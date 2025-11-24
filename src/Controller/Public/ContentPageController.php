@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Public;
+namespace Shared\Controller\Public;
 
-use App\Domain\Content\Page\ContentPage;
+use Shared\Domain\Content\Page\ContentPage;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

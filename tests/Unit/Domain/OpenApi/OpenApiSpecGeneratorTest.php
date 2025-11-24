@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\OpenApi;
+namespace Shared\Tests\Unit\Domain\OpenApi;
 
 use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\OpenApi\OpenApi;
-use App\Domain\OpenApi\OpenApiSpecGenerator;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\OpenApi\OpenApiSpecGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class OpenApiSpecGeneratorTest extends UnitTestCase

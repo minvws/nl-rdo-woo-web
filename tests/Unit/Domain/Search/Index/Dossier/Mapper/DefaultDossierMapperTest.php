@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
+namespace Shared\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Search\Index\Dossier\Mapper\DefaultDossierMapper;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Index\Schema\ElasticObjectField;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Search\Index\Dossier\Mapper\DefaultDossierMapper;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Index\Schema\ElasticObjectField;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class DefaultDossierMapperTest extends UnitTestCase

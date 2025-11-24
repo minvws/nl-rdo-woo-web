@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

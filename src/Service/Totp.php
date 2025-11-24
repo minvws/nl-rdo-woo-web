@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace Shared\Service;
 
-use App\Service\Security\User;
+use Shared\Service\Security\User;
 
 class Totp
 {

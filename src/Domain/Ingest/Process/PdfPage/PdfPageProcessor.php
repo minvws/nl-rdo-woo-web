@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\PdfPage;
+namespace Shared\Domain\Ingest\Process\PdfPage;
 
-use App\Domain\Ingest\Content\ContentExtractCache;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Worker\Pdf\Extractor\PageContentExtractor;
-use App\Service\Worker\Pdf\Extractor\PageExtractor;
-use App\Service\Worker\Pdf\Extractor\ThumbnailExtractor;
+use Shared\Domain\Ingest\Content\ContentExtractCache;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Worker\Pdf\Extractor\PageContentExtractor;
+use Shared\Service\Worker\Pdf\Extractor\PageExtractor;
+use Shared\Service\Worker\Pdf\Extractor\ThumbnailExtractor;
 use Webmozart\Assert\Assert;
 
 readonly class PdfPageProcessor

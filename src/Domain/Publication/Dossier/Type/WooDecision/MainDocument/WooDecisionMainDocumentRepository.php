@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\MainDocument;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
-use App\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
-use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
+use Shared\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
+use Shared\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Webmozart\Assert\Assert;
 
 /**

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Organisation\Event;
+namespace Shared\Domain\Organisation\Event;
 
-use App\Domain\Organisation\Organisation;
 use Doctrine\ORM\PersistentCollection;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
+use Shared\Domain\Organisation\Organisation;
 
 readonly class OrganisationUpdatedEvent
 {

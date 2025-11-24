@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace Shared\Service;
 
 use Doctrine\ORM\Query;
 use Knp\Component\Pager\Pagination\PaginationInterface;

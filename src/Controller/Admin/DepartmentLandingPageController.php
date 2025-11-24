@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Department\Department;
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Department\DepartmentService;
-use App\Domain\Department\LandingPage\ViewModel\DepartmentLandingPageViewFactory;
-use App\Form\LandingPageType;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Department\DepartmentService;
+use Shared\Domain\Department\LandingPage\ViewModel\DepartmentLandingPageViewFactory;
+use Shared\Form\LandingPageType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

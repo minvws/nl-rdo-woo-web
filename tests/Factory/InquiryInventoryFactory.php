@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory;
+namespace Shared\Tests\Factory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

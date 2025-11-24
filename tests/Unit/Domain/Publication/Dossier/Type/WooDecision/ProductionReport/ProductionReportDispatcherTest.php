@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ProductionReport;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ProductionReport;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ConfirmProductionReportUpdateCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\InitiateProductionReportUpdateCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ProductionReportProcessRunCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\RejectProductionReportUpdateCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ConfirmProductionReportUpdateCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\InitiateProductionReportUpdateCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ProductionReportProcessRunCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\RejectProductionReportUpdateCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\DossierReference;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Tests\Unit\UnitTestCase;
 
-final class DossierReferenceTest extends MockeryTestCase
+final class DossierReferenceTest extends UnitTestCase
 {
     public function testFromEntity(): void
     {

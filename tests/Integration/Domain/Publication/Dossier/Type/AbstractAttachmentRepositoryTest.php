@@ -2,22 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
-use App\Domain\Publication\Attachment\Repository\AbstractAttachmentRepository;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
-use App\Tests\Integration\IntegrationTestTrait;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Repository\AbstractAttachmentRepository;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Component\Uid\Uuid;
 
-final class AbstractAttachmentRepositoryTest extends KernelTestCase
+final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     /**
      * @return AbstractAttachmentRepository<CovenantAttachment>
      */

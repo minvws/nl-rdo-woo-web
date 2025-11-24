@@ -1,0 +1,273 @@
+<?php
+
+declare(strict_types=1);
+
+class_alias(
+    '\Shared\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand',
+    '\App\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand',
+);
+class_alias(
+    '\Shared\Domain\Search\Index\Rollover\SetElasticAliasCommand',
+    '\App\Domain\Search\Index\Rollover\SetElasticAliasCommand',
+);
+
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ProductionReportProcessRunCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ProductionReportProcessRunCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Command\DeleteDossierCommand',
+    '\App\Domain\Publication\Dossier\Command\DeleteDossierCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUploadsCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUploadsCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUpdatesCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUpdatesCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUploadCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUploadCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUpdateCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUpdateCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawDocumentCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawDocumentCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand',
+);
+class_alias(
+    '\Shared\Domain\Upload\Command\ValidateUploadCommand',
+    '\App\Domain\Upload\Command\ValidateUploadCommand',
+);
+
+class_alias(
+    '\Shared\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand',
+    '\App\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand',
+);
+class_alias(
+    '\Shared\Domain\Ingest\Process\Dossier\IngestDossierCommand',
+    '\App\Domain\Ingest\Process\Dossier\IngestDossierCommand',
+);
+class_alias(
+    '\Shared\Domain\Ingest\Process\Pdf\IngestPdfCommand',
+    '\App\Domain\Ingest\Process\Pdf\IngestPdfCommand',
+);
+class_alias(
+    '\Shared\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand',
+    '\App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand',
+);
+class_alias(
+    '\Shared\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand',
+    '\App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand',
+);
+class_alias(
+    '\Shared\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand',
+    '\App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand',
+);
+
+class_alias(
+    '\Shared\Domain\Search\Index\Dossier\IndexDossierCommand',
+    '\App\Domain\Search\Index\Dossier\IndexDossierCommand',
+);
+class_alias(
+    '\Shared\Domain\Department\UpdateDepartmentCommand',
+    '\App\Domain\Department\UpdateDepartmentCommand',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\RemoveDocumentCommand',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\RemoveDocumentCommand',
+);
+class_alias(
+    '\Shared\Domain\Search\Index\DeleteElasticDocumentCommand',
+    '\App\Domain\Search\Index\DeleteElasticDocumentCommand',
+);
+
+class_alias(
+    '\Shared\Domain\Publication\Attachment\Event\AttachmentCreatedEvent',
+    '\App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent',
+);
+class_alias(
+    '\Shared\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent',
+    '\App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent',
+);
+class_alias(
+    '\Shared\Domain\Publication\Attachment\Event\AttachmentDeletedEvent',
+    '\App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent',
+);
+class_alias(
+    '\Shared\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent',
+    '\App\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent',
+);
+class_alias(
+    '\Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent',
+    '\App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent',
+);
+class_alias(
+    '\Shared\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent',
+    '\App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent',
+);
+class_alias(
+    '\Shared\Domain\Publication\Subject\Event\SubjectUpdatedEvent',
+    '\App\Domain\Publication\Subject\Event\SubjectUpdatedEvent',
+);
+
+class_alias(
+    '\Shared\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand',
+    '\App\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand',
+);
+
+// EntityWithFileInfo implementations
+class_alias(
+    '\Shared\Domain\Department\Department',
+    '\App\Domain\Department\Department',
+);
+
+// AbstractPublicationItem and its subclasses
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Document\Document',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport',
+);
+
+// Other EntityWithFileInfo implementations
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory',
+);
+
+// AbstractAttachment and its subclasses
+class_alias(
+    '\Shared\Domain\Publication\Attachment\Entity\AbstractAttachment',
+    '\App\Domain\Publication\Attachment\Entity\AbstractAttachment',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment',
+    '\App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment',
+    '\App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\Advice\AdviceAttachment',
+    '\App\Domain\Publication\Dossier\Type\Advice\AdviceAttachment',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment',
+    '\App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment',
+    '\App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment',
+    '\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment',
+    '\App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment',
+);
+
+// AbstractMainDocument and its subclasses
+class_alias(
+    '\Shared\Domain\Publication\MainDocument\AbstractMainDocument',
+    '\App\Domain\Publication\MainDocument\AbstractMainDocument',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument',
+    '\App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument',
+    '\App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\Advice\AdviceMainDocument',
+    '\App\Domain\Publication\Dossier\Type\Advice\AdviceMainDocument',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument',
+    '\App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument',
+    '\App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument',
+    '\App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument',
+    '\App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument',
+    '\App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument',
+);
+
+// Other non-command/event classes
+class_alias(
+    '\Shared\Service\Security\AuditUserDetails',
+    '\App\Service\Security\AuditUserDetails',
+);
+class_alias(
+    '\Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason',
+    '\App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason',
+);

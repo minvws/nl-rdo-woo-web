@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Decision;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Decision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final class DecisionTypeTest extends MockeryTestCase
+final class DecisionTypeTest extends UnitTestCase
 {
     #[DataProvider('transDataProvider')]
     public function testTransKey(DecisionType $decisionType, string $expectedKey, ?string $locale): void

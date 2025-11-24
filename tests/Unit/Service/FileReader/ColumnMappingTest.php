@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\FileReader;
+namespace Shared\Tests\Unit\Service\FileReader;
 
-use App\Service\FileReader\ColumnMapping;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Service\FileReader\ColumnMapping;
+use Shared\Tests\Unit\UnitTestCase;
 
-class ColumnMappingTest extends MockeryTestCase
+class ColumnMappingTest extends UnitTestCase
 {
     public function testGetters(): void
     {

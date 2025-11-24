@@ -2,25 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Api\Admin;
+namespace Shared\Tests\Integration\Api\Admin;
 
-use App\Api\Admin\AnnualReportAttachment\AnnualReportAttachmentDto;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Upload\Handler\UploadHandlerInterface;
-use App\Domain\Upload\UploadEntity;
-use App\Service\Uploader\UploadGroupId;
-use App\Tests\Factory\FileInfoFactory;
-use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportAttachmentFactory;
-use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
-use App\Tests\Factory\UploadEntityFactory;
-use App\Tests\Factory\UserFactory;
-use App\Tests\Integration\IntegrationTestTrait;
 use Carbon\CarbonImmutable;
 use League\Flysystem\FilesystemOperator;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Api\Admin\AnnualReportAttachment\AnnualReportAttachmentDto;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Upload\Handler\UploadHandlerInterface;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Factory\FileInfoFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportAttachmentFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
+use Shared\Tests\Factory\UploadEntityFactory;
+use Shared\Tests\Factory\UserFactory;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,8 +32,6 @@ use Symfony\Component\Validator\Constraints\Type;
 
 final class AnnualReportAttachmentTest extends AdminApiTestCase
 {
-    use IntegrationTestTrait;
-
     protected static ?bool $alwaysBootKernel = false;
 
     private UploadHandlerInterface&MockInterface $uploadHandler;

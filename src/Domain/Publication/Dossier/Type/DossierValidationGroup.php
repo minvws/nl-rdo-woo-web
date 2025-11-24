@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type;
+namespace Shared\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Dossier\Step\StepDefinitionInterface;
+use Shared\Domain\Publication\Dossier\Step\StepDefinitionInterface;
 
 /**
  * These validation groups can be used when the validation of a property that is shared between multiple dossiertypes

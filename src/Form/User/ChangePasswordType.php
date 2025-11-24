@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Form\User;
+namespace Shared\Form\User;
 
-use App\Validator\CommonList;
-use App\Validator\NotTheSamePassword;
-use App\Validator\SimilarityEmail;
+use Shared\Validator\CommonList;
+use Shared\Validator\NotTheSamePassword;
+use Shared\Validator\SimilarityEmail;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;

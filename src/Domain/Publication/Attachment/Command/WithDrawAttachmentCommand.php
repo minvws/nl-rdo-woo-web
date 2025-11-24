@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\Command;
+namespace Shared\Domain\Publication\Attachment\Command;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
 use Symfony\Component\Uid\Uuid;
 
 readonly class WithDrawAttachmentCommand

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory;
+namespace Shared\Tests\Factory;
 
-use App\Service\Security\Roles;
-use App\Service\Security\User;
+use Shared\Service\Security\Roles;
+use Shared\Service\Security\User;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 

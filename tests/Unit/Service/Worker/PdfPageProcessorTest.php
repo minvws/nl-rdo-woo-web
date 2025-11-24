@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker;
+namespace Shared\Tests\Unit\Service\Worker;
 
-use App\Domain\Ingest\Content\ContentExtractCache;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContextFactory;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessor;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Worker\Pdf\Extractor\PageContentExtractor;
-use App\Service\Worker\Pdf\Extractor\PageExtractor;
-use App\Service\Worker\Pdf\Extractor\ThumbnailExtractor;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\Content\ContentExtractCache;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContextFactory;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessor;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Worker\Pdf\Extractor\PageContentExtractor;
+use Shared\Service\Worker\Pdf\Extractor\PageExtractor;
+use Shared\Service\Worker\Pdf\Extractor\ThumbnailExtractor;
+use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\InvalidArgumentException;
 
 class PdfPageProcessorTest extends UnitTestCase

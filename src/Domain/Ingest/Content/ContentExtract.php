@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content;
+namespace Shared\Domain\Ingest\Content;
 
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 
 readonly class ContentExtract
 {

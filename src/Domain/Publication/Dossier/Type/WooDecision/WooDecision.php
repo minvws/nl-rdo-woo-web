@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
-use App\Domain\Publication\Attachment\Entity\HasAttachments;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierTypeWithPreview;
-use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
-use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Domain\Publication\MainDocument\HasMainDocument;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeWithPreview;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
+use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -76,13 +76,13 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     #[Assert\LessThanOrEqual(value: 'today', message: 'date_must_not_be_in_future', groups: [DossierValidationGroup::DECISION->value])]
     private ?\DateTimeImmutable $decisionDate = null;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: WooDecisionMainDocument::class, cascade: ['remove'])]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: WooDecisionMainDocument::class, cascade: ['remove', 'persist'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::DECISION->value])]
     private ?WooDecisionMainDocument $document;
 
     /** @var Collection<array-key,WooDecisionAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: WooDecisionAttachment::class)]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: WooDecisionAttachment::class, cascade: ['persist'])]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 

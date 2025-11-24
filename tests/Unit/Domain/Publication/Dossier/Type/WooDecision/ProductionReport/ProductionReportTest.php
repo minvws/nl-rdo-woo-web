@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ProductionReport;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ProductionReport;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 
-final class ProductionReportTest extends MockeryTestCase
+final class ProductionReportTest extends UnitTestCase
 {
     public function testSetAndGetDossier(): void
     {

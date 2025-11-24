@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload;
+namespace Shared\Domain\Upload;
 
-use App\Service\Uploader\UploadGroupId;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Admin;
+namespace Shared\Domain\Publication\Dossier\Admin;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\DossierType;
 use Doctrine\Common\Collections\ArrayCollection;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
 
 class DossierFilterParameters
 {

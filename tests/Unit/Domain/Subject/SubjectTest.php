@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Subject;
+namespace Shared\Tests\Unit\Domain\Subject;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Subject\Subject;
 use Doctrine\Common\Collections\Collection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Tests\Unit\UnitTestCase;
 
-class SubjectTest extends MockeryTestCase
+class SubjectTest extends UnitTestCase
 {
     public function testGettersAndSetters(): void
     {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Sort\ViewModel;
+namespace Shared\Service\Search\Query\Sort\ViewModel;
 
-use App\Service\Search\Query\Sort\SortException;
+use Shared\Service\Search\Query\Sort\SortException;
 
 class SortItems implements \IteratorAggregate
 {

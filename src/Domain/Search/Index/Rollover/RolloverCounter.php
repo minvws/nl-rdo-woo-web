@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Rollover;
+namespace Shared\Domain\Search\Index\Rollover;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Index\Schema\ElasticNestedField;
-use App\Service\Elastic\ElasticClientInterface;
-use App\Service\Search\Query\Dsl\Aggregation;
-use App\Service\Search\Query\Dsl\Query;
 use Doctrine\ORM\EntityManagerInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Erichard\ElasticQueryBuilder\Aggregation\NestedAggregation;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
 use MinVWS\TypeArray\TypeArray;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Index\Schema\ElasticNestedField;
+use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Service\Search\Query\Dsl\Aggregation;
+use Shared\Service\Search\Query\Dsl\Query;
 
 /**
  * @SuppressWarnings("PHPMD.CouplingBetweenObjects")

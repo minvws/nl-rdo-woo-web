@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload\Type;
+namespace Shared\Domain\Publication\BatchDownload\Type;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\ORM\QueryBuilder;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Webmozart\Assert\Assert;
 
 readonly class InquiryDossierBatchDownload implements BatchDownloadTypeInterface

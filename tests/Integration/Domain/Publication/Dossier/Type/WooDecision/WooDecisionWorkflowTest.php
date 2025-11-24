@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class WooDecisionWorkflowTest extends KernelTestCase
+final class WooDecisionWorkflowTest extends SharedWebTestCase
 {
     protected function setUp(): void
     {

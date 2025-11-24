@@ -2,21 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\Covenant;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\Covenant;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use App\Tests\Integration\IntegrationTestTrait;
 use Carbon\CarbonImmutable;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class CovenantTest extends KernelTestCase
+final class CovenantTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     protected function setUp(): void
     {
         parent::setUp();

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\OpenApi\Exceptions;
+namespace Shared\Domain\OpenApi\Exceptions;
 
 use League\OpenAPIValidation\Schema\Exception\FormatMismatch;
 

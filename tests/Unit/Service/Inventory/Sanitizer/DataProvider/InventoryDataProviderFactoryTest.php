@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inventory\Sanitizer\DataProvider;
+namespace Shared\Tests\Unit\Service\Inventory\Sanitizer\DataProvider;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
+use Shared\Tests\Unit\UnitTestCase;
 
-class InventoryDataProviderFactoryTest extends MockeryTestCase
+class InventoryDataProviderFactoryTest extends UnitTestCase
 {
     private DocumentRepository&MockInterface $documentRepository;
     private Document&MockInterface $docA;

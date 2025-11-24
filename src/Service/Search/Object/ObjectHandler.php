@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Object;
+namespace Shared\Service\Search\Object;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\ElasticDocumentId;
-use App\Domain\Search\Index\Schema\ElasticNestedField;
-use App\Domain\Search\Index\Schema\ElasticPath;
-use App\Service\Elastic\ElasticClientInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use MinVWS\TypeArray\TypeArray;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\ElasticDocumentId;
+use Shared\Domain\Search\Index\Schema\ElasticNestedField;
+use Shared\Domain\Search\Index\Schema\ElasticPath;
+use Shared\Service\Elastic\ElasticClientInterface;
 
 /**
  * DocumentHandler would be a better Elasticsearch name

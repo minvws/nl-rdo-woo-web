@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Uploader\Status;
+namespace Shared\Api\Admin\Uploader\Status;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Domain\Upload\Exception\UploadNotFoundException;
-use App\Domain\Upload\UploadEntityRepository;
+use Shared\Domain\Upload\Exception\UploadNotFoundException;
+use Shared\Domain\Upload\UploadEntityRepository;
 
 final readonly class UploadStatusProvider implements ProviderInterface
 {

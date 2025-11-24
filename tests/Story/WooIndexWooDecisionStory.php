@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Story;
+namespace Shared\Tests\Story;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Tests\Factory\DocumentFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionAttachmentFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
 use Carbon\CarbonImmutable;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Tests\Factory\DocumentFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionAttachmentFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
 use Symfony\Component\Uid\UuidV1;
 use Symfony\Component\Uid\UuidV6;
 use Zenstruck\Foundry\Object\Instantiator;

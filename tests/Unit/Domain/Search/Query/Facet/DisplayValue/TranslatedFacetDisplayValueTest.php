@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Query\Facet\DisplayValue;
+namespace Shared\Tests\Unit\Domain\Search\Query\Facet\DisplayValue;
 
-use App\Domain\Search\Query\Facet\DisplayValue\TranslatedFacetDisplayValue;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Search\Query\Facet\DisplayValue\TranslatedFacetDisplayValue;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class TranslatedFacetDisplayValueTest extends MockeryTestCase
+class TranslatedFacetDisplayValueTest extends UnitTestCase
 {
     public function testCreateAndGetters(): void
     {

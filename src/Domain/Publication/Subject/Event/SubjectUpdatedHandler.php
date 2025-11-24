@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Subject\Event;
+namespace Shared\Domain\Publication\Subject\Event;
 
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Publication\Subject\SubjectRepository;
-use App\Domain\Search\Index\Updater\SubjectIndexUpdater;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Publication\Subject\SubjectRepository;
+use Shared\Domain\Search\Index\Updater\SubjectIndexUpdater;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Webmozart\Assert\Assert;
 

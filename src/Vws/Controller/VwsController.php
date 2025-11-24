@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Vws\Controller;
+namespace Shared\Vws\Controller;
 
-use App\Vws\Search\Theme\Covid19Theme;
+use Shared\Vws\Search\Theme\Covid19Theme;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;

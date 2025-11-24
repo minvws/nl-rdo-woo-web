@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
-use App\Domain\Search\Index\Rollover\RolloverParameters;
-use App\Domain\Search\Index\Rollover\RolloverService;
-use App\Form\Elastic\ActivateIndexType;
-use App\Form\Elastic\DeleteIndexType;
-use App\Form\Elastic\RolloverParametersType;
+use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
+use Shared\Domain\Search\Index\Rollover\RolloverParameters;
+use Shared\Domain\Search\Index\Rollover\RolloverService;
+use Shared\Form\Elastic\ActivateIndexType;
+use Shared\Form\Elastic\DeleteIndexType;
+use Shared\Form\Elastic\RolloverParametersType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -85,7 +85,7 @@ class ElasticController extends AbstractController
         $breadcrumbs->addItem('global.details');
 
         $indices = $this->indexService->find($indexName);
-        if (empty($indices)) {
+        if ($indices === []) {
             $this->addFlash('backend', ['danger' => 'admin.elastic.invalid_index']);
 
             return $this->redirectToRoute('app_admin_elastic');
@@ -114,14 +114,14 @@ class ElasticController extends AbstractController
     public function delete(string $indexName, Request $request): Response
     {
         $indices = $this->indexService->find($indexName);
-        if (empty($indices)) {
+        if ($indices === []) {
             $this->addFlash('backend', ['danger' => 'admin.elastic.invalid_index']);
 
             return $this->redirectToRoute('app_admin_elastic');
         }
 
         $index = reset($indices);
-        if (count($index->aliases) !== 0) {
+        if ($index->aliases !== []) {
             $this->addFlash('backend', ['danger' => 'admin.elastic.cannot_delete_active_index']);
 
             return $this->redirectToRoute('app_admin_elastic');
@@ -151,7 +151,7 @@ class ElasticController extends AbstractController
         $breadcrumbs->addItem('admin.elastic.promote_to_live');
 
         $indices = $this->indexService->find($indexName);
-        if (empty($indices)) {
+        if ($indices === []) {
             $this->addFlash('backend', ['danger' => 'admin.elastic.invalid_index']);
 
             return $this->redirectToRoute('app_admin_elastic');

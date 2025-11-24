@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Department\LandingPage\ViewModel;
+namespace Shared\Domain\Department\LandingPage\ViewModel;
 
-use App\Domain\Department\Department;
+use Shared\Domain\Department\Department;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class DepartmentLandingPageViewFactory

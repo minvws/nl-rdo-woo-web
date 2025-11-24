@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\FileReader;
+namespace Shared\Tests\Unit\Service\FileReader;
 
-use App\Exception\FileReaderException;
-use App\Service\FileReader\ExcelReader;
-use App\Service\FileReader\HeaderMap;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Shared\Exception\FileReaderException;
+use Shared\Service\FileReader\ExcelReader;
+use Shared\Service\FileReader\HeaderMap;
+use Shared\Tests\Unit\UnitTestCase;
 
-class ExcelReaderTest extends MockeryTestCase
+class ExcelReaderTest extends UnitTestCase
 {
     private ExcelReader $excelReader;
     private HeaderMap&MockInterface $headerMap;

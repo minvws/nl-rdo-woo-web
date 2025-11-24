@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search;
+namespace Shared\Domain\Search;
 
-use App\Domain\Search\Index\DeleteElasticDocumentCommand;
-use App\Domain\Search\Index\Dossier\IndexDossierCommand;
-use App\Domain\Search\Index\SubType\IndexAttachmentCommand;
-use App\Domain\Search\Index\SubType\IndexMainDocumentCommand;
+use Shared\Domain\Search\Index\DeleteElasticDocumentCommand;
+use Shared\Domain\Search\Index\Dossier\IndexDossierCommand;
+use Shared\Domain\Search\Index\SubType\IndexAttachmentCommand;
+use Shared\Domain\Search\Index\SubType\IndexMainDocumentCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 

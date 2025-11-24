@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\Enum;
+namespace Shared\Domain\Publication\Attachment\Enum;
 
-use App\Domain\Publication\Attachment\Exception\AttachmentTypeBranchException;
+use Shared\Domain\Publication\Attachment\Exception\AttachmentTypeBranchException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index;
+namespace Shared\Domain\Search\Index;
 
 class ElasticConfig
 {

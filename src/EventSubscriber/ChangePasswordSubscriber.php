@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscriber;
+namespace Shared\EventSubscriber;
 
-use App\Service\Security\User;
+use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;

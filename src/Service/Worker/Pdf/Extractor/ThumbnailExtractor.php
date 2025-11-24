@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Worker\Pdf\Extractor;
+namespace Shared\Service\Worker\Pdf\Extractor;
 
-use App\Domain\Ingest\Process\PdfPage\PdfPageException;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
-use App\Service\Storage\ThumbnailStorageService;
-use App\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmService;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
+use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmService;
 use Symfony\Component\HttpFoundation\File\File;
 
 readonly class ThumbnailExtractor

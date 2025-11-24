@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory;
+namespace Shared\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Exception\ProcessInventoryException;
-use App\Exception\TranslatableException;
-use App\Service\Inventory\Progress\RunProgress;
-use App\Service\Inventory\Reader\InventoryReaderInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\TranslatableException;
+use Shared\Service\Inventory\Progress\RunProgress;
+use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 
 class InventoryComparator
 {

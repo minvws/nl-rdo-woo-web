@@ -2,17 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Content\Page;
+namespace Shared\Tests\Integration\Domain\Content\Page;
 
-use App\Domain\Content\Page\ContentPageRepository;
-use App\Tests\Factory\Content\Page\ContentPageFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Content\Page\ContentPageRepository;
+use Shared\Tests\Factory\Content\Page\ContentPageFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-class ContentPageRepositoryTest extends KernelTestCase
+class ContentPageRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private ContentPageRepository $repository;
 
     protected function setUp(): void

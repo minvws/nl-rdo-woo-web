@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Command\Index;
+namespace Shared\Command\Index;
 
-use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
+use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

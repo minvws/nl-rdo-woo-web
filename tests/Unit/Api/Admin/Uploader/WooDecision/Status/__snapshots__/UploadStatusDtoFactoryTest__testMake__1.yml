@@ -1,5 +1,5 @@
 dossierId: 00000000-0000-0000-0000-000000000001
-status: !php/const App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus::OPEN_FOR_UPLOADS
+status: !php/const Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus::OPEN_FOR_UPLOADS
 canProcess: true
 uploadedFiles:
     -

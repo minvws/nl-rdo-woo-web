@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Storage;
+namespace Shared\Service\Storage;
 
 use Psr\Log\LoggerInterface;
 use Webmozart\Assert\Assert;

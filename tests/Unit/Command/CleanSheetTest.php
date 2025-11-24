@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command;
+namespace Shared\Tests\Unit\Command;
 
-use App\Command\CleanSheet;
-use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
-use App\Domain\WooIndex\WooIndexSitemapService;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Command\CleanSheet;
+use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
+use Shared\Domain\WooIndex\WooIndexSitemapService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -17,7 +17,7 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class CleanSheetTest extends MockeryTestCase
+class CleanSheetTest extends UnitTestCase
 {
     private Command $command;
     private ElasticIndexManager&MockInterface $indexService;

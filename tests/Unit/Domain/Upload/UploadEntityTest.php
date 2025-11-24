@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload;
+namespace Shared\Tests\Unit\Domain\Upload;
 
-use App\Domain\Upload\Exception\UploadException;
-use App\Domain\Upload\Exception\UploadValidationException;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\UploadStatus;
-use App\Service\Security\User;
-use App\Service\Uploader\UploadGroupId;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Upload\Exception\UploadException;
+use Shared\Domain\Upload\Exception\UploadValidationException;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadStatus;
+use Shared\Service\Security\User;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\InputBag;
 
-class UploadEntityTest extends MockeryTestCase
+class UploadEntityTest extends UnitTestCase
 {
     private User&MockInterface $user;
     private InputBag $context;

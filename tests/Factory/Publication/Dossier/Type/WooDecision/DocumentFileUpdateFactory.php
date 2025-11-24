@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory\Publication\Dossier\Type\WooDecision;
+namespace Shared\Tests\Factory\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateStatus;
-use App\Tests\Factory\DocumentFactory;
-use App\Tests\Factory\FileInfoFactory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateStatus;
+use Shared\Tests\Factory\DocumentFactory;
+use Shared\Tests\Factory\FileInfoFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

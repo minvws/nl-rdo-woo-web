@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Command\CreateDossierCommand;
-use App\Domain\Publication\Dossier\Command\DeleteDossierCommand;
-use App\Domain\Publication\Dossier\Command\UpdateDossierContentCommand;
-use App\Domain\Publication\Dossier\Command\UpdateDossierDetailsCommand;
-use App\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
-use App\Domain\Publication\Dossier\DossierDispatcher;
-use App\Service\Security\User;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Command\CreateDossierCommand;
+use Shared\Domain\Publication\Dossier\Command\DeleteDossierCommand;
+use Shared\Domain\Publication\Dossier\Command\UpdateDossierContentCommand;
+use Shared\Domain\Publication\Dossier\Command\UpdateDossierDetailsCommand;
+use Shared\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
+use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;

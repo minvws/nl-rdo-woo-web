@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final class DocumentWithdrawReasonTest extends MockeryTestCase
+final class DocumentWithdrawReasonTest extends UnitTestCase
 {
     public function testTrans(): void
     {

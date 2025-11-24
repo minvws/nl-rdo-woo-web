@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Public\Dossier\WooDecision;
+namespace Shared\Controller\Public\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\DocumentViewFactory;
-use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
-use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Security\DossierVoter;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\DocumentViewFactory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Security\DossierVoter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

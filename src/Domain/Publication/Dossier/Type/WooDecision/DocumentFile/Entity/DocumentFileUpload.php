@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity;
 
-use App\Doctrine\TimestampableTrait;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUploadError;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUploadStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUploadRepository;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\TimestampableTrait;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUploadError;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUploadStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUploadRepository;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: DocumentFileUploadRepository::class)]

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\Dossier;
+namespace Shared\Domain\Ingest\Process\Dossier;
 
-use App\Domain\Ingest\Process\IngestProcessException;
-use App\Domain\Publication\Dossier\AbstractDossier;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Ingest\Process\IngestProcessException;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

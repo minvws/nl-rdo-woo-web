@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory\Publication\Dossier\Type\AnnualReport;
+namespace Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
-use App\Tests\Factory\FileInfoFactory;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
+use Shared\Tests\Factory\FileInfoFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

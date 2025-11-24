@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Publication\V1\Prefix;
+namespace Shared\Api\Publication\V1\Prefix;
 
-use App\Api\Publication\V1\Organisation\OrganisationReferenceDto;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Api\Publication\V1\Organisation\OrganisationReferenceDto;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
 
 class PrefixMapper
 {
@@ -17,7 +17,7 @@ class PrefixMapper
      */
     public static function fromEntities(array $documentPrefixes): array
     {
-        return array_map(fn (DocumentPrefix $documentPrefix): PrefixDto => self::fromEntity($documentPrefix), $documentPrefixes);
+        return array_map(self::fromEntity(...), $documentPrefixes);
     }
 
     public static function fromEntity(DocumentPrefix $documentPrefix): PrefixDto

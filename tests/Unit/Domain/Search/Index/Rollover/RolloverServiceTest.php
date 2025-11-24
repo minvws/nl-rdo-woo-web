@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Rollover;
+namespace Shared\Tests\Unit\Domain\Search\Index\Rollover;
 
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
-use App\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand;
-use App\Domain\Search\Index\Rollover\MainTypeCount;
-use App\Domain\Search\Index\Rollover\MappingService;
-use App\Domain\Search\Index\Rollover\RolloverCounter;
-use App\Domain\Search\Index\Rollover\RolloverParameters;
-use App\Domain\Search\Index\Rollover\RolloverService;
-use App\Domain\Search\Index\Rollover\SetElasticAliasCommand;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
+use Shared\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand;
+use Shared\Domain\Search\Index\Rollover\MainTypeCount;
+use Shared\Domain\Search\Index\Rollover\MappingService;
+use Shared\Domain\Search\Index\Rollover\RolloverCounter;
+use Shared\Domain\Search\Index\Rollover\RolloverParameters;
+use Shared\Domain\Search\Index\Rollover\RolloverService;
+use Shared\Domain\Search\Index\Rollover\SetElasticAliasCommand;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 

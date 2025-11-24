@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Vws\AuditLog;
+namespace Shared\Tests\Unit\Vws\AuditLog;
 
-use App\Domain\Department\Department;
-use App\Domain\Organisation\Event\OrganisationCreatedEvent;
-use App\Domain\Organisation\Event\OrganisationUpdatedEvent;
-use App\Domain\Organisation\Organisation;
-use App\Service\Security\User;
-use App\Vws\AuditLog\OrganisationAuditLogger;
 use Doctrine\Common\Collections\ArrayCollection;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\OrganisationChangeLogEvent;
 use MinVWS\AuditLogger\Events\Logging\OrganisationCreatedLogEvent;
 use MinVWS\AuditLogger\Loggers\LoggerInterface as AuditLoggerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Organisation\Event\OrganisationCreatedEvent;
+use Shared\Domain\Organisation\Event\OrganisationUpdatedEvent;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Vws\AuditLog\OrganisationAuditLogger;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Uid\Uuid;
 
-class OrganisationAuditLoggerTest extends MockeryTestCase
+class OrganisationAuditLoggerTest extends UnitTestCase
 {
     use MatchesSnapshots;
 

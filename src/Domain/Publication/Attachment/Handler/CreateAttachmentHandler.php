@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\Handler;
+namespace Shared\Domain\Publication\Attachment\Handler;
 
-use App\Domain\Publication\Attachment\AttachmentDispatcher;
-use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Upload\Process\EntityUploadStorer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
+use Shared\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Upload\Process\EntityUploadStorer;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

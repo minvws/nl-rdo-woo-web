@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum;
 
 enum DocumentFileUploadStatus: string
 {

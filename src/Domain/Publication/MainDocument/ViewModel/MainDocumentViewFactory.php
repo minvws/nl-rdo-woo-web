@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\MainDocument\ViewModel;
+namespace Shared\Domain\Publication\MainDocument\ViewModel;
 
-use App\Domain\Publication\Citation;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Domain\Publication\Citation;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 readonly class MainDocumentViewFactory

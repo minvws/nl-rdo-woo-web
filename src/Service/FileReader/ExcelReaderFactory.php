@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service\FileReader;
+namespace Shared\Service\FileReader;
 
-use App\Exception\FileReaderException;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Shared\Exception\FileReaderException;
 
 /**
  * Creates instances of the ExcelReader. Uses ColumnMapping instances as input to parse and validate the headers.
@@ -77,7 +77,7 @@ class ExcelReaderFactory implements ReaderFactoryInterface
                 $columnName = strval($cell->getValue());
                 $columnName = strtolower(trim($columnName));
                 $columnName = trim(ltrim($columnName, '0123456789'));
-                if (empty($columnName)) {
+                if ($columnName === '') {
                     continue;
                 }
 

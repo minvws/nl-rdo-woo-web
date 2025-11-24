@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Storage;
+namespace Shared\Tests\Unit\Service\Storage;
 
-use App\Service\Storage\RemoteFilesystem;
-use App\Tests\Unit\UnitTestCase;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnreadableFileEncountered;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Service\Storage\RemoteFilesystem;
+use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 
 final class RemoteFilesystemTest extends UnitTestCase

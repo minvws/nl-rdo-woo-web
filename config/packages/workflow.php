@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-use App\Domain\Publication\Dossier\Type\Advice\AdviceWorkflow;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportWorkflow;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementWorkflow;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantWorkflow;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionWorkflow;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportWorkflow;
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationWorkflow;
-use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceWorkflow;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionWorkflow;
+use Shared\Domain\Publication\Dossier\Type\Advice\AdviceWorkflow;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportWorkflow;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementWorkflow;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantWorkflow;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionWorkflow;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportWorkflow;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationWorkflow;
+use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceWorkflow;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionWorkflow;
 use Symfony\Config\FrameworkConfig;
 
 return static function (FrameworkConfig $frameworkConfig): void {

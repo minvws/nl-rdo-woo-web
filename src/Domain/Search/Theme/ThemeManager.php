@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Theme;
+namespace Shared\Domain\Search\Theme;
 
-use App\Domain\Search\Theme\ViewModel\Theme;
-use App\Domain\Search\Theme\ViewModel\ThemeViewFactory;
+use Shared\Domain\Search\Theme\ViewModel\Theme;
+use Shared\Domain\Search\Theme\ViewModel\ThemeViewFactory;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 class ThemeManager

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker\Pdf\Tools\Pdftk;
+namespace Shared\Tests\Unit\Service\Worker\Pdf\Tools\Pdftk;
 
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkRuntimeException;
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkRuntimeException;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Process\Process;
 
 final class PdftkServiceTest extends UnitTestCase

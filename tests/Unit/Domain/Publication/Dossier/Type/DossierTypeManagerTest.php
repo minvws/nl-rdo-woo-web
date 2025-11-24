@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
-use App\Domain\Publication\Dossier\Type\DossierTypeException;
-use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeException;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
-class DossierTypeManagerTest extends MockeryTestCase
+class DossierTypeManagerTest extends UnitTestCase
 {
     private DossierTypeConfigInterface&MockInterface $configWoo;
     private DossierTypeConfigInterface&MockInterface $configCovenant;

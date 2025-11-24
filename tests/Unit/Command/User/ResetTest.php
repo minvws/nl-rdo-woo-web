@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command\User;
+namespace Shared\Tests\Unit\Command\User;
 
-use App\Command\User\Reset;
-use App\Service\Security\User;
-use App\Service\Security\UserRepository;
-use App\Service\UserService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Command\User\Reset;
+use Shared\Service\Security\User;
+use Shared\Service\Security\UserRepository;
+use Shared\Service\UserService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ResetTest extends UnitTestCase

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\InvestigationReport;
+namespace Shared\Domain\Publication\Dossier\Type\InvestigationReport;
 
-use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
-use App\Domain\Search\Result\Dossier\InvestigationReport\InvestigationReportSearchResult;
-use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Domain\Publication\Dossier\Type\AbstractDossierRepository;
+use Shared\Domain\Search\Result\Dossier\InvestigationReport\InvestigationReportSearchResult;
+use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 /**
  * @extends AbstractDossierRepository<InvestigationReport>

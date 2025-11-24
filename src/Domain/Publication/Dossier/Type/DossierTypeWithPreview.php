@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type;
+namespace Shared\Domain\Publication\Dossier\Type;
 
 interface DossierTypeWithPreview
 {

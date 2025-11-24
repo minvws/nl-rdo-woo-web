@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\SubType\Mapper;
+namespace Shared\Tests\Unit\Domain\Search\Index\SubType\Mapper;
 
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\SourceType;
-use App\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
-use App\Domain\Search\Index\ElasticDocument;
-use App\Domain\Search\Index\SubType\Mapper\WooDecisionDocumentMapper;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
+use Shared\Domain\Search\Index\ElasticDocument;
+use Shared\Domain\Search\Index\SubType\Mapper\WooDecisionDocumentMapper;
+use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Uid\Uuid;
 
-class WooDecisionDocumentMapperTest extends MockeryTestCase
+class WooDecisionDocumentMapperTest extends UnitTestCase
 {
     use MatchesSnapshots;
 

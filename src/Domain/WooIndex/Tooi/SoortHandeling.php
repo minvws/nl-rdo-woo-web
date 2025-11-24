@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Tooi;
+namespace Shared\Domain\WooIndex\Tooi;
 
 /**
  * @phpcs:ignore Generic.Files.LineLength.TooLong

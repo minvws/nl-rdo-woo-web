@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Extractor;
+namespace Shared\Domain\Upload\Extractor;
 
 final class ExtractorException extends \RuntimeException
 {

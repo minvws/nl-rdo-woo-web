@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\MainDocument;
+namespace Shared\Tests\Unit\Domain\Publication\MainDocument;
 
-use App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
-use App\Domain\Publication\MainDocument\MainDocumentDossierFileProvider;
-use App\Domain\Publication\MainDocument\MainDocumentRepository;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use Shared\Domain\Publication\MainDocument\MainDocumentDossierFileProvider;
+use Shared\Domain\Publication\MainDocument\MainDocumentRepository;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class MainDocumentDossierFileProviderTest extends UnitTestCase

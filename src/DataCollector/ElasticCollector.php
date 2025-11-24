@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DataCollector;
+namespace Shared\DataCollector;
 
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Symfony\Bundle\FrameworkBundle\DataCollector\AbstractDataCollector;

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Vws\AuditLog;
+namespace Shared\Vws\AuditLog;
 
-use App\Service\Security\User;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\UserLoginLogEvent;
 use MinVWS\AuditLogger\Events\Logging\UserLoginTwoFactorFailedEvent;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvent;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvents;
+use Shared\Service\Security\User;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: TwoFactorAuthenticationEvents::FAILURE, method: 'onFailure')]

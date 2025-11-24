@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inquiry;
+namespace Shared\Tests\Unit\Service\Inquiry;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\Inquiry\CaseNumbers;
-use App\Service\Inquiry\DocumentCaseNumbers;
-use App\Service\Inquiry\InquiryChangeset;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inquiry\InquiryChangeset;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class InquiryChangesetTest extends MockeryTestCase
+class InquiryChangesetTest extends UnitTestCase
 {
     private InquiryChangeset $changeset;
 

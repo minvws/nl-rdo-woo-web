@@ -2,17 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace Shared\Service;
 
-use App\Domain\Organisation\Organisation;
-use App\Service\Security\Event\UserCreatedEvent;
-use App\Service\Security\Event\UserDisableEvent;
-use App\Service\Security\Event\UserEnableEvent;
-use App\Service\Security\Event\UserResetEvent;
-use App\Service\Security\Event\UserUpdatedEvent;
-use App\Service\Security\Roles;
-use App\Service\Security\User;
-use App\Service\Security\UserRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
@@ -20,6 +11,15 @@ use MinVWS\AuditLogger\Contracts\LoggableUser;
 use Minvws\HorseBattery\PasswordGenerator;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Service\Security\Event\UserCreatedEvent;
+use Shared\Service\Security\Event\UserDisableEvent;
+use Shared\Service\Security\Event\UserEnableEvent;
+use Shared\Service\Security\Event\UserResetEvent;
+use Shared\Service\Security\Event\UserUpdatedEvent;
+use Shared\Service\Security\Roles;
+use Shared\Service\Security\User;
+use Shared\Service\Security\UserRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity;
 
-use App\Doctrine\TimestampableTrait;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateType;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\TimestampableTrait;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateType;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]

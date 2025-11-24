@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Content\Page\ContentPage;
-use App\Domain\Content\Page\ContentPageRepository;
-use App\Form\ContentPageType;
+use Shared\Domain\Content\Page\ContentPage;
+use Shared\Domain\Content\Page\ContentPageRepository;
+use Shared\Form\ContentPageType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

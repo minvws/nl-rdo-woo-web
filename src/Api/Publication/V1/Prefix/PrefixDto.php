@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Publication\V1\Prefix;
+namespace Shared\Api\Publication\V1\Prefix;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
@@ -12,8 +12,8 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Factory\OpenApiFactory;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\Parameter;
-use App\Api\Publication\V1\Organisation\OrganisationReferenceDto;
-use App\Api\Publication\V1\PublicationV1Api;
+use Shared\Api\Publication\V1\Organisation\OrganisationReferenceDto;
+use Shared\Api\Publication\V1\PublicationV1Api;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(

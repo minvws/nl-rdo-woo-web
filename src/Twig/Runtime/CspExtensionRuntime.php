@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Runtime;
+namespace Shared\Twig\Runtime;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;

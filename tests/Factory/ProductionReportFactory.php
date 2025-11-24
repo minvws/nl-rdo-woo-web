@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory;
+namespace Shared\Tests\Factory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
-use App\Domain\Publication\SourceType;
-use App\Service\Storage\StorageRootPathGenerator;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use Shared\Domain\Publication\SourceType;
+use Shared\Service\Storage\StorageRootPathGenerator;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 

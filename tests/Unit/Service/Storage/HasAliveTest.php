@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Storage;
+namespace Shared\Tests\Unit\Service\Storage;
 
-use App\Service\Storage\HasAlive;
-use App\Service\Storage\RemoteFilesystem;
-use App\Service\Storage\StorageAliveInterface;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\Matcher\Closure as ClosureMatcher;
 use Mockery\MockInterface;
+use Shared\Service\Storage\HasAlive;
+use Shared\Service\Storage\RemoteFilesystem;
+use Shared\Service\Storage\StorageAliveInterface;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class HasAliveTest extends UnitTestCase
 {

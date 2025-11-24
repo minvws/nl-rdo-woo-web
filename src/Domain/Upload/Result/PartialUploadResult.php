@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Result;
+namespace Shared\Domain\Upload\Result;
 
-use App\Domain\Upload\UploadRequest;
-use App\Service\Uploader\UploadGroupId;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 readonly class PartialUploadResult implements UploadResultInterface

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inquiry;
+namespace Shared\Service\Inquiry;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\Inventory\InventoryDataHelper;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\Inventory\InventoryDataHelper;
 use Webmozart\Assert\Assert;
 
 /**

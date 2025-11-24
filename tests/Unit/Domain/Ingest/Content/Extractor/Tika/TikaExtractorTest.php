@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Content\Extractor\Tika;
+namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tika;
 
-use App\Domain\Ingest\Content\ContentExtractLogContext;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Ingest\Content\Extractor\Tika\TikaExtractor;
-use App\Domain\Ingest\Content\Extractor\Tika\TikaService;
-use App\Domain\Ingest\Content\LazyFileReference;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\Content\ContentExtractLogContext;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Ingest\Content\Extractor\Tika\TikaExtractor;
+use Shared\Domain\Ingest\Content\Extractor\Tika\TikaService;
+use Shared\Domain\Ingest\Content\LazyFileReference;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-final class TikaExtractorTest extends MockeryTestCase
+final class TikaExtractorTest extends UnitTestCase
 {
     private TikaService&MockInterface $tikaService;
     private TikaExtractor $extractor;

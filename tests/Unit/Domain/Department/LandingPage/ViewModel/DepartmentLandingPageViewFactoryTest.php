@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Department\LandingPage\ViewModel;
+namespace Shared\Tests\Unit\Domain\Department\LandingPage\ViewModel;
 
-use App\Domain\Department\Department;
-use App\Domain\Department\LandingPage\ViewModel\DepartmentLandingPageViewFactory;
-use App\Domain\Publication\FileInfo;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\LandingPage\ViewModel\DepartmentLandingPageViewFactory;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 

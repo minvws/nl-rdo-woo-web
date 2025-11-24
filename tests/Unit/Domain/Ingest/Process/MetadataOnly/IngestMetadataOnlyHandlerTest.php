@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Process\MetadataOnly;
+namespace Shared\Tests\Unit\Domain\Ingest\Process\MetadataOnly;
 
-use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
-use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyHandler;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
+use Shared\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyHandler;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class IngestMetadataOnlyHandlerTest extends UnitTestCase

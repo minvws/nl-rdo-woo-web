@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service;
+namespace Shared\Tests\Unit\Service;
 
-use App\Service\ApiPlatformService;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Shared\Service\ApiPlatformService;
 
 class ApiPlatformServiceTest extends TestCase
 {

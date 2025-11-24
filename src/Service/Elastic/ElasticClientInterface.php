@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Elastic;
+namespace Shared\Service\Elastic;
 
 use Elastic\Elasticsearch\Endpoints\Cat;
 use Elastic\Elasticsearch\Endpoints\Indices;

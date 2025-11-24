@@ -97,6 +97,6 @@ describe('The "SearchResultsTable" component', () => {
     });
 
     // Remove comments from the HTML
-    expect(component.html().replace(/(<!--.*?-->)/g, '')).toBe('');
+    expect(component.html().replaceAll(/(<!--.*?-->)/g, '')).toBe('');
   });
 });

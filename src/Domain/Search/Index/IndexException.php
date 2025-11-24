@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index;
+namespace Shared\Domain\Search\Index;
 
-use App\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
 
 class IndexException extends \RuntimeException
 {

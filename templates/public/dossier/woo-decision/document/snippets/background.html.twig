@@ -51,7 +51,7 @@
                                 </div>
                             {% endif %}
 
-                            <a class="woo-a" href="{{ path('app_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::INVENTORY').value}) }}" download>{{ 'public.dossiers.inventory_list' | trans }}</a>
+                            <a class="woo-a" href="{{ path('app_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('Shared\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::INVENTORY').value}) }}" download>{{ 'public.dossiers.inventory_list' | trans }}</a>
                         </div>
                     </td>
                 </tr>

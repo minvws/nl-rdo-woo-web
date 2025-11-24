@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier\WooDecision;
+namespace Shared\Controller\Admin\Dossier\WooDecision;
 
-use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
-use App\Domain\Publication\Dossier\Step\StepActionHelper;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
-use App\Form\Dossier\WooDecision\DecisionType;
-use App\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
+use Shared\Form\Dossier\WooDecision\DecisionType;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

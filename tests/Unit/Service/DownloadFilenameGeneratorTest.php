@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service;
+namespace Shared\Tests\Unit\Service;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Service\DownloadFilenameGenerator;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Service\DownloadFilenameGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DownloadFilenameGeneratorTest extends MockeryTestCase
+class DownloadFilenameGeneratorTest extends UnitTestCase
 {
     public function testGetFileNameForDocument(): void
     {

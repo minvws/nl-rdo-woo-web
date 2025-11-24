@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\SubType\Strategy;
+namespace Shared\Domain\Ingest\Process\SubType\Strategy;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
-use App\Domain\Publication\EntityWithFileInfo;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Ingest\Process\IngestProcessOptions;
+use Shared\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 readonly class MetadataOnlySubTypeIngestStrategy implements SubTypeIngestStrategyInterface
 {

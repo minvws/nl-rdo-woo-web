@@ -1,8 +1,11 @@
 #!/usr/bin/env php
 <?php
 
-use App\Kernel;
+use Shared\ApplicationId;
+use Shared\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 if (!is_dir(dirname(__DIR__).'/vendor')) {
     throw new LogicException('Dependencies are missing. Try running "composer install".');
@@ -14,8 +17,17 @@ if (!is_file(dirname(__DIR__).'/vendor/autoload_runtime.php')) {
 
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
-return function (array $context) {
-    $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+require_once dirname(__DIR__) . '/src/class_aliases.php';
 
-    return new Application($kernel);
+return function (InputInterface $input, array $context) {
+    $applicationId = ApplicationId::fromString($input->getParameterOption(['--id', '-i'], $context['APP_ID'] ?? null));
+
+    $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG'], $applicationId);
+
+    $application = new Application($kernel);
+    $application
+        ->getDefinition()
+        ->addOption(new InputOption('--id', '-i', InputOption::VALUE_REQUIRED, 'The application ID'));
+
+    return $application;
 };

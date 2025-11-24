@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Logging;
+namespace Shared\Tests\Unit\Service\Logging;
 
-use App\Service\Logging\EnrichedPsrLogger;
-use App\Service\Security\User;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Service\Logging\EnrichedPsrLogger;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;

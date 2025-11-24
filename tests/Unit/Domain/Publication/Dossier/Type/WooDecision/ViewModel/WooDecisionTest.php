@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
-use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
-use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecision;
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
-use App\Domain\Publication\Dossier\ViewModel\Department;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
-use App\Tests\Story\DepartmentEnum;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecision;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
+use Shared\Domain\Publication\Dossier\ViewModel\Department;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
+use Shared\Tests\Story\DepartmentEnum;
+use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 
 final class WooDecisionTest extends UnitTestCase

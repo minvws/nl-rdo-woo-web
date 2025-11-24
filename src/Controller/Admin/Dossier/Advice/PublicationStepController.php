@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier\Advice;
+namespace Shared\Controller\Admin\Dossier\Advice;
 
-use App\Domain\Publication\Dossier\DossierDispatcher;
-use App\Domain\Publication\Dossier\Step\StepActionHelper;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\Advice\Advice;
-use App\Form\Dossier\Advice\PublishType;
+use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
+use Shared\Form\Dossier\Advice\PublishType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

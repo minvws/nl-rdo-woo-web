@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Extension;
+namespace Shared\Twig\Extension;
 
-use App\Twig\Runtime\AppExtensionRuntime;
+use Shared\Twig\Runtime\AppExtensionRuntime;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;

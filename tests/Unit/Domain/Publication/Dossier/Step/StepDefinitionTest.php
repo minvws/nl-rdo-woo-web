@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Step;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Step;
 
-use App\Domain\Publication\Dossier\Step\StepDefinition;
-use App\Domain\Publication\Dossier\Step\StepException;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\Step\StepDefinition;
+use Shared\Domain\Publication\Dossier\Step\StepException;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class StepDefinitionTest extends MockeryTestCase
+class StepDefinitionTest extends UnitTestCase
 {
     public function testGetters(): void
     {

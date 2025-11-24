@@ -2,14 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Department;
+namespace Shared\Domain\Department;
 
-use App\Domain\Organisation\Organisation;
-use App\Repository\PaginationQueryBuilder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Repository\PaginationQueryBuilder;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 /**
  * @extends ServiceEntityRepository<Department>
@@ -136,16 +138,34 @@ class DepartmentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getSingleResult();
     }
 
+    public function findByOrganisationAndId(Organisation $organisation, Uuid $departmentId): Department
+    {
+        $department = $this->getDepartmentsQueryBuilder($organisation)
+            ->andWhere('d.id = :departmentId')
+            ->setParameter('departmentId', $departmentId)
+            ->getQuery()
+            ->getSingleResult();
+
+        Assert::isInstanceOf($department, Department::class);
+
+        return $department;
+    }
+
     public function getDepartmentsQuery(?Organisation $filterByOrganisation): Query
+    {
+        return $this->getDepartmentsQueryBuilder($filterByOrganisation)->getQuery();
+    }
+
+    private function getDepartmentsQueryBuilder(?Organisation $filterByOrganisation): QueryBuilder
     {
         $queryBuilder = $this->createQueryBuilder('d');
 
         if ($filterByOrganisation instanceof Organisation) {
             $queryBuilder->innerJoin('d.organisations', 'o')
-                ->where('o.id = :organisationId')
+                ->andWhere('o.id = :organisationId')
                 ->setParameter('organisationId', $filterByOrganisation->getId());
         }
 
-        return $queryBuilder->getQuery();
+        return $queryBuilder;
     }
 }

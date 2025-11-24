@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service;
+namespace Shared\Tests\Unit\Service;
 
-use App\Domain\Organisation\Event\OrganisationCreatedEvent;
-use App\Domain\Organisation\Event\OrganisationUpdatedEvent;
-use App\Domain\Organisation\Organisation;
-use App\Service\OrganisationService;
-use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Organisation\Event\OrganisationCreatedEvent;
+use Shared\Domain\Organisation\Event\OrganisationUpdatedEvent;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Service\OrganisationService;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
-class OrganisationServiceTest extends MockeryTestCase
+class OrganisationServiceTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private LoggerInterface&MockInterface $logger;

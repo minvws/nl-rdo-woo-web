@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Search;
+namespace Shared\Tests\Unit\Service\Search;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
-use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Query\SearchParametersFactory;
-use App\Service\Elastic\ElasticClientInterface;
-use App\Service\Search\Object\ObjectHandler;
-use App\Service\Search\Query\Definition\QueryDefinitionInterface;
-use App\Service\Search\Result\Result;
-use App\Service\Search\Result\ResultTransformer;
-use App\Service\Search\SearchService;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputCollection;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Query\SearchParametersFactory;
+use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Service\Search\Object\ObjectHandler;
+use Shared\Service\Search\Query\Definition\QueryDefinitionInterface;
+use Shared\Service\Search\Result\Result;
+use Shared\Service\Search\Result\ResultTransformer;
+use Shared\Service\Search\SearchService;
+use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class SearchServiceTest extends MockeryTestCase
+class SearchServiceTest extends UnitTestCase
 {
     use MatchesSnapshots;
 

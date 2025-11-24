@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Content\Markdown\Renderer;
+namespace Shared\Domain\Content\Markdown\Renderer;
 
 use League\CommonMark\Extension\CommonMark\Node\Inline\Strong;
 use League\CommonMark\Node\Node;

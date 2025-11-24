@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\InvestigationReport;
+namespace Shared\Domain\Publication\Dossier\Type\InvestigationReport;
 
-use App\Domain\Publication\Attachment\Repository\AbstractAttachmentRepository;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Domain\Publication\Attachment\Repository\AbstractAttachmentRepository;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
 
 /**
  * @extends AbstractAttachmentRepository<InvestigationReportAttachment>

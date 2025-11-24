@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Process\Dossier;
+namespace Shared\Tests\Unit\Domain\Ingest\Process\Dossier;
 
-use App\Domain\Ingest\Process\Dossier\DossierIngester;
-use App\Domain\Ingest\Process\Dossier\IngestDossierCommand;
-use App\Domain\Ingest\Process\Dossier\IngestDossierHandler;
-use App\Domain\Ingest\Process\IngestProcessException;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\Process\Dossier\DossierIngester;
+use Shared\Domain\Ingest\Process\Dossier\IngestDossierCommand;
+use Shared\Domain\Ingest\Process\Dossier\IngestDossierHandler;
+use Shared\Domain\Ingest\Process\IngestProcessException;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class IngestDossierHandlerTest extends MockeryTestCase
+class IngestDossierHandlerTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $doctrine;
     private DossierIngester&MockInterface $ingester;

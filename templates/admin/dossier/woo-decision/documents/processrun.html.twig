@@ -63,7 +63,7 @@
     {% if dossier.status.isConcept or app.request.get('replace') is not null %}
         {% if not inventoryStatus.needsUpload and app.request.get('replace') is null %}
             <twig:Admin:UploadedFile
-                downloadUrl="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
+                downloadUrl="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('Shared\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
                 fileName="{{ dossier.productionReport.fileInfo.name }}"
                 fileSize="{{ dossier.productionReport.fileInfo.size }}"
                 mimeType="{{ dossier.productionReport.fileInfo.mimetype }}"

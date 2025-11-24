@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Handler;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Handler;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Service\DocumentService;
-use App\Service\DossierService;
-use App\Service\Inventory\InventoryService;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Service\DocumentService;
+use Shared\Service\DossierService;
+use Shared\Service\Inventory\InventoryService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Faker;
+namespace Shared\Tests\Faker;
 
-use App\Domain\Publication\Citation;
 use Faker\Generator;
 use Faker\Provider\Base;
+use Shared\Domain\Publication\Citation;
 use Webmozart\Assert\Assert;
 
 final class GroundsFakerProvider extends Base

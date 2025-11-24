@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Producer;
+namespace Shared\Domain\WooIndex\Producer;
 
-use App\Domain\WooIndex\Builder\Changefreq;
 use Carbon\CarbonInterface;
+use Shared\Domain\WooIndex\Builder\Changefreq;
 
 final readonly class Url
 {

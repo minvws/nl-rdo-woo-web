@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload;
+namespace Shared\Tests\Unit\Domain\Upload;
 
-use App\Domain\Upload\UploadCleaner;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\UploadEntityRepository;
-use App\Domain\Upload\UploadService;
 use Carbon\CarbonImmutable;
 use League\Flysystem\DirectoryListing;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\StorageAttributes;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Upload\UploadCleaner;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadEntityRepository;
+use Shared\Domain\Upload\UploadService;
+use Shared\Tests\Unit\UnitTestCase;
 
-class UploadCleanerTest extends MockeryTestCase
+class UploadCleanerTest extends UnitTestCase
 {
-    private \App\Domain\Upload\UploadEntityRepository&MockInterface $uploadEntityRepository;
+    private UploadEntityRepository&MockInterface $uploadEntityRepository;
     private FilesystemOperator&MockInterface $uploadStorage;
     private FilesystemOperator&MockInterface $workingCopyStorage;
     private UploadService&MockInterface $uploadService;

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\AttachmentDeleter;
-use App\Domain\Publication\Attachment\AttachmentDeleteStrategyInterface;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Attachment\AttachmentDeleter;
+use Shared\Domain\Publication\Attachment\AttachmentDeleteStrategyInterface;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Tests\Unit\UnitTestCase;
 
-class AttachmentDeleterTest extends MockeryTestCase
+class AttachmentDeleterTest extends UnitTestCase
 {
     private AttachmentDeleter $deleter;
     private AttachmentDeleteStrategyInterface&MockInterface $deleteStrategyA;

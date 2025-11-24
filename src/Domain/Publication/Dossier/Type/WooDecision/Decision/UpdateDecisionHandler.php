@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\Decision;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Decision;
 
-use App\Domain\Publication\Dossier\Event\DossierUpdatedEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Service\DossierService;
+use Shared\Domain\Publication\Dossier\Event\DossierUpdatedEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Service\DossierService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 

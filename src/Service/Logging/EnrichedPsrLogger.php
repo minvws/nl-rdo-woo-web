@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Logging;
+namespace Shared\Service\Logging;
 
-use App\Service\Security\User;
 use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Shared\Service\Security\User;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -90,8 +90,7 @@ class EnrichedPsrLogger implements LoggerInterface
         $token = $this->tokenStorage->getToken();
         if ($token) {
             $user = $token->getUser();
-            if ($user) {
-                /** @var User $user */
+            if ($user instanceof User) {
                 $userInfo['id'] = (string) $user->getId();
                 $userInfo['roles'] = $user->getRoles();
             }

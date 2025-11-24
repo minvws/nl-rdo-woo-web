@@ -3,6 +3,12 @@ parameters:
     env(DOCUMENT_PAGE_LIMIT): '0'
     env(HAS_FEATURE_WOO_GPT): 'false'
 
+    env(ENABLE_TOOLBAR) : 'true'
+    enable_symfony_toolbar: '%env(bool:ENABLE_TOOLBAR)%'
+
+    env(LIMIT_TOTAL_DOCUMENT_FILE_SIZE_IN_GIB): '50'
+    limit_total_document_file_size_in_gib: '%env(int:LIMIT_TOTAL_DOCUMENT_FILE_SIZE_IN_GIB)%'
+
     rabbitmq_stats_url: '%env(RABBITMQ_STATS_URL)%'
 
     available_locales: ['en', 'nl']
@@ -23,18 +29,23 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
         bind:
-            Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
+            Psr\Log\LoggerInterface $logger: '@Shared\Service\Logging\EnrichedPsrLogger'
 
-    App\Service\Security\ApplicationMode\ApplicationMode:
-        factory: ['App\Service\Security\ApplicationMode\ApplicationMode', 'fromEnvVar']
+    # Legacy namespace normalizer for Messenger - converts old App\ to Shared\ namespace
+    Shared\Domain\Messenger\LegacyNamespaceNormalizer:
+        tags:
+            - { name: 'serializer.normalizer', priority: 1000 }
+
+    Shared\Service\Security\ApplicationMode\ApplicationMode:
+        factory: ['Shared\Service\Security\ApplicationMode\ApplicationMode', 'fromEnvVar']
         arguments: [ '%app_mode%' ]
 
-    App\Domain\Search\Index\Rollover\MappingService:
+    Shared\Domain\Search\Index\Rollover\MappingService:
         arguments:
             $rootDir: '%kernel.project_dir%'
 
     Elastic\Elasticsearch\Client:
-        factory: ['App\Service\Elastic\ElasticClientFactory', 'create']
+        factory: ['Shared\Service\Elastic\ElasticClientFactory', 'create']
         arguments:
             $host: '%env(ELASTICSEARCH_HOST)%'
             $username: '%env(ELASTICSEARCH_USER)%'
@@ -44,68 +55,65 @@ services:
             $mtlsCAPath: '%env(ELASTICSEARCH_MTLS_CA_PATH)%'
 
     Elastic\Elasticsearch\ClientInterface:
-        alias: 'App\DataCollector\CollectorClient'
+        alias: 'Shared\DataCollector\CollectorClient'
 
     tika.client:
         class: GuzzleHttp\Client
-        factory: ['App\Domain\Ingest\Content\Extractor\Tika\TikaGuzzleClientFactory', 'create']
+        factory: ['Shared\Domain\Ingest\Content\Extractor\Tika\TikaGuzzleClientFactory', 'create']
         arguments:
             $tikaHost: '%env(TIKA_HOST)%'
 
-    App\Domain\Ingest\Content\Extractor\Tika\TikaService:
+    Shared\Domain\Ingest\Content\Extractor\Tika\TikaService:
         $client: '@tika.client'
 
-    App\Service\Inventory\Reader\InventoryReaderFactory:
+    Shared\Service\Inventory\Reader\InventoryReaderFactory:
         arguments:
             $factories:
-                - '@App\Service\FileReader\ExcelCsvReaderFactory'
+                - '@Shared\Service\FileReader\ExcelCsvReaderFactory'
 
-    App\Service\Stats\WorkerStatsService:
+    Shared\Service\Stats\WorkerStatsService:
         arguments:
             $handlers:
-                - '@App\Service\Stats\Handler\ElasticHandler'
-                - '@App\Service\Stats\Handler\DoctrineHandler'
+                - '@Shared\Service\Stats\Handler\ElasticHandler'
+                - '@Shared\Service\Stats\Handler\DoctrineHandler'
 
     # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
-    App\Service\Encryption\EncryptionService:
+    Shared\Service\Encryption\EncryptionService:
         public: true
         arguments:
             $encryptionKey: '%env(DATABASE_ENCRYPTION_KEY)%'
 
-    App\Service\Storage\EntityStorageService:
+    Shared\Service\Encryption\EncryptionServiceInterface:
+        alias: 'Shared\Service\Encryption\EncryptionService'
+        public: true
+
+    Shared\Service\Storage\EntityStorageService:
         arguments:
             $isLocal: "@=env('STORAGE_DOCUMENT_ADAPTER')=='local' ? true : false"
             $documentRoot: '%document_path%'
 
-    # We need to create an alias to the monolog.logger service, as these services are by default private. This means
-    # it is not possible to fetch these services from the container. This is normally a "good thing"(tm), but in this
-    # case we need it because we cannot inject these services in the DBAL types (see /App/Doctrine/Encrypted*.php files)
-    public_logger:
-        alias: 'monolog.logger'
-        public: true
-
-    App\Twig\Runtime\AppExtensionRuntime:
+    Shared\Twig\Runtime\AppExtensionRuntime:
         arguments:
             $projectPath: '%kernel.project_dir%'
 
-    App\Domain\Publication\BatchDownload\BatchDownloadStorage:
+    Shared\Domain\Publication\BatchDownload\BatchDownloadStorage:
         arguments:
             $filesystem: '@batch.storage'
 
-    App\EventSubscriber\LocaleListener:
+    Shared\EventSubscriber\LocaleListener:
         arguments:
             $defaultLocale: '%kernel.default_locale%'
             $allowedLocales: '%available_locales%'
 
-    App\EventSubscriber\ApiVersionHeaderSubscriber:
+    Shared\EventSubscriber\ApiVersionHeaderSubscriber:
         arguments:
             $apiVersion: '%api_platform.version%'
 
-    App\Service\Totp:
+    Shared\Service\Totp:
         arguments:
             $issuer: '%env(TOTP_ISSUER)%'
 
-    App\Command\CleanSheet:
+    Shared\Command\CleanSheet:
         arguments:
             $queueDsns: [
                 '%env(HIGH_TRANSPORT_DSN)%',
@@ -114,7 +122,7 @@ services:
                 '%env(GLOBAL_TRANSPORT_DSN)%',
             ]
 
-    App\Controller\Public\StatsController:
+    Shared\Controller\Public\StatsController:
         arguments:
             $redis: '@snc_redis.ingest'
             $rabbitMqStatUrl: '%rabbitmq_stats_url%'
@@ -124,14 +132,18 @@ services:
         arguments:
             $redis: '@snc_redis.session'
 
-    App\Service\Security\Session\EncryptedSessionProxy:
+    Shared\Service\Security\Session\EncryptedSessionProxy:
         arguments:
             - '@Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler'
             - '%env(APP_SECRET)%'
 
-    App\Service\Logging\EnrichedPsrLogger:
+    Shared\Service\Logging\EnrichedPsrLogger:
         arguments:
             $logger: '@monolog.logger'
+
+    Psr\Log\LoggerInterface:
+        alias: 'Shared\Service\Logging\EnrichedPsrLogger'
+        public: true
 
     Aws\S3\S3Client:
         arguments:
@@ -143,51 +155,51 @@ services:
                 key: '%env(STORAGE_MINIO_ACCESS_KEY)%'
                 secret: '%env(STORAGE_MINIO_SECRET_KEY)%'
 
-    App\Service\Security\Authorization\AuthorizationMatrix:
+    Shared\Service\Security\Authorization\AuthorizationMatrix:
         arguments:
-            $entries: '@=service("App\\Service\\Security\\Authorization\\ConfigFactory").create()'
+            $entries: '@=service("Shared\\Service\\Security\\Authorization\\ConfigFactory").create()'
 
-    App\Service\Security\Authorization\ConfigFactory:
+    Shared\Service\Security\Authorization\ConfigFactory:
         arguments:
             $config: '%authorization_matrix%'
 
-    App\Service\Inventory\Sanitizer\InventorySanitizer:
+    Shared\Service\Inventory\Sanitizer\InventorySanitizer:
         arguments:
-            $writer: '@App\Service\Inventory\Sanitizer\ExcelWriter'
+            $writer: '@Shared\Service\Inventory\Sanitizer\ExcelWriter'
 
-    App\Service\Inventory\Sanitizer\InventoryDocumentMapper:
+    Shared\Service\Inventory\Sanitizer\InventoryDocumentMapper:
         arguments:
             $publicBaseUrl: '%public_base_url%'
 
-    App\Service\HistoryService:
+    Shared\Service\HistoryService:
         arguments:
             $translator: '@translator.default'
 
     extractor.7z:
-        class: App\Domain\Upload\Extractor\Extractor
+        class: Shared\Domain\Upload\Extractor\Extractor
         public: true
         arguments:
-            $archive: '@App\Domain\ArchiveExtractor\SevenZipArchive'
+            $archive: '@Shared\Domain\ArchiveExtractor\SevenZipArchive'
 
-    App\Domain\Upload\Extractor\Extractor $sevenZipExtractor: '@extractor.7z'
+    Shared\Domain\Upload\Extractor\Extractor $sevenZipExtractor: '@extractor.7z'
 
-    App\Domain\Upload\AntiVirus\ClamAvClientFactory:
+    Shared\Domain\Upload\AntiVirus\ClamAvClientFactory:
         arguments:
             $address: '%env(CLAM_AV_ADDRESS)%'
 
-    App\Domain\Upload\AntiVirus\ClamAvFileScanner:
+    Shared\Domain\Upload\AntiVirus\ClamAvFileScanner:
         arguments:
             $fileSizeLimit: '%env(CLAM_AV_MAX_FILESIZE)%'
 
-    App\Domain\Upload\Handler\S3\S3UploadHelper:
+    Shared\Domain\Upload\Handler\S3\S3UploadHelper:
         arguments:
             $bucket: '%env(STORAGE_MINIO_UPLOAD_BUCKET)%'
 
     League\MimeTypeDetection\FinfoMimeTypeDetector:
         arguments:
-            $bufferSampleSize: !php/const App\Domain\Upload\FileType\MimeTypeHelper::SAMPLE_SIZE
+            $bufferSampleSize: !php/const Shared\Domain\Upload\FileType\MimeTypeHelper::SAMPLE_SIZE
 
-    App\Domain\Robots\RobotsViewFactory:
+    Shared\Domain\Robots\RobotsViewFactory:
         arguments:
             $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
 
@@ -196,16 +208,16 @@ services:
 
 when@dev:
     services: &services_dev
-        App\Tests\Factory\:
+        Shared\Tests\Factory\:
             autowire: true
             autoconfigure: true
             resource: '../tests/Factory'
 
         Faker\Generator:
             public: true
-            factory: ['App\Tests\Faker\FakerFactory', 'create']
+            factory: ['Shared\Tests\Faker\FakerFactory', 'create']
 
-        App\Tests\Story\:
+        Shared\Tests\Story\:
             autowire: true
             autoconfigure: true
             resource: '../tests/Story'
@@ -214,5 +226,5 @@ when@test:
     services:
         <<: *services_dev
 
-        App\Domain\Department\Markdown\MarkdownConverter:
+        Shared\Domain\Department\Markdown\MarkdownConverter:
             public: true

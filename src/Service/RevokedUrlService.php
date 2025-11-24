@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace Shared\Service;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Symfony\Component\Routing\RouterInterface;
 
 readonly class RevokedUrlService

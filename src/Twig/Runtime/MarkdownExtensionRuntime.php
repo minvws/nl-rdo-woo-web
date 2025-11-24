@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Runtime;
+namespace Shared\Twig\Runtime;
 
-use App\Domain\Content\Markdown\MarkdownConverter;
+use Shared\Domain\Content\Markdown\MarkdownConverter;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class MarkdownExtensionRuntime implements RuntimeExtensionInterface
 {
-    public function __construct(private MarkdownConverter $markdownConverter)
+    public function __construct(private readonly MarkdownConverter $markdownConverter)
     {
     }
 

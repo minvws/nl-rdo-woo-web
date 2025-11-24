@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory\Publication\Dossier\Type\AnnualReport;
+namespace Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Tests\Factory\OrganisationFactory;
 use Carbon\CarbonImmutable;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Tests\Factory\OrganisationFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

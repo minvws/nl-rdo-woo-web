@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Exception;
+namespace Shared\Tests\Unit\Exception;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Exception\ProcessInventoryException;
-use App\Exception\TranslatableException;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\TranslatableException;
 
 final class ProcessInventoryExceptionTest extends TestCase
 {

@@ -2,18 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\ComplaintJudgement;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\ComplaintJudgement;
 
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementRepository;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementRepository;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class ComplaintJudgementRepositoryTest extends KernelTestCase
+final class ComplaintJudgementRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private function getRepository(): ComplaintJudgementRepository
     {
         /** @var ComplaintJudgementRepository */

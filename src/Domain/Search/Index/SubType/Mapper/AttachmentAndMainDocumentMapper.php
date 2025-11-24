@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\SubType\Mapper;
+namespace Shared\Domain\Search\Index\SubType\Mapper;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Search\Index\Dossier\DossierIndexer;
-use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
-use App\Domain\Search\Index\ElasticDocument;
-use App\Domain\Search\Index\ElasticDocumentId;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Index\Schema\ElasticNestedField;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Search\Index\Dossier\DossierIndexer;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Domain\Search\Index\ElasticDocument;
+use Shared\Domain\Search\Index\ElasticDocumentId;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Index\Schema\ElasticNestedField;
 use Webmozart\Assert\Assert;
 
 readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperInterface

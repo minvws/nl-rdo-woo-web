@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Twig\Runtime;
+namespace Shared\Tests\Unit\Twig\Runtime;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\ViewModel\DossierNotifications;
-use App\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
-use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use App\Service\HistoryService;
-use App\Service\Security\OrganisationSwitcher;
-use App\Twig\Runtime\WooExtensionRuntime;
-use Mockery;
+use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierNotifications;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Service\HistoryService;
+use Shared\Service\Security\OrganisationSwitcher;
+use Shared\Twig\Runtime\WooExtensionRuntime;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class WooExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
+class WooExtensionRuntimeTest extends MockeryTestCase
 {
     private RequestStack&MockInterface $requestStack;
     private WooExtensionRuntime $runtime;

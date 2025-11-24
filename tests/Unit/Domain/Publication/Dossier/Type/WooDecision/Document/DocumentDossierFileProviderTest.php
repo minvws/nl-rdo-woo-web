@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDossierFileProvider;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\Security\DossierVoter;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDossierFileProvider;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\Security\DossierVoter;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Uid\Uuid;
 

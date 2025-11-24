@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Admin;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Admin;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\Admin\DossierQueryConditions;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\DossierType;
 use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\QueryBuilder;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\Admin\DossierQueryConditions;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DossierQueryConditionsTest extends MockeryTestCase
+class DossierQueryConditionsTest extends UnitTestCase
 {
     private DossierQueryConditions $queryCondition;
 

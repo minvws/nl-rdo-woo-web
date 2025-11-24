@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inventory;
+namespace Shared\Tests\Unit\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\SourceType;
-use App\Exception\InventoryReaderException;
-use App\Service\FileReader\ExcelReaderFactory;
-use App\Service\Inventory\Reader\InventoryReaderFactory;
-use App\Service\Inventory\Reader\InventoryReaderInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\SourceType;
+use Shared\Exception\InventoryReaderException;
+use Shared\Service\FileReader\ExcelReaderFactory;
+use Shared\Service\Inventory\Reader\InventoryReaderFactory;
+use Shared\Service\Inventory\Reader\InventoryReaderInterface;
+use Shared\Tests\Unit\UnitTestCase;
 
-class InventoryReaderTest extends MockeryTestCase
+class InventoryReaderTest extends UnitTestCase
 {
     private InventoryReaderInterface $reader;
 

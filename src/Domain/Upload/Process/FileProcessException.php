@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Process;
+namespace Shared\Domain\Upload\Process;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 class FileProcessException extends \RuntimeException
 {

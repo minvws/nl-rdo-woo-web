@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Api\Admin;
+namespace Shared\Tests\Integration\Api\Admin;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Symfony\Bundle\Test\Client;
-use App\Service\Security\User;
+use Shared\Service\Security\User;
+use Shared\Tests\Integration\SharedApiTestCase;
 
-abstract class AdminApiTestCase extends ApiTestCase
+abstract class AdminApiTestCase extends SharedApiTestCase
 {
     public function createAdminApiClient(User $user): Client
     {

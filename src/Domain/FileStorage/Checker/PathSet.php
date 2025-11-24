@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\FileStorage\Checker;
+namespace Shared\Domain\FileStorage\Checker;
 
 class PathSet
 {

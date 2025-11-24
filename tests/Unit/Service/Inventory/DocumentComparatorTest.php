@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inventory;
+namespace Shared\Tests\Unit\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\SourceType;
-use App\Service\Inquiry\CaseNumbers;
-use App\Service\Inventory\DocumentComparator;
-use App\Service\Inventory\DocumentMetadata;
-use App\Service\Inventory\DocumentNumber;
-use App\Service\Inventory\MetadataField;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\SourceType;
+use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inventory\DocumentComparator;
+use Shared\Service\Inventory\DocumentMetadata;
+use Shared\Service\Inventory\DocumentNumber;
+use Shared\Service\Inventory\MetadataField;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DocumentComparatorTest extends MockeryTestCase
+class DocumentComparatorTest extends UnitTestCase
 {
     private DocumentComparator $documentComparator;
     private WooDecision&MockInterface $dossier;

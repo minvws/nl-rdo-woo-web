@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\History\WooDecision;
+namespace Shared\Tests\Unit\Domain\Publication\History\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUpdateEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\History\WooDecision\DocumentHistoryHandler;
-use App\Service\HistoryService;
-use App\Service\Inventory\DocumentComparator;
-use App\Service\Inventory\DocumentMetadata;
-use App\Service\Inventory\MetadataField;
-use App\Service\Inventory\PropertyChangeset;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUpdateEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\History\WooDecision\DocumentHistoryHandler;
+use Shared\Service\HistoryService;
+use Shared\Service\Inventory\DocumentComparator;
+use Shared\Service\Inventory\DocumentMetadata;
+use Shared\Service\Inventory\MetadataField;
+use Shared\Service\Inventory\PropertyChangeset;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class DocumentHistoryHandlerTest extends UnitTestCase

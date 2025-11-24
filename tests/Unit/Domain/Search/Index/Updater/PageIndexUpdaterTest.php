@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Updater;
+namespace Shared\Tests\Unit\Domain\Search\Index\Updater;
 
-use App\Domain\Search\Index\Updater\PageIndexUpdater;
-use App\Service\Elastic\ElasticClientInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Search\Index\Updater\PageIndexUpdater;
+use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Tests\Unit\UnitTestCase;
 
-class PageIndexUpdaterTest extends MockeryTestCase
+class PageIndexUpdaterTest extends UnitTestCase
 {
     private ElasticClientInterface&MockInterface $elasticClient;
     private LoggerInterface&MockInterface $logger;

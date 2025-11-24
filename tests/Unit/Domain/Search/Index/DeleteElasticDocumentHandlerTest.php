@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index;
+namespace Shared\Tests\Unit\Domain\Search\Index;
 
-use App\Domain\Search\Index\DeleteElasticDocumentCommand;
-use App\Domain\Search\Index\DeleteElasticDocumentHandler;
-use App\Service\Elastic\ElasticService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Search\Index\DeleteElasticDocumentCommand;
+use Shared\Domain\Search\Index\DeleteElasticDocumentHandler;
+use Shared\Service\Elastic\ElasticService;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DeleteElasticDocumentHandlerTest extends MockeryTestCase
+class DeleteElasticDocumentHandlerTest extends UnitTestCase
 {
     public function testInvoke(): void
     {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier\ComplaintJudgement;
+namespace Shared\Controller\Admin\Dossier\ComplaintJudgement;
 
-use App\Domain\Publication\Dossier\DossierDispatcher;
-use App\Domain\Publication\Dossier\Step\StepActionHelper;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
-use App\Form\Dossier\ComplaintJudgement\ContentFormType;
+use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
+use Shared\Form\Dossier\ComplaintJudgement\ContentFormType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;

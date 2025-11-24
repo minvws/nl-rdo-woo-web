@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Department;
+namespace Shared\Domain\Department;
 
-use App\Domain\Search\Index\Updater\DepartmentIndexUpdater;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Search\Index\Updater\DepartmentIndexUpdater;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**

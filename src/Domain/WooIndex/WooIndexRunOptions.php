@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex;
+namespace Shared\Domain\WooIndex;
 
-use App\Domain\WooIndex\Producer\InvalidChunkSizeException;
+use Shared\Domain\WooIndex\Producer\InvalidChunkSizeException;
 
 final readonly class WooIndexRunOptions
 {

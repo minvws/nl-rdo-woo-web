@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Exception;
+namespace Shared\Tests\Unit\Exception;
 
-use App\Exception\TranslatableException;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Exception\TranslatableException;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TranslatableExceptionTest extends UnitTestCase

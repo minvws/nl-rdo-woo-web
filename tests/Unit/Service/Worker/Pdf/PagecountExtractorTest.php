@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker\Pdf;
+namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Stats\WorkerStatsService;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Worker\Pdf\Extractor\PagecountExtractor;
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkPageCountResult;
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Stats\WorkerStatsService;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Worker\Pdf\Extractor\PagecountExtractor;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkPageCountResult;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class PagecountExtractorTest extends UnitTestCase

@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Archive;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Archive;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\Archive\GenerateArchivesDossierAdminAction;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Archive\GenerateArchivesDossierAdminAction;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 
-final class GenerateArchivesDossierAdminActionTest extends MockeryTestCase
+final class GenerateArchivesDossierAdminActionTest extends UnitTestCase
 {
     private BatchDownloadService&MockInterface $batchDownloadService;
     private GenerateArchivesDossierAdminAction $action;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Doctrine;
+namespace Shared\Doctrine;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Parser;

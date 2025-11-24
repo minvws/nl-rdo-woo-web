@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Vws\Search\Theme;
+namespace Shared\Vws\Search\Theme;
 
-use App\Domain\Organisation\OrganisationRepository;
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Index\Schema\ElasticNestedField;
-use App\Domain\Search\Index\Schema\ElasticPath;
-use App\Domain\Search\Query\Facet\FacetList;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Condition\QueryConditionBuilderInterface;
-use App\Service\Search\Query\Dsl\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+use Shared\Domain\Organisation\OrganisationRepository;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Index\Schema\ElasticNestedField;
+use Shared\Domain\Search\Index\Schema\ElasticPath;
+use Shared\Domain\Search\Query\Facet\FacetList;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Query\Condition\QueryConditionBuilderInterface;
+use Shared\Service\Search\Query\Dsl\Query;
 
 /**
  * @SuppressWarnings("PHPMD.CouplingBetweenObjects")

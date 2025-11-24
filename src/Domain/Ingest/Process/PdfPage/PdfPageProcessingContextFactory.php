@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\PdfPage;
+namespace Shared\Domain\Ingest\Process\PdfPage;
 
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Stats\WorkerStatsService;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\LocalFilesystem;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Stats\WorkerStatsService;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\LocalFilesystem;
 
 readonly class PdfPageProcessingContextFactory
 {

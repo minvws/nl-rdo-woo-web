@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Department;
+namespace Shared\Tests\Unit\Domain\Upload\Department;
 
-use App\Domain\Department\Department;
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Department\DepartmentService;
-use App\Domain\Upload\Department\DepartmentUploadVoter;
-use App\Domain\Upload\UploadRequest;
-use App\Domain\Upload\UploadService;
-use App\Service\Uploader\UploadGroupId;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Department\DepartmentService;
+use Shared\Domain\Upload\Department\DepartmentUploadVoter;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Domain\Upload\UploadService;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;

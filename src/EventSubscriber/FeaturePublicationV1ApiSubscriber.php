@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscriber;
+namespace Shared\EventSubscriber;
 
-use App\Api\Publication\V1\PublicationV1Api;
+use Shared\Api\Publication\V1\PublicationV1Api;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-final class FeaturePublicationV1ApiSubscriber
+final readonly class FeaturePublicationV1ApiSubscriber
 {
     public function __construct(
         #[Autowire('%has_feature_publication_v1_api%')]

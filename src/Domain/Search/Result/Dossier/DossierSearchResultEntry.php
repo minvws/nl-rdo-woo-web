@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result\Dossier;
+namespace Shared\Domain\Search\Result\Dossier;
 
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Result\ResultEntryInterface;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Result\ResultEntryInterface;
 
 class DossierSearchResultEntry implements ResultEntryInterface
 {

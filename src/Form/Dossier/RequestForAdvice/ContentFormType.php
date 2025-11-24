@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier\RequestForAdvice;
+namespace Shared\Form\Dossier\RequestForAdvice;
 
-use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
-use App\Form\Dossier\AbstractDossierStepType;
-use App\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
+use Shared\Form\Dossier\AbstractDossierStepType;
+use Shared\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

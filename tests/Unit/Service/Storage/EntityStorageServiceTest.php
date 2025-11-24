@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Storage;
+namespace Shared\Tests\Unit\Service\Storage;
 
-use App\Domain\Ingest\Content\Event\EntityFileUpdateEvent;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\LocalFilesystem;
-use App\Service\Storage\RemoteFilesystem;
-use App\Service\Storage\StorageRootPathGenerator;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Content\Event\EntityFileUpdateEvent;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\LocalFilesystem;
+use Shared\Service\Storage\RemoteFilesystem;
+use Shared\Service\Storage\StorageRootPathGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;

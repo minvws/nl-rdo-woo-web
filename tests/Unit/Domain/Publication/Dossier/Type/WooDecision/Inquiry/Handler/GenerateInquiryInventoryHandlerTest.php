@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler\GenerateInquiryInventoryHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
-use App\Service\Inventory\Sanitizer\DataProvider\InquiryInventoryDataProvider;
-use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
-use App\Service\Inventory\Sanitizer\InventorySanitizer;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler\GenerateInquiryInventoryHandler;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use Shared\Service\Inventory\Sanitizer\DataProvider\InquiryInventoryDataProvider;
+use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
+use Shared\Service\Inventory\Sanitizer\InventorySanitizer;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class GenerateInquiryInventoryHandlerTest extends UnitTestCase

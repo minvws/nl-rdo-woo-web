@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier;
+namespace Shared\Controller\Admin\Dossier;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierDispatcher;
-use App\Domain\Publication\Dossier\Step\StepActionHelper;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Form\Document\WithdrawDocumentFormType;
-use App\Form\Dossier\DeleteFormType;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Form\Document\WithdrawDocumentFormType;
+use Shared\Form\Dossier\DeleteFormType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

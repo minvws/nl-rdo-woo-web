@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload\Archiver;
+namespace Shared\Domain\Publication\BatchDownload\Archiver;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Service\FilenameSanitizer;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Service\FilenameSanitizer;
 
 readonly class ArchiveNamer
 {

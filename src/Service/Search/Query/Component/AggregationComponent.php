@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Component;
+namespace Shared\Service\Search\Query\Component;
 
-use App\Domain\Search\Query\Facet\Facet;
-use App\Domain\Search\Query\Facet\FacetList;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Condition\ContentAccessConditionBuilder;
-use App\Service\Search\Query\Condition\FacetConditionBuilder;
-use App\Service\Search\Query\Condition\QueryConditionBuilderInterface;
-use App\Service\Search\Query\Condition\SearchTermConditionBuilder;
-use App\Service\Search\Query\Dsl\Aggregation;
-use App\Service\Search\Query\Dsl\Query;
 use Erichard\ElasticQueryBuilder\Aggregation\FilterAggregation;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
+use Shared\Domain\Search\Query\Facet\Facet;
+use Shared\Domain\Search\Query\Facet\FacetList;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Query\Condition\ContentAccessConditionBuilder;
+use Shared\Service\Search\Query\Condition\FacetConditionBuilder;
+use Shared\Service\Search\Query\Condition\QueryConditionBuilderInterface;
+use Shared\Service\Search\Query\Condition\SearchTermConditionBuilder;
+use Shared\Service\Search\Query\Dsl\Aggregation;
+use Shared\Service\Search\Query\Dsl\Query;
 
 readonly class AggregationComponent
 {

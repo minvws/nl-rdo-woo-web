@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Handler\S3;
+namespace Shared\Tests\Unit\Domain\Upload\Handler\S3;
 
-use App\Domain\Upload\Handler\S3\S3UploadHandler;
-use App\Domain\Upload\Handler\S3\S3UploadHelper;
-use App\Domain\Upload\Result\PartialUploadResult;
-use App\Domain\Upload\Result\UploadCompletedResult;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\UploadRequest;
-use App\Service\Uploader\UploadGroupId;
 use GuzzleHttp\Psr7\Stream;
 use League\Flysystem\FilesystemOperator;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use Shared\Domain\Upload\Handler\S3\S3UploadHandler;
+use Shared\Domain\Upload\Handler\S3\S3UploadHelper;
+use Shared\Domain\Upload\Result\PartialUploadResult;
+use Shared\Domain\Upload\Result\UploadCompletedResult;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Service\Uploader\UploadGroupId;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
@@ -27,7 +27,7 @@ class S3UploadHandlerTest extends MockeryTestCase
     use MatchesSnapshots;
 
     private S3UploadHandler $handler;
-    private \App\Domain\Upload\Handler\S3\S3UploadHelper&MockInterface $s3uploadHelper;
+    private S3UploadHelper&MockInterface $s3uploadHelper;
     private vfsStreamDirectory $vfs;
 
     protected function setUp(): void

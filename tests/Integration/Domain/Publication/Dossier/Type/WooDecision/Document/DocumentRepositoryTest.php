@@ -2,31 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision\Document;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
-use App\Tests\Factory\DocumentFactory;
-use App\Tests\Factory\FileInfoFactory;
-use App\Tests\Factory\InquiryFactory;
-use App\Tests\Factory\OrganisationFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Story\WooIndexWooDecisionStory;
 use Carbon\CarbonImmutable;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use Shared\Tests\Factory\DocumentFactory;
+use Shared\Tests\Factory\FileInfoFactory;
+use Shared\Tests\Factory\InquiryFactory;
+use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Persistence\Proxy;
 
-final class DocumentRepositoryTest extends KernelTestCase
+final class DocumentRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private DocumentRepository $repository;
 
     protected function setUp(): void

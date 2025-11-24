@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command;
+namespace Shared\Tests\Unit\Command;
 
-use App\Command\PostDeploy;
-use App\Domain\Content\Page\ContentPageService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Command\PostDeploy;
+use Shared\Domain\Content\Page\ContentPageService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class PostDeployTest extends MockeryTestCase
+class PostDeployTest extends UnitTestCase
 {
     public function testDocumentFileSetRemoverIsCalled(): void
     {

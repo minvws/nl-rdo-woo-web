@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Sitemap;
+namespace Shared\Domain\Sitemap;
 
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 readonly class SitemapDossierSubscriber

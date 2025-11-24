@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Department\ViewModel;
+namespace Shared\Tests\Unit\Domain\Department\ViewModel;
 
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
-use App\Service\Storage\ThumbnailStorageService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
+use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 

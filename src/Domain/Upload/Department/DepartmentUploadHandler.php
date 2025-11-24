@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Department;
+namespace Shared\Domain\Upload\Department;
 
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Upload\Event\UploadValidatedEvent;
-use App\Domain\Upload\Process\EntityUploadStorer;
-use App\Service\Uploader\UploadGroupId;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Upload\Event\UploadValidatedEvent;
+use Shared\Domain\Upload\Process\EntityUploadStorer;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Uid\Uuid;
 

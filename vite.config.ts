@@ -36,6 +36,15 @@ export default defineConfig({
   },
 
   server: {
+    cors: {
+      origin: [
+        'http://localhost:8000',
+        'https://public-woo.local',
+        'http://public-woo.local',
+        'https://admin-woo.local',
+        'http://admin-woo.local',
+      ],
+    },
     host: 'localhost',
     port: 8001,
   },

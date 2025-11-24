@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service;
+namespace Shared\Tests\Unit\Service;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\BatchDownload\BatchDownloadStorage;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Service\DownloadFilenameGenerator;
-use App\Service\DownloadResponseHelper;
-use App\Service\Storage\EntityStorageService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadStorage;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Service\DownloadFilenameGenerator;
+use Shared\Service\DownloadResponseHelper;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DownloadResponseHelperTest extends UnitTestCase
@@ -136,6 +136,7 @@ class DownloadResponseHelperTest extends UnitTestCase
         $response = $this->responseHelper->getResponseForBatchDownload($batch);
 
         $this->assertEquals($size, $response->headers->get('Content-Length'));
+        $this->assertStringContainsStringIgnoringCase('no-store', $response->headers->get('Cache-Control', ''));
 
         ob_start();
         $response->sendContent();

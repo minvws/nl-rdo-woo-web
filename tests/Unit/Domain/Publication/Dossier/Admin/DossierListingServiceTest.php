@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Admin;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Admin;
 
-use App\Domain\Department\Department;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\Admin\DossierFilterParameters;
-use App\Domain\Publication\Dossier\Admin\DossierListingService;
-use App\Domain\Publication\Dossier\Admin\DossierQueryConditions;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
-use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\Admin\DossierFilterParameters;
+use Shared\Domain\Publication\Dossier\Admin\DossierListingService;
+use Shared\Domain\Publication\Dossier\Admin\DossierQueryConditions;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\Authorization\AuthorizationMatrixFilter;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class DossierListingServiceTest extends MockeryTestCase
+class DossierListingServiceTest extends UnitTestCase
 {
     private DossierRepository&MockInterface $dossierRepository;
     private AuthorizationMatrix&MockInterface $authorizationMatrix;

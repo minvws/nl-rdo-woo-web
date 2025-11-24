@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Public\Dossier\Disposition;
+namespace Shared\Controller\Public\Dossier\Disposition;
 
-use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
-use App\Domain\Publication\Dossier\Type\Disposition\ViewModel\DispositionViewFactory;
-use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
+use Shared\Domain\Publication\Dossier\Type\Disposition\ViewModel\DispositionViewFactory;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

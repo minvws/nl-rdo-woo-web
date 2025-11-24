@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\FileReader;
+namespace Shared\Service\FileReader;
 
 use PhpOffice\PhpSpreadsheet\Exception;
 use Symfony\Component\Process\Process;

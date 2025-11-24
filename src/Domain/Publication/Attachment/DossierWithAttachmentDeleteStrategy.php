@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment;
+namespace Shared\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
-use App\Domain\Publication\Attachment\Command\DeleteAttachmentWithOverrideCommand;
-use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
+use Shared\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Command\DeleteAttachmentWithOverrideCommand;
+use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class DossierWithAttachmentDeleteStrategy implements DossierDeleteStrategyInterface

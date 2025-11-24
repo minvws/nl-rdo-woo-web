@@ -2,18 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Subject;
+namespace Shared\Tests\Integration\Domain\Subject;
 
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Publication\Subject\SubjectRepository;
-use App\Tests\Factory\OrganisationFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Publication\Subject\SubjectRepository;
+use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-class SubjectRepositoryTest extends KernelTestCase
+class SubjectRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private function getRepository(): SubjectRepository
     {
         /** @var SubjectRepository */

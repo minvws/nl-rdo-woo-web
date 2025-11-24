@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Inquiry;
+namespace Shared\Form\Inquiry;
 
-use App\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\CaseNumbers;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

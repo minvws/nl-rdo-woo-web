@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\WooDecision;
+namespace Shared\Tests\Unit\Domain\Upload\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Domain\Upload\Event\UploadValidatedEvent;
-use App\Domain\Upload\Process\EntityUploadStorer;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\WooDecision\DocumentUploadHandler;
-use App\Service\Uploader\UploadGroupId;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Domain\Upload\Event\UploadValidatedEvent;
+use Shared\Domain\Upload\Process\EntityUploadStorer;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\WooDecision\DocumentUploadHandler;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class DocumentUploadHandlerTest extends UnitTestCase

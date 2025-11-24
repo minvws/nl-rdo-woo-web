@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Updater;
+namespace Shared\Tests\Unit\Domain\Search\Index\Updater;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Search\Index\Updater\NestedDossierIndexUpdater;
-use App\Service\Elastic\ElasticClientInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Search\Index\Updater\NestedDossierIndexUpdater;
+use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Tests\Unit\UnitTestCase;
 
-class NestedDossierIndexUpdaterTest extends MockeryTestCase
+class NestedDossierIndexUpdaterTest extends UnitTestCase
 {
     private ElasticClientInterface&MockInterface $elasticClient;
     private LoggerInterface&MockInterface $logger;

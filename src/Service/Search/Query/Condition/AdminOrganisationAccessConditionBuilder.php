@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Condition;
+namespace Shared\Service\Search\Query\Condition;
 
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Query\Facet\FacetList;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Dsl\Query;
-use App\Service\Security\Authorization\AuthorizationMatrix;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Query\Facet\FacetList;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Query\Dsl\Query;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
 
 readonly class AdminOrganisationAccessConditionBuilder implements QueryConditionBuilderInterface
 {

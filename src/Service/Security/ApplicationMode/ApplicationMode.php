@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Security\ApplicationMode;
+namespace Shared\Service\Security\ApplicationMode;
 
-use App\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierStatus;
 
 enum ApplicationMode: string
 {
     case PUBLIC = 'FRONTEND';
     case ADMIN = 'BALIE';
+    case WORKER = 'WORKER';
     case API = 'API';
     case ALL = 'ALL';
 
@@ -58,6 +59,16 @@ enum ApplicationMode: string
     public function isPublicOrAll(): bool
     {
         return $this->isEnvironmentOrAll(ApplicationMode::PUBLIC);
+    }
+
+    public function isWorker(): bool
+    {
+        return $this === ApplicationMode::WORKER;
+    }
+
+    public function isWorkerOrAll(): bool
+    {
+        return $this->isEnvironmentOrAll(ApplicationMode::WORKER);
     }
 
     public function isAll(): bool

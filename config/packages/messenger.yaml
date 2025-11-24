@@ -48,39 +48,39 @@ framework:
                     multiplier: 2
 
         routing:
-            App\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand: high
-            App\Domain\Search\Index\Rollover\SetElasticAliasCommand: high
-            App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ProductionReportProcessRunCommand: high
-            App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand: high
-            App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand: high
-            App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand: high
-            App\Domain\Publication\Dossier\Command\DeleteDossierCommand: high
-            App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUploadsCommand: high
-            App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUpdatesCommand: high
-            App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUploadCommand: high
-            App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUpdateCommand: high
-            App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawDocumentCommand: high
-            App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand: high
-            App\Domain\Upload\Command\ValidateUploadCommand: high
+            Shared\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand: high
+            Shared\Domain\Search\Index\Rollover\SetElasticAliasCommand: high
+            Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ProductionReportProcessRunCommand: high
+            Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand: high
+            Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand: high
+            Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand: high
+            Shared\Domain\Publication\Dossier\Command\DeleteDossierCommand: high
+            Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUploadsCommand: high
+            Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUpdatesCommand: high
+            Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUploadCommand: high
+            Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUpdateCommand: high
+            Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawDocumentCommand: high
+            Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand: high
+            Shared\Domain\Upload\Command\ValidateUploadCommand: high
 
-            App\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand: ingestor
-            App\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor
-            App\Domain\Ingest\Process\Pdf\IngestPdfCommand: ingestor           # Ingests a complete PDF document and fires a command for each page
-            App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand: ingestor
-            App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand: ingestor   # Ingests a single PDF page from a PDF document
-            App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand: ingestor
-            App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand: ingestor
+            Shared\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand: ingestor
+            Shared\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor
+            Shared\Domain\Ingest\Process\Pdf\IngestPdfCommand: ingestor           # Ingests a complete PDF document and fires a command for each page
+            Shared\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand: ingestor
+            Shared\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand: ingestor   # Ingests a single PDF page from a PDF document
+            Shared\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand: ingestor
+            Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand: ingestor
 
-            App\Domain\Search\Index\Dossier\IndexDossierCommand: esupdater     # Updates the dossier in the elastic index
-            App\Domain\Department\UpdateDepartmentCommand: esupdater             # Updates the dossier in the elastic index
-            App\Domain\Publication\Dossier\Type\WooDecision\Document\Command\RemoveDocumentCommand: esupdater
-            App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent: esupdater
-            App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent: esupdater
-            App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent: esupdater
-            App\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent: esupdater
-            App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent: esupdater
-            App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent: esupdater
-            App\Domain\Search\Index\DeleteElasticDocumentCommand: esupdater
-            App\Domain\Publication\Subject\Event\SubjectUpdatedEvent: esupdater
+            Shared\Domain\Search\Index\Dossier\IndexDossierCommand: esupdater     # Updates the dossier in the elastic index
+            Shared\Domain\Department\UpdateDepartmentCommand: esupdater             # Updates the dossier in the elastic index
+            Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\RemoveDocumentCommand: esupdater
+            Shared\Domain\Publication\Attachment\Event\AttachmentCreatedEvent: esupdater
+            Shared\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent: esupdater
+            Shared\Domain\Publication\Attachment\Event\AttachmentDeletedEvent: esupdater
+            Shared\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent: esupdater
+            Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent: esupdater
+            Shared\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent: esupdater
+            Shared\Domain\Search\Index\DeleteElasticDocumentCommand: esupdater
+            Shared\Domain\Publication\Subject\Event\SubjectUpdatedEvent: esupdater
 
-            App\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand: global
+            Shared\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand: global

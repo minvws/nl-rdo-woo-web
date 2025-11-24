@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document\Handler;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document\Handler;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Handler\RemoveInventoryAndDocumentsHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Service\DocumentService;
-use App\Service\DossierService;
-use App\Service\Inventory\InventoryService;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Handler\RemoveInventoryAndDocumentsHandler;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Service\DocumentService;
+use Shared\Service\DossierService;
+use Shared\Service\Inventory\InventoryService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class RemoveInventoryAndDocumentsHandlerTest extends UnitTestCase

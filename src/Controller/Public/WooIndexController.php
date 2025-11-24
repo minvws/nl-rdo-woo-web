@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Public;
+namespace Shared\Controller\Public;
 
-use App\Domain\WooIndex\WooIndexSitemap;
-use App\Domain\WooIndex\WooIndexSitemapService;
+use Shared\Domain\WooIndex\WooIndexSitemap;
+use Shared\Domain\WooIndex\WooIndexSitemapService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

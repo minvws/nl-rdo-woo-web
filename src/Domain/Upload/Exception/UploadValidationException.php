@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Exception;
+namespace Shared\Domain\Upload\Exception;
 
-use App\Domain\Upload\FileType\FileType;
-use App\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\FileType\FileType;
+use Shared\Domain\Upload\UploadEntity;
 
 class UploadValidationException extends \RuntimeException
 {

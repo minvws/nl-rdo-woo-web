@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\EventSubscriber;
+namespace Shared\Tests\Unit\EventSubscriber;
 
-use App\EventSubscriber\SecurityHeaderSubscriber;
-use App\Service\EnvironmentService;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\EventSubscriber\SecurityHeaderSubscriber;
+use Shared\Service\EnvironmentService;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class SecurityHeaderSubscriberTest extends MockeryTestCase
+class SecurityHeaderSubscriberTest extends UnitTestCase
 {
     use MatchesSnapshots;
 

@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Vws\AuditLog;
+namespace Shared\Tests\Unit\Vws\AuditLog;
 
-use App\Service\Security\User;
-use App\Vws\AuditLog\TwoFactorAuditLogger;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\UserLoginLogEvent;
 use MinVWS\AuditLogger\Events\Logging\UserLoginTwoFactorFailedEvent;
 use MinVWS\AuditLogger\Loggers\LoggerInterface as AuditLoggerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvent;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Vws\AuditLog\TwoFactorAuditLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
-class TwoFactorAuditLoggerTest extends MockeryTestCase
+class TwoFactorAuditLoggerTest extends UnitTestCase
 {
     private AuditLoggerInterface&MockInterface $internalAuditLogger;
     private TwoFactorAuditLogger $twoFactorLogger;

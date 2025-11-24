@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service;
+namespace Shared\Tests\Unit\Service;
 
-use App\Service\EnvironmentService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Service\EnvironmentService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class EnvironmentServiceTest extends UnitTestCase

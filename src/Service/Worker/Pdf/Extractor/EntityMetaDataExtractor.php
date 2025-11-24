@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Worker\Pdf\Extractor;
+namespace Shared\Service\Worker\Pdf\Extractor;
 
-use App\Domain\Ingest\Content\ContentExtractLogContext;
-use App\Domain\Ingest\Content\Extractor\Tika\TikaService;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use App\Service\Stats\WorkerStatsService;
-use App\Service\Storage\EntityStorageService;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Content\ContentExtractLogContext;
+use Shared\Domain\Ingest\Content\Extractor\Tika\TikaService;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
+use Shared\Service\Stats\WorkerStatsService;
+use Shared\Service\Storage\EntityStorageService;
 use Symfony\Contracts\Cache\CacheInterface;
 
 /**

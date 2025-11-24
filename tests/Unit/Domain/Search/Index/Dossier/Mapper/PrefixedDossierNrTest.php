@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
+namespace Shared\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Tests\Unit\UnitTestCase;
 
-class PrefixedDossierNrTest extends MockeryTestCase
+class PrefixedDossierNrTest extends UnitTestCase
 {
     public function testForDossier(): void
     {

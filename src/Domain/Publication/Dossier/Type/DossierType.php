@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type;
+namespace Shared\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
-use App\Domain\Publication\Dossier\Type\Advice\Advice;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
-use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
+use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

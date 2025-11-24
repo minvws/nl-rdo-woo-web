@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory\Sanitizer;
+namespace Shared\Service\Inventory\Sanitizer;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\Inventory\DocumentNumber;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\Inventory\DocumentNumber;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webmozart\Assert\Assert;

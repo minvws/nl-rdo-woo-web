@@ -38,12 +38,12 @@ Display facet with hyperlinks
 {% endmacro %}
 
 {% macro facets_sitemap(result) %}
-    {{ _self.facet_sitemap('categories.category.type' | trans, constant('App\\Service\\Search\\Model\\FacetKey::TYPE'), result) }}
-    {{ _self.facet_sitemap('categories.category.department' | trans, constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), result) }}
-    {{ _self.facet_sitemap('categories.category.grounds' | trans, constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
-    {{ _self.facet_sitemap('categories.category.source_file' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SOURCE'), result) }}
-    {{ _self.facet_sitemap('categories.category.subject' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT'), result) }}
-    {{ _self.facet_sitemap('categories.category.judgement' | trans, constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
+    {{ _self.facet_sitemap('categories.category.type' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::TYPE'), result) }}
+    {{ _self.facet_sitemap('categories.category.department' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), result) }}
+    {{ _self.facet_sitemap('categories.category.grounds' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
+    {{ _self.facet_sitemap('categories.category.source_file' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::SOURCE'), result) }}
+    {{ _self.facet_sitemap('categories.category.subject' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::SUBJECT'), result) }}
+    {{ _self.facet_sitemap('categories.category.judgement' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
 {% endmacro %}
 
 {% macro facet_sitemap(title, facetKey, result) %}

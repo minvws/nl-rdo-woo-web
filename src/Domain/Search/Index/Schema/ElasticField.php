@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Schema;
+namespace Shared\Domain\Search\Index\Schema;
 
 enum ElasticField: string
 {

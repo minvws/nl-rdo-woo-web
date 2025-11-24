@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\ComplaintJudgement;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\ComplaintJudgement;
 
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
-use App\Domain\Publication\Dossier\Type\DossierType;
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
 
 final class ComplaintJudgementTest extends TestCase
 {

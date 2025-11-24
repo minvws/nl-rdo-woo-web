@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
+namespace Shared\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
-use App\Domain\Department\Department;
-use App\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DepartmentFieldMapperTest extends MockeryTestCase
+class DepartmentFieldMapperTest extends UnitTestCase
 {
     public function testFromDepartment(): void
     {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\Document\Handler;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Handler;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentRepublishedEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
-use App\Service\DossierService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentRepublishedEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
+use Shared\Service\DossierService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 readonly class DocumentEventHandler

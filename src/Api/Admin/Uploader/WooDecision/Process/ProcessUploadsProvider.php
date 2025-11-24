@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Uploader\WooDecision\Process;
+namespace Shared\Api\Admin\Uploader\WooDecision\Process;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

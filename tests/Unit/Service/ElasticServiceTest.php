@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service;
+namespace Shared\Tests\Unit\Service;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\ElasticDocument;
-use App\Service\Elastic\ElasticClientInterface;
-use App\Service\Elastic\ElasticService;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use MinVWS\TypeArray\TypeArray;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\ElasticDocument;
+use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Service\Elastic\ElasticService;
+use Shared\Tests\Unit\UnitTestCase;
 
-class ElasticServiceTest extends MockeryTestCase
+class ElasticServiceTest extends UnitTestCase
 {
     private ElasticClientInterface&MockInterface $elasticClient;
     private LoggerInterface&MockInterface $logger;

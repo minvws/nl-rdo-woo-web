@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\Dossier\Strategy;
+namespace Shared\Domain\Ingest\Process\Dossier\Strategy;
 
-use App\Domain\Ingest\Process\Dossier\DossierIngestStrategyInterface;
-use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Ingest\Process\Dossier\DossierIngestStrategyInterface;
+use Shared\Domain\Ingest\Process\IngestProcessOptions;
+use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Webmozart\Assert\Assert;
 
 readonly class WooDecisionIngestStrategy implements DossierIngestStrategyInterface

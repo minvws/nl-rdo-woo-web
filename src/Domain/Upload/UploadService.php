@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload;
+namespace Shared\Domain\Upload;
 
-use App\Domain\Upload\Event\UploadCompletedEvent;
-use App\Domain\Upload\Event\UploadValidatedEvent;
-use App\Domain\Upload\Exception\UploadException;
-use App\Domain\Upload\Exception\UploadValidationException;
-use App\Domain\Upload\Handler\UploadHandlerInterface;
-use App\Domain\Upload\Result\UploadCompletedResult;
-use App\Domain\Upload\Result\UploadResultInterface;
-use App\Service\Security\User;
 use League\Flysystem\FilesystemOperator;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shared\Domain\Upload\Event\UploadCompletedEvent;
+use Shared\Domain\Upload\Event\UploadValidatedEvent;
+use Shared\Domain\Upload\Exception\UploadException;
+use Shared\Domain\Upload\Exception\UploadValidationException;
+use Shared\Domain\Upload\Handler\UploadHandlerInterface;
+use Shared\Domain\Upload\Result\UploadCompletedResult;
+use Shared\Domain\Upload\Result\UploadResultInterface;
+use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**

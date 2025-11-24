@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Runtime;
+namespace Shared\Twig\Runtime;
 
-use App\Domain\Publication\Citation;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Publication\Dossier\ViewModel\DossierNotifications;
-use App\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
-use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use App\Domain\Publication\History\History;
-use App\Service\DateRangeConverter;
-use App\Service\HistoryService;
-use App\Service\Search\Query\Component\HighlightComponent;
-use App\Service\Security\OrganisationSwitcher;
+use Shared\Domain\Publication\Citation;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\DossierReference;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierNotifications;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\History\History;
+use Shared\Service\DateRangeConverter;
+use Shared\Service\HistoryService;
+use Shared\Service\Search\Query\Component\HighlightComponent;
+use Shared\Service\Security\OrganisationSwitcher;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;
 

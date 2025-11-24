@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Producer;
+namespace Shared\Domain\WooIndex\Producer;
 
 final readonly class UrlReference
 {

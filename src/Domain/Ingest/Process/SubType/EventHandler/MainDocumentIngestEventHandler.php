@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\SubType\EventHandler;
+namespace Shared\Domain\Ingest\Process\SubType\EventHandler;
 
-use App\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent;
-use App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
-use App\Domain\Search\SearchDispatcher;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
+use Shared\Domain\Search\SearchDispatcher;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 final readonly class MainDocumentIngestEventHandler

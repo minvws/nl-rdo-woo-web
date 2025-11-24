@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace Shared\Service;
 
-use App\Domain\Organisation\Event\OrganisationCreatedEvent;
-use App\Domain\Organisation\Event\OrganisationUpdatedEvent;
-use App\Domain\Organisation\Organisation;
-use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use MinVWS\AuditLogger\AuditUser;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Organisation\Event\OrganisationCreatedEvent;
+use Shared\Domain\Organisation\Event\OrganisationUpdatedEvent;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Service\Security\User;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 

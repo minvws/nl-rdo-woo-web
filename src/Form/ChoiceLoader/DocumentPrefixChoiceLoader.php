@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Form\ChoiceLoader;
+namespace Shared\Form\ChoiceLoader;
 
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\ChoiceList\ArrayChoiceList;
 use Symfony\Component\Form\ChoiceList\ChoiceListInterface;
@@ -70,12 +70,9 @@ class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
     {
         $values = [];
         foreach ($choices as $choice) {
-            /** @var DocumentPrefix|null $choice */
-            if ($choice === null || empty($choice)) {
-                continue;
+            if ($choice instanceof DocumentPrefix) {
+                $values[] = (string) $choice->getId();
             }
-
-            $values[] = (string) $choice->getId();
         }
 
         return $values;

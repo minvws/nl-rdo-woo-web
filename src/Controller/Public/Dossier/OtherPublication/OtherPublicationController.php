@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Public\Dossier\OtherPublication;
+namespace Shared\Controller\Public\Dossier\OtherPublication;
 
-use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
-use App\Domain\Publication\Dossier\Type\OtherPublication\ViewModel\OtherPublicationViewFactory;
-use App\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\ViewModel\OtherPublicationViewFactory;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

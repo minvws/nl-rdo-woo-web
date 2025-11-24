@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Content;
+namespace Shared\Tests\Unit\Domain\Ingest\Content;
 
-use App\Domain\Ingest\Content\ContentExtractCacheKeyGenerator;
-use App\Domain\Ingest\Content\ContentExtractOptions;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Publication\EntityWithFileInfo;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Ingest\Content\ContentExtractCacheKeyGenerator;
+use Shared\Domain\Ingest\Content\ContentExtractOptions;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class ContentExtractCacheKeyGeneratorTest extends MockeryTestCase
+class ContentExtractCacheKeyGeneratorTest extends UnitTestCase
 {
     private ContentExtractCacheKeyGenerator $keyGenerator;
 

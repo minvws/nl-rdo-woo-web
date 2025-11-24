@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Form\ChoiceLoader\DocumentPrefixChoiceLoader;
-use App\Form\ChoiceLoader\WooDecisionChoiceLoader;
-use App\Form\Inquiry\InquiryLinkDocumentsFormType;
-use App\Form\Inquiry\InquiryLinkDossierFormType;
-use App\Service\Inquiry\CaseNumbers;
-use App\Service\Inquiry\InquiryChangeset;
-use App\Service\Inquiry\InquiryLinkImporter;
-use App\Service\Inquiry\InquiryService;
-use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Form\ChoiceLoader\DocumentPrefixChoiceLoader;
+use Shared\Form\ChoiceLoader\WooDecisionChoiceLoader;
+use Shared\Form\Inquiry\InquiryLinkDocumentsFormType;
+use Shared\Form\Inquiry\InquiryLinkDossierFormType;
+use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\InquiryChangeset;
+use Shared\Service\Inquiry\InquiryLinkImporter;
+use Shared\Service\Inquiry\InquiryService;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\SubmitButton;

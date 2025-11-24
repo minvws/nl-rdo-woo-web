@@ -1,0 +1,42 @@
+services:
+  public:
+    ports:
+      - ${DOCKER_PUBLIC_PORT:-8000}:80
+
+  admin:
+    ports:
+      - ${DOCKER_ADMIN_PORT:-8001}:80
+
+  publication_api:
+    ports:
+      - ${DOCKER_PUBLICATION_API_PORT:-8002}:80
+
+  tika:
+    ports:
+      - ${DOCKER_TIKA_PORT:-9998}:9998
+
+  elasticsearch:
+    ports:
+      - ${DOCKER_ELASTICSEARCH_PORT:-9200}:9200
+
+  redis:
+    ports:
+      - ${DOCKER_REDIS_PORT:-6379}:6379
+
+  rabbitmq:
+    ports:
+      - ${DOCKER_RABBITMQ_PORT:-5672}:5672
+      - ${DOCKER_RABIITMQ_MANAGEMENT_PORT:-15672}:15672
+
+  postgres:
+    ports:
+      - ${DOCKER_POSTGRES_PORT:-5432}:5432
+
+  clamav:
+    ports:
+      - ${DOCKER_CLAMAV_PORT:-3310}:3310
+
+  minio:
+    ports:
+      - ${DOCKER_MINIO_PORT:-9000}:9000
+      - ${DOCKER_MINIO_CONSOLE_PORT:-9001}:9001

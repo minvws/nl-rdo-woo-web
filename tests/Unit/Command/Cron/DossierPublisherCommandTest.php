@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command\Cron;
+namespace Shared\Tests\Unit\Command\Cron;
 
-use App\Command\Cron\DossierPublisherCommand;
-use App\Domain\Publication\Dossier\DossierPublisher;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Command\Cron\DossierPublisherCommand;
+use Shared\Domain\Publication\Dossier\DossierPublisher;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class DossierPublisherCommandTest extends MockeryTestCase
+class DossierPublisherCommandTest extends UnitTestCase
 {
     public function testExecute(): void
     {

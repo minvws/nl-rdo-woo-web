@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\MainDocument\Handler;
+namespace Shared\Tests\Unit\Domain\Publication\MainDocument\Handler;
 
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentRepository;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
-use App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
-use App\Domain\Publication\MainDocument\Handler\DeleteMainDocumentHandler;
-use App\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface;
-use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentRepository;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
+use Shared\Domain\Publication\MainDocument\Handler\DeleteMainDocumentHandler;
+use Shared\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface;
+use Shared\Domain\Publication\MainDocument\MainDocumentNotFoundException;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Workflow\Exception\TransitionException;
 
-class DeleteMainDocumentHandlerTest extends MockeryTestCase
+class DeleteMainDocumentHandlerTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private AnnualReportMainDocumentRepository&MockInterface $annualReportDocumentRepository;

@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\SubType;
+namespace Shared\Tests\Unit\Domain\Search\Index\SubType;
 
-use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\MainDocumentRepository;
-use App\Domain\Search\Index\SubType\IndexMainDocumentCommand;
-use App\Domain\Search\Index\SubType\IndexMainDocumentHandler;
-use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Process\IngestProcessOptions;
+use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\MainDocumentRepository;
+use Shared\Domain\Search\Index\SubType\IndexMainDocumentCommand;
+use Shared\Domain\Search\Index\SubType\IndexMainDocumentHandler;
+use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class IndexMainDocumentHandlerTest extends MockeryTestCase
+class IndexMainDocumentHandlerTest extends UnitTestCase
 {
     private MainDocumentRepository&MockInterface $repository;
     private SubTypeIndexer&MockInterface $subTypeIndexer;

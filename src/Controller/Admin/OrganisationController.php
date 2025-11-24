@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Department\Department;
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Organisation\OrganisationRepository;
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Form\Organisation\OrganisationFormType;
-use App\Service\OrganisationService;
 use Doctrine\Common\Collections\Collection;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Organisation\OrganisationRepository;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Form\Organisation\OrganisationFormType;
+use Shared\Service\OrganisationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Result;
+namespace Shared\Domain\Upload\Result;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 

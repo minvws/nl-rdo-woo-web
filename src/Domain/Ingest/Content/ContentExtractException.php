@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content;
+namespace Shared\Domain\Ingest\Content;
 
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 class ContentExtractException extends \RuntimeException
 {

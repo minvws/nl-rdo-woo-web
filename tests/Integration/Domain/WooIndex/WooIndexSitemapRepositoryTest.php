@@ -2,21 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\WooIndex;
+namespace Shared\Tests\Integration\Domain\WooIndex;
 
-use App\Domain\WooIndex\WooIndexSitemap;
-use App\Domain\WooIndex\WooIndexSitemapRepository;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Story\WooIndexSitemapsStory;
 use Carbon\CarbonImmutable;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\WooIndex\WooIndexSitemap;
+use Shared\Domain\WooIndex\WooIndexSitemapRepository;
+use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\Tests\Story\WooIndexSitemapsStory;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Persistence\Proxy;
 
-final class WooIndexSitemapRepositoryTest extends KernelTestCase
+final class WooIndexSitemapRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private WooIndexSitemapRepository $wooIndexSitemapRepository;
 
     protected function setUp(): void

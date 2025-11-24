@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\FileProvider;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\FileProvider;
 
-use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderException;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileProviderException;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DossierFileProviderManagerTest extends MockeryTestCase
+class DossierFileProviderManagerTest extends UnitTestCase
 {
     private DossierFileProviderInterface&MockInterface $providerA;
     private DossierFileProviderInterface&MockInterface $providerB;

@@ -2,7 +2,7 @@
 
 For the actual mapping, see the `config/elastic/mapping.json`. Additional settings are found in `config/elastic/settings.json`.
 
-Note that we currently use a single index as defined in `\App\ElasticConfig::INDEX`.
+Note that we currently use a single index as defined in `\Shared\ElasticConfig::INDEX`.
 
 ```json
 {

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Service\Search\Query\Definition;
+namespace Shared\Tests\Integration\Service\Search\Query\Definition;
 
-use App\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
 use PHPUnit\Framework\Attributes\Group;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
+use Shared\Tests\Integration\SharedWebTestCase;
 
 #[Group('search')]
-final class BrowseMainAggregationsQueryDefinitionTest extends KernelTestCase
+final class BrowseMainAggregationsQueryDefinitionTest extends SharedWebTestCase
 {
     use QueryDefinitionTestTrait;
 

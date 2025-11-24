@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\FileStorage;
+namespace Shared\Tests\Unit\Domain\FileStorage;
 
-use App\Domain\FileStorage\Checker\FileStorageLister;
-use App\Domain\FileStorage\Checker\FileStorageType;
-use App\Domain\FileStorage\Checker\OrphanedPaths;
-use App\Domain\FileStorage\OrphanedFileMover;
-use App\Tests\Unit\UnitTestCase;
 use Aws\S3\S3Client;
 use League\Flysystem\FilesystemOperator;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use Shared\Domain\FileStorage\Checker\FileStorageLister;
+use Shared\Domain\FileStorage\Checker\FileStorageType;
+use Shared\Domain\FileStorage\Checker\OrphanedPaths;
+use Shared\Domain\FileStorage\OrphanedFileMover;
+use Shared\Tests\Unit\UnitTestCase;
 
 class OrphanedFileMoverTest extends UnitTestCase
 {

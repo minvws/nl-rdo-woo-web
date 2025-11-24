@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Command;
+namespace Shared\Domain\Upload\Command;
 
-use App\Domain\Upload\AntiVirus\ClamAvFileScanner;
-use App\Domain\Upload\Exception\UploadException;
-use App\Domain\Upload\Exception\UploadValidationException;
-use App\Domain\Upload\FileType\FileType;
-use App\Domain\Upload\FileType\MimeTypeHelper;
-use App\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\UploadEntityRepository;
-use App\Domain\Upload\UploadService;
 use League\Flysystem\FilesystemOperator;
+use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
+use Shared\Domain\Upload\Exception\UploadException;
+use Shared\Domain\Upload\Exception\UploadValidationException;
+use Shared\Domain\Upload\FileType\FileType;
+use Shared\Domain\Upload\FileType\MimeTypeHelper;
+use Shared\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadEntityRepository;
+use Shared\Domain\Upload\UploadService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;

@@ -2,21 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
-use App\Tests\Factory\OrganisationFactory;
-use App\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
-use App\Tests\Integration\IntegrationTestTrait;
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\AbstractDossierRepository;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
+use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class AbstractDossierRepositoryTest extends KernelTestCase
+final class AbstractDossierRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     /**
      * @return AbstractDossierRepository<InvestigationReport>
      */

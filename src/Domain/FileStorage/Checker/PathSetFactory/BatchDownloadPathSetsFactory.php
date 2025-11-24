@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\FileStorage\Checker\PathSetFactory;
+namespace Shared\Domain\FileStorage\Checker\PathSetFactory;
 
-use App\Domain\FileStorage\Checker\FileStorageType;
-use App\Domain\FileStorage\Checker\PathSet;
-use App\Domain\Publication\BatchDownload\BatchDownloadRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\FileStorage\Checker\FileStorageType;
+use Shared\Domain\FileStorage\Checker\PathSet;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
 
 readonly class BatchDownloadPathSetsFactory implements PathSetsFactoryInterface
 {

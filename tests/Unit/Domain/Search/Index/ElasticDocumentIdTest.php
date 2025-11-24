@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index;
+namespace Shared\Tests\Unit\Domain\Search\Index;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Search\Index\ElasticDocumentId;
-use App\Domain\Search\Index\IndexException;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Search\Index\ElasticDocumentId;
+use Shared\Domain\Search\Index\IndexException;
+use Shared\Tests\Unit\UnitTestCase;
 
 class ElasticDocumentIdTest extends UnitTestCase
 {

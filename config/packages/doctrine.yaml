@@ -1,9 +1,6 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
-        types:
-            encrypted_string: App\Doctrine\EncryptedString
-            encrypted_array: App\Doctrine\EncryptedArray
 
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
@@ -23,19 +20,19 @@ doctrine:
                 type: attribute
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Service'
-                prefix: 'App\Service'
+                prefix: 'Shared\Service'
                 alias: App
             Domain:
                 type: attribute
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Domain'
-                prefix: 'App\Domain'
+                prefix: 'Shared\Domain'
                 alias: Domain
         dql:
             string_functions:
                 CONTAINS: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\Contains
                 ILIKE: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\Ilike
-                TYPE: App\Doctrine\TypeFunction
+                TYPE: Shared\Doctrine\TypeFunction
         controller_resolver:
             auto_mapping: false
 

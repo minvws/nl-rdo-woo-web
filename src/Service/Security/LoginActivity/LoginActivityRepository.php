@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Security\LoginActivity;
+namespace Shared\Service\Security\LoginActivity;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

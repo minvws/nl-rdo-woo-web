@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker\Pdf\Tools\Pdftoppm;
+namespace Shared\Tests\Unit\Service\Worker\Pdf\Tools\Pdftoppm;
 
-use App\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmThumbnailResult;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmThumbnailResult;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class PdftoppmThumbnailResultTest extends UnitTestCase
 {

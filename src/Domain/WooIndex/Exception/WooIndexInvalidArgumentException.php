@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Exception;
+namespace Shared\Domain\WooIndex\Exception;
 
 final class WooIndexInvalidArgumentException extends \InvalidArgumentException implements WooIndexException
 {

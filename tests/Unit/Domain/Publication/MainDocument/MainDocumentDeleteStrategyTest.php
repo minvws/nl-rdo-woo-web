@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\MainDocument;
+namespace Shared\Tests\Unit\Domain\Publication\MainDocument;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
-use App\Domain\Publication\MainDocument\MainDocumentDeleteStrategy;
-use App\Domain\Search\SearchDispatcher;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use Shared\Domain\Publication\MainDocument\MainDocumentDeleteStrategy;
+use Shared\Domain\Search\SearchDispatcher;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 
-final class MainDocumentDeleteStrategyTest extends MockeryTestCase
+final class MainDocumentDeleteStrategyTest extends UnitTestCase
 {
     private EntityStorageService&MockInterface $entityStorageService;
     private ThumbnailStorageService&MockInterface $thumbnailStorageService;

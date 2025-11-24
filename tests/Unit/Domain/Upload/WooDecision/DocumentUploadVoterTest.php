@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\WooDecision;
+namespace Shared\Tests\Unit\Domain\Upload\WooDecision;
 
-use App\Domain\Upload\Dossier\DossierUploadRequestValidator;
-use App\Domain\Upload\UploadRequest;
-use App\Domain\Upload\UploadService;
-use App\Domain\Upload\WooDecision\DocumentUploadVoter;
-use App\Service\Uploader\UploadGroupId;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Upload\Dossier\DossierUploadRequestValidator;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Domain\Upload\UploadService;
+use Shared\Domain\Upload\WooDecision\DocumentUploadVoter;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
-class DocumentUploadVoterTest extends MockeryTestCase
+class DocumentUploadVoterTest extends UnitTestCase
 {
     private DocumentUploadVoter $voter;
     private DossierUploadRequestValidator&MockInterface $validator;

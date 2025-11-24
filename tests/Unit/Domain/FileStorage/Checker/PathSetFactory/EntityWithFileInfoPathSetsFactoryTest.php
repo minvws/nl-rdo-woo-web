@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\FileStorage\Checker\PathSetFactory;
+namespace Shared\Tests\Unit\Domain\FileStorage\Checker\PathSetFactory;
 
-use App\Domain\FileStorage\Checker\FileStorageType;
-use App\Domain\FileStorage\Checker\PathSet;
-use App\Domain\FileStorage\Checker\PathSetFactory\EntityWithFileInfoPathSetsFactory;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Service\Storage\ThumbnailStorageService;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
+use Shared\Domain\FileStorage\Checker\FileStorageType;
+use Shared\Domain\FileStorage\Checker\PathSet;
+use Shared\Domain\FileStorage\Checker\PathSetFactory\EntityWithFileInfoPathSetsFactory;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class EntityWithFileInfoPathSetsFactoryTest extends UnitTestCase

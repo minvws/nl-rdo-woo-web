@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\Covenant\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Covenant\ViewModel;
 
-use App\Domain\Publication\SourceType;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Publication\SourceType;
 
 class CovenantSearchEntryTest extends TestCase
 {

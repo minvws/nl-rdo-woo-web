@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex;
+namespace Shared\Domain\WooIndex;
 
-use App\Domain\WooIndex\Exception\WooIndexFileNotFoundException;
 use Carbon\CarbonImmutable;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
+use Shared\Domain\WooIndex\Exception\WooIndexFileNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
 

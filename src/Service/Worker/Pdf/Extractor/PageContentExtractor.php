@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Worker\Pdf\Extractor;
+namespace Shared\Service\Worker\Pdf\Extractor;
 
-use App\Domain\Ingest\Content\ContentExtractCache;
-use App\Domain\Ingest\Content\ContentExtractOptions;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use App\Service\Stats\WorkerStatsService;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Content\ContentExtractCache;
+use Shared\Domain\Ingest\Content\ContentExtractOptions;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
+use Shared\Service\Stats\WorkerStatsService;
 
 /**
  * Extractor that will extract content from a single page from a given entity and index it into ES.

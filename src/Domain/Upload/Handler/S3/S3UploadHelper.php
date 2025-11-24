@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Handler\S3;
+namespace Shared\Domain\Upload\Handler\S3;
 
-use App\Domain\Upload\UploadRequest;
 use Aws\S3\S3Client;
 use Aws\S3\S3UriParser;
 use GuzzleHttp\Psr7\Stream;
+use Shared\Domain\Upload\UploadRequest;
 use Webmozart\Assert\Assert;
 
 readonly class S3UploadHelper

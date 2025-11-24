@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier\Covenant;
+namespace Shared\Form\Dossier\Covenant;
 
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Form\Dossier\AbstractDossierStepType;
-use App\Form\Dossier\DossierFormBuilderTrait;
-use App\Form\YearMonthType;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Form\Dossier\AbstractDossierStepType;
+use Shared\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Form\YearMonthType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class DetailsType extends AbstractDossierStepType
@@ -57,7 +57,8 @@ class DetailsType extends AbstractDossierStepType
         $this->addInternalReferenceField($builder);
         $this->addDepartmentsField($builder);
         $this->addSubjectField($builder);
-        $this->addNewDossierFields($builder);
+        $this->addDossierNrField($builder);
+        $this->addDocumentPrefixField($builder);
         $this->addSubmits($builder);
     }
 }

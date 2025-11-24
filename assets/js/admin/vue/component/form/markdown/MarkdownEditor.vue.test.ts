@@ -91,7 +91,7 @@ describe('The "MarkdownEditor" component', () => {
 
     test('should have the provided value with carriage returns replaced by an empty string', () => {
       const textarea = getTextareaElement(createComponent());
-      expect(textarea.element.value).toBe(mockedMarkdown.replace(/\r/g, ''));
+      expect(textarea.element.value).toBe(mockedMarkdown.replaceAll(/\r/g, ''));
     });
   });
 

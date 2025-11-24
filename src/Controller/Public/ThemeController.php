@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Public;
+namespace Shared\Controller\Public;
 
-use App\Domain\Search\Query\SearchParametersFactory;
-use App\Domain\Search\Theme\ThemeInterface;
-use App\Domain\Search\Theme\ThemeManager;
-use App\Service\Search\Query\Definition\SearchAllQueryDefinition;
-use App\Service\Search\Result\Result;
-use App\Service\Search\SearchService;
+use Shared\Domain\Search\Query\SearchParametersFactory;
+use Shared\Domain\Search\Theme\ThemeInterface;
+use Shared\Domain\Search\Theme\ThemeManager;
+use Shared\Service\Search\Query\Definition\SearchAllQueryDefinition;
+use Shared\Service\Search\Result\Result;
+use Shared\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

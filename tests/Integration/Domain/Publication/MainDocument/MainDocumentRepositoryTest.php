@@ -2,25 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\MainDocument;
+namespace Shared\Tests\Integration\Domain\Publication\MainDocument;
 
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
-use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\MainDocumentRepository;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Story\WooIndexAnnualReportStory;
-use App\Tests\Story\WooIndexCovenantStory;
-use App\Tests\Story\WooIndexWooDecisionStory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\MainDocumentRepository;
+use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\Tests\Story\WooIndexAnnualReportStory;
+use Shared\Tests\Story\WooIndexCovenantStory;
+use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Persistence\Proxy;
 
-final class MainDocumentRepositoryTest extends KernelTestCase
+final class MainDocumentRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private MainDocumentRepository $repository;
 
     protected function setUp(): void

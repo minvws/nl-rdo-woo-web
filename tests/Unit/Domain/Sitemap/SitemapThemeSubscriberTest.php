@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Sitemap;
+namespace Shared\Tests\Unit\Domain\Sitemap;
 
-use App\Domain\Search\Theme\ThemeManager;
-use App\Domain\Search\Theme\ViewModel\Theme;
-use App\Domain\Sitemap\SitemapThemeSubscriber;
-use App\Tests\Unit\Domain\Upload\IterableToGenerator;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
+use Shared\Domain\Search\Theme\ThemeManager;
+use Shared\Domain\Search\Theme\ViewModel\Theme;
+use Shared\Domain\Sitemap\SitemapThemeSubscriber;
+use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SitemapThemeSubscriberTest extends UnitTestCase

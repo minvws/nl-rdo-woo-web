@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 
-class BatchDownloadTest extends MockeryTestCase
+class BatchDownloadTest extends UnitTestCase
 {
     public function testConstructor(): void
     {

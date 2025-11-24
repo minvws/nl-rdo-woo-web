@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\Pdf;
+namespace Shared\Domain\Ingest\Process\Pdf;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Worker\Pdf\Extractor\PagecountExtractor;
-use App\Service\Worker\PdfProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Doctrine\LegacyNamespaceHelper;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Worker\Pdf\Extractor\PagecountExtractor;
+use Shared\Service\Worker\PdfProcessor;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Webmozart\Assert\Assert;
 
@@ -30,7 +31,8 @@ final readonly class IngestPdfHandler
 
     public function __invoke(IngestPdfCommand $message): void
     {
-        $entity = $this->doctrine->getRepository($message->getEntityClass())->find($message->getEntityId());
+        $entityClass = LegacyNamespaceHelper::normalizeClassName($message->getEntityClass());
+        $entity = $this->doctrine->getRepository($entityClass)->find($message->getEntityId());
         if (is_null($entity)) {
             $this->logger->warning('No entity found in IngestPdfHandler', [
                 'id' => $message->getEntityId()->toRfc4122(),

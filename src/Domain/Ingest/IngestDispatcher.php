@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest;
+namespace Shared\Domain\Ingest;
 
-use App\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand;
-use App\Domain\Ingest\Process\Dossier\IngestDossierCommand;
-use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
-use App\Domain\Ingest\Process\Pdf\IngestPdfCommand;
-use App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand;
-use App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand;
+use Shared\Domain\Ingest\Process\Dossier\IngestDossierCommand;
+use Shared\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
+use Shared\Domain\Ingest\Process\Pdf\IngestPdfCommand;
+use Shared\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand;
+use Shared\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 

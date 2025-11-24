@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload;
+namespace Shared\Domain\Publication\BatchDownload;
 
-use App\Domain\Publication\BatchDownload\Archiver\ArchiveNamer;
-use App\Domain\Publication\BatchDownload\Archiver\ZipStreamFactory;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\S3\StreamFactory;
-use App\Service\DownloadFilenameGenerator;
 use Aws\S3\S3Client;
+use Shared\Domain\Publication\BatchDownload\Archiver\ArchiveNamer;
+use Shared\Domain\Publication\BatchDownload\Archiver\ZipStreamFactory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\S3\StreamFactory;
+use Shared\Service\DownloadFilenameGenerator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Webmozart\Assert\Assert;
 
@@ -55,7 +55,8 @@ readonly class OnDemandZipGenerator
                 }
 
                 $zip->finish();
-            }
+            },
+            headers: ['Cache-Control' => 'no-store'],
         );
     }
 

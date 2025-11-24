@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Admin\Action;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Admin\Action;
 
-use App\Domain\Publication\Dossier\Admin\Action\DeleteDossierAdminAction;
-use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
-use App\Domain\Publication\Dossier\DossierDispatcher;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Admin\Action\DeleteDossierAdminAction;
+use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
+use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-final class DeleteDossierAdminActionTest extends MockeryTestCase
+final class DeleteDossierAdminActionTest extends UnitTestCase
 {
     private DossierDispatcher&MockInterface $dossierDispatcher;
     private DeleteDossierAdminAction $action;

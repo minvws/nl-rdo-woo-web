@@ -97,7 +97,7 @@ Verify Document Upload Remaining
 Upload And Process Documents
   [Arguments]  @{file_locations}
   # This has been wrapped with a retry mechanism, since sometimes the Click Process Documents fails for unclear reasons
-  Wait Until Keyword Succeeds  3x  5s  Inner Keyword Upload And Process Documents  @{file_locations}
+  Wait Until Keyword Succeeds  3x  20s  Inner Keyword Upload And Process Documents  @{file_locations}
 
 Inner Keyword Upload And Process Documents
   [Arguments]  @{file_locations}

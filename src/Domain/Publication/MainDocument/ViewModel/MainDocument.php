@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\MainDocument\ViewModel;
+namespace Shared\Domain\Publication\MainDocument\ViewModel;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\SourceType;
-use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Search\Result\SubType\SubTypeViewModelInterface;
 
 readonly class MainDocument implements SubTypeViewModelInterface
 {

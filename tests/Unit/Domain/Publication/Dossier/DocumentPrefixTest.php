@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DocumentPrefixTest extends MockeryTestCase
+class DocumentPrefixTest extends UnitTestCase
 {
     public function testSetPrefixAppliesUppercase(): void
     {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Content\Page;
+namespace Shared\Domain\Content\Page;
 
-use App\Doctrine\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\TimestampableTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ContentPageRepository::class)]

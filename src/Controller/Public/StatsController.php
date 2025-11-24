@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Public;
+namespace Shared\Controller\Public;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
-use App\Service\Search\SearchService;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Predis\Client;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
+use Shared\Service\Search\SearchService;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

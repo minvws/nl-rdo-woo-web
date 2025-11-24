@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\DossierFactory;
-use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
-use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\DossierFactory;
+use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DossierFactoryTest extends MockeryTestCase
+class DossierFactoryTest extends UnitTestCase
 {
     private AuthorizationMatrix&MockInterface $authorizationMatrix;
     private DossierTypeManager&MockInterface $dossierTypeManager;

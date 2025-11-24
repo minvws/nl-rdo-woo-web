@@ -2,41 +2,38 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Admin\Dossier;
+namespace Shared\Tests\Integration\Admin\Dossier;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Security\User;
-use App\Tests\Factory\DocumentFactory;
-use App\Tests\Factory\FileInfoFactory;
-use App\Tests\Factory\InventoryFactory;
-use App\Tests\Factory\ProductionReportFactory;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
-use App\Tests\Factory\UserFactory;
-use App\Tests\Integration\IntegrationTestTrait;
 use Doctrine\ORM\EntityManager;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Security\User;
+use Shared\Tests\Factory\DocumentFactory;
+use Shared\Tests\Factory\FileInfoFactory;
+use Shared\Tests\Factory\InventoryFactory;
+use Shared\Tests\Factory\ProductionReportFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
+use Shared\Tests\Factory\UserFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Webmozart\Assert\Assert;
 
-final class DossierFileControllerTest extends WebTestCase
+final class DossierFileControllerTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private vfsStreamDirectory $root;
     private KernelBrowser $client;
     private EntityManager $em;

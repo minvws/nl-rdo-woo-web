@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Sitemap;
+namespace Shared\Domain\Sitemap;
 
-use App\Domain\Department\DepartmentRepository;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
+use Shared\Domain\Department\DepartmentRepository;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 

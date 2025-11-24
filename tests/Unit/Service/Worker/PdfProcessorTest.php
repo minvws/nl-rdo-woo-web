@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker;
+namespace Shared\Tests\Unit\Service\Worker;
 
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Worker\Pdf\Extractor\EntityMetaDataExtractor;
-use App\Service\Worker\PdfProcessor;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Worker\Pdf\Extractor\EntityMetaDataExtractor;
+use Shared\Service\Worker\PdfProcessor;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class PdfProcessorTest extends UnitTestCase
 {

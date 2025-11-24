@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\DataCollector;
+namespace Shared\DataCollector;
 
-use App\Service\Elastic\ElasticClientInterface;
 use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\ClientInterface;
 use Elastic\Elasticsearch\Endpoints\Cat;
@@ -14,6 +13,7 @@ use Elastic\Transport\Transport;
 use Http\Promise\Promise;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Service\Elastic\ElasticClientInterface;
 
 /**
  * @SuppressWarnings("PHPMD.TooManyPublicMethods")
@@ -97,6 +97,32 @@ class CollectorClient implements ClientInterface, ElasticClientInterface
         return $this->elastic->indices();
     }
 
+    /**
+     * @param array{
+     *     index?: string|array<string>,
+     *     ignore_unavailable?: bool,
+     *     ignore_throttled?: bool,
+     *     allow_no_indices?: bool,
+     *     expand_wildcards?: string,
+     *     min_score?: float,
+     *     preference?: string,
+     *     project_routing?: string,
+     *     routing?: string|array<string>,
+     *     q?: string,
+     *     analyzer?: string,
+     *     analyze_wildcard?: bool,
+     *     default_operator?: string,
+     *     df?: string,
+     *     lenient?: bool,
+     *     terminate_after?: int,
+     *     pretty?: bool,
+     *     human?: bool,
+     *     error_trace?: bool,
+     *     source?: string,
+     *     filter_path?: string|array<string>,
+     *     body?: string|array<mixed>,
+     * } $params
+     */
     public function count(array $params = []): Elasticsearch|Promise
     {
         /** @var Elasticsearch|Promise $response */

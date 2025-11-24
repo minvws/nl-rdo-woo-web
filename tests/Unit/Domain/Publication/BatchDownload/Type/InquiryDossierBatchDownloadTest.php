@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload\Type;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\Type;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\Type\InquiryDossierBatchDownload;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\QueryBuilder;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\Type\InquiryDossierBatchDownload;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 
-class InquiryDossierBatchDownloadTest extends MockeryTestCase
+class InquiryDossierBatchDownloadTest extends UnitTestCase
 {
     private InquiryRepository&MockInterface $repository;
     private InquiryDossierBatchDownload $type;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\PdfPage;
+namespace Shared\Domain\Ingest\Process\PdfPage;
 
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 class PdfPageException extends \RuntimeException
 {

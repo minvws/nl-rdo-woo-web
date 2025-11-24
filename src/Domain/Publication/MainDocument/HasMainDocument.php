@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\MainDocument;
+namespace Shared\Domain\Publication\MainDocument;
 
-use App\Domain\Publication\MainDocument\AbstractMainDocument as TDocument;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument as TDocument;
 
 /**
  * @template TDocument of AbstractMainDocument

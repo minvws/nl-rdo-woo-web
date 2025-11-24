@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier;
+namespace Shared\Domain\Publication\Dossier;
 
-use App\Domain\Organisation\Organisation;
-use App\Repository\PaginationQueryBuilder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Repository\PaginationQueryBuilder;
 use Symfony\Component\Uid\Uuid;
 
 /**

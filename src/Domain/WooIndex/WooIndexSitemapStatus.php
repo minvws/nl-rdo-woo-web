@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex;
+namespace Shared\Domain\WooIndex;
 
 enum WooIndexSitemapStatus: string
 {

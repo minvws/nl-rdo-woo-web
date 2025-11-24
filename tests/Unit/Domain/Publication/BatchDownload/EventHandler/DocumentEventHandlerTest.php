@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload\EventHandler;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\EventHandler;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\BatchDownload\EventHandler\DocumentEventHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\BatchDownload\EventHandler\DocumentEventHandler;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DocumentEventHandlerTest extends MockeryTestCase
+class DocumentEventHandlerTest extends UnitTestCase
 {
     private BatchDownloadService&MockInterface $batchDownloadService;
     private DocumentEventHandler $handler;

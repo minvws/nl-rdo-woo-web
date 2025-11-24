@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Runtime;
+namespace Shared\Twig\Runtime;
 
-use App\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class AuthExtensionRuntime implements RuntimeExtensionInterface

@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Condition;
+namespace Shared\Service\Search\Query\Condition;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Index\Schema\ElasticNestedField;
-use App\Domain\Search\Index\Schema\ElasticPath;
-use App\Domain\Search\Query\Facet\FacetList;
-use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
-use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Query\SearchType;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Dsl\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Index\Schema\ElasticNestedField;
+use Shared\Domain\Search\Index\Schema\ElasticPath;
+use Shared\Domain\Search\Query\Facet\FacetList;
+use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Query\SearchType;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Query\Dsl\Query;
 
 class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
 {

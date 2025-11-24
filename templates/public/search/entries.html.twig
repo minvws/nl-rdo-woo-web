@@ -23,7 +23,7 @@
         {% endif %}
 
         {# Suggestions #}
-        {% set suggestionsId = constant('App\\Domain\\Search\\Index\\ElasticConfig::SUGGESTIONS_SEARCH_INPUT') %}
+        {% set suggestionsId = constant('Shared\\Domain\\Search\\Index\\ElasticConfig::SUGGESTIONS_SEARCH_INPUT') %}
         {% if result.suggestion(suggestionsId) is not null and result.suggestion(suggestionsId).entries|length %}
         <p class="italic pt-1">
             {% if result.suggestion(suggestionsId).entries | length == 1 %}
@@ -85,19 +85,19 @@
 {% if result.searchParameters.hasActiveFacets %}
     {# Facet pills #}
     <ul class="flex flex-wrap pb-1 gap-x-2">
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::PREFIXED_DOSSIER_NR'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::INQUIRY_DOCUMENTS'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::INQUIRY_DOSSIERS'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::TYPE'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::DATE'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::SOURCE'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::FAMILY'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::THREAD'), result) }}
-        {{ macro.facet_pills(constant('App\\Service\\Search\\Model\\FacetKey::REFERRED_DOCUMENT_NR'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::PREFIXED_DOSSIER_NR'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::INQUIRY_DOCUMENTS'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::INQUIRY_DOSSIERS'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::TYPE'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::DATE'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::SUBJECT'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::SOURCE'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::FAMILY'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::THREAD'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::REFERRED_DOCUMENT_NR'), result) }}
     </ul>
 {% endif %}
 

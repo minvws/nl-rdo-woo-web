@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Encryption;
+namespace Shared\Tests\Unit\Service\Encryption;
 
-use App\Service\Encryption\EncryptionService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use ParagonIE\Halite\KeyFactory;
 use Psr\Log\LoggerInterface;
+use Shared\Service\Encryption\EncryptionService;
+use Shared\Tests\Unit\UnitTestCase;
 
-class EncryptionServiceTest extends MockeryTestCase
+class EncryptionServiceTest extends UnitTestCase
 {
     private string $encryptionKey;
     private LoggerInterface&MockInterface $logger;
@@ -56,7 +56,7 @@ class EncryptionServiceTest extends MockeryTestCase
         $encryptedData = $encryptionService->encrypt($inputData);
         $decryptedData = $encryptionService->decrypt($encryptedData);
 
-        self::assertEquals($decryptedData, $inputData);
-        self::assertNotEquals($encryptedData, $inputData);
+        self::assertEquals($inputData, $decryptedData);
+        self::assertNotEquals($inputData, $encryptedData);
     }
 }

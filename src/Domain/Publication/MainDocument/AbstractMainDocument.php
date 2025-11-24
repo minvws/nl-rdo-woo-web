@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\MainDocument;
+namespace Shared\Domain\Publication\MainDocument;
 
-use App\Domain\Publication\AttachmentAndMainDocumentEntityTrait;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\Advice\AdviceMainDocument;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
-use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
-use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Uploader\UploadGroupId;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\Publication\AttachmentAndMainDocumentEntityTrait;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\Advice\AdviceMainDocument;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
+use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Uploader\UploadGroupId;
 use Webmozart\Assert\Assert;
 
 /**

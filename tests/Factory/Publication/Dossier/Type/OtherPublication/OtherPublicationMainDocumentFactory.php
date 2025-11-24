@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory\Publication\Dossier\Type\OtherPublication;
+namespace Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
-use App\Tests\Factory\FileInfoFactory;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
+use Shared\Tests\Factory\FileInfoFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

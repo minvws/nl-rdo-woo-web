@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Elastic;
+namespace Shared\Service\Elastic;
 
 use Elastic\Elasticsearch\ClientBuilder;
 use Elastic\Elasticsearch\ClientInterface;
@@ -28,16 +28,16 @@ class ElasticClientFactory
         ]));
         $builder->setHosts(explode(',', $host));
 
-        if (! empty($username)) {
+        if ($username !== null && $username !== '') {
             $builder->setBasicAuthentication($username, $password ?? '');
         }
 
-        if (! empty($mtlsCertPath) && ! empty($mtlsKeyPath)) {
+        if ($mtlsCertPath !== null && $mtlsCertPath !== '' && $mtlsKeyPath !== null && $mtlsKeyPath !== '') {
             $builder->setSSLCert($mtlsCertPath);
             $builder->setSSLKey($mtlsKeyPath);
         }
 
-        if (! empty($mtlsCAPath)) {
+        if ($mtlsCAPath !== null && $mtlsCAPath !== '') {
             $builder->setCABundle($mtlsCAPath);
         }
 

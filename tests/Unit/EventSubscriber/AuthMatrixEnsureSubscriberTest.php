@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\EventSubscriber;
+namespace Shared\Tests\Unit\EventSubscriber;
 
-use App\EventSubscriber\AuthMatrixEnsureSubscriber;
-use App\Service\Security\Authorization\AuthorizationEntryRequestStore;
-use App\Service\Security\Authorization\Entry;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\EventSubscriber\AuthMatrixEnsureSubscriber;
+use Shared\Service\Security\Authorization\AuthorizationEntryRequestStore;
+use Shared\Service\Security\Authorization\Entry;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
-class AuthMatrixEnsureSubscriberTest extends MockeryTestCase
+class AuthMatrixEnsureSubscriberTest extends UnitTestCase
 {
     private AuthorizationEntryRequestStore&MockInterface $store;
     private AuthMatrixEnsureSubscriber $subscriber;

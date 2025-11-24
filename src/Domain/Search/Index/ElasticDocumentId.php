@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index;
+namespace Shared\Domain\Search\Index;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 readonly class ElasticDocumentId
 {

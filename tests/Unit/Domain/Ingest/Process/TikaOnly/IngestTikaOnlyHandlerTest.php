@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Process\TikaOnly;
+namespace Shared\Tests\Unit\Domain\Ingest\Process\TikaOnly;
 
-use App\Domain\Ingest\Content\ContentExtractCache;
-use App\Domain\Ingest\Content\ContentExtractOptions;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand;
-use App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Content\ContentExtractCache;
+use Shared\Domain\Ingest\Content\ContentExtractOptions;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand;
+use Shared\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyHandler;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class IngestTikaOnlyHandlerTest extends UnitTestCase

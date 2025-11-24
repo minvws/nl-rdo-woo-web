@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Transformer;
+namespace Shared\Form\Transformer;
 
-use App\Domain\Publication\Dossier\DocumentPrefix;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Symfony\Component\Form\DataTransformerInterface;
 
 /**

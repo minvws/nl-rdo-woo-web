@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\DataFixtures;
+namespace Shared\DataFixtures;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Subject\Subject;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Subject\Subject;
 
 class E2ESubjectFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {

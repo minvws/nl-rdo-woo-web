@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace Shared\Command;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

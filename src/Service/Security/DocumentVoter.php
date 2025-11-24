@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Security;
+namespace Shared\Service\Security;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class DocumentVoter extends WooDecisionVoter

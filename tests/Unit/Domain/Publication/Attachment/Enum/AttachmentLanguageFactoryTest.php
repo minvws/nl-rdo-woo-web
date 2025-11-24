@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment\Enum;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment\Enum;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
-use App\Tests\Unit\UnitTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Group('attachment')]

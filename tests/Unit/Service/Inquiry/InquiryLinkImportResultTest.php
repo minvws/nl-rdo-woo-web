@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inquiry;
+namespace Shared\Tests\Unit\Service\Inquiry;
 
-use App\Exception\InquiryLinkImportException;
-use App\Service\Inquiry\InquiryChangeset;
-use App\Service\Inquiry\InquiryLinkImportResult;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Exception\InquiryLinkImportException;
+use Shared\Service\Inquiry\InquiryChangeset;
+use Shared\Service\Inquiry\InquiryLinkImportResult;
+use Shared\Tests\Unit\UnitTestCase;
 
-class InquiryLinkImportResultTest extends MockeryTestCase
+class InquiryLinkImportResultTest extends UnitTestCase
 {
     private MockInterface&InquiryChangeset $changeset;
     private InquiryLinkImportResult $result;

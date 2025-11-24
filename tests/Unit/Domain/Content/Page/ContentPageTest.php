@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Content\Page;
+namespace Shared\Tests\Unit\Domain\Content\Page;
 
-use App\Domain\Content\Page\ContentPage;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Content\Page\ContentPage;
+use Shared\Tests\Unit\UnitTestCase;
 
 class ContentPageTest extends UnitTestCase
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\MainDocument\Command;
+namespace Shared\Domain\Publication\MainDocument\Command;
 
 use Symfony\Component\Uid\Uuid;
 

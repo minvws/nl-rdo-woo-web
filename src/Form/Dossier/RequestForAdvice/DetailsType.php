@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier\RequestForAdvice;
+namespace Shared\Form\Dossier\RequestForAdvice;
 
-use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
-use App\Form\Dossier\AbstractDossierStepType;
-use App\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
+use Shared\Form\Dossier\AbstractDossierStepType;
+use Shared\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class DetailsType extends AbstractDossierStepType
@@ -28,7 +28,8 @@ class DetailsType extends AbstractDossierStepType
         $this->addInternalReferenceField($builder);
         $this->addDepartmentsField($builder);
         $this->addSubjectField($builder, 'admin.dossiers.request-for-advice.form.details.subject_help');
-        $this->addNewDossierFields($builder);
+        $this->addDossierNrField($builder);
+        $this->addDocumentPrefixField($builder);
         $this->addSubmits($builder);
     }
 }

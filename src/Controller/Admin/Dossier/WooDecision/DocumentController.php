@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier\WooDecision;
+namespace Shared\Controller\Admin\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\DocumentWorkflow\DocumentWorkflowStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\DocumentWorkflow\DocumentWorkflowStatus;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

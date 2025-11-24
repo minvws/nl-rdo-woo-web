@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Stats;
+namespace Shared\Tests\Unit\Service\Stats;
 
-use App\Service\Stats\Handler\StatsHandlerInterface;
-use App\Service\Stats\WorkerStatsService;
-use App\Tests\Unit\UnitTestCase;
 use Carbon\CarbonImmutable;
 use Mockery\MockInterface;
+use Shared\Service\Stats\Handler\StatsHandlerInterface;
+use Shared\Service\Stats\WorkerStatsService;
+use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 
 final class WorkerStatsServiceTest extends UnitTestCase

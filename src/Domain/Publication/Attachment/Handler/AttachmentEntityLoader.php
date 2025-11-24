@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\Handler;
+namespace Shared\Domain\Publication\Attachment\Handler;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
-use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Doctrine\ORM\NoResultException;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use Shared\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

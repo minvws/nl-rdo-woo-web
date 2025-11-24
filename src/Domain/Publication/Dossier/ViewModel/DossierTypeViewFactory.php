@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

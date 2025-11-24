@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\FileStorage\Checker\PathSetFactory;
+namespace Shared\Domain\FileStorage\Checker\PathSetFactory;
 
-use App\Domain\FileStorage\Checker\PathSet;
+use Shared\Domain\FileStorage\Checker\PathSet;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('domain.filestorage.pathsetsfactory')]

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\Exception;
+namespace Shared\Domain\Publication\Attachment\Exception;
 
 final class AttachmentTypeBranchException extends \RuntimeException implements AttachmentExceptionInterface
 {

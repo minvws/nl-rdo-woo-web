@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory\WooIndex;
+namespace Shared\Tests\Factory\WooIndex;
 
-use App\Domain\WooIndex\WooIndexSitemap;
-use App\Domain\WooIndex\WooIndexSitemapStatus;
+use Shared\Domain\WooIndex\WooIndexSitemap;
+use Shared\Domain\WooIndex\WooIndexSitemapStatus;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

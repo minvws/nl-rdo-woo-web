@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Rollover;
+namespace Shared\Tests\Unit\Domain\Search\Index\Rollover;
 
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
-use App\Domain\Search\Index\Rollover\MappingService;
-use App\Service\Elastic\ElasticClientInterface;
-use App\Tests\Unit\UnitTestCase;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Mockery\MockInterface;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
+use Shared\Domain\Search\Index\Rollover\MappingService;
+use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Tests\Unit\UnitTestCase;
 
 class ElasticIndexManagerTest extends UnitTestCase
 {

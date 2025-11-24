@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Producer;
+namespace Shared\Domain\WooIndex\Producer;
 
-use App\Domain\WooIndex\Producer\Mapper\UrlMapper;
-use App\Domain\WooIndex\Producer\Repository\RawUrlDto;
-use App\Domain\WooIndex\Producer\Repository\UrlRepository;
+use Shared\Domain\WooIndex\Producer\Mapper\UrlMapper;
+use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
+use Shared\Domain\WooIndex\Producer\Repository\UrlRepository;
 
 final readonly class UrlProducer
 {

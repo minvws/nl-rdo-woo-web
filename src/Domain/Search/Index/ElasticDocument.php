@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index;
+namespace Shared\Domain\Search\Index;
 
-use App\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Index\Schema\ElasticField;
 
 readonly class ElasticDocument
 {

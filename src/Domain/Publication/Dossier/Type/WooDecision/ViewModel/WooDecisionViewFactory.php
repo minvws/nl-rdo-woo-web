@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision as WooDecisionEntity;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
-use App\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
-use App\Service\Search\Model\FacetKey;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision as WooDecisionEntity;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
+use Shared\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Service\Search\Model\FacetKey;
 use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
 

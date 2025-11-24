@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content;
+namespace Shared\Domain\Ingest\Content;
 
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Webmozart\Assert\Assert;
 
 class ContentExtractCacheKeyGenerator

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Worker\Pdf\Tools\Pdftoppm;
+namespace Shared\Service\Worker\Pdf\Tools\Pdftoppm;
 
 final readonly class PdftoppmThumbnailResult
 {

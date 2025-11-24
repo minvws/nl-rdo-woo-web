@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Search\Query\Sort;
+namespace Shared\Tests\Unit\Service\Search\Query\Sort;
 
-use App\Service\Search\Query\Sort\SortField;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Service\Search\Query\Sort\SortField;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SortFieldTest extends UnitTestCase

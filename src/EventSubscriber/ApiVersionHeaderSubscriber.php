@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscriber;
+namespace Shared\EventSubscriber;
 
 use ApiPlatform\Symfony\EventListener\EventPriorities;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;

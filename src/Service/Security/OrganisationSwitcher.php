@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Security;
+namespace Shared\Service\Security;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Organisation\OrganisationRepository;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Organisation\OrganisationRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Uid\Uuid;

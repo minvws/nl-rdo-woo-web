@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Workflow\Guard;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Workflow\Guard;
 
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\Guard\PublishGuard;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\Guard\PublishGuard;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\Marking;
 use Symfony\Component\Workflow\Transition;
 
-class PublishGuardTest extends MockeryTestCase
+class PublishGuardTest extends UnitTestCase
 {
     private PublishGuard $guard;
 

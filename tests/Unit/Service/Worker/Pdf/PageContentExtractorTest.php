@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker\Pdf;
+namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
-use App\Domain\Ingest\Content\ContentExtractCache;
-use App\Domain\Ingest\Content\ContentExtractCollection;
-use App\Domain\Ingest\Content\ContentExtractOptions;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use App\Service\Stats\WorkerStatsService;
-use App\Service\Worker\Pdf\Extractor\PageContentExtractor;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Content\ContentExtractCache;
+use Shared\Domain\Ingest\Content\ContentExtractCollection;
+use Shared\Domain\Ingest\Content\ContentExtractOptions;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
+use Shared\Service\Stats\WorkerStatsService;
+use Shared\Service\Worker\Pdf\Extractor\PageContentExtractor;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class PageContentExtractorTest extends UnitTestCase

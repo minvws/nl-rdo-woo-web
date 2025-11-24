@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Rollover;
+namespace Shared\Domain\Search\Index\Rollover;
 
 readonly class MappingService
 {
@@ -30,7 +30,7 @@ readonly class MappingService
     public function getLatestMappingVersion(): int
     {
         $versions = $this->getMappingVersions();
-        if (empty($versions)) {
+        if ($versions === []) {
             return -1;
         }
 

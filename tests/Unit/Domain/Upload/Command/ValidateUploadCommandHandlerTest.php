@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Command;
+namespace Shared\Tests\Unit\Domain\Upload\Command;
 
-use App\Domain\Upload\AntiVirus\ClamAvFileScanner;
-use App\Domain\Upload\AntiVirus\FileScanResult;
-use App\Domain\Upload\Command\ValidateUploadCommand;
-use App\Domain\Upload\Command\ValidateUploadCommandHandler;
-use App\Domain\Upload\Exception\UploadException;
-use App\Domain\Upload\Exception\UploadValidationException;
-use App\Domain\Upload\FileType\FileType;
-use App\Domain\Upload\FileType\MimeTypeHelper;
-use App\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\UploadEntityRepository;
-use App\Domain\Upload\UploadService;
-use App\Domain\Upload\UploadStatus;
-use App\Service\Uploader\UploadGroupId;
 use League\Flysystem\FilesystemOperator;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
+use Shared\Domain\Upload\AntiVirus\FileScanResult;
+use Shared\Domain\Upload\Command\ValidateUploadCommand;
+use Shared\Domain\Upload\Command\ValidateUploadCommandHandler;
+use Shared\Domain\Upload\Exception\UploadException;
+use Shared\Domain\Upload\Exception\UploadValidationException;
+use Shared\Domain\Upload\FileType\FileType;
+use Shared\Domain\Upload\FileType\MimeTypeHelper;
+use Shared\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadEntityRepository;
+use Shared\Domain\Upload\UploadService;
+use Shared\Domain\Upload\UploadStatus;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class ValidateUploadCommandHandlerTest extends MockeryTestCase
+class ValidateUploadCommandHandlerTest extends UnitTestCase
 {
     private UploadEntityRepository&MockInterface $uploadEntityRepository;
     private UploadService&MockInterface $uploadService;

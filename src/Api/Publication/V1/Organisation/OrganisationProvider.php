@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Publication\V1\Organisation;
+namespace Shared\Api\Publication\V1\Organisation;
 
 use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\Pagination\ArrayPaginator;
 use ApiPlatform\State\ProviderInterface;
-use App\Domain\Organisation\OrganisationRepository;
-use App\Service\ApiPlatformService;
+use Shared\Domain\Organisation\OrganisationRepository;
+use Shared\Service\ApiPlatformService;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

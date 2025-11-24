@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content\Extractor\Tesseract;
+namespace Shared\Domain\Ingest\Content\Extractor\Tesseract;
 
-use App\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Ingest\Content\FileReferenceInterface;
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Ingest\Content\FileReferenceInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 readonly class TesseractExtractor implements ContentExtractorInterface
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Publication\V1\Department;
+namespace Shared\Api\Publication\V1\Department;
 
-use App\Domain\Department\Department;
+use Shared\Domain\Department\Department;
 
 class DepartmentMapper
 {
@@ -15,7 +15,7 @@ class DepartmentMapper
      */
     public static function fromEntities(array $departments): array
     {
-        return array_map(fn (Department $department): DepartmentDto => self::fromEntity($department), $departments);
+        return array_map(self::fromEntity(...), $departments);
     }
 
     public static function fromEntity(Department $department): DepartmentDto

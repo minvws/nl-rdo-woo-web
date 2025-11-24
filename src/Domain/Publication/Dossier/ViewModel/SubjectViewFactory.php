@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Subject\Subject as SubjectEntity;
-use App\Service\Search\Model\FacetKey;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Subject\Subject as SubjectEntity;
+use Shared\Service\Search\Model\FacetKey;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 readonly class SubjectViewFactory

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result;
+namespace Shared\Domain\Search\Result;
 
-use App\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\ElasticDocumentType;
 
 interface ResultEntryInterface
 {

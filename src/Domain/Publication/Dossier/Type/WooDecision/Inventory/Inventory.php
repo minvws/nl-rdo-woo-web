@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\Inventory;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]

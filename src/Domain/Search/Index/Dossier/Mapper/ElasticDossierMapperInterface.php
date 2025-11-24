@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Dossier\Mapper;
+namespace Shared\Domain\Search\Index\Dossier\Mapper;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Search\Index\ElasticDocument;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Search\Index\ElasticDocument;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('woo_platform.search.index.dossier_mapper')]

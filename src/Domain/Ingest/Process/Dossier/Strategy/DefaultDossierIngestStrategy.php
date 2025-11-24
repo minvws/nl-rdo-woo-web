@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\Dossier\Strategy;
+namespace Shared\Domain\Ingest\Process\Dossier\Strategy;
 
-use App\Domain\Ingest\Process\Dossier\DossierIngestStrategyInterface;
-use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Domain\Search\SearchDispatcher;
+use Shared\Domain\Ingest\Process\Dossier\DossierIngestStrategyInterface;
+use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
+use Shared\Domain\Search\SearchDispatcher;
 
 readonly class DefaultDossierIngestStrategy implements DossierIngestStrategyInterface
 {

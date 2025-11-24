@@ -2,19 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier;
 
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Domain\Publication\Dossier\DocumentPrefixRepository;
-use App\Tests\Factory\OrganisationFactory;
-use App\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Domain\Publication\Dossier\DocumentPrefixRepository;
+use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-class DocumentPrefixRepositoryTest extends KernelTestCase
+class DocumentPrefixRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private DocumentPrefixRepository $documentPrefixRepository;
 
     protected function setUp(): void

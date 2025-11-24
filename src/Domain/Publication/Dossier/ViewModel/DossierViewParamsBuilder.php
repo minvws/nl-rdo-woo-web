@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
-use App\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Service\DossierWizard\DossierWizardStatus;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
+use Shared\Service\DossierWizard\DossierWizardStatus;
 use Symfony\Component\Form\FormInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 

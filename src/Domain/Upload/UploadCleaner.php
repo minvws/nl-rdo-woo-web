@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload;
+namespace Shared\Domain\Upload;
 
 use Carbon\CarbonImmutable;
 use League\Flysystem\FilesystemOperator;

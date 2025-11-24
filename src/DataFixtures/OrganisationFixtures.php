@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\DataFixtures;
+namespace Shared\DataFixtures;
 
-use App\Domain\Department\Department;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\DocumentPrefix;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
 
 /**
  * This is a set of fixtures for the Organisation entity. It is not meant to be used in production.

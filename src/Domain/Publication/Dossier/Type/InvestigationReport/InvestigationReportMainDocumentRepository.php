@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\InvestigationReport;
+namespace Shared\Domain\Publication\Dossier\Type\InvestigationReport;
 
-use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
-use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
+use Shared\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 
 /**
  * @extends AbstractMainDocumentRepository<InvestigationReportMainDocument>

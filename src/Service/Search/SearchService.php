@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search;
+namespace Shared\Service\Search;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Query\SearchParametersFactory;
-use App\Service\Elastic\ElasticClientInterface;
-use App\Service\Search\Object\ObjectHandler;
-use App\Service\Search\Query\Definition\QueryDefinitionInterface;
-use App\Service\Search\Result\Result;
-use App\Service\Search\Result\ResultTransformer;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Query\SearchParametersFactory;
+use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Service\Search\Object\ObjectHandler;
+use Shared\Service\Search\Query\Definition\QueryDefinitionInterface;
+use Shared\Service\Search\Result\Result;
+use Shared\Service\Search\Result\ResultTransformer;
 
 readonly class SearchService
 {

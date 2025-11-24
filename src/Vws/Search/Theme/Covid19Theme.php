@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Vws\Search\Theme;
+namespace Shared\Vws\Search\Theme;
 
-use App\Domain\Search\Theme\ThemeInterface;
-use App\Service\Search\Query\Condition\QueryConditionBuilderInterface;
+use Shared\Domain\Search\Theme\ThemeInterface;
+use Shared\Service\Search\Query\Condition\QueryConditionBuilderInterface;
 
 readonly class Covid19Theme implements ThemeInterface
 {

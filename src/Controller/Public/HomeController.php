@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Public;
+namespace Shared\Controller\Public;
 
-use App\Domain\Content\Page\ContentPageService;
-use App\Domain\Content\Page\ContentPageType;
-use App\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
-use App\Service\Search\SearchService;
+use Shared\Domain\Content\Page\ContentPageService;
+use Shared\Domain\Content\Page\ContentPageType;
+use Shared\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
+use Shared\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Form\User;
+namespace Shared\Form\User;
 
-use App\Service\Security\Roles;
-use App\Service\Security\User;
+use Shared\Service\Security\Roles;
+use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;

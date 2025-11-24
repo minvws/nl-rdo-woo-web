@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Vws\AuditLog;
+namespace Shared\Vws\AuditLog;
 
-use App\Service\Security\User;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\UserLoginLogEvent;
 use MinVWS\AuditLogger\Events\Logging\UserLogoutLogEvent;
+use Shared\Service\Security\User;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;

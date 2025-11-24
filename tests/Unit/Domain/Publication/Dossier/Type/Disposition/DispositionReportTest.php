@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\Disposition;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Disposition;
 
-use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
-use App\Domain\Publication\Dossier\Type\DossierType;
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
 
 final class DispositionReportTest extends TestCase
 {

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Preprocessor;
+namespace Shared\Tests\Unit\Domain\Upload\Preprocessor;
 
-use App\Domain\Upload\Preprocessor\FilePreprocessor;
-use App\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface;
-use App\Domain\Upload\UploadedFile;
-use App\Tests\Unit\Domain\Upload\IterableToGenerator;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Upload\Preprocessor\FilePreprocessor;
+use Shared\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface;
+use Shared\Domain\Upload\UploadedFile;
+use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class FilePreprocessorTest extends UnitTestCase
 {

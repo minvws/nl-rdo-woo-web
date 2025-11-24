@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\FileStorage\Checker;
+namespace Shared\Domain\FileStorage\Checker;
 
-use App\Domain\FileStorage\Checker\PathSetFactory\PathSetsFactoryInterface;
+use Shared\Domain\FileStorage\Checker\PathSetFactory\PathSetsFactoryInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class FileStorageChecker

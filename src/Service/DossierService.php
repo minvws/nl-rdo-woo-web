@@ -2,15 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace Shared\Service;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\SearchDispatcher;
-use App\Service\DossierWizard\WizardStatusFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Search\SearchDispatcher;
+use Shared\Service\DossierWizard\WizardStatusFactory;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 readonly class DossierService
 {
@@ -18,6 +21,7 @@ readonly class DossierService
         private EntityManagerInterface $doctrine,
         private WizardStatusFactory $statusFactory,
         private SearchDispatcher $searchDispatcher,
+        private ValidatorInterface $validator,
     ) {
     }
 
@@ -54,5 +58,22 @@ readonly class DossierService
         $this->validateCompletion($dossier);
 
         $this->searchDispatcher->dispatchIndexDossierCommand($dossier->getId());
+    }
+
+    /**
+     * @throws ValidationFailedException
+     */
+    public function validate(AbstractDossier $dossier): void
+    {
+        $errors = $this->validator->validate($dossier, groups: \array_column(DossierValidationGroup::cases(), 'value'));
+
+        if ($errors->count() > 0) {
+            throw new ValidationFailedException($dossier, $errors);
+        }
+    }
+
+    public function isApiUpdateAllowed(AbstractDossier $dossier): bool
+    {
+        return $dossier->getStatus()->isNewOrConcept();
     }
 }

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Exception;
+namespace Shared\Tests\Unit\Exception;
 
-use App\Exception\InquiryLinkImportException;
 use PHPUnit\Framework\TestCase;
+use Shared\Exception\InquiryLinkImportException;
 
 final class InquiryLinkImportExceptionTest extends TestCase
 {

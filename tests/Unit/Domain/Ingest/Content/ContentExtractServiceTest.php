@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Content;
+namespace Shared\Tests\Unit\Domain\Ingest\Content;
 
-use App\Domain\Ingest\Content\ContentExtractOptions;
-use App\Domain\Ingest\Content\ContentExtractService;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Ingest\Content\FileReferenceInterface;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
-use App\Service\Storage\EntityStorageService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Shared\Domain\Ingest\Content\ContentExtractOptions;
+use Shared\Domain\Ingest\Content\ContentExtractService;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Ingest\Content\FileReferenceInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class ContentExtractServiceTest extends UnitTestCase

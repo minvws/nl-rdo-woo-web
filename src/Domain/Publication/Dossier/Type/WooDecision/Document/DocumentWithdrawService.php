@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\Document;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Exception\DocumentWorkflowException;
-use App\Service\DocumentWorkflow\DocumentWorkflowStatus;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Exception\DocumentWorkflowException;
+use Shared\Service\DocumentWorkflow\DocumentWorkflowStatus;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
 
 readonly class DocumentWithdrawService
 {

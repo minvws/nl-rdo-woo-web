@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory;
+namespace Shared\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\SourceType;
-use App\Service\Inquiry\CaseNumbers;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\SourceType;
+use Shared\Service\Inquiry\CaseNumbers;
 
 /**
  * @SuppressWarnings("PHPMD.ExcessiveParameterList")
@@ -42,7 +42,7 @@ readonly class DocumentMetadata
 
     public function getFilename(string $documentNr): string
     {
-        if (empty($this->filename)) {
+        if ($this->filename === '') {
             // Assume that when we have no filename, we can use the documentNr as filename and its extension is PDF.
             return $documentNr . '.pdf';
         }

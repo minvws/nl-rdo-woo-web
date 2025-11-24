@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Command\User;
+namespace Shared\Command\User;
 
-use App\Service\Security\UserRepository;
-use App\Service\UserService;
+use Shared\Service\Security\UserRepository;
+use Shared\Service\UserService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

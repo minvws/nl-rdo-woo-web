@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\MetadataOnly;
+namespace Shared\Domain\Ingest\Process\MetadataOnly;
 
-use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Doctrine\LegacyNamespaceHelper;
+use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -21,7 +22,8 @@ final readonly class IngestMetadataOnlyHandler
 
     public function __invoke(IngestMetadataOnlyCommand $message): void
     {
-        $entity = $this->doctrine->getRepository($message->getEntityClass())->find($message->getEntityId());
+        $entityClass = LegacyNamespaceHelper::normalizeClassName($message->getEntityClass());
+        $entity = $this->doctrine->getRepository($entityClass)->find($message->getEntityId());
         if (is_null($entity)) {
             $this->logger->warning('No entity found in IngestMetadataOnlyHandler', [
                 'id' => $message->getEntityId()->toRfc4122(),

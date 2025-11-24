@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Preprocessor\Strategy;
+namespace Shared\Tests\Unit\Domain\Upload\Preprocessor\Strategy;
 
-use App\Domain\Upload\AntiVirus\ClamAvFileScanner;
-use App\Domain\Upload\AntiVirus\FileScanResult;
-use App\Domain\Upload\Extractor\Extractor;
-use App\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
-use App\Domain\Upload\UploadedFile;
-use App\Service\Storage\LocalFilesystem;
-use App\Tests\Unit\Domain\Upload\IterableToGenerator;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
+use Shared\Domain\Upload\AntiVirus\FileScanResult;
+use Shared\Domain\Upload\Extractor\Extractor;
+use Shared\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
+use Shared\Domain\Upload\UploadedFile;
+use Shared\Service\Storage\LocalFilesystem;
+use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Mime\MimeTypesInterface;
 
 final class SevenZipFileStrategyTest extends UnitTestCase

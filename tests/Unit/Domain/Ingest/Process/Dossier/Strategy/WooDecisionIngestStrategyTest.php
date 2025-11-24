@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Process\Dossier\Strategy;
+namespace Shared\Tests\Unit\Domain\Ingest\Process\Dossier\Strategy;
 
-use App\Domain\Ingest\Process\Dossier\Strategy\DefaultDossierIngestStrategy;
-use App\Domain\Ingest\Process\Dossier\Strategy\WooDecisionIngestStrategy;
-use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\Process\Dossier\Strategy\DefaultDossierIngestStrategy;
+use Shared\Domain\Ingest\Process\Dossier\Strategy\WooDecisionIngestStrategy;
+use Shared\Domain\Ingest\Process\IngestProcessOptions;
+use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class WooDecisionIngestStrategyTest extends MockeryTestCase
+class WooDecisionIngestStrategyTest extends UnitTestCase
 {
     private WooDecisionIngestStrategy $ingester;
     private SubTypeIngester&MockInterface $ingestService;

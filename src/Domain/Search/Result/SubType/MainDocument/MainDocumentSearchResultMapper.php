@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result\SubType\MainDocument;
+namespace Shared\Domain\Search\Result\SubType\MainDocument;
 
-use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\MainDocumentRepository;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticHighlights;
-use App\Domain\Search\Result\HighlightMapperTrait;
-use App\Domain\Search\Result\ResultEntryInterface;
-use App\Domain\Search\Result\SearchResultMapperInterface;
-use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
+use Shared\Domain\Publication\Dossier\Type\DossierReference;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\MainDocumentRepository;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticHighlights;
+use Shared\Domain\Search\Result\HighlightMapperTrait;
+use Shared\Domain\Search\Result\ResultEntryInterface;
+use Shared\Domain\Search\Result\SearchResultMapperInterface;
+use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 readonly class MainDocumentSearchResultMapper implements SearchResultMapperInterface
 {

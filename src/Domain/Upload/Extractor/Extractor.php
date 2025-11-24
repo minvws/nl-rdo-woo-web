@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Extractor;
+namespace Shared\Domain\Upload\Extractor;
 
-use App\Domain\ArchiveExtractor\ArchiveInterface;
-use App\Domain\ArchiveExtractor\Exception\ArchiveExceptionInterface;
-use App\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
-use App\Service\Storage\LocalFilesystem;
+use Shared\Domain\ArchiveExtractor\ArchiveInterface;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveExceptionInterface;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
+use Shared\Service\Storage\LocalFilesystem;
 
 readonly class Extractor
 {

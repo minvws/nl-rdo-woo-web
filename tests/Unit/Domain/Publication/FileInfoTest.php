@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication;
+namespace Shared\Tests\Unit\Domain\Publication;
 
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\SourceType;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\SourceType;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class FileInfoTest extends UnitTestCase
 {

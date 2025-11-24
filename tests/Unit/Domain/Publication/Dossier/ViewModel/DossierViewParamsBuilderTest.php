@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
-use App\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
-use App\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
-use App\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Service\DossierWizard\DossierWizardStatus;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
+use Shared\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Service\DossierWizard\DossierWizardStatus;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Form\FormInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
-final class DossierViewParamsBuilderTest extends MockeryTestCase
+final class DossierViewParamsBuilderTest extends UnitTestCase
 {
     private DossierViewParamsBuilder $builder;
     private Covenant&MockInterface $dossier;

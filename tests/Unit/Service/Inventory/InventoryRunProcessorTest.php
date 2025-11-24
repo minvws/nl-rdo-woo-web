@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inventory;
+namespace Shared\Tests\Unit\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\DossierService;
-use App\Service\Inventory\InventoryChangeset;
-use App\Service\Inventory\InventoryComparator;
-use App\Service\Inventory\InventoryRunProcessor;
-use App\Service\Inventory\InventoryService;
-use App\Service\Inventory\InventoryUpdater;
-use App\Service\Inventory\Progress\ProgressUpdater;
-use App\Service\Inventory\Progress\RunProgress;
-use App\Service\Inventory\Reader\InventoryReaderInterface;
-use App\Service\Logging\LoggingHelper;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\DossierService;
+use Shared\Service\Inventory\InventoryChangeset;
+use Shared\Service\Inventory\InventoryComparator;
+use Shared\Service\Inventory\InventoryRunProcessor;
+use Shared\Service\Inventory\InventoryService;
+use Shared\Service\Inventory\InventoryUpdater;
+use Shared\Service\Inventory\Progress\ProgressUpdater;
+use Shared\Service\Inventory\Progress\RunProgress;
+use Shared\Service\Inventory\Reader\InventoryReaderInterface;
+use Shared\Service\Logging\LoggingHelper;
+use Shared\Tests\Unit\UnitTestCase;
 
-class InventoryRunProcessorTest extends MockeryTestCase
+class InventoryRunProcessorTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private InventoryComparator&MockInterface $inventoryComparator;

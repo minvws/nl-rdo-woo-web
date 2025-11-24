@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Api\Admin\Publication\Search;
+namespace Shared\Tests\Unit\Api\Admin\Publication\Search;
 
-use App\Api\Admin\Publication\Search\SearchResultDtoFactory;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Attachment\ViewModel\Attachment;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
-use App\Domain\Publication\SourceType;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Result\Dossier\DossierSearchResultEntry;
-use App\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
-use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
-use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
-use App\Service\DossierWizard\DossierWizardStatus;
-use App\Service\DossierWizard\WizardStatusFactory;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Api\Admin\Publication\Search\SearchResultDtoFactory;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Attachment\ViewModel\Attachment;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\DossierReference;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
+use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Result\Dossier\DossierSearchResultEntry;
+use Shared\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
+use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
+use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
+use Shared\Service\DossierWizard\DossierWizardStatus;
+use Shared\Service\DossierWizard\WizardStatusFactory;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 

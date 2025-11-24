@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\SubType;
+namespace Shared\Domain\Search\Index\SubType;
 
-use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\MainDocumentRepository;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Process\IngestProcessOptions;
+use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\MainDocumentRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

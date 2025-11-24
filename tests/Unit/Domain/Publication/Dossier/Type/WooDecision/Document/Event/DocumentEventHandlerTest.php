@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document\Event;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document\Event;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentRepublishedEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Handler\DocumentEventHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\DossierService;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentRepublishedEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Handler\DocumentEventHandler;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\DossierService;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DocumentEventHandlerTest extends MockeryTestCase
+class DocumentEventHandlerTest extends UnitTestCase
 {
     private DossierService&MockInterface $dossierService;
     private DocumentEventHandler $handler;

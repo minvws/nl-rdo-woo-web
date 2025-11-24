@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command;
+namespace Shared\Tests\Unit\Command;
 
-use App\Command\ExportRevokedUrls;
-use App\Service\RevokedUrlService;
-use App\Tests\Unit\Domain\Upload\IterableToGenerator;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Command\ExportRevokedUrls;
+use Shared\Service\RevokedUrlService;
+use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ExportRevokedUrlsTest extends MockeryTestCase
+class ExportRevokedUrlsTest extends UnitTestCase
 {
     use IterableToGenerator;
 

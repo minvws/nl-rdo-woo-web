@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier;
+namespace Shared\Domain\Publication\Dossier;
 
-use App\Doctrine\TimestampableTrait;
-use App\Domain\Department\Department;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\Type\Advice\Advice;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
-use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Validator as DossierValidator;
-use App\Domain\Publication\Subject\Subject;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\TimestampableTrait;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
+use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Validator as DossierValidator;
+use Shared\Domain\Publication\Subject\Subject;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;

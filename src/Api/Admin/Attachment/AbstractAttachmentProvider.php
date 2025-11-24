@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Attachment;
+namespace Shared\Api\Admin\Attachment;
 
 use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\State\ProviderInterface;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

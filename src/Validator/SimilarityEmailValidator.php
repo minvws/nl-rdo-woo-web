@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Validator;
+namespace Shared\Validator;
 
-use App\Service\Security\User;
+use Shared\Service\Security\User;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;

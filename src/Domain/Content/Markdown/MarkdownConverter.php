@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Content\Markdown;
+namespace Shared\Domain\Content\Markdown;
 
 use League\CommonMark\ConverterInterface;
 use League\CommonMark\Environment\Environment;
@@ -42,20 +42,12 @@ class MarkdownConverter implements ConverterInterface
 
     public function getParser(): MarkdownParserInterface
     {
-        if (isset($this->parser)) {
-            return $this->parser;
-        }
-
-        return $this->parser = new MarkdownParser($this->getEnvironment());
+        return $this->parser ?? $this->parser = new MarkdownParser($this->getEnvironment());
     }
 
     public function getRenderer(): DocumentRendererInterface
     {
-        if (isset($this->renderer)) {
-            return $this->renderer;
-        }
-
-        return $this->renderer = new HtmlRenderer($this->getEnvironment());
+        return $this->renderer ?? $this->renderer = new HtmlRenderer($this->getEnvironment());
     }
 
     private function getEnvironment(): EnvironmentInterface&EnvironmentBuilderInterface

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\DossierWizard;
+namespace Shared\Tests\Unit\Service\DossierWizard;
 
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\DossierWizard\DossierWizardStatus;
-use App\Service\DossierWizard\StepStatus;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\DossierWizard\DossierWizardStatus;
+use Shared\Service\DossierWizard\StepStatus;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DossierWizardStatusTest extends MockeryTestCase
+class DossierWizardStatusTest extends UnitTestCase
 {
     private WooDecision&MockInterface $dossier;
     private DossierWizardStatus $status;

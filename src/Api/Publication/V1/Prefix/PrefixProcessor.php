@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Publication\V1\Prefix;
+namespace Shared\Api\Publication\V1\Prefix;
 
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\State\ProcessorInterface;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Organisation\OrganisationRepository;
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Domain\Publication\Dossier\DocumentPrefixRepository;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Organisation\OrganisationRepository;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Domain\Publication\Dossier\DocumentPrefixRepository;
 use Webmozart\Assert\Assert;
 
 /**

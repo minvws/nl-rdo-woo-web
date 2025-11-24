@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload\Archiver;
+namespace Shared\Domain\Publication\BatchDownload\Archiver;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 
 interface BatchArchiver
 {

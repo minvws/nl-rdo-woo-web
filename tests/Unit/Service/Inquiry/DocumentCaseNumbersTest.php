@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inquiry;
+namespace Shared\Tests\Unit\Service\Inquiry;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Service\Inquiry\DocumentCaseNumbers;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class DocumentCaseNumbersTest extends MockeryTestCase
+class DocumentCaseNumbersTest extends UnitTestCase
 {
     public function testFromArrayWithEmptyArray(): void
     {

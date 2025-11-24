@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory;
+namespace Shared\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Webmozart\Assert\Assert;
 
 class InventoryDataHelper
@@ -23,7 +23,7 @@ class InventoryDataHelper
 
     public static function toDateTimeImmutable(string $value): \DateTimeImmutable
     {
-        if (empty($value)) {
+        if ($value === '') {
             throw new \RuntimeException('Cannot parse empty date string');
         }
 
@@ -76,7 +76,7 @@ class InventoryDataHelper
         $values = preg_split('/(' . implode('|', $separators) . ')/', $value, -1);
         Assert::isArray($values);
 
-        $values = array_map('trim', $values);
+        $values = array_map(trim(...), $values);
 
         return array_filter($values);
     }

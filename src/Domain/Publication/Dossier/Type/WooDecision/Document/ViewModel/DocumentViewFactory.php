@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document as DocumentEntity;
-use App\Service\Search\SearchService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document as DocumentEntity;
+use Shared\Service\Search\SearchService;
 
 final readonly class DocumentViewFactory
 {

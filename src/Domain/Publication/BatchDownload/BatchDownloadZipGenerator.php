@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload;
+namespace Shared\Domain\Publication\BatchDownload;
 
-use App\Domain\Publication\BatchDownload\Archiver\ArchiveNamer;
-use App\Domain\Publication\BatchDownload\Archiver\BatchArchiver;
-use App\Domain\Publication\BatchDownload\Archiver\BatchArchiverResult;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\BatchDownload\Archiver\ArchiveNamer;
+use Shared\Domain\Publication\BatchDownload\Archiver\BatchArchiver;
+use Shared\Domain\Publication\BatchDownload\Archiver\BatchArchiverResult;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 
 readonly class BatchDownloadZipGenerator
 {
-    private const CHECK_STATUS_EVERY_X_DOCUMENTS = 10;
+    private const int CHECK_STATUS_EVERY_X_DOCUMENTS = 10;
 
     public function __construct(
         private EntityManagerInterface $doctrine,

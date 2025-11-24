@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Step;
+namespace Shared\Domain\Publication\Dossier\Step;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
-use App\Service\DossierWizard\DossierWizardStatus;
-use App\Service\DossierWizard\WizardStatusFactory;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
+use Shared\Service\DossierWizard\DossierWizardStatus;
+use Shared\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\RedirectResponse;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content\Extractor;
+namespace Shared\Domain\Ingest\Content\Extractor;
 
 enum ContentExtractorKey: string
 {

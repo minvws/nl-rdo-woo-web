@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier;
+namespace Shared\Domain\Publication\Dossier;
 
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
 
 readonly class DossierFactory
 {

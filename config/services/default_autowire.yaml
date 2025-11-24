@@ -5,13 +5,14 @@ services:
 
         bind:
             $configPageLimit: '%configPageLimit%'
-            Psr\Log\LoggerInterface $logger: '@App\Service\Logging\EnrichedPsrLogger'
+            Psr\Log\LoggerInterface $logger: '@Shared\Service\Logging\EnrichedPsrLogger'
             string $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
             int $thumbnailLimit: '%thumbnail_limit%'
 
-    App\:
+    Shared\:
         resource: '../../src/'
         exclude:
             - '../../src/DependencyInjection/'
             - '../../src/Entity/'
             - '../../src/Kernel.php'
+            - '../../src/class_aliases.php'

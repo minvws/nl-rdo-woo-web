@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\DocumentWorkflow;
+namespace Shared\Service\DocumentWorkflow;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 
 readonly class DocumentWorkflowStatus
 {

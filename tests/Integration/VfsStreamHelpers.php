@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace Shared\Tests\Integration;
 
-use App\Domain\Publication\EntityWithFileInfo;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Webmozart\Assert\Assert;
 
 trait VfsStreamHelpers

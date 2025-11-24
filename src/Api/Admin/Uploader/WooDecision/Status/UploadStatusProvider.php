@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Uploader\WooDecision\Status;
+namespace Shared\Api\Admin\Uploader\WooDecision\Status;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

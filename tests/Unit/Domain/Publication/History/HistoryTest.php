@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\History;
+namespace Shared\Tests\Unit\Domain\Publication\History;
 
-use App\Domain\Publication\History\History;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\History\History;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class HistoryTest extends MockeryTestCase
+class HistoryTest extends UnitTestCase
 {
     public function testSetAndGetType(): void
     {

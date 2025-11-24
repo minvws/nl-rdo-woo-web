@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Organisation;
+namespace Shared\Domain\Organisation;
 
-use App\Repository\PaginationQueryBuilder;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Repository\PaginationQueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<Organisation>

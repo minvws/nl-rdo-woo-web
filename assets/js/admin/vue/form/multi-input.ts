@@ -1,6 +1,6 @@
 export const createName = (name: string, index: number) => {
   const regex = /\[(\d+)\]/;
-  if (!RegExp(regex).test(name)) {
+  if (!new RegExp(regex).test(name)) {
     return `${name}[${index}]`;
   }
   return name.replace(regex, `[${index}]`);

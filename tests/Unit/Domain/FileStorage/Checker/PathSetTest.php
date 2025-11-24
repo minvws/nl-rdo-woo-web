@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\FileStorage\Checker;
+namespace Shared\Tests\Unit\Domain\FileStorage\Checker;
 
-use App\Domain\FileStorage\Checker\FileStorageType;
-use App\Domain\FileStorage\Checker\PathSet;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\FileStorage\Checker\FileStorageType;
+use Shared\Domain\FileStorage\Checker\PathSet;
+use Shared\Tests\Unit\UnitTestCase;
 
 class PathSetTest extends UnitTestCase
 {

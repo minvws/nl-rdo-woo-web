@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier;
+namespace Shared\Controller\Admin\Dossier;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
-use App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionService;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Form\Dossier\AdministrationActionsType;
-use App\Service\DossierWizard\WizardStatusFactory;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
+use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminActionService;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Form\Dossier\AdministrationActionsType;
+use Shared\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

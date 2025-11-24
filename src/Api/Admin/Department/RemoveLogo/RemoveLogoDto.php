@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Department\RemoveLogo;
+namespace Shared\Api\Admin\Department\RemoveLogo;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;

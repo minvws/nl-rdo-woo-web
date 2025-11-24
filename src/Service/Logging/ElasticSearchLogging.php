@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Logging;
+namespace Shared\Service\Logging;
 
-use App\DataCollector\ElasticCollector;
-use App\Service\Elastic\ElasticService;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Shared\DataCollector\ElasticCollector;
+use Shared\Service\Elastic\ElasticService;
 
 class ElasticSearchLogging implements LoggingTypeInterface
 {

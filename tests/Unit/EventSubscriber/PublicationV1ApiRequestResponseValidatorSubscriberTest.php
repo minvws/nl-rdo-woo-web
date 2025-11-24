@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\EventSubscriber;
+namespace Shared\Tests\Unit\EventSubscriber;
 
 use ApiPlatform\Metadata\HttpOperation;
-use App\Api\Publication\V1\PublicationV1Api;
-use App\Domain\OpenApi\Exceptions\ValidatonException;
-use App\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
-use App\Domain\OpenApi\OpenApiValidator;
-use App\EventSubscriber\PublicationV1ApiRequestResponseValidatorSubscriber;
-use App\Tests\Unit\UnitTestCase;
 use Psr\Log\LoggerInterface;
+use Shared\Api\Publication\V1\PublicationV1Api;
+use Shared\Domain\OpenApi\Exceptions\ValidatonException;
+use Shared\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
+use Shared\Domain\OpenApi\OpenApiValidator;
+use Shared\EventSubscriber\PublicationV1ApiRequestResponseValidatorSubscriber;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

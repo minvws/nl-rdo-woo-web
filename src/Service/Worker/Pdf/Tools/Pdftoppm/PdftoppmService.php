@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Worker\Pdf\Tools\Pdftoppm;
+namespace Shared\Service\Worker\Pdf\Tools\Pdftoppm;
 
 use Symfony\Component\Process\Process;
 

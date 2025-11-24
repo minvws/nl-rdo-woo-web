@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Stats;
+namespace Shared\Service\Stats;
 
-use App\Service\Stats\Handler\StatsHandlerInterface;
 use Carbon\CarbonImmutable;
+use Shared\Service\Stats\Handler\StatsHandlerInterface;
 use Webmozart\Assert\Assert;
 
 class WorkerStatsService

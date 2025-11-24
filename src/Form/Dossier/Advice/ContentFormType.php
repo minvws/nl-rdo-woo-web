@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier\Advice;
+namespace Shared\Form\Dossier\Advice;
 
-use App\Domain\Publication\Dossier\Type\Advice\Advice;
-use App\Form\Dossier\AbstractDossierStepType;
-use App\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
+use Shared\Form\Dossier\AbstractDossierStepType;
+use Shared\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class ContentFormType extends AbstractDossierStepType

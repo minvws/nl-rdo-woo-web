@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\InvestigationReportMainDocument;
+namespace Shared\Api\Admin\InvestigationReportMainDocument;
 
-use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
-use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentProvider;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
+use Shared\Api\Admin\AbstractMainDocument\AbstractMainDocumentProvider;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 
 final readonly class InvestigationReportMainDocumentProvider extends AbstractMainDocumentProvider
 {

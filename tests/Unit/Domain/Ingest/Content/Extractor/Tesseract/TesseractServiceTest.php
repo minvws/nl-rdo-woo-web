@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Content\Extractor\Tesseract;
+namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tesseract;
 
-use App\Domain\Ingest\Content\Extractor\Tesseract\TesseractService;
-use App\Service\Storage\LocalFilesystem;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Content\Extractor\Tesseract\TesseractService;
+use Shared\Service\Storage\LocalFilesystem;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Process\Process;
 
 final class TesseractServiceTest extends UnitTestCase

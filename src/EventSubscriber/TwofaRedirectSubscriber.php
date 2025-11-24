@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscriber;
+namespace Shared\EventSubscriber;
 
 use Scheb\TwoFactorBundle\Security\Authentication\Token\TwoFactorToken;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;

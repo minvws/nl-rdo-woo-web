@@ -4,7 +4,7 @@
     dossierId: dossier.id,
     fileLimits: uploadGroupId.fileLimits | default([]),
     maxFileSize: 1024 * 1024 * 1024 * 5,
-    maxCombinedFileSize: constant('App\\Domain\\Publication\\Dossier\\Type\\WooDecision\\DocumentFile\\TotalDocumentFileSizeValidator::MAX_SIZE'),
+    maxCombinedFileSize: LIMIT_TOTAL_DOCUMENTS_FILE_SIZE_IN_GIB * 1024 * 1024 * 1024,
     nextStepUrl: nextStepUrl | default,
     continueLaterUrl: continueLaterUrl | default,
     confirmEndpoint: path('api_uploader_woo_decision_confirm_changes', { dossierId: dossier.id }),

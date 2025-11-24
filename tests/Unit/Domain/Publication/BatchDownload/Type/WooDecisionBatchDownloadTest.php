@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload\Type;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\Type;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\Type\WooDecisionBatchDownload;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Doctrine\ORM\QueryBuilder;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\Type\WooDecisionBatchDownload;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Tests\Unit\UnitTestCase;
 
-class WooDecisionBatchDownloadTest extends MockeryTestCase
+class WooDecisionBatchDownloadTest extends UnitTestCase
 {
     private WooDecisionRepository&MockInterface $repository;
     private WooDecisionBatchDownload $type;

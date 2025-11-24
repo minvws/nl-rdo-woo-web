@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier;
+namespace Shared\Controller\Admin\Dossier;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Service\DownloadResponseHelper;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Service\DownloadResponseHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;

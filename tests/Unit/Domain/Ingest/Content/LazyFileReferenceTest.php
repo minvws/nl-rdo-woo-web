@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Content;
+namespace Shared\Tests\Unit\Domain\Ingest\Content;
 
-use App\Domain\Ingest\Content\ContentExtractException;
-use App\Domain\Ingest\Content\ContentExtractOptions;
-use App\Domain\Ingest\Content\LazyFileReference;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Storage\EntityStorageService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Mockery\VerificationDirector;
+use Shared\Domain\Ingest\Content\ContentExtractException;
+use Shared\Domain\Ingest\Content\ContentExtractOptions;
+use Shared\Domain\Ingest\Content\LazyFileReference;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class LazyFileReferenceTest extends MockeryTestCase
+class LazyFileReferenceTest extends UnitTestCase
 {
     public function testLazyFileReferenceLoadsFileOnlyWhenNeededAndOnlyOnce(): void
     {

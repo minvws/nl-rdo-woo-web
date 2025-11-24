@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
 
-use App\Domain\Organisation\OrganisationRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
-use App\Service\Inquiry\InquiryService;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Organisation\OrganisationRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
+use Shared\Service\Inquiry\InquiryService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

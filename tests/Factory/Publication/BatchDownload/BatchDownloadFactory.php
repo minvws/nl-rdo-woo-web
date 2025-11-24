@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory\Publication\BatchDownload;
+namespace Shared\Tests\Factory\Publication\BatchDownload;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

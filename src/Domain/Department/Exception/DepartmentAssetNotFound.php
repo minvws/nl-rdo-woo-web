@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Department\Exception;
+namespace Shared\Domain\Department\Exception;
 
-use App\Domain\Department\Department;
+use Shared\Domain\Department\Department;
 
 final class DepartmentAssetNotFound extends \RuntimeException implements DepartmentException
 {

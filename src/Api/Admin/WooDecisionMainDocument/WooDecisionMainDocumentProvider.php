@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\WooDecisionMainDocument;
+namespace Shared\Api\Admin\WooDecisionMainDocument;
 
-use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
-use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentProvider;
-use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
+use Shared\Api\Admin\AbstractMainDocument\AbstractMainDocumentProvider;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 
 final readonly class WooDecisionMainDocumentProvider extends AbstractMainDocumentProvider
 {

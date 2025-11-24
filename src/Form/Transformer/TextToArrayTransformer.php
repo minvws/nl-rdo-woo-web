@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Transformer;
+namespace Shared\Form\Transformer;
 
 use Symfony\Component\Form\DataTransformerInterface;
 
@@ -20,7 +20,7 @@ class TextToArrayTransformer implements DataTransformerInterface
 
     public function __construct(string $splitter)
     {
-        $this->splitter = empty($splitter) ? ',' : $splitter;
+        $this->splitter = $splitter === '' ? ',' : $splitter;
     }
 
     /**
@@ -28,7 +28,7 @@ class TextToArrayTransformer implements DataTransformerInterface
      */
     public function transform(mixed $value): ?array
     {
-        if (empty($value)) {
+        if (! \is_string($value) || $value === '') {
             return null;
         }
 

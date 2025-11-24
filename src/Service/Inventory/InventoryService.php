@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory;
+namespace Shared\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\SourceType;
-use App\Exception\ProcessInventoryException;
-use App\Service\Inventory\Reader\InventoryReaderFactory;
-use App\Service\Inventory\Reader\InventoryReaderInterface;
-use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\SourceType;
+use Shared\Exception\ProcessInventoryException;
+use Shared\Service\Inventory\Reader\InventoryReaderFactory;
+use Shared\Service\Inventory\Reader\InventoryReaderInterface;
+use Shared\Service\Storage\EntityStorageService;
 
 /**
  * This class will process an inventory and generates document entities from the given data.

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Rollover;
+namespace Shared\Domain\Search\Index\Rollover;
 
-use App\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\ElasticDocumentType;
 
 readonly class MainTypeCount
 {

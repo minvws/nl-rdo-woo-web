@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Content;
+namespace Shared\Tests\Unit\Domain\Ingest\Content;
 
-use App\Domain\Ingest\Content\ContentExtractOptions;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Ingest\Content\ContentExtractOptions;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Tests\Unit\UnitTestCase;
 
-class ContentExtractOptionsTest extends MockeryTestCase
+class ContentExtractOptionsTest extends UnitTestCase
 {
     public function testCreateWithDefaultOptions(): void
     {

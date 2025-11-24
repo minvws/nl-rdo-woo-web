@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Vws\AuditLog;
+namespace Shared\Tests\Unit\Vws\AuditLog;
 
-use App\Service\Security\User;
-use App\Vws\AuditLog\LoginAuditLogger;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\UserLoginLogEvent;
 use MinVWS\AuditLogger\Events\Logging\UserLogoutLogEvent;
 use MinVWS\AuditLogger\Loggers\LoggerInterface as AuditLoggerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Vws\AuditLog\LoginAuditLogger;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
 
-class LoginAuditLoggerTest extends MockeryTestCase
+class LoginAuditLoggerTest extends UnitTestCase
 {
     private AuditLoggerInterface&MockInterface $internalAuditLogger;
     private LoginAuditLogger $loginAuditLogger;

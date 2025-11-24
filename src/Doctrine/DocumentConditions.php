@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Doctrine;
+namespace Shared\Doctrine;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Doctrine\ORM\QueryBuilder;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 
 class DocumentConditions
 {

@@ -921,7 +921,7 @@ public.dossiers.no_dossiers: "Geen besluiten"
 public.search_suggestion: "Bedoelde u misschien:"
 public.search_suggestion.terms: "Bedoelde u misschien een van de volgende zoektermen:"
 
-history.dossier_created.private: 'Publicatie aangemaakt als concept'
+history.dossier_created.private: 'Publicatie aangemaakt met status "{status}" (via {applicationMode})'
 history.dossier_created.public: null
 history.dossier_updated.private: 'De volgende gegevens zijn aangepast: {changes}'
 history.dossier_updated.public: 'Informatie over de publicatie bijgewerkt'

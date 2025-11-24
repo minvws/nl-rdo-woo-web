@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory\Reader;
+namespace Shared\Service\Inventory\Reader;
 
-use App\Exception\TranslatableException;
-use App\Service\Inventory\DocumentMetadata;
+use Shared\Exception\TranslatableException;
+use Shared\Service\Inventory\DocumentMetadata;
 
 class InventoryReadItem
 {

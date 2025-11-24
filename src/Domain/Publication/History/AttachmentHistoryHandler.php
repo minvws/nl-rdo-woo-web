@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\History;
+namespace Shared\Domain\Publication\History;
 
-use App\Domain\Publication\Attachment\Event\AbstractAttachmentEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentWithdrawnEvent;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Service\HistoryService;
+use Shared\Domain\Publication\Attachment\Event\AbstractAttachmentEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentWithdrawnEvent;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Service\HistoryService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

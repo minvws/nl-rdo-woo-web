@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query;
+namespace Shared\Domain\Search\Query;
 
-use App\Api\Admin\Publication\Search\SearchResultType;
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Query\Facet\Definition\PrefixedDossierNrFacet;
-use App\Domain\Search\Query\Facet\Definition\TypeFacet;
-use App\Domain\Search\Query\Facet\Input\FacetInputFactory;
-use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Sort\SortField;
-use App\Service\Search\Query\Sort\SortOrder;
-use App\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Api\Admin\Publication\Search\SearchResultType;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Query\Facet\Definition\PrefixedDossierNrFacet;
+use Shared\Domain\Search\Query\Facet\Definition\TypeFacet;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputFactory;
+use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Query\Sort\SortField;
+use Shared\Service\Search\Query\Sort\SortOrder;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 

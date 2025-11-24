@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Condition;
+namespace Shared\Service\Search\Query\Condition;
 
-use App\Domain\Search\Query\Facet\FacetList;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Dsl\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+use Shared\Domain\Search\Query\Facet\FacetList;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Query\Dsl\Query;
 
 class FacetConditionBuilder implements QueryConditionBuilderInterface
 {

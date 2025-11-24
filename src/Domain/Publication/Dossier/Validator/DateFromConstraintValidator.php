@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Validator;
+namespace Shared\Domain\Publication\Dossier\Validator;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
 use Carbon\CarbonImmutable;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;

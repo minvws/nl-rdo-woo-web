@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Department\ViewModel;
+namespace Shared\Domain\Department\ViewModel;
 
 readonly class Department
 {

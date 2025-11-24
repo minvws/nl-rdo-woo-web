@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace Shared\Command;
 
-use App\Service\Encryption\EncryptionService;
 use ParagonIE\Halite\KeyFactory;
+use Shared\Service\Encryption\EncryptionService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

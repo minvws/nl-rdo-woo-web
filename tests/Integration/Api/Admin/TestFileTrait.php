@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Api\Admin;
+namespace Shared\Tests\Integration\Api\Admin;
 
 use org\bovigo\vfs\vfsStream;
 

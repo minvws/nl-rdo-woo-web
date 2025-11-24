@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload;
+namespace Shared\Domain\Upload;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\FilenameSanitizer;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\FilenameSanitizer;
 
 readonly class AssetsNamer
 {

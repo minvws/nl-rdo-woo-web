@@ -29,7 +29,7 @@ services:
 
     Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory: ~
 
-    App\EventSubscriber\PublicationV1ApiRequestResponseValidatorSubscriber:
+    Shared\EventSubscriber\PublicationV1ApiRequestResponseValidatorSubscriber:
         bind:
             bool $enableRequestValidation: '%publication_v1_request_validation%'
             bool $enableResponseValidation: '%publication_v1_response_validation%'

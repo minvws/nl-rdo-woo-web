@@ -19,7 +19,7 @@ jobs:
     name: 'Run E2E tests on Acceptance'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Install Task
         uses: go-task/setup-task@v1
         with:

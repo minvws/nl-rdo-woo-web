@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\Disposition;
+namespace Shared\Domain\Publication\Dossier\Type\Disposition;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Dossier\AbstractDossier;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Webmozart\Assert\Assert;
 
 #[ORM\Entity(repositoryClass: DispositionAttachmentRepository::class)]

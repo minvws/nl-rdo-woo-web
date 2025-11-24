@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Result;
+namespace Shared\Tests\Unit\Domain\Upload\Result;
 
-use App\Domain\Upload\Result\UploadCompletedResult;
-use App\Domain\Upload\UploadRequest;
-use App\Service\Uploader\UploadGroupId;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Upload\Result\UploadCompletedResult;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
 
-class UploadCompletedResultTest extends MockeryTestCase
+class UploadCompletedResultTest extends UnitTestCase
 {
     use MatchesSnapshots;
 

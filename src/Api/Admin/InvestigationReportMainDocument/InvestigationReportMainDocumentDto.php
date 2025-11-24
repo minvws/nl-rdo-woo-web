@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\InvestigationReportMainDocument;
+namespace Shared\Api\Admin\InvestigationReportMainDocument;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
@@ -13,13 +13,13 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Factory\OpenApiFactory;
 use ApiPlatform\OpenApi\Model\Operation;
-use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
-use App\Api\Admin\Attachment\AttachmentCreateDto;
-use App\Api\Admin\Attachment\AttachmentUpdateDto;
-use App\Api\Admin\Dossier\DossierReferenceDto;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
-use App\Domain\Publication\MainDocument\MainDocumentAlreadyExistsException;
-use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
+use Shared\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
+use Shared\Api\Admin\Attachment\AttachmentCreateDto;
+use Shared\Api\Admin\Attachment\AttachmentUpdateDto;
+use Shared\Api\Admin\Dossier\DossierReferenceDto;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
+use Shared\Domain\Publication\MainDocument\MainDocumentAlreadyExistsException;
+use Shared\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 
 #[ApiResource(
     uriTemplate: '/investigation-report-document/{mainDocumentId}',

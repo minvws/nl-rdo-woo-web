@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Storage;
+namespace Shared\Tests\Unit\Service\Storage;
 
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Storage\StorageRootPathGenerator;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Storage\StorageRootPathGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class StorageRootPathGeneratorTest extends UnitTestCase

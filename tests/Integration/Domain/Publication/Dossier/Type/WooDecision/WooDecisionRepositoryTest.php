@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Tests\Factory\DocumentFactory;
-use App\Tests\Factory\FileInfoFactory;
-use App\Tests\Factory\OrganisationFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Doctrine\ORM\NoResultException;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\DossierReference;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Factory\DocumentFactory;
+use Shared\Tests\Factory\FileInfoFactory;
+use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Component\Uid\Uuid;
 
-final class WooDecisionRepositoryTest extends KernelTestCase
+final class WooDecisionRepositoryTest extends SharedWebTestCase
 {
     protected function setUp(): void
     {

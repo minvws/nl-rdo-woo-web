@@ -2,16 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Service\Storage;
+namespace Shared\Tests\Integration\Service\Storage;
 
-use App\Service\Storage\EntityStorageService;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class EntityStorageServiceTest extends KernelTestCase
+final class EntityStorageServiceTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     public function testItCanBeInitialized(): void
     {
         $service = $this->getContainer()->get(EntityStorageService::class);

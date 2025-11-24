@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Producer\Mapper;
+namespace Shared\Domain\WooIndex\Producer\Mapper;
 
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\WooIndex\Producer\DiWooDocument;
-use App\Domain\WooIndex\Producer\DocumentHandeling;
-use App\Domain\WooIndex\Producer\Repository\RawUrlDto;
-use App\Domain\WooIndex\Tooi\InformatieCategorie;
-use App\Domain\WooIndex\Tooi\Ministerie;
-use App\Domain\WooIndex\Tooi\SoortHandeling;
 use Carbon\CarbonImmutable;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\WooIndex\Producer\DiWooDocument;
+use Shared\Domain\WooIndex\Producer\DocumentHandeling;
+use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
+use Shared\Domain\WooIndex\Tooi\InformatieCategorie;
+use Shared\Domain\WooIndex\Tooi\Ministerie;
+use Shared\Domain\WooIndex\Tooi\SoortHandeling;
 
 /**
  * @SuppressWarnings("PHPMD.CouplingBetweenObjects")

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\S3;
+namespace Shared\Domain\S3;
 
 use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\StreamInterface;

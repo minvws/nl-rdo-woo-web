@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\WooIndex;
+namespace Shared\Tests\Unit\Domain\WooIndex;
 
-use App\Domain\WooIndex\Exception\WooIndexFileNotFoundException;
-use App\Domain\WooIndex\WooIndex;
-use App\Domain\WooIndex\WooIndexNamer;
-use App\Domain\WooIndex\WooIndexRunOptions;
-use App\Domain\WooIndex\WooIndexSitemap;
-use App\Domain\WooIndex\WooIndexSitemapRepository;
-use App\Domain\WooIndex\WooIndexSitemapService;
-use App\Domain\WooIndex\WooIndexSitemapStatus;
-use App\Tests\Unit\UnitTestCase;
 use Carbon\CarbonImmutable;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use Mockery\MockInterface;
+use Shared\Domain\WooIndex\Exception\WooIndexFileNotFoundException;
+use Shared\Domain\WooIndex\WooIndex;
+use Shared\Domain\WooIndex\WooIndexNamer;
+use Shared\Domain\WooIndex\WooIndexRunOptions;
+use Shared\Domain\WooIndex\WooIndexSitemap;
+use Shared\Domain\WooIndex\WooIndexSitemapRepository;
+use Shared\Domain\WooIndex\WooIndexSitemapService;
+use Shared\Domain\WooIndex\WooIndexSitemapStatus;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Uid\Uuid;
 

@@ -1,0 +1,12 @@
+# https://taskfile.dev
+version: "3"
+
+tasks:
+  php:
+    desc: Run the PHP image locally
+    cmds:
+      - >-
+        docker build
+        --file ./docker/php/Dockerfile
+        --tag ghcr.io/minvws/nl-rdo-woo-web-private/php:dev
+        {{.BASE_PATH}}

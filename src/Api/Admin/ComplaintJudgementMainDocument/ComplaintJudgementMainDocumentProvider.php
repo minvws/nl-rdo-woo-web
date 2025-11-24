@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\ComplaintJudgementMainDocument;
+namespace Shared\Api\Admin\ComplaintJudgementMainDocument;
 
-use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
-use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentProvider;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
+use Shared\Api\Admin\AbstractMainDocument\AbstractMainDocumentProvider;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 
 final readonly class ComplaintJudgementMainDocumentProvider extends AbstractMainDocumentProvider
 {

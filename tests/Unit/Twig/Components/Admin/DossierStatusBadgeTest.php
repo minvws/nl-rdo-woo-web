@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Twig\Components\Admin;
+namespace Shared\Tests\Unit\Twig\Components\Admin;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Tests\Unit\UnitTestCase;
-use App\Twig\Components\Admin\DossierStatusBadge;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Twig\Components\Admin\DossierStatusBadge;
 
 final class DossierStatusBadgeTest extends UnitTestCase
 {

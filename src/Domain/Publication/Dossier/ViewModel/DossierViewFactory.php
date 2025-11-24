@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierRepository;
 
 readonly class DossierViewFactory
 {
@@ -43,7 +43,7 @@ readonly class DossierViewFactory
     private function mapToRecentDossier(array $dossiers): array
     {
         return array_map(
-            static fn (AbstractDossier $dossier) => RecentDossier::create($dossier),
+            RecentDossier::create(...),
             $dossiers,
         );
     }

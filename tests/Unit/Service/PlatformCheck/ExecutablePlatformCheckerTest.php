@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\PlatformCheck;
+namespace Shared\Tests\Unit\Service\PlatformCheck;
 
-use App\Service\PlatformCheck\ExecutablePlatformChecker;
 use PHPUnit\Framework\TestCase;
+use Shared\Service\PlatformCheck\ExecutablePlatformChecker;
 
 class ExecutablePlatformCheckerTest extends TestCase
 {

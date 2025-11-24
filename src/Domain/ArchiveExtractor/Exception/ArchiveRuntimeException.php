@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ArchiveExtractor\Exception;
+namespace Shared\Domain\ArchiveExtractor\Exception;
 
 final class ArchiveRuntimeException extends \RuntimeException implements ArchiveExceptionInterface
 {

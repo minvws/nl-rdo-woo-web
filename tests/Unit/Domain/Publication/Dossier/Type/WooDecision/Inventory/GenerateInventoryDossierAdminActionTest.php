@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Inventory;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Inventory;
 
-use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\GenerateInventoryDossierAdminAction;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\GenerateInventoryDossierAdminAction;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-final class GenerateInventoryDossierAdminActionTest extends MockeryTestCase
+final class GenerateInventoryDossierAdminActionTest extends UnitTestCase
 {
     private ProductionReportDispatcher&MockInterface $dispatcher;
     private GenerateInventoryDossierAdminAction $action;

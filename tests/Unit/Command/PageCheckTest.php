@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command;
+namespace Shared\Tests\Unit\Command;
 
-use App\Command\PageCheck;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Service\Elastic\ElasticService;
 use Doctrine\Common\Collections\ArrayCollection;
 use MinVWS\TypeArray\TypeArray;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Command\PageCheck;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Service\Elastic\ElasticService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Uid\Uuid;
 
-class PageCheckTest extends MockeryTestCase
+class PageCheckTest extends UnitTestCase
 {
     private Command $command;
     private ElasticService&MockInterface $elasticService;

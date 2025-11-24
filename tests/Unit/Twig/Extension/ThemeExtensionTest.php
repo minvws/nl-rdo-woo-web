@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Twig\Extension;
+namespace Shared\Tests\Unit\Twig\Extension;
 
-use App\Domain\Search\Theme\ThemeManager;
-use App\Domain\Search\Theme\ViewModel\Theme;
-use App\Tests\Unit\Domain\Upload\IterableToGenerator;
-use App\Twig\Extension\ThemeExtension;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Search\Theme\ThemeManager;
+use Shared\Domain\Search\Theme\ViewModel\Theme;
+use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Twig\Extension\ThemeExtension;
 
-class ThemeExtensionTest extends MockeryTestCase
+class ThemeExtensionTest extends UnitTestCase
 {
     use IterableToGenerator;
 

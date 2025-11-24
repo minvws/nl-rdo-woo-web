@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\SubType;
+namespace Shared\Domain\Search\Index\SubType;
 
-use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Process\IngestProcessOptions;
+use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

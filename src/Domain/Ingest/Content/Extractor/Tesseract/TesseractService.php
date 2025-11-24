@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content\Extractor\Tesseract;
+namespace Shared\Domain\Ingest\Content\Extractor\Tesseract;
 
-use App\Service\Storage\LocalFilesystem;
 use Psr\Log\LoggerInterface;
+use Shared\Service\Storage\LocalFilesystem;
 use Symfony\Component\Process\Process;
 
 /**

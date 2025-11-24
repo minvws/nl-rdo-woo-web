@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\PlatformCheck;
+namespace Shared\Service\PlatformCheck;
 
 readonly class PhpExtensionPlatformChecker implements PlatformCheckerInterface
 {

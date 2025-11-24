@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Command\Cron;
+namespace Shared\Command\Cron;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRunRepository;
-use App\Exception\ProcessInventoryException;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRunRepository;
+use Shared\Exception\ProcessInventoryException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

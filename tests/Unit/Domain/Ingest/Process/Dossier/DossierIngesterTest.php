@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Process\Dossier;
+namespace Shared\Tests\Unit\Domain\Ingest\Process\Dossier;
 
-use App\Domain\Ingest\Process\Dossier\DossierIngester;
-use App\Domain\Ingest\Process\Dossier\Strategy\DefaultDossierIngestStrategy;
-use App\Domain\Ingest\Process\Dossier\Strategy\WooDecisionIngestStrategy;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\Process\Dossier\DossierIngester;
+use Shared\Domain\Ingest\Process\Dossier\Strategy\DefaultDossierIngestStrategy;
+use Shared\Domain\Ingest\Process\Dossier\Strategy\WooDecisionIngestStrategy;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DossierIngesterTest extends MockeryTestCase
+class DossierIngesterTest extends UnitTestCase
 {
     private DefaultDossierIngestStrategy&MockInterface $defaultIngester;
     private WooDecisionIngestStrategy&MockInterface $wooDecisionIngester;

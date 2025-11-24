@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Publication\Subject\SubjectService;
-use App\Form\SubjectType;
 use Knp\Component\Pager\PaginatorInterface;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Publication\Subject\SubjectService;
+use Shared\Form\SubjectType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

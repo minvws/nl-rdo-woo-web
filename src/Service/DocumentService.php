@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace Shared\Service;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
 
 /**
  * This class handles Document entity management. Not to be confused with 'ES documents' or 'upload document' (files)!

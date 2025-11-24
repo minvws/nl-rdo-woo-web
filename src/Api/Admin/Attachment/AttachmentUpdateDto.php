@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Attachment;
+namespace Shared\Api\Admin\Attachment;
 
 use ApiPlatform\Metadata\ApiProperty;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Webmozart\Assert\Assert as WebmozartAssert;
 

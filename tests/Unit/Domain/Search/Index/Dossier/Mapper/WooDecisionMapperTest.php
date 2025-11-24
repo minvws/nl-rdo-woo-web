@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
+namespace Shared\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\Dossier\Mapper\DefaultDossierMapper;
-use App\Domain\Search\Index\Dossier\Mapper\ElasticDossierMapperInterface;
-use App\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
-use App\Domain\Search\Index\ElasticDocument;
-use App\Domain\Search\Index\ElasticDocumentType;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Search\Index\Dossier\Mapper\DefaultDossierMapper;
+use Shared\Domain\Search\Index\Dossier\Mapper\ElasticDossierMapperInterface;
+use Shared\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
+use Shared\Domain\Search\Index\ElasticDocument;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class WooDecisionMapperTest extends MockeryTestCase
+class WooDecisionMapperTest extends UnitTestCase
 {
     private WooDecisionMapper $mapper;
     private ElasticDossierMapperInterface&MockInterface $defaultMapper;

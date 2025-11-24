@@ -1,12 +1,12 @@
 controllers:
     resource:
         path: ../src/Controller/
-        namespace: App\Controller
+        namespace: Shared\Controller
     type: attribute
 
 app_contact:
     path:          /contact
-    controller:    App\Controller\Public\ContentPageController::page
+    controller:    Shared\Controller\Public\ContentPageController::page
     defaults:
         slug: 'contact'
     options:
@@ -16,7 +16,7 @@ app_contact:
 
 app_privacy:
     path:          /privacy
-    controller:    App\Controller\Public\ContentPageController::page
+    controller:    Shared\Controller\Public\ContentPageController::page
     defaults:
         slug: 'privacy'
     options:
@@ -27,7 +27,7 @@ app_privacy:
 
 app_about:
     path:          /over-dit-platform
-    controller:    App\Controller\Public\ContentPageController::page
+    controller:    Shared\Controller\Public\ContentPageController::page
     defaults:
         slug: 'over-dit-platform'
     options:
@@ -38,7 +38,7 @@ app_about:
 
 app_copyright:
     path:          /copyright
-    controller:    App\Controller\Public\ContentPageController::page
+    controller:    Shared\Controller\Public\ContentPageController::page
     defaults:
         slug: 'copyright'
     options:
@@ -49,7 +49,7 @@ app_copyright:
 
 app_cookies:
     path:          /cookies
-    controller:    App\Controller\Public\ContentPageController::page
+    controller:    Shared\Controller\Public\ContentPageController::page
     defaults:
         slug: 'cookies'
     options:
@@ -60,7 +60,7 @@ app_cookies:
 
 app_accessibility:
     path:          /toegankelijkheid
-    controller:    App\Controller\Public\ContentPageController::page
+    controller:    Shared\Controller\Public\ContentPageController::page
     defaults:
         slug: 'toegankelijkheid'
     options:
@@ -71,7 +71,7 @@ app_accessibility:
 
 app_report_vulnerability:
     path:          /kwetsbaarheid-melden
-    controller:    App\Controller\Public\ContentPageController::page
+    controller:    Shared\Controller\Public\ContentPageController::page
     defaults:
         slug: 'kwetsbaarheid-melden'
     options:
@@ -82,18 +82,18 @@ app_report_vulnerability:
 
 app_admin_accessibility:
     path:          /balie/toegankelijkheid
-    controller:    App\Controller\Admin\IndexController::contentPage
+    controller:    Shared\Controller\Admin\IndexController::contentPage
     defaults:
         slug: 'toegankelijkheid'
 
 app_admin_privacy:
     path:          /balie/privacy
-    controller:    App\Controller\Admin\IndexController::contentPage
+    controller:    Shared\Controller\Admin\IndexController::contentPage
     defaults:
         slug: 'privacy'
 
 app_admin_contact:
     path:          /balie/contact
-    controller:    App\Controller\Admin\IndexController::contentPage
+    controller:    Shared\Controller\Admin\IndexController::contentPage
     defaults:
         slug: 'balie-contact'

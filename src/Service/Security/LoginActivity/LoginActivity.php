@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Security\LoginActivity;
+namespace Shared\Service\Security\LoginActivity;
 
-use App\Service\Security\User;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Service\Security\User;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 

@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Process\SubType;
+namespace Shared\Tests\Unit\Domain\Ingest\Process\SubType;
 
-use App\Domain\Ingest\Process\IngestProcessException;
-use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\Process\IngestProcessException;
+use Shared\Domain\Ingest\Process\IngestProcessOptions;
+use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
+use Shared\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class SubTypeIngesterTest extends MockeryTestCase
+class SubTypeIngesterTest extends UnitTestCase
 {
     private SubTypeIngestStrategyInterface&MockInterface $strategyA;
 

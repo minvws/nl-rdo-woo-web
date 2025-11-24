@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query\Facet;
+namespace Shared\Domain\Search\Query\Facet;
 
 /**
  * @implements \IteratorAggregate<array-key,Facet>

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem;
-use App\Domain\Publication\Dossier\ViewModel\PublicationItemViewFactory;
-use App\Domain\Publication\FileInfo;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem;
+use Shared\Domain\Publication\Dossier\ViewModel\PublicationItemViewFactory;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class PublicationItemViewFactoryTest extends UnitTestCase
 {

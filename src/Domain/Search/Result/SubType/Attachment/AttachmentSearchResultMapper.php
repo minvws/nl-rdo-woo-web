@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result\SubType\Attachment;
+namespace Shared\Domain\Search\Result\SubType\Attachment;
 
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
-use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticHighlights;
-use App\Domain\Search\Result\HighlightMapperTrait;
-use App\Domain\Search\Result\ResultEntryInterface;
-use App\Domain\Search\Result\SearchResultMapperInterface;
-use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use Shared\Domain\Publication\Dossier\Type\DossierReference;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticHighlights;
+use Shared\Domain\Search\Result\HighlightMapperTrait;
+use Shared\Domain\Search\Result\ResultEntryInterface;
+use Shared\Domain\Search\Result\SearchResultMapperInterface;
+use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 readonly class AttachmentSearchResultMapper implements SearchResultMapperInterface
 {

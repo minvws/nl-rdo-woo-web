@@ -34,7 +34,7 @@ In the examples below the name 'foo' is used for the new dossier type.
 
 - Add a new case to the DossierType enum
   - Also add the ```isFoo``` helper method.
-- Define a namespace for the dossier type. In this example: `App\Domain\Publication\Dossier\Type\Foo`.
+- Define a namespace for the dossier type. In this example: `Shared\Domain\Publication\Dossier\Type\Foo`.
 - Create a Doctrine entity
   - This class is placed within the newly created namespace.
   - Each dossiertype should extend the AbstractDossier entity. See one of the existing implementations like ```AnnualReport``` in ```src/Domain/Publication/Dossier/Type/AnnualReport``` as an example.
@@ -83,8 +83,8 @@ Optionally the new dossier type could support a main document. In that case thes
 - The entity class should implement the `EntityWithMainDocument` interface, see the existing implementations for reference.
   - The `hasMainDocument` trait can be used to simplify this.
   - You should define the doctrine relationship and initialize the collection in the constructor.
-- Implement admin API endpoints for the editor. Use an existing implementation as reference, for instance `App\Api\Admin\AnnualReportMainDocument```
-  - Also include test coverage, see the `App\Tests\Integration\Api\Admin\AnnualReportMainDocumentTest` as an example.
+- Implement admin API endpoints for the editor. Use an existing implementation as reference, for instance `Shared\Api\Admin\AnnualReportMainDocument```
+  - Also include test coverage, see the `Shared\Tests\Integration\Api\Admin\AnnualReportMainDocumentTest` as an example.
 
 ## Attachment support
 
@@ -95,8 +95,8 @@ Optionally the new dossier type could support attachments. In that case these ad
 - The entity class should implement the `EntityWithAttachments` interface, see the existing implementations for reference.
   - The `hasAttachments` trait can be used to simplify this.
   - You should define the doctrine relationship and initialize the collection in the constructor.
-- Implement admin API endpoints for the editor. Use an existing implementation as reference, for instance `App\Api\Admin\AnnualReportAttachment```
-  - Also include test coverage, see the `App\Tests\Integration\Api\Admin\AnnualReportAttachmentTest` as an example.
+- Implement admin API endpoints for the editor. Use an existing implementation as reference, for instance `Shared\Api\Admin\AnnualReportAttachment```
+  - Also include test coverage, see the `Shared\Tests\Integration\Api\Admin\AnnualReportAttachmentTest` as an example.
 
 ## Admin pages
 
@@ -121,21 +121,21 @@ For the 'details' step of the 'foo' dossier type this results in the following p
   - `/balie/dossier/foo/details/concept/{prefix}/{dossierId}`
   - `/balie/dossier/foo/details/edit/{prefix}/{dossierId}`
 - controllers/actions
-  - `App\Controller\Admin\Dossier\Foo\DetailsStepController::concept`
-  - `App\Controller\Admin\Dossier\Foo\DetailsStepController::edit`
+  - `Shared\Controller\Admin\Dossier\Foo\DetailsStepController::concept`
+  - `Shared\Controller\Admin\Dossier\Foo\DetailsStepController::edit`
   - If the step needs a lot of actions or has many differences between edit and concept mode it can be split up into separate controllers:
-    - `App\Controller\Admin\Dossier\Foo\DetailsConceptStepController::concept`
-    - `App\Controller\Admin\Dossier\Foo\DetailsEditStepController::edit`
+    - `Shared\Controller\Admin\Dossier\Foo\DetailsConceptStepController::concept`
+    - `Shared\Controller\Admin\Dossier\Foo\DetailsEditStepController::edit`
 - forms
-  - In many cases a single form can be used for both edit modes: `App\Form\Dossier\Foo\DetailsType`
-  - If needed separate forms per edit mode can be defined: `App\Form\Dossier\Foo\DetailsConceptType`
+  - In many cases a single form can be used for both edit modes: `Shared\Form\Dossier\Foo\DetailsType`
+  - If needed separate forms per edit mode can be defined: `Shared\Form\Dossier\Foo\DetailsConceptType`
 
 Use the existing implementations as a starting point / reference.
 
 ## Public pages
 
-- Add a viewmodel and factory in the `App\Domain\Publication\Dossier\Type\Foo\ViewModel` namespace.
-- Create a new namespace `App\Controller\Public\Dossier\OtherPublication\Foo` for the new type
+- Add a viewmodel and factory in the `Shared\Domain\Publication\Dossier\Type\Foo\ViewModel` namespace.
+- Create a new namespace `Shared\Controller\Public\Dossier\OtherPublication\Foo` for the new type
 - Add a new `FooController` class in this namespace, based on for instance `src/Controller/Public/Dossier/AnnualReport/AnnualReportController.php`
 - Add the public templates. See the existing templates in `templates/annualreport` for reference.
 
@@ -163,7 +163,7 @@ See ``WooDecisionIngestStrategy`` for an example.
 - Implement ``ElasticDossierMapperInterface`` if needed. All dossier types automatically use the ``DefaultDossierMapper`` which indexes common properties from ``AbstractDossier``.
   If you need to map additional data into ElasticSearch that is specific to the dossier type you should implement a custom mapper. In that case you probably also need to add new fields to the ES schema.
   See ``WooDecisionMapper`` for an example. If you implement the ``ElasticDossierMapperInterface`` your mapper will be autowired with a higher priority than the default mapper.
-- Add a new namespace for search result mapping: `App\Domain\Search\Result\Dossier\Foo`
+- Add a new namespace for search result mapping: `Shared\Domain\Search\Result\Dossier\Foo`
   - Create a search result viewmodel that implements the marker interface ``DossierTypeSearchResultInterface``.
   - Implement ``ProvidesDossierTypeSearchResultInterface`` in the repository of the dossier type, this should return the new search result viewmodel.
   - Implement ``DossierTypeSearchResultMapperInterface``. In most cases you can use ``DossierTypeSearchResultMapper`` as a base to make this easier.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Producer\Repository;
+namespace Shared\Domain\WooIndex\Producer\Repository;
 
 use Symfony\Component\Uid\Uuid;
 

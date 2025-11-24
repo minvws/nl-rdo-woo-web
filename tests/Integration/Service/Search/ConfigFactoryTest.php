@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Service\Search;
+namespace Shared\Tests\Integration\Service\Search;
 
-use App\Domain\Search\Query\SearchParametersFactory;
 use PHPUnit\Framework\Attributes\Group;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Search\Query\SearchParametersFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
 #[Group('search')]
-final class ConfigFactoryTest extends KernelTestCase
+final class ConfigFactoryTest extends SharedWebTestCase
 {
     public function testItCanBeInitialized(): void
     {

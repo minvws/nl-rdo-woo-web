@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\AntiVirus;
+namespace Shared\Tests\Unit\Domain\Upload\AntiVirus;
 
-use App\Domain\Upload\AntiVirus\ClamAvClientFactory;
-use App\Domain\Upload\AntiVirus\ClamAvPlatformChecker;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Upload\AntiVirus\ClamAvClientFactory;
+use Shared\Domain\Upload\AntiVirus\ClamAvPlatformChecker;
+use Shared\Tests\Unit\UnitTestCase;
 use Xenolope\Quahog\Client;
 use Xenolope\Quahog\Result;
 
-final class ClamAvPlatformCheckerTest extends MockeryTestCase
+final class ClamAvPlatformCheckerTest extends UnitTestCase
 {
     private Client&MockInterface $client;
     private ClamAvClientFactory&MockInterface $clientFactory;

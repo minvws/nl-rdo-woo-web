@@ -2,24 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Tests\Factory\DepartmentFactory;
-use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
-use App\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
-use App\Tests\Integration\IntegrationTestTrait;
 use Doctrine\ORM\NoResultException;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Tests\Factory\DepartmentFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class DossierRepositoryTest extends KernelTestCase
+final class DossierRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private DossierRepository $repository;
 
     protected function setUp(): void

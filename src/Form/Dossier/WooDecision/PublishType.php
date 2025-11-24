@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier\WooDecision;
+namespace Shared\Form\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;

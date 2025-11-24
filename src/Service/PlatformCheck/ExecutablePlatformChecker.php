@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\PlatformCheck;
+namespace Shared\Service\PlatformCheck;
 
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
 
 readonly class ExecutablePlatformChecker implements PlatformCheckerInterface
 {

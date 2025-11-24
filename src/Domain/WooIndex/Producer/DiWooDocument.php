@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Producer;
+namespace Shared\Domain\WooIndex\Producer;
 
-use App\Domain\WooIndex\Tooi\InformatieCategorie;
-use App\Domain\WooIndex\Tooi\Ministerie;
 use Carbon\CarbonInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Shared\Domain\WooIndex\Tooi\InformatieCategorie;
+use Shared\Domain\WooIndex\Tooi\Ministerie;
 
 final readonly class DiWooDocument
 {

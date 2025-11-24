@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Dossier;
+namespace Shared\Tests\Unit\Domain\Upload\Dossier;
 
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Upload\Dossier\DossierUploadRequestValidator;
-use App\Domain\Upload\UploadRequest;
-use App\Domain\Upload\UploadService;
-use App\Service\Uploader\UploadGroupId;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Upload\Dossier\DossierUploadRequestValidator;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Domain\Upload\UploadService;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
 
-class DossierUploadRequestValidatorTest extends MockeryTestCase
+class DossierUploadRequestValidatorTest extends UnitTestCase
 {
     private DossierUploadRequestValidator $requestValidator;
 

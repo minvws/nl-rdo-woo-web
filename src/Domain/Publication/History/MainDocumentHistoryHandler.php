@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\History;
+namespace Shared\Domain\Publication\History;
 
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\MainDocument\Event\AbstractMainDocumentEvent;
-use App\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent;
-use App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
-use App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
-use App\Service\HistoryService;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\MainDocument\Event\AbstractMainDocumentEvent;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
+use Shared\Service\HistoryService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 final readonly class MainDocumentHistoryHandler

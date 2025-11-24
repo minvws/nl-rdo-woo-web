@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Department;
+namespace Shared\Tests\Unit\Domain\Upload\Department;
 
-use App\Domain\Department\Department;
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Upload\Department\DepartmentUploadHandler;
-use App\Domain\Upload\Event\UploadValidatedEvent;
-use App\Domain\Upload\Process\EntityUploadStorer;
-use App\Domain\Upload\UploadEntity;
-use App\Service\Uploader\UploadGroupId;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Upload\Department\DepartmentUploadHandler;
+use Shared\Domain\Upload\Event\UploadValidatedEvent;
+use Shared\Domain\Upload\Process\EntityUploadStorer;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class DepartmentUploadHandlerTest extends UnitTestCase

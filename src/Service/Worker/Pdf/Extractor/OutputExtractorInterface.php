@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Worker\Pdf\Extractor;
+namespace Shared\Service\Worker\Pdf\Extractor;
 
 /**
  * This interface can be used to communicate data that is extracted from a PDF document.

@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command\User;
+namespace Shared\Tests\Unit\Command\User;
 
-use App\Command\User\Create;
-use App\Domain\Organisation\Organisation;
-use App\Service\Totp;
-use App\Service\UserService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Command\User\Create;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Service\Totp;
+use Shared\Service\UserService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CreateTest extends MockeryTestCase
+class CreateTest extends UnitTestCase
 {
     private Create $command;
     private UserService&MockInterface $userService;

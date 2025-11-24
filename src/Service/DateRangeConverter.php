@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace Shared\Service;
 
 /**
  * This class will convert a date range into a human-readable string.

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\AbstractMainDocument;
+namespace Shared\Api\Admin\AbstractMainDocument;
 
 use ApiPlatform\Metadata\ApiProperty;
-use App\Api\Admin\Dossier\DossierReferenceDto;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Api\Admin\Dossier\DossierReferenceDto;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Uid\Uuid;

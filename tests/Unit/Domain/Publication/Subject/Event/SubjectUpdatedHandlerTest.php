@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Subject\Event;
+namespace Shared\Tests\Unit\Domain\Publication\Subject\Event;
 
-use App\Domain\Publication\Subject\Event\SubjectUpdatedEvent;
-use App\Domain\Publication\Subject\Event\SubjectUpdatedHandler;
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Publication\Subject\SubjectRepository;
-use App\Domain\Search\Index\Updater\SubjectIndexUpdater;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Subject\Event\SubjectUpdatedEvent;
+use Shared\Domain\Publication\Subject\Event\SubjectUpdatedHandler;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Publication\Subject\SubjectRepository;
+use Shared\Domain\Search\Index\Updater\SubjectIndexUpdater;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\InvalidArgumentException;
 
-class SubjectUpdatedHandlerTest extends MockeryTestCase
+class SubjectUpdatedHandlerTest extends UnitTestCase
 {
     private SubjectRepository&MockInterface $repository;
     private SubjectIndexUpdater&MockInterface $indexUpdater;

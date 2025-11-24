@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Subject\Subject;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Subject\Subject;
 
 final class AbstractDossierTest extends TestCase
 {

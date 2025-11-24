@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query\Facet\Input;
+namespace Shared\Domain\Search\Query\Facet\Input;
 
-use App\Domain\Search\Query\Facet\FacetDefinitions;
-use App\Service\Search\Model\FacetKey;
+use Shared\Domain\Search\Query\Facet\FacetDefinitions;
+use Shared\Service\Search\Model\FacetKey;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 readonly class FacetInputFactory

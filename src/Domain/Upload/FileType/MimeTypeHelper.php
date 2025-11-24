@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\FileType;
+namespace Shared\Domain\Upload\FileType;
 
-use App\Domain\Upload\UploadedFile;
-use App\Service\Uploader\UploadGroupId;
 use League\MimeTypeDetection\FinfoMimeTypeDetector;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Upload\UploadedFile;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\File\File;
 use Webmozart\Assert\Assert;
 

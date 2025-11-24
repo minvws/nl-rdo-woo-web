@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\Document;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Upload\Process\FileStorer;
-use App\Domain\Upload\UploadedFile;
-use App\Service\HistoryService;
-use App\Service\Utils\Utils;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Process\IngestProcessOptions;
+use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Upload\Process\FileStorer;
+use Shared\Domain\Upload\UploadedFile;
+use Shared\Service\HistoryService;
+use Shared\Service\Utils\Utils;
 
 readonly class DocumentFileProcessor
 {

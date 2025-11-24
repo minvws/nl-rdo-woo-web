@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document as DocumentEntity;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\DocumentViewFactory;
-use App\Service\Search\SearchService;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document as DocumentEntity;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\DocumentViewFactory;
+use Shared\Service\Search\SearchService;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class DocumentViewFactoryTest extends UnitTestCase
 {

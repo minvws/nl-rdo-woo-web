@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
-use App\Domain\Publication\Attachment\Command\DeleteAttachmentWithOverrideCommand;
-use App\Domain\Publication\Attachment\DossierWithAttachmentDeleteStrategy;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Command\DeleteAttachmentWithOverrideCommand;
+use Shared\Domain\Publication\Attachment\DossierWithAttachmentDeleteStrategy;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
-final class DossierWithAttachmentsDeleteStrategyTest extends MockeryTestCase
+final class DossierWithAttachmentsDeleteStrategyTest extends UnitTestCase
 {
     private MessageBusInterface&MockInterface $messageBus;
     private DossierWithAttachmentDeleteStrategy $strategy;

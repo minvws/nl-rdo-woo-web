@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory\Reader;
+namespace Shared\Service\Inventory\Reader;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 interface InventoryReaderInterface
 {

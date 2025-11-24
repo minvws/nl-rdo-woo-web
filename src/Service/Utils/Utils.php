@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Utils;
+namespace Shared\Service\Utils;
 
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 class Utils
 {

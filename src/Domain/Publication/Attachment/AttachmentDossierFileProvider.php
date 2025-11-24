@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment;
+namespace Shared\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\EntityWithFileInfo;
 use Doctrine\ORM\NoResultException;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\Uid\Uuid;
 
 readonly class AttachmentDossierFileProvider implements DossierFileProviderInterface

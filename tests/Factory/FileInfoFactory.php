@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory;
+namespace Shared\Tests\Factory;
 
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\SourceType;
-use App\Service\Storage\StorageRootPathGenerator;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\SourceType;
+use Shared\Service\Storage\StorageRootPathGenerator;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\ObjectFactory;
 

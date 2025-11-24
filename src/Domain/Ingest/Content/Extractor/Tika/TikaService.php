@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content\Extractor\Tika;
+namespace Shared\Domain\Ingest\Content\Extractor\Tika;
 
-use App\Domain\Ingest\Content\ContentExtractLogContext;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Content\ContentExtractLogContext;
 
 readonly class TikaService
 {

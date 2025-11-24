@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Content\Extractor\Tika;
+namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tika;
 
-use App\Domain\Ingest\Content\Extractor\Tika\TikaGuzzleClientFactory;
-use App\Tests\Unit\UnitTestCase;
 use GuzzleHttp\Client;
+use Shared\Domain\Ingest\Content\Extractor\Tika\TikaGuzzleClientFactory;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class TikaGuzzleClientFactoryTest extends UnitTestCase
 {

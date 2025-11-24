@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment\Handler;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment\Handler;
 
-use App\Domain\Publication\Attachment\AttachmentDispatcher;
-use App\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
-use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
-use App\Domain\Publication\Attachment\Handler\AttachmentEntityLoader;
-use App\Domain\Publication\Attachment\Handler\UpdateAttachmentHandler;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Upload\Process\EntityUploadStorer;
-use App\Service\Uploader\UploadGroupId;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
+use Shared\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
+use Shared\Domain\Publication\Attachment\Handler\AttachmentEntityLoader;
+use Shared\Domain\Publication\Attachment\Handler\UpdateAttachmentHandler;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Upload\Process\EntityUploadStorer;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UpdateAttachmentHandlerTest extends MockeryTestCase
+class UpdateAttachmentHandlerTest extends UnitTestCase
 {
     private AttachmentRepository&MockInterface $attachmentRepository;
     private UpdateAttachmentHandler $handler;

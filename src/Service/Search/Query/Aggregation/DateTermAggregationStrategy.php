@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Aggregation;
+namespace Shared\Service\Search\Query\Aggregation;
 
-use App\Domain\Search\Query\Facet\Facet;
-use App\Domain\Search\Query\Facet\Input\DateFacetInputInterface;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Dsl\Aggregation;
-use App\Service\Search\Query\Filter\PeriodFilter;
 use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
+use Shared\Domain\Search\Query\Facet\Facet;
+use Shared\Domain\Search\Query\Facet\Input\DateFacetInputInterface;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Query\Dsl\Aggregation;
+use Shared\Service\Search\Query\Filter\PeriodFilter;
 
 final readonly class DateTermAggregationStrategy implements AggregationStrategyInterface
 {

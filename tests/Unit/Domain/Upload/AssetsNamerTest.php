@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload;
+namespace Shared\Tests\Unit\Domain\Upload;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Upload\AssetsNamer;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Upload\AssetsNamer;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class AssetsNamerTest extends UnitTestCase

@@ -40,12 +40,20 @@ describe('The functionality regarding the collapsible filters on the search page
       </fieldset>
     `;
 
-    vi.spyOn(window, 'matchMedia').mockImplementation(
-      () =>
-        ({
-          matches: true,
-        }) as MediaQueryList,
-    );
+    // Define matchMedia if it doesn't exist (jsdom compatibility)
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query) => ({
+        matches: true,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    });
 
     ({ cleanup, initialize } = collapsibleFilters());
     initialize();

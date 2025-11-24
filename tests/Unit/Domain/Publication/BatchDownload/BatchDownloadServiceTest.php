@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\BatchDownload\BatchDownloadDispatcher;
-use App\Domain\Publication\BatchDownload\BatchDownloadRepository;
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\BatchDownload\BatchDownloadStatus;
-use App\Domain\Publication\BatchDownload\BatchDownloadStorage;
-use App\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadDispatcher;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadStatus;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadStorage;
+use Shared\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class BatchDownloadServiceTest extends MockeryTestCase
+class BatchDownloadServiceTest extends UnitTestCase
 {
     private BatchDownloadRepository&MockInterface $batchRepository;
     private BatchDownloadDispatcher&MockInterface $dispatcher;

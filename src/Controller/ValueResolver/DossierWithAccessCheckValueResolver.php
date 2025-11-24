@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\ValueResolver;
+namespace Shared\Controller\ValueResolver;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Exception\ViewingNotAllowedException;
-use App\Service\Security\DossierVoter;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Exception\ViewingNotAllowedException;
+use Shared\Service\Security\DossierVoter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsTargetedValueResolver;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
@@ -49,7 +49,7 @@ readonly class DossierWithAccessCheckValueResolver implements ValueResolverInter
 
         $prefix = $request->attributes->getString('prefix');
         $dossierId = $request->attributes->getString('dossierId');
-        if (empty($prefix) || empty($dossierId)) {
+        if ($prefix === '' || $dossierId === '') {
             return null;
         }
 

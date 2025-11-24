@@ -2,16 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Content\Markdown;
+namespace Shared\Tests\Integration\Domain\Content\Markdown;
 
-use App\Domain\Content\Markdown\MarkdownConverter;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Content\Markdown\MarkdownConverter;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class MarkdownConverterTest extends KernelTestCase
+final class MarkdownConverterTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private MarkdownConverter $markdownConverter;
 
     protected function setUp(): void

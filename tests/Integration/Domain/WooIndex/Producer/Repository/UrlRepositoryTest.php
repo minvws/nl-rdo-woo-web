@@ -2,22 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\WooIndex\Producer\Repository;
+namespace Shared\Tests\Integration\Domain\WooIndex\Producer\Repository;
 
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\WooIndex\Producer\Repository\RawUrlDto;
-use App\Domain\WooIndex\Producer\Repository\UrlRepository;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Story\WooIndexAnnualReportStory;
-use App\Tests\Story\WooIndexWooDecisionStory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
+use Shared\Domain\WooIndex\Producer\Repository\UrlRepository;
+use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\Tests\Story\WooIndexAnnualReportStory;
+use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Attribute\WithStory;
 
-final class UrlRepositoryTest extends KernelTestCase
+final class UrlRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private UrlRepository $repository;
 
     protected function setUp(): void

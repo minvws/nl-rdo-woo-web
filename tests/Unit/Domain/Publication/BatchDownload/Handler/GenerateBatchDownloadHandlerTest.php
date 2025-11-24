@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload\Handler;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\Handler;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\BatchDownload\BatchDownloadRepository;
-use App\Domain\Publication\BatchDownload\BatchDownloadZipGenerator;
-use App\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand;
-use App\Domain\Publication\BatchDownload\Handler\GenerateBatchDownloadHandler;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadZipGenerator;
+use Shared\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand;
+use Shared\Domain\Publication\BatchDownload\Handler\GenerateBatchDownloadHandler;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class GenerateBatchDownloadHandlerTest extends MockeryTestCase
+class GenerateBatchDownloadHandlerTest extends UnitTestCase
 {
     private BatchDownloadRepository&MockInterface $repository;
     private BatchDownloadZipGenerator&MockInterface $zipGenerator;

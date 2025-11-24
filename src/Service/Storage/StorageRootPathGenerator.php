@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Storage;
+namespace Shared\Service\Storage;
 
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\Uid\Uuid;
 
 class StorageRootPathGenerator

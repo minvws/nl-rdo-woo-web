@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content;
+namespace Shared\Domain\Ingest\Content;
 
-use App\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Storage\EntityStorageService;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Storage\EntityStorageService;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class ContentExtractService

@@ -19,6 +19,7 @@ return (new PhpCsFixer\Config())
         'not_operator_with_successor_space' => true,
         'phpdoc_to_comment' => ['ignored_tags' => ['var']],
         'types_spaces' => ['space_multiple_catch' => 'single'],
+        'no_multiline_whitespace_around_double_arrow' => false,
     ])
     ->setFinder($finder)
 ;

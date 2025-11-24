@@ -5,19 +5,19 @@ services:
         bind:
             string $publicBaseUrl: '%public_base_url%'
 
-    App\Domain\WooIndex\Producer\Mapper\UrlMapper:
+    Shared\Domain\WooIndex\Producer\Mapper\UrlMapper:
         public: true
-    App\Domain\WooIndex\Producer\Repository\UrlRepository:
-        public: true
-
-    App\Domain\WooIndex\Producer\UrlProducer:
+    Shared\Domain\WooIndex\Producer\Repository\UrlRepository:
         public: true
 
-    App\Domain\WooIndex\Builder\SitemapIndexBuilder:
+    Shared\Domain\WooIndex\Producer\UrlProducer:
         public: true
 
-    App\Domain\WooIndex\Builder\SitemapBuilder:
+    Shared\Domain\WooIndex\Builder\SitemapIndexBuilder:
         public: true
 
-    App\Domain\WooIndex\WooIndex:
+    Shared\Domain\WooIndex\Builder\SitemapBuilder:
+        public: true
+
+    Shared\Domain\WooIndex\WooIndex:
         public: true

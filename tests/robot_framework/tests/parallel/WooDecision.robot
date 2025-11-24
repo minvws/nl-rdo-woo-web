@@ -70,18 +70,6 @@ Upload A Production Report With N Public Files And A Zip With N+1 Files
   Publish Dossier And Return To Admin Home
   Check Document Existence On Public  This is a non-published document
 
-Upload A Production Report With N Public Files And A Zip With N Other Files
-  ${new_prefix} =  Add A Random Organisation Prefix
-  Click Publications
-  Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=${new_prefix}
-  Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report  files/woodecision/productierapport - 10 openbaar.xlsx
-  Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Upload And Process Documents  files/woodecision/documenten - 10 andere.zip
-  Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet  Er moeten nog 10 document(en) geüpload worden.
-
 Upload A Production Report With N Public Files, M Non-public Files, And A Zip With N + M Files
   ${new_prefix} =  Add A Random Organisation Prefix
   Click Publications

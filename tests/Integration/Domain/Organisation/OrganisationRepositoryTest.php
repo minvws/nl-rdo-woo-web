@@ -2,18 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Organisation;
+namespace Shared\Tests\Integration\Domain\Organisation;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Organisation\OrganisationRepository;
-use App\Tests\Factory\OrganisationFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Organisation\OrganisationRepository;
+use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-class OrganisationRepositoryTest extends KernelTestCase
+class OrganisationRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private OrganisationRepository $organisationRepository;
 
     protected function setUp(): void

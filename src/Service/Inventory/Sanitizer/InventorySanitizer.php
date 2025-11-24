@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory\Sanitizer;
+namespace Shared\Service\Inventory\Sanitizer;
 
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\SourceType;
-use App\Exception\InventorySanitizerException;
-use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
-use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\SourceType;
+use Shared\Exception\InventorySanitizerException;
+use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
+use Shared\Service\Storage\EntityStorageService;
 
 readonly class InventorySanitizer
 {

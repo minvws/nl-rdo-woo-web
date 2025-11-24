@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Service\Storage\Streams;
+namespace Shared\Tests\Integration\Service\Storage\Streams;
 
 /**
  * @see https://www.php.net/manual/en/class.streamwrapper.php

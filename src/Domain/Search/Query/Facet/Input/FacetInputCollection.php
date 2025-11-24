@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query\Facet\Input;
+namespace Shared\Domain\Search\Query\Facet\Input;
 
-use App\Domain\Search\Query\Facet\FacetDefinitionInterface;
-use App\Service\Search\Model\FacetKey;
+use Shared\Domain\Search\Query\Facet\FacetDefinitionInterface;
+use Shared\Service\Search\Model\FacetKey;
 use Webmozart\Assert\Assert;
 
 /**

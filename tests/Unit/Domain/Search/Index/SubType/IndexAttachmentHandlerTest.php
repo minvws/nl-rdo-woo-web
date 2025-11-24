@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\SubType;
+namespace Shared\Tests\Unit\Domain\Search\Index\SubType;
 
-use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Ingest\Process\SubType\SubTypeIngester;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Search\Index\SubType\IndexAttachmentCommand;
-use App\Domain\Search\Index\SubType\IndexAttachmentHandler;
-use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Process\IngestProcessOptions;
+use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Search\Index\SubType\IndexAttachmentCommand;
+use Shared\Domain\Search\Index\SubType\IndexAttachmentHandler;
+use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class IndexAttachmentHandlerTest extends MockeryTestCase
+class IndexAttachmentHandlerTest extends UnitTestCase
 {
     private AttachmentRepository&MockInterface $repository;
     private SubTypeIndexer&MockInterface $subTypeIndexer;

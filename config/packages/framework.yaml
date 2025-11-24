@@ -10,7 +10,7 @@ framework:
     # Remove or comment this section to explicitly disable session support.
     session:
         enabled: true
-        handler_id: App\Service\Security\Session\EncryptedSessionProxy
+        handler_id: Shared\Service\Security\Session\EncryptedSessionProxy
         cookie_secure: true
         cookie_samesite: strict
         storage_factory_id: session.storage.factory.native
@@ -24,13 +24,13 @@ framework:
     php_errors:
         log: true
     exceptions:
-        App\Domain\Publication\PageProvider\PageProviderException:
+        Shared\Domain\Publication\PageProvider\PageProviderException:
             status_code: 404
-        App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException:
+        Shared\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException:
             status_code: 404
-        App\Domain\WooIndex\Exception\WooIndexFileNotFoundException:
+        Shared\Domain\WooIndex\Exception\WooIndexFileNotFoundException:
             status_code: 404
-        App\Domain\Department\Exception\DepartmentAssetNotFound:
+        Shared\Domain\Department\Exception\DepartmentAssetNotFound:
             status_code: 404
     assets:
         packages:
@@ -51,7 +51,7 @@ when@dev:
             cookie_secure: auto
         trusted_hosts:
             - '%env(TRUSTED_HOSTS)%'
-            - app.local
-            - open.local
-            - balie.local
-            - api.local
+            - public-woo.local
+            - admin-woo.local
+        trusted_proxies: '%env(default::TRUSTED_PROXIES)%'
+        trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']

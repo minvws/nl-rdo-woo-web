@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication;
+namespace Shared\Tests\Unit\Domain\Publication;
 
-use App\Domain\Publication\Citation;
-use App\Tests\Unit\UnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Citation;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class CitationTest extends UnitTestCase
 {

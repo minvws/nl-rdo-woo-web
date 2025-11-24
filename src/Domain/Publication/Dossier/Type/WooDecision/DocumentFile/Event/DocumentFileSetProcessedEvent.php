@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Event;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Event;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
 use Symfony\Component\Uid\Uuid;
 
 readonly class DocumentFileSetProcessedEvent

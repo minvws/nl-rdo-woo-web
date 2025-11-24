@@ -2,22 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\WooIndex\Command;
+namespace Shared\Tests\Integration\Domain\WooIndex\Command;
 
-use App\Domain\WooIndex\WooIndexNamer;
-use App\Domain\WooIndex\WooIndexSitemapRepository;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Story\WooIndexWooDecisionStory;
 use League\Flysystem\FilesystemOperator;
+use Shared\Domain\WooIndex\WooIndexNamer;
+use Shared\Domain\WooIndex\WooIndexSitemapRepository;
+use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
-final class WooIndexGenerateCommandTest extends KernelTestCase
+final class WooIndexGenerateCommandTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private FilesystemOperator $wooIndexStorage;
 
     private WooIndexSitemapRepository $wooIndexSitemapRepository;

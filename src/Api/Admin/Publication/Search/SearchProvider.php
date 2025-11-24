@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Publication\Search;
+namespace Shared\Api\Admin\Publication\Search;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Api\ContextGetter;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
-use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Query\SearchParametersFactory;
-use App\Service\Search\Query\Definition\AdminDossiersAndDocumentsQueryDefinition;
-use App\Service\Search\SearchService;
+use Shared\Api\ContextGetter;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Query\SearchParametersFactory;
+use Shared\Service\Search\Query\Definition\AdminDossiersAndDocumentsQueryDefinition;
+use Shared\Service\Search\SearchService;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\Uid\Uuid;
 

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\AbstractDossier;
 use Doctrine\Common\Collections\Collection;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Uid\Uuid;
 

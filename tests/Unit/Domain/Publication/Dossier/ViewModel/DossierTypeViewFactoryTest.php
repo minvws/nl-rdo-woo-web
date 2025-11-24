@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\DossierType as DossierTypeEnum;
-use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
-use App\Domain\Publication\Dossier\ViewModel\DossierTypeViewFactory;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\DossierType as DossierTypeEnum;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierTypeViewFactory;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

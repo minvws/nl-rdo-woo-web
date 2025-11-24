@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security\Authorization;
+namespace Shared\Tests\Unit\Service\Security\Authorization;
 
-use App\Service\Security\Authorization\Entry;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Service\Security\Authorization\Entry;
+use Shared\Tests\Unit\UnitTestCase;
 
-class EntryTest extends MockeryTestCase
+class EntryTest extends UnitTestCase
 {
     public function testEmptyEntry(): void
     {

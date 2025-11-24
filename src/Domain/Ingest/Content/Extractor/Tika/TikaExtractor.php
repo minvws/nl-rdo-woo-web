@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content\Extractor\Tika;
+namespace Shared\Domain\Ingest\Content\Extractor\Tika;
 
-use App\Domain\Ingest\Content\ContentExtractLogContext;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Ingest\Content\FileReferenceInterface;
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Ingest\Content\ContentExtractLogContext;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Ingest\Content\FileReferenceInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 readonly class TikaExtractor implements ContentExtractorInterface
 {
@@ -30,7 +30,7 @@ readonly class TikaExtractor implements ContentExtractorInterface
 
     public function supports(EntityWithFileInfo $entity): bool
     {
-        return ! empty($entity->getFileInfo()->getNormalizedMimeType());
+        return $entity->getFileInfo()->getNormalizedMimeType() !== '';
     }
 
     public function getKey(): ContentExtractorKey

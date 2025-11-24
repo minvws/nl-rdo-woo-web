@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier\WooDecision;
+namespace Shared\Controller\Admin\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Step\StepActionHelper;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\ProductionReportStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Form\Dossier\WooDecision\InventoryType;
-use App\Service\DossierWizard\DossierWizardStatus;
-use App\Service\Uploader\UploadGroupId;
+use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\ProductionReportStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Form\Dossier\WooDecision\InventoryType;
+use Shared\Service\DossierWizard\DossierWizardStatus;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;

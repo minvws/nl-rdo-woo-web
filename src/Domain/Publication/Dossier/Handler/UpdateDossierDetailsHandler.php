@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Handler;
+namespace Shared\Domain\Publication\Dossier\Handler;
 
-use App\Domain\Publication\Dossier\Command\UpdateDossierDetailsCommand;
-use App\Domain\Publication\Dossier\Event\DossierUpdatedEvent;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Service\DossierService;
+use Shared\Domain\Publication\Dossier\Command\UpdateDossierDetailsCommand;
+use Shared\Domain\Publication\Dossier\Event\DossierUpdatedEvent;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Service\DossierService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 

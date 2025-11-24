@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload;
+namespace Shared\Tests\Unit\Domain\Upload;
 
-use App\Domain\Upload\UploadStatus;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Upload\UploadStatus;
+use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class UploadStatusTest extends MockeryTestCase
+class UploadStatusTest extends UnitTestCase
 {
     use MatchesSnapshots;
 

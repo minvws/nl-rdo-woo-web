@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Command\Ingest;
+namespace Shared\Command\Ingest;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Publication\Dossier\DossierRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

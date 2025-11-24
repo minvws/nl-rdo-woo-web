@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscriber;
+namespace Shared\EventSubscriber;
 
-use App\Service\EnvironmentService;
-use App\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Service\EnvironmentService;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -75,6 +75,10 @@ class SecurityHeaderSubscriber
             if (! $response->headers->has($key)) {
                 $response->headers->set($key, $value);
             }
+        }
+
+        if ($this->environmentService->isDev()) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=0');
         }
     }
 

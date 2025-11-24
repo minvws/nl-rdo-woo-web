@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service;
+namespace Shared\Tests\Unit\Service;
 
-use App\Service\Security\Event\UserDisableEvent;
-use App\Service\Security\Event\UserEnableEvent;
-use App\Service\Security\Event\UserResetEvent;
-use App\Service\Security\Event\UserUpdatedEvent;
-use App\Service\Security\User;
-use App\Service\Security\UserRepository;
-use App\Service\UserService;
-use App\Tests\Unit\UnitTestCase;
 use Minvws\HorseBattery\PasswordGenerator;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Totp\TotpAuthenticatorInterface;
+use Shared\Service\Security\Event\UserDisableEvent;
+use Shared\Service\Security\Event\UserEnableEvent;
+use Shared\Service\Security\Event\UserResetEvent;
+use Shared\Service\Security\Event\UserUpdatedEvent;
+use Shared\Service\Security\User;
+use Shared\Service\Security\UserRepository;
+use Shared\Service\UserService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;

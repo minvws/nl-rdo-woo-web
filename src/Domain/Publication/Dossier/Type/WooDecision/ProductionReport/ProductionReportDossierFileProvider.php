@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 readonly class ProductionReportDossierFileProvider implements DossierFileProviderInterface
 {

@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
-use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
-use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
-use App\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\AbstractDossierRepository;
+use Shared\Domain\Publication\Dossier\Type\DossierReference;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
+use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
+use Shared\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\Uid\Uuid;
 
 /**

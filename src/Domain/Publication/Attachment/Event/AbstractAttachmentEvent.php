@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\Event;
+namespace Shared\Domain\Publication\Attachment\Event;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Service\Utils\Utils;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Service\Utils\Utils;
 use Symfony\Component\Uid\Uuid;
 
 abstract readonly class AbstractAttachmentEvent

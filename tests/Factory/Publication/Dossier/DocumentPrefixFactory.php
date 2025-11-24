@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory\Publication\Dossier;
+namespace Shared\Tests\Factory\Publication\Dossier;
 
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Tests\Factory\OrganisationFactory;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Tests\Factory\OrganisationFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

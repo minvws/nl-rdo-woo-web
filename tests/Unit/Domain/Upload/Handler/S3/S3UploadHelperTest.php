@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Handler\S3;
+namespace Shared\Tests\Unit\Domain\Upload\Handler\S3;
 
-use App\Domain\Upload\Handler\S3\S3UploadHelper;
-use App\Domain\Upload\UploadRequest;
-use App\Service\Uploader\UploadGroupId;
 use Aws\Result;
 use Aws\S3\S3Client;
 use GuzzleHttp\Psr7\Stream;
@@ -14,6 +11,9 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use Shared\Domain\Upload\Handler\S3\S3UploadHelper;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Service\Uploader\UploadGroupId;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;

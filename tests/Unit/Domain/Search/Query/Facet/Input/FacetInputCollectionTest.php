@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Query\Facet\Input;
+namespace Shared\Tests\Unit\Domain\Search\Query\Facet\Input;
 
-use App\Domain\Search\Query\Facet\FacetDefinitionInterface;
-use App\Domain\Search\Query\Facet\Input\FacetInput;
-use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
-use App\Service\Search\Model\FacetKey;
-use App\Tests\Unit\UnitTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use Shared\Domain\Search\Query\Facet\FacetDefinitionInterface;
+use Shared\Domain\Search\Query\Facet\Input\FacetInput;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputCollection;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\InvalidArgumentException;
 
 #[Group('facet')]

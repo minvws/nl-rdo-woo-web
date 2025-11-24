@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Result;
+namespace Shared\Service\Search\Result;
 
-use App\Domain\Search\Query\Facet\Input\DateFacetInput;
-use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Result\ResultEntryInterface;
-use App\Domain\Search\Result\ResultFactory;
-use App\Service\Search\Model\Aggregation;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Model\Suggestion;
-use App\Service\Search\Model\SuggestionEntry;
-use App\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Knp\Component\Pager\Pagination\AbstractPagination;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use MinVWS\TypeArray\TypeArray;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Search\Query\Facet\Input\DateFacetInput;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Result\ResultEntryInterface;
+use Shared\Domain\Search\Result\ResultFactory;
+use Shared\Service\Search\Model\Aggregation;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Model\Suggestion;
+use Shared\Service\Search\Model\SuggestionEntry;
+use Shared\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
 
 /**
  * @SuppressWarnings("PHPMD.CouplingBetweenObjects")

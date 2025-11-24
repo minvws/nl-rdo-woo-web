@@ -14,12 +14,12 @@
     </div>
 
     <div class="pt-8">
-        {{ macro.facet_links('categories.category.type' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::TYPE'), result) }}
-        {{ macro.facet_links('categories.category.department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), result) }}
-        {{ macro.facet_links('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
-        {{ macro.facet_links('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE'), result) }}
-        {{ macro.facet_links('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT'), result) }}
-        {{ macro.facet_links('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
+        {{ macro.facet_links('categories.category.type' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::TYPE'), result) }}
+        {{ macro.facet_links('categories.category.department' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), result) }}
+        {{ macro.facet_links('categories.category.grounds' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
+        {{ macro.facet_links('categories.category.source_file' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::SOURCE'), result) }}
+        {{ macro.facet_links('categories.category.subject' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::SUBJECT'), result) }}
+        {{ macro.facet_links('categories.category.judgement' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
     </div>
 </div>
 {% endblock %}

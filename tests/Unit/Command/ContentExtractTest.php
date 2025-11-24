@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command;
+namespace Shared\Tests\Unit\Command;
 
-use App\Command\ContentExtractCommand;
-use App\Domain\Ingest\Content\ContentExtract;
-use App\Domain\Ingest\Content\ContentExtractCollection;
-use App\Domain\Ingest\Content\ContentExtractOptions;
-use App\Domain\Ingest\Content\ContentExtractService;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocumentRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Command\ContentExtractCommand;
+use Shared\Domain\Ingest\Content\ContentExtract;
+use Shared\Domain\Ingest\Content\ContentExtractCollection;
+use Shared\Domain\Ingest\Content\ContentExtractOptions;
+use Shared\Domain\Ingest\Content\ContentExtractService;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocumentRepository;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ContentExtractTest extends MockeryTestCase
+class ContentExtractTest extends UnitTestCase
 {
     private Command $command;
     private ContentExtractService&MockInterface $contentExtractService;

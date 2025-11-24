@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Admin\Action;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Admin\Action;
 
-use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class DossierAdminActionTest extends MockeryTestCase
+class DossierAdminActionTest extends UnitTestCase
 {
     public function testTrans(): void
     {

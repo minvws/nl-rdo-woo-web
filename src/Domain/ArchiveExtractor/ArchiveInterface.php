@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ArchiveExtractor;
+namespace Shared\Domain\ArchiveExtractor;
 
-use App\Domain\ArchiveExtractor\Exception\ArchiveLogicException;
-use App\Domain\ArchiveExtractor\Exception\ArchiveMissingDestinationException;
-use App\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveLogicException;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveMissingDestinationException;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
 
 interface ArchiveInterface
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory;
+namespace Shared\Tests\Factory;
 
-use App\Domain\Organisation\Organisation;
+use Shared\Domain\Organisation\Organisation;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

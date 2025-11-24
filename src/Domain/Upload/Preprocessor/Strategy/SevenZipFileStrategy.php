@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Preprocessor\Strategy;
+namespace Shared\Domain\Upload\Preprocessor\Strategy;
 
-use App\Domain\Upload\AntiVirus\ClamAvFileScanner;
-use App\Domain\Upload\Extractor\Extractor;
-use App\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface;
-use App\Domain\Upload\UploadedFile;
-use App\Service\Storage\LocalFilesystem;
+use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
+use Shared\Domain\Upload\Extractor\Extractor;
+use Shared\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface;
+use Shared\Domain\Upload\UploadedFile;
+use Shared\Service\Storage\LocalFilesystem;
 use Symfony\Component\Mime\MimeTypesInterface;
 
 readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface

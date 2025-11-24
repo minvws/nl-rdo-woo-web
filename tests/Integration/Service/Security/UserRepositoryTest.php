@@ -2,20 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Service\Security;
+namespace Shared\Tests\Integration\Service\Security;
 
-use App\Service\Security\Roles;
-use App\Service\Security\User;
-use App\Service\Security\UserRepository;
-use App\Tests\Factory\OrganisationFactory;
-use App\Tests\Factory\UserFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Service\Security\Roles;
+use Shared\Service\Security\User;
+use Shared\Service\Security\UserRepository;
+use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\UserFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class UserRepositoryTest extends KernelTestCase
+final class UserRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private UserRepository $repository;
 
     protected function setUp(): void

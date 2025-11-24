@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Updater;
+namespace Shared\Tests\Unit\Domain\Search\Index\Updater;
 
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Search\Index\Updater\SubjectIndexUpdater;
-use App\Service\Elastic\ElasticClientInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Search\Index\Updater\SubjectIndexUpdater;
+use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class SubjectIndexUpdaterTest extends MockeryTestCase
+class SubjectIndexUpdaterTest extends UnitTestCase
 {
     private SubjectIndexUpdater $indexUpdater;
     private ElasticClientInterface&MockInterface $elasticClient;

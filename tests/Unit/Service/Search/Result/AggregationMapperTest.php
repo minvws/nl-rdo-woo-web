@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Search\Result;
+namespace Shared\Tests\Unit\Service\Search\Result;
 
-use App\Domain\Publication\Citation;
-use App\Domain\Publication\SourceType;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Query\Facet\Definition\DepartmentFacet;
-use App\Domain\Search\Query\Facet\Definition\GroundsFacet;
-use App\Domain\Search\Query\Facet\Definition\SourceFacet;
-use App\Domain\Search\Query\Facet\Definition\TypeFacet;
-use App\Domain\Search\Query\Facet\FacetDefinitions;
-use App\Domain\Search\Query\Facet\Input\FacetInputFactory;
-use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Result\AggregationMapper;
 use MinVWS\TypeArray\TypeArray;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Citation;
+use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Query\Facet\Definition\DepartmentFacet;
+use Shared\Domain\Search\Query\Facet\Definition\GroundsFacet;
+use Shared\Domain\Search\Query\Facet\Definition\SourceFacet;
+use Shared\Domain\Search\Query\Facet\Definition\TypeFacet;
+use Shared\Domain\Search\Query\Facet\FacetDefinitions;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputFactory;
+use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Result\AggregationMapper;
+use Shared\Tests\Unit\UnitTestCase;
 
-class AggregationMapperTest extends MockeryTestCase
+class AggregationMapperTest extends UnitTestCase
 {
     private FacetDefinitions&MockInterface $facetDefinitions;
     private FacetInputFactory&MockInterface $facetInputFactory;

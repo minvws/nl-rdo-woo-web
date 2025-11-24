@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\ElasticIndex;
+namespace Shared\Domain\Search\Index\ElasticIndex;
 
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\Rollover\MappingService;
-use App\Service\Elastic\ElasticClientInterface;
 use Elastic\Elasticsearch\Response\Elasticsearch;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\Rollover\MappingService;
+use Shared\Service\Elastic\ElasticClientInterface;
 
 /**
  * Creates and manages Elasticsearch indices and mappings.

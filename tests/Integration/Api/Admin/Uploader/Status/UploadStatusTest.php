@@ -2,20 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Api\Admin\Uploader\Status;
+namespace Shared\Tests\Integration\Api\Admin\Uploader\Status;
 
-use App\Domain\Upload\UploadStatus;
-use App\Tests\Factory\UploadEntityFactory;
-use App\Tests\Factory\UserFactory;
-use App\Tests\Integration\Api\Admin\AdminApiTestCase;
-use App\Tests\Integration\IntegrationTestTrait;
+use Shared\Domain\Upload\UploadStatus;
+use Shared\Tests\Factory\UploadEntityFactory;
+use Shared\Tests\Factory\UserFactory;
+use Shared\Tests\Integration\Api\Admin\AdminApiTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 final class UploadStatusTest extends AdminApiTestCase
 {
-    use IntegrationTestTrait;
-
     protected function setUp(): void
     {
         parent::setUp();

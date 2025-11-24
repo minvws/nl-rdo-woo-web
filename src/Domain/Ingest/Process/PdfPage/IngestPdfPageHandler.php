@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\PdfPage;
+namespace Shared\Domain\Ingest\Process\PdfPage;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Doctrine\LegacyNamespaceHelper;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -23,7 +24,8 @@ final readonly class IngestPdfPageHandler
 
     public function __invoke(IngestPdfPageCommand $message): void
     {
-        $entity = $this->doctrine->getRepository($message->getEntityClass())->find($message->getEntityId());
+        $entityClass = LegacyNamespaceHelper::normalizeClassName($message->getEntityClass());
+        $entity = $this->doctrine->getRepository($entityClass)->find($message->getEntityId());
         if (is_null($entity)) {
             $this->logger->warning('No entity found in IngestPdfPageHandler', [
                 'id' => $message->getEntityId()->toRfc4122(),

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Search\Query\Sort\ViewModel;
+namespace Shared\Tests\Unit\Service\Search\Query\Sort\ViewModel;
 
-use App\Service\Search\Query\Sort\SortException;
-use App\Service\Search\Query\Sort\ViewModel\SortItem;
-use App\Service\Search\Query\Sort\ViewModel\SortItems;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Shared\Service\Search\Query\Sort\SortException;
+use Shared\Service\Search\Query\Sort\ViewModel\SortItem;
+use Shared\Service\Search\Query\Sort\ViewModel\SortItems;
 
 class SortItemsTest extends TestCase
 {

@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Organisation\Organisation;
-use App\Form\User\DisableUserFormType;
-use App\Form\User\EnableUserFormType;
-use App\Form\User\ResetPasswordFormType;
-use App\Form\User\ResetTwoFactorAuthFormType;
-use App\Form\User\UserCreateFormType;
-use App\Form\User\UserInfoFormType;
-use App\Service\PaginatorFactory;
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use App\Service\Security\Authorization\AuthorizationMatrixFilter;
-use App\Service\Security\Roles;
-use App\Service\Security\User;
-use App\Service\Security\UserRepository;
-use App\Service\UserService;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Form\User\DisableUserFormType;
+use Shared\Form\User\EnableUserFormType;
+use Shared\Form\User\ResetPasswordFormType;
+use Shared\Form\User\ResetTwoFactorAuthFormType;
+use Shared\Form\User\UserCreateFormType;
+use Shared\Form\User\UserInfoFormType;
+use Shared\Service\PaginatorFactory;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\Authorization\AuthorizationMatrixFilter;
+use Shared\Service\Security\Roles;
+use Shared\Service\Security\User;
+use Shared\Service\Security\UserRepository;
+use Shared\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormInterface;

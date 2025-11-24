@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Publication\Search;
+namespace Shared\Api\Admin\Publication\Search;
 
 enum SearchResultType: string
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\PlatformCheck;
+namespace Shared\Service\PlatformCheck;
 
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\StorageAliveInterface;
-use App\Service\Storage\ThumbnailStorageService;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\StorageAliveInterface;
+use Shared\Service\Storage\ThumbnailStorageService;
 
 readonly class StorageAlivePlatformChecker implements PlatformCheckerInterface
 {

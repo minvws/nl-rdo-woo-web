@@ -38,11 +38,11 @@
             </div>
 
             <div class="woo-container">
-                {{ macro.facet_preview('categories.category.type' | trans, constant('App\\Service\\Search\\Model\\FacetKey::TYPE'), facets) }}
-                {{ macro.facet_preview('categories.category.grounds' | trans, constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), facets) }}
-                {{ macro.facet_preview('categories.category.subject' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT'), facets) }}
-                {{ macro.facet_preview('categories.category.source_file' | trans, constant('App\\Service\\Search\\Model\\FacetKey::SOURCE'), facets) }}
-                {{ macro.facet_preview('categories.category.judgement' | trans, constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), facets) }}
+                {{ macro.facet_preview('categories.category.type' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::TYPE'), facets) }}
+                {{ macro.facet_preview('categories.category.grounds' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::GROUNDS'), facets) }}
+                {{ macro.facet_preview('categories.category.subject' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::SUBJECT'), facets) }}
+                {{ macro.facet_preview('categories.category.source_file' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::SOURCE'), facets) }}
+                {{ macro.facet_preview('categories.category.judgement' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), facets) }}
             </div>
         </section>
     {% endif %}

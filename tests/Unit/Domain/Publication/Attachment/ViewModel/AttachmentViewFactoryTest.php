@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment\ViewModel;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Attachment\ViewModel\Attachment;
-use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\SourceType;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Matcher\Closure;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Attachment\ViewModel\Attachment;
+use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\SourceType;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\UuidV6;
 

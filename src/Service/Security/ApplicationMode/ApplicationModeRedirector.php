@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Security\ApplicationMode;
+namespace Shared\Service\Security\ApplicationMode;
 
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;

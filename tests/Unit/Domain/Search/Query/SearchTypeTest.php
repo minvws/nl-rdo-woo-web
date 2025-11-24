@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Query;
+namespace Shared\Tests\Unit\Domain\Search\Query;
 
-use App\Domain\Search\Query\SearchType;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Search\Query\SearchType;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class SearchTypeTest extends MockeryTestCase
+class SearchTypeTest extends UnitTestCase
 {
     public function testIsDossier(): void
     {

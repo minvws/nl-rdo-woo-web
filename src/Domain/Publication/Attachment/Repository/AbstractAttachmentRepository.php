@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\Repository;
+namespace Shared\Domain\Publication\Attachment\Repository;
 
-use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Dossier\AbstractDossier;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Shared\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\Uid\Uuid;
 
 /**

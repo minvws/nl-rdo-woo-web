@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Publication\Search;
+namespace Shared\Api\Admin\Publication\Search;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\QueryParameter;
 use ApiPlatform\OpenApi\Factory\OpenApiFactory;
 use ApiPlatform\OpenApi\Model\Operation;
-use App\Api\Admin\Publication\Search\Parameter\DossierIdParameterProvider;
-use App\Api\Admin\Publication\Search\Parameter\PublicationTypeFilterParameterProvider;
-use App\Api\Admin\Publication\Search\Parameter\ResultTypeFilterParameterProvider;
-use App\Api\Admin\Publication\Search\Parameter\SearchParameterProvider;
-use App\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Api\Admin\Publication\Search\Parameter\DossierIdParameterProvider;
+use Shared\Api\Admin\Publication\Search\Parameter\PublicationTypeFilterParameterProvider;
+use Shared\Api\Admin\Publication\Search\Parameter\ResultTypeFilterParameterProvider;
+use Shared\Api\Admin\Publication\Search\Parameter\SearchParameterProvider;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Symfony\Component\TypeInfo\Type;
 use Symfony\Component\TypeInfo\TypeIdentifier;
 use Symfony\Component\Validator\Constraints as Assert;

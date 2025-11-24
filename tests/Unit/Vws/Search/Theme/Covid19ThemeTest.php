@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Vws\Search\Theme;
+namespace Shared\Tests\Unit\Vws\Search\Theme;
 
-use App\Tests\Unit\UnitTestCase;
-use App\Vws\Search\Theme\Covid19QueryConditionBuilder;
-use App\Vws\Search\Theme\Covid19Theme;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Vws\Search\Theme\Covid19QueryConditionBuilder;
+use Shared\Vws\Search\Theme\Covid19Theme;
 
 class Covid19ThemeTest extends UnitTestCase
 {

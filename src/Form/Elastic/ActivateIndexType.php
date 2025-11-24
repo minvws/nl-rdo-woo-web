@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Elastic;
+namespace Shared\Form\Elastic;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

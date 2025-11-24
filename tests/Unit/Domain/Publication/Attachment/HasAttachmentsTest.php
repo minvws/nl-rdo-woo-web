@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
-use App\Domain\Publication\Attachment\Entity\HasAttachments;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\Collection;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class HasAttachmentsTest extends UnitTestCase
 {

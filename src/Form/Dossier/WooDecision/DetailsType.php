@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier\WooDecision;
+namespace Shared\Form\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Form\Dossier\AbstractDossierStepType;
-use App\Form\Dossier\DossierFormBuilderTrait;
-use App\Form\YearMonthType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Form\Dossier\AbstractDossierStepType;
+use Shared\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Form\YearMonthType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -65,7 +65,8 @@ class DetailsType extends AbstractDossierStepType
             ]);
 
         $this->addInternalReferenceField($builder);
-        $this->addNewDossierFields($builder);
+        $this->addDossierNrField($builder);
+        $this->addDocumentPrefixField($builder);
         $this->addSubmits($builder);
     }
 }

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Component;
+namespace Shared\Service\Search\Query\Component;
 
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Index\Schema\ElasticPath;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Dsl\Query;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Index\Schema\ElasticPath;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Query\Dsl\Query;
 
 readonly class HighlightComponent
 {

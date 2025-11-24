@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory\Reader;
+namespace Shared\Service\Inventory\Reader;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\SourceType;
-use App\Exception\InventoryReaderException;
-use App\Service\FileReader\ColumnMapping;
-use App\Service\FileReader\FileReaderInterface;
-use App\Service\FileReader\ReaderFactoryInterface;
-use App\Service\Inquiry\CaseNumbers;
-use App\Service\Inventory\DocumentMetadata;
-use App\Service\Inventory\InventoryDataHelper;
-use App\Service\Inventory\MetadataField;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\SourceType;
+use Shared\Exception\InventoryReaderException;
+use Shared\Service\FileReader\ColumnMapping;
+use Shared\Service\FileReader\FileReaderInterface;
+use Shared\Service\FileReader\ReaderFactoryInterface;
+use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inventory\DocumentMetadata;
+use Shared\Service\Inventory\InventoryDataHelper;
+use Shared\Service\Inventory\MetadataField;
 
 /**
  * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
@@ -119,7 +119,7 @@ class InventoryReader implements InventoryReaderInterface
         $links = InventoryDataHelper::separateValues($this->reader->getOptionalString($rowIdx, MetadataField::LINK->value), '|');
 
         foreach ($links as $link) {
-            if ($link && strlen($link) > self::MAX_LINK_LENGTH) {
+            if ($link && \strlen($link) > self::MAX_LINK_LENGTH) {
                 throw InventoryReaderException::forLinkTooLong($link, $rowIdx);
             }
         }
@@ -160,7 +160,7 @@ class InventoryReader implements InventoryReaderInterface
     private function getDocumentId(int $rowIdx): string
     {
         $documentId = $this->reader->getString($rowIdx, MetadataField::ID->value);
-        if (empty($documentId)) {
+        if ($documentId === '') {
             throw InventoryReaderException::forMissingDocumentIdInRow($rowIdx);
         }
 
@@ -179,7 +179,7 @@ class InventoryReader implements InventoryReaderInterface
     private function getFilename(int $rowIdx): string
     {
         $filename = $this->reader->getString($rowIdx, MetadataField::DOCUMENT->value);
-        if (strlen($filename) > self::MAX_FILENAME_LENGTH) {
+        if (\strlen($filename) > self::MAX_FILENAME_LENGTH) {
             throw InventoryReaderException::forFileTooLong($filename, $rowIdx);
         }
 

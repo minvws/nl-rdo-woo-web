@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Aggregation;
+namespace Shared\Service\Search\Query\Aggregation;
 
-use App\Domain\Search\Query\Facet\Facet;
-use App\Domain\Search\Query\SearchParameters;
 use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
+use Shared\Domain\Search\Query\Facet\Facet;
+use Shared\Domain\Search\Query\SearchParameters;
 
 interface AggregationStrategyInterface
 {

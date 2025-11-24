@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Public;
+namespace Shared\Controller\Public;
 
-use App\Domain\Department\DepartmentService;
-use App\Service\Search\Query\Definition\BrowseAllAggregationsQueryDefinition;
-use App\Service\Search\SearchService;
+use Shared\Domain\Department\DepartmentService;
+use Shared\Service\Search\Query\Definition\BrowseAllAggregationsQueryDefinition;
+use Shared\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

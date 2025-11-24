@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security\Api;
+namespace Shared\Tests\Unit\Service\Security\Api;
 
-use App\Service\Security\Api\ApiUser;
-use App\Service\Security\Api\GlobDomainValidator;
-use App\Service\Security\Api\PublicationApiAuthenticator;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Service\Security\Api\ApiUser;
+use Shared\Service\Security\Api\GlobDomainValidator;
+use Shared\Service\Security\Api\PublicationApiAuthenticator;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
-class PublicationApiAuthenticatorTest extends MockeryTestCase
+class PublicationApiAuthenticatorTest extends UnitTestCase
 {
     public function testSupportsWithSslUserName(): void
     {

@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Subject;
+namespace Shared\Tests\Unit\Domain\Publication\Subject;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Subject\Event\SubjectUpdatedEvent;
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Publication\Subject\SubjectRepository;
-use App\Domain\Publication\Subject\SubjectService;
-use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\ORM\Query;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Subject\Event\SubjectUpdatedEvent;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Publication\Subject\SubjectRepository;
+use Shared\Domain\Publication\Subject\SubjectService;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
-class SubjectServiceTest extends MockeryTestCase
+class SubjectServiceTest extends UnitTestCase
 {
     private SubjectRepository&MockInterface $repository;
     private AuthorizationMatrix&MockInterface $authMatrix;

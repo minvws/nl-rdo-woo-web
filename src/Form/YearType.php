@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Form;
+namespace Shared\Form;
 
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;

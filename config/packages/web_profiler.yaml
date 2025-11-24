@@ -1,9 +1,10 @@
 when@dev:
     web_profiler:
-        toolbar: true
+        toolbar: '%enable_symfony_toolbar%'
 
     framework:
         profiler:
+            collect: '%enable_symfony_toolbar%'
             collect_serializer_data: true
 
 when@test:

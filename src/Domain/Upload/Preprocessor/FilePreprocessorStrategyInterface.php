@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Preprocessor;
+namespace Shared\Domain\Upload\Preprocessor;
 
-use App\Domain\Upload\UploadedFile;
+use Shared\Domain\Upload\UploadedFile;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('woo_platform.upload.preprocessor.strategy')]

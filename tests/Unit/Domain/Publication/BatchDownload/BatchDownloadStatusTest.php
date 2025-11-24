@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadStatus;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadStatus;
+use Shared\Tests\Unit\UnitTestCase;
 
-class BatchDownloadStatusTest extends MockeryTestCase
+class BatchDownloadStatusTest extends UnitTestCase
 {
     public function testIsDownloadable(): void
     {

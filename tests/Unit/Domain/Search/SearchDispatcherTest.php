@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search;
+namespace Shared\Tests\Unit\Domain\Search;
 
-use App\Domain\Search\Index\DeleteElasticDocumentCommand;
-use App\Domain\Search\Index\Dossier\IndexDossierCommand;
-use App\Domain\Search\Index\SubType\IndexAttachmentCommand;
-use App\Domain\Search\Index\SubType\IndexMainDocumentCommand;
-use App\Domain\Search\SearchDispatcher;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Search\Index\DeleteElasticDocumentCommand;
+use Shared\Domain\Search\Index\Dossier\IndexDossierCommand;
+use Shared\Domain\Search\Index\SubType\IndexAttachmentCommand;
+use Shared\Domain\Search\Index\SubType\IndexMainDocumentCommand;
+use Shared\Domain\Search\SearchDispatcher;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;

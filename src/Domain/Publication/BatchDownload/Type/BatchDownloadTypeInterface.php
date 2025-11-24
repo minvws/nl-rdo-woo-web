@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload\Type;
+namespace Shared\Domain\Publication\BatchDownload\Type;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Doctrine\ORM\QueryBuilder;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('domain.public.batchdownload.type')]

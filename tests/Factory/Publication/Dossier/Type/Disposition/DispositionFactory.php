@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory\Publication\Dossier\Type\Disposition;
+namespace Shared\Tests\Factory\Publication\Dossier\Type\Disposition;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
-use App\Tests\Factory\OrganisationFactory;
 use Carbon\CarbonImmutable;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
+use Shared\Tests\Factory\OrganisationFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

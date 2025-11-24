@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Attachment;
+namespace Shared\Api\Admin\Attachment;
 
-use App\Api\Admin\Dossier\DossierReferenceDto;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Api\Admin\Dossier\DossierReferenceDto;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
 

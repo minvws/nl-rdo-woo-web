@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security;
+namespace Shared\Tests\Unit\Service\Security;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\Inquiry\InquirySessionService;
-use App\Service\Security\DocumentVoter;
-use App\Service\Security\DossierVoter;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\Inquiry\InquirySessionService;
+use Shared\Service\Security\DocumentVoter;
+use Shared\Service\Security\DossierVoter;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 use Symfony\Component\Uid\Uuid;
 
-class DocumentVoterTest extends MockeryTestCase
+class DocumentVoterTest extends UnitTestCase
 {
     private DocumentVoter $voter;
 

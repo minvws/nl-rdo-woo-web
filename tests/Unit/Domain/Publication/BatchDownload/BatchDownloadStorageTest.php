@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\BatchDownload\BatchDownloadStorage;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToDeleteFile;
 use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToWriteFile;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadStorage;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class BatchDownloadStorageTest extends MockeryTestCase
+class BatchDownloadStorageTest extends UnitTestCase
 {
     private BatchDownloadStorage $storage;
     private LoggerInterface&MockInterface $logger;

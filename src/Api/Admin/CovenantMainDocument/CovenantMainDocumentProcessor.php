@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\CovenantMainDocument;
+namespace Shared\Api\Admin\CovenantMainDocument;
 
-use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
-use App\Api\Admin\AbstractMainDocument\AbstractMainDocumentProcessor;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Api\Admin\AbstractMainDocument\AbstractMainDocumentDto;
+use Shared\Api\Admin\AbstractMainDocument\AbstractMainDocumentProcessor;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 
 final class CovenantMainDocumentProcessor extends AbstractMainDocumentProcessor
 {

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Organisation;
+namespace Shared\Tests\Unit\Domain\Organisation;
 
-use App\Domain\Department\Department;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Service\Security\User;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\Collection;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
 
 class OrganisationTest extends UnitTestCase
 {

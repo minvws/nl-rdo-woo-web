@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\OpenApi;
+namespace Shared\Domain\OpenApi;
 
-use App\Api\Publication\V1\PublicationV1Api;
-use App\Domain\OpenApi\Exceptions\FormatMismatchException;
-use App\Domain\OpenApi\Exceptions\KeywordMismatchException;
-use App\Domain\OpenApi\Exceptions\SchemaMismatchException;
-use App\Domain\OpenApi\Exceptions\ValidatonException;
+use Shared\Api\Publication\V1\PublicationV1Api;
+use Shared\Domain\OpenApi\Exceptions\FormatMismatchException;
+use Shared\Domain\OpenApi\Exceptions\KeywordMismatchException;
+use Shared\Domain\OpenApi\Exceptions\SchemaMismatchException;
+use Shared\Domain\OpenApi\Exceptions\ValidatonException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class OpenApiValidationExceptionResponseFactory

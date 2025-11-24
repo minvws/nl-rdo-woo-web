@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Producer;
+namespace Shared\Domain\WooIndex\Producer;
 
-use App\Domain\WooIndex\Tooi\SoortHandeling;
 use Carbon\CarbonInterface;
+use Shared\Domain\WooIndex\Tooi\SoortHandeling;
 
 final readonly class DocumentHandeling
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security;
+namespace Shared\Tests\Unit\Service\Security;
 
-use App\Service\Security\Roles;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Service\Security\Roles;
+use Shared\Tests\Unit\UnitTestCase;
 
 class RolesTest extends UnitTestCase
 {

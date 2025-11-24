@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawService;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Exception\DocumentWorkflowException;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Exception\DocumentWorkflowException;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class DocumentWithdrawServiceTest extends MockeryTestCase
+class DocumentWithdrawServiceTest extends UnitTestCase
 {
     private DocumentRepository&MockInterface $documentRepository;
     private MockInterface&EntityStorageService $entityStorageService;

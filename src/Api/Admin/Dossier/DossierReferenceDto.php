@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Dossier;
+namespace Shared\Api\Admin\Dossier;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 
 final readonly class DossierReferenceDto
 {

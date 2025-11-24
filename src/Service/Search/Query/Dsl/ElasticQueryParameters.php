@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Dsl;
+namespace Shared\Service\Search\Query\Dsl;
 
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Sort\SortField;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Query\Sort\SortField;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class ElasticQueryParameters

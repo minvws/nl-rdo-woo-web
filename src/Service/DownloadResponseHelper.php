@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace Shared\Service;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\BatchDownload\BatchDownloadStorage;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Storage\EntityStorageService;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadStorage;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Storage\EntityStorageService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -71,6 +71,7 @@ readonly class DownloadResponseHelper
         $response->headers->set('Content-Type', 'application/zip');
         $response->headers->set('Content-Length', (string) $batch->getSize());
         $response->headers->set('Content-Disposition', 'attachment; filename="' . $batch->getFilename() . '"');
+        $response->headers->set('Cache-Control', 'no-store');
         $response->setCallback(function () use ($stream) {
             fpassthru($stream);
         });

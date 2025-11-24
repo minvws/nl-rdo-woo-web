@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Vws\Search\Theme;
+namespace Shared\Vws\Search\Theme;
 
 enum Covid19Subject: string
 {

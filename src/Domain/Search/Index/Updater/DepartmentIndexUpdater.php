@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Updater;
+namespace Shared\Domain\Search\Index\Updater;
 
-use App\Domain\Department\Department;
-use App\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\Schema\ElasticNestedField;
-use App\Domain\Search\Index\Schema\ElasticPath;
-use App\Service\Elastic\ElasticClientInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\Schema\ElasticNestedField;
+use Shared\Domain\Search\Index\Schema\ElasticPath;
+use Shared\Service\Elastic\ElasticClientInterface;
 
 readonly class DepartmentIndexUpdater
 {

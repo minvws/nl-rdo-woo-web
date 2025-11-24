@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Storage;
+namespace Shared\Service\Storage;
 
-use App\Domain\Publication\EntityWithFileInfo;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 /**
  * This class is responsible for storing and retrieving thumbnails attach to entities using FileInfo. See StorageService

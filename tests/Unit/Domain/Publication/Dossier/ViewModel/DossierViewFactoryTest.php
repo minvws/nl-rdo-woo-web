@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\ViewModel\DossierViewFactory;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierViewFactory;
+use Shared\Tests\Unit\UnitTestCase;
 
-final class DossierViewFactoryTest extends MockeryTestCase
+final class DossierViewFactoryTest extends UnitTestCase
 {
     private DossierRepository&MockInterface $repository;
     private DossierViewFactory $factory;

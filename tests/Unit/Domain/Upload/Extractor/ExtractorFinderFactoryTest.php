@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Extractor;
+namespace Shared\Tests\Unit\Domain\Upload\Extractor;
 
-use App\Domain\Upload\Extractor\ExtractorFinderFactory;
-use App\Tests\Unit\UnitTestCase;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use Shared\Domain\Upload\Extractor\ExtractorFinderFactory;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Finder\Finder;
 
 final class ExtractorFinderFactoryTest extends UnitTestCase

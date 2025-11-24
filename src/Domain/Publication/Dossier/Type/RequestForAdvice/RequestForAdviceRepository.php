@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\RequestForAdvice;
+namespace Shared\Domain\Publication\Dossier\Type\RequestForAdvice;
 
-use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
-use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
-use App\Domain\Search\Result\Dossier\RequestForAdvice\RequestForAdviceSearchResult;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Domain\Publication\Dossier\Type\AbstractDossierRepository;
+use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
+use Shared\Domain\Search\Result\Dossier\RequestForAdvice\RequestForAdviceSearchResult;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 /**
  * @extends AbstractDossierRepository<RequestForAdvice>

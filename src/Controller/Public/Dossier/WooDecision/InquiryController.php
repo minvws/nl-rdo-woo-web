@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Public\Dossier\WooDecision;
+namespace Shared\Controller\Public\Dossier\WooDecision;
 
-use App\Doctrine\DocumentConditions;
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\OnDemandZipGenerator;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
-use App\Service\DownloadResponseHelper;
-use App\Service\Inquiry\InquirySessionService;
-use App\Service\Search\Model\FacetKey;
 use Knp\Component\Pager\PaginatorInterface;
+use Shared\Doctrine\DocumentConditions;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\OnDemandZipGenerator;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Service\DownloadResponseHelper;
+use Shared\Service\Inquiry\InquirySessionService;
+use Shared\Service\Search\Model\FacetKey;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

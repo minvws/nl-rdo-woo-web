@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Dossier;
+namespace Shared\Tests\Unit\Domain\Search\Index\Dossier;
 
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\Dossier\DossierIndexer;
-use App\Domain\Search\Index\Dossier\IndexDossierCommand;
-use App\Domain\Search\Index\Dossier\IndexDossierHandler;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Search\Index\Dossier\DossierIndexer;
+use Shared\Domain\Search\Index\Dossier\IndexDossierCommand;
+use Shared\Domain\Search\Index\Dossier\IndexDossierHandler;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class IndexDossierHandlerTest extends MockeryTestCase
+class IndexDossierHandlerTest extends UnitTestCase
 {
     private DossierRepository&MockInterface $dossierRepository;
     private DossierIndexer&MockInterface $dossierIndexer;

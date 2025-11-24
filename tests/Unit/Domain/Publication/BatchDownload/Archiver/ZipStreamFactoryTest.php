@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload\Archiver;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\Archiver;
 
-use App\Domain\Publication\BatchDownload\Archiver\ZipStreamFactory;
-use App\Tests\Unit\UnitTestCase;
 use Psr\Http\Message\StreamInterface;
+use Shared\Domain\Publication\BatchDownload\Archiver\ZipStreamFactory;
+use Shared\Tests\Unit\UnitTestCase;
 use ZipStream\ZipStream;
 
 final class ZipStreamFactoryTest extends UnitTestCase

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\Disposition;
+namespace Shared\Domain\Publication\Dossier\Type\Disposition;
 
-use App\Domain\Publication\Dossier\Step\StepDefinition;
-use App\Domain\Publication\Dossier\Step\StepDefinitionInterface;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
+use Shared\Domain\Publication\Dossier\Step\StepDefinition;
+use Shared\Domain\Publication\Dossier\Step\StepDefinitionInterface;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Workflow\WorkflowInterface;
 

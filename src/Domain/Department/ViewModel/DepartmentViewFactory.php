@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Department\ViewModel;
+namespace Shared\Domain\Department\ViewModel;
 
-use App\Domain\Department\Department as DepartmentEntity;
+use Shared\Domain\Department\Department as DepartmentEntity;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 readonly class DepartmentViewFactory
@@ -32,7 +32,7 @@ readonly class DepartmentViewFactory
     {
         /** @var list<Department> */
         return array_map(
-            fn (DepartmentEntity $department): Department => $this->make($department),
+            $this->make(...),
             $departments,
         );
     }

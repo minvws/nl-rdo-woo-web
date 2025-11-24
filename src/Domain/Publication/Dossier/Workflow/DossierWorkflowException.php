@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Workflow;
+namespace Shared\Domain\Publication\Dossier\Workflow;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
 use Symfony\Component\Workflow\Exception\TransitionException;
 

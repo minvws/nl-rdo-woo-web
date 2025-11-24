@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\FileProvider;
+namespace Shared\Domain\Publication\Dossier\FileProvider;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 
 class DossierFileNotFoundException extends \RuntimeException
 {

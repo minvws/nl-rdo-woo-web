@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Definition;
+namespace Shared\Service\Search\Query\Definition;
 
-use App\Domain\Search\Query\Facet\FacetListFactory;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Condition\QueryConditionHelper;
-use App\Service\Search\Query\Dsl\ElasticQueryParameters;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
+use Shared\Domain\Search\Query\Facet\FacetListFactory;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Query\Condition\QueryConditionHelper;
+use Shared\Service\Search\Query\Dsl\ElasticQueryParameters;
 
 readonly class AdminDossiersAndDocumentsQueryDefinition implements QueryDefinitionInterface
 {

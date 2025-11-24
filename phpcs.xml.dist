@@ -51,6 +51,7 @@
                 <element key="sizeof" value="count"/>
                 <element key="delete" value="unset"/>
                 <element key="create_function" value="null"/>
+                <element key="empty" value="null"/>
             </property>
         </properties>
     </rule>

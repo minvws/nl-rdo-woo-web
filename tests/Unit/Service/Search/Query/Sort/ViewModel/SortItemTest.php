@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Search\Query\Sort\ViewModel;
+namespace Shared\Tests\Unit\Service\Search\Query\Sort\ViewModel;
 
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Sort\SortField;
-use App\Service\Search\Query\Sort\SortOrder;
-use App\Service\Search\Query\Sort\ViewModel\SortItem;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Query\Sort\SortField;
+use Shared\Service\Search\Query\Sort\SortOrder;
+use Shared\Service\Search\Query\Sort\ViewModel\SortItem;
 
 class SortItemTest extends TestCase
 {

@@ -5,7 +5,7 @@ security:
     providers:
         app_user_provider:
             entity:
-                class: App\Service\Security\User
+                class: Shared\Service\Security\User
                 property: email
 
     firewalls:
@@ -13,10 +13,10 @@ security:
             pattern: ^/api
             stateless: true
             custom_authenticators:
-                - App\Service\Security\Api\PublicationApiAuthenticator
+                - Shared\Service\Security\Api\PublicationApiAuthenticator
         balie:
             pattern: ^/balie
-            user_checker: App\Service\Security\UserChecker
+            user_checker: Shared\Service\Security\UserChecker
             form_login:
                 provider: app_user_provider
                 login_path: app_login

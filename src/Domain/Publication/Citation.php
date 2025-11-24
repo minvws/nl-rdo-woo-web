@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication;
+namespace Shared\Domain\Publication;
 
 use Webmozart\Assert\Assert;
 
@@ -63,12 +63,8 @@ class Citation
         $canonical = str_replace(' ', '', $citation);
         $canonical = strtolower($canonical);
 
-        if (isset(self::$wobCitations[$canonical])) {
-            return self::$wobCitations[$canonical];
-        }
-
         // Unknown citations get no classification intentionally
-        return self::$wooCitations[$canonical] ?? '';
+        return self::$wobCitations[$canonical] ?? self::$wooCitations[$canonical] ?? '';
     }
 
     /**

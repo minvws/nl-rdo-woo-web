@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractEntityWithFileInfoDeleteStrategy;
-use App\Service\DocumentService;
-use App\Service\Inquiry\InquiryService;
-use App\Service\Storage\EntityStorageService;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\AbstractEntityWithFileInfoDeleteStrategy;
+use Shared\Service\DocumentService;
+use Shared\Service\Inquiry\InquiryService;
+use Shared\Service\Storage\EntityStorageService;
 
 readonly class WooDecisionDeleteStrategy extends AbstractEntityWithFileInfoDeleteStrategy
 {

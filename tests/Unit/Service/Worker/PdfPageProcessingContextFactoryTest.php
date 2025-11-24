@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker;
+namespace Shared\Tests\Unit\Service\Worker;
 
-use App\Domain\Ingest\Process\PdfPage\PdfPageException;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContextFactory;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
-use App\Service\Stats\WorkerStatsService;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\LocalFilesystem;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContextFactory;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Service\Stats\WorkerStatsService;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\LocalFilesystem;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class PdfPageProcessingContextFactoryTest extends UnitTestCase

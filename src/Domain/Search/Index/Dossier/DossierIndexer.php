@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Dossier;
+namespace Shared\Domain\Search\Index\Dossier;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Search\Index\Dossier\Mapper\ElasticDossierMapperInterface;
-use App\Domain\Search\Index\ElasticDocument;
-use App\Domain\Search\Index\IndexException;
-use App\Domain\Search\Index\Updater\NestedDossierIndexUpdater;
-use App\Service\Elastic\ElasticService;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Search\Index\Dossier\Mapper\ElasticDossierMapperInterface;
+use Shared\Domain\Search\Index\ElasticDocument;
+use Shared\Domain\Search\Index\IndexException;
+use Shared\Domain\Search\Index\Updater\NestedDossierIndexUpdater;
+use Shared\Service\Elastic\ElasticService;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class DossierIndexer

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex;
+namespace Shared\Domain\WooIndex;
 
-use App\Domain\WooIndex\Builder\SitemapBuilder;
-use App\Domain\WooIndex\Builder\SitemapIndexBuilder;
-use App\Domain\WooIndex\Builder\SitemapUrlBuilder;
-use App\Domain\WooIndex\Producer\ProducerSignal;
-use App\Domain\WooIndex\Producer\UrlProducer;
 use League\Flysystem\FilesystemOperator;
+use Shared\Domain\WooIndex\Builder\SitemapBuilder;
+use Shared\Domain\WooIndex\Builder\SitemapIndexBuilder;
+use Shared\Domain\WooIndex\Builder\SitemapUrlBuilder;
+use Shared\Domain\WooIndex\Producer\ProducerSignal;
+use Shared\Domain\WooIndex\Producer\UrlProducer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 readonly class WooIndex

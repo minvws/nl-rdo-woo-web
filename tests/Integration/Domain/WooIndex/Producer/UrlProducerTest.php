@@ -2,23 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\WooIndex\Producer;
+namespace Shared\Tests\Integration\Domain\WooIndex\Producer;
 
-use App\Domain\WooIndex\Producer\ProducerSignal;
-use App\Domain\WooIndex\Producer\UnconsumedPreviousChunkGeneratorException;
-use App\Domain\WooIndex\Producer\Url;
-use App\Domain\WooIndex\Producer\UrlProducer;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Story\WooIndexAnnualReportStory;
-use App\Tests\Story\WooIndexCovenantStory;
-use App\Tests\Story\WooIndexWooDecisionStory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\WooIndex\Producer\ProducerSignal;
+use Shared\Domain\WooIndex\Producer\UnconsumedPreviousChunkGeneratorException;
+use Shared\Domain\WooIndex\Producer\Url;
+use Shared\Domain\WooIndex\Producer\UrlProducer;
+use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\Tests\Story\WooIndexAnnualReportStory;
+use Shared\Tests\Story\WooIndexCovenantStory;
+use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Zenstruck\Foundry\Attribute\WithStory;
 
-final class UrlProducerTest extends KernelTestCase
+final class UrlProducerTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private UrlProducer $urlProducer;
 
     protected function setUp(): void

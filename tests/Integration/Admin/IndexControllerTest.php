@@ -2,19 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Admin;
+namespace Shared\Tests\Integration\Admin;
 
-use App\Service\Security\Roles;
-use App\Tests\Factory\UserFactory;
-use App\Tests\Integration\IntegrationTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Shared\Service\Security\Roles;
+use Shared\Tests\Factory\UserFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-final class IndexControllerTest extends WebTestCase
+final class IndexControllerTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     #[DataProvider('indexRedirectData')]
     public function testIndexRedirect(string $role, string $expectedLocation): void
     {

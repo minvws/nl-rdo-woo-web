@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory\Sanitizer\DataProvider;
+namespace Shared\Service\Inventory\Sanitizer\DataProvider;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 readonly class WooDecisionInventoryDataProvider implements InventoryDataProviderInterface
 {

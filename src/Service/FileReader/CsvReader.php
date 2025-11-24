@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\FileReader;
+namespace Shared\Service\FileReader;
 
-use App\Exception\FileReaderException;
-use App\Service\Inventory\InventoryDataHelper;
+use Shared\Exception\FileReaderException;
+use Shared\Service\Inventory\InventoryDataHelper;
 
 /**
  * CSV reader. This class will read the CSV file in its entirety and store it in memory.
@@ -83,7 +83,7 @@ class CsvReader implements FileReaderInterface
     public function getOptionalDateTime(int $rowIndex, string $columnName): ?\DateTimeImmutable
     {
         $value = $this->getOptionalString($rowIndex, $columnName);
-        if (empty($value)) {
+        if ($value === null || $value === '') {
             return null;
         }
 

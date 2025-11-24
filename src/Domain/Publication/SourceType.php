@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication;
+namespace Shared\Domain\Publication;
 
-use App\Domain\Upload\FileType\FileType;
+use Shared\Domain\Upload\FileType\FileType;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

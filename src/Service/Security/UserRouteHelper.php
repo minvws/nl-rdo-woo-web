@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Security;
+namespace Shared\Service\Security;
 
-use App\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
 
 readonly class UserRouteHelper
 {

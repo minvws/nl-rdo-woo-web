@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final class JudgementTest extends MockeryTestCase
+final class JudgementTest extends UnitTestCase
 {
     public function testIsAlreadyPublic(): void
     {

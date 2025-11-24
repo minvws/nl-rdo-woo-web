@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ArchiveExtractor;
+namespace Shared\Domain\ArchiveExtractor;
 
-use App\Domain\ArchiveExtractor\Exception\ArchiveLogicException;
-use App\Domain\ArchiveExtractor\Exception\ArchiveMissingDestinationException;
-use App\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
-use App\Domain\ArchiveExtractor\Factory\SevenZipArchiveFactory;
 use Archive7z\Archive7z;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveLogicException;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveMissingDestinationException;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
+use Shared\Domain\ArchiveExtractor\Factory\SevenZipArchiveFactory;
 
 final class SevenZipArchive implements ArchiveInterface
 {

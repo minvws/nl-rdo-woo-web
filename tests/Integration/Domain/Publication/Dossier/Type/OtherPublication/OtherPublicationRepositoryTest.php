@@ -2,18 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\OtherPublication;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\OtherPublication;
 
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationRepository;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Tests\Factory\Publication\Dossier\Type\OtherPublication\OtherPublicationFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationRepository;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication\OtherPublicationFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class OtherPublicationRepositoryTest extends KernelTestCase
+final class OtherPublicationRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private function getRepository(): OtherPublicationRepository
     {
         /** @var OtherPublicationRepository */

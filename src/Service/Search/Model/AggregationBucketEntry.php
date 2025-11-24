@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Model;
+namespace Shared\Service\Search\Model;
 
-use App\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
-use App\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
+use Shared\Domain\Search\Query\SearchParameters;
 
 readonly class AggregationBucketEntry
 {

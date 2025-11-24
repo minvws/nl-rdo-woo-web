@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\EventSubscriber;
+namespace Shared\Tests\Unit\EventSubscriber;
 
-use App\EventSubscriber\LoginLogger;
-use App\Service\Security\User;
-use App\Service\Security\UserRouteHelper;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\EventSubscriber\LoginLogger;
+use Shared\Service\Security\User;
+use Shared\Service\Security\UserRouteHelper;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
@@ -19,7 +19,7 @@ use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
 
-class LoginLoggerTest extends MockeryTestCase
+class LoginLoggerTest extends UnitTestCase
 {
     private LoggerInterface&MockInterface $logger;
     private RouterInterface&MockInterface $router;

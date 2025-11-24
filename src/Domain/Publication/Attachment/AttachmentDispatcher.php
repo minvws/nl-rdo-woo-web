@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment;
+namespace Shared\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\Command\WithDrawAttachmentCommand;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
-use App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentWithdrawnEvent;
-use App\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Attachment\Command\WithDrawAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
+use Shared\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentWithdrawnEvent;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class AttachmentDispatcher

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Updater;
+namespace Shared\Domain\Search\Index\Updater;
 
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\Schema\ElasticNestedField;
-use App\Domain\Search\Index\Schema\ElasticPath;
-use App\Service\Elastic\ElasticClientInterface;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\Schema\ElasticNestedField;
+use Shared\Domain\Search\Index\Schema\ElasticPath;
+use Shared\Service\Elastic\ElasticClientInterface;
 
 readonly class SubjectIndexUpdater
 {

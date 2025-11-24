@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\AuditLog;
+namespace Shared\Domain\Publication\Dossier\AuditLog;
 
 use MinVWS\AuditLogger\Events\Logging\GeneralLogEvent;
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Exception;
+namespace Shared\Domain\Upload\Exception;
 
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\UploadStatus;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadStatus;
 use Symfony\Component\Uid\Uuid;
 
 class UploadException extends \RuntimeException

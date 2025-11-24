@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Department\Twig;
+namespace Shared\Domain\Department\Twig;
 
-use App\Domain\Department\DepartmentRepository;
+use Shared\Domain\Department\DepartmentRepository;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 

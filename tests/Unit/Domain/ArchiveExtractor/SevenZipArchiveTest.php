@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\ArchiveExtractor;
+namespace Shared\Tests\Unit\Domain\ArchiveExtractor;
 
-use App\Domain\ArchiveExtractor\Exception\ArchiveLogicException;
-use App\Domain\ArchiveExtractor\Exception\ArchiveMissingDestinationException;
-use App\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
-use App\Domain\ArchiveExtractor\Factory\SevenZipArchiveFactory;
-use App\Domain\ArchiveExtractor\SevenZipArchive;
-use App\Tests\Unit\UnitTestCase;
 use Archive7z\Archive7z;
 use Mockery\MockInterface;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveLogicException;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveMissingDestinationException;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
+use Shared\Domain\ArchiveExtractor\Factory\SevenZipArchiveFactory;
+use Shared\Domain\ArchiveExtractor\SevenZipArchive;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class SevenZipArchiveTest extends UnitTestCase
 {

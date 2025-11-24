@@ -2,36 +2,31 @@
 
 declare(strict_types=1);
 
-namespace App\Doctrine;
+namespace Shared\Doctrine;
 
-use App\Service\Encryption\EncryptionServiceInterface;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Exception\SerializationFailed;
 use Doctrine\DBAL\Types\Exception\ValueNotConvertible;
 use Doctrine\DBAL\Types\TextType;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Service\Encryption\EncryptionServiceInterface;
 
 /**
- * This class is a Doctrine type that encrypts and decrypts data transparently. It will convert the given array as a json string and
- * encrypts this string. The encrypted string is stored in the database. When the data is retrieved from the database, the encrypted
- * string is decrypted and converted back to an array.
+ * This class is a Doctrine type that encrypts and decrypts data transparently. It will convert the given array as a
+ * json string and encrypts this string. The encrypted string is stored in the database. When the data is retrieved from
+ * the database, the encrypted string is decrypted and converted back to an array.
  */
 class EncryptedArray extends TextType
 {
     public const TYPE = 'encrypted_array';
 
-    // Type classes are instantiated by Doctrine, so we can't inject the encryption service directly.
-    // The encryption service is injected through the Kernel::boot() method.
-    protected static EncryptionServiceInterface $encryptionService;
-    protected static LoggerInterface $logger;
-
-    public static function injectServices(
-        EncryptionServiceInterface $encryptionService,
-        LoggerInterface $logger,
-    ): void {
-        static::$encryptionService = $encryptionService;
-        static::$logger = $logger;
+    /**
+     * See Kernel.php boot() on how and what is injected.
+     */
+    public function __construct(private readonly ContainerInterface $locator)
+    {
     }
 
     /**
@@ -47,9 +42,9 @@ class EncryptedArray extends TextType
         try {
             $value = json_encode($value, JSON_THROW_ON_ERROR);
 
-            return self::$encryptionService->encrypt($value);
+            return $this->getEncryptionService()->encrypt($value);
         } catch (\Throwable $e) {
-            self::$logger->error('cannot convert to database value', [
+            $this->getLogger()->error('cannot convert to database value', [
                 'exception' => $e->getMessage(),
             ]);
 
@@ -74,16 +69,26 @@ class EncryptedArray extends TextType
         }
 
         try {
-            $value = self::$encryptionService->decrypt(strval($value));
+            $value = $this->getEncryptionService()->decrypt(strval($value));
 
             return json_decode(strval($value), true);
         } catch (\Throwable $e) {
-            self::$logger->error('cannot convert to php value', [
+            $this->getLogger()->error('cannot convert to php value', [
                 'exception' => $e->getMessage(),
             ]);
 
             throw ValueNotConvertible::new($value, 'encrypted_array', previous: $e);
         }
+    }
+
+    private function getEncryptionService(): EncryptionServiceInterface
+    {
+        return $this->locator->get(EncryptionServiceInterface::class);
+    }
+
+    private function getLogger(): LoggerInterface
+    {
+        return $this->locator->get(LoggerInterface::class);
     }
 
     public function getName(): string

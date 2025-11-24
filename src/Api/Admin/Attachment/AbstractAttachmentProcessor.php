@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Attachment;
+namespace Shared\Api\Admin\Attachment;
 
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Operation;
@@ -10,11 +10,11 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
-use App\Api\Admin\ApiDossierAccessChecker;
-use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
-use App\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
-use App\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Api\Admin\ApiDossierAccessChecker;
+use Shared\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;

@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker\Pdf;
+namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
-use App\Domain\Ingest\Process\PdfPage\PdfPageException;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Storage\ThumbnailStorageService;
-use App\Service\Worker\Pdf\Extractor\ThumbnailExtractor;
-use App\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmService;
-use App\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmThumbnailResult;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\Service\Worker\Pdf\Extractor\ThumbnailExtractor;
+use Shared\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmService;
+use Shared\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmThumbnailResult;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Uid\Uuid;
 

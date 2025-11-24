@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Upload\Extractor;
+namespace Shared\Tests\Integration\Domain\Upload\Extractor;
 
-use App\Domain\Upload\Extractor\Extractor;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Upload\Extractor\Extractor;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class ExtractorTest extends KernelTestCase
+final class ExtractorTest extends SharedWebTestCase
 {
     public function testGetFilesWithSevenZipArchiveGivenAZipFile(): void
     {

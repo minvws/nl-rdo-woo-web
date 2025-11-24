@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Sort\ViewModel;
+namespace Shared\Service\Search\Query\Sort\ViewModel;
 
-use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Query\SearchType;
-use App\Service\Search\Query\Sort\SortField;
-use App\Service\Search\Query\Sort\SortOrder;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Query\SearchType;
+use Shared\Service\Search\Query\Sort\SortField;
+use Shared\Service\Search\Query\Sort\SortOrder;
 
 class SortItemViewFactory
 {

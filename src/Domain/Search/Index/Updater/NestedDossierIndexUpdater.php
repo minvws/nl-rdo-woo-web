@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Updater;
+namespace Shared\Domain\Search\Index\Updater;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\ElasticDocumentId;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Index\Schema\ElasticNestedField;
-use App\Domain\Search\Index\Schema\ElasticPath;
-use App\Service\Elastic\ElasticClientInterface;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\ElasticDocumentId;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Index\Schema\ElasticNestedField;
+use Shared\Domain\Search\Index\Schema\ElasticPath;
+use Shared\Service\Elastic\ElasticClientInterface;
 
 readonly class NestedDossierIndexUpdater
 {

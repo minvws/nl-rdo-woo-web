@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Subject;
+namespace Shared\Domain\Publication\Subject;
 
-use App\Domain\Publication\Subject\Event\SubjectUpdatedEvent;
-use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\ORM\Query;
+use Shared\Domain\Publication\Subject\Event\SubjectUpdatedEvent;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class SubjectService

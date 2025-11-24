@@ -2,18 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Service\Stats;
+namespace Shared\Tests\Integration\Service\Stats;
 
-use App\Service\Stats\WorkerStatsRepository;
-use App\Tests\Factory\WorkerStatsFactory;
-use App\Tests\Integration\IntegrationTestTrait;
 use Carbon\CarbonImmutable;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Service\Stats\WorkerStatsRepository;
+use Shared\Tests\Factory\WorkerStatsFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class WorkerStatsRepositoryTest extends KernelTestCase
+final class WorkerStatsRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private WorkerStatsRepository $repository;
 
     protected function setUp(): void

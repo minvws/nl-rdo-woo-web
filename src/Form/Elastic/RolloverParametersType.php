@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Elastic;
+namespace Shared\Form\Elastic;
 
-use App\Domain\Search\Index\Rollover\MappingService;
-use App\Domain\Search\Index\Rollover\RolloverParameters;
+use Shared\Domain\Search\Index\Rollover\MappingService;
+use Shared\Domain\Search\Index\Rollover\RolloverParameters;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -23,7 +23,7 @@ class RolloverParametersType extends AbstractType
 {
     public function __construct(
         protected MappingService $mappingService,
-        private TranslatorInterface $translator,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 

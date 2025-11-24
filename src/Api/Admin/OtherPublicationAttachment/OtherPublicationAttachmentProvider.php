@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\OtherPublicationAttachment;
+namespace Shared\Api\Admin\OtherPublicationAttachment;
 
-use App\Api\Admin\Attachment\AbstractAttachmentDto;
-use App\Api\Admin\Attachment\AbstractAttachmentProvider;
-use App\Api\Admin\Attachment\AttachmentDtoFactory;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachmentRepository;
+use Shared\Api\Admin\Attachment\AbstractAttachmentDto;
+use Shared\Api\Admin\Attachment\AbstractAttachmentProvider;
+use Shared\Api\Admin\Attachment\AttachmentDtoFactory;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachmentRepository;
 
 final readonly class OtherPublicationAttachmentProvider extends AbstractAttachmentProvider
 {

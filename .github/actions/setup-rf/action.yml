@@ -20,6 +20,9 @@ runs:
     - name: Run task setup
       shell: bash
       run: task setup
+    - name: Disable Symfony toolbar
+      shell: bash
+      run: task rf:disable-toolbar
     - name: Install uv
       uses: astral-sh/setup-uv@v6
       with:

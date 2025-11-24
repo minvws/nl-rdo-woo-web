@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\FileProvider;
+namespace Shared\Domain\Publication\Dossier\FileProvider;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class DossierFileProviderManager

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\Dossier;
+namespace Shared\Domain\Ingest\Process\Dossier;
 
-use App\Domain\Ingest\Process\Dossier\Strategy\DefaultDossierIngestStrategy;
-use App\Domain\Ingest\Process\Dossier\Strategy\WooDecisionIngestStrategy;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Ingest\Process\Dossier\Strategy\DefaultDossierIngestStrategy;
+use Shared\Domain\Ingest\Process\Dossier\Strategy\WooDecisionIngestStrategy;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 readonly class DossierIngester
 {

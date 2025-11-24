@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query\Facet;
+namespace Shared\Domain\Search\Query\Facet;
 
-use App\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Model\FacetKey;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class FacetDefinitions implements \IteratorAggregate

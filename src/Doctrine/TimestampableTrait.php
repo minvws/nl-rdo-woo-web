@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Doctrine;
+namespace Shared\Doctrine;
 
 use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;

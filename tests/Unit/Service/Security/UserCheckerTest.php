@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security;
+namespace Shared\Tests\Unit\Service\Security;
 
-use App\Service\Security\User;
-use App\Service\Security\UserChecker;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Service\Security\User;
+use Shared\Service\Security\UserChecker;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class UserCheckerTest extends MockeryTestCase
+class UserCheckerTest extends UnitTestCase
 {
     public function testCheckPreAuth(): void
     {

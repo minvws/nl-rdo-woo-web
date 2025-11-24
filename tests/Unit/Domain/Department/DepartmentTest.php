@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Department;
+namespace Shared\Tests\Unit\Domain\Department;
 
-use App\Domain\Department\Department;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\FileInfo;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DepartmentTest extends MockeryTestCase
+class DepartmentTest extends UnitTestCase
 {
     public function testSetAndGetLandingPageTitle(): void
     {

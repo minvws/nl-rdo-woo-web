@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Api;
+namespace Shared\Controller\Api;
 
 use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
-use App\Api\Publication\V1\PublicationV1Api;
+use Shared\Api\Publication\V1\PublicationV1Api;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

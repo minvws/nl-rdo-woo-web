@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\FileStorage;
+namespace Shared\Domain\FileStorage;
 
-use App\Domain\FileStorage\Checker\FileStorageLister;
-use App\Domain\FileStorage\Checker\FileStorageType;
-use App\Domain\FileStorage\Checker\OrphanedPaths;
 use Aws\S3\S3Client;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use League\Flysystem\Filesystem;
+use Shared\Domain\FileStorage\Checker\FileStorageLister;
+use Shared\Domain\FileStorage\Checker\FileStorageType;
+use Shared\Domain\FileStorage\Checker\OrphanedPaths;
 
 readonly class OrphanedFileMover
 {

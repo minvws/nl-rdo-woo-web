@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory;
+namespace Shared\Tests\Factory;
 
-use App\Domain\Upload\UploadEntity;
-use App\Service\Uploader\UploadGroupId;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\InputBag;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 

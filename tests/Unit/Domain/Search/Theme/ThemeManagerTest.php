@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Theme;
+namespace Shared\Tests\Unit\Domain\Search\Theme;
 
-use App\Domain\Search\Theme\ThemeInterface;
-use App\Domain\Search\Theme\ThemeManager;
-use App\Domain\Search\Theme\ViewModel\Theme;
-use App\Domain\Search\Theme\ViewModel\ThemeViewFactory;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Search\Theme\ThemeInterface;
+use Shared\Domain\Search\Theme\ThemeManager;
+use Shared\Domain\Search\Theme\ViewModel\Theme;
+use Shared\Domain\Search\Theme\ViewModel\ThemeViewFactory;
+use Shared\Tests\Unit\UnitTestCase;
 
 class ThemeManagerTest extends UnitTestCase
 {

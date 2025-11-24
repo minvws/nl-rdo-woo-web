@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Step;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Step;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Step\StepActionHelper;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
-use App\Service\DossierWizard\DossierWizardStatus;
-use App\Service\DossierWizard\StepStatus;
-use App\Service\DossierWizard\WizardStatusFactory;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
+use Shared\Service\DossierWizard\DossierWizardStatus;
+use Shared\Service\DossierWizard\StepStatus;
+use Shared\Service\DossierWizard\WizardStatusFactory;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Form\Button;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Routing\RouterInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
-class StepActionHelperTest extends MockeryTestCase
+class StepActionHelperTest extends UnitTestCase
 {
     private RouterInterface&MockInterface $router;
     private StepActionHelper $helper;

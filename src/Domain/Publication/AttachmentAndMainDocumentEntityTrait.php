@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication;
+namespace Shared\Domain\Publication;
 
-use App\Doctrine\FileCacheKeyBasedOnClassAndIdTrait;
-use App\Doctrine\TimestampableTrait;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Service\Uploader\UploadGroupId;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\FileCacheKeyBasedOnClassAndIdTrait;
+use Shared\Doctrine\TimestampableTrait;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 

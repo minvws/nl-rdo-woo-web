@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier\WooDecision;
+namespace Shared\Form\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inquiry;
+namespace Shared\Service\Inquiry;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Exception\InquiryLinkImportException;
-use App\Exception\InventoryReaderException;
-use App\Exception\TranslatableException;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Exception\InquiryLinkImportException;
+use Shared\Exception\InventoryReaderException;
+use Shared\Exception\TranslatableException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Webmozart\Assert\InvalidArgumentException;
 

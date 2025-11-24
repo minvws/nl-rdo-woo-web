@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\MainDocument\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\MainDocument\ViewModel;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
-use App\Domain\Publication\Dossier\Type\Disposition\Disposition;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Domain\Publication\SourceType;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\Matcher\Closure;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use Shared\Domain\Publication\SourceType;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\UuidV6;
 

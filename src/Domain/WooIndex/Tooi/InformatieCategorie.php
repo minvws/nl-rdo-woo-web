@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Tooi;
+namespace Shared\Domain\WooIndex\Tooi;
 
 /**
  * Based on https://standaarden.overheid.nl/diwoo/metadata/doc/0.9.4/diwoo-metadata-lijsten_xsd_Simple_Type_diwoo_informatiecategorielijst#informatiecategorielijst.

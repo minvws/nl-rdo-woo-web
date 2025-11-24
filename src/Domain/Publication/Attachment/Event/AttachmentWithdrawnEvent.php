@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\Event;
+namespace Shared\Domain\Publication\Attachment\Event;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

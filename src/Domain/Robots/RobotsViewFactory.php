@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Robots;
+namespace Shared\Domain\Robots;
 
-use App\Domain\WooIndex\WooIndexSitemapService;
+use Shared\Domain\WooIndex\WooIndexSitemapService;
 
 final readonly class RobotsViewFactory
 {

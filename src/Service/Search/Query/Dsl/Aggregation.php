@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Dsl;
+namespace Shared\Service\Search\Query\Dsl;
 
 use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
 use Erichard\ElasticQueryBuilder\Aggregation\Aggregation as ErichardAggregation;

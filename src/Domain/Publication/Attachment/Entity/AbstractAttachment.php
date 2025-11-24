@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\Entity;
+namespace Shared\Domain\Publication\Attachment\Entity;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
-use App\Domain\Publication\Attachment\Exception\AttachmentWithdrawException;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\AttachmentAndMainDocumentEntityTrait;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
-use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Uploader\UploadGroupId;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
+use Shared\Domain\Publication\Attachment\Exception\AttachmentWithdrawException;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\AttachmentAndMainDocumentEntityTrait;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
+use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Uploader\UploadGroupId;
 use Webmozart\Assert\Assert;
 
 #[ORM\Entity(repositoryClass: AttachmentRepository::class)]

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Security;
+namespace Shared\Service\Security;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Service\Security\Authorization\AuthorizationEntryRequestStore;
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use App\Service\Security\Authorization\AuthorizationMatrixFilter;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Service\Security\Authorization\AuthorizationEntryRequestStore;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;

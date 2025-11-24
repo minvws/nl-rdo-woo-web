@@ -6,4 +6,4 @@ export const pluralize = (
   numberOf: number,
 ) => (numberOf === 1 ? singular : plural);
 export const removeAccents = (input: string) =>
-  input.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  input.normalize('NFD').replaceAll(/[\u0300-\u036f]/g, '');

@@ -2,18 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\Disposition;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\Disposition;
 
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionRepository;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Tests\Factory\Publication\Dossier\Type\Disposition\DispositionFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionRepository;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Factory\Publication\Dossier\Type\Disposition\DispositionFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class DispositionRepositoryTest extends KernelTestCase
+final class DispositionRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private function getRepository(): DispositionRepository
     {
         /** @var DispositionRepository */

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\PlatformCheck;
+namespace Shared\Tests\Unit\Service\PlatformCheck;
 
-use App\Service\PlatformCheck\StorageAlivePlatformChecker;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Service\PlatformCheck\StorageAlivePlatformChecker;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 
-class StorageAlivePlatformCheckerTest extends MockeryTestCase
+class StorageAlivePlatformCheckerTest extends UnitTestCase
 {
     public function testChecker(): void
     {

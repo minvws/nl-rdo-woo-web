@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\DispositionAttachment;
+namespace Shared\Api\Admin\DispositionAttachment;
 
-use App\Api\Admin\Attachment\AbstractAttachmentDto;
-use App\Api\Admin\Attachment\AbstractAttachmentProvider;
-use App\Api\Admin\Attachment\AttachmentDtoFactory;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionAttachmentRepository;
+use Shared\Api\Admin\Attachment\AbstractAttachmentDto;
+use Shared\Api\Admin\Attachment\AbstractAttachmentProvider;
+use Shared\Api\Admin\Attachment\AttachmentDtoFactory;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterface;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachmentRepository;
 
 final readonly class DispositionAttachmentProvider extends AbstractAttachmentProvider
 {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query\Facet;
+namespace Shared\Domain\Search\Query\Facet;
 
-use App\Domain\Search\Query\Facet\Input\FacetInputInterface;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Model\FacetKey;
 use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputInterface;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Model\FacetKey;
 
 final readonly class Facet
 {

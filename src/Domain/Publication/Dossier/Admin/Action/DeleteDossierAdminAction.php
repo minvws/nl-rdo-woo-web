@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Admin\Action;
+namespace Shared\Domain\Publication\Dossier\Admin\Action;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierDispatcher;
 
 readonly class DeleteDossierAdminAction implements DossierAdminActionInterface
 {

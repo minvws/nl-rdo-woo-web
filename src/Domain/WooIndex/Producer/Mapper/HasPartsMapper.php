@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Producer\Mapper;
+namespace Shared\Domain\WooIndex\Producer\Mapper;
 
 use ApiPlatform\Metadata\UrlGeneratorInterface;
-use App\Domain\WooIndex\Producer\Repository\RawReferenceDto;
-use App\Domain\WooIndex\Producer\Repository\RawUrlDto;
-use App\Domain\WooIndex\Producer\UrlReference;
 use Doctrine\Common\Collections\ArrayCollection;
+use Shared\Domain\WooIndex\Producer\Repository\RawReferenceDto;
+use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
+use Shared\Domain\WooIndex\Producer\UrlReference;
 
 final readonly class HasPartsMapper
 {

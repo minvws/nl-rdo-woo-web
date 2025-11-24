@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command\Cron;
+namespace Shared\Tests\Unit\Command\Cron;
 
-use App\Command\Cron\CleanWorkerStats;
-use App\Service\Stats\WorkerStatsRepository;
 use Carbon\CarbonImmutable;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Command\Cron\CleanWorkerStats;
+use Shared\Service\Stats\WorkerStatsRepository;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CleanWorkerStatsTest extends MockeryTestCase
+class CleanWorkerStatsTest extends UnitTestCase
 {
     public function testRepositoryIsCalled(): void
     {

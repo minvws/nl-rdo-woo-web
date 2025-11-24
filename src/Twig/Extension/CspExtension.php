@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Extension;
+namespace Shared\Twig\Extension;
 
-use App\Twig\Runtime\CspExtensionRuntime;
+use Shared\Twig\Runtime\CspExtensionRuntime;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 

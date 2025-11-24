@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest;
+namespace Shared\Tests\Unit\Domain\Ingest;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand;
-use App\Domain\Ingest\Process\Dossier\IngestDossierCommand;
-use App\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
-use App\Domain\Ingest\Process\Pdf\IngestPdfCommand;
-use App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand;
-use App\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\Query;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand;
+use Shared\Domain\Ingest\Process\Dossier\IngestDossierCommand;
+use Shared\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
+use Shared\Domain\Ingest\Process\Pdf\IngestPdfCommand;
+use Shared\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand;
+use Shared\Domain\Ingest\Process\TikaOnly\IngestTikaOnlyCommand;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;

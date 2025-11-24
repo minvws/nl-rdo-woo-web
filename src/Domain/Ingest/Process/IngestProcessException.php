@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process;
+namespace Shared\Domain\Ingest\Process;
 
 use Symfony\Component\Uid\Uuid;
 

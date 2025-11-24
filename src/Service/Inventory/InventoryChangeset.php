@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory;
+namespace Shared\Service\Inventory;
 
-use App\Exception\ProcessInventoryException;
+use Shared\Exception\ProcessInventoryException;
 
 class InventoryChangeset
 {

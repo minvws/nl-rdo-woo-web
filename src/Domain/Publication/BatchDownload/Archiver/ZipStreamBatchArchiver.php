@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload\Archiver;
+namespace Shared\Domain\Publication\BatchDownload\Archiver;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\S3\StreamFactory;
-use App\Service\DownloadFilenameGenerator;
 use Aws\Exception\AwsException;
 use Aws\S3\S3Client;
 use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\S3\StreamFactory;
+use Shared\Service\DownloadFilenameGenerator;
 use Webmozart\Assert\Assert;
 use ZipStream\Exception as ZipStreamException;
 use ZipStream\ZipStream;

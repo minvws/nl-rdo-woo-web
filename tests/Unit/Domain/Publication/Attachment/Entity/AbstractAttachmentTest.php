@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment\Entity;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment\Entity;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
-use App\Domain\Publication\Attachment\Exception\AttachmentWithdrawException;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\FileInfo;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
+use Shared\Domain\Publication\Attachment\Exception\AttachmentWithdrawException;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Tests\Unit\UnitTestCase;
 
-class AbstractAttachmentTest extends MockeryTestCase
+class AbstractAttachmentTest extends UnitTestCase
 {
     private Covenant&MockInterface $dossier;
 

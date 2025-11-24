@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Department\Twig;
+namespace Shared\Tests\Unit\Domain\Department\Twig;
 
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Department\Twig\Departments;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Department\Twig\Departments;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 

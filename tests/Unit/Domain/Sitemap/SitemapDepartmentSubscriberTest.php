@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Sitemap;
+namespace Shared\Tests\Unit\Domain\Sitemap;
 
-use App\Domain\Department\Department;
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Sitemap\SitemapDepartmentSubscriber;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Sitemap\SitemapDepartmentSubscriber;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SitemapDepartmentSubscriberTest extends UnitTestCase

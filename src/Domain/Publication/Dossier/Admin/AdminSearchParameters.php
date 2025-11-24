@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Admin;
+namespace Shared\Domain\Publication\Dossier\Admin;
 
-use App\Api\Admin\Publication\Search\SearchResultType;
-use App\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Api\Admin\Publication\Search\SearchResultType;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Symfony\Component\Uid\Uuid;
 
 final readonly class AdminSearchParameters

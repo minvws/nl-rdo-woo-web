@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Publication\Search\Parameter;
+namespace Shared\Api\Admin\Publication\Search\Parameter;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Parameter;
 use ApiPlatform\State\ParameterProviderInterface;
-use App\Api\ContextGetter;
-use App\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Api\ContextGetter;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Webmozart\Assert\Assert;
 
 class PublicationTypeFilterParameterProvider implements ParameterProviderInterface

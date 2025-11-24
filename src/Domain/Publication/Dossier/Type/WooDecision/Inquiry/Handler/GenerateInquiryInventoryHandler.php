@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
-use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
-use App\Service\Inventory\Sanitizer\InventorySanitizer;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
+use Shared\Service\Inventory\Sanitizer\InventorySanitizer;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

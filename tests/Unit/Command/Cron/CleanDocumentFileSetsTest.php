@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command\Cron;
+namespace Shared\Tests\Unit\Command\Cron;
 
-use App\Command\Cron\CleanDocumentFileSets;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileSetRemover;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Command\Cron\CleanDocumentFileSets;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileSetRemover;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CleanDocumentFileSetsTest extends MockeryTestCase
+class CleanDocumentFileSetsTest extends UnitTestCase
 {
     public function testDocumentFileSetRemoverIsCalled(): void
     {

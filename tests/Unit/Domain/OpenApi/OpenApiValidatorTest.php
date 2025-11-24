@@ -2,17 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\OpenApi;
+namespace Shared\Tests\Unit\Domain\OpenApi;
 
-use App\Api\Publication\V1\PublicationV1Api;
-use App\Domain\OpenApi\Exceptions\FormatMismatchException;
-use App\Domain\OpenApi\Exceptions\KeywordMismatchException;
-use App\Domain\OpenApi\Exceptions\SchemaMismatchException;
-use App\Domain\OpenApi\Exceptions\SpecException;
-use App\Domain\OpenApi\Exceptions\ValidatonException;
-use App\Domain\OpenApi\OpenApiSpecGenerator;
-use App\Domain\OpenApi\OpenApiValidator;
-use App\Tests\Unit\UnitTestCase;
 use cebe\openapi\spec\OpenApi;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\OperationAddress;
@@ -25,6 +16,15 @@ use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Shared\Api\Publication\V1\PublicationV1Api;
+use Shared\Domain\OpenApi\Exceptions\FormatMismatchException;
+use Shared\Domain\OpenApi\Exceptions\KeywordMismatchException;
+use Shared\Domain\OpenApi\Exceptions\SchemaMismatchException;
+use Shared\Domain\OpenApi\Exceptions\SpecException;
+use Shared\Domain\OpenApi\Exceptions\ValidatonException;
+use Shared\Domain\OpenApi\OpenApiSpecGenerator;
+use Shared\Domain\OpenApi\OpenApiValidator;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

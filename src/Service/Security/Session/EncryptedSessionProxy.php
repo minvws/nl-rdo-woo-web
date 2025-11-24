@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Security\Session;
+namespace Shared\Service\Security\Session;
 
 use ParagonIE\Halite\Symmetric\Crypto;
 use ParagonIE\Halite\Symmetric\EncryptionKey;
@@ -28,7 +28,7 @@ class EncryptedSessionProxy extends SessionHandlerProxy
     public function read($sessionId): string
     {
         $data = parent::read($sessionId);
-        if (empty($data)) {
+        if ($data === false || $data === '') {
             return '';
         }
 

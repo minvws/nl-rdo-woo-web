@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result\SubType\WooDecisionDocument;
+namespace Shared\Domain\Search\Result\SubType\WooDecisionDocument;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\FileInfo;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\SourceType;
-use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\FileInfo;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Search\Result\SubType\SubTypeViewModelInterface;
 
 readonly class DocumentViewModel implements SubTypeViewModelInterface
 {

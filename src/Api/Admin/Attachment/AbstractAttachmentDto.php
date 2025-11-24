@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Attachment;
+namespace Shared\Api\Admin\Attachment;
 
 use ApiPlatform\Metadata\ApiProperty;
-use App\Api\Admin\Dossier\DossierReferenceDto;
+use Shared\Api\Admin\Dossier\DossierReferenceDto;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 

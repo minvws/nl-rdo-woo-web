@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query\Facet\Definition;
+namespace Shared\Domain\Search\Query\Facet\Definition;
 
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
-use App\Domain\Search\Query\Facet\DisplayValue\TranslatedFacetDisplayValue;
-use App\Domain\Search\Query\Facet\DisplayValue\UntranslatedStringFacetDisplayValue;
-use App\Domain\Search\Query\Facet\FacetDefinitionInterface;
-use App\Domain\Search\Query\Facet\Input\DateFacetInput;
-use App\Domain\Search\Query\Facet\Input\FacetInputInterface;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Aggregation\AggregationStrategyInterface;
-use App\Service\Search\Query\Aggregation\DateTermAggregationStrategy;
-use App\Service\Search\Query\Filter\FilterInterface;
-use App\Service\Search\Query\Filter\PeriodFilter;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
+use Shared\Domain\Search\Query\Facet\DisplayValue\TranslatedFacetDisplayValue;
+use Shared\Domain\Search\Query\Facet\DisplayValue\UntranslatedStringFacetDisplayValue;
+use Shared\Domain\Search\Query\Facet\FacetDefinitionInterface;
+use Shared\Domain\Search\Query\Facet\Input\DateFacetInput;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputInterface;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Query\Aggregation\AggregationStrategyInterface;
+use Shared\Service\Search\Query\Aggregation\DateTermAggregationStrategy;
+use Shared\Service\Search\Query\Filter\FilterInterface;
+use Shared\Service\Search\Query\Filter\PeriodFilter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Department;
+namespace Shared\Domain\Upload\Department;
 
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Department\DepartmentService;
-use App\Domain\Upload\UploadRequest;
-use App\Domain\Upload\UploadService;
-use App\Service\Uploader\UploadGroupId;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Department\DepartmentService;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Domain\Upload\UploadService;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 

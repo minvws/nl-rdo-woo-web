@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Exception;
+namespace Shared\Exception;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 

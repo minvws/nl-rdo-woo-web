@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\EventHandler;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\EventHandler;
 
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\EventHandler\ValidateDossierCompletionEventHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Event\DocumentFileSetProcessedEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\DossierService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\EventHandler\ValidateDossierCompletionEventHandler;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Event\DocumentFileSetProcessedEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\DossierService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class ValidateDossierCompletionEventHandlerTest extends MockeryTestCase
+class ValidateDossierCompletionEventHandlerTest extends UnitTestCase
 {
     private DossierRepository&MockInterface $repository;
     private DossierService&MockInterface $dossierService;

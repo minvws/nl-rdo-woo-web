@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service\FileReader;
+namespace Shared\Service\FileReader;
 
-use App\Exception\FileReaderException;
-use App\Service\Inventory\InventoryDataHelper;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Shared\Exception\FileReaderException;
+use Shared\Service\Inventory\InventoryDataHelper;
 use Webmozart\Assert\Assert;
 
 /**
@@ -77,7 +77,7 @@ class ExcelReader implements \IteratorAggregate, FileReaderInterface
     public function getOptionalDateTime(int $rowIndex, string $columnName): ?\DateTimeImmutable
     {
         $value = $this->getOptionalString($rowIndex, $columnName);
-        if (empty($value)) {
+        if ($value === null || $value === '') {
             return null;
         }
 

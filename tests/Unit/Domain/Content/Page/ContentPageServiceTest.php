@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Content\Page;
+namespace Shared\Tests\Unit\Domain\Content\Page;
 
-use App\Domain\Content\Page\ContentPage;
-use App\Domain\Content\Page\ContentPageException;
-use App\Domain\Content\Page\ContentPageRepository;
-use App\Domain\Content\Page\ContentPageService;
-use App\Domain\Content\Page\ContentPageType;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Content\Page\ContentPage;
+use Shared\Domain\Content\Page\ContentPageException;
+use Shared\Domain\Content\Page\ContentPageRepository;
+use Shared\Domain\Content\Page\ContentPageService;
+use Shared\Domain\Content\Page\ContentPageType;
+use Shared\Tests\Unit\UnitTestCase;
 
 class ContentPageServiceTest extends UnitTestCase
 {

@@ -63,7 +63,7 @@ describe('the "sortTables" function', () => {
     ];
 
   const getTogglerText = (columnNumber: number) =>
-    getToggler(columnNumber)?.textContent?.trim()?.replace(/\s+/g, ' ');
+    getToggler(columnNumber)?.textContent?.trim()?.replaceAll(/\s+/g, ' ');
 
   const sort = (columnNumber: number) => getToggler(columnNumber)?.click();
 

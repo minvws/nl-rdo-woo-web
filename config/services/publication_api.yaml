@@ -7,25 +7,37 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    App\Api\Publication\V1\RequestLogProcessor:
+    Shared\Api\Publication\V1\RequestLogProcessor:
         tags: [ monolog.processor ]
 
-    App\Api\Publication\V1\Department\DepartmentProvider:
+    Shared\Api\Publication\V1\Department\DepartmentProvider:
         arguments:
             $itemsPerPage: 100
 
-    App\Api\Publication\V1\Organisation\OrganisationProvider:
+    Shared\Api\Publication\V1\Dossier\Disposition\DispositionProvider:
         arguments:
             $itemsPerPage: 100
 
-    App\Api\Publication\V1\Prefix\PrefixProvider:
+    Shared\Api\Publication\V1\Dossier\OtherPublication\OtherPublicationProvider:
         arguments:
             $itemsPerPage: 100
 
-    App\Api\Publication\V1\Subject\SubjectProvider:
+    Shared\Api\Publication\V1\Dossier\WooDecision\WooDecisionProvider:
         arguments:
             $itemsPerPage: 100
 
-    App\Service\Security\Api\PublicationApiAuthenticator:
+    Shared\Api\Publication\V1\Organisation\OrganisationProvider:
+        arguments:
+            $itemsPerPage: 100
+
+    Shared\Api\Publication\V1\Prefix\PrefixProvider:
+        arguments:
+            $itemsPerPage: 100
+
+    Shared\Api\Publication\V1\Subject\SubjectProvider:
+        arguments:
+            $itemsPerPage: 100
+
+    Shared\Service\Security\Api\PublicationApiAuthenticator:
         arguments:
             $sslUserNameWhitelist: '%env(PUBLICATION_API_SSL_USERNAME_WHITELIST)%'

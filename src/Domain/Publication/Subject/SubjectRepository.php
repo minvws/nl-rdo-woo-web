@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Subject;
+namespace Shared\Domain\Publication\Subject;
 
-use App\Domain\Organisation\Organisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Domain\Organisation\Organisation;
 use Symfony\Component\Uid\Uuid;
 
 /**

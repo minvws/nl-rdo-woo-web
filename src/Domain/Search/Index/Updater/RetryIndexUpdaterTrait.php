@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Updater;
+namespace Shared\Domain\Search\Index\Updater;
 
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 

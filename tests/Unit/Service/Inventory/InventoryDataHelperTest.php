@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inventory;
+namespace Shared\Tests\Unit\Service\Inventory;
 
-use App\Service\Inventory\InventoryDataHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Shared\Service\Inventory\InventoryDataHelper;
 
 class InventoryDataHelperTest extends TestCase
 {

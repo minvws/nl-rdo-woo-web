@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Content\Page\ContentPage;
-use App\Service\Security\Roles;
-use App\Service\Security\UserRouteHelper;
+use Shared\Domain\Content\Page\ContentPage;
+use Shared\Service\Security\Roles;
+use Shared\Service\Security\UserRouteHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

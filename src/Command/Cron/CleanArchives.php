@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Command\Cron;
+namespace Shared\Command\Cron;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadRepository;
-use App\Domain\Publication\BatchDownload\BatchDownloadStorage;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadStorage;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

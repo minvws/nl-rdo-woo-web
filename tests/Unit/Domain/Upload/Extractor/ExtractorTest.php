@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Extractor;
+namespace Shared\Tests\Unit\Domain\Upload\Extractor;
 
-use App\Domain\ArchiveExtractor\ArchiveInterface;
-use App\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
-use App\Domain\Upload\Extractor\Extractor;
-use App\Domain\Upload\Extractor\ExtractorException;
-use App\Domain\Upload\Extractor\ExtractorFinderFactory;
-use App\Service\Storage\LocalFilesystem;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\ArchiveExtractor\ArchiveInterface;
+use Shared\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
+use Shared\Domain\Upload\Extractor\Extractor;
+use Shared\Domain\Upload\Extractor\ExtractorException;
+use Shared\Domain\Upload\Extractor\ExtractorFinderFactory;
+use Shared\Service\Storage\LocalFilesystem;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Finder\Finder;
 
 final class ExtractorTest extends UnitTestCase

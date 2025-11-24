@@ -2,18 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\AnnualReport;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\AnnualReport;
 
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportRepository;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportRepository;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class AnnualReportRepositoryTest extends KernelTestCase
+final class AnnualReportRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private function getRepository(): AnnualReportRepository
     {
         /** @var AnnualReportRepository */

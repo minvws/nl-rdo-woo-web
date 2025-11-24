@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Service\Search\Query\Definition;
+namespace Shared\Tests\Integration\Service\Search\Query\Definition;
 
-use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Query\SearchParametersFactory;
-use App\Service\Elastic\ElasticClientInterface;
-use App\Service\Search\Object\ObjectHandler;
-use App\Service\Search\Query\Definition\QueryDefinitionInterface;
-use App\Service\Search\Result\Result;
-use App\Service\Search\Result\ResultTransformer;
-use App\Service\Search\SearchService;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Query\SearchParametersFactory;
+use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Service\Search\Object\ObjectHandler;
+use Shared\Service\Search\Query\Definition\QueryDefinitionInterface;
+use Shared\Service\Search\Result\Result;
+use Shared\Service\Search\Result\ResultTransformer;
+use Shared\Service\Search\SearchService;
 use Spatie\Snapshots\MatchesSnapshots;
 
 trait QueryDefinitionTestTrait

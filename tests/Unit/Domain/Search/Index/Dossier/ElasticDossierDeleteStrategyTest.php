@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Dossier;
+namespace Shared\Tests\Unit\Domain\Search\Index\Dossier;
 
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Search\Index\Dossier\ElasticDossierDeleteStrategy;
-use App\Service\Elastic\ElasticService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Search\Index\Dossier\ElasticDossierDeleteStrategy;
+use Shared\Service\Elastic\ElasticService;
+use Shared\Tests\Unit\UnitTestCase;
 
-final class ElasticDossierDeleteStrategyTest extends MockeryTestCase
+final class ElasticDossierDeleteStrategyTest extends UnitTestCase
 {
     private ElasticService&MockInterface $elasticService;
     private ElasticDossierDeleteStrategy $strategy;

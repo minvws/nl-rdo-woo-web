@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Worker\Pdf\Extractor;
+namespace Shared\Service\Worker\Pdf\Extractor;
 
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 interface EntityExtractorInterface
 {

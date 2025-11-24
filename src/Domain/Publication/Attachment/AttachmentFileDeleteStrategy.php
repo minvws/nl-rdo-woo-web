@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment;
+namespace Shared\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
 
 readonly class AttachmentFileDeleteStrategy implements AttachmentDeleteStrategyInterface
 {

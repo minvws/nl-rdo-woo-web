@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Publication\V1;
+namespace Shared\Api\Publication\V1;
 
-use App\Service\Security\Api\ApiUser;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
+use Shared\Service\Security\Api\ApiUser;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Bundle\SecurityBundle\Security;
 
 readonly class RequestLogProcessor implements ProcessorInterface

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\SubType;
+namespace Shared\Domain\Search\Index\SubType;
 
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface;
-use App\Domain\Search\Index\ElasticDocumentId;
-use App\Domain\Search\SearchDispatcher;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface;
+use Shared\Domain\Search\Index\ElasticDocumentId;
+use Shared\Domain\Search\SearchDispatcher;
 
 readonly class ElasticMainDocumentDeleteStrategy implements MainDocumentDeleteStrategyInterface
 {

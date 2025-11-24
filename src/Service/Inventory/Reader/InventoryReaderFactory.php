@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory\Reader;
+namespace Shared\Service\Inventory\Reader;
 
-use App\Service\FileReader\ColumnMapping;
-use App\Service\FileReader\ReaderFactoryInterface;
-use App\Service\Inventory\MetadataField;
+use Shared\Service\FileReader\ColumnMapping;
+use Shared\Service\FileReader\ReaderFactoryInterface;
+use Shared\Service\Inventory\MetadataField;
 
 /**
  * Creates an InventoryReaderInterface configured with mapping.

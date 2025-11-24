@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Doctrine;
+namespace Shared\Doctrine;
 
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Query\AST\OrderByClause;
@@ -11,6 +11,7 @@ use Webmozart\Assert\Assert;
 
 class SortNullsLastWalker extends SqlWalker
 {
+    #[\Override]
     public function walkOrderByClause(OrderByClause $orderByClause): string
     {
         $sql = parent::walkOrderByClause($orderByClause);

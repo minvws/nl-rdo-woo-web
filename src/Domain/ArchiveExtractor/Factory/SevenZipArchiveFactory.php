@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ArchiveExtractor\Factory;
+namespace Shared\Domain\ArchiveExtractor\Factory;
 
 use Archive7z\Archive7z;
 

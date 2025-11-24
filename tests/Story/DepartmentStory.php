@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Story;
+namespace Shared\Tests\Story;
 
-use App\Tests\Factory\DepartmentFactory;
+use Shared\Tests\Factory\DepartmentFactory;
 use Zenstruck\Foundry\Story;
 
 final class DepartmentStory extends Story

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Story;
+namespace Shared\Tests\Story;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportAttachmentFactory;
-use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
-use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentFactory;
 use Carbon\CarbonImmutable;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportAttachmentFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentFactory;
 use Symfony\Component\Uid\UuidV1;
 use Symfony\Component\Uid\UuidV6;
 use Zenstruck\Foundry\Object\Instantiator;

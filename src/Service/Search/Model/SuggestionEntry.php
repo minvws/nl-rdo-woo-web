@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Model;
+namespace Shared\Service\Search\Model;
 
 class SuggestionEntry
 {

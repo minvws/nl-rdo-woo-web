@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query\Facet;
+namespace Shared\Domain\Search\Query\Facet;
 
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
-use App\Domain\Search\Query\Facet\Input\FacetInputInterface;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Aggregation\AggregationStrategyInterface;
-use App\Service\Search\Query\Filter\FilterInterface;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputInterface;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Query\Aggregation\AggregationStrategyInterface;
+use Shared\Service\Search\Query\Filter\FilterInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\HttpFoundation\ParameterBag;
 

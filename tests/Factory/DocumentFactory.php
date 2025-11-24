@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory;
+namespace Shared\Tests\Factory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Service\Storage\StorageRootPathGenerator;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Service\Storage\StorageRootPathGenerator;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

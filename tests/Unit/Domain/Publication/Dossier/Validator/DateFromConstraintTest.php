@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Validator;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Validator;
 
-use App\Domain\Publication\Dossier\Validator\DateFromConstraint;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\Validator\DateFromConstraint;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DateFromConstraintTest extends MockeryTestCase
+class DateFromConstraintTest extends UnitTestCase
 {
     public function testConstructor(): void
     {

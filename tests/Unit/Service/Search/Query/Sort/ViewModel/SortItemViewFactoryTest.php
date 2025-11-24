@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Search\Query\Sort\ViewModel;
+namespace Shared\Tests\Unit\Service\Search\Query\Sort\ViewModel;
 
-use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
-use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Query\SearchType;
-use App\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputCollection;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Query\SearchType;
+use Shared\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
+use Shared\Tests\Unit\UnitTestCase;
 
 class SortItemViewFactoryTest extends UnitTestCase
 {

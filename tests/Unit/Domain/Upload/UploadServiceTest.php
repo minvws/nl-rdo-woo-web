@@ -2,32 +2,32 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload;
+namespace Shared\Tests\Unit\Domain\Upload;
 
-use App\Domain\Upload\Event\UploadCompletedEvent;
-use App\Domain\Upload\Event\UploadValidatedEvent;
-use App\Domain\Upload\Exception\UploadException;
-use App\Domain\Upload\Exception\UploadValidationException;
-use App\Domain\Upload\Handler\UploadHandlerInterface;
-use App\Domain\Upload\Result\PartialUploadResult;
-use App\Domain\Upload\Result\UploadCompletedResult;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\UploadEntityRepository;
-use App\Domain\Upload\UploadRequest;
-use App\Domain\Upload\UploadService;
-use App\Domain\Upload\UploadStatus;
-use App\Service\Security\User;
-use App\Service\Uploader\UploadGroupId;
 use League\Flysystem\FilesystemOperator;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Shared\Domain\Upload\Event\UploadCompletedEvent;
+use Shared\Domain\Upload\Event\UploadValidatedEvent;
+use Shared\Domain\Upload\Exception\UploadException;
+use Shared\Domain\Upload\Exception\UploadValidationException;
+use Shared\Domain\Upload\Handler\UploadHandlerInterface;
+use Shared\Domain\Upload\Result\PartialUploadResult;
+use Shared\Domain\Upload\Result\UploadCompletedResult;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadEntityRepository;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Domain\Upload\UploadService;
+use Shared\Domain\Upload\UploadStatus;
+use Shared\Service\Security\User;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\Uid\Uuid;
 
-class UploadServiceTest extends MockeryTestCase
+class UploadServiceTest extends UnitTestCase
 {
     private UploadHandlerInterface&MockInterface $uploadHandler;
     private EventDispatcherInterface&MockInterface $eventDispatcher;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type;
+namespace Shared\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;

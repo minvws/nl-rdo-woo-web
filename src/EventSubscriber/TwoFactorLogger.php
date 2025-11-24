@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscriber;
+namespace Shared\EventSubscriber;
 
-use App\Service\Security\LoginActivity\LoginActivity;
-use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvent;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvents;
+use Shared\Service\Security\LoginActivity\LoginActivity;
+use Shared\Service\Security\User;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 readonly class TwoFactorLogger

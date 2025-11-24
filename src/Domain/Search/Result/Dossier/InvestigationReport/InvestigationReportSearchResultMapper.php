@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result\Dossier\InvestigationReport;
+namespace Shared\Domain\Search\Result\Dossier\InvestigationReport;
 
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportRepository;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
-use App\Domain\Search\Result\ResultEntryInterface;
-use App\Domain\Search\Result\SearchResultMapperInterface;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportRepository;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
+use Shared\Domain\Search\Result\ResultEntryInterface;
+use Shared\Domain\Search\Result\SearchResultMapperInterface;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 readonly class InvestigationReportSearchResultMapper implements SearchResultMapperInterface
 {

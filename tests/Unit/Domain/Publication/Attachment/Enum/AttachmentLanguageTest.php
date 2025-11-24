@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment\Enum;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment\Enum;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Tests\Unit\UnitTestCase as UnitUnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Tests\Unit\UnitTestCase as UnitUnitTestCase;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

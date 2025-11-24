@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Command\User;
+namespace Shared\Command\User;
 
-use App\Service\Security\User;
-use App\Service\Security\UserRepository;
-use App\Service\Totp;
+use Shared\Service\Security\User;
+use Shared\Service\Security\UserRepository;
+use Shared\Service\Totp;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;

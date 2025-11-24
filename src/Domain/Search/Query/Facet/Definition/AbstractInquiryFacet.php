@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query\Facet\Definition;
+namespace Shared\Domain\Search\Query\Facet\Definition;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
-use App\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
-use App\Domain\Search\Query\Facet\DisplayValue\UntranslatedStringFacetDisplayValue;
-use App\Domain\Search\Query\Facet\FacetDefinitionInterface;
-use App\Domain\Search\Query\Facet\Input\FacetInputInterface;
-use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
-use App\Service\Inquiry\InquirySessionService;
-use App\Service\Search\Query\Aggregation\AggregationStrategyInterface;
-use App\Service\Search\Query\Filter\FilterInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use Shared\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
+use Shared\Domain\Search\Query\Facet\DisplayValue\UntranslatedStringFacetDisplayValue;
+use Shared\Domain\Search\Query\Facet\FacetDefinitionInterface;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputInterface;
+use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
+use Shared\Service\Inquiry\InquirySessionService;
+use Shared\Service\Search\Query\Aggregation\AggregationStrategyInterface;
+use Shared\Service\Search\Query\Filter\FilterInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 abstract readonly class AbstractInquiryFacet implements FacetDefinitionInterface
@@ -75,7 +75,7 @@ abstract readonly class AbstractInquiryFacet implements FacetDefinitionInterface
         }
 
         $validInquiries = $this->inquirySession->getInquiries();
-        if (empty($validInquiries)) {
+        if ($validInquiries === []) {
             return [];
         }
 

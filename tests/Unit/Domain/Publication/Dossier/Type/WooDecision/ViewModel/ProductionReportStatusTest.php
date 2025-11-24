@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
-use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\ProductionReportStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\Inventory\InventoryChangeset;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\ProductionReportStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\Inventory\InventoryChangeset;
+use Shared\Tests\Unit\UnitTestCase;
 
-class ProductionReportStatusTest extends MockeryTestCase
+class ProductionReportStatusTest extends UnitTestCase
 {
     private WooDecision&MockInterface $dossier;
     private ProductionReportProcessRun&MockInterface $processRun;

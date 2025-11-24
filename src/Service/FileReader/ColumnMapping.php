@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\FileReader;
+namespace Shared\Service\FileReader;
 
 /**
  * Describes the column mapping for an Excel file.

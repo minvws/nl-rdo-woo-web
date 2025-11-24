@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\History;
+namespace Shared\Tests\Unit\Domain\Publication\History;
 
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\History\MainDocumentHistoryHandler;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent;
-use App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
-use App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
-use App\Service\HistoryService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\History\MainDocumentHistoryHandler;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
+use Shared\Service\HistoryService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class MainDocumentHistoryHandlerTest extends UnitTestCase

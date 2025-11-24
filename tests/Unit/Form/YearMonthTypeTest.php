@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Form;
+namespace Shared\Tests\Unit\Form;
 
-use App\Form\YearMonthType;
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
+use Shared\Form\YearMonthType;
 
 final class YearMonthTypeTest extends TestCase
 {

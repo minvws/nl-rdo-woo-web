@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Storage\ThumbnailStorageService;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Storage\ThumbnailStorageService;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 readonly class DossierFileViewFactory

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\SqlDump;
+namespace Shared\Service\SqlDump;
 
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;

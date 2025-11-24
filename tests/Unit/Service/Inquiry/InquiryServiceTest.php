@@ -2,34 +2,34 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inquiry;
+namespace Shared\Tests\Unit\Service\Inquiry;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Domain\Search\SearchDispatcher;
-use App\Service\HistoryService;
-use App\Service\Inquiry\CaseNumbers;
-use App\Service\Inquiry\DocumentCaseNumbers;
-use App\Service\Inquiry\InquiryChangeset;
-use App\Service\Inquiry\InquiryService;
-use App\Service\Storage\EntityStorageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Domain\Search\SearchDispatcher;
+use Shared\Service\HistoryService;
+use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inquiry\InquiryChangeset;
+use Shared\Service\Inquiry\InquiryService;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Uid\UuidV6;
 
-class InquiryServiceTest extends MockeryTestCase
+class InquiryServiceTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private BatchDownloadService&MockInterface $batchDownloadService;

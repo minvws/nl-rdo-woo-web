@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Workflow;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Workflow;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Service\DossierService;
-use App\Service\HistoryService;
-use App\Service\Inquiry\InquiryService;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Service\DossierService;
+use Shared\Service\HistoryService;
+use Shared\Service\Inquiry\InquiryService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Workflow\Exception\TransitionException;
 use Symfony\Component\Workflow\WorkflowInterface;
 
-class DossierWorkflowManagerTest extends MockeryTestCase
+class DossierWorkflowManagerTest extends UnitTestCase
 {
     private DossierTypeManager&MockInterface $dossierTypeManager;
     private WooDecision&MockInterface $dossier;

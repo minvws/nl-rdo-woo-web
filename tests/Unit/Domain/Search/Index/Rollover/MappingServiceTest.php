@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Rollover;
+namespace Shared\Tests\Unit\Domain\Search\Index\Rollover;
 
-use App\Domain\Search\Index\Rollover\MappingService;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Search\Index\Rollover\MappingService;
+use Shared\Tests\Unit\UnitTestCase;
 
 class MappingServiceTest extends UnitTestCase
 {

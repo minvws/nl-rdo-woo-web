@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Search\Model;
+namespace Shared\Tests\Unit\Service\Search\Model;
 
-use App\Domain\Search\Query\Facet\DisplayValue\UntranslatedStringFacetDisplayValue;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Model\AggregationBucketEntry;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Search\Query\Facet\DisplayValue\UntranslatedStringFacetDisplayValue;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Model\AggregationBucketEntry;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class AggregationBucketEntryTest extends TestCase

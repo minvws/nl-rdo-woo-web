@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Validator;
+namespace Shared\Tests\Unit\Validator;
 
-use App\Tests\Unit\UnitTestCase;
-use App\Validator\CommonList;
-use App\Validator\CommonListValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Validator\CommonList;
+use Shared\Validator\CommonListValidator;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 

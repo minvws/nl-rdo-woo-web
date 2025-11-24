@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Validator;
+namespace Shared\Tests\Unit\Validator;
 
-use App\Service\Security\User;
-use App\Tests\Unit\UnitTestCase;
-use App\Validator\NotTheSamePassword;
-use App\Validator\NotTheSamePasswordValidator;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Validator\NotTheSamePassword;
+use Shared\Validator\NotTheSamePasswordValidator;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;

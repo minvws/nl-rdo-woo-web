@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inquiry;
+namespace Shared\Service\Inquiry;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

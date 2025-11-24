@@ -2,16 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace Shared\Tests\Integration;
 
-use App\Domain\Organisation\Organisation;
-use App\Service\Security\OrganisationSwitcher;
-use App\Tests\CarbonHelpers;
-use App\Tests\Faker\FakerFactory;
 use Faker\Generator;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Shared\ApplicationId;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Kernel;
+use Shared\Service\Security\OrganisationSwitcher;
+use Shared\Tests\CarbonHelpers;
+use Shared\Tests\Faker\FakerFactory;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
@@ -25,6 +28,22 @@ trait IntegrationTestTrait
     use CarbonHelpers;
 
     protected Generator $faker;
+
+    abstract public static function getAppId(): ApplicationId;
+
+    /**
+     * @param array{environment?:string,debug?:bool} $options
+     */
+    #[\Override]
+    protected static function createKernel(array $options = []): KernelInterface
+    {
+        $env = $options['environment'] ?? $_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? 'test';
+        $debug = $options['debug'] ?? (bool) ($_ENV['APP_DEBUG'] ?? $_SERVER['APP_DEBUG'] ?? true);
+
+        Assert::string($env);
+
+        return new Kernel($env, $debug, self::getAppId());
+    }
 
     public static function createFaker(): Generator
     {

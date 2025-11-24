@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Node
         uses: ./.github/actions/setup-node
         with:
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup PHP
         uses: ./.github/actions/setup-php
         with:
@@ -46,7 +46,7 @@ jobs:
     needs: [setup-composer-cache]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup PHP
         uses: ./.github/actions/setup-php
         with:
@@ -60,7 +60,7 @@ jobs:
     needs: [setup-npm-cache]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Node
         uses: ./.github/actions/setup-node
         with:
@@ -73,26 +73,26 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Linting Markdown
-        uses: DavidAnson/markdownlint-cli2-action@v20
+        uses: DavidAnson/markdownlint-cli2-action@v21
 
   reuse-compliance:
     name: Check REUSE compliance
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Linting REUSE
         uses: fsfe/reuse-action@v6
 
   fe-linting:
     name: Check front-end linting
     runs-on: ubuntu-24.04
-    needs: [setup-npm-cache, audit-npm]
+    needs: [setup-npm-cache]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Node
         uses: ./.github/actions/setup-node
         with:
@@ -108,10 +108,10 @@ jobs:
   fe-unit-tests:
     name: Check front-end Unit tests
     runs-on: ubuntu-24.04
-    needs: [setup-npm-cache, audit-npm]
+    needs: [setup-npm-cache]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Node
         uses: ./.github/actions/setup-node
         with:
@@ -127,10 +127,10 @@ jobs:
   be-linting-php-cs-fixer:
     name: Check back-end PHP-CS-Fixer
     runs-on: ubuntu-24.04
-    needs: [setup-composer-cache, audit-composer]
+    needs: [setup-composer-cache]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup PHP
         uses: ./.github/actions/setup-php
         with:
@@ -147,10 +147,10 @@ jobs:
   be-linting-codesniffer:
     name: Check back-end CodeSniffer
     runs-on: ubuntu-24.04
-    needs: [setup-composer-cache, audit-composer]
+    needs: [setup-composer-cache]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup PHP
         uses: ./.github/actions/setup-php
         with:
@@ -167,10 +167,10 @@ jobs:
   be-linting-php-mess-detector:
     name: Check back-end PHP Mess Detector
     runs-on: ubuntu-24.04
-    needs: [setup-composer-cache, audit-composer]
+    needs: [setup-composer-cache]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup PHP
         uses: ./.github/actions/setup-php
         with:
@@ -187,10 +187,10 @@ jobs:
   be-linting-twig:
     name: Check back-end Twig template files
     runs-on: ubuntu-24.04
-    needs: [setup-composer-cache, audit-composer]
+    needs: [setup-composer-cache]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup PHP
         uses: ./.github/actions/setup-php
         with:
@@ -201,10 +201,10 @@ jobs:
   be-linting-yaml-translations:
     name: Check YAML translation files
     runs-on: ubuntu-24.04
-    needs: [setup-composer-cache, audit-composer]
+    needs: [setup-composer-cache]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup PHP
         uses: ./.github/actions/setup-php
         with:
@@ -215,10 +215,10 @@ jobs:
   be-static-code-analysis:
     name: Check back-end Static Code Analysis
     runs-on: ubuntu-24.04
-    needs: [setup-composer-cache, audit-composer]
+    needs: [setup-composer-cache]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup PHP
         uses: ./.github/actions/setup-php
         with:
@@ -247,7 +247,7 @@ jobs:
   be-migrations:
     name: Check back-end migrations
     runs-on: ubuntu-24.04
-    needs: [setup-composer-cache, audit-composer]
+    needs: [setup-composer-cache]
     services:
       postgres:
         image: postgres:14.10-bookworm
@@ -260,7 +260,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup PHP
         uses: ./.github/actions/setup-php
         with:
@@ -273,13 +273,13 @@ jobs:
   be-unit-tests:
     name: Check back-end Unit tests
     runs-on: ubuntu-24.04
-    needs: [setup-npm-cache, setup-composer-cache, audit-npm, audit-composer]
+    needs: [setup-npm-cache, setup-composer-cache]
     env:
       CR_PAT: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }} # For gh cli tool
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Install Task
         uses: go-task/setup-task@v1
         with:
@@ -310,7 +310,7 @@ jobs:
       - be-static-code-analysis
       - be-unit-tests
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Create reports directories
@@ -356,8 +356,6 @@ jobs:
   package:
     name: Package
     needs:
-      - audit-composer
-      - audit-npm
       - markdown
       - reuse-compliance
       - fe-linting

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Vws\AuditLog;
+namespace Shared\Vws\AuditLog;
 
-use App\Service\Security\Event\UserCreatedEvent;
-use App\Service\Security\Event\UserDisableEvent;
-use App\Service\Security\Event\UserEnableEvent;
-use App\Service\Security\Event\UserResetEvent;
-use App\Service\Security\Event\UserUpdatedEvent;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\AuditUser;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
 use MinVWS\AuditLogger\Events\Logging\AccountChangeLogEvent;
 use MinVWS\AuditLogger\Events\Logging\ResetCredentialsLogEvent;
 use MinVWS\AuditLogger\Events\Logging\UserCreatedLogEvent;
+use Shared\Service\Security\Event\UserCreatedEvent;
+use Shared\Service\Security\Event\UserDisableEvent;
+use Shared\Service\Security\Event\UserEnableEvent;
+use Shared\Service\Security\Event\UserResetEvent;
+use Shared\Service\Security\Event\UserUpdatedEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 readonly class UserAdminAuditLogger

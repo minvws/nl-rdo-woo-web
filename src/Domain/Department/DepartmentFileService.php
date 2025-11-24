@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Department;
+namespace Shared\Domain\Department;
 
-use App\Domain\Department\Exception\DepartmentAssetNotFound;
-use App\Domain\Publication\EntityWithFileInfo;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
+use Shared\Domain\Department\Exception\DepartmentAssetNotFound;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Webmozart\Assert\Assert;
 
 final readonly class DepartmentFileService

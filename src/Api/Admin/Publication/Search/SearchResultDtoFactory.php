@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Publication\Search;
+namespace Shared\Api\Admin\Publication\Search;
 
-use App\Domain\Publication\Attachment\ViewModel\Attachment;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Result\Dossier\DossierSearchResultEntry;
-use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
-use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
-use App\Service\DossierWizard\WizardStatusFactory;
+use Shared\Domain\Publication\Attachment\ViewModel\Attachment;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\DossierReference;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Result\Dossier\DossierSearchResultEntry;
+use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
+use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
+use Shared\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 readonly class SearchResultDtoFactory
@@ -54,7 +54,7 @@ readonly class SearchResultDtoFactory
     public function makeCollection(array $entities): array
     {
         return array_values(array_map(
-            fn (object $entity): SearchResultDto => $this->make($entity),
+            $this->make(...),
             $entities,
         ));
     }

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Twig\Components\Admin;
+namespace Shared\Tests\Unit\Twig\Components\Admin;
 
-use App\Domain\Upload\FileType\FileType;
-use App\Twig\Components\Admin\MimeTypeIcon;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Upload\FileType\FileType;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Twig\Components\Admin\MimeTypeIcon;
 
-final class MimeTypeIconTest extends MockeryTestCase
+final class MimeTypeIconTest extends UnitTestCase
 {
     private MimeTypeIcon $mimeTypeIcon;
 

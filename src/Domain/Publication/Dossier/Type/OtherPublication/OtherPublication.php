@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\OtherPublication;
+namespace Shared\Domain\Publication\Dossier\Type\OtherPublication;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
-use App\Domain\Publication\Attachment\Entity\HasAttachments;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Domain\Publication\MainDocument\HasMainDocument;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
+use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -30,13 +30,13 @@ class OtherPublication extends AbstractDossier implements EntityWithAttachments,
     /** @use HasMainDocument<OtherPublicationMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: OtherPublicationMainDocument::class, cascade: ['remove'])]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: OtherPublicationMainDocument::class, cascade: ['persist', 'remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?OtherPublicationMainDocument $document;
 
     /** @var Collection<array-key,OtherPublicationAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: OtherPublicationAttachment::class)]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: OtherPublicationAttachment::class, cascade: ['persist'])]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 

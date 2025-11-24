@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\AttachmentDispatcher;
-use App\Domain\Publication\Attachment\Command\WithDrawAttachmentCommand;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
-use App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentWithdrawnEvent;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\FileInfo;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
+use Shared\Domain\Publication\Attachment\Command\WithDrawAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
+use Shared\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentWithdrawnEvent;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;

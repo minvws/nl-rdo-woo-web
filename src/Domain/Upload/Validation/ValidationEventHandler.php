@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Validation;
+namespace Shared\Domain\Upload\Validation;
 
-use App\Domain\Upload\Command\ValidateUploadCommand;
-use App\Domain\Upload\Event\UploadCompletedEvent;
+use Shared\Domain\Upload\Command\ValidateUploadCommand;
+use Shared\Domain\Upload\Event\UploadCompletedEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Messenger\MessageBusInterface;
 

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Subject;
+namespace Shared\Domain\Publication\Subject;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\AbstractDossier;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;

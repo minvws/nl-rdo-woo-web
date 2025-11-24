@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload\Archiver;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\Archiver;
 
-use App\Domain\Publication\BatchDownload\Archiver\ArchiveNamer;
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Publication\BatchDownload\Archiver\ArchiveNamer;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class ArchiveNamerTest extends UnitTestCase

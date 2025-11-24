@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WorkflowConfigHelper;
-use App\Domain\Publication\Dossier\Workflow\DossierMarkingStore;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WorkflowConfigHelper;
+use Shared\Domain\Publication\Dossier\Workflow\DossierMarkingStore;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Symfony\Config\FrameworkConfig;
 
 class WooDecisionWorkflow

@@ -12,7 +12,7 @@
                 <twig:Admin:LeftAndRight class="pt-1">
                     <a
                         class="bhr-btn-filled-primary mr-2"
-                        href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
+                        href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('Shared\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
                     >
                         {{ 'admin.dossiers.download_report' | trans }}
 

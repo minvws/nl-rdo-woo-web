@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service;
+namespace Shared\Tests\Unit\Service;
 
-use App\Domain\Publication\History\History;
-use App\Service\HistoryService;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\History\History;
+use Shared\Service\HistoryService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Uid\Uuid;

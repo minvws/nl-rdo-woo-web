@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Result\Dossier\WooDecisionDocument;
+namespace Shared\Tests\Unit\Domain\Search\Result\Dossier\WooDecisionDocument;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentSearchResultMapper;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentSearchResultMapper;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DocumentSearchResultMapperTest extends MockeryTestCase
+class DocumentSearchResultMapperTest extends UnitTestCase
 {
     private DocumentRepository&MockInterface $documentRepository;
     private WooDecisionRepository&MockInterface $dossierRepository;

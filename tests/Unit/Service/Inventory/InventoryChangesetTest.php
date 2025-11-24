@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inventory;
+namespace Shared\Tests\Unit\Service\Inventory;
 
-use App\Exception\ProcessInventoryException;
-use App\Service\Inventory\DocumentNumber;
-use App\Service\Inventory\InventoryChangeset;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Exception\ProcessInventoryException;
+use Shared\Service\Inventory\DocumentNumber;
+use Shared\Service\Inventory\InventoryChangeset;
+use Shared\Tests\Unit\UnitTestCase;
 
-class InventoryChangesetTest extends MockeryTestCase
+class InventoryChangesetTest extends UnitTestCase
 {
     protected function setUp(): void
     {

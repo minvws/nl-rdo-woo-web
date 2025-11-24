@@ -50,34 +50,6 @@ Publish A WooDecision With Max Individual Archive Size Of 5GB
   ...  contains
   ...  Het bestand "archive.zip" werd genegeerd omdat het te groot is
 
-Publish A Woodecision With Max Total Size Of 10GB
-  [Documentation]  Should not be run on TEST and ACC, as it polutes the envs.
-  ${new_prefix} =  Add A Random Organisation Prefix
-  ${test_data_location1} =  Create Unique TestData Location
-  ${test_data_location2} =  Create Unique TestData Location
-  ${test_data_location3} =  Create Unique TestData Location
-  ${archive1} =  Generate A WooDecision Archive Based On Size  3000  ${test_data_location1}  archive1.zip
-  ${archive2} =  Generate A WooDecision Archive Based On Size  4000  ${test_data_location2}  archive2.zip
-  ${archive3} =  Generate A WooDecision Archive Based On Size  4000  ${test_data_location3}  archive3.zip
-  ${test_data_location} =  Create Unique TestData Location
-  Move Files  ${test_data_location1}/*.txt  ${test_data_location}
-  Move Files  ${test_data_location2}/*.txt  ${test_data_location}
-  Move Files  ${test_data_location3}/*.txt  ${test_data_location}
-  ${production_report} =  Create Test Production Report  ${test_data_location}
-  Click Publications
-  Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=${new_prefix}  type=woo-decision
-  Fill Out WooDecision Details  Openbaarmaking
-  Set Browser Timeout  10min
-  Upload Production Report  ${production_report}
-  Upload And Process Documents  ${archive1}
-  Upload And Process Documents  ${archive2}
-  Upload And Process Documents  ${archive3}
-  Get Text
-  ...  //*[@data-e2e-name="max-combined-size-exceeded"]
-  ...  contains
-  ...  De maximaal toegestane grootte van alle bestanden samen is overschreden.
-
 Publish A Covenant With More Than Max Nr Of Attachments
   [Documentation]  Relates to #5112. Can also be more efficient with TXT files.
   Set Browser Timeout  30s

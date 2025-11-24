@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\SubType\Mapper;
+namespace Shared\Tests\Unit\Domain\Search\Index\SubType\Mapper;
 
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\SourceType;
-use App\Domain\Search\Index\Dossier\DossierIndexer;
-use App\Domain\Search\Index\ElasticDocument;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\SubType\Mapper\AttachmentAndMainDocumentMapper;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Search\Index\Dossier\DossierIndexer;
+use Shared\Domain\Search\Index\ElasticDocument;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\SubType\Mapper\AttachmentAndMainDocumentMapper;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class AttachmentAndMainDocumentMapperTest extends UnitTestCase

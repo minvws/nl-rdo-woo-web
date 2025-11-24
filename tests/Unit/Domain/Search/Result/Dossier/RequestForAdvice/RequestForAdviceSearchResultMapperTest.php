@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Result\Dossier\RequestForAdvice;
+namespace Shared\Tests\Unit\Domain\Search\Result\Dossier\RequestForAdvice;
 
-use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceRepository;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
-use App\Domain\Search\Result\Dossier\RequestForAdvice\RequestForAdviceSearchResultMapper;
-use App\Domain\Search\Result\ResultEntryInterface;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceRepository;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
+use Shared\Domain\Search\Result\Dossier\RequestForAdvice\RequestForAdviceSearchResultMapper;
+use Shared\Domain\Search\Result\ResultEntryInterface;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Unit\UnitTestCase;
 
-class RequestForAdviceSearchResultMapperTest extends MockeryTestCase
+class RequestForAdviceSearchResultMapperTest extends UnitTestCase
 {
     private DossierSearchResultBaseMapper&MockInterface $baseMapper;
     private RequestForAdviceRepository&MockInterface $repository;

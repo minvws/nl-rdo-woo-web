@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\FileReader;
+namespace Shared\Service\FileReader;
 
-use App\Exception\FileReaderException;
+use Shared\Exception\FileReaderException;
 
 /**
  * This class provides a lookup of cell coordinate by mapping.

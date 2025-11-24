@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Exception;
+namespace Shared\Tests\Unit\Exception;
 
-use App\Exception\ViewingNotAllowedException;
 use PHPUnit\Framework\TestCase;
+use Shared\Exception\ViewingNotAllowedException;
 
 class ViewingNotAllowedExceptionTest extends TestCase
 {

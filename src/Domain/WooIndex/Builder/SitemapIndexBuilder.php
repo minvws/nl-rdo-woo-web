@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Builder;
+namespace Shared\Domain\WooIndex\Builder;
 
 use Webmozart\Assert\Assert;
 

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Result;
+namespace Shared\Service\Search\Result;
 
-use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Result\ResultEntryInterface;
-use App\Service\Search\Model\Aggregation;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Model\Suggestion;
-use App\Service\Search\Query\Sort\ViewModel\SortItems;
 use Knp\Component\Pager\Pagination\AbstractPagination;
 use Knp\Component\Pager\Pagination\PaginationInterface;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Result\ResultEntryInterface;
+use Shared\Service\Search\Model\Aggregation;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Model\Suggestion;
+use Shared\Service\Search\Query\Sort\ViewModel\SortItems;
 
 /**
  * This class is the result that is returned after a search has been performed.

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscriber;
+namespace Shared\EventSubscriber;
 
 use ApiPlatform\Metadata\HttpOperation;
-use App\Api\Publication\V1\PublicationV1Api;
-use App\Domain\OpenApi\Exceptions\ValidatonException;
-use App\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
-use App\Domain\OpenApi\OpenApiValidator;
 use Psr\Log\LoggerInterface;
+use Shared\Api\Publication\V1\PublicationV1Api;
+use Shared\Domain\OpenApi\Exceptions\ValidatonException;
+use Shared\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
+use Shared\Domain\OpenApi\OpenApiValidator;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Builder;
+namespace Shared\Domain\WooIndex\Builder;
 
-use App\Domain\WooIndex\Exception\WooIndexInvalidArgumentException;
-use App\Domain\WooIndex\Producer\DiWooDocument;
-use App\Domain\WooIndex\Producer\Url;
+use Shared\Domain\WooIndex\Exception\WooIndexInvalidArgumentException;
+use Shared\Domain\WooIndex\Producer\DiWooDocument;
+use Shared\Domain\WooIndex\Producer\Url;
 
 final readonly class SitemapUrlBuilder
 {

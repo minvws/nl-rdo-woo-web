@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Result\Dossier\Advice;
+namespace Shared\Tests\Unit\Domain\Search\Result\Dossier\Advice;
 
-use App\Domain\Publication\Dossier\Type\Advice\AdviceRepository;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Result\Dossier\Advice\AdviceSearchResultMapper;
-use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
-use App\Domain\Search\Result\ResultEntryInterface;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\Advice\AdviceRepository;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Result\Dossier\Advice\AdviceSearchResultMapper;
+use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
+use Shared\Domain\Search\Result\ResultEntryInterface;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Unit\UnitTestCase;
 
-class AdviceSearchResultMapperTest extends MockeryTestCase
+class AdviceSearchResultMapperTest extends UnitTestCase
 {
     private DossierSearchResultBaseMapper&MockInterface $baseMapper;
     private AdviceRepository&MockInterface $repository;

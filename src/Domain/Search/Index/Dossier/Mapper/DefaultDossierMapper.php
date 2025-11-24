@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Dossier\Mapper;
+namespace Shared\Domain\Search\Index\Dossier\Mapper;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Search\Index\ElasticDocument;
-use App\Domain\Search\Index\ElasticDocumentId;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Index\Schema\ElasticObjectField;
-use App\Service\DateRangeConverter;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Search\Index\ElasticDocument;
+use Shared\Domain\Search\Index\ElasticDocumentId;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Index\Schema\ElasticObjectField;
+use Shared\Service\DateRangeConverter;
 use Symfony\Component\Uid\Uuid;
 
 readonly class DefaultDossierMapper implements ElasticDossierMapperInterface

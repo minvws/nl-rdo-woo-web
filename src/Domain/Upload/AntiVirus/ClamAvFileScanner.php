@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\AntiVirus;
+namespace Shared\Domain\Upload\AntiVirus;
 
-use App\Service\Storage\LocalFilesystem;
 use Psr\Log\LoggerInterface;
+use Shared\Service\Storage\LocalFilesystem;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 readonly class ClamAvFileScanner

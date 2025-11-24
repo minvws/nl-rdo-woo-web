@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inquiry;
+namespace Shared\Tests\Unit\Service\Inquiry;
 
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Service\FileReader\ExcelReaderFactory;
-use App\Service\Inquiry\InquiryLinkImportParser;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Service\FileReader\ExcelReaderFactory;
+use Shared\Service\Inquiry\InquiryLinkImportParser;
+use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class InquiryLinkImportParserTest extends MockeryTestCase
+class InquiryLinkImportParserTest extends UnitTestCase
 {
     use MatchesSnapshots;
 

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier;
+namespace Shared\Form\Dossier;
 
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Form\Transformer\DocumentPrefixTransformer;
-use App\Service\Security\Authorization\AuthorizationMatrix;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Form\Transformer\DocumentPrefixTransformer;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

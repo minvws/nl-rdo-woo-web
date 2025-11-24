@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Publication\Citation;
+use Shared\Domain\Publication\Citation;
 
 readonly class GroundViewFactory
 {

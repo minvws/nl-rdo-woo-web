@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\Disposition\ViewModel;
+namespace Shared\Domain\Publication\Dossier\Type\Disposition\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\Disposition\Disposition as DispositionEntity;
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
+use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition as DispositionEntity;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
 use Webmozart\Assert\Assert;
 
 final readonly class DispositionViewFactory

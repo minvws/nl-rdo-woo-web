@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\AntiVirus;
+namespace Shared\Domain\Upload\AntiVirus;
 
-use App\Service\PlatformCheck\PlatformCheckerInterface;
-use App\Service\PlatformCheck\PlatformCheckResult;
+use Shared\Service\PlatformCheck\PlatformCheckerInterface;
+use Shared\Service\PlatformCheck\PlatformCheckResult;
 
 readonly class ClamAvPlatformChecker implements PlatformCheckerInterface
 {

@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker\Pdf;
+namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
-use App\Domain\Ingest\Content\ContentExtractLogContext;
-use App\Domain\Ingest\Content\Extractor\Tika\TikaService;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Search\Index\SubType\SubTypeIndexer;
-use App\Service\Stats\WorkerStatsService;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Worker\Pdf\Extractor\EntityMetaDataExtractor;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Content\ContentExtractLogContext;
+use Shared\Domain\Ingest\Content\Extractor\Tika\TikaService;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
+use Shared\Service\Stats\WorkerStatsService;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Worker\Pdf\Extractor\EntityMetaDataExtractor;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Cache\CacheInterface;
 

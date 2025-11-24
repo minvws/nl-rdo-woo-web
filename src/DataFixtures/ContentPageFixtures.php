@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\DataFixtures;
+namespace Shared\DataFixtures;
 
-use App\Domain\Content\Page\ContentPage;
-use App\Domain\Content\Page\ContentPageType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
+use Shared\Domain\Content\Page\ContentPage;
+use Shared\Domain\Content\Page\ContentPageType;
 
 class ContentPageFixtures extends Fixture implements FixtureGroupInterface
 {

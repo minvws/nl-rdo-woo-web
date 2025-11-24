@@ -7,9 +7,6 @@ on:
       REPO_READ_ONLY_TOKEN:
         required: true
 
-env:
-  GITHUBH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }}
-
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -17,7 +14,7 @@ jobs:
       - name: Set env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Install Task
         uses: go-task/setup-task@v1
         with:
@@ -33,6 +30,8 @@ jobs:
       - name: Run build task
         run: npm run build
       - name: Build the docs
+        env:
+          GH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }}
         run: task docs:sphinx:build:ci
       - name: Clean build
         run: |

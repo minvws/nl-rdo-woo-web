@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Twig\Runtime;
+namespace Shared\Tests\Unit\Twig\Runtime;
 
-use App\Domain\Content\Markdown\MarkdownConverter;
-use App\Twig\Runtime\MarkdownExtensionRuntime;
 use League\CommonMark\Output\RenderedContentInterface;
-use Mockery;
+use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Content\Markdown\MarkdownConverter;
+use Shared\Twig\Runtime\MarkdownExtensionRuntime;
 
-class MarkdownExtensionRuntimeTest extends Mockery\Adapter\Phpunit\MockeryTestCase
+class MarkdownExtensionRuntimeTest extends MockeryTestCase
 {
     private MarkdownConverter&MockInterface $converter;
     private MarkdownExtensionRuntime $runtime;

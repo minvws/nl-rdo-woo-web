@@ -2,13 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 readonly class TotalDocumentFileSizeValidator
 {
-    public const int MAX_SIZE = 1024 * 1024 * 1024 * 10;
+    private int $maxAllowedDocumentsSizeInKib;
+
+    public function __construct(
+        #[Autowire(param: 'limit_total_document_file_size_in_gib')]
+        int $maxAllowedDocumentsSizeInGib,
+    ) {
+        $this->maxAllowedDocumentsSizeInKib = $maxAllowedDocumentsSizeInGib * 1024 * 1024 * 1024;
+    }
 
     public function exceedsMaxSizeWithUpdatesApplied(DocumentFileSet $documentFileSet): bool
     {
@@ -28,6 +36,6 @@ readonly class TotalDocumentFileSizeValidator
             }
         }
 
-        return $totalSize > self::MAX_SIZE;
+        return $totalSize > $this->maxAllowedDocumentsSizeInKib;
     }
 }

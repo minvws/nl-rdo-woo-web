@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Dossier;
+namespace Shared\Domain\Search\Index\Dossier;
 
-use App\Domain\Publication\Dossier\DossierRepository;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\DossierRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**

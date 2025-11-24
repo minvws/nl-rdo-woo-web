@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inventory;
+namespace Shared\Tests\Unit\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\Inventory\DocumentMetadata;
-use App\Service\Inventory\DocumentNumber;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\Inventory\DocumentMetadata;
+use Shared\Service\Inventory\DocumentNumber;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DocumentNumberTest extends MockeryTestCase
+class DocumentNumberTest extends UnitTestCase
 {
     #[DataProvider('fromDossierAndReferralProvider')]
     public function testFromReferral(string $documentNr, string $prefix, string $documentId, string $referral, string $expected): void

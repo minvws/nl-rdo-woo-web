@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security\ApplicationMode;
+namespace Shared\Tests\Unit\Service\Security\ApplicationMode;
 
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Service\Security\ApplicationMode\ApplicationModeRedirector;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Service\Security\ApplicationMode\ApplicationModeRedirector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Rollover;
+namespace Shared\Domain\Search\Index\Rollover;
 
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class RolloverService

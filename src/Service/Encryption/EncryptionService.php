@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Encryption;
+namespace Shared\Service\Encryption;
 
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Symmetric\Crypto;

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\FileStorage\Checker;
+namespace Shared\Tests\Unit\Domain\FileStorage\Checker;
 
-use App\Domain\FileStorage\Checker\FileStorageLister;
-use App\Domain\FileStorage\Checker\FileStorageType;
-use App\Tests\Unit\UnitTestCase;
 use League\Flysystem\DirectoryListing;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\StorageAttributes;
 use Mockery\MockInterface;
+use Shared\Domain\FileStorage\Checker\FileStorageLister;
+use Shared\Domain\FileStorage\Checker\FileStorageType;
+use Shared\Tests\Unit\UnitTestCase;
 
 class FileStorageListerTest extends UnitTestCase
 {

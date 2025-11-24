@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Validator;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Validator;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Validator\DateFromConstraint;
-use App\Domain\Publication\Dossier\Validator\DateFromConstraintValidator;
 use Carbon\CarbonImmutable;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Validator\DateFromConstraint;
+use Shared\Domain\Publication\Dossier\Validator\DateFromConstraintValidator;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
-class DateFromConstraintValidatorTest extends MockeryTestCase
+class DateFromConstraintValidatorTest extends UnitTestCase
 {
     public function testValidateThrowsExceptionForUnsupportedConstraint(): void
     {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Stats;
+namespace Shared\Service\Stats;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;

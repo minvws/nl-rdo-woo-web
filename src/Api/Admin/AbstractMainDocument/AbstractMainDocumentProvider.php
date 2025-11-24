@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\AbstractMainDocument;
+namespace Shared\Api\Admin\AbstractMainDocument;
 
 use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Api\Admin\ApiDossierAccessChecker;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Shared\Api\Admin\ApiDossierAccessChecker;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Symfony\Component\Uid\Uuid;
 
 abstract readonly class AbstractMainDocumentProvider implements ProviderInterface

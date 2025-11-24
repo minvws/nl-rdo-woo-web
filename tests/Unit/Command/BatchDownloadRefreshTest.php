@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command;
+namespace Shared\Tests\Unit\Command;
 
-use App\Command\BatchDownloadRefresh;
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Command\BatchDownloadRefresh;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class BatchDownloadRefreshTest extends MockeryTestCase
+class BatchDownloadRefreshTest extends UnitTestCase
 {
     public function testRun(): void
     {

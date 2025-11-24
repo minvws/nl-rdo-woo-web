@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Result\SubType\WooDecisionDocument;
+namespace Shared\Tests\Unit\Domain\Search\Result\SubType\WooDecisionDocument;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\SourceType;
-use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 
 class DocumentViewModelTest extends TestCase
 {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Rollover;
+namespace Shared\Domain\Search\Index\Rollover;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**

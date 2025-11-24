@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inquiry;
+namespace Shared\Service\Inquiry;
 
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Exception\FileReaderException;
-use App\Service\FileReader\ColumnMapping;
-use App\Service\FileReader\ExcelReaderFactory;
-use App\Service\FileReader\FileReaderInterface;
-use App\Service\Inventory\InventoryDataHelper;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Exception\FileReaderException;
+use Shared\Service\FileReader\ColumnMapping;
+use Shared\Service\FileReader\ExcelReaderFactory;
+use Shared\Service\FileReader\FileReaderInterface;
+use Shared\Service\Inventory\InventoryDataHelper;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class InquiryLinkImportParser

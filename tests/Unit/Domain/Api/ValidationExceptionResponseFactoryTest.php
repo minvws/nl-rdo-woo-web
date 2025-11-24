@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Api;
+namespace Shared\Tests\Unit\Domain\Api;
 
-use App\Api\Publication\V1\PublicationV1Api;
-use App\Domain\OpenApi\Exceptions\FormatMismatchException;
-use App\Domain\OpenApi\Exceptions\KeywordMismatchException;
-use App\Domain\OpenApi\Exceptions\SchemaMismatchException;
-use App\Domain\OpenApi\Exceptions\ValidatonException;
-use App\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
-use App\Tests\Unit\UnitTestCase;
 use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\FormatMismatch;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use Shared\Api\Publication\V1\PublicationV1Api;
+use Shared\Domain\OpenApi\Exceptions\FormatMismatchException;
+use Shared\Domain\OpenApi\Exceptions\KeywordMismatchException;
+use Shared\Domain\OpenApi\Exceptions\SchemaMismatchException;
+use Shared\Domain\OpenApi\Exceptions\ValidatonException;
+use Shared\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Webmozart\Assert\Assert;
 

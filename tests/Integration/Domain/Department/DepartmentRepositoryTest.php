@@ -2,22 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Department;
+namespace Shared\Tests\Integration\Domain\Department;
 
-use App\Domain\Department\Department;
-use App\Domain\Department\DepartmentRepository;
-use App\Tests\Factory\DepartmentFactory;
-use App\Tests\Factory\OrganisationFactory;
-use App\Tests\Integration\IntegrationTestTrait;
 use Doctrine\ORM\NoResultException;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Tests\Factory\DepartmentFactory;
+use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Persistence\Proxy;
 
-final class DepartmentRepositoryTest extends KernelTestCase
+final class DepartmentRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private DepartmentRepository $repository;
 
     protected function setUp(): void

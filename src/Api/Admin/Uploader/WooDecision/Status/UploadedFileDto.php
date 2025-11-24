@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Uploader\WooDecision\Status;
+namespace Shared\Api\Admin\Uploader\WooDecision\Status;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

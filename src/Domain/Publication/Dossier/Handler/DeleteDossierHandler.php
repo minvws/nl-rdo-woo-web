@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Handler;
+namespace Shared\Domain\Publication\Dossier\Handler;
 
-use App\Domain\Publication\Dossier\AuditLog\DossierDeleteLogEvent;
-use App\Domain\Publication\Dossier\Command\DeleteDossierCommand;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Doctrine\ORM\EntityManagerInterface;
 use MinVWS\AuditLogger\AuditLogger;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\AuditLog\DossierDeleteLogEvent;
+use Shared\Domain\Publication\Dossier\Command\DeleteDossierCommand;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -62,7 +62,7 @@ readonly class DeleteDossierHandler
                     }
                 } catch (\Exception $exception) {
                     $this->logger->error(
-                        sprintf('Error while deleting dossier in strategy %s', get_class($strategy)),
+                        sprintf('Error while deleting dossier in strategy %s', $strategy::class),
                         [
                             'message' => $exception->getMessage(),
                             'file' => $exception->getFile(),

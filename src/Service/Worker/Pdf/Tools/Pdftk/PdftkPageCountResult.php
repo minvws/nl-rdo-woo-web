@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Worker\Pdf\Tools\Pdftk;
+namespace Shared\Service\Worker\Pdf\Tools\Pdftk;
 
 final readonly class PdftkPageCountResult
 {

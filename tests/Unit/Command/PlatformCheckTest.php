@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command;
+namespace Shared\Tests\Unit\Command;
 
-use App\Command\PlatformCheck;
-use App\Service\PlatformCheck\PlatformCheckerInterface;
-use App\Service\PlatformCheck\PlatformCheckResult;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Command\PlatformCheck;
+use Shared\Service\PlatformCheck\PlatformCheckerInterface;
+use Shared\Service\PlatformCheck\PlatformCheckResult;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class PlatformCheckTest extends MockeryTestCase
+class PlatformCheckTest extends UnitTestCase
 {
     public function testPlatformCheckReturnsErrorStatusCodeIfOneCheckFails(): void
     {

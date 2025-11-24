@@ -41,7 +41,7 @@ jobs:
     if: ${{ inputs.test_tag != 'api' }}
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Robot Framework test stack
         uses: ./.github/actions/setup-rf
         with:
@@ -50,7 +50,7 @@ jobs:
         working-directory: tests/robot_framework
         env:
           URL_PUBLIC: http://localhost:8000
-          URL_ADMIN: http://localhost:8000/balie
+          URL_ADMIN: http://localhost:8001/balie
           HEADLESS: true
         run: |
           if [ '${{ env.TEST_TAG }}' == 'ci' ]; then
@@ -76,7 +76,7 @@ jobs:
     if: ${{ inputs.test_tag == 'ci' || inputs.test_tag == 'api' }}
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Robot Framework test stack
         uses: ./.github/actions/setup-rf
         with:
@@ -85,7 +85,7 @@ jobs:
         working-directory: tests/robot_framework
         env:
           URL_PUBLIC: http://localhost:8000
-          URL_ADMIN: http://localhost:8000/balie
+          URL_ADMIN: http://localhost:8001/balie
           HEADLESS: true
         run: uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api  --variable ENVIRONMENT:docker-ci .
       - name: Upload test results

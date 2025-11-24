@@ -2,18 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\InvestigationReport;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\InvestigationReport;
 
-use App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportRepository;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportRepository;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class InvestigationReportRepositoryTest extends KernelTestCase
+final class InvestigationReportRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private function getRepository(): InvestigationReportRepository
     {
         /** @var InvestigationReportRepository */

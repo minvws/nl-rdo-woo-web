@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\OtherPublication\ViewModel;
+namespace Shared\Domain\Publication\Dossier\Type\OtherPublication\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication as OtherPublicationEntity;
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication as OtherPublicationEntity;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
 use Webmozart\Assert\Assert;
 
 final readonly class OtherPublicationViewFactory

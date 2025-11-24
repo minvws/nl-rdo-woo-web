@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Command\Index;
+namespace Shared\Command\Index;
 
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
-use App\Domain\Search\Index\Rollover\MappingService;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
+use Shared\Domain\Search\Index\Rollover\MappingService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

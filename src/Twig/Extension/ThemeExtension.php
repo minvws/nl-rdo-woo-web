@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Extension;
+namespace Shared\Twig\Extension;
 
-use App\Domain\Search\Theme\ThemeManager;
-use App\Domain\Search\Theme\ViewModel\Theme;
+use Shared\Domain\Search\Theme\ThemeManager;
+use Shared\Domain\Search\Theme\ViewModel\Theme;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 

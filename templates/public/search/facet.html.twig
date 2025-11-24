@@ -35,7 +35,7 @@
         </div>
     </fieldset>
 
-    {% set facetInput = result.searchParameters.facetInputs.getByFacetKey(constant('App\\Service\\Search\\Model\\FacetKey::TYPE')) %}
+    {% set facetInput = result.searchParameters.facetInputs.getByFacetKey(constant('Shared\\Service\\Search\\Model\\FacetKey::TYPE')) %}
     {% set facet = facetInput.facet %}
     {% set entries = result.aggregation(facet.key).entries|default([]) %}
 
@@ -100,11 +100,11 @@
         </fieldset>
     {% endif %}
 
-    {{ macro.facet_select('categories.category.department' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), result) }}
-    {{ macro.facet_select('categories.category.subject' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SUBJECT'), result) }}
-    {{ macro.facet_select('categories.category.source_file' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::SOURCE'), result) }}
-    {{ macro.facet_select('categories.category.judgement' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
-    {{ macro.facet_select('categories.category.grounds' | trans(), constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
+    {{ macro.facet_select('categories.category.department' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), result) }}
+    {{ macro.facet_select('categories.category.subject' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::SUBJECT'), result) }}
+    {{ macro.facet_select('categories.category.source_file' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::SOURCE'), result) }}
+    {{ macro.facet_select('categories.category.judgement' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
+    {{ macro.facet_select('categories.category.grounds' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
 
     <input type="hidden" name="q" value="{{ app.request.get('q') }}">
 

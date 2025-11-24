@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security;
+namespace Shared\Tests\Unit\Service\Security;
 
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use App\Service\Security\UserRouteHelper;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\UserRouteHelper;
+use Shared\Tests\Unit\UnitTestCase;
 
-class UserRouteHelperTest extends MockeryTestCase
+class UserRouteHelperTest extends UnitTestCase
 {
     public function testGetDefaultIndexRouteNameWhenAuthorized(): void
     {

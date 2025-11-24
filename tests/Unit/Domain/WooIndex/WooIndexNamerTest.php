@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\WooIndex;
+namespace Shared\Tests\Unit\Domain\WooIndex;
 
-use App\Domain\WooIndex\WooIndexNamer;
-use App\Domain\WooIndex\WooIndexSitemap;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\WooIndex\WooIndexNamer;
+use Shared\Domain\WooIndex\WooIndexSitemap;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class WooIndexNamerTest extends UnitTestCase

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace Shared\Command;
 
-use App\Service\SqlDump\NodeVisitor;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use PhpParser\PhpVersion;
+use Shared\Service\SqlDump\NodeVisitor;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

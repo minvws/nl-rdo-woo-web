@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Elastic;
+namespace Shared\Service\Elastic;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\ElasticDocument;
-use App\Domain\Search\Index\ElasticDocumentId;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use MinVWS\TypeArray\TypeArray;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\ElasticDocument;
+use Shared\Domain\Search\Index\ElasticDocumentId;
 
 /**
  * Service for interacting with Elasticsearch. Together with the SearchService, this should be the only entrypoint to

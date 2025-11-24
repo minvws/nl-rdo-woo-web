@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-use App\Domain\Department\Department as DepartmentEntity;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
-use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
-use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
-use App\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
-use App\Domain\Publication\Dossier\ViewModel\Department;
-use App\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
-use App\Domain\Publication\Dossier\ViewModel\Subject as SubjectViewModel;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Domain\Publication\Subject\Subject;
-use App\Tests\Story\DepartmentEnum;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department as DepartmentEntity;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
+use Shared\Domain\Publication\Dossier\ViewModel\Department;
+use Shared\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
+use Shared\Domain\Publication\Dossier\ViewModel\Subject as SubjectViewModel;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Tests\Story\DepartmentEnum;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Uid\Uuid;
 

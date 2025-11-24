@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Vws\Controller;
+namespace Shared\Vws\Controller;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Exception\ViewingNotAllowedException;
-use App\Service\Security\DossierVoter;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Exception\ViewingNotAllowedException;
+use Shared\Service\Security\DossierVoter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\OpenApi;
+namespace Shared\Domain\OpenApi;
 
 use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
-use App\Domain\OpenApi\Exceptions\SpecException;
 use cebe\openapi\exceptions\IOException;
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\exceptions\UnresolvableReferenceException;
 use cebe\openapi\json\InvalidJsonPointerSyntaxException;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi as OpenApiSpec;
+use Shared\Domain\OpenApi\Exceptions\SpecException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Webmozart\Assert\Assert;
 

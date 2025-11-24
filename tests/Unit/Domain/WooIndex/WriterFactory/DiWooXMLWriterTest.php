@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\WooIndex\WriterFactory;
+namespace Shared\Tests\Unit\Domain\WooIndex\WriterFactory;
 
-use App\Domain\WooIndex\Builder\DiWooXMLWriter;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\WooIndex\Builder\DiWooXMLWriter;
+use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 
 final class DiWooXMLWriterTest extends UnitTestCase

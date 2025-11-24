@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload;
+namespace Shared\Domain\Upload;
 
-use App\Service\Security\User;
-use App\Service\Uploader\UploadGroupId;
 use Carbon\CarbonImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Service\Security\User;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\InputBag;
 
 /**

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\MainDocument;
+namespace Shared\Domain\Upload\MainDocument;
 
-use App\Domain\Upload\Dossier\DossierUploadRequestValidator;
-use App\Domain\Upload\UploadRequest;
-use App\Service\Uploader\UploadGroupId;
+use Shared\Domain\Upload\Dossier\DossierUploadRequestValidator;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 

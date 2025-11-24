@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Result;
+namespace Shared\Tests\Unit\Domain\Search\Result;
 
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Result\ResultEntryInterface;
-use App\Domain\Search\Result\ResultFactory;
-use App\Domain\Search\Result\SearchResultException;
-use App\Domain\Search\Result\SearchResultMapperInterface;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Result\ResultEntryInterface;
+use Shared\Domain\Search\Result\ResultFactory;
+use Shared\Domain\Search\Result\SearchResultException;
+use Shared\Domain\Search\Result\SearchResultMapperInterface;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Unit\UnitTestCase;
 
-class ResultFactoryTest extends MockeryTestCase
+class ResultFactoryTest extends UnitTestCase
 {
     private SearchResultMapperInterface&MockInterface $firstMapper;
     private SearchResultMapperInterface&MockInterface $secondMapper;

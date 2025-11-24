@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex;
+namespace Shared\Domain\WooIndex;
 
-use App\Doctrine\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\TimestampableTrait;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: WooIndexSitemapRepository::class)]

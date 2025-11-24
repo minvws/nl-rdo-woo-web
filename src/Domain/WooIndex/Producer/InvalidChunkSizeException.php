@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Producer;
+namespace Shared\Domain\WooIndex\Producer;
 
-use App\Domain\WooIndex\Exception\WooIndexException;
+use Shared\Domain\WooIndex\Exception\WooIndexException;
 
 final class InvalidChunkSizeException extends \InvalidArgumentException implements WooIndexException
 {

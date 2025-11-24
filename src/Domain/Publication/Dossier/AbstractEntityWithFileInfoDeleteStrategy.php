@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier;
+namespace Shared\Domain\Publication\Dossier;
 
-use App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Storage\EntityStorageService;
+use Shared\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Storage\EntityStorageService;
 
 abstract readonly class AbstractEntityWithFileInfoDeleteStrategy implements DossierDeleteStrategyInterface
 {

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier\RequestForAdvice;
+namespace Shared\Controller\Admin\Dossier\RequestForAdvice;
 
-use App\Domain\Publication\Dossier\DossierDispatcher;
-use App\Domain\Publication\Dossier\DossierFactory;
-use App\Domain\Publication\Dossier\Step\StepActionHelper;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
-use App\Domain\Publication\Dossier\ViewModel\DossierFormParamBuilder;
-use App\Form\Dossier\RequestForAdvice\DetailsType;
+use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Dossier\DossierFactory;
+use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierFormParamBuilder;
+use Shared\Form\Dossier\RequestForAdvice\DetailsType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;

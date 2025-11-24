@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 readonly class ProductionReportStatus
 {

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Query\Facet\Input;
+namespace Shared\Tests\Unit\Domain\Search\Query\Facet\Input;
 
-use App\Domain\Search\Query\Facet\Definition\DateFacet;
-use App\Domain\Search\Query\Facet\Input\DateFacetInput;
-use App\Domain\Search\Query\Facet\Input\DateFacetInputInterface;
-use App\Service\Search\Model\FacetKey;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use Shared\Domain\Search\Query\Facet\Definition\DateFacet;
+use Shared\Domain\Search\Query\Facet\Input\DateFacetInput;
+use Shared\Domain\Search\Query\Facet\Input\DateFacetInputInterface;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 #[Group('facet')]

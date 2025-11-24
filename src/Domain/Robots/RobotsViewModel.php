@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Robots;
+namespace Shared\Domain\Robots;
 
 final readonly class RobotsViewModel
 {

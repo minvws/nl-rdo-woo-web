@@ -2,27 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Api\Admin\Department;
+namespace Shared\Tests\Integration\Api\Admin\Department;
 
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\SourceType;
-use App\Tests\Factory\DepartmentFactory;
-use App\Tests\Factory\FileInfoFactory;
-use App\Tests\Factory\UserFactory;
-use App\Tests\Integration\Api\Admin\AdminApiTestCase;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Integration\VfsStreamHelpers;
 use Doctrine\ORM\EntityManagerInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\SourceType;
+use Shared\Tests\Factory\DepartmentFactory;
+use Shared\Tests\Factory\FileInfoFactory;
+use Shared\Tests\Factory\UserFactory;
+use Shared\Tests\Integration\Api\Admin\AdminApiTestCase;
+use Shared\Tests\Integration\VfsStreamHelpers;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 
 final class RemoveLogoTest extends AdminApiTestCase
 {
-    use IntegrationTestTrait;
     use VfsStreamHelpers;
 
     private vfsStreamDirectory $root;

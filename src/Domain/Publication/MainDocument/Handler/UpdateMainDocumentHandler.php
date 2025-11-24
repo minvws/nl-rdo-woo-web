@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\MainDocument\Handler;
+namespace Shared\Domain\Publication\MainDocument\Handler;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\Command\UpdateMainDocumentCommand;
-use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
-use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
-use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
-use App\Domain\Upload\Process\EntityUploadStorer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\Command\UpdateMainDocumentCommand;
+use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
+use Shared\Domain\Publication\MainDocument\MainDocumentNotFoundException;
+use Shared\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
+use Shared\Domain\Upload\Process\EntityUploadStorer;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;

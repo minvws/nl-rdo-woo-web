@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Process\Dossier;
+namespace Shared\Tests\Unit\Domain\Ingest\Process\Dossier;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand;
-use App\Domain\Ingest\Process\Dossier\IngestAllDossiersHandler;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand;
+use Shared\Domain\Ingest\Process\Dossier\IngestAllDossiersHandler;
+use Shared\Tests\Unit\UnitTestCase;
 
 class IngestAllDossiersHandlerTest extends UnitTestCase
 {

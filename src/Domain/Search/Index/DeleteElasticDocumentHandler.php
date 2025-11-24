@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index;
+namespace Shared\Domain\Search\Index;
 
-use App\Service\Elastic\ElasticService;
+use Shared\Service\Elastic\ElasticService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

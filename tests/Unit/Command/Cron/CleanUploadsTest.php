@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Command\Cron;
+namespace Shared\Tests\Unit\Command\Cron;
 
-use App\Command\Cron\CleanUploads;
-use App\Domain\Upload\UploadCleaner;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Command\Cron\CleanUploads;
+use Shared\Domain\Upload\UploadCleaner;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CleanUploadsTest extends MockeryTestCase
+class CleanUploadsTest extends UnitTestCase
 {
     public function testDocumentFileSetRemoverIsCalled(): void
     {

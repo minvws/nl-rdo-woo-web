@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload;
 
-use App\Domain\Publication\BatchDownload\Archiver\ArchiveNamer;
-use App\Domain\Publication\BatchDownload\Archiver\ZipStreamFactory;
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\BatchDownload\OnDemandZipGenerator;
-use App\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\S3\StreamFactory;
-use App\Service\DownloadFilenameGenerator;
 use Aws\S3\S3Client;
 use Doctrine\ORM\QueryBuilder;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Http\Message\StreamInterface;
+use Shared\Domain\Publication\BatchDownload\Archiver\ArchiveNamer;
+use Shared\Domain\Publication\BatchDownload\Archiver\ZipStreamFactory;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\BatchDownload\OnDemandZipGenerator;
+use Shared\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\S3\StreamFactory;
+use Shared\Service\DownloadFilenameGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 use ZipStream\ZipStream;
 
-class OnDemandZipGeneratorTest extends MockeryTestCase
+class OnDemandZipGeneratorTest extends UnitTestCase
 {
     private BatchDownloadService&MockInterface $batchDownloadService;
     private StreamFactory&MockInterface $streamFactory;
@@ -86,6 +86,8 @@ class OnDemandZipGeneratorTest extends MockeryTestCase
         $zip->expects('finish');
 
         $response = $this->zipGenerator->getStreamedResponse($scope);
+
+        $this->assertStringContainsStringIgnoringCase('no-store', $response->headers->get('Cache-Control', ''));
 
         ob_start();
         $response->sendContent();

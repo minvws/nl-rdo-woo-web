@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload;
+namespace Shared\Domain\Publication\BatchDownload;
 
-use App\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
+use Shared\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class BatchDownloadService

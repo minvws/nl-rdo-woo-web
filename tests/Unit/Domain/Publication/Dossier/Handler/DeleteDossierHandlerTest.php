@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Handler;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Handler;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AuditLog\DossierDeleteLogEvent;
-use App\Domain\Publication\Dossier\Command\DeleteDossierCommand;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Handler\DeleteDossierHandler;
-use App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Service\Security\AuditUserDetails;
 use Doctrine\ORM\EntityManagerInterface;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\GeneralLogEvent;
 use MinVWS\AuditLogger\Loggers\LoggerInterface as AuditLoggerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\AuditLog\DossierDeleteLogEvent;
+use Shared\Domain\Publication\Dossier\Command\DeleteDossierCommand;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Handler\DeleteDossierHandler;
+use Shared\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Service\Security\AuditUserDetails;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Uid\UuidV6;
 
-class DeleteDossierHandlerTest extends MockeryTestCase
+class DeleteDossierHandlerTest extends UnitTestCase
 {
     private DossierRepository&MockInterface $dossierRepository;
     private LoggerInterface&MockInterface $logger;

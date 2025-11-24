@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\PdfPage;
+namespace Shared\Domain\Ingest\Process\PdfPage;
 
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 class PdfPageProcessingContext
 {
-    private EntityWithFileInfo $entity;
-    private int $pageNumber;
-    private string $workDirPath;
-    private string $localDocument;
+    private readonly EntityWithFileInfo $entity;
+    private readonly int $pageNumber;
+    private readonly string $workDirPath;
+    private readonly string $localDocument;
     private ?string $localPageDocument = null;
 
     public function __construct(

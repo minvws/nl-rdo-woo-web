@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handler;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handler;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentFileProcessor;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUpdateCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUpdateRepository;
-use App\Domain\Upload\UploadedFile;
-use App\Service\Storage\EntityStorageService;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentFileProcessor;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUpdateCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUpdateRepository;
+use Shared\Domain\Upload\UploadedFile;
+use Shared\Service\Storage\EntityStorageService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Webmozart\Assert\Assert;
 

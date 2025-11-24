@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory;
+namespace Shared\Service\Inventory;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUpdateEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\SearchDispatcher;
-use App\Exception\ProductionReportUpdaterException;
-use App\Service\Inquiry\DocumentCaseNumbers;
-use App\Service\Inquiry\InquiryChangeset;
-use App\Service\Inquiry\InquiryService;
-use App\Service\Inventory\Progress\RunProgress;
-use App\Service\Inventory\Reader\InventoryReaderInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUpdateEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Search\SearchDispatcher;
+use Shared\Exception\ProductionReportUpdaterException;
+use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inquiry\InquiryChangeset;
+use Shared\Service\Inquiry\InquiryService;
+use Shared\Service\Inventory\Progress\RunProgress;
+use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**

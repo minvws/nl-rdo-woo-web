@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Storage;
+namespace Shared\Service\Storage;
 
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;

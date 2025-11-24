@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Content;
+namespace Shared\Tests\Unit\Domain\Ingest\Content;
 
-use App\Domain\Ingest\Content\ContentExtract;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Ingest\Content\ContentExtract;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 
 class ContentExtractTest extends TestCase
 {

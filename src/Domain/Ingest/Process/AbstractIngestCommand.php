@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process;
+namespace Shared\Domain\Ingest\Process;
 
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\Uid\Uuid;
 
 abstract readonly class AbstractIngestCommand

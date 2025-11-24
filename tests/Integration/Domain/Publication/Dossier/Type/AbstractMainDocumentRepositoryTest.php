@@ -2,22 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
-use App\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
-use App\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
-use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
-use App\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentFactory;
-use App\Tests\Integration\IntegrationTestTrait;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
+use Shared\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
+use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Component\Uid\Uuid;
 
-final class AbstractMainDocumentRepositoryTest extends KernelTestCase
+final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     /**
      * @return AbstractMainDocumentRepository<AnnualReportMainDocument>
      */

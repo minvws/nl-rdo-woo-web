@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\ViewModel;
+namespace Shared\Domain\Publication\Attachment\ViewModel;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
-use App\Domain\Publication\SourceType;
-use App\Domain\Search\Result\SubType\SubTypeViewModelInterface;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
+use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Search\Result\SubType\SubTypeViewModelInterface;
 
 readonly class Attachment implements SubTypeViewModelInterface
 {

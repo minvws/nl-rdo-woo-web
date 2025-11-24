@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier;
 
-use App\Domain\Publication\Dossier\DossierPublisher;
-use App\Domain\Publication\Dossier\Event\DossierPublishedEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\DossierPublisher;
+use Shared\Domain\Publication\Dossier\Event\DossierPublishedEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
-class DossierPublisherTest extends MockeryTestCase
+class DossierPublisherTest extends UnitTestCase
 {
     private WooDecision&MockInterface $dossier;
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;

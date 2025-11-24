@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Admin\Action;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Admin\Action;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
-use App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionException;
-use App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionInterface;
-use App\Domain\Publication\Dossier\Admin\Action\DossierAdminActionService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
+use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminActionException;
+use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminActionInterface;
+use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminActionService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class DossierAdminActionServiceTest extends MockeryTestCase
+class DossierAdminActionServiceTest extends UnitTestCase
 {
     private DossierAdminActionInterface&MockInterface $actionA;
     private DossierAdminActionInterface&MockInterface $actionB;

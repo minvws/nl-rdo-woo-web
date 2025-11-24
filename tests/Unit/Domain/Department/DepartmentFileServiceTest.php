@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Department;
+namespace Shared\Tests\Unit\Domain\Department;
 
-use App\Domain\Department\Department;
-use App\Domain\Department\DepartmentFileService;
-use App\Domain\Department\Exception\DepartmentAssetNotFound;
-use App\Domain\Publication\FileInfo;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\DepartmentFileService;
+use Shared\Domain\Department\Exception\DepartmentAssetNotFound;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class DepartmentFileServiceTest extends UnitTestCase

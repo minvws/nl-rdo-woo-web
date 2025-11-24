@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Utils;
+namespace Shared\Tests\Unit\Service\Utils;
 
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
-use App\Service\Utils\Utils;
-use App\Tests\Unit\UnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Service\Utils\Utils;
+use Shared\Tests\Unit\UnitTestCase;
 
 class UtilsTest extends UnitTestCase
 {

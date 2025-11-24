@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Theme\ViewModel;
+namespace Shared\Domain\Search\Theme\ViewModel;
 
 readonly class Theme
 {

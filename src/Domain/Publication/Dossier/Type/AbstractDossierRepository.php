@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type;
+namespace Shared\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -50,5 +51,47 @@ abstract class AbstractDossierRepository extends ServiceEntityRepository
 
         /** @var T */
         return $qb->getQuery()->getSingleResult();
+    }
+
+    /**
+     * @return list<T>
+     */
+    public function getByOrganisation(Organisation $organisation, int $itemsPerPage, ?string $cursor): array
+    {
+        $queryBuilder = $this->createQueryBuilder('dossier')
+            ->where('dossier.organisation = :organisation')
+            ->setParameter('organisation', $organisation);
+
+        if ($cursor !== null) {
+            $decodedCursor = \json_decode(\base64_decode($cursor), true);
+            if (\is_array($decodedCursor) && \array_key_exists('id', $decodedCursor)) {
+                $id = $decodedCursor['id'];
+
+                $queryBuilder->andWhere('dossier.id > :id')
+                    ->setParameter('id', $id);
+            }
+        }
+
+        /** @var list<T> */
+        return $queryBuilder
+            ->orderBy('dossier.id', 'ASC')
+            ->setMaxResults($itemsPerPage + 1)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return ?T
+     */
+    public function findByOrganisationAndId(Organisation $organisation, Uuid $dossierId): ?AbstractDossier
+    {
+        /** @var ?T */
+        return $this->createQueryBuilder('dossier')
+            ->where('dossier.organisation = :organisation')
+            ->setParameter('organisation', $organisation)
+            ->andWhere('dossier.id = :dossierId')
+            ->setParameter('dossierId', $dossierId)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

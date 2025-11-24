@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\MainDocument;
+namespace Shared\Domain\Publication\MainDocument;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
 use Symfony\Component\Uid\Uuid;
 
 /**

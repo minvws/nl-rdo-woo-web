@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Worker\Pdf\Extractor;
+namespace Shared\Service\Worker\Pdf\Extractor;
 
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Stats\WorkerStatsService;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkPageCountResult;
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Stats\WorkerStatsService;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkPageCountResult;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
 
 /**
  * Extractor that will extract the page count of a PDF entity.

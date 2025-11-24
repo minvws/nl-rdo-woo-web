@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker;
+namespace Shared\Tests\Unit\Service\Worker;
 
-use App\Domain\Ingest\Process\PdfPage\PdfPageException;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Stats\WorkerStatsService;
-use App\Service\Worker\Pdf\Extractor\PageExtractor;
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkPageExtractResult;
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Stats\WorkerStatsService;
+use Shared\Service\Worker\Pdf\Extractor\PageExtractor;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkPageExtractResult;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class PageExtractorTest extends UnitTestCase

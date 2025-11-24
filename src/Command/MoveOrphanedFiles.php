@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace Shared\Command;
 
-use App\Domain\FileStorage\Checker\FileStorageChecker;
-use App\Domain\FileStorage\OrphanedFileMover;
-use App\Service\Utils\Utils;
+use Shared\Domain\FileStorage\Checker\FileStorageChecker;
+use Shared\Domain\FileStorage\OrphanedFileMover;
+use Shared\Service\Utils\Utils;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;

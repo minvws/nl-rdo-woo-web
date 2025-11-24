@@ -2,26 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Service\Storage;
+namespace Shared\Tests\Integration\Service\Storage;
 
-use App\Service\Storage\LocalFilesystem;
-use App\Service\Storage\StorageRuntimeException;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Integration\Service\Storage\Streams\FailingReadStreamWrapper;
-use App\Tests\Integration\Service\Storage\Streams\FailingWriteStreamWrapper;
 use Mockery\MockInterface;
 use org\bovigo\vfs\content\LargeFileContent;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Service\Storage\LocalFilesystem;
+use Shared\Service\Storage\StorageRuntimeException;
+use Shared\Tests\Integration\Service\Storage\Streams\FailingReadStreamWrapper;
+use Shared\Tests\Integration\Service\Storage\Streams\FailingWriteStreamWrapper;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Webmozart\Assert\Assert;
 
-final class LocalFilesystemTest extends KernelTestCase
+final class LocalFilesystemTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private vfsStreamDirectory $root;
     private LoggerInterface&MockInterface $logger;
 

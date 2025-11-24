@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Process\SubType\EventHandler;
+namespace Shared\Tests\Unit\Domain\Ingest\Process\SubType\EventHandler;
 
-use App\Domain\Ingest\Process\SubType\EventHandler\AttachmentIngestEventHandler;
-use App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
-use App\Domain\Search\SearchDispatcher;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\Process\SubType\EventHandler\AttachmentIngestEventHandler;
+use Shared\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
+use Shared\Domain\Search\SearchDispatcher;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class AttachmentIngestEventHandlerTest extends UnitTestCase

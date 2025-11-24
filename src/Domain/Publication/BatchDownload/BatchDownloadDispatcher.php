@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload;
+namespace Shared\Domain\Publication\BatchDownload;
 
-use App\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand;
+use Shared\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class BatchDownloadDispatcher

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Form\ChoiceLoader;
+namespace Shared\Form\ChoiceLoader;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use App\Service\Security\User;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\ChoiceList\ArrayChoiceList;
 use Symfony\Component\Form\ChoiceList\ChoiceListInterface;
@@ -72,12 +72,9 @@ class WooDecisionChoiceLoader implements ChoiceLoaderInterface
     {
         $values = [];
         foreach ($choices as $choice) {
-            /** @var WooDecision|null $choice */
-            if ($choice === null || empty($choice)) {
-                continue;
+            if ($choice instanceof WooDecision) {
+                $values[] = (string) $choice->getId();
             }
-
-            $values[] = (string) $choice->getId();
         }
 
         return $values;

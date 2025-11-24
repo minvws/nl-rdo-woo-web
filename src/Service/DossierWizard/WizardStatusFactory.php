@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service\DossierWizard;
+namespace Shared\Service\DossierWizard;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 readonly class WizardStatusFactory

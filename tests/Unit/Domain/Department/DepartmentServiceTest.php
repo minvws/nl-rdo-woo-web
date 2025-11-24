@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Department;
+namespace Shared\Tests\Unit\Domain\Department;
 
-use App\Domain\Department\Department as DepartmentEntity;
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Department\DepartmentService;
-use App\Domain\Department\ViewModel\Department;
-use App\Domain\Department\ViewModel\DepartmentViewFactory;
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use App\Service\Security\Authorization\AuthorizationMatrixFilter;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department as DepartmentEntity;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Department\DepartmentService;
+use Shared\Domain\Department\ViewModel\Department;
+use Shared\Domain\Department\ViewModel\DepartmentViewFactory;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\Authorization\AuthorizationMatrixFilter;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class DepartmentServiceTest extends UnitTestCase
 {

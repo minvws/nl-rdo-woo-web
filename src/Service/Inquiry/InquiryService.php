@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inquiry;
+namespace Shared\Service\Inquiry;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
-use App\Domain\Search\SearchDispatcher;
-use App\Service\HistoryService;
-use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
+use Shared\Domain\Search\SearchDispatcher;
+use Shared\Service\HistoryService;
+use Shared\Service\Storage\EntityStorageService;
 use Symfony\Component\Uid\Uuid;
 
 /**

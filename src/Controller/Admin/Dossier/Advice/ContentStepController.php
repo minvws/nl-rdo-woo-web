@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier\Advice;
+namespace Shared\Controller\Admin\Dossier\Advice;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Attachment\Enum\AttachmentTypeBranch;
-use App\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
-use App\Domain\Publication\Dossier\DossierDispatcher;
-use App\Domain\Publication\Dossier\Step\StepActionHelper;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\Advice\Advice;
-use App\Form\Dossier\Advice\ContentFormType;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentTypeBranch;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
+use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
+use Shared\Form\Dossier\Advice\ContentFormType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;

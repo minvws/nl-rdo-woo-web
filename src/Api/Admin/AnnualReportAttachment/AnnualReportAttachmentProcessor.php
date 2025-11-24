@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\AnnualReportAttachment;
+namespace Shared\Api\Admin\AnnualReportAttachment;
 
-use App\Api\Admin\Attachment\AbstractAttachmentDto;
-use App\Api\Admin\Attachment\AbstractAttachmentProcessor;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Api\Admin\Attachment\AbstractAttachmentDto;
+use Shared\Api\Admin\Attachment\AbstractAttachmentProcessor;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 
 final class AnnualReportAttachmentProcessor extends AbstractAttachmentProcessor
 {

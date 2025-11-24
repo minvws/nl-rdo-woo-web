@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Process;
+namespace Shared\Domain\Upload\Process;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\SourceType;
-use App\Domain\Upload\AssetsNamer;
-use App\Domain\Upload\Exception\UploadException;
-use App\Domain\Upload\FileType\FileType;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\UploadEntityRepository;
-use App\Domain\Upload\UploadService;
-use App\Service\Storage\EntityStorageService;
 use League\Flysystem\FilesystemOperator;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Upload\AssetsNamer;
+use Shared\Domain\Upload\Exception\UploadException;
+use Shared\Domain\Upload\FileType\FileType;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadEntityRepository;
+use Shared\Domain\Upload\UploadService;
+use Shared\Service\Storage\EntityStorageService;
 use Webmozart\Assert\Assert;
 
 readonly class EntityUploadStorer

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Department\Department;
-use App\Domain\Department\DepartmentRepository;
-use App\Domain\Department\UpdateDepartmentCommand;
-use App\Form\DepartmentType;
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use App\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Knp\Component\Pager\PaginatorInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\Department\UpdateDepartmentCommand;
+use Shared\Form\DepartmentType;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

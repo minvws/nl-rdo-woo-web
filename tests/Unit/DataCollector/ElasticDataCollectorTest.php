@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\DataCollector;
+namespace Shared\Tests\Unit\DataCollector;
 
-use App\DataCollector\ElasticCollector;
-use App\Tests\Unit\UnitTestCase;
 use Elastic\Elasticsearch\Response\Elasticsearch as ElasticsearchResponse;
+use Shared\DataCollector\ElasticCollector;
+use Shared\Tests\Unit\UnitTestCase;
 
 class ElasticDataCollectorTest extends UnitTestCase
 {

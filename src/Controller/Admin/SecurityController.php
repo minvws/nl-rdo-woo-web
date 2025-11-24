@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Form\User\ChangePasswordType;
-use App\Service\Security\Roles;
-use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
 use MinVWS\AuditLogger\Contracts\LoggableUser;
+use Shared\Form\User\ChangePasswordType;
+use Shared\Service\Security\Roles;
+use Shared\Service\Security\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

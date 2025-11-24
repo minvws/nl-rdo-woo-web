@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Exception;
+namespace Shared\Tests\Unit\Exception;
 
-use App\Exception\InventoryReaderException;
 use PHPUnit\Framework\TestCase;
+use Shared\Exception\InventoryReaderException;
 
 final class InventoryReaderExceptionTest extends TestCase
 {

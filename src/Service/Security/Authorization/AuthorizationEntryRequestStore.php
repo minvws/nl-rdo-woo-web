@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Security\Authorization;
+namespace Shared\Service\Security\Authorization;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;

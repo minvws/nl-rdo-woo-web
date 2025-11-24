@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content;
+namespace Shared\Domain\Ingest\Content;
 
 interface FileReferenceInterface
 {

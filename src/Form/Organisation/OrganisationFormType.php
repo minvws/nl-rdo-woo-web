@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Organisation;
+namespace Shared\Form\Organisation;
 
-use App\Domain\Department\Department;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Form\DocumentPrefixType;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Form\DocumentPrefixType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\Covenant;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Covenant;
 
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 
 final class CovenantTest extends TestCase
 {

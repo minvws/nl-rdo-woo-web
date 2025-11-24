@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Vws\Search\Theme;
+namespace Shared\Tests\Unit\Vws\Search\Theme;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Organisation\OrganisationRepository;
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Search\Query\Facet\FacetList;
-use App\Domain\Search\Query\SearchParameters;
-use App\Tests\Unit\UnitTestCase;
-use App\Vws\Search\Theme\Covid19QueryConditionBuilder;
 use Doctrine\Common\Collections\ArrayCollection;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 use Mockery\MockInterface;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Organisation\OrganisationRepository;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Search\Query\Facet\FacetList;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Vws\Search\Theme\Covid19QueryConditionBuilder;
 use Symfony\Component\Uid\Uuid;
 
 class Covid19QueryConditionsTest extends UnitTestCase

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier\InvestigationReport;
+namespace Shared\Form\Dossier\InvestigationReport;
 
-use App\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 

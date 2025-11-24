@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Extension;
+namespace Shared\Twig\Extension;
 
-use App\Domain\Department\DepartmentService;
-use App\Twig\Runtime\AuthExtensionRuntime;
+use Shared\Domain\Department\DepartmentService;
+use Shared\Twig\Runtime\AuthExtensionRuntime;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -15,8 +15,8 @@ use Twig\TwigFunction;
 class AuthExtension extends AbstractExtension
 {
     public function __construct(
-        private AuthExtensionRuntime $runtime,
-        private DepartmentService $departmentService,
+        private readonly AuthExtensionRuntime $runtime,
+        private readonly DepartmentService $departmentService,
     ) {
     }
 

@@ -19,7 +19,7 @@ jobs:
           - linux/arm64
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Cache Docker layers
         uses: actions/cache@v4
         with:
@@ -61,7 +61,7 @@ jobs:
         with:
           push: true
           context: .
-          file: docker/app/Dockerfile
+          file: docker/php/Dockerfile
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           provenance: false
@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Image name
         id: image_name
         uses: ASzc/change-string-case-action@v6

@@ -2,20 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUpdateRepository;
-use App\Tests\Factory\DocumentFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileSetFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUpdateFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUpdateRepository;
+use Shared\Tests\Factory\DocumentFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileSetFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUpdateFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Webmozart\Assert\Assert;
 
-final class DocumentFileUpdateRepositoryTest extends KernelTestCase
+final class DocumentFileUpdateRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private DocumentFileUpdateRepository $repository;
 
     protected function setUp(): void

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Uploader\WooDecision\Process;
+namespace Shared\Api\Admin\Uploader\WooDecision\Process;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Factory\OpenApiFactory;
 use ApiPlatform\OpenApi\Model\Operation;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileSetException;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileSetException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 

@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Service\Search\Query\Definition;
+namespace Shared\Tests\Integration\Service\Search\Query\Definition;
 
-use App\Api\Admin\Publication\Search\SearchResultType;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Search\Query\SearchParametersFactory;
-use App\Service\Search\Query\Definition\AdminDossiersAndDocumentsQueryDefinition;
-use App\Service\Security\Authorization\AuthorizationMatrix;
 use PHPUnit\Framework\Attributes\Group;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Api\Admin\Publication\Search\SearchResultType;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Search\Query\SearchParametersFactory;
+use Shared\Service\Search\Query\Definition\AdminDossiersAndDocumentsQueryDefinition;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Component\Uid\Uuid;
 
 #[Group('search')]
-final class AdminDossiersAndDocumentsQueryDefinitionTest extends KernelTestCase
+final class AdminDossiersAndDocumentsQueryDefinitionTest extends SharedWebTestCase
 {
     use QueryDefinitionTestTrait;
 

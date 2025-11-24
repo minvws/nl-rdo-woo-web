@@ -2,26 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision\Inquiry;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision\Inquiry;
 
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Tests\Factory\DocumentFactory;
-use App\Tests\Factory\FileInfoFactory;
-use App\Tests\Factory\InquiryFactory;
-use App\Tests\Factory\OrganisationFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Tests\Factory\DocumentFactory;
+use Shared\Tests\Factory\FileInfoFactory;
+use Shared\Tests\Factory\InquiryFactory;
+use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Webmozart\Assert\Assert;
 
-final class InquiryRepositoryTest extends KernelTestCase
+final class InquiryRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private InquiryRepository $repository;
 
     protected function setUp(): void

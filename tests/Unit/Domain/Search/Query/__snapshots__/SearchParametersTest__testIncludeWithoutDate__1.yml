@@ -37,6 +37,8 @@ mode:
     apiOrAll: false
     public: true
     publicOrAll: true
+    worker: false
+    workerOrAll: false
     all: false
     name: PUBLIC
     value: FRONTEND

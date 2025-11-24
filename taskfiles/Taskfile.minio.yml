@@ -15,10 +15,10 @@ tasks:
     desc: Create the default buckets
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: "app mc ready local" }
+        vars: { SUB_CMD: "admin mc ready local" }
       - for: { var: MINIO_BUCKETS }
         task: dc:shell
-        vars: { SUB_CMD: "app mc mb {{.MINIO_ALIAS}}/{{.ITEM}} --ignore-existing" }
+        vars: { SUB_CMD: "admin mc mb {{.MINIO_ALIAS}}/{{.ITEM}} --ignore-existing" }
 
   minio:clear-buckets:
     desc: Clear the default buckets
@@ -26,5 +26,5 @@ tasks:
       - echo "Clearing Minio buckets ({{.MINIO_BUCKETS | join ", "}})... "
       - for: { var: MINIO_BUCKETS }
         task: dc:shell
-        vars: { SUB_CMD: "app mc rm {{.MINIO_ALIAS}}/{{.ITEM}} --recursive --force" }
+        vars: { SUB_CMD: "admin mc rm {{.MINIO_ALIAS}}/{{.ITEM}} --recursive --force" }
       - echo "Done clearing Minio buckets."

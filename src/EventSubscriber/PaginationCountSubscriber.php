@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscriber;
+namespace Shared\EventSubscriber;
 
-use App\Service\Search\Result\Result;
 use Knp\Component\Pager\Event\ItemsEvent;
+use Shared\Service\Search\Result\Result;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 /**

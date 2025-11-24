@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace Shared\Command;
 
-use App\Service\PlatformCheck\PlatformCheckerInterface;
+use Shared\Service\PlatformCheck\PlatformCheckerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -47,7 +47,7 @@ class PlatformCheck extends Command
                 if (! $result->successful) {
                     $output->writeln('<error>💀 ' . $result->output . '</error>');
                     $returnCode = 1;
-                } elseif (! empty($result->output)) {
+                } elseif ($result->output !== '') {
                     $output->writeln('<info>👍 ' . $result->output . '</info>');
                 }
             }

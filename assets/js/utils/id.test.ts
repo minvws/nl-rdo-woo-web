@@ -1,4 +1,5 @@
 import { describe, expect, test, vi } from 'vitest';
+import * as browser from './browser';
 import { uniqueId } from './id';
 
 vi.mock('./browser');
@@ -18,5 +19,19 @@ describe('The "uniqueId" function', () => {
     const mockedRandomUuid = 'some-mocked-random-uuid';
     const { length } = mockedRandomUuid;
     expect(uniqueId(prefix, length)).toBe(`${prefix}-${mockedRandomUuid}`);
+  });
+
+  test('should generate a unique id using getRandomValues when randomUUID is not available', () => {
+    const mockGetRandomValues = vi.fn((array: Uint8Array) => array.fill(42));
+
+    const mockCrypto = {
+      getRandomValues: mockGetRandomValues,
+    };
+
+    vi.spyOn(browser, 'getCrypto').mockReturnValueOnce(mockCrypto as any);
+
+    const id = uniqueId();
+    expect(id).toBe('2a2a2a2a');
+    expect(mockGetRandomValues).toHaveBeenCalledTimes(1);
   });
 });

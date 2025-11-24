@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment\Handler;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment\Handler;
 
-use App\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
-use App\Domain\Publication\Attachment\Handler\AttachmentEntityLoader;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\NoResultException;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
+use Shared\Domain\Publication\Attachment\Handler\AttachmentEntityLoader;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class AttachmentEntityLoaderTest extends UnitTestCase

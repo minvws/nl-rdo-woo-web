@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Storage;
+namespace Shared\Tests\Unit\Service\Storage;
 
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
-use App\Service\Storage\LocalFilesystem;
-use App\Service\Storage\RemoteFilesystem;
-use App\Service\Storage\StorageRootPathGenerator;
-use App\Service\Storage\ThumbnailStorageService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Service\Storage\LocalFilesystem;
+use Shared\Service\Storage\RemoteFilesystem;
+use Shared\Service\Storage\StorageRootPathGenerator;
+use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 
 final class ThumbnailStorageServiceTest extends UnitTestCase

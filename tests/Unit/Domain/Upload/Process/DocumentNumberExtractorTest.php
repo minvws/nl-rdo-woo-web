@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Process;
+namespace Shared\Tests\Unit\Domain\Upload\Process;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Upload\Process\DocumentNumberExtractor;
-use App\Domain\Upload\Process\FileProcessException;
-use App\Domain\Upload\UploadedFile;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Upload\Process\DocumentNumberExtractor;
+use Shared\Domain\Upload\Process\FileProcessException;
+use Shared\Domain\Upload\UploadedFile;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class DocumentNumberExtractorTest extends UnitTestCase

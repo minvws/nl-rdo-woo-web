@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory;
+namespace Shared\Service\Inventory;
 
 enum MetadataField: string
 {

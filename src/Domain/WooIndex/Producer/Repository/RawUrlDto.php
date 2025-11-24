@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Producer\Repository;
+namespace Shared\Domain\WooIndex\Producer\Repository;
 
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Domain\Publication\Dossier\Type\DossierType;
 use Doctrine\Common\Collections\ArrayCollection;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Symfony\Component\Uid\Uuid;
 
 /**

@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inventory\Sanitizer;
+namespace Shared\Tests\Unit\Service\Inventory\Sanitizer;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
-use App\Domain\Publication\FileInfo;
-use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
-use App\Service\Inventory\Sanitizer\InventoryDocumentMapper;
-use App\Service\Inventory\Sanitizer\InventorySanitizer;
-use App\Service\Inventory\Sanitizer\InventoryWriterInterface;
-use App\Service\Storage\EntityStorageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
+use Shared\Service\Inventory\Sanitizer\InventoryDocumentMapper;
+use Shared\Service\Inventory\Sanitizer\InventorySanitizer;
+use Shared\Service\Inventory\Sanitizer\InventoryWriterInterface;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 
-class InventorySanitizerTest extends MockeryTestCase
+class InventorySanitizerTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private EntityStorageService&MockInterface $entityStorageService;

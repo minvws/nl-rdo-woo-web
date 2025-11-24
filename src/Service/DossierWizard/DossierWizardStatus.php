@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\DossierWizard;
+namespace Shared\Service\DossierWizard;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Step\StepName;
 
 readonly class DossierWizardStatus
 {

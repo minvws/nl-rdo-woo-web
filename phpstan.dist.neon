@@ -19,10 +19,10 @@ parameters:
         - src/Domain/Publication/Dossier/Type/WorkflowConfigHelper.php
     level: max
     symfony:
-        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+        containerXmlPath: var/cache/shared/dev/Shared_KernelDevDebugContainer.xml
     faker:
         providerClasses:
-            - App\Tests\Faker\GroundsFakerProvider
+            - Shared\Tests\Faker\GroundsFakerProvider
     ignoreErrors:
         - identifier: missingType.generics
 

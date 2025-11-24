@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\MainDocument;
+namespace Shared\Domain\Publication\MainDocument;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\AbstractEntityWithFileInfoDeleteStrategy;
-use App\Domain\Search\Index\ElasticDocumentId;
-use App\Domain\Search\SearchDispatcher;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\AbstractEntityWithFileInfoDeleteStrategy;
+use Shared\Domain\Search\Index\ElasticDocumentId;
+use Shared\Domain\Search\SearchDispatcher;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
 
 readonly class MainDocumentDeleteStrategy extends AbstractEntityWithFileInfoDeleteStrategy
 {

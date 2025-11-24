@@ -154,7 +154,7 @@
                     <span data-e2e-name="dossier-inventoryFile">
                     {% if dossier.hasProductionReport  %}
                         <twig:Admin:IconLink
-                            href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('App\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
+                            href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('Shared\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
                             icon="file-csv"
                             text="{{ dossier.productionReport.fileInfo.name }}"
                         />

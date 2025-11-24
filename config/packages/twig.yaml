@@ -6,8 +6,9 @@ twig:
         PUBLIC_BASE_URL: '%env(PUBLIC_BASE_URL)%'
         PIWIK_ANALYTICS_ID: '%env(PIWIK_ANALYTICS_ID)%'
         SITE_NAME: '%env(SITE_NAME)%'
-        DEPARTMENTS: '@App\Domain\Department\Twig\Departments'
+        DEPARTMENTS: '@Shared\Domain\Department\Twig\Departments'
         THUMBNAIL_LIMIT: '%thumbnail_limit%'
+        LIMIT_TOTAL_DOCUMENTS_FILE_SIZE_IN_GIB: '%limit_total_document_file_size_in_gib%'
     file_name_pattern: '*.twig'
     date:
         timezone: Europe/Amsterdam

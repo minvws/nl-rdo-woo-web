@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\AnnualReport;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\AnnualReport;
 
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
-use App\Domain\Publication\Dossier\Type\DossierType;
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
 
 final class AnnualReportTest extends TestCase
 {

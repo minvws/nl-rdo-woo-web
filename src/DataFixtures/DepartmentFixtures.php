@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\DataFixtures;
+namespace Shared\DataFixtures;
 
-use App\Domain\Department\Department;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
+use Shared\Domain\Department\Department;
 
 /**
  * This is a set of fixtures for the Department entities. It is not meant to be used in production.

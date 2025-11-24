@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Department\Department;
-use App\Domain\Department\DepartmentFileService;
-use App\Domain\Department\DepartmentService;
-use App\Service\DownloadResponseHelper;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\DepartmentFileService;
+use Shared\Domain\Department\DepartmentService;
+use Shared\Service\DownloadResponseHelper;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;

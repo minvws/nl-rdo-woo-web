@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscriber;
+namespace Shared\EventSubscriber;
 
-use App\Service\Security\User;
-use App\Service\Security\UserRouteHelper;
 use Psr\Log\LoggerInterface;
+use Shared\Service\Security\User;
+use Shared\Service\Security\UserRouteHelper;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;

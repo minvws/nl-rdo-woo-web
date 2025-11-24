@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result\Dossier\WooDecision;
+namespace Shared\Domain\Search\Result\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
-use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
-use App\Domain\Search\Result\Dossier\AbstractDossierTypeSearchResult;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
+use Shared\Domain\Search\Result\Dossier\AbstractDossierTypeSearchResult;
 use Symfony\Component\Uid\Uuid;
 
 readonly class WooDecisionSearchResult extends AbstractDossierTypeSearchResult

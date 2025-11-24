@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\AbstractMainDocument;
+namespace Shared\Api\Admin\AbstractMainDocument;
 
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Operation;
@@ -10,13 +10,13 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
-use App\Api\Admin\ApiDossierAccessChecker;
-use App\Api\Admin\Attachment\AttachmentCreateDto;
-use App\Api\Admin\Attachment\AttachmentUpdateDto;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
-use App\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
-use App\Domain\Publication\MainDocument\Command\UpdateMainDocumentCommand;
+use Shared\Api\Admin\ApiDossierAccessChecker;
+use Shared\Api\Admin\Attachment\AttachmentCreateDto;
+use Shared\Api\Admin\Attachment\AttachmentUpdateDto;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
+use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
+use Shared\Domain\Publication\MainDocument\Command\UpdateMainDocumentCommand;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;

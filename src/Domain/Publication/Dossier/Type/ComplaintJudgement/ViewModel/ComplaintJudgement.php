@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\ComplaintJudgement\ViewModel;
+namespace Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ViewModel;
 
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesAccessors;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesAccessors;
 
 final readonly class ComplaintJudgement
 {

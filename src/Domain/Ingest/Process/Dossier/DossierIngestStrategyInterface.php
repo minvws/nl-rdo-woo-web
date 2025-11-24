@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\Dossier;
+namespace Shared\Domain\Ingest\Process\Dossier;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 
 interface DossierIngestStrategyInterface
 {

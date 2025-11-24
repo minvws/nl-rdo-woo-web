@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Api\Admin;
+namespace Shared\Tests\Unit\Api\Admin;
 
 use ApiPlatform\Symfony\Security\Exception\AccessDeniedException;
-use App\Api\Admin\ApiDossierAccessChecker;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Api\Admin\ApiDossierAccessChecker;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Uid\Uuid;
 

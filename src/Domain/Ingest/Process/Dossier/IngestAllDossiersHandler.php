@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\Dossier;
+namespace Shared\Domain\Ingest\Process\Dossier;
 
-use App\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Ingest\IngestDispatcher;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

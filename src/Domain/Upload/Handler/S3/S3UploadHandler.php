@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Handler\S3;
+namespace Shared\Domain\Upload\Handler\S3;
 
-use App\Domain\Upload\Handler\UploadHandlerInterface;
-use App\Domain\Upload\Result\PartialUploadResult;
-use App\Domain\Upload\Result\UploadCompletedResult;
-use App\Domain\Upload\Result\UploadResultInterface;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\UploadRequest;
 use League\Flysystem\FilesystemOperator;
+use Shared\Domain\Upload\Handler\UploadHandlerInterface;
+use Shared\Domain\Upload\Result\PartialUploadResult;
+use Shared\Domain\Upload\Result\UploadCompletedResult;
+use Shared\Domain\Upload\Result\UploadResultInterface;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadRequest;
 use Webmozart\Assert\Assert;
 
 readonly class S3UploadHandler implements UploadHandlerInterface

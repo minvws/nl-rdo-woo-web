@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Twig\Components\Admin;
+namespace Shared\Tests\Unit\Twig\Components\Admin;
 
-use App\Twig\Components\Admin\Alert;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Twig\Components\Admin\Alert;
 
-final class AlertTest extends MockeryTestCase
+final class AlertTest extends UnitTestCase
 {
     private Alert $alert;
 

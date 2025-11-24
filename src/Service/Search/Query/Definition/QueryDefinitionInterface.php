@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Definition;
+namespace Shared\Service\Search\Query\Definition;
 
-use App\Domain\Search\Query\SearchParameters;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
+use Shared\Domain\Search\Query\SearchParameters;
 
 interface QueryDefinitionInterface
 {

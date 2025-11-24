@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
-use App\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesAccessors;
-use App\Domain\Publication\Dossier\ViewModel\Department;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use Doctrine\Common\Collections\Collection;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesAccessors;
+use Shared\Domain\Publication\Dossier\ViewModel\Department;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
 
 /**
  * @SuppressWarnings("PHPMD.ExcessiveParameterList")

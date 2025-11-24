@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\History;
+namespace Shared\Domain\Publication\History;
 
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Event\DossierCreatedEvent;
-use App\Service\HistoryService;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Event\DossierCreatedEvent;
+use Shared\Service\HistoryService;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 final readonly class DossierHistoryHandler
@@ -14,17 +15,22 @@ final readonly class DossierHistoryHandler
     public function __construct(
         private HistoryService $historyService,
         private DossierRepository $repository,
+        private ApplicationMode $applicationMode,
     ) {
     }
 
     #[AsMessageHandler()]
     public function handleCreated(DossierCreatedEvent $event): void
     {
-        $this->repository->findOneByDossierId($event->dossierId);
+        $dossier = $this->repository->findOneByDossierId($event->dossierId);
 
         $this->historyService->addDossierEntry(
             dossierId: $event->dossierId,
             key: 'dossier_created',
+            context: [
+                'applicationMode' => $this->applicationMode->value,
+                'status' => $dossier->getStatus()->value,
+            ],
         );
     }
 }

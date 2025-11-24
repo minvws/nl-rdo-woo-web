@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier\WooDecision;
+namespace Shared\Form\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType as DecisionTypeEnum;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Form\Dossier\AbstractDossierStepType;
-use App\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType as DecisionTypeEnum;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Form\Dossier\AbstractDossierStepType;
+use Shared\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;

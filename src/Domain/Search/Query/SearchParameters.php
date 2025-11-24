@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query;
+namespace Shared\Domain\Search\Query;
 
-use App\Domain\Search\Query\Facet\FacetDefinitionInterface;
-use App\Domain\Search\Query\Facet\Input\DateFacetInput;
-use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
-use App\Domain\Search\Query\Facet\Input\FacetInputInterface;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Condition\QueryConditionBuilderInterface;
-use App\Service\Search\Query\Sort\SortField;
-use App\Service\Search\Query\Sort\SortOrder;
-use App\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Domain\Search\Query\Facet\FacetDefinitionInterface;
+use Shared\Domain\Search\Query\Facet\Input\DateFacetInput;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputCollection;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputInterface;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Query\Condition\QueryConditionBuilderInterface;
+use Shared\Service\Search\Query\Sort\SortField;
+use Shared\Service\Search\Query\Sort\SortOrder;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 readonly class SearchParameters
@@ -38,7 +38,7 @@ readonly class SearchParameters
 
     public function hasQueryString(): bool
     {
-        return ! empty($this->query);
+        return $this->query !== '';
     }
 
     public function hasActiveFacets(): bool
@@ -108,7 +108,7 @@ readonly class SearchParameters
             $params->set('type', $this->searchType->value);
         }
 
-        if (! empty($this->query)) {
+        if ($this->hasQueryString()) {
             $params->set('q', $this->query);
         }
 

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory\Sanitizer;
+namespace Shared\Service\Inventory\Sanitizer;
 
-use App\Exception\InventorySanitizerException;
+use Shared\Exception\InventorySanitizerException;
 
 class CsvWriter implements InventoryWriterInterface
 {

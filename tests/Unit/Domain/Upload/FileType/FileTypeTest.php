@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\FileType;
+namespace Shared\Tests\Unit\Domain\Upload\FileType;
 
-use App\Domain\Upload\FileType\FileType;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Upload\FileType\FileType;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class FileTypeTest extends UnitTestCase
 {

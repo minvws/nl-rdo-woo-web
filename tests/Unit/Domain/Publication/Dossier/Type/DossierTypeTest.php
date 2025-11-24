@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Tests\Unit\UnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class DossierTypeTest extends UnitTestCase

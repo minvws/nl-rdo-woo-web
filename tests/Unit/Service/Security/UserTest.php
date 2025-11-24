@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security;
+namespace Shared\Tests\Unit\Service\Security;
 
-use App\Domain\Organisation\Organisation;
-use App\Service\Security\LoginActivity\LoginActivity;
-use App\Service\Security\Roles;
-use App\Service\Security\User;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Service\Security\LoginActivity\LoginActivity;
+use Shared\Service\Security\Roles;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
 
 class UserTest extends UnitTestCase
 {

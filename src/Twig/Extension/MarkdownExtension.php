@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Extension;
+namespace Shared\Twig\Extension;
 
-use App\Twig\Runtime\MarkdownExtensionRuntime;
+use Shared\Twig\Runtime\MarkdownExtensionRuntime;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
@@ -14,6 +14,7 @@ final class MarkdownExtension extends AbstractExtension
     {
     }
 
+    #[\Override]
     public function getFilters(): array
     {
         return [

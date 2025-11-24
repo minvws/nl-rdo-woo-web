@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Content\Extractor\Tika;
+namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tika;
 
-use App\Domain\Ingest\Content\ContentExtractLogContext;
-use App\Domain\Ingest\Content\Extractor\Tika\TikaService;
-use App\Tests\Unit\UnitTestCase;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ConnectException;
 use Mockery\MockInterface;
@@ -16,6 +13,9 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Content\ContentExtractLogContext;
+use Shared\Domain\Ingest\Content\Extractor\Tika\TikaService;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class TikaServiceTest extends UnitTestCase
 {

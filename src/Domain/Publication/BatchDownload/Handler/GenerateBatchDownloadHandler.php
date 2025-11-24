@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload\Handler;
+namespace Shared\Domain\Publication\BatchDownload\Handler;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadRepository;
-use App\Domain\Publication\BatchDownload\BatchDownloadZipGenerator;
-use App\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadZipGenerator;
+use Shared\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

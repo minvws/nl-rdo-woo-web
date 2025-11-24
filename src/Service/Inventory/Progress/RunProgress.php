@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory\Progress;
+namespace Shared\Service\Inventory\Progress;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 
 class RunProgress
 {

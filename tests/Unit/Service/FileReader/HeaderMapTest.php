@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\FileReader;
+namespace Shared\Tests\Unit\Service\FileReader;
 
-use App\Exception\FileReaderException;
-use App\Service\FileReader\HeaderMap;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Exception\FileReaderException;
+use Shared\Service\FileReader\HeaderMap;
+use Shared\Tests\Unit\UnitTestCase;
 
-class HeaderMapTest extends MockeryTestCase
+class HeaderMapTest extends UnitTestCase
 {
     public function testGetters(): void
     {

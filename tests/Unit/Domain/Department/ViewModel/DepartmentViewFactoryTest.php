@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Department\ViewModel;
+namespace Shared\Tests\Unit\Domain\Department\ViewModel;
 
-use App\Domain\Department\Department;
-use App\Domain\Department\ViewModel\DepartmentViewFactory;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\ViewModel\DepartmentViewFactory;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class DepartmentViewFactoryTest extends UnitTestCase

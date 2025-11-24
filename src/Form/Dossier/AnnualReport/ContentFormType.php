@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier\AnnualReport;
+namespace Shared\Form\Dossier\AnnualReport;
 
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Form\Dossier\AbstractDossierStepType;
-use App\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Form\Dossier\AbstractDossierStepType;
+use Shared\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class ContentFormType extends AbstractDossierStepType

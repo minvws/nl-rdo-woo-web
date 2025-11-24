@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Worker;
+namespace Shared\Service\Worker;
 
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Worker\Pdf\Extractor\EntityMetaDataExtractor;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Worker\Pdf\Extractor\EntityMetaDataExtractor;
 
 readonly class PdfProcessor
 {

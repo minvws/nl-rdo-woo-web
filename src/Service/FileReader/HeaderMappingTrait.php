@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Service\FileReader;
+namespace Shared\Service\FileReader;
 
-use App\Exception\FileReaderException;
 use PhpOffice\PhpSpreadsheet\Exception;
+use Shared\Exception\FileReaderException;
 
 trait HeaderMappingTrait
 {
@@ -28,11 +28,10 @@ trait HeaderMappingTrait
         $headerMapping = [];
         $missingHeaders = $mapping;
 
-        foreach ($headers as $idx => $cell) {
-            $columnName = strval($cell);
+        foreach ($headers as $idx => $columnName) {
             $columnName = strtolower(trim($columnName));
             $columnName = trim(ltrim($columnName, '0123456789'));
-            if (empty($columnName)) {
+            if ($columnName === '') {
                 continue;
             }
 

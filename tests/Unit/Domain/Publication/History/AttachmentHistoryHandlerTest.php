@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\History;
+namespace Shared\Tests\Unit\Domain\Publication\History;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
-use App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentWithdrawnEvent;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\History\AttachmentHistoryHandler;
-use App\Service\HistoryService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
+use Shared\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentWithdrawnEvent;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\History\AttachmentHistoryHandler;
+use Shared\Service\HistoryService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Rollover;
+namespace Shared\Tests\Unit\Domain\Search\Index\Rollover;
 
-use App\Domain\Publication\Dossier\Type\AbstractDossierRepository;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementConfig;
-use App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantConfig;
-use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionConfig;
-use App\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
-use App\Domain\Search\Index\Rollover\RolloverCounter;
-use App\Service\Elastic\ElasticClientInterface;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\AbstractDossierRepository;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementConfig;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantConfig;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionConfig;
+use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
+use Shared\Domain\Search\Index\Rollover\RolloverCounter;
+use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 class RolloverCounterTest extends UnitTestCase

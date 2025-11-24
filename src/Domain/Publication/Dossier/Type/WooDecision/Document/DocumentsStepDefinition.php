@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\Document;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Step\StepDefinition;
-use App\Domain\Publication\Dossier\Step\StepException;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Step\StepDefinition;
+use Shared\Domain\Publication\Dossier\Step\StepException;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 readonly class DocumentsStepDefinition extends StepDefinition

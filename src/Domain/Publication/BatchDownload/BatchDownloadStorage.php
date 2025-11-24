@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload;
+namespace Shared\Domain\Publication\BatchDownload;
 
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;

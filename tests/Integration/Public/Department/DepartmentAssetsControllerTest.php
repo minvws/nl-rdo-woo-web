@@ -2,25 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Public\Department;
+namespace Shared\Tests\Integration\Public\Department;
 
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\SourceType;
-use App\Tests\Factory\DepartmentFactory;
-use App\Tests\Factory\FileInfoFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Integration\VfsStreamHelpers;
 use Doctrine\ORM\EntityManagerInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\SourceType;
+use Shared\Tests\Factory\DepartmentFactory;
+use Shared\Tests\Factory\FileInfoFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\Tests\Integration\VfsStreamHelpers;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 
-final class DepartmentAssetsControllerTest extends WebTestCase
+final class DepartmentAssetsControllerTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
     use VfsStreamHelpers;
 
     private vfsStreamDirectory $root;

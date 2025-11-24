@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Worker\Pdf\Extractor;
+namespace Shared\Service\Worker\Pdf\Extractor;
 
-use App\Domain\Ingest\Process\PdfPage\PdfPageException;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
-use App\Service\Stats\WorkerStatsService;
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkPageExtractResult;
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
+use Shared\Service\Stats\WorkerStatsService;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkPageExtractResult;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
 
 readonly class PageExtractor
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier;
+namespace Shared\Domain\Publication\Dossier;
 
-use App\Domain\Publication\Dossier\Event\DossierPublishedEvent;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Domain\Publication\Dossier\Event\DossierPublishedEvent;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class DossierPublisher

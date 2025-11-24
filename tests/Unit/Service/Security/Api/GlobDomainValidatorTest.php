@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security\Api;
+namespace Shared\Tests\Unit\Service\Security\Api;
 
-use App\Service\Security\Api\GlobDomainValidator;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Service\Security\Api\GlobDomainValidator;
+use Shared\Tests\Unit\UnitTestCase;
 
-class GlobDomainValidatorTest extends MockeryTestCase
+class GlobDomainValidatorTest extends UnitTestCase
 {
     /**
      * @param array<array-key, string> $whitelist

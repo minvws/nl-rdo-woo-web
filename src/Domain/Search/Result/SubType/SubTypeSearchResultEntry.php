@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result\SubType;
+namespace Shared\Domain\Search\Result\SubType;
 
-use App\Domain\Publication\Dossier\Type\DossierReference;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Result\ResultEntryInterface;
+use Shared\Domain\Publication\Dossier\Type\DossierReference;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Result\ResultEntryInterface;
 
 class SubTypeSearchResultEntry implements ResultEntryInterface
 {

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Api\Publication\V1;
+namespace Shared\Tests\Unit\Api\Publication\V1;
 
-use App\Api\Publication\V1\RequestLogProcessor;
-use App\Service\Security\Api\ApiUser;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Tests\Unit\UnitTestCase;
 use Monolog\Level;
 use Monolog\LogRecord;
+use Shared\Api\Publication\V1\RequestLogProcessor;
+use Shared\Service\Security\Api\ApiUser;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class RequestLogProcessorTest extends UnitTestCase

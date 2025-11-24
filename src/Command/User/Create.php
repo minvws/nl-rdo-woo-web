@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Command\User;
+namespace Shared\Command\User;
 
-use App\Domain\Organisation\Organisation;
-use App\Service\Security\Roles;
-use App\Service\Security\User;
-use App\Service\Totp;
-use App\Service\UserService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Service\Security\Roles;
+use Shared\Service\Security\User;
+use Shared\Service\Totp;
+use Shared\Service\UserService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

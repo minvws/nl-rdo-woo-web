@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment;
+namespace Shared\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class AttachmentDeleter

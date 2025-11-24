@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Robots;
+namespace Shared\Tests\Unit\Domain\Robots;
 
-use App\Domain\Robots\RobotsViewFactory;
-use App\Domain\WooIndex\WooIndexSitemapService;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Robots\RobotsViewFactory;
+use Shared\Domain\WooIndex\WooIndexSitemapService;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class RobotsViewFactoryTest extends UnitTestCase
 {

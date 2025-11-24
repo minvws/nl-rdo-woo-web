@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inventory;
+namespace Shared\Tests\Unit\Service\Inventory;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
-use App\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Exception\ProcessInventoryException;
-use App\Service\Inventory\InventoryService;
-use App\Service\Inventory\Reader\InventoryReaderFactory;
-use App\Service\Inventory\Reader\InventoryReaderInterface;
-use App\Service\Storage\EntityStorageService;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Exception\ProcessInventoryException;
+use Shared\Service\Inventory\InventoryService;
+use Shared\Service\Inventory\Reader\InventoryReaderFactory;
+use Shared\Service\Inventory\Reader\InventoryReaderInterface;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 
-class InventoryServiceTest extends MockeryTestCase
+class InventoryServiceTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private EntityStorageService&MockInterface $entityStorageService;

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory\Sanitizer\DataProvider;
+namespace Shared\Service\Inventory\Sanitizer\DataProvider;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 readonly class InventoryDataProviderFactory
 {

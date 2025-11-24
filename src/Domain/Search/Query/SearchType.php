@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query;
+namespace Shared\Domain\Search\Query;
 
-use App\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\ElasticDocumentType;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 enum SearchType: string

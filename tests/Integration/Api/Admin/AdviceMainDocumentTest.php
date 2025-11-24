@@ -2,32 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Api\Admin;
+namespace Shared\Tests\Integration\Api\Admin;
 
-use App\Api\Admin\AdviceMainDocument\AdviceMainDocumentDto;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Upload\Handler\UploadHandlerInterface;
-use App\Domain\Upload\UploadEntity;
-use App\Service\Uploader\UploadGroupId;
-use App\Tests\Factory\FileInfoFactory;
-use App\Tests\Factory\Publication\Dossier\Type\Advice\AdviceFactory;
-use App\Tests\Factory\Publication\Dossier\Type\Advice\AdviceMainDocumentFactory;
-use App\Tests\Factory\UploadEntityFactory;
-use App\Tests\Factory\UserFactory;
-use App\Tests\Integration\IntegrationTestTrait;
 use Carbon\CarbonImmutable;
 use League\Flysystem\FilesystemOperator;
 use Mockery\MockInterface;
+use Shared\Api\Admin\AdviceMainDocument\AdviceMainDocumentDto;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Upload\Handler\UploadHandlerInterface;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Factory\FileInfoFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\Advice\AdviceFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\Advice\AdviceMainDocumentFactory;
+use Shared\Tests\Factory\UploadEntityFactory;
+use Shared\Tests\Factory\UserFactory;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 final class AdviceMainDocumentTest extends AdminApiTestCase
 {
-    use IntegrationTestTrait;
-
     protected static ?bool $alwaysBootKernel = false;
 
     private UploadHandlerInterface&MockInterface $uploadHandler;

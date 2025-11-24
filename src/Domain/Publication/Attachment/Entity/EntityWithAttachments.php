@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\Entity;
+namespace Shared\Domain\Publication\Attachment\Entity;
 
 use Doctrine\Common\Collections\Collection;
 

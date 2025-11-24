@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Controller\ValueResolver;
+namespace Shared\Tests\Unit\Controller\ValueResolver;
 
-use App\Controller\ValueResolver\DossierWithAccessCheckValueResolver;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Exception\ViewingNotAllowedException;
-use App\Service\Security\DossierVoter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Controller\ValueResolver\DossierWithAccessCheckValueResolver;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Exception\ViewingNotAllowedException;
+use Shared\Service\Security\DossierVoter;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
-class DossierWithAccessCheckValueResolverTest extends MockeryTestCase
+class DossierWithAccessCheckValueResolverTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private AuthorizationCheckerInterface&MockInterface $authorizationChecker;

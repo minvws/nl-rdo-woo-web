@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Components\Admin;
+namespace Shared\Twig\Components\Admin;
 
-use App\Domain\Upload\FileType\FileType;
+use Shared\Domain\Upload\FileType\FileType;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent]

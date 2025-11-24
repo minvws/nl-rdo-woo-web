@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result\Dossier\Advice;
+namespace Shared\Domain\Search\Result\Dossier\Advice;
 
-use App\Domain\Search\Result\Dossier\AbstractDossierTypeSearchResult;
+use Shared\Domain\Search\Result\Dossier\AbstractDossierTypeSearchResult;
 use Symfony\Component\Uid\Uuid;
 
 readonly class AdviceSearchResult extends AbstractDossierTypeSearchResult

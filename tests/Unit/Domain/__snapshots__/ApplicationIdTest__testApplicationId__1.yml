@@ -1,0 +1,40 @@
+-
+    admin: true
+    public: false
+    publicationApi: false
+    worker: false
+    shared: false
+    name: ADMIN
+    value: admin
+-
+    admin: false
+    public: true
+    publicationApi: false
+    worker: false
+    shared: false
+    name: PUBLIC
+    value: public
+-
+    admin: false
+    public: false
+    publicationApi: true
+    worker: false
+    shared: false
+    name: PUBLICATION_API
+    value: publication_api
+-
+    admin: false
+    public: false
+    publicationApi: false
+    worker: true
+    shared: false
+    name: WORKER
+    value: worker
+-
+    admin: false
+    public: false
+    publicationApi: false
+    worker: false
+    shared: true
+    name: SHARED
+    value: shared

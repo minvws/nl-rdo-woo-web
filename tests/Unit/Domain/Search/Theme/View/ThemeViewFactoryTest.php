@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Theme\View;
+namespace Shared\Tests\Unit\Domain\Search\Theme\View;
 
-use App\Domain\Search\Theme\ViewModel\ThemeViewFactory;
-use App\Tests\Unit\UnitTestCase;
-use App\Vws\Search\Theme\Covid19QueryConditionBuilder;
-use App\Vws\Search\Theme\Covid19Theme;
+use Shared\Domain\Search\Theme\ViewModel\ThemeViewFactory;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Vws\Search\Theme\Covid19QueryConditionBuilder;
+use Shared\Vws\Search\Theme\Covid19Theme;
 
 class ThemeViewFactoryTest extends UnitTestCase
 {

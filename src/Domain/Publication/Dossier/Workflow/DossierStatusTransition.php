@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Workflow;
+namespace Shared\Domain\Publication\Dossier\Workflow;
 
 enum DossierStatusTransition: string
 {

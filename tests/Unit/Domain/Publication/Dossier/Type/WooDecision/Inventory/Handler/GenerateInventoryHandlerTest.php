@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Inventory\Handler;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Inventory\Handler;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inventory\Handler\GenerateInventoryHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use App\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
-use App\Service\Inventory\Sanitizer\DataProvider\WooDecisionInventoryDataProvider;
-use App\Service\Inventory\Sanitizer\InventorySanitizer;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Handler\GenerateInventoryHandler;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
+use Shared\Service\Inventory\Sanitizer\DataProvider\WooDecisionInventoryDataProvider;
+use Shared\Service\Inventory\Sanitizer\InventorySanitizer;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 class GenerateInventoryHandlerTest extends UnitTestCase

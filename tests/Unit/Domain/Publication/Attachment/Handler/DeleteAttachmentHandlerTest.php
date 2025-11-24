@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment\Handler;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment\Handler;
 
-use App\Domain\Publication\Attachment\AttachmentDeleter;
-use App\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
-use App\Domain\Publication\Attachment\Command\DeleteAttachmentWithOverrideCommand;
-use App\Domain\Publication\Attachment\Handler\AttachmentEntityLoader;
-use App\Domain\Publication\Attachment\Handler\DeleteAttachmentHandler;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Attachment\AttachmentDeleter;
+use Shared\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Command\DeleteAttachmentWithOverrideCommand;
+use Shared\Domain\Publication\Attachment\Handler\AttachmentEntityLoader;
+use Shared\Domain\Publication\Attachment\Handler\DeleteAttachmentHandler;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
-class DeleteAttachmentHandlerTest extends MockeryTestCase
+class DeleteAttachmentHandlerTest extends UnitTestCase
 {
     private AttachmentRepository&MockInterface $attachmentRepository;
     private MessageBusInterface&MockInterface $messageBus;

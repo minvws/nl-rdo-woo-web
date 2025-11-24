@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier\WooDecision;
+namespace Shared\Form\Dossier\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Upload\FileType\FileType as FileTypeEnum;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Upload\FileType\FileType as FileTypeEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

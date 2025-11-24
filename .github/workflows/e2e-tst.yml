@@ -12,14 +12,14 @@ on:
 env:
   CR_PAT: ${{ secrets.GITHUB_TOKEN }}
   TEST_TAG: ${{ inputs.test_tag || 'testdossiers' }}
-  GITHUB_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }} # For gh cli tool
+  GITHUB_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }} # For gh cli too
 
 jobs:
   e2e-tests:
     name: 'Run E2E tests on Test'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Install Task
         uses: go-task/setup-task@v1
         with:

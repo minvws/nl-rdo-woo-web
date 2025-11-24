@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Doctrine\Common\Collections\ReadableCollection;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Webmozart\Assert\Assert;
 
 readonly class DossierUploadStatus

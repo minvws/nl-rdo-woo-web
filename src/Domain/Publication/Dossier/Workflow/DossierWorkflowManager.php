@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Workflow;
+namespace Shared\Domain\Publication\Dossier\Workflow;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Service\DossierService;
-use App\Service\HistoryService;
-use App\Service\Inquiry\InquiryService;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\DossierService;
+use Shared\Service\HistoryService;
+use Shared\Service\Inquiry\InquiryService;
 use Symfony\Component\Workflow\Exception\TransitionException;
 
 /**

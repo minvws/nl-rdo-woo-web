@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\MainDocument;
+namespace Shared\Domain\Publication\MainDocument;
 
-use App\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\EntityStorageService;
 
 readonly class MainDocumentFileDeleteStrategy implements MainDocumentDeleteStrategyInterface
 {

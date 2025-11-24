@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace Shared\Command;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\History\History;
-use App\Domain\Publication\Subject\Subject;
-use App\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\WooIndex\WooIndexSitemapService;
-use App\Service\Security\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\History\History;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\WooIndex\WooIndexSitemapService;
+use Shared\Service\Security\User;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -54,7 +54,7 @@ class CleanSheet extends Command
                 new InputOption('users', 'u', InputOption::VALUE_NONE, 'Reset users'),
                 new InputOption('keep-prefixes', 'p', InputOption::VALUE_NONE, 'Do not remove prefixes'),
                 new InputOption('keep-subjects', 's', InputOption::VALUE_NONE, 'Do not remove subjects'),
-                new InputOption('index', 'i', InputOption::VALUE_REQUIRED, 'ES index name', 'woopie'),
+                new InputOption('index', null, InputOption::VALUE_REQUIRED, 'ES index name', 'woopie'),
             ])
         ;
     }

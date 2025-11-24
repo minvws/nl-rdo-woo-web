@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security\Authorization;
+namespace Shared\Tests\Unit\Service\Security\Authorization;
 
-use App\Service\Security\Authorization\AuthorizationEntryRequestStore;
-use App\Service\Security\Authorization\Entry;
-use Mockery;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
+use Shared\Service\Security\Authorization\AuthorizationEntryRequestStore;
+use Shared\Service\Security\Authorization\Entry;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class AuthorizationRequestStoreTest extends MockeryTestCase
+class AuthorizationRequestStoreTest extends UnitTestCase
 {
-    private RequestStack&Mockery\MockInterface $requestStack;
-    private Request&Mockery\MockInterface $request;
+    private RequestStack&MockInterface $requestStack;
+    private Request&MockInterface $request;
     private AuthorizationEntryRequestStore $store;
 
     protected function setUp(): void

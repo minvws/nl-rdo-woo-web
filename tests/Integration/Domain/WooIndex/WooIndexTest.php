@@ -2,31 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\WooIndex;
+namespace Shared\Tests\Integration\Domain\WooIndex;
 
-use App\Domain\WooIndex\Builder\DiWooXMLWriter;
-use App\Domain\WooIndex\Builder\SitemapBuilder;
-use App\Domain\WooIndex\Builder\SitemapIndexBuilder;
-use App\Domain\WooIndex\StreamHelper;
-use App\Domain\WooIndex\WooIndex;
-use App\Domain\WooIndex\WooIndexNamer;
-use App\Domain\WooIndex\WooIndexRunOptions;
-use App\Domain\WooIndex\WooIndexSitemap;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Story\DepartmentStory;
-use App\Tests\Story\WooIndexAnnualReportStory;
-use App\Tests\Story\WooIndexCovenantStory;
-use App\Tests\Story\WooIndexWooDecisionStory;
 use League\Flysystem\FilesystemOperator;
 use Mockery\MockInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\WooIndex\Builder\DiWooXMLWriter;
+use Shared\Domain\WooIndex\Builder\SitemapBuilder;
+use Shared\Domain\WooIndex\Builder\SitemapIndexBuilder;
+use Shared\Domain\WooIndex\StreamHelper;
+use Shared\Domain\WooIndex\WooIndex;
+use Shared\Domain\WooIndex\WooIndexNamer;
+use Shared\Domain\WooIndex\WooIndexRunOptions;
+use Shared\Domain\WooIndex\WooIndexSitemap;
+use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\Tests\Story\DepartmentStory;
+use Shared\Tests\Story\WooIndexAnnualReportStory;
+use Shared\Tests\Story\WooIndexCovenantStory;
+use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Attribute\WithStory;
 
-final class WooIndexTest extends KernelTestCase
+final class WooIndexTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private StreamHelper&MockInterface $streamHelper;
     private FilesystemOperator $wooIndexStorage;
     private WooIndexNamer $wooIndexNamer;

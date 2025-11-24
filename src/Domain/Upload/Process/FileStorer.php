@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Process;
+namespace Shared\Domain\Upload\Process;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Upload\UploadedFile;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Upload\UploadedFile;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
 
 readonly class FileStorer
 {

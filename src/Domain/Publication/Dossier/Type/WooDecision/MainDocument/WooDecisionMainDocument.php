@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\MainDocument;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 
 /**
  * @extends AbstractMainDocument<WooDecision>

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Exception;
+namespace Shared\Exception;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 
 /**
  * @SuppressWarnings("PHPMD.TooManyPublicMethods")

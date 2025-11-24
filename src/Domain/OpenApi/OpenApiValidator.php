@@ -2,14 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\OpenApi;
+namespace Shared\Domain\OpenApi;
 
-use App\Api\Publication\V1\PublicationV1Api;
-use App\Domain\OpenApi\Exceptions\FormatMismatchException;
-use App\Domain\OpenApi\Exceptions\KeywordMismatchException;
-use App\Domain\OpenApi\Exceptions\SchemaMismatchException;
-use App\Domain\OpenApi\Exceptions\SpecException;
-use App\Domain\OpenApi\Exceptions\ValidatonException;
 use cebe\openapi\exceptions\TypeErrorException;
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\OperationAddress;
@@ -17,6 +11,12 @@ use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use League\OpenAPIValidation\Schema\Exception\FormatMismatch;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
+use Shared\Api\Publication\V1\PublicationV1Api;
+use Shared\Domain\OpenApi\Exceptions\FormatMismatchException;
+use Shared\Domain\OpenApi\Exceptions\KeywordMismatchException;
+use Shared\Domain\OpenApi\Exceptions\SchemaMismatchException;
+use Shared\Domain\OpenApi\Exceptions\SpecException;
+use Shared\Domain\OpenApi\Exceptions\ValidatonException;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

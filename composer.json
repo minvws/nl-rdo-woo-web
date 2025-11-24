@@ -131,12 +131,20 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "Shared\\": "src/",
+            "Admin\\": "apps/admin/src/",
+            "Public\\": "apps/public/src/",
+            "PublicationApi\\": "apps/publication_api/src/",
+            "Worker\\": "apps/worker/src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/"
+            "Shared\\Tests\\": "tests/",
+            "Admin\\Tests\\": "app/admin/tests/",
+            "Public\\Tests\\": "app/public/tests/",
+            "PublicationApi\\Tests\\": "app/publication_api/tests/",
+            "Worker\\Tests\\": "app/worker/tests/"
         }
     },
     "replace": {
@@ -151,8 +159,13 @@
     },
     "scripts": {
         "auto-scripts": {
-            "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+            "cache:clear -ishared": "symfony-cmd",
+            "cache:clear -iadmin": "symfony-cmd",
+            "cache:clear -ipublic": "symfony-cmd",
+            "cache:clear -ipublication_api": "symfony-cmd",
+            "cache:clear -iworker": "symfony-cmd",
+            "assets:install %PUBLIC_DIR% -iadmin": "symfony-cmd",
+            "assets:install %PUBLIC_DIR% -ipublic": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"
@@ -169,14 +182,20 @@
             "XDEBUG_MODE=off phpcbf",
             "XDEBUG_MODE=off php-cs-fixer fix --diff"
         ],
-        "checktype": "XDEBUG_MODE=off phpstan analyse --memory-limit=-1",
-        "update-type-baseline": "XDEBUG_MODE=off phpstan --generate-baseline",
+        "checktype": [
+            "XDEBUG_MODE=off bin/console cache:warmup --no-optional-warmers",
+            "XDEBUG_MODE=off phpstan analyse --memory-limit=-1"
+        ],
+        "update-type-baseline": [
+            "XDEBUG_MODE=off bin/console cache:warmup --no-optional-warmers",
+            "XDEBUG_MODE=off phpstan --generate-baseline"
+        ],
         "md": "XDEBUG_MODE=off phpmd src/ ansi ruleset.phpmd.xml",
         "md:xml": "XDEBUG_MODE=off phpmd src/ xml ruleset.phpmd.xml --cache",
         "checktranslations": "XDEBUG_MODE=off bin/console lint:yaml translations",
         "checktemplates": [
-            "XDEBUG_MODE=off APP_DEBUG=false APP_ENV=prod php bin/console cache:clear",
-            "XDEBUG_MODE=off APP_DEBUG=false APP_ENV=prod php bin/console lint:twig templates"
+            "XDEBUG_MODE=off APP_DEBUG=false php bin/console cache:clear",
+            "XDEBUG_MODE=off APP_DEBUG=false php bin/console lint:twig templates"
         ],
         "checkall": [
             "@checkstyle",

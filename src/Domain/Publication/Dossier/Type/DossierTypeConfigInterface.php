@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type;
+namespace Shared\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Step\StepDefinitionInterface;
-use App\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Step\StepDefinitionInterface;
+use Shared\Domain\Publication\Dossier\Step\StepName;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Workflow\WorkflowInterface;

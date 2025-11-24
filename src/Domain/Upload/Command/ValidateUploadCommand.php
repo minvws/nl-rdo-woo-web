@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Command;
+namespace Shared\Domain\Upload\Command;
 
-use App\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadEntity;
 use Symfony\Component\Uid\Uuid;
 
 class ValidateUploadCommand

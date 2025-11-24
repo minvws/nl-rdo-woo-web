@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Result\SubType\MainDocument;
+namespace Shared\Tests\Unit\Domain\Search\Result\SubType\MainDocument;
 
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\MainDocumentRepository;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocument;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Result\SubType\MainDocument\MainDocumentSearchResultMapper;
-use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
 use MinVWS\TypeArray\TypeArray;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\MainDocumentRepository;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Result\SubType\MainDocument\MainDocumentSearchResultMapper;
+use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
+use Shared\Tests\Unit\UnitTestCase;
 
-class MainDocumentSearchResultMapperTest extends MockeryTestCase
+class MainDocumentSearchResultMapperTest extends UnitTestCase
 {
     private MainDocumentRepository&MockInterface $mainDocumentRepository;
     private MainDocumentViewFactory&MockInterface $mainDocumentViewFactory;

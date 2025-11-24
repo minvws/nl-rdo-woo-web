@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query;
+namespace Shared\Domain\Search\Query;
 
 enum SearchOperator: string
 {

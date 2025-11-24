@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query\Facet\Input;
+namespace Shared\Domain\Search\Query\Facet\Input;
 
 interface DateFacetInputInterface extends FacetInputInterface
 {

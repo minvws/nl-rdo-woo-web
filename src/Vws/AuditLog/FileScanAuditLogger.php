@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Vws\AuditLog;
+namespace Shared\Vws\AuditLog;
 
-use App\Domain\Upload\AntiVirus\FileScannedEvent;
-use App\Service\Security\User;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\FileUploadLogEvent;
+use Shared\Domain\Upload\AntiVirus\FileScannedEvent;
+use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 

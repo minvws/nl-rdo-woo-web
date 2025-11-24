@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace Shared\Command;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -117,7 +117,7 @@ class NormalizeDocumentGrounds extends Command
                 $normalizedValues = [];
             } else {
                 $normalizedValues = explode(';', $row[1]);
-                $normalizedValues = array_map('trim', $normalizedValues);
+                $normalizedValues = array_map(trim(...), $normalizedValues);
             }
             $mapping[trim($row[0])] = $normalizedValues;
         }

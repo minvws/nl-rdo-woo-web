@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\AntiVirus;
+namespace Shared\Tests\Unit\Domain\Upload\AntiVirus;
 
-use App\Domain\Upload\AntiVirus\ClamAvClientFactory;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Upload\AntiVirus\ClamAvClientFactory;
+use Shared\Tests\Unit\UnitTestCase;
 use Socket\Raw\Exception;
 
 final class ClamAvClientFactoryTest extends UnitTestCase

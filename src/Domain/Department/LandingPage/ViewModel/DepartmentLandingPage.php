@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Department\LandingPage\ViewModel;
+namespace Shared\Domain\Department\LandingPage\ViewModel;
 
 use Symfony\Component\Uid\Uuid;
 

@@ -2,18 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\Advice;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\Advice;
 
-use App\Domain\Publication\Dossier\Type\Advice\AdviceRepository;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Tests\Factory\Publication\Dossier\Type\Advice\AdviceFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\Advice\AdviceRepository;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Factory\Publication\Dossier\Type\Advice\AdviceFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class AdviceRepositoryTest extends KernelTestCase
+final class AdviceRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private function getRepository(): AdviceRepository
     {
         /** @var AdviceRepository */

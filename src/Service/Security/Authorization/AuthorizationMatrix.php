@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Security\Authorization;
+namespace Shared\Service\Security\Authorization;
 
-use App\Domain\Organisation\Organisation;
-use App\Service\Security\OrganisationSwitcher;
-use App\Service\Security\User;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Service\Security\OrganisationSwitcher;
+use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 

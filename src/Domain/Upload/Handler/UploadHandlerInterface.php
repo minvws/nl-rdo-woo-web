@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Handler;
+namespace Shared\Domain\Upload\Handler;
 
-use App\Domain\Upload\Result\UploadResultInterface;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\UploadRequest;
 use League\Flysystem\FilesystemOperator;
+use Shared\Domain\Upload\Result\UploadResultInterface;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadRequest;
 
 interface UploadHandlerInterface
 {

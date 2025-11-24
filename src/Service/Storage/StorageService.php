@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Storage;
+namespace Shared\Service\Storage;
 
-use App\Domain\Publication\EntityWithFileInfo;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
 
 /**
  * This class is responsible for storing and retrieving file content based on an entity that implements
- * \App\Domain\Publication\EntityWithFileInfo. It is a wrapper around the storage adapter so the rest of the system does
+ * \Shared\Domain\Publication\EntityWithFileInfo. It is a wrapper around the storage adapter so the rest of the system does
  * not need to know anything about the storage adapter. This way, we can use simple local filesystem or even more
  * complex adapters like S3.
  *

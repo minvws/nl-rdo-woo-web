@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query\Facet;
+namespace Shared\Domain\Search\Query\Facet;
 
-use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputCollection;
 
 final readonly class FacetListFactory
 {

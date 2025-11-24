@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inventory;
+namespace Shared\Tests\Unit\Service\Inventory;
 
-use App\Service\Inventory\PropertyChangeset;
 use PHPUnit\Framework\TestCase;
+use Shared\Service\Inventory\PropertyChangeset;
 
 class PropertyChangesetTest extends TestCase
 {

@@ -135,7 +135,7 @@ export const dateFilters = () => {
       'aria-describedby',
       dateElement
         .getAttribute('aria-describedby')
-        ?.replace(ID_OF_INPUT_ERROR_ELEMENT, '')
+        ?.replaceAll(ID_OF_INPUT_ERROR_ELEMENT, '')
         .trim() ?? '',
     );
     dateElement.setAttribute('aria-invalid', 'false');

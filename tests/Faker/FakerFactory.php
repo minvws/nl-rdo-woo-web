@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Faker;
+namespace Shared\Tests\Faker;
 
 use Faker\Factory;
 use Faker\Generator;

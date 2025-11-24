@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Query\Facet\Input;
+namespace Shared\Domain\Search\Query\Facet\Input;
 
-use App\Domain\Search\Query\Facet\FacetDefinitionInterface;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Utils\CastTypes;
+use Shared\Domain\Search\Query\Facet\FacetDefinitionInterface;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Utils\CastTypes;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 final readonly class DateFacetInput extends FacetInput implements DateFacetInputInterface

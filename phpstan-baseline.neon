@@ -1,13 +1,7 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Parameter \#1 \$environment of class App\\Kernel constructor expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: public/index.php
-
-		-
-			message: '#^Parameter \$title of class App\\Api\\Admin\\Publication\\Search\\SearchResultDto constructor expects string, mixed given\.$#'
+			message: '#^Parameter \$title of class Shared\\Api\\Admin\\Publication\\Search\\SearchResultDto constructor expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Api/Admin/Publication/Search/SearchResultDtoFactory.php
@@ -19,7 +13,7 @@ parameters:
 			path: src/Api/Admin/Uploader/WooDecision/Status/UploadStatusDtoFactory.php
 
 		-
-			message: '#^Method App\\Api\\Admin\\Uploader\\WooDecision\\Status\\UploadStatusDtoFactory\:\:getStatus\(\) should return ArrayObject\<''add''\|''republish''\|''update'', int\> but returns ArrayObject\<\(int\|string\), mixed\>\.$#'
+			message: '#^Method Shared\\Api\\Admin\\Uploader\\WooDecision\\Status\\UploadStatusDtoFactory\:\:getStatus\(\) should return ArrayObject\<''add''\|''republish''\|''update'', int\> but returns ArrayObject\<\(int\|string\), mixed\>\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Api/Admin/Uploader/WooDecision/Status/UploadStatusDtoFactory.php
@@ -139,13 +133,7 @@ parameters:
 			path: src/Controller/Admin/SecurityController.php
 
 		-
-			message: '#^Parameter \#1 \$params of method Elastic\\Elasticsearch\\Client\:\:count\(\) expects array\{index\?\: array\<string\>\|string, ignore_unavailable\?\: bool, ignore_throttled\?\: bool, allow_no_indices\?\: bool, expand_wildcards\?\: string, min_score\?\: int, preference\?\: string, routing\?\: array\<string\>\|string, \.\.\.\}\|null, array\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/DataCollector/CollectorClient.php
-
-		-
-			message: '#^Parameter \#3 \$response of method App\\DataCollector\\ElasticCollector\:\:addCall\(\) expects Elastic\\Elasticsearch\\Response\\Elasticsearch, mixed given\.$#'
+			message: '#^Parameter \#3 \$response of method Shared\\DataCollector\\ElasticCollector\:\:addCall\(\) expects Elastic\\Elasticsearch\\Response\\Elasticsearch, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/DataCollector/CollectorClient.php
@@ -157,7 +145,7 @@ parameters:
 			path: src/DataCollector/ElasticCollector.php
 
 		-
-			message: '#^Method App\\DataCollector\\ElasticCollector\:\:getCalls\(\) should return array\<mixed\> but returns mixed\.$#'
+			message: '#^Method Shared\\DataCollector\\ElasticCollector\:\:getCalls\(\) should return array\<mixed\> but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/DataCollector/ElasticCollector.php
@@ -175,25 +163,25 @@ parameters:
 			path: src/Doctrine/EncryptedString.php
 
 		-
-			message: '#^Method App\\Domain\\Ingest\\Content\\LazyFileReference\:\:getPath\(\) should return string but returns string\|null\.$#'
+			message: '#^Method Shared\\Domain\\Ingest\\Content\\LazyFileReference\:\:getPath\(\) should return string but returns string\|null\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Domain/Ingest/Content/LazyFileReference.php
 
 		-
-			message: '#^Property App\\Domain\\Ingest\\Content\\LazyFileReference\:\:\$path \(string\|null\) does not accept mixed\.$#'
+			message: '#^Property Shared\\Domain\\Ingest\\Content\\LazyFileReference\:\:\$path \(string\|null\) does not accept mixed\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Domain/Ingest/Content/LazyFileReference.php
 
 		-
-			message: '#^Method App\\Domain\\Publication\\Dossier\\ViewModel\\DossierTypeViewFactory\:\:makeCollection\(\) should return list\<App\\Domain\\Publication\\Dossier\\ViewModel\\DossierType\> but returns list\.$#'
+			message: '#^Method Shared\\Domain\\Publication\\Dossier\\ViewModel\\DossierTypeViewFactory\:\:makeCollection\(\) should return list\<Shared\\Domain\\Publication\\Dossier\\ViewModel\\DossierType\> but returns list\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Domain/Publication/Dossier/ViewModel/DossierTypeViewFactory.php
 
 		-
-			message: '#^Parameter \#2 \$dossierDoc of method App\\Domain\\Search\\Index\\Updater\\NestedDossierIndexUpdater\:\:update\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			message: '#^Parameter \#2 \$dossierDoc of method Shared\\Domain\\Search\\Index\\Updater\\NestedDossierIndexUpdater\:\:update\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Domain/Search/Index/Dossier/DossierIndexer.php
@@ -217,7 +205,7 @@ parameters:
 			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
 
 		-
-			message: '#^Method App\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexManager\:\:listAlias\(\) should return array\<int, array\<string, array\<string, mixed\>\>\> but returns array\.$#'
+			message: '#^Method Shared\\Domain\\Search\\Index\\ElasticIndex\\ElasticIndexManager\:\:listAlias\(\) should return array\<int, array\<string, array\<string, mixed\>\>\> but returns array\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
@@ -253,7 +241,7 @@ parameters:
 			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
 
 		-
-			message: '#^Method App\\Domain\\Search\\Index\\Rollover\\RolloverCounter\:\:getElasticCounts\(\) should return array\<string, array\{count\: int, subtypes\?\: non\-empty\-array\<string, array\{count\: int, pages\: int\}\>\}\> but returns array\<string, array\{count\: mixed, subtypes\?\: non\-empty\-array\<string, array\{count\: mixed, pages\: mixed\}\>\}\>\.$#'
+			message: '#^Method Shared\\Domain\\Search\\Index\\Rollover\\RolloverCounter\:\:getElasticCounts\(\) should return array\<string, array\{count\: int, subtypes\?\: non\-empty\-array\<string, array\{count\: int, pages\: int\}\>\}\> but returns array\<string, array\{count\: mixed, subtypes\?\: non\-empty\-array\<string, array\{count\: mixed, pages\: mixed\}\>\}\>\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
@@ -337,13 +325,13 @@ parameters:
 			path: src/Service/FileReader/CsvReader.php
 
 		-
-			message: '#^Parameter \#1 \$headers of method App\\Service\\FileReader\\CsvReaderFactory\:\:resolveHeaderMapping\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			message: '#^Parameter \#1 \$headers of method Shared\\Service\\FileReader\\CsvReaderFactory\:\:resolveHeaderMapping\(\) expects array\<string\>, list\<string\|null\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Service/FileReader/CsvReaderFactory.php
 
 		-
-			message: '#^Parameter \#1 \$headers of method App\\Service\\FileReader\\ExcelCsvReaderFactory\:\:resolveHeaderMapping\(\) expects array\<string\>, list\<string\|null\> given\.$#'
+			message: '#^Parameter \#1 \$headers of method Shared\\Service\\FileReader\\ExcelCsvReaderFactory\:\:resolveHeaderMapping\(\) expects array\<string\>, list\<string\|null\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Service/FileReader/ExcelCsvReaderFactory.php
@@ -373,7 +361,7 @@ parameters:
 			path: src/Service/Inventory/InventoryChangeset.php
 
 		-
-			message: '#^Method App\\Service\\Inventory\\InventoryChangeset\:\:getCounts\(\) should return array\<string, int\> but returns array\.$#'
+			message: '#^Method Shared\\Service\\Inventory\\InventoryChangeset\:\:getCounts\(\) should return array\<string, int\> but returns array\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Service/Inventory/InventoryChangeset.php
@@ -397,13 +385,13 @@ parameters:
 			path: src/Service/Search/Query/Condition/ContentAccessConditionBuilder.php
 
 		-
-			message: '#^Method App\\Service\\Search\\Query\\Dsl\\GlobalAggregation\:\:build\(\) should return array\<string, mixed\> but returns array\.$#'
+			message: '#^Method Shared\\Service\\Search\\Query\\Dsl\\GlobalAggregation\:\:build\(\) should return array\<string, mixed\> but returns array\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Service/Search/Query/Dsl/GlobalAggregation.php
 
 		-
-			message: '#^Method App\\Service\\Search\\Query\\Dsl\\TermsAggregationWithMinDocCount\:\:buildAggregation\(\) should return array\<string, string\> but returns array\.$#'
+			message: '#^Method Shared\\Service\\Search\\Query\\Dsl\\TermsAggregationWithMinDocCount\:\:buildAggregation\(\) should return array\<string, string\> but returns array\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Service/Search/Query/Dsl/TermsAggregationWithMinDocCount.php
@@ -427,13 +415,13 @@ parameters:
 			path: src/Service/Search/Result/AggregationMapper.php
 
 		-
-			message: '#^Parameter \#2 \$count of class App\\Service\\Search\\Model\\AggregationBucketEntry constructor expects int, mixed given\.$#'
+			message: '#^Parameter \#2 \$count of class Shared\\Service\\Search\\Model\\AggregationBucketEntry constructor expects int, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Service/Search/Result/AggregationMapper.php
 
 		-
-			message: '#^Parameter \#2 \.\.\.\$values of method App\\Domain\\Search\\Query\\Facet\\Input\\FacetInputFactory\:\:createStringFacetInputForValue\(\) expects string, mixed given\.$#'
+			message: '#^Parameter \#2 \.\.\.\$values of method Shared\\Domain\\Search\\Query\\Facet\\Input\\FacetInputFactory\:\:createStringFacetInputForValue\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Service/Search/Result/AggregationMapper.php
@@ -457,43 +445,43 @@ parameters:
 			path: src/Service/Search/Result/ResultTransformer.php
 
 		-
-			message: '#^Parameter \#1 \$hit of method App\\Domain\\Search\\Result\\ResultFactory\:\:map\(\) expects MinVWS\\TypeArray\\TypeArray, mixed given\.$#'
+			message: '#^Parameter \#1 \$hit of method Shared\\Domain\\Search\\Result\\ResultFactory\:\:map\(\) expects MinVWS\\TypeArray\\TypeArray, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Service/Search/Result/ResultTransformer.php
 
 		-
-			message: '#^Parameter \#2 \$buckets of method App\\Service\\Search\\Result\\AggregationMapper\:\:map\(\) expects iterable\<\(int\|string\), MinVWS\\TypeArray\\TypeArray\>, iterable\<string, mixed\> given\.$#'
+			message: '#^Parameter \#2 \$buckets of method Shared\\Service\\Search\\Result\\AggregationMapper\:\:map\(\) expects iterable\<\(int\|string\), MinVWS\\TypeArray\\TypeArray\>, iterable\<string, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Service/Search/Result/ResultTransformer.php
 
 		-
-			message: '#^Parameter \#1 \$query of method App\\Service\\Search\\Result\\ResultTransformer\:\:transform\(\) expects array\<string, mixed\>, array given\.$#'
+			message: '#^Parameter \#1 \$query of method Shared\\Service\\Search\\Result\\ResultTransformer\:\:transform\(\) expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Service/Search/SearchService.php
 
 		-
-			message: '#^Property App\\Service\\Security\\Authorization\\Entry\:\:\$filters \(array\<string, bool\>\) does not accept mixed\.$#'
+			message: '#^Property Shared\\Service\\Security\\Authorization\\Entry\:\:\$filters \(array\<string, bool\>\) does not accept mixed\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Service/Security/Authorization/Entry.php
 
 		-
-			message: '#^Property App\\Service\\Security\\Authorization\\Entry\:\:\$permissions \(array\<string, bool\>\) does not accept mixed\.$#'
+			message: '#^Property Shared\\Service\\Security\\Authorization\\Entry\:\:\$permissions \(array\<string, bool\>\) does not accept mixed\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Service/Security/Authorization/Entry.php
 
 		-
-			message: '#^Property App\\Service\\Security\\Authorization\\Entry\:\:\$prefix \(string\) does not accept mixed\.$#'
+			message: '#^Property Shared\\Service\\Security\\Authorization\\Entry\:\:\$prefix \(string\) does not accept mixed\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Service/Security/Authorization/Entry.php
 
 		-
-			message: '#^Property App\\Service\\Security\\Authorization\\Entry\:\:\$roles \(array\<string\>\) does not accept mixed\.$#'
+			message: '#^Property Shared\\Service\\Security\\Authorization\\Entry\:\:\$roles \(array\<string\>\) does not accept mixed\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Service/Security/Authorization/Entry.php
@@ -511,25 +499,25 @@ parameters:
 			path: src/Twig/Runtime/CspExtensionRuntime.php
 
 		-
-			message: '#^Method App\\Tests\\Faker\\GroundsFakerProvider\:\:ground\(\) should return string but returns mixed\.$#'
+			message: '#^Method Shared\\Tests\\Faker\\GroundsFakerProvider\:\:ground\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: tests/Faker/GroundsFakerProvider.php
 
 		-
-			message: '#^Method App\\Tests\\Faker\\GroundsFakerProvider\:\:grounds\(\) should return list\<string\> but returns list\.$#'
+			message: '#^Method Shared\\Tests\\Faker\\GroundsFakerProvider\:\:grounds\(\) should return list\<string\> but returns list\.$#'
 			identifier: return.type
 			count: 1
 			path: tests/Faker/GroundsFakerProvider.php
 
 		-
-			message: '#^Method App\\Tests\\Faker\\GroundsFakerProvider\:\:groundsBetween\(\) should return list\<string\> but returns list\.$#'
+			message: '#^Method Shared\\Tests\\Faker\\GroundsFakerProvider\:\:groundsBetween\(\) should return list\<string\> but returns list\.$#'
 			identifier: return.type
 			count: 1
 			path: tests/Faker/GroundsFakerProvider.php
 
 		-
-			message: '#^Trait App\\Tests\\Integration\\Api\\Admin\\TestFileTrait is used zero times and is not analysed\.$#'
+			message: '#^Trait Shared\\Tests\\Integration\\Api\\Admin\\TestFileTrait is used zero times and is not analysed\.$#'
 			identifier: trait.unused
 			count: 1
 			path: tests/Integration/Api/Admin/TestFileTrait.php
@@ -781,37 +769,37 @@ parameters:
 			path: tests/Unit/Domain/Search/Index/Updater/SubjectIndexUpdaterTest.php
 
 		-
-			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getDateTime\(\) expects int, int\|string\|null given\.$#'
+			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getDateTime\(\) expects int, int\|string\|null given\.$#'
 			identifier: argument.type
 			count: 2
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
 
 		-
-			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getDateTime\(\) expects int, mixed given\.$#'
+			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getDateTime\(\) expects int, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
 
 		-
-			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getInt\(\) expects int, mixed given\.$#'
+			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getInt\(\) expects int, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
 
 		-
-			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getOptionalDateTime\(\) expects int, mixed given\.$#'
+			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getOptionalDateTime\(\) expects int, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
 
 		-
-			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getOptionalInt\(\) expects int, mixed given\.$#'
+			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getOptionalInt\(\) expects int, mixed given\.$#'
 			identifier: argument.type
 			count: 2
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
 
 		-
-			message: '#^Parameter \#1 \$rowIndex of method App\\Service\\FileReader\\CsvReader\:\:getOptionalString\(\) expects int, mixed given\.$#'
+			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getOptionalString\(\) expects int, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php

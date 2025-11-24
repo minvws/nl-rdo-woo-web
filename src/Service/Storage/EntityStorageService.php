@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Storage;
+namespace Shared\Service\Storage;
 
-use App\Domain\Ingest\Content\Event\EntityFileUpdateEvent;
-use App\Domain\Publication\EntityWithFileInfo;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Content\Event\EntityFileUpdateEvent;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\MessageBusInterface;

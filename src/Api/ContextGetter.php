@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Api;
+namespace Shared\Api;
 
 use ApiPlatform\Metadata\Operation;
 use Symfony\Component\HttpFoundation\Request;

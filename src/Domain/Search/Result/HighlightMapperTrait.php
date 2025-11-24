@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result;
+namespace Shared\Domain\Search\Result;
 
 use MinVWS\TypeArray\TypeArray;
 

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier;
+namespace Shared\Controller\Admin\Dossier;
 
-use App\Domain\Publication\Attachment\AttachmentDispatcher;
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Form\Dossier\WithdrawAttachmentFormType;
-use App\Service\DossierWizard\WizardStatusFactory;
+use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Form\Dossier\WithdrawAttachmentFormType;
+use Shared\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\SubmitButton;

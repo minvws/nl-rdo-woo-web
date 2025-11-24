@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\BatchDownload\EventHandler;
+namespace Shared\Domain\Publication\BatchDownload\EventHandler;
 
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\BatchDownloadService;
-use App\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Event\DocumentFileSetProcessedEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Event\DocumentFileSetProcessedEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 readonly class DocumentFileSetEventHandler

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\S3;
+namespace Shared\Tests\Unit\Domain\S3;
 
-use App\Domain\S3\S3StreamFactory;
-use App\Domain\S3\StreamMode;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\S3\S3StreamFactory;
+use Shared\Domain\S3\StreamMode;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class S3StreamFactoryTest extends UnitTestCase
 {

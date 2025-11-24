@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\WooIndex\Builder;
+namespace Shared\Tests\Unit\Domain\WooIndex\Builder;
 
-use App\Domain\WooIndex\Builder\Changefreq;
-use App\Domain\WooIndex\Builder\DiWooXMLWriter;
-use App\Domain\WooIndex\Builder\SitemapUrlBuilder;
-use App\Domain\WooIndex\Exception\WooIndexInvalidArgumentException;
-use App\Domain\WooIndex\Producer\DiWooDocument;
-use App\Domain\WooIndex\Producer\DocumentHandeling;
-use App\Domain\WooIndex\Producer\Url;
-use App\Domain\WooIndex\Producer\UrlReference;
-use App\Domain\WooIndex\Tooi\InformatieCategorie;
-use App\Domain\WooIndex\Tooi\Ministerie;
-use App\Domain\WooIndex\Tooi\SoortHandeling;
-use App\Tests\Unit\UnitTestCase;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\WooIndex\Builder\Changefreq;
+use Shared\Domain\WooIndex\Builder\DiWooXMLWriter;
+use Shared\Domain\WooIndex\Builder\SitemapUrlBuilder;
+use Shared\Domain\WooIndex\Exception\WooIndexInvalidArgumentException;
+use Shared\Domain\WooIndex\Producer\DiWooDocument;
+use Shared\Domain\WooIndex\Producer\DocumentHandeling;
+use Shared\Domain\WooIndex\Producer\Url;
+use Shared\Domain\WooIndex\Producer\UrlReference;
+use Shared\Domain\WooIndex\Tooi\InformatieCategorie;
+use Shared\Domain\WooIndex\Tooi\Ministerie;
+use Shared\Domain\WooIndex\Tooi\SoortHandeling;
+use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 
 final class SitemapUrlBuilderTest extends UnitTestCase

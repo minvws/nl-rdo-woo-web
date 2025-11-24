@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Component;
+namespace Shared\Service\Search\Query\Component;
 
-use App\Domain\Search\Query\Facet\FacetList;
-use App\Domain\Search\Query\SearchParameters;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
+use Shared\Domain\Search\Query\Facet\FacetList;
+use Shared\Domain\Search\Query\SearchParameters;
 
 readonly class QueryComponentHelper
 {

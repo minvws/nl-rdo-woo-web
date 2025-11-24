@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Utils;
+namespace Shared\Service\Utils;
 
 final readonly class CastTypes
 {

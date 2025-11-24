@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\AttachmentDossierFileProvider;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\NoResultException;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Attachment\AttachmentDossierFileProvider;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class AttachmentDossierFileProviderTest extends UnitTestCase

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Form;
+namespace Shared\Form;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonPeriod;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeImmutableToDateTimeTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

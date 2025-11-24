@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\EventSubscriber;
+namespace Shared\Tests\Unit\EventSubscriber;
 
-use App\Api\Publication\V1\PublicationV1Api;
-use App\EventSubscriber\FeaturePublicationV1ApiSubscriber;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Api\Publication\V1\PublicationV1Api;
+use Shared\EventSubscriber\FeaturePublicationV1ApiSubscriber;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

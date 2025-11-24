@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Result\Dossier;
+namespace Shared\Tests\Unit\Domain\Search\Result\Dossier;
 
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
-use App\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
-use App\Domain\Search\Result\Dossier\DossierSearchResultEntry;
-use App\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
+use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
+use Shared\Domain\Search\Result\Dossier\DossierSearchResultEntry;
+use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DossierSearchResultBaseMapperTest extends MockeryTestCase
+class DossierSearchResultBaseMapperTest extends UnitTestCase
 {
     private DossierSearchResultBaseMapper $mapper;
     private ProvidesDossierTypeSearchResultInterface&MockInterface $repository;

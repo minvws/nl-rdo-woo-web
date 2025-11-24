@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Process\Pdf;
+namespace Shared\Tests\Unit\Domain\Ingest\Process\Pdf;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Ingest\Process\Pdf\IngestPdfCommand;
-use App\Domain\Ingest\Process\Pdf\IngestPdfHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
-use App\Service\Worker\Pdf\Extractor\PagecountExtractor;
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkPageCountResult;
-use App\Service\Worker\PdfProcessor;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Ingest\Process\Pdf\IngestPdfCommand;
+use Shared\Domain\Ingest\Process\Pdf\IngestPdfHandler;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Service\Worker\Pdf\Extractor\PagecountExtractor;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkPageCountResult;
+use Shared\Service\Worker\PdfProcessor;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class IngestPdfHandlerTest extends UnitTestCase

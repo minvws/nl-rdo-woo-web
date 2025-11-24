@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Attachment;
+namespace Shared\Tests\Unit\Domain\Upload\Attachment;
 
-use App\Domain\Upload\Attachment\AttachmentUploadVoter;
-use App\Domain\Upload\Dossier\DossierUploadRequestValidator;
-use App\Domain\Upload\UploadRequest;
-use App\Domain\Upload\UploadService;
-use App\Service\Uploader\UploadGroupId;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Upload\Attachment\AttachmentUploadVoter;
+use Shared\Domain\Upload\Dossier\DossierUploadRequestValidator;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Domain\Upload\UploadService;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
-class AttachmentUploadVoterTest extends MockeryTestCase
+class AttachmentUploadVoterTest extends UnitTestCase
 {
     private AttachmentUploadVoter $voter;
     private DossierUploadRequestValidator&MockInterface $validator;

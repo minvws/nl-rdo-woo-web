@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Inventory\Sanitizer;
+namespace Shared\Service\Inventory\Sanitizer;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;

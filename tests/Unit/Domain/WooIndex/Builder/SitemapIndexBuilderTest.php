@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\WooIndex\Builder;
+namespace Shared\Tests\Unit\Domain\WooIndex\Builder;
 
-use App\Domain\WooIndex\Builder\DiWooXMLWriter;
-use App\Domain\WooIndex\Builder\SitemapIndexBuilder;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\WooIndex\Builder\DiWooXMLWriter;
+use Shared\Domain\WooIndex\Builder\SitemapIndexBuilder;
+use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 
 final class SitemapIndexBuilderTest extends UnitTestCase

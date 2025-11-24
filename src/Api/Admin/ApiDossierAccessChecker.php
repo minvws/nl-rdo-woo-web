@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin;
+namespace Shared\Api\Admin;
 
 use ApiPlatform\Symfony\Security\Exception\AccessDeniedException;
-use App\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\DossierRepository;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Uid\Uuid;
 

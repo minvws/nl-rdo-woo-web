@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Condition;
+namespace Shared\Service\Search\Query\Condition;
 
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Domain\Search\Index\Schema\ElasticNestedField;
-use App\Domain\Search\Index\Schema\ElasticPath;
-use App\Domain\Search\Query\Facet\FacetList;
-use App\Domain\Search\Query\SearchParameters;
-use App\Service\Search\Query\Dsl\Query;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 use Erichard\ElasticQueryBuilder\Query\NestedQuery;
 use Erichard\ElasticQueryBuilder\Query\SimpleQueryStringQuery;
 use Erichard\ElasticQueryBuilder\Query\TermQuery;
 use Erichard\ElasticQueryBuilder\Query\TermsQuery;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Index\Schema\ElasticNestedField;
+use Shared\Domain\Search\Index\Schema\ElasticPath;
+use Shared\Domain\Search\Query\Facet\FacetList;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Query\Dsl\Query;
 
 class SearchTermConditionBuilder implements QueryConditionBuilderInterface
 {

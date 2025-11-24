@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Process;
+namespace Shared\Tests\Unit\Domain\Upload\Process;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\SourceType;
-use App\Domain\Upload\AssetsNamer;
-use App\Domain\Upload\Process\EntityUploadStorer;
-use App\Domain\Upload\UploadEntity;
-use App\Domain\Upload\UploadEntityRepository;
-use App\Domain\Upload\UploadService;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Uploader\UploadGroupId;
-use App\Tests\Unit\UnitTestCase;
 use League\Flysystem\FilesystemOperator;
 use Mockery\MockInterface;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Upload\AssetsNamer;
+use Shared\Domain\Upload\Process\EntityUploadStorer;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadEntityRepository;
+use Shared\Domain\Upload\UploadService;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 
 class EntityUploadStorerTest extends UnitTestCase
 {

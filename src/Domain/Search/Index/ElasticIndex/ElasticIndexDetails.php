@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\ElasticIndex;
+namespace Shared\Domain\Search\Index\ElasticIndex;
 
 readonly class ElasticIndexDetails
 {

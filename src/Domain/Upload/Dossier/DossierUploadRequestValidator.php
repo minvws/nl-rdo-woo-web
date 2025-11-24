@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Dossier;
+namespace Shared\Domain\Upload\Dossier;
 
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Upload\UploadRequest;
-use App\Domain\Upload\UploadService;
-use App\Service\Uploader\UploadGroupId;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Upload\UploadRequest;
+use Shared\Domain\Upload\UploadService;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class DossierUploadRequestValidator

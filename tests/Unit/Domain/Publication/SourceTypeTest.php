@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication;
+namespace Shared\Tests\Unit\Domain\Publication;
 
-use App\Domain\Publication\SourceType;
-use App\Domain\Upload\FileType\FileType;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Publication\SourceType;
+use Shared\Domain\Upload\FileType\FileType;
 
 class SourceTypeTest extends TestCase
 {

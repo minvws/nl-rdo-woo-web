@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker\Pdf\Tools\Pdftoppm;
+namespace Shared\Tests\Unit\Service\Worker\Pdf\Tools\Pdftoppm;
 
-use App\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Process\Process;
 
 final class PdftoppmServiceTest extends UnitTestCase

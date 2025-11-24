@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Components\Admin;
+namespace Shared\Twig\Components\Admin;
 
-use App\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierStatus;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent]

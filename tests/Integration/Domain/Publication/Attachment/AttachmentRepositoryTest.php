@@ -2,21 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Attachment;
+namespace Shared\Tests\Integration\Domain\Publication\Attachment;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Story\WooIndexAnnualReportStory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
+use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\Tests\Story\WooIndexAnnualReportStory;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Persistence\Proxy;
 
-final class AttachmentRepositoryTest extends KernelTestCase
+final class AttachmentRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private AttachmentRepository $repository;
 
     protected function setUp(): void

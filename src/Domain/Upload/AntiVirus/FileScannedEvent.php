@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\AntiVirus;
+namespace Shared\Domain\Upload\AntiVirus;
 
 readonly class FileScannedEvent
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Logging;
+namespace Shared\Service\Logging;
 
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 

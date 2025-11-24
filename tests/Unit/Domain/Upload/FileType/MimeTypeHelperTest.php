@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\FileType;
+namespace Shared\Tests\Unit\Domain\Upload\FileType;
 
-use App\Domain\Upload\FileType\MimeTypeHelper;
-use App\Domain\Upload\UploadedFile;
-use App\Service\Uploader\UploadGroupId;
 use League\MimeTypeDetection\FinfoMimeTypeDetector;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Log\NullLogger;
+use Shared\Domain\Upload\FileType\MimeTypeHelper;
+use Shared\Domain\Upload\UploadedFile;
+use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 
-class MimeTypeHelperTest extends MockeryTestCase
+class MimeTypeHelperTest extends UnitTestCase
 {
     private FinfoMimeTypeDetector&MockInterface $mimeTypeDetector;
     private MimeTypeHelper $helper;

@@ -23,9 +23,9 @@
         <div class="woo-container woo-container--sm">
             <h2 class="woo-h2 woo-readable-width pb-10">{{ 'public.browse.title' | trans | raw }}</h2>
 
-            {{ macro.facet_preview('categories.category.type' | trans, constant('App\\Service\\Search\\Model\\FacetKey::TYPE'), facets, 'categories.category.type.go_to_plural' | trans) }}
-            {{ macro.facet_preview('categories.category.department' | trans, constant('App\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), facets, 'categories.category.department.go_to_plural' | trans) }}
-            {{ macro.facet_preview('categories.category.grounds' | trans, constant('App\\Service\\Search\\Model\\FacetKey::GROUNDS'), facets, 'categories.category.grounds.go_to_plural' | trans) }}
+            {{ macro.facet_preview('categories.category.type' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::TYPE'), facets, 'categories.category.type.go_to_plural' | trans) }}
+            {{ macro.facet_preview('categories.category.department' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::DEPARTMENT'), facets, 'categories.category.department.go_to_plural' | trans) }}
+            {{ macro.facet_preview('categories.category.grounds' | trans, constant('Shared\\Service\\Search\\Model\\FacetKey::GROUNDS'), facets, 'categories.category.grounds.go_to_plural' | trans) }}
 
             <p class="text-right">
                 <twig:Public:ArrowedBoldLink to="{{ path('app_browse') }}">{{ 'categories.label.all-categories' | trans }}</twig:Public:ArrowedBoldLink>

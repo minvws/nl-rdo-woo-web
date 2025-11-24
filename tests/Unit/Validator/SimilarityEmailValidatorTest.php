@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Validator;
+namespace Shared\Tests\Unit\Validator;
 
-use App\Service\Security\User;
-use App\Tests\Unit\UnitTestCase;
-use App\Validator\SimilarityEmail;
-use App\Validator\SimilarityEmailValidator;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\Validator\SimilarityEmail;
+use Shared\Validator\SimilarityEmailValidator;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;

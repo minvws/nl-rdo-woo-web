@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inventory;
+namespace Shared\Tests\Unit\Service\Inventory;
 
-use App\Domain\Ingest\IngestDispatcher;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Publication\SourceType;
-use App\Service\Inquiry\CaseNumbers;
-use App\Service\Inventory\DocumentMetadata;
-use App\Service\Inventory\DocumentNumber;
-use App\Service\Inventory\DocumentUpdater;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
 use Doctrine\Common\Collections\ArrayCollection;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\IngestDispatcher;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\SourceType;
+use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inventory\DocumentMetadata;
+use Shared\Service\Inventory\DocumentNumber;
+use Shared\Service\Inventory\DocumentUpdater;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class DocumentUpdaterTest extends MockeryTestCase
+class DocumentUpdaterTest extends UnitTestCase
 {
     private MockInterface&EntityStorageService $entityStorageService;
     private MockInterface&ThumbnailStorageService $thumbnailStorageService;

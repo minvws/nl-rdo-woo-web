@@ -2,19 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\Covenant;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\Covenant;
 
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocumentRepository;
-use App\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantMainDocumentFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocumentRepository;
+use Shared\Domain\Publication\MainDocument\Command\CreateMainDocumentCommand;
+use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantMainDocumentFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class CovenantMainDocumentRepositoryTest extends KernelTestCase
+final class CovenantMainDocumentRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     protected function setUp(): void
     {
         parent::setUp();

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\Event;
+namespace Shared\Domain\Upload\Event;
 
-use App\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadEntity;
 
 readonly class UploadCompletedEvent
 {

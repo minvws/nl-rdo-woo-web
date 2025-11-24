@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Dossier;
+namespace Shared\Domain\Search\Index\Dossier;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
-use App\Service\Elastic\ElasticService;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
+use Shared\Service\Elastic\ElasticService;
 
 readonly class ElasticDossierDeleteStrategy implements DossierDeleteStrategyInterface
 {

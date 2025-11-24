@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload\FileType;
+namespace Shared\Domain\Upload\FileType;
 
 use Symfony\Component\Mime\MimeTypes;
 

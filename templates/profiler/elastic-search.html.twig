@@ -33,7 +33,7 @@
 {% block menu %}
     <span class="label">
         <span class="icon">
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            <svg version="1.1" id="Layer_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                  viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
             <g>
             	<path fill="#888888" d="M434,348.4l-84.4-19.8l-22.5-42.8L437.6,189c32.8,12.4,54.6,43.8,54.6,79C492.2,304.1,468.3,337,434,348.4z M370.5,448.2
@@ -85,7 +85,7 @@
                         <div class="tab">
                             <h3 class="tab-title">Response</h3>
                             <div class="tab-content">
-                                <div id="formatted-query-{{ loop.index0 }}" class="sql-runnable">
+                                <div id="formatted-query-{{ loop.index1 }}" class="sql-runnable">
                                     <pre>{{ call.response|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE')) }}</pre>
                                 </div>
                             </div>

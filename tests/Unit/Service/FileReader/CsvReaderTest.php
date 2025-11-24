@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\FileReader;
+namespace Shared\Tests\Unit\Service\FileReader;
 
-use App\Exception\FileReaderException;
-use App\Service\FileReader\CsvReader;
-use App\Service\FileReader\HeaderMap;
-use App\Service\Inventory\MetadataField;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Exception\FileReaderException;
+use Shared\Service\FileReader\CsvReader;
+use Shared\Service\FileReader\HeaderMap;
+use Shared\Service\Inventory\MetadataField;
+use Shared\Tests\Unit\UnitTestCase;
 
-class CsvReaderTest extends MockeryTestCase
+class CsvReaderTest extends UnitTestCase
 {
     private CsvReader $csvReader;
     private HeaderMap&MockInterface $headerMap;

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory\Publication\Dossier\Type\WooDecision;
+namespace Shared\Tests\Factory\Publication\Dossier\Type\WooDecision;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
-use App\Service\Storage\StorageRootPathGenerator;
-use App\Tests\Factory\FileInfoFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
+use Shared\Service\Storage\StorageRootPathGenerator;
+use Shared\Tests\Factory\FileInfoFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\WooIndex\Builder;
+namespace Shared\Tests\Unit\Domain\WooIndex\Builder;
 
-use App\Domain\WooIndex\Producer\InvalidChunkSizeException;
-use App\Domain\WooIndex\WooIndexRunOptions;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\WooIndex\Producer\InvalidChunkSizeException;
+use Shared\Domain\WooIndex\WooIndexRunOptions;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class WooIndexRunOptionsTest extends UnitTestCase
 {

@@ -25,9 +25,17 @@
     <testsuites>
         <testsuite name="unit">
             <directory>tests/Unit/</directory>
+            <directory>apps/admin/tests/Unit</directory>
+            <directory>apps/public/tests/Unit</directory>
+            <directory>apps/publication_api/tests/Unit</directory>
+            <directory>apps/worker/tests/Unit</directory>
         </testsuite>
         <testsuite name="integration">
             <directory>tests/Integration/</directory>
+            <directory>apps/admin/tests/Integration</directory>
+            <directory>apps/public/tests/Integration</directory>
+            <directory>apps/publication_api/tests/Integration</directory>
+            <directory>apps/worker/tests/Integration</directory>
         </testsuite>
     </testsuites>
 
@@ -39,6 +47,7 @@
             <directory>src/Controller</directory>
             <directory>src/Form</directory>
             <directory suffix="Dto.php">src/Api</directory>
+            <file>src/class_aliases.php</file>
         </exclude>
     </source>
 

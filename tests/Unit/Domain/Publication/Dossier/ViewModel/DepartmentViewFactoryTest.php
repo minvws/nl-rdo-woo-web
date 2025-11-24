@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\Common\Collections\ArrayCollection;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class DepartmentViewFactoryTest extends UnitTestCase
 {

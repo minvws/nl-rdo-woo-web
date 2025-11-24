@@ -44,8 +44,12 @@ describe('The "uploadFile" function', () => {
     xmlHttpRequestMock2 = createXmlHttpRequestMock(2);
 
     vi.spyOn(window, 'XMLHttpRequest')
-      .mockImplementationOnce(() => xmlHttpRequestMock1)
-      .mockImplementationOnce(() => xmlHttpRequestMock2);
+      .mockImplementationOnce(function (this: XMLHttpRequest) {
+        return xmlHttpRequestMock1;
+      })
+      .mockImplementationOnce(function (this: XMLHttpRequest) {
+        return xmlHttpRequestMock2;
+      });
   };
 
   const getHandler = (eventTarget: EventTarget, findEvent: string) =>
@@ -133,6 +137,7 @@ describe('The "uploadFile" function', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
+    vi.restoreAllMocks();
     createXmlHttpRequestMocks();
 
     fetchSpy = vi.spyOn(window, 'fetch').mockResolvedValue({

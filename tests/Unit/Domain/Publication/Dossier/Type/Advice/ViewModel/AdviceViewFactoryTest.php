@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\Advice\ViewModel;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Advice\ViewModel;
 
-use App\Domain\Publication\Dossier\Type\Advice\Advice;
-use App\Domain\Publication\Dossier\Type\Advice\ViewModel\AdviceViewFactory;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
-use App\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
-use App\Domain\Publication\Dossier\ViewModel\Department;
-use App\Domain\Publication\Dossier\ViewModel\Subject;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
+use Shared\Domain\Publication\Dossier\Type\Advice\ViewModel\AdviceViewFactory;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
+use Shared\Domain\Publication\Dossier\ViewModel\Department;
+use Shared\Domain\Publication\Dossier\ViewModel\Subject;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class AdviceViewFactoryTest extends UnitTestCase
 {

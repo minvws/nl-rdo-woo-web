@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content\Extractor;
+namespace Shared\Domain\Ingest\Content\Extractor;
 
-use App\Domain\Ingest\Content\FileReferenceInterface;
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Ingest\Content\FileReferenceInterface;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('woo_platform.ingest.content_extractor')]

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\Covenant;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Covenant;
 
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class CovenantMainDocumentTest extends UnitTestCase
 {

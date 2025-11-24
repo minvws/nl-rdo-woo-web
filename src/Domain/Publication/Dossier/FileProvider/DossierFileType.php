@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\FileProvider;
+namespace Shared\Domain\Publication\Dossier\FileProvider;
 
 enum DossierFileType: string
 {

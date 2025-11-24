@@ -2,20 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\WooIndex\Producer\Mapper;
+namespace Shared\Tests\Integration\Domain\WooIndex\Producer\Mapper;
 
-use App\Domain\WooIndex\Producer\Mapper\UrlMapper;
-use App\Domain\WooIndex\Producer\Repository\UrlRepository;
-use App\Tests\Integration\IntegrationTestTrait;
-use App\Tests\Story\WooIndexAnnualReportStory;
-use App\Tests\Story\WooIndexWooDecisionStory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\WooIndex\Producer\Mapper\UrlMapper;
+use Shared\Domain\WooIndex\Producer\Repository\UrlRepository;
+use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\Tests\Story\WooIndexAnnualReportStory;
+use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Zenstruck\Foundry\Attribute\WithStory;
 
-final class UrlMapperTest extends KernelTestCase
+final class UrlMapperTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private UrlRepository $urlRepository;
 
     private UrlMapper $urlMapper;

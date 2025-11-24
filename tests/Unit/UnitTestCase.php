@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit;
+namespace Shared\Tests\Unit;
 
-use App\Tests\CarbonHelpers;
-use App\Tests\Faker\FakerFactory;
 use Faker\Generator;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use Shared\Tests\CarbonHelpers;
+use Shared\Tests\Faker\FakerFactory;
 use Spatie\Snapshots\MatchesSnapshots;
 
 abstract class UnitTestCase extends BaseTestCase

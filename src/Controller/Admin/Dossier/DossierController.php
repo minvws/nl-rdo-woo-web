@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin\Dossier;
+namespace Shared\Controller\Admin\Dossier;
 
-use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Admin\DossierFilterParameters;
-use App\Domain\Publication\Dossier\Admin\DossierListingService;
-use App\Domain\Publication\Dossier\Type\DossierTypeManager;
-use App\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use App\Domain\Publication\Dossier\ViewModel\DossierTypeViewFactory;
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
-use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use App\Form\Dossier\SearchFormType;
-use App\Service\DossierWizard\WizardStatusFactory;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use Knp\Component\Pager\PaginatorInterface;
+use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Admin\DossierFilterParameters;
+use Shared\Domain\Publication\Dossier\Admin\DossierListingService;
+use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierTypeViewFactory;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
+use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use Shared\Form\Dossier\SearchFormType;
+use Shared\Service\DossierWizard\WizardStatusFactory;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

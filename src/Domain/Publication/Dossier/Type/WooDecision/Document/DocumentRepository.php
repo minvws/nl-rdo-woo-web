@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\WooDecision\Document;
+namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use App\Doctrine\SortNullsLastWalker;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
-use App\Service\Inquiry\DocumentCaseNumbers;
-use App\Service\Inventory\DocumentNumber;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\Doctrine\SortNullsLastWalker;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
+use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inventory\DocumentNumber;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -286,7 +286,7 @@ class DocumentRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('d')
             ->where('EXISTS (
                 SELECT 1
-                FROM App\Domain\Publication\Dossier\Type\WooDecision\WooDecision ds
+                FROM Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision ds
                 WHERE ds MEMBER OF d.dossiers AND ds.status = :status
             )')
             ->andWhere('d.judgement IN (:judgements)')

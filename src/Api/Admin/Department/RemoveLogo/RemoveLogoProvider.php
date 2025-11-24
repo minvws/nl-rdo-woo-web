@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Admin\Department\RemoveLogo;
+namespace Shared\Api\Admin\Department\RemoveLogo;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Domain\Department\Department;
-use App\Domain\Department\DepartmentRepository;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Department\DepartmentRepository;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Search\Result;
+namespace Shared\Tests\Unit\Service\Search\Result;
 
-use App\Domain\Search\Query\Facet\Definition\DateFacet;
-use App\Domain\Search\Query\Facet\Definition\PrefixedDossierNrFacet;
-use App\Domain\Search\Query\Facet\Input\DateFacetInput;
-use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
-use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
-use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Result\ResultFactory;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Sort\ViewModel\SortItems;
-use App\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
-use App\Service\Search\Result\AggregationMapper;
-use App\Service\Search\Result\ResultTransformer;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Knp\Component\Pager\PaginatorInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Search\Query\Facet\Definition\DateFacet;
+use Shared\Domain\Search\Query\Facet\Definition\PrefixedDossierNrFacet;
+use Shared\Domain\Search\Query\Facet\Input\DateFacetInput;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputCollection;
+use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Result\ResultFactory;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Query\Sort\ViewModel\SortItems;
+use Shared\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
+use Shared\Service\Search\Result\AggregationMapper;
+use Shared\Service\Search\Result\ResultTransformer;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class ResultTransformerTest extends MockeryTestCase
+class ResultTransformerTest extends UnitTestCase
 {
     private LoggerInterface&MockInterface $logger;
     private PaginatorInterface&MockInterface $paginator;

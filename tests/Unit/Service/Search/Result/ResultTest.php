@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Search\Result;
+namespace Shared\Tests\Unit\Service\Search\Result;
 
-use App\Service\Search\Model\Aggregation;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Result\Result;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Service\Search\Model\Aggregation;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Result\Result;
+use Shared\Tests\Unit\UnitTestCase;
 
-class ResultTest extends MockeryTestCase
+class ResultTest extends UnitTestCase
 {
     public function testGetAggregationReturnsMatchingAggregation(): void
     {

@@ -9,7 +9,7 @@
     advice: false
     requestForAdvice: false
     attachments: true
-    dossierClass: App\Domain\Publication\Dossier\Type\Covenant\Covenant
+    dossierClass: Shared\Domain\Publication\Dossier\Type\Covenant\Covenant
     valueForRouteName: covenant
     name: COVENANT
     value: covenant
@@ -24,7 +24,7 @@
     advice: false
     requestForAdvice: false
     attachments: true
-    dossierClass: App\Domain\Publication\Dossier\Type\WooDecision\WooDecision
+    dossierClass: Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision
     valueForRouteName: woodecision
     name: WOO_DECISION
     value: woo-decision
@@ -39,7 +39,7 @@
     advice: false
     requestForAdvice: false
     attachments: true
-    dossierClass: App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport
+    dossierClass: Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport
     valueForRouteName: annualreport
     name: ANNUAL_REPORT
     value: annual-report
@@ -54,7 +54,7 @@
     advice: false
     requestForAdvice: false
     attachments: true
-    dossierClass: App\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport
+    dossierClass: Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport
     valueForRouteName: investigationreport
     name: INVESTIGATION_REPORT
     value: investigation-report
@@ -69,7 +69,7 @@
     advice: false
     requestForAdvice: false
     attachments: true
-    dossierClass: App\Domain\Publication\Dossier\Type\Disposition\Disposition
+    dossierClass: Shared\Domain\Publication\Dossier\Type\Disposition\Disposition
     valueForRouteName: disposition
     name: DISPOSITION
     value: disposition
@@ -84,7 +84,7 @@
     advice: false
     requestForAdvice: false
     attachments: false
-    dossierClass: App\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement
+    dossierClass: Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement
     valueForRouteName: complaintjudgement
     name: COMPLAINT_JUDGEMENT
     value: complaint-judgement
@@ -99,7 +99,7 @@
     advice: false
     requestForAdvice: false
     attachments: true
-    dossierClass: App\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication
+    dossierClass: Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication
     valueForRouteName: otherpublication
     name: OTHER_PUBLICATION
     value: other-publication
@@ -114,7 +114,7 @@
     advice: true
     requestForAdvice: false
     attachments: true
-    dossierClass: App\Domain\Publication\Dossier\Type\Advice\Advice
+    dossierClass: Shared\Domain\Publication\Dossier\Type\Advice\Advice
     valueForRouteName: advice
     name: ADVICE
     value: advice
@@ -129,7 +129,7 @@
     advice: false
     requestForAdvice: true
     attachments: true
-    dossierClass: App\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice
+    dossierClass: Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice
     valueForRouteName: requestforadvice
     name: REQUEST_FOR_ADVICE
     value: request-for-advice

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Condition;
+namespace Shared\Service\Search\Query\Condition;
 
-use App\Domain\Search\Query\Facet\FacetList;
-use App\Domain\Search\Query\SearchParameters;
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
+use Shared\Domain\Search\Query\Facet\FacetList;
+use Shared\Domain\Search\Query\SearchParameters;
 
 readonly class QueryConditionHelper
 {

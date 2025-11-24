@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\BatchDownload\Archiver;
+namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\Archiver;
 
-use App\Domain\Publication\BatchDownload\Archiver\ZipStreamBatchArchiver;
-use App\Domain\Publication\BatchDownload\Archiver\ZipStreamFactory;
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\FileInfo;
-use App\Domain\S3\StreamFactory;
-use App\Service\DownloadFilenameGenerator;
-use App\Tests\Unit\UnitTestCase;
 use Aws\CommandInterface;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Mockery\MockInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\BatchDownload\Archiver\ZipStreamBatchArchiver;
+use Shared\Domain\Publication\BatchDownload\Archiver\ZipStreamFactory;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\S3\StreamFactory;
+use Shared\Service\DownloadFilenameGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 use ZipStream\Exception\FileNotReadableException;
 use ZipStream\ZipStream;
 

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Form\Dossier;
+namespace Shared\Form\Dossier;
 
-use App\Domain\Department\Department;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Subject\Subject;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Subject\Subject;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Webmozart\Assert\Assert;
 
 trait DossierFormBuilderTrait
 {
@@ -34,83 +35,76 @@ trait DossierFormBuilderTrait
 
     private function addDepartmentsField(FormBuilderInterface $builder): void
     {
-        /** @var AbstractDossier $dossier */
-        $dossier = $builder->getData();
+        $dossier = $this->getDossier($builder);
 
-        $builder
-            ->add('departments', EntityType::class, [
-                'class' => Department::class,
-                'choices' => $dossier->getOrganisation()->getDepartments(),
-                'attr' => [
-                    'class' => 'min-w-full',
-                ],
-                'required' => true,
-                'multiple' => true,
-                'choice_label' => 'name',
-            ]);
+        $builder->add('departments', EntityType::class, [
+            'class' => Department::class,
+            'choices' => $dossier->getOrganisation()->getDepartments(),
+            'attr' => [
+                'class' => 'min-w-full',
+            ],
+            'required' => true,
+            'multiple' => true,
+            'choice_label' => 'name',
+        ]);
     }
 
     private function addSubjectField(
         FormBuilderInterface $builder,
         string $helpLabel = 'admin.dossiers.form.details.subject_help',
     ): void {
-        /** @var AbstractDossier $dossier */
-        $dossier = $builder->getData();
+        $dossier = $this->getDossier($builder);
 
-        $builder
-            ->add('subject', EntityType::class, [
-                'class' => Subject::class,
-                'label' => 'admin.dossiers.form.details.subject_label',
-                'help' => $helpLabel,
-                'choices' => $dossier->getOrganisation()->getSubjects(),
-                'attr' => [
-                    'class' => 'min-w-full',
-                ],
-                'required' => false,
-                'placeholder' => 'admin.dossiers.form.details.subject_placeholder',
-                'choice_label' => 'name',
-            ]);
+        $builder->add('subject', EntityType::class, [
+            'class' => Subject::class,
+            'label' => 'admin.dossiers.form.details.subject_label',
+            'help' => $helpLabel,
+            'choices' => $dossier->getOrganisation()->getSubjects(),
+            'attr' => [
+                'class' => 'min-w-full',
+            ],
+            'required' => false,
+            'placeholder' => 'admin.dossiers.form.details.subject_placeholder',
+            'choice_label' => 'name',
+        ]);
     }
 
     private function addSubmits(FormBuilderInterface $builder): void
     {
-        /** @var AbstractDossier $dossier */
-        $dossier = $builder->getData();
+        $dossier = $this->getDossier($builder);
 
         if ($dossier->getStatus()->isNewOrConcept()) {
-            $builder
-                ->add('next', SubmitType::class, [
-                    'label' => 'global.save_and_continue',
-                    'attr' => [
-                        'data-first-button' => true,
-                    ],
-                    'row_attr' => [
-                        'class' => 'pt-0',
-                    ],
-                ])
-                ->add('save', SubmitType::class, [
-                    'label' => 'global.save_draft',
-                    'attr' => [
-                        'class' => 'bhr-btn-bordered-primary',
-                        'data-last-button' => true,
-                    ],
-                ]);
+            $builder->add('next', SubmitType::class, [
+                'label' => 'global.save_and_continue',
+                'attr' => [
+                    'data-first-button' => true,
+                ],
+                'row_attr' => [
+                    'class' => 'pt-0',
+                ],
+            ]);
+            $builder->add('save', SubmitType::class, [
+                'label' => 'global.save_draft',
+                'attr' => [
+                    'class' => 'bhr-btn-bordered-primary',
+                    'data-last-button' => true,
+                ],
+            ]);
         } else {
-            $builder
-                ->add('save', SubmitType::class, [
-                    'label' => 'global.save_edit',
-                    'attr' => [
-                        'data-first-button' => true,
-                    ],
-                ])
-                ->add('cancel', SubmitType::class, [
-                    'label' => 'global.cancel',
-                    'validate' => false,
-                    'attr' => [
-                        'class' => 'bhr-btn-bordered-primary',
-                        'data-last-button' => true,
-                    ],
-                ]);
+            $builder->add('save', SubmitType::class, [
+                'label' => 'global.save_edit',
+                'attr' => [
+                    'data-first-button' => true,
+                ],
+            ]);
+            $builder->add('cancel', SubmitType::class, [
+                'label' => 'global.cancel',
+                'validate' => false,
+                'attr' => [
+                    'class' => 'bhr-btn-bordered-primary',
+                    'data-last-button' => true,
+                ],
+            ]);
         }
     }
 
@@ -121,39 +115,41 @@ trait DossierFormBuilderTrait
         ]);
     }
 
-    /**
-     * These fields are only added when creating a new dossier. They are not shown when editing an existing dossier.
-     */
-    private function addNewDossierFields(FormBuilderInterface $builder): void
+    private function addDossierNrField(FormBuilderInterface $builder): void
     {
-        /** @var AbstractDossier $dossier */
-        $dossier = $builder->getData();
+        $dossier = $this->getDossier($builder);
+
+        if ($dossier->getStatus()->isNewOrConcept()) {
+            $builder->add('dossierNr', TextType::class, [
+                'label' => 'global.ref_number',
+                'required' => true,
+                'help' => 'admin.dossiers.form.details.ref_nr_help',
+                'help_html' => true,
+                'empty_data' => '',
+                'attr' => [
+                    'class' => 'bhr-input-text w-full',
+                ],
+            ]);
+        }
+    }
+
+    private function addDocumentPrefixField(FormBuilderInterface $builder): void
+    {
+        $dossier = $this->getDossier($builder);
 
         if ($dossier->getStatus()->isNew()) {
-            $builder
-                ->add('dossierNr', TextType::class, [
-                    'label' => 'global.ref_number',
-                    'required' => true, // @codingStandardsIgnoreStart
-                    'help' => 'admin.dossiers.form.details.ref_nr_help', // @codingStandardsIgnoreEnd
-                    'help_html' => true,
-                    'empty_data' => '',
-                    'attr' => [
-                        'class' => 'bhr-input-text w-full',
-                    ],
-                ])
-                ->add('documentPrefix', DocumentPrefixType::class, [
-                    'label' => false,
-                    'error_mapping' => [
-                        '.' => 'documentPrefix',
-                    ],
-                ]);
+            $builder->add('documentPrefix', DocumentPrefixType::class, [
+                'label' => false,
+                'error_mapping' => [
+                    '.' => 'documentPrefix',
+                ],
+            ]);
         }
     }
 
     private function addSummaryField(FormBuilderInterface $builder): void
     {
-        /** @var AbstractDossier $dossier */
-        $dossier = $builder->getData();
+        $dossier = $this->getDossier($builder);
 
         $builder->add('summary', TextareaType::class, [
             'label' => 'admin.dossiers.' . $dossier->getType()->value . '.summary',
@@ -170,8 +166,7 @@ trait DossierFormBuilderTrait
 
     private function addTitleField(FormBuilderInterface $builder): void
     {
-        /** @var AbstractDossier $dossier */
-        $dossier = $builder->getData();
+        $dossier = $this->getDossier($builder);
 
         $builder->add('title', TextType::class, [
             'label' => 'admin.dossiers.' . $dossier->getType()->value . '.form.details.title',
@@ -196,8 +191,7 @@ trait DossierFormBuilderTrait
 
     private function addPublicationDateField(FormBuilderInterface $builder): void
     {
-        /** @var AbstractDossier $dossier */
-        $dossier = $builder->getData();
+        $dossier = $this->getDossier($builder);
 
         $builder->add('publication_date', DateType::class, [
             'label' => 'admin.dossiers.' . $dossier->getType()->value . '.form.publication.publication_date_label',
@@ -218,16 +212,22 @@ trait DossierFormBuilderTrait
 
     private function addDateField(FormBuilderInterface $builder): void
     {
-        /** @var AbstractDossier $dossier */
-        $dossier = $builder->getData();
+        $dossier = $this->getDossier($builder);
 
-        $builder
-            ->add('date', DateType::class, [
-                'required' => true,
-                'label' => 'admin.dossiers.' . $dossier->getType()->value . '.form.details.date_label',
-                'widget' => 'single_text',
-                'input' => 'datetime_immutable',
-                'property_path' => 'dateFrom',
-            ]);
+        $builder->add('date', DateType::class, [
+            'required' => true,
+            'label' => 'admin.dossiers.' . $dossier->getType()->value . '.form.details.date_label',
+            'widget' => 'single_text',
+            'input' => 'datetime_immutable',
+            'property_path' => 'dateFrom',
+        ]);
+    }
+
+    private function getDossier(FormBuilderInterface $builder): AbstractDossier
+    {
+        $dossier = $builder->getData();
+        Assert::isInstanceOf($dossier, AbstractDossier::class);
+
+        return $dossier;
     }
 }

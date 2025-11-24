@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Stats\Handler;
+namespace Shared\Service\Stats\Handler;
 
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 

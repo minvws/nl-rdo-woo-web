@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Inquiry;
+namespace Shared\Tests\Unit\Service\Inquiry;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\DocumentPrefix;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use App\Exception\InquiryLinkImportException;
-use App\Service\Inquiry\CaseNumbers;
-use App\Service\Inquiry\DocumentCaseNumbers;
-use App\Service\Inquiry\InquiryChangeset;
-use App\Service\Inquiry\InquiryLinkImporter;
-use App\Service\Inquiry\InquiryLinkImportParser;
-use App\Service\Inquiry\InquiryService;
-use App\Tests\Unit\Domain\Upload\IterableToGenerator;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Exception\InquiryLinkImportException;
+use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inquiry\InquiryChangeset;
+use Shared\Service\Inquiry\InquiryLinkImporter;
+use Shared\Service\Inquiry\InquiryLinkImportParser;
+use Shared\Service\Inquiry\InquiryService;
+use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Uid\Uuid;
 
-class InquiryLinkImporterTest extends MockeryTestCase
+class InquiryLinkImporterTest extends UnitTestCase
 {
     use MatchesSnapshots;
     use IterableToGenerator;

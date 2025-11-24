@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\MainDocument\Event;
+namespace Shared\Domain\Publication\MainDocument\Event;
 
-use App\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Symfony\Component\Uid\Uuid;
 
 abstract readonly class AbstractMainDocumentEvent

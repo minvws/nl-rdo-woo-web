@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\TikaOnly;
+namespace Shared\Domain\Ingest\Process\TikaOnly;
 
-use App\Domain\Ingest\Content\ContentExtractCache;
-use App\Domain\Ingest\Content\ContentExtractOptions;
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Search\Index\SubType\SubTypeIndexer;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Doctrine\LegacyNamespaceHelper;
+use Shared\Domain\Ingest\Content\ContentExtractCache;
+use Shared\Domain\Ingest\Content\ContentExtractOptions;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Webmozart\Assert\Assert;
 
@@ -27,7 +28,8 @@ final readonly class IngestTikaOnlyHandler
 
     public function __invoke(IngestTikaOnlyCommand $message): void
     {
-        $entity = $this->doctrine->getRepository($message->getEntityClass())->find($message->getEntityId());
+        $entityClass = LegacyNamespaceHelper::normalizeClassName($message->getEntityClass());
+        $entity = $this->doctrine->getRepository($entityClass)->find($message->getEntityId());
         if (is_null($entity)) {
             $this->logger->warning('No entity found in IngestTikaOnlyHandler', [
                 'id' => $message->getEntityId()->toRfc4122(),

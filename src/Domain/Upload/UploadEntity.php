@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Upload;
+namespace Shared\Domain\Upload;
 
-use App\Doctrine\TimestampableTrait;
-use App\Domain\Upload\Exception\UploadException;
-use App\Domain\Upload\Exception\UploadValidationException;
-use App\Service\Security\User;
-use App\Service\Uploader\UploadGroupId;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\TimestampableTrait;
+use Shared\Domain\Upload\Exception\UploadException;
+use Shared\Domain\Upload\Exception\UploadValidationException;
+use Shared\Service\Security\User;
+use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\Uid\Uuid;
 

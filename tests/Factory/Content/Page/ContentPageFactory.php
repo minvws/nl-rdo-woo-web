@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory\Content\Page;
+namespace Shared\Tests\Factory\Content\Page;
 
-use App\Domain\Content\Page\ContentPage;
+use Shared\Domain\Content\Page\ContentPage;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\WooIndex\Producer\Mapper;
+namespace Shared\Domain\WooIndex\Producer\Mapper;
 
-use App\Domain\WooIndex\Producer\Repository\RawUrlDto;
-use App\Domain\WooIndex\Producer\Url;
 use Carbon\CarbonImmutable;
+use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
+use Shared\Domain\WooIndex\Producer\Url;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class UrlMapper

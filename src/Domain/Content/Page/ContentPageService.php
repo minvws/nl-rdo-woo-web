@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Content\Page;
+namespace Shared\Domain\Content\Page;
 
 use Doctrine\Common\Collections\ArrayCollection;
 

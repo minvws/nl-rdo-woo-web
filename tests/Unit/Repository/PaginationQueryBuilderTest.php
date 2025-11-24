@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Repository;
+namespace Shared\Tests\Unit\Repository;
 
-use App\Domain\Department\Department;
-use App\Repository\PaginationQueryBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Department\Department;
+use Shared\Repository\PaginationQueryBuilder;
 use Webmozart\Assert\Assert;
 
 class PaginationQueryBuilderTest extends TestCase

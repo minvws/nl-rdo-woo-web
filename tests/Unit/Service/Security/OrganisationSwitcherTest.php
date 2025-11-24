@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security;
+namespace Shared\Tests\Unit\Service\Security;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Organisation\OrganisationRepository;
-use App\Service\Security\OrganisationSwitcher;
-use App\Service\Security\Roles;
-use App\Service\Security\User;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Organisation\OrganisationRepository;
+use Shared\Service\Security\OrganisationSwitcher;
+use Shared\Service\Security\Roles;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Uid\Uuid;
 
-class OrganisationSwitcherTest extends MockeryTestCase
+class OrganisationSwitcherTest extends UnitTestCase
 {
     private User&MockInterface $user;
     private OrganisationRepository&MockInterface $organisationRepository;

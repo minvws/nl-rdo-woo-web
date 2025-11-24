@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Factory\Publication\Dossier\Type\Disposition;
+namespace Shared\Tests\Factory\Publication\Dossier\Type\Disposition;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
-use App\Tests\Factory\FileInfoFactory;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
+use Shared\Tests\Factory\FileInfoFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -24,7 +23,7 @@ final class DispositionMainDocumentFactory extends PersistentProxyObjectFactory
     {
         return [
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'dossier' => CovenantFactory::new(),
+            'dossier' => DispositionFactory::new(),
             'fileInfo' => FileInfoFactory::new(),
             'formalDate' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'grounds' => self::faker()->optional(default: [])->words(),

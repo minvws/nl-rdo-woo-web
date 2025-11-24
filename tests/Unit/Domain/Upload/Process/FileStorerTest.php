@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\Process;
+namespace Shared\Tests\Unit\Domain\Upload\Process;
 
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\FileInfo;
-use App\Domain\Upload\Process\FileProcessException;
-use App\Domain\Upload\Process\FileStorer;
-use App\Domain\Upload\UploadedFile;
-use App\Service\Storage\EntityStorageService;
-use App\Service\Storage\ThumbnailStorageService;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Upload\Process\FileProcessException;
+use Shared\Domain\Upload\Process\FileStorer;
+use Shared\Domain\Upload\UploadedFile;
+use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class FileStorerTest extends UnitTestCase
 {

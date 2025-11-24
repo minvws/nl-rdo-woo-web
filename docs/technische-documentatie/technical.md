@@ -66,7 +66,7 @@ These messages are send through the rabbitMQ queue and are consumed by the worke
 Holds all message handlers that are used for the rabbitMQ queue. Each type of message handler corresponds
 to a ingester. Each ingester will take a message from the queue and process it. For instance, the PDF ingester
 will take a IngestPdfMessage and will extract the text from the PDF for the given page it needs to ingest, and
-store it in the database and elasticsearch. The bulk of the work is done in the `App\Service\Worker` classes.
+store it in the database and elasticsearch. The bulk of the work is done in the `Shared\Service\Worker` classes.
 
 #### Path: /src/Service
 
@@ -89,13 +89,13 @@ These classes are used to prepare a document for ingesting.
 
 These classes are used to process given documents for ingesting. In some cases, it is needed to fetch some
 metadata like pagecount etc. These processor classes will fetch this information from the
-files. Note that these are NOT the same as the processors found in `\App\Service\Worker` even though in theory
+files. Note that these are NOT the same as the processors found in `\Shared\Service\Worker` even though in theory
 the can overlap in functionality.
 
 #### Path: /src/Service/Worker
 
 These classes are used to process ingester messages. These processors are called from the worker handlers
-(`\App\MessageHandler\Ingest*Handler`) and provide the meat of processing of a given document.
+(`\Shared\MessageHandler\Ingest*Handler`) and provide the meat of processing of a given document.
 
 #### Class: /src/Service/Elastic/IndexService
 
@@ -146,19 +146,19 @@ Creates or mutates dossiers. This will add document entries if a inventory file 
 
 To add more ingesters, you need to follow these steps:
 
-1. Create an ingester handler in `\App\Service\Ingest\Handler` that extends the `BaseHandler` and implements `Handler`. You
+1. Create an ingester handler in `\Shared\Service\Ingest\Handler` that extends the `BaseHandler` and implements `Handler`. You
 need to define two methods: `canHandle` and `handle`. The `canHandle` method will check if the given document can be
 handled (for instance, based on mimetype). The `handle` method will prepare the document for ingesting and will send
 ingest messages to the queue for processing.
 
    > It's important to implement the `Handler` interface. This will automatically add the handler to the ingester.
 
-2. Create an ingester message in `\App\Message\Ingest*Message`. This message will be sent to the queue by your new handler
+2. Create an ingester message in `\Shared\Message\Ingest*Message`. This message will be sent to the queue by your new handler
 and will be consumed by the worker. This message will contain all the information needed to ingest the document, which
 often is nothing more than a document uuid.
-3. Create a message handler in `\App\MessageHandler\Ingest*Handler`. This handler will consume the ingest message and
-will often do nothing more than calling a `Processor` from `\App\Service\Worker\*Processor`.
-4. Create a processor in `\App\Service\Worker\*Processor`. This will do the actual processing of the ingest message.
+3. Create a message handler in `\Shared\MessageHandler\Ingest*Handler`. This handler will consume the ingest message and
+will often do nothing more than calling a `Processor` from `\Shared\Service\Worker\*Processor`.
+4. Create a processor in `\Shared\Service\Worker\*Processor`. This will do the actual processing of the ingest message.
 5. Make sure the message bus is configured to handle your new ingester message. This is done in `config/packages/messenger.yaml`
 where you need to add your message to the `routing` section (currently: `async` is used).
 6. When restarting the workers, it will automatically pick up the new ingester and start processing documents.

@@ -2,20 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\Dossier\Type\Covenant;
+namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\Covenant;
 
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantRepository;
-use App\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
-use App\Service\Security\ApplicationMode\ApplicationMode;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
-use App\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantRepository;
+use Shared\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
+use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class CovenantRepositoryTest extends KernelTestCase
+final class CovenantRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private function getRepository(): CovenantRepository
     {
         /** @var CovenantRepository */

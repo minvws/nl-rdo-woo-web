@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Process\PdfPage;
+namespace Shared\Tests\Unit\Domain\Ingest\Process\PdfPage;
 
-use App\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand;
-use App\Domain\Ingest\Process\PdfPage\IngestPdfPageHandler;
-use App\Domain\Ingest\Process\PdfPage\PdfPageProcessor;
-use App\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Tests\Unit\UnitTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Ingest\Process\PdfPage\IngestPdfPageCommand;
+use Shared\Domain\Ingest\Process\PdfPage\IngestPdfPageHandler;
+use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessor;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
 final class IngestPdfPageHandlerTest extends UnitTestCase

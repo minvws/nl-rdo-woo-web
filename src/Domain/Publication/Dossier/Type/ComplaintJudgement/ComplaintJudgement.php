@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\ComplaintJudgement;
+namespace Shared\Domain\Publication\Dossier\Type\ComplaintJudgement;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Domain\Publication\MainDocument\HasMainDocument;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
+use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**

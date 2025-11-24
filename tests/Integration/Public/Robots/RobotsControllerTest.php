@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Public\Robots;
+namespace Shared\Tests\Integration\Public\Robots;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-class RobotsControllerTest extends WebTestCase
+class RobotsControllerTest extends SharedWebTestCase
 {
     public function testIndex(): void
     {

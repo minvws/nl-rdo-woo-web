@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\FileStorage\Checker;
+namespace Shared\Tests\Unit\Domain\FileStorage\Checker;
 
-use App\Domain\FileStorage\Checker\FileStorageChecker;
-use App\Domain\FileStorage\Checker\FileStorageLister;
-use App\Domain\FileStorage\Checker\FileStorageType;
-use App\Domain\FileStorage\Checker\PathSet;
-use App\Domain\FileStorage\Checker\PathSetFactory\PathSetsFactoryInterface;
-use App\Tests\Unit\Domain\Upload\IterableToGenerator;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\FileStorage\Checker\FileStorageChecker;
+use Shared\Domain\FileStorage\Checker\FileStorageLister;
+use Shared\Domain\FileStorage\Checker\FileStorageType;
+use Shared\Domain\FileStorage\Checker\PathSet;
+use Shared\Domain\FileStorage\Checker\PathSetFactory\PathSetsFactoryInterface;
+use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
+use Shared\Tests\Unit\UnitTestCase;
 
 class FileStorageCheckerTest extends UnitTestCase
 {

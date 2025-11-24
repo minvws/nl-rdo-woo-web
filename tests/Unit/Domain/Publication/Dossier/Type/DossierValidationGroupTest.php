@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type;
 
-use App\Domain\Publication\Dossier\Step\StepDefinition;
-use App\Domain\Publication\Dossier\Step\StepName;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Shared\Domain\Publication\Dossier\Step\StepDefinition;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Tests\Unit\UnitTestCase;
 
-final class DossierValidationGroupTest extends MockeryTestCase
+final class DossierValidationGroupTest extends UnitTestCase
 {
     public function testGetValidationGroupForStepIncludesTypeSpecificGroup(): void
     {

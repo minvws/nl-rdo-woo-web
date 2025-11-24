@@ -2,6 +2,41 @@
 
 # Release notes
 
+## v2.1.0
+
+*20 november 2025*
+
+### API
+
+- Nieuwe Publication API endpoints voor departments, prefixes & organisations
+- Validatie toegevoegd voor Publication V1 API requests en responses
+
+### Content & Data Management
+
+- Productierapport nu optioneel gemaakt bij keuze "Reeds openbaar" en "Geen openbaarmaking"
+- Document prefix filtering verbeterd (verwijdert lege prefixes uit resultaten)
+- Dossier documenten limiet is nu configureerbaar via environment variable en standaard verhoogd
+
+### Gebruikerservaring
+
+- Nieuw design toegepast
+- Betere vertalingen doorgevoerd
+
+### Development
+
+- Ondersteuning voor self-signed certificaten toegevoegd
+- OpenAPI validatie refactor doorgevoerd
+
+### Testing & Kwaliteit
+
+- Tests verbeterd: global state te verwijderd en statische data vervangen met fake-data
+- E2E tests verbeterd voor betere stabiliteit en parallel uitvoeren
+
+### Dependencies
+
+- Meerdere dependency updates (Symfony, AWS SDK, Vite, ClamAV, etc.)
+- Verschillende CI/CD verbeteringen
+
 ## v2.0.0
 
 *23 oktober 2025*

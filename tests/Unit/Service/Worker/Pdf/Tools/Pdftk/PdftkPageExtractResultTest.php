@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Worker\Pdf\Tools\Pdftk;
+namespace Shared\Tests\Unit\Service\Worker\Pdf\Tools\Pdftk;
 
-use App\Service\Worker\Pdf\Tools\Pdftk\PdftkPageExtractResult;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkPageExtractResult;
+use Shared\Tests\Unit\UnitTestCase;
 
 final class PdftkPageExtractResultTest extends UnitTestCase
 {

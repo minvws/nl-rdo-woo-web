@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Updater;
+namespace Shared\Domain\Search\Index\Updater;
 
-use App\Domain\Search\Index\ElasticConfig;
-use App\Domain\Search\Index\Schema\ElasticField;
-use App\Service\Elastic\ElasticClientInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Search\Index\ElasticConfig;
+use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Service\Elastic\ElasticClientInterface;
 
 class PageIndexUpdater
 {

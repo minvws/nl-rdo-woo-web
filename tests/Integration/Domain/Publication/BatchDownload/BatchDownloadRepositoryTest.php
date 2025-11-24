@@ -2,22 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Domain\Publication\BatchDownload;
+namespace Shared\Tests\Integration\Domain\Publication\BatchDownload;
 
-use App\Domain\Publication\BatchDownload\BatchDownload;
-use App\Domain\Publication\BatchDownload\BatchDownloadRepository;
-use App\Domain\Publication\BatchDownload\BatchDownloadScope;
-use App\Tests\Factory\InquiryFactory;
-use App\Tests\Factory\Publication\BatchDownload\BatchDownloadFactory;
-use App\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
-use App\Tests\Integration\IntegrationTestTrait;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Shared\Domain\Publication\BatchDownload\BatchDownload;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Tests\Factory\InquiryFactory;
+use Shared\Tests\Factory\Publication\BatchDownload\BatchDownloadFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Component\Uid\Uuid;
 
-class BatchDownloadRepositoryTest extends KernelTestCase
+class BatchDownloadRepositoryTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     private BatchDownloadRepository $repository;
 
     protected function setUp(): void

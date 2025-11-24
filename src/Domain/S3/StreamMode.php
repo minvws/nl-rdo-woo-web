@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\S3;
+namespace Shared\Domain\S3;
 
 enum StreamMode: string
 {

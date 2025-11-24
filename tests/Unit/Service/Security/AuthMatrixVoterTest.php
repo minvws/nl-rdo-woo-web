@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security;
+namespace Shared\Tests\Unit\Service\Security;
 
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierStatus;
-use App\Service\Security\AuthMatrixVoter;
-use App\Service\Security\Authorization\AuthorizationEntryRequestStore;
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use App\Service\Security\Authorization\AuthorizationMatrixFilter;
-use App\Service\Security\Authorization\Entry;
-use App\Service\Security\Roles;
-use App\Service\Security\User;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Service\Security\AuthMatrixVoter;
+use Shared\Service\Security\Authorization\AuthorizationEntryRequestStore;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\Authorization\AuthorizationMatrixFilter;
+use Shared\Service\Security\Authorization\Entry;
+use Shared\Service\Security\Roles;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
-class AuthMatrixVoterTest extends MockeryTestCase
+class AuthMatrixVoterTest extends UnitTestCase
 {
     /**
      * @param array<array-key, Entry&MockInterface>|null $entries

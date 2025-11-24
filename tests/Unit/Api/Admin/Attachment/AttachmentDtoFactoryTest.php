@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Api\Admin\Attachment;
+namespace Shared\Tests\Unit\Api\Admin\Attachment;
 
-use App\Api\Admin\Attachment\AttachmentDtoFactory;
-use App\Api\Admin\WooDecisionAttachment\WooDecisionAttachmentDto;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Api\Admin\Attachment\AttachmentDtoFactory;
+use Shared\Api\Admin\WooDecisionAttachment\WooDecisionAttachmentDto;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 

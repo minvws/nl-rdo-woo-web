@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Attachment\Handler;
+namespace Shared\Domain\Publication\Attachment\Handler;
 
-use App\Domain\Publication\Attachment\AttachmentDeleter;
-use App\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
-use App\Domain\Publication\Attachment\Command\DeleteAttachmentWithOverrideCommand;
-use App\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Attachment\AttachmentDeleter;
+use Shared\Domain\Publication\Attachment\Command\DeleteAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Command\DeleteAttachmentWithOverrideCommand;
+use Shared\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 

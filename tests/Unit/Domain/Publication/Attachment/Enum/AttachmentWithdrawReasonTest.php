@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment\Enum;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment\Enum;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final class AttachmentWithdrawReasonTest extends MockeryTestCase
+final class AttachmentWithdrawReasonTest extends UnitTestCase
 {
     #[DataProvider('transDataProvider')]
     public function testTransKey(AttachmentWithdrawReason $reason, string $expectedKey, ?string $locale): void

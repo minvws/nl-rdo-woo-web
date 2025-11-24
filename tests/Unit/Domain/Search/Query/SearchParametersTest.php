@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Query;
+namespace Shared\Tests\Unit\Domain\Search\Query;
 
-use App\Domain\Search\Query\Facet\Definition\DateFacet;
-use App\Domain\Search\Query\Facet\Definition\InquiryDocumentsFacet;
-use App\Domain\Search\Query\Facet\Definition\InquiryDossiersFacet;
-use App\Domain\Search\Query\Facet\Input\DateFacetInput;
-use App\Domain\Search\Query\Facet\Input\FacetInput;
-use App\Domain\Search\Query\Facet\Input\FacetInputCollection;
-use App\Domain\Search\Query\Facet\Input\FacetInputInterface;
-use App\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
-use App\Domain\Search\Query\SearchParameters;
-use App\Domain\Search\Query\SearchType;
-use App\Service\Search\Model\FacetKey;
-use App\Service\Search\Query\Condition\QueryConditionBuilderInterface;
-use App\Service\Search\Query\Sort\SortField;
-use App\Service\Search\Query\Sort\SortOrder;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Search\Query\Facet\Definition\DateFacet;
+use Shared\Domain\Search\Query\Facet\Definition\InquiryDocumentsFacet;
+use Shared\Domain\Search\Query\Facet\Definition\InquiryDossiersFacet;
+use Shared\Domain\Search\Query\Facet\Input\DateFacetInput;
+use Shared\Domain\Search\Query\Facet\Input\FacetInput;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputCollection;
+use Shared\Domain\Search\Query\Facet\Input\FacetInputInterface;
+use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
+use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Domain\Search\Query\SearchType;
+use Shared\Service\Search\Model\FacetKey;
+use Shared\Service\Search\Query\Condition\QueryConditionBuilderInterface;
+use Shared\Service\Search\Query\Sort\SortField;
+use Shared\Service\Search\Query\Sort\SortOrder;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class SearchParametersTest extends UnitTestCase

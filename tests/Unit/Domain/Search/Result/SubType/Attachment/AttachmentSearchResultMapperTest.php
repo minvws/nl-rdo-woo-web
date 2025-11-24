@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Result\SubType\Attachment;
+namespace Shared\Tests\Unit\Domain\Search\Result\SubType\Attachment;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use App\Domain\Publication\Attachment\ViewModel\Attachment;
-use App\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
-use App\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Result\SubType\Attachment\AttachmentSearchResultMapper;
-use App\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
 use MinVWS\TypeArray\TypeArray;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\Attachment\ViewModel\Attachment;
+use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Result\SubType\Attachment\AttachmentSearchResultMapper;
+use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
+use Shared\Tests\Unit\UnitTestCase;
 
-class AttachmentSearchResultMapperTest extends MockeryTestCase
+class AttachmentSearchResultMapperTest extends UnitTestCase
 {
     private AttachmentRepository&MockInterface $attachmentRepository;
     private AttachmentViewFactory&MockInterface $attachmentViewFactory;

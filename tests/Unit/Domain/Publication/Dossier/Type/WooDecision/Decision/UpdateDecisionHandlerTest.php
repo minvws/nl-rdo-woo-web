@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Decision;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Decision;
 
-use App\Domain\Publication\Dossier\Event\DossierUpdatedEvent;
-use App\Domain\Publication\Dossier\Type\WooDecision\Decision\UpdateDecisionCommand;
-use App\Domain\Publication\Dossier\Type\WooDecision\Decision\UpdateDecisionHandler;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Service\DossierService;
-use App\Tests\Unit\UnitTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Event\DossierUpdatedEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\UpdateDecisionCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\UpdateDecisionHandler;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Service\DossierService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;

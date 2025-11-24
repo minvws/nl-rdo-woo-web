@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Search\Query\Sort;
+namespace Shared\Service\Search\Query\Sort;
 
-use App\Domain\Search\Index\Schema\ElasticField;
+use Shared\Domain\Search\Index\Schema\ElasticField;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 

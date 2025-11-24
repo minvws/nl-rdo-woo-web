@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment\Handler;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment\Handler;
 
-use App\Domain\Publication\Attachment\AttachmentDispatcher;
-use App\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
-use App\Domain\Publication\Attachment\Enum\AttachmentLanguage;
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Attachment\Handler\AttachmentEntityLoader;
-use App\Domain\Publication\Attachment\Handler\CreateAttachmentHandler;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use App\Domain\Publication\Dossier\Type\Covenant\CovenantAttachmentRepository;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Upload\Process\EntityUploadStorer;
 use Doctrine\ORM\EntityManagerInterface;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
+use Shared\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Attachment\Handler\AttachmentEntityLoader;
+use Shared\Domain\Publication\Attachment\Handler\CreateAttachmentHandler;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachmentRepository;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Upload\Process\EntityUploadStorer;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class CreateAttachmentHandlerTest extends MockeryTestCase
+class CreateAttachmentHandlerTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private CreateAttachmentHandler $handler;

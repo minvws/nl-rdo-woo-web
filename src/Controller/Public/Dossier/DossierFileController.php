@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Public\Dossier;
+namespace Shared\Controller\Public\Dossier;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager;
-use App\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use App\Service\DownloadResponseHelper;
-use App\Service\Storage\ThumbnailStorageService;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileProviderManager;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Service\DownloadResponseHelper;
+use Shared\Service\Storage\ThumbnailStorageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;

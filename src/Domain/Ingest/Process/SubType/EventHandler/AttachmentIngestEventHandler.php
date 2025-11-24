@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\SubType\EventHandler;
+namespace Shared\Domain\Ingest\Process\SubType\EventHandler;
 
-use App\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
-use App\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
-use App\Domain\Search\SearchDispatcher;
+use Shared\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
+use Shared\Domain\Search\SearchDispatcher;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 final readonly class AttachmentIngestEventHandler

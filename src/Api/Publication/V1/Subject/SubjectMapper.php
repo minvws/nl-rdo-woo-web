@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Publication\V1\Subject;
+namespace Shared\Api\Publication\V1\Subject;
 
-use App\Api\Publication\V1\Organisation\OrganisationReferenceDto;
-use App\Domain\Organisation\Organisation;
-use App\Domain\Publication\Subject\Subject;
+use Shared\Api\Publication\V1\Organisation\OrganisationReferenceDto;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Subject\Subject;
 
 class SubjectMapper
 {
@@ -17,7 +17,7 @@ class SubjectMapper
      */
     public static function fromEntities(array $subjects): array
     {
-        return array_map(fn (Subject $subject): SubjectDto => self::fromEntity($subject), $subjects);
+        return array_map(self::fromEntity(...), $subjects);
     }
 
     public static function fromEntity(Subject $subject): SubjectDto

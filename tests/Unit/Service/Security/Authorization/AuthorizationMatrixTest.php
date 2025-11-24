@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Service\Security\Authorization;
+namespace Shared\Tests\Unit\Service\Security\Authorization;
 
-use App\Domain\Organisation\Organisation;
-use App\Service\Security\Authorization\AuthorizationEntryRequestStore;
-use App\Service\Security\Authorization\AuthorizationMatrix;
-use App\Service\Security\Authorization\AuthorizationMatrixException;
-use App\Service\Security\Authorization\AuthorizationMatrixFilter;
-use App\Service\Security\Authorization\Entry;
-use App\Service\Security\OrganisationSwitcher;
-use App\Service\Security\User;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Service\Security\Authorization\AuthorizationEntryRequestStore;
+use Shared\Service\Security\Authorization\AuthorizationMatrix;
+use Shared\Service\Security\Authorization\AuthorizationMatrixException;
+use Shared\Service\Security\Authorization\AuthorizationMatrixFilter;
+use Shared\Service\Security\Authorization\Entry;
+use Shared\Service\Security\OrganisationSwitcher;
+use Shared\Service\Security\User;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -24,7 +24,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\RoleVoter;
 
-class AuthorizationMatrixTest extends MockeryTestCase
+class AuthorizationMatrixTest extends UnitTestCase
 {
     private Security&MockInterface $mockSecurity;
     private RequestStack&MockInterface $mockRequestStack;

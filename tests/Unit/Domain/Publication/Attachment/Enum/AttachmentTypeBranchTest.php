@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Attachment\Enum;
+namespace Shared\Tests\Unit\Domain\Publication\Attachment\Enum;
 
-use App\Domain\Publication\Attachment\Enum\AttachmentType;
-use App\Domain\Publication\Attachment\Enum\AttachmentTypeBranch;
-use App\Domain\Publication\Attachment\Exception\AttachmentTypeBranchException;
-use App\Tests\Unit\UnitTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentTypeBranch;
+use Shared\Domain\Publication\Attachment\Exception\AttachmentTypeBranchException;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Group('attachment')]

@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Publication\Dossier\Handler;
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Handler;
 
-use App\Domain\Publication\Dossier\Command\CreateDossierCommand;
-use App\Domain\Publication\Dossier\Event\DossierCreatedEvent;
-use App\Domain\Publication\Dossier\Handler\CreateDossierHandler;
-use App\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Service\DossierService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Command\CreateDossierCommand;
+use Shared\Domain\Publication\Dossier\Event\DossierCreatedEvent;
+use Shared\Domain\Publication\Dossier\Handler\CreateDossierHandler;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Service\DossierService;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
-class CreateDossierHandlerTest extends MockeryTestCase
+class CreateDossierHandlerTest extends UnitTestCase
 {
     private MessageBusInterface&MockInterface $messageBus;
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;

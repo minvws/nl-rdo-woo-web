@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests;
+namespace Shared\Tests;
 
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;

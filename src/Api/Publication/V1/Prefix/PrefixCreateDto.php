@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Api\Publication\V1\Prefix;
+namespace Shared\Api\Publication\V1\Prefix;
 
 use Symfony\Component\Validator\Constraints as Assert;
 

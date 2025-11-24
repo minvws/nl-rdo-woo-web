@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Ingest\Content\Extractor\Tesseract;
+namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tesseract;
 
-use App\Domain\Ingest\Content\Extractor\ContentExtractorKey;
-use App\Domain\Ingest\Content\Extractor\Tesseract\TesseractExtractor;
-use App\Domain\Ingest\Content\Extractor\Tesseract\TesseractService;
-use App\Domain\Ingest\Content\LazyFileReference;
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Domain\Publication\FileInfo;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+use Shared\Domain\Ingest\Content\Extractor\Tesseract\TesseractExtractor;
+use Shared\Domain\Ingest\Content\Extractor\Tesseract\TesseractService;
+use Shared\Domain\Ingest\Content\LazyFileReference;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\FileInfo;
+use Shared\Tests\Unit\UnitTestCase;
 
-final class TesseractExtractorTest extends MockeryTestCase
+final class TesseractExtractorTest extends UnitTestCase
 {
     private TesseractService&MockInterface $tesseractService;
     private TesseractExtractor $extractor;

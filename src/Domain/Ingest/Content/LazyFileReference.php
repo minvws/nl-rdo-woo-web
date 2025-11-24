@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Content;
+namespace Shared\Domain\Ingest\Content;
 
-use App\Domain\Publication\EntityWithFileInfo;
-use App\Service\Storage\EntityStorageService;
+use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Storage\EntityStorageService;
 
 class LazyFileReference implements FileReferenceInterface
 {

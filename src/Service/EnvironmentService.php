@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service;
+namespace Shared\Service;
 
 use Symfony\Component\HttpKernel\KernelInterface;
 

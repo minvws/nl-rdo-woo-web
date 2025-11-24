@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Theme\ViewModel;
+namespace Shared\Domain\Search\Theme\ViewModel;
 
-use App\Domain\Search\Theme\ThemeInterface;
+use Shared\Domain\Search\Theme\ThemeInterface;
 
 readonly class ThemeViewFactory
 {

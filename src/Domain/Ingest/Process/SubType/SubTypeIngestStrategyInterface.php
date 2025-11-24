@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Ingest\Process\SubType;
+namespace Shared\Domain\Ingest\Process\SubType;
 
-use App\Domain\Ingest\Process\IngestProcessOptions;
-use App\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Ingest\Process\IngestProcessOptions;
+use Shared\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('domain.ingest.subtype.strategy')]

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Rollover;
+namespace Shared\Tests\Unit\Domain\Search\Index\Rollover;
 
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Domain\Search\Index\Rollover\SubtypeCount;
-use App\Tests\Unit\UnitTestCase;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Domain\Search\Index\Rollover\SubtypeCount;
+use Shared\Tests\Unit\UnitTestCase;
 
 class SubTypeCountsTest extends UnitTestCase
 {

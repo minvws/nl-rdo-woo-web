@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\Stats;
+namespace Shared\Service\Stats;
 
 use Carbon\CarbonImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

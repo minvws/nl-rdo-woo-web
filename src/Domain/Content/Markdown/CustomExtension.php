@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Content\Markdown;
+namespace Shared\Domain\Content\Markdown;
 
-use App\Domain\Content\Markdown\Renderer\CustomEmphasisRenderer;
-use App\Domain\Content\Markdown\Renderer\CustomHeadingRenderer;
-use App\Domain\Content\Markdown\Renderer\CustomStrongRenderer;
 use League\CommonMark\Environment\EnvironmentBuilderInterface;
 use League\CommonMark\Extension\CommonMark\Delimiter\Processor\EmphasisDelimiterProcessor;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
@@ -37,6 +34,9 @@ use League\CommonMark\Renderer\Inline\NewlineRenderer;
 use League\CommonMark\Renderer\Inline\TextRenderer;
 use League\Config\ConfigurationBuilderInterface;
 use Nette\Schema\Expect;
+use Shared\Domain\Content\Markdown\Renderer\CustomEmphasisRenderer;
+use Shared\Domain\Content\Markdown\Renderer\CustomHeadingRenderer;
+use Shared\Domain\Content\Markdown\Renderer\CustomStrongRenderer;
 
 /**
  * @SuppressWarnings("PHPMD.CouplingBetweenObjects")

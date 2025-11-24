@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Dossier;
+namespace Shared\Tests\Unit\Domain\Search\Index\Dossier;
 
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use App\Domain\Search\Index\Dossier\DossierIndexer;
-use App\Domain\Search\Index\Dossier\Mapper\ElasticDossierMapperInterface;
-use App\Domain\Search\Index\ElasticDocument;
-use App\Domain\Search\Index\IndexException;
-use App\Domain\Search\Index\Updater\NestedDossierIndexUpdater;
-use App\Service\Elastic\ElasticService;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Search\Index\Dossier\DossierIndexer;
+use Shared\Domain\Search\Index\Dossier\Mapper\ElasticDossierMapperInterface;
+use Shared\Domain\Search\Index\ElasticDocument;
+use Shared\Domain\Search\Index\IndexException;
+use Shared\Domain\Search\Index\Updater\NestedDossierIndexUpdater;
+use Shared\Service\Elastic\ElasticService;
+use Shared\Tests\Unit\UnitTestCase;
 
-class DossierIndexerTest extends MockeryTestCase
+class DossierIndexerTest extends UnitTestCase
 {
     private ElasticDossierMapperInterface&MockInterface $firstMapper;
     private ElasticDossierMapperInterface&MockInterface $secondMapper;

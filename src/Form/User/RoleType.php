@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Form\User;
+namespace Shared\Form\User;
 
-use App\Form\ChoiceTypeWithHelp;
+use Shared\Form\ChoiceTypeWithHelp;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 

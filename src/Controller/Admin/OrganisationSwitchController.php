@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace Shared\Controller\Admin;
 
-use App\Domain\Organisation\Organisation;
-use App\Service\Security\OrganisationSwitcher;
-use App\Service\Security\User;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Service\Security\OrganisationSwitcher;
+use Shared\Service\Security\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,7 +42,7 @@ class OrganisationSwitchController extends AbstractController
         $this->organisationSwitcher->switchToOrganisation($user, $organisation);
 
         $referer = $request->headers->get('referer');
-        if (empty($referer)) {
+        if ($referer === null || $referer === '') {
             return $this->redirect(
                 $this->generateUrl(self::FALLBACK_ROUTE)
             );

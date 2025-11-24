@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\MainDocument\Handler;
+namespace Shared\Domain\Publication\MainDocument\Handler;
 
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\DossierRepository;
-use App\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use App\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
-use App\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
-use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
-use App\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface;
-use App\Domain\Publication\MainDocument\MainDocumentNotFoundException;
-use App\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
+use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
+use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent;
+use Shared\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface;
+use Shared\Domain\Publication\MainDocument\MainDocumentNotFoundException;
+use Shared\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;

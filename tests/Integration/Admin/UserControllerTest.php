@@ -2,18 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Admin;
+namespace Shared\Tests\Integration\Admin;
 
-use App\Service\Security\Roles;
-use App\Tests\Factory\UserFactory;
-use App\Tests\Integration\IntegrationTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Shared\Service\Security\Roles;
+use Shared\Tests\Factory\UserFactory;
+use Shared\Tests\Integration\SharedWebTestCase;
 
-final class UserControllerTest extends WebTestCase
+final class UserControllerTest extends SharedWebTestCase
 {
-    use IntegrationTestTrait;
-
     #[DataProvider('indexResponsCodeData')]
     public function testIndexResponseCode(string $role, int $expectedResponseCode): void
     {

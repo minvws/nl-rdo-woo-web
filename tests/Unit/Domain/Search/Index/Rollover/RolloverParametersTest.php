@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Search\Index\Rollover;
+namespace Shared\Tests\Unit\Domain\Search\Index\Rollover;
 
-use App\Domain\Search\Index\Rollover\RolloverParameters;
 use PHPUnit\Framework\TestCase;
+use Shared\Domain\Search\Index\Rollover\RolloverParameters;
 
 class RolloverParametersTest extends TestCase
 {

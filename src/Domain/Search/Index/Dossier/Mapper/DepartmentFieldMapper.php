@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Index\Dossier\Mapper;
+namespace Shared\Domain\Search\Index\Dossier\Mapper;
 
-use App\Domain\Department\Department;
+use Shared\Domain\Department\Department;
 
 readonly class DepartmentFieldMapper
 {

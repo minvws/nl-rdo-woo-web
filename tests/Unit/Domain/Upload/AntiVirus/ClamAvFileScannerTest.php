@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Domain\Upload\AntiVirus;
+namespace Shared\Tests\Unit\Domain\Upload\AntiVirus;
 
-use App\Domain\Upload\AntiVirus\ClamAvClientFactory;
-use App\Domain\Upload\AntiVirus\ClamAvFileScanner;
-use App\Domain\Upload\AntiVirus\FileScannedEvent;
-use App\Domain\Upload\AntiVirus\FileScanResult;
-use App\Service\Storage\LocalFilesystem;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use Shared\Domain\Upload\AntiVirus\ClamAvClientFactory;
+use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
+use Shared\Domain\Upload\AntiVirus\FileScannedEvent;
+use Shared\Domain\Upload\AntiVirus\FileScanResult;
+use Shared\Service\Storage\LocalFilesystem;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xenolope\Quahog\Client;
 use Xenolope\Quahog\Result;
 
-final class ClamAvFileScannerTest extends MockeryTestCase
+final class ClamAvFileScannerTest extends UnitTestCase
 {
     private Client&MockInterface $clamAvClient;
     private LoggerInterface&MockInterface $logger;

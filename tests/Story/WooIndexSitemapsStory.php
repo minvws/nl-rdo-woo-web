@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Story;
+namespace Shared\Tests\Story;
 
-use App\Tests\Factory\WooIndex\WooIndexSitemapFactory;
 use Carbon\CarbonImmutable;
+use Shared\Tests\Factory\WooIndex\WooIndexSitemapFactory;
 use Zenstruck\Foundry\Story;
 
 /**

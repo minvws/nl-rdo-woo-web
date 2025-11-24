@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result;
+namespace Shared\Domain\Search\Result;
 
-use App\Domain\Search\Index\ElasticDocumentType;
-use App\Service\Security\ApplicationMode\ApplicationMode;
 use MinVWS\TypeArray\TypeArray;
+use Shared\Domain\Search\Index\ElasticDocumentType;
+use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('woo_platform.search.result_mapper')]

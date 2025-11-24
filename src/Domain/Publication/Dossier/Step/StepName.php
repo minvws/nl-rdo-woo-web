@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Step;
+namespace Shared\Domain\Publication\Dossier\Step;
 
 enum StepName: string
 {

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Vws\AuditLog;
+namespace Shared\Vws\AuditLog;
 
-use App\Domain\Department\Department;
-use App\Domain\Organisation\Event\OrganisationCreatedEvent;
-use App\Domain\Organisation\Event\OrganisationUpdatedEvent;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\OrganisationChangeLogEvent;
 use MinVWS\AuditLogger\Events\Logging\OrganisationCreatedLogEvent;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Organisation\Event\OrganisationCreatedEvent;
+use Shared\Domain\Organisation\Event\OrganisationUpdatedEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 readonly class OrganisationAuditLogger

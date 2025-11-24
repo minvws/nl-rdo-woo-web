@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Publication\Dossier\Type\Disposition;
+namespace Shared\Domain\Publication\Dossier\Type\Disposition;
 
-use App\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use App\Domain\Publication\Attachment\Entity\EntityWithAttachments;
-use App\Domain\Publication\Attachment\Entity\HasAttachments;
-use App\Domain\Publication\Dossier\AbstractDossier;
-use App\Domain\Publication\Dossier\Type\DossierType;
-use App\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use App\Domain\Publication\MainDocument\EntityWithMainDocument;
-use App\Domain\Publication\MainDocument\HasMainDocument;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
+use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
+use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -30,13 +30,13 @@ class Disposition extends AbstractDossier implements EntityWithAttachments, Enti
     /** @use HasMainDocument<DispositionMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: DispositionMainDocument::class, cascade: ['remove'])]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: DispositionMainDocument::class, cascade: ['remove', 'persist'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?DispositionMainDocument $document;
 
     /** @var Collection<array-key,DispositionAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DispositionAttachment::class)]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: DispositionAttachment::class, cascade: ['persist'])]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 

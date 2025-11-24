@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Search\Result\Dossier\AnnualReport;
+namespace Shared\Domain\Search\Result\Dossier\AnnualReport;
 
-use App\Domain\Search\Result\Dossier\AbstractDossierTypeSearchResult;
+use Shared\Domain\Search\Result\Dossier\AbstractDossierTypeSearchResult;
 use Symfony\Component\Uid\Uuid;
 
 readonly class AnnualReportSearchResult extends AbstractDossierTypeSearchResult
