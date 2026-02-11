@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Updater;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -19,8 +20,8 @@ class NestedDossierIndexUpdaterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
         $this->indexUpdater = new NestedDossierIndexUpdater(
             $this->elasticClient,
@@ -32,14 +33,14 @@ class NestedDossierIndexUpdaterTest extends UnitTestCase
 
     public function testUpdate(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-bar-123');
 
         $dossierDoc = ['foo' => 'bar'];
 
         $this->logger->shouldReceive('debug');
 
-        $this->elasticClient->expects('updateByQuery')->with(\Mockery::on(
+        $this->elasticClient->expects('updateByQuery')->with(Mockery::on(
             static fn (array $input) => $input['body']['query']['bool']['must'][1]['nested']['query']['term']['dossiers.id'] === $dossierId
                 && $input['body']['script']['params']['dossier'] === $dossierDoc
         ));

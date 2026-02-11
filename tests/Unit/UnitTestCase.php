@@ -12,6 +12,9 @@ use Shared\Tests\CarbonHelpers;
 use Shared\Tests\Faker\FakerFactory;
 use Spatie\Snapshots\MatchesSnapshots;
 
+use function method_exists;
+use function sprintf;
+
 abstract class UnitTestCase extends BaseTestCase
 {
     use MockeryPHPUnitIntegration;
@@ -36,7 +39,7 @@ abstract class UnitTestCase extends BaseTestCase
 
     protected function assertMockMethodNotCalled(MockInterface $mock, string $method): void
     {
-        $this->assertTrue(\method_exists($mock, $method), \sprintf('%s method does not exist on validator', $method));
+        $this->assertTrue(method_exists($mock, $method), sprintf('%s method does not exist on validator', $method));
 
         $mock->shouldNotReceive($method);
     }

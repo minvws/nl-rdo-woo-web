@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department as DepartmentEntity;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -30,8 +32,8 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->departmentViewFactory = \Mockery::mock(DepartmentViewFactory::class);
-        $this->subjectViewFactory = \Mockery::mock(SubjectViewFactory::class);
+        $this->departmentViewFactory = Mockery::mock(DepartmentViewFactory::class);
+        $this->subjectViewFactory = Mockery::mock(SubjectViewFactory::class);
 
         $this->factory = new CommonDossierPropertiesViewFactory(
             $this->departmentViewFactory,
@@ -41,15 +43,15 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        $uuid = \Mockery::mock(Uuid::class);
+        $uuid = Mockery::mock(Uuid::class);
         $uuid->shouldReceive('toRfc4122')->andReturn($expectedUuid = 'my uuid');
 
-        $department = \Mockery::mock(DepartmentEntity::class);
+        $department = Mockery::mock(DepartmentEntity::class);
         /** @var ArrayCollection<array-key,DepartmentEntity> $departments */
         $departments = new ArrayCollection([$department]);
 
         /** @var Subject&MockInterface $subject */
-        $subject = \Mockery::mock(Subject::class);
+        $subject = Mockery::mock(Subject::class);
         $subject->shouldReceive('getName')->andReturn($expectedSubject = 'A subject');
 
         $this->departmentViewFactory
@@ -62,14 +64,14 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
             ));
 
         /** @var AbstractDossier&MockInterface $dossier */
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->shouldReceive('getId')->andReturn($uuid);
         $dossier->shouldReceive('getDossierNr')->andReturn($expectedDossierNr = 'my dossier nr');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($expectedDocumentPrefix = 'my document prefix');
         $dossier->shouldReceive('getStatus')->andReturn($expectedStatus = DossierStatus::PUBLISHED);
         $dossier->shouldReceive('getTitle')->andReturn($expectedTitle = 'my title');
         $dossier->shouldReceive('getPublicationDate')->andReturn(
-            $expectedPublicationDate = \DateTimeImmutable::createFromInterface(
+            $expectedPublicationDate = DateTimeImmutable::createFromInterface(
                 $this->getFaker()->dateTimeBetween('-2 years')
             )
         );
@@ -81,7 +83,7 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
         $this->subjectViewFactory
             ->shouldReceive('getSubjectForDossier')
             ->with($dossier)
-            ->andReturn($expectedSubject = \Mockery::mock(SubjectViewModel::class));
+            ->andReturn($expectedSubject = Mockery::mock(SubjectViewModel::class));
 
         $result = $this->factory->make($dossier);
 
@@ -100,15 +102,15 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
 
     public function testMakeForPreview(): void
     {
-        $uuid = \Mockery::mock(Uuid::class);
+        $uuid = Mockery::mock(Uuid::class);
         $uuid->shouldReceive('toRfc4122')->andReturn($expectedUuid = 'my uuid');
 
-        $department = \Mockery::mock(DepartmentEntity::class);
+        $department = Mockery::mock(DepartmentEntity::class);
         /** @var ArrayCollection<array-key,DepartmentEntity> $departments */
         $departments = new ArrayCollection([$department]);
 
         /** @var Subject&MockInterface $subject */
-        $subject = \Mockery::mock(Subject::class);
+        $subject = Mockery::mock(Subject::class);
         $subject->shouldReceive('getName')->andReturn($expectedSubject = 'A subject');
 
         $this->departmentViewFactory
@@ -121,14 +123,14 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
             ));
 
         /** @var AbstractDossier&MockInterface $dossier */
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->shouldReceive('getId')->andReturn($uuid);
         $dossier->shouldReceive('getDossierNr')->andReturn($expectedDossierNr = 'my dossier nr');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($expectedDocumentPrefix = 'my document prefix');
         $dossier->shouldReceive('getStatus')->andReturn($expectedStatus = DossierStatus::PREVIEW);
         $dossier->shouldReceive('getTitle')->andReturn($expectedTitle = 'my title');
         $dossier->shouldReceive('getPublicationDate')->andReturn(
-            $expectedPublicationDate = \DateTimeImmutable::createFromInterface(
+            $expectedPublicationDate = DateTimeImmutable::createFromInterface(
                 $this->getFaker()->dateTimeBetween('-2 years')
             )
         );
@@ -140,7 +142,7 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
         $this->subjectViewFactory
             ->shouldReceive('getSubjectForDossier')
             ->with($dossier)
-            ->andReturn($expectedSubject = \Mockery::mock(SubjectViewModel::class));
+            ->andReturn($expectedSubject = Mockery::mock(SubjectViewModel::class));
 
         $result = $this->factory->make($dossier);
 

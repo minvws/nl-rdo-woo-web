@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\Type\AnnualReport;
 
 use Carbon\CarbonImmutable;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Override;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
@@ -31,13 +33,13 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
     /** @use HasMainDocument<AnnualReportMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AnnualReportMainDocument::class, cascade: ['remove'])]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AnnualReportMainDocument::class, cascade: ['persist', 'remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?AnnualReportMainDocument $document;
 
     /** @var Collection<array-key,AnnualReportAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: AnnualReportAttachment::class)]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: AnnualReportAttachment::class, cascade: ['persist'])]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 
@@ -49,8 +51,8 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
         $this->document = null;
     }
 
-    #[\Override]
-    public function setDateFrom(?\DateTimeImmutable $dateFrom): static
+    #[Override]
+    public function setDateFrom(?DateTimeImmutable $dateFrom): static
     {
         $carbonDate = new CarbonImmutable($dateFrom);
 

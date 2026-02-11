@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inquiry;
 
+use Exception;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
@@ -13,9 +14,6 @@ use Shared\Exception\TranslatableException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Webmozart\Assert\InvalidArgumentException;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 readonly class InquiryLinkImporter
 {
     public function __construct(
@@ -41,7 +39,7 @@ readonly class InquiryLinkImporter
             $this->processUploadedFile($uploadedFile, $prefix, $inquiryChangeset, $result);
 
             $this->inquiryService->applyChangesetAsync($inquiryChangeset);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             if (! $exception instanceof TranslatableException) {
                 $exception = InventoryReaderException::forOpenSpreadsheetException($exception);
             }

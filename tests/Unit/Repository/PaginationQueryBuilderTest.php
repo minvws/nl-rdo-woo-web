@@ -7,22 +7,27 @@ namespace Shared\Tests\Unit\Repository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Mockery;
+use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Repository\PaginationQueryBuilder;
+use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 
-class PaginationQueryBuilderTest extends TestCase
+use function base64_encode;
+use function json_encode;
+
+class PaginationQueryBuilderTest extends UnitTestCase
 {
-    private EntityManagerInterface&MockObject $entityManager;
-    private EntityRepository&MockObject $entityRepository;
+    private EntityManagerInterface&MockInterface $entityManager;
+    private EntityRepository&MockInterface $entityRepository;
     private PaginationQueryBuilder $paginationQueryBuilder;
 
     protected function setUp(): void
     {
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->entityRepository = $this->createMock(EntityRepository::class);
+        parent::setUp();
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->entityRepository = Mockery::mock(EntityRepository::class);
         $this->paginationQueryBuilder = new PaginationQueryBuilder($this->entityManager);
     }
 
@@ -31,23 +36,23 @@ class PaginationQueryBuilderTest extends TestCase
         $entityClass = Department::class;
         $itemsPerPage = 10;
 
-        $queryBuilderMock = $this->createMock(QueryBuilder::class);
-        $queryBuilderMock->expects($this->once())
-            ->method('orderBy')
+        $queryBuilderMock = Mockery::mock(QueryBuilder::class);
+        $queryBuilderMock->shouldReceive('orderBy')
+            ->once()
             ->with('entity.id', 'ASC')
-            ->willReturnSelf();
-        $queryBuilderMock->expects($this->once())
-            ->method('setMaxResults')
+            ->andReturnSelf();
+        $queryBuilderMock->shouldReceive('setMaxResults')
+            ->once()
             ->with($itemsPerPage + 1)
-            ->willReturnSelf();
-        $this->entityRepository->expects($this->once())
-            ->method('createQueryBuilder')
+            ->andReturnSelf();
+        $this->entityRepository->shouldReceive('createQueryBuilder')
+            ->once()
             ->with('entity')
-            ->willReturn($queryBuilderMock);
-        $this->entityManager->expects($this->once())
-            ->method('getRepository')
+            ->andReturn($queryBuilderMock);
+        $this->entityManager->shouldReceive('getRepository')
+            ->once()
             ->with($entityClass)
-            ->willReturn($this->entityRepository);
+            ->andReturn($this->entityRepository);
 
         $result = $this->paginationQueryBuilder->getPaginated($entityClass, $itemsPerPage, null);
 
@@ -59,24 +64,28 @@ class PaginationQueryBuilderTest extends TestCase
         $entityClass = Department::class;
         $cursorId = 123;
 
-        $queryBuilderMock = $this->createMock(QueryBuilder::class);
-        $queryBuilderMock->expects($this->once())
-            ->method('andWhere')
+        $queryBuilderMock = Mockery::mock(QueryBuilder::class);
+        $queryBuilderMock->shouldReceive('andWhere')
+            ->once()
             ->with('entity.id > :id')
-            ->willReturnSelf();
-        $queryBuilderMock->expects($this->once())
-            ->method('setParameter')
+            ->andReturnSelf();
+        $queryBuilderMock->shouldReceive('setParameter')
+            ->once()
             ->with('id', $cursorId)
-            ->willReturnSelf();
-        $queryBuilderMock->expects($this->once())
-            ->method('orderBy')
-            ->willReturnSelf();
-        $queryBuilderMock->expects($this->once())
-            ->method('setMaxResults')
-            ->willReturnSelf();
+            ->andReturnSelf();
+        $queryBuilderMock->shouldReceive('orderBy')
+            ->once()
+            ->andReturnSelf();
+        $queryBuilderMock->shouldReceive('setMaxResults')
+            ->once()
+            ->andReturnSelf();
 
-        $this->entityRepository->method('createQueryBuilder')->willReturn($queryBuilderMock);
-        $this->entityManager->method('getRepository')->willReturn($this->entityRepository);
+        $this->entityRepository->shouldReceive('createQueryBuilder')
+            ->once()
+            ->andReturn($queryBuilderMock);
+        $this->entityManager->shouldReceive('getRepository')
+            ->once()
+            ->andReturn($this->entityRepository);
 
         $json = json_encode(['id' => $cursorId]);
         Assert::string($json);

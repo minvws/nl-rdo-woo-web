@@ -9,8 +9,11 @@ use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Shared\Service\Security\User;
+use Stringable;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+
+use function array_merge;
 
 class EnrichedPsrLogger implements LoggerInterface
 {
@@ -31,47 +34,47 @@ class EnrichedPsrLogger implements LoggerInterface
         }
     }
 
-    public function emergency(string|\Stringable $message, array $context = []): void
+    public function emergency(string|Stringable $message, array $context = []): void
     {
         $this->logger->emergency($message, $this->enriched($context));
     }
 
-    public function alert(string|\Stringable $message, array $context = []): void
+    public function alert(string|Stringable $message, array $context = []): void
     {
         $this->logger->alert($message, $this->enriched($context));
     }
 
-    public function critical(string|\Stringable $message, array $context = []): void
+    public function critical(string|Stringable $message, array $context = []): void
     {
         $this->logger->critical($message, $this->enriched($context));
     }
 
-    public function error(string|\Stringable $message, array $context = []): void
+    public function error(string|Stringable $message, array $context = []): void
     {
         $this->logger->error($message, $this->enriched($context));
     }
 
-    public function warning(string|\Stringable $message, array $context = []): void
+    public function warning(string|Stringable $message, array $context = []): void
     {
         $this->logger->warning($message, $this->enriched($context));
     }
 
-    public function notice(string|\Stringable $message, array $context = []): void
+    public function notice(string|Stringable $message, array $context = []): void
     {
         $this->logger->notice($message, $this->enriched($context));
     }
 
-    public function info(string|\Stringable $message, array $context = []): void
+    public function info(string|Stringable $message, array $context = []): void
     {
         $this->logger->info($message, $this->enriched($context));
     }
 
-    public function debug(string|\Stringable $message, array $context = []): void
+    public function debug(string|Stringable $message, array $context = []): void
     {
         $this->logger->debug($message, $this->enriched($context));
     }
 
-    public function log(mixed $level, string|\Stringable $message, array $context = []): void
+    public function log(mixed $level, string|Stringable $message, array $context = []): void
     {
         $this->logger->log($level, $message, $this->enriched($context));
     }

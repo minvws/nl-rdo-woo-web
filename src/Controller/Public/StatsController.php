@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Controller\Public;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Predis\Client;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -15,12 +16,9 @@ use Shared\Service\Storage\ThumbnailStorageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Throwable;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- * @SuppressWarnings("PHPMD.LongVariable")
- */
 class StatsController extends AbstractController
 {
     public function __construct(
@@ -76,8 +74,7 @@ class StatsController extends AbstractController
             && $services['elastic']
             && $services['rabbitmq']
             && $services['storage']['document']
-            && $services['storage']['thumbnail']
-        ;
+            && $services['storage']['thumbnail'];
         $response = new JsonResponse([
             'healthy' => $healthy,
             'externals' => $services,
@@ -98,7 +95,7 @@ class StatsController extends AbstractController
             $result = $this->redis->ping('ping');
 
             return $result === 'ping';
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // ignore
         }
 
@@ -111,7 +108,7 @@ class StatsController extends AbstractController
             $result = $this->doctrine->getConnection()->fetchOne('SELECT 1');
 
             return $result === 1;
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // ignore
         }
 
@@ -126,7 +123,7 @@ class StatsController extends AbstractController
             );
 
             return $result->hasFailed() === false;
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // ignore
         }
 
@@ -144,7 +141,7 @@ class StatsController extends AbstractController
             $response = $client->get('/api/overview');
 
             return $response->getStatusCode() === Response::HTTP_OK;
-        } catch (\Exception) {
+        } catch (Exception) {
             // ignore
         }
 

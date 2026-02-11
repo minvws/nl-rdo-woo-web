@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Department;
 
+use Mockery;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\FileInfo;
@@ -74,7 +75,7 @@ class DepartmentTest extends UnitTestCase
     {
         $department = new Department();
 
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
         $organisation->expects('addDepartment')->with($department);
 
         $department->addOrganisation($organisation);

@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Stats;
 
 use Carbon\CarbonImmutable;
+use DateTimeImmutable;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Service\Stats\Handler\StatsHandlerInterface;
 use Shared\Service\Stats\WorkerStatsService;
 use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
+
+use function func_get_args;
 
 final class WorkerStatsServiceTest extends UnitTestCase
 {
@@ -35,22 +39,22 @@ final class WorkerStatsServiceTest extends UnitTestCase
 
         $hostname = 'test-hostname';
         $section = 'test-section';
-        $statsHandlerOne = \Mockery::mock(StatsHandlerInterface::class);
+        $statsHandlerOne = Mockery::mock(StatsHandlerInterface::class);
         $statsHandlerOne
             ->shouldReceive('store')
             ->once()
             ->with(
-                \Mockery::on(fn (\DateTimeImmutable $date): bool => $date == $testNow),
+                Mockery::on(fn (DateTimeImmutable $date): bool => $date == $testNow),
                 $hostname,
                 $section,
                 $duration,
             );
-        $statsHandlerTwo = \Mockery::mock(StatsHandlerInterface::class);
+        $statsHandlerTwo = Mockery::mock(StatsHandlerInterface::class);
         $statsHandlerTwo
             ->shouldReceive('store')
             ->once()
             ->with(
-                \Mockery::on(fn (\DateTimeImmutable $date): bool => $date == $testNow),
+                Mockery::on(fn (DateTimeImmutable $date): bool => $date == $testNow),
                 $hostname,
                 $section,
                 $duration,
@@ -59,7 +63,7 @@ final class WorkerStatsServiceTest extends UnitTestCase
         $handlers = [$statsHandlerOne, $statsHandlerTwo];
 
         /** @var WorkerStatsService&MockInterface $statsService */
-        $statsService = \Mockery::mock(WorkerStatsService::class, [$handlers])
+        $statsService = Mockery::mock(WorkerStatsService::class, [$handlers])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
         $statsService

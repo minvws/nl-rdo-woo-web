@@ -9,6 +9,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
+use function array_key_exists;
+
 /**
  * This class aggregates Document level changes to caseNrs into a changeset grouped by caseNrs. Grouping it that way
  * makes it much more efficient to process, as it can be applied as one change per case.

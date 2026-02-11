@@ -15,9 +15,6 @@ readonly class IngestAllDossiersHandler
     ) {
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function __invoke(IngestAllDossiersCommand $message): void
     {
         $this->ingestDispatcher->dispatchIngestDossierCommandForAllDossiers();

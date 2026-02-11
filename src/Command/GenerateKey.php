@@ -6,10 +6,13 @@ namespace Shared\Command;
 
 use ParagonIE\Halite\KeyFactory;
 use Shared\Service\Encryption\EncryptionService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
+#[AsCommand(name: 'generate:database-key', description: 'Creates a new key to encrypt database entries')]
 class GenerateKey extends Command
 {
     public function __construct(protected EncryptionService $service)
@@ -19,8 +22,7 @@ class GenerateKey extends Command
 
     protected function configure(): void
     {
-        $this->setName('generate:database-key')
-            ->setDescription('Creates a new key to encrypt database entries')
+        $this
             ->setHelp('Creates a new key to encrypt database entries');
     }
 
@@ -31,14 +33,14 @@ class GenerateKey extends Command
         try {
             $encKey = KeyFactory::generateEncryptionKey();
             $keyHex = KeyFactory::export($encKey)->getString();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $output->writeln("<error>{$e->getMessage()}</error>");
 
-            return 1;
+            return self::FAILURE;
         }
 
         $output->writeln("Key: <info>$keyHex</info>");
 
-        return 0;
+        return self::SUCCESS;
     }
 }

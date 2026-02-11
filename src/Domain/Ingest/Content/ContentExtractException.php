@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Ingest\Content;
 
+use RuntimeException;
 use Shared\Domain\Publication\EntityWithFileInfo;
 
-class ContentExtractException extends \RuntimeException
+use function sprintf;
+
+class ContentExtractException extends RuntimeException
 {
     public static function forCannotCreateLazyFileReference(EntityWithFileInfo $entity): self
     {

@@ -25,7 +25,7 @@ class DossierRepository extends ServiceEntityRepository
 
     /**
      * @param DossierStatus[] $statuses
-     * @param DossierType[]   $types
+     * @param DossierType[] $types
      */
     public function getDossiersForOrganisationQueryBuilder(
         Organisation $organisation,
@@ -91,8 +91,7 @@ class DossierRepository extends ServiceEntityRepository
             ->where('dos.status = :status')
             ->setParameter('status', DossierStatus::PUBLISHED)
             ->orderBy('dos.publicationDate', 'DESC')
-            ->setMaxResults($limit)
-        ;
+            ->setMaxResults($limit);
 
         if ($department !== null) {
             $qb->innerJoin('dos.departments', 'dep')

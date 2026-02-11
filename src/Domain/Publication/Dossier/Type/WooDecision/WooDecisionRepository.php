@@ -18,9 +18,9 @@ use Shared\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\Uid\Uuid;
 
+use function sprintf;
+
 /**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- *
  * @extends AbstractDossierRepository<WooDecision>
  */
 class WooDecisionRepository extends AbstractDossierRepository implements ProvidesDossierTypeSearchResultInterface
@@ -65,8 +65,7 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
             ->innerJoin('dos.documents', 'doc')
             ->setParameter('documentNr', $documentNr)
             ->setParameter('type', DossierType::WOO_DECISION)
-            ->setParameter('statuses', DossierStatus::publiclyAvailableCases())
-        ;
+            ->setParameter('statuses', DossierStatus::publiclyAvailableCases());
 
         return $qb->getQuery()->getResult();
     }
@@ -99,8 +98,7 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
-        ;
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
 
         /** @var ?WooDecisionSearchResult */
         return $qb->getQuery()->getOneOrNullResult();
@@ -113,8 +111,7 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
     {
         $qb = $this->createQueryBuilder('d')
             ->where('d.organisation = :organisation')
-            ->setParameter('organisation', $organisation)
-        ;
+            ->setParameter('organisation', $organisation);
 
         return $qb->getQuery()->getResult();
     }
@@ -154,8 +151,7 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
         $qb = $this->createQueryBuilder('d')
             ->where('d.status IN (:statuses)')
             ->orderBy('d.publicationDate', 'ASC')
-            ->setParameter('statuses', DossierStatus::publiclyAvailableCases())
-        ;
+            ->setParameter('statuses', DossierStatus::publiclyAvailableCases());
 
         return $qb->getQuery()->getResult();
     }
@@ -177,8 +173,7 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
             ->where('d.id = :dossierId')
             ->leftJoin('d.documents', 'doc')
             ->setParameter('dossierId', $wooDecision->getId())
-            ->setParameter('judgements', Judgement::atLeastPartialPublicValues())
-        ;
+            ->setParameter('judgements', Judgement::atLeastPartialPublicValues());
 
         /**
          * @var array{missing_uploads: int, withdrawn: int, suspended: int}

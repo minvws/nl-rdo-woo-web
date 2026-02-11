@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Utils;
 
+use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
@@ -61,10 +62,10 @@ class UtilsTest extends UnitTestCase
 
     public function testGetFileSize(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->expects('getSize')->andReturn(12345);
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->expects('getFileInfo')->andReturn($fileInfo);
 
         self::assertEquals('12.06 KB', Utils::getFileSize($entity));

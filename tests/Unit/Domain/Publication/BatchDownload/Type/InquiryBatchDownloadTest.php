@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\Type;
 
 use Doctrine\ORM\QueryBuilder;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\Type\InquiryBatchDownload;
@@ -20,7 +21,7 @@ class InquiryBatchDownloadTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(InquiryRepository::class);
+        $this->repository = Mockery::mock(InquiryRepository::class);
 
         $this->type = new InquiryBatchDownload(
             $this->repository,
@@ -29,12 +30,12 @@ class InquiryBatchDownloadTest extends UnitTestCase
 
     public function testSupports(): void
     {
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $inquiry = Mockery::mock(Inquiry::class);
         $scope = BatchDownloadScope::forInquiry($inquiry);
 
         self::assertTrue($this->type->supports($scope));
 
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $wooDecision);
 
         self::assertFalse($this->type->supports($scope));
@@ -42,7 +43,7 @@ class InquiryBatchDownloadTest extends UnitTestCase
 
     public function testGetFileBasename(): void
     {
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $inquiry = Mockery::mock(Inquiry::class);
         $inquiry->shouldReceive('getCasenr')->andReturn($caseNr = 'foo-123');
         $scope = BatchDownloadScope::forInquiry($inquiry);
 
@@ -54,8 +55,8 @@ class InquiryBatchDownloadTest extends UnitTestCase
 
     public function testGetDocumentsQuery(): void
     {
-        $inquiry = \Mockery::mock(Inquiry::class);
-        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+        $inquiry = Mockery::mock(Inquiry::class);
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->repository
             ->shouldReceive('getDocumentsForBatchDownload')
@@ -72,9 +73,9 @@ class InquiryBatchDownloadTest extends UnitTestCase
 
     public function testIsAvailableForBatchDownloadReturnsTrueForAtLeastOneUploadedDocument(): void
     {
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $inquiry = Mockery::mock(Inquiry::class);
         $scope = BatchDownloadScope::forInquiry($inquiry);
-        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->repository
             ->shouldReceive('getDocumentsForBatchDownload')
@@ -89,9 +90,9 @@ class InquiryBatchDownloadTest extends UnitTestCase
 
     public function testIsAvailableForBatchDownloadReturnsFalseIfThereAreNoUploadedDocuments(): void
     {
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $inquiry = Mockery::mock(Inquiry::class);
         $scope = BatchDownloadScope::forInquiry($inquiry);
-        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->repository
             ->shouldReceive('getDocumentsForBatchDownload')

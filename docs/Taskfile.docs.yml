@@ -2,7 +2,8 @@
 version: "3"
 
 vars:
-  MARKDOWNLINT_VERSION: v0.19.0
+  # See tags for latest version: https://hub.docker.com/r/davidanson/markdownlint-cli2/tags
+  MARKDOWNLINT_VERSION: v0.20.0
 
 tasks:
   lint:
@@ -85,3 +86,14 @@ tasks:
       - task: :dc
         vars:
           SUB_CMD: run --rm sphinx sphinx-build -M html gebruikershandleiding _build
+
+  bruno:init:
+    desc: Initialize Bruno by creating an environment file Local.bru
+    cmds:
+      - |
+        cat <<EOF > bruno-collection/environments/Local.bru
+        vars {
+          baseUrl: {{.PUBLICATION_API_URL}}
+          organisationId:
+        }
+        EOF

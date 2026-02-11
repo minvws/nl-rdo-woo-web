@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\WooIndex;
 
+use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use ReflectionClass;
 use Shared\Domain\WooIndex\WooIndexNamer;
 use Shared\Domain\WooIndex\WooIndexSitemap;
 use Shared\Tests\Unit\UnitTestCase;
@@ -19,7 +21,7 @@ final class WooIndexNamerTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->wooIndexNamer = \Mockery::mock(WooIndexNamer::class)
+        $this->wooIndexNamer = Mockery::mock(WooIndexNamer::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
     }
@@ -77,7 +79,7 @@ final class WooIndexNamerTest extends UnitTestCase
     {
         $wooIndexSitemap = new WooIndexSitemap();
 
-        $reflection = new \ReflectionClass($wooIndexSitemap);
+        $reflection = new ReflectionClass($wooIndexSitemap);
         $property = $reflection->getProperty('id');
         $property->setAccessible(true);
         $property->setValue($wooIndexSitemap, $uuid);

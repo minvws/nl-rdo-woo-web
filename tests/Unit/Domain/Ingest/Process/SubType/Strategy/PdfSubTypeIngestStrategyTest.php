@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Process\SubType\Strategy;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\IngestDispatcher;
@@ -22,17 +23,17 @@ final class PdfSubTypeIngestStrategyTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->ingestDispatcher = Mockery::mock(IngestDispatcher::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
         $this->strategy = new PdfSubTypeIngestStrategy($this->ingestDispatcher, $this->logger);
     }
 
     public function testHandle(): void
     {
-        $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->andReturn($id = \Mockery::mock(Uuid::class));
-        $options = \Mockery::mock(IngestProcessOptions::class);
+        $document = Mockery::mock(Document::class);
+        $document->shouldReceive('getId')->andReturn($id = Mockery::mock(Uuid::class));
+        $options = Mockery::mock(IngestProcessOptions::class);
         $options->shouldReceive('forceRefresh')->andReturn($forceRefresh = true);
 
         $this->logger->shouldReceive('info')->once()->with('Dispatching ingest for PDF entity', [
@@ -50,11 +51,11 @@ final class PdfSubTypeIngestStrategyTest extends UnitTestCase
 
     public function testCanHandleReturnsTrueWhenTheUploadIsAPdfAndPaginatable(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getMimetype')->once()->andReturn('application/pdf');
         $fileInfo->shouldReceive('isPaginatable')->once()->andReturnTrue();
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $this->assertTrue($this->strategy->canHandle($document));
@@ -62,10 +63,10 @@ final class PdfSubTypeIngestStrategyTest extends UnitTestCase
 
     public function testCanHandleReturnsFalseWhenTheUploadIsNotAPdf(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getMimetype')->once()->andReturn('application/json');
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $this->assertFalse($this->strategy->canHandle($document));
@@ -73,11 +74,11 @@ final class PdfSubTypeIngestStrategyTest extends UnitTestCase
 
     public function testCanHandleReturnsFalseWhenTheUploadIsAPdfAndNotPaginatable(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getMimetype')->once()->andReturn('application/pdf');
         $fileInfo->shouldReceive('isPaginatable')->once()->andReturnFalse();
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $this->assertFalse($this->strategy->canHandle($document));

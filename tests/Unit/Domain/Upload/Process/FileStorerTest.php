@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Upload\Process;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -31,13 +32,13 @@ final class FileStorerTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->thumbnailStorageService = \Mockery::mock(ThumbnailStorageService::class);
-        $this->fileInfo = \Mockery::mock(FileInfo::class);
-        $this->file = \Mockery::mock(UploadedFile::class);
-        $this->document = \Mockery::mock(Document::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->doctrine = Mockery::mock(EntityManagerInterface::class);
+        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
+        $this->thumbnailStorageService = Mockery::mock(ThumbnailStorageService::class);
+        $this->fileInfo = Mockery::mock(FileInfo::class);
+        $this->file = Mockery::mock(UploadedFile::class);
+        $this->document = Mockery::mock(Document::class);
         $this->document->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
 
         $this->fileStorer = new FileStorer(

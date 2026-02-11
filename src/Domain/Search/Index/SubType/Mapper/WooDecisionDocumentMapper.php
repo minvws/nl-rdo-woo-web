@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\SubType\Mapper;
 
+use DateTimeInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
@@ -28,7 +29,7 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
     }
 
     /**
-     * @param string[]               $metadata
+     * @param string[] $metadata
      * @param array<int, mixed>|null $pages
      */
     public function map(object $entity, ?array $metadata = null, ?array $pages = null): ElasticDocument
@@ -62,7 +63,7 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
             ElasticField::FILE_SIZE->value => $file->getSize(),
             ElasticField::FILE_TYPE->value => $file->getType(),
             ElasticField::SOURCE_TYPE->value => $file->getSourceType(),
-            ElasticField::DATE->value => $entity->getDocumentDate()?->format(\DateTimeInterface::ATOM),
+            ElasticField::DATE->value => $entity->getDocumentDate()?->format(DateTimeInterface::ATOM),
             ElasticField::FILENAME->value => $file->getName(),
             ElasticField::FAMILY_ID->value => $entity->getFamilyId() ?? 0,
             ElasticField::DOCUMENT_ID->value => $entity->getDocumentId() ?? '',

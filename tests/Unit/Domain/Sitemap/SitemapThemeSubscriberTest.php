@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Sitemap;
 
+use Mockery;
 use Mockery\MockInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
@@ -24,7 +25,7 @@ class SitemapThemeSubscriberTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->themeManager = \Mockery::mock(ThemeManager::class);
+        $this->themeManager = Mockery::mock(ThemeManager::class);
 
         $this->subscriber = new SitemapThemeSubscriber(
             $this->themeManager,
@@ -35,14 +36,14 @@ class SitemapThemeSubscriberTest extends UnitTestCase
     {
         $themeView = new Theme($slug = 'foobar', '', '', '');
 
-        $urlContainer = \Mockery::mock(UrlContainerInterface::class);
+        $urlContainer = Mockery::mock(UrlContainerInterface::class);
 
         $this->themeManager
             ->expects('getViewsForAllThemes')
             ->once()
             ->andReturn($this->iterableToGenerator([$themeView]));
 
-        $urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
+        $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
         $urlGenerator->expects('generate')->with(
             'app_theme',
             [
@@ -52,7 +53,7 @@ class SitemapThemeSubscriberTest extends UnitTestCase
         )->andReturn($themeUrl = '/theme/foobar');
 
         $urlContainer->expects('addUrl')->with(
-            \Mockery::on(
+            Mockery::on(
                 static function (UrlConcrete $urlConcrete) use ($themeUrl): bool {
                     self::assertEquals($themeUrl, $urlConcrete->getLoc());
 

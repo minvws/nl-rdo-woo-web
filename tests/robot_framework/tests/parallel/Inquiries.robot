@@ -1,3 +1,7 @@
+*** Comments ***
+# robocop: off=no-suite-variable
+
+
 *** Settings ***
 Documentation       Tests that focus on using the inquiry system
 ...                 This is named 01 because we want to run this first, when the queue is empty, because the first test waits for the queue to be empty.
@@ -8,6 +12,10 @@ Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
 Test Tags           ci  inquiries
+
+
+*** Variables ***
+${NEW_PREFIX}   ${EMPTY}
 
 
 *** Test Cases ***
@@ -42,7 +50,7 @@ Preview Inquiry Access
   Search On Public For  ${doc_name}  0 resultaten
   # Verify the document page can't be accessed normally
   Go To  ${document_url}
-  Verify Symfony Error  not found
+  Verify Page Error  404
 
 Inquiry With Multiple Dossiers
   [Documentation]  Create an inquiry with multiple dossiers

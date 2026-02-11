@@ -20,9 +20,8 @@ use Shared\Service\Search\Query\Filter\FilterInterface;
 use Shared\Service\Search\Query\Filter\SubTypesOnlyFilter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function sprintf;
+
 readonly class GroundsFacet implements FacetDefinitionInterface
 {
     public function getKey(): FacetKey

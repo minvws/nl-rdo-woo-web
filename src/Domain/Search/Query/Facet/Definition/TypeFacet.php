@@ -18,6 +18,8 @@ use Shared\Service\Search\Query\Filter\DocTypeFilter;
 use Shared\Service\Search\Query\Filter\FilterInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
+use function sprintf;
+
 readonly class TypeFacet implements FacetDefinitionInterface
 {
     public function getKey(): FacetKey

@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain\Upload\Handler\S3;
 use Aws\Result;
 use Aws\S3\S3Client;
 use GuzzleHttp\Psr7\Stream;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
@@ -17,6 +18,8 @@ use Shared\Service\Uploader\UploadGroupId;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
+
+use function sprintf;
 
 class S3UploadHelperTest extends MockeryTestCase
 {
@@ -29,14 +32,14 @@ class S3UploadHelperTest extends MockeryTestCase
 
     protected function setUp(): void
     {
-        $this->s3Client = \Mockery::mock(S3Client::class);
+        $this->s3Client = Mockery::mock(S3Client::class);
         $this->helper = new S3UploadHelper($this->s3Client, $this->bucket);
         $this->vfs = vfsStream::setup();
     }
 
     public function testCreateMultipartUpload(): void
     {
-        $uploadedFile = \Mockery::mock(UploadedFile::class);
+        $uploadedFile = Mockery::mock(UploadedFile::class);
         $request = new UploadRequest(
             chunkIndex: 0,
             chunkCount: 1,
@@ -46,7 +49,7 @@ class S3UploadHelperTest extends MockeryTestCase
             additionalParameters: new InputBag(),
         );
 
-        $result = \Mockery::mock(Result::class);
+        $result = Mockery::mock(Result::class);
         $result->shouldReceive('hasKey')->with('UploadId')->andReturnTrue();
         $result->shouldReceive('get')->with('UploadId')->andReturn($id = 'test-123');
 
@@ -65,7 +68,7 @@ class S3UploadHelperTest extends MockeryTestCase
             ->at($this->vfs);
         $realPath = sprintf('%s/%s', $this->vfs->url(), $path);
 
-        $uploadedFile = \Mockery::mock(UploadedFile::class);
+        $uploadedFile = Mockery::mock(UploadedFile::class);
         $uploadedFile->shouldReceive('getRealPath')->andReturn($realPath);
 
         $request = new UploadRequest(
@@ -77,7 +80,7 @@ class S3UploadHelperTest extends MockeryTestCase
             additionalParameters: new InputBag(),
         );
 
-        $result = \Mockery::mock(Result::class);
+        $result = Mockery::mock(Result::class);
         $id = 'test-123';
 
         $this->s3Client->expects('uploadPart')->with([
@@ -93,7 +96,7 @@ class S3UploadHelperTest extends MockeryTestCase
 
     public function testCompleteMultipartUpload(): void
     {
-        $uploadedFile = \Mockery::mock(UploadedFile::class);
+        $uploadedFile = Mockery::mock(UploadedFile::class);
         $request = new UploadRequest(
             chunkIndex: 2,
             chunkCount: 3,
@@ -122,7 +125,7 @@ class S3UploadHelperTest extends MockeryTestCase
             ],
         ]);
 
-        $headResult = \Mockery::mock(Result::class);
+        $headResult = Mockery::mock(Result::class);
         $headResult->shouldReceive('hasKey')->with('ContentLength')->andReturnTrue();
         $headResult->shouldReceive('get')->with('ContentLength')->andReturn($length = 456);
         $this->s3Client->expects('headObject')->with([
@@ -179,7 +182,7 @@ class S3UploadHelperTest extends MockeryTestCase
     public function testUploadFile(): void
     {
         $realPath = 'foo/bar.baz';
-        $uploadedFile = \Mockery::mock(UploadedFile::class);
+        $uploadedFile = Mockery::mock(UploadedFile::class);
         $uploadedFile->shouldReceive('getRealPath')->andReturn($realPath);
 
         $request = new UploadRequest(
@@ -204,8 +207,8 @@ class S3UploadHelperTest extends MockeryTestCase
     {
         $uploadId = 'test-123';
 
-        $stream = \Mockery::mock(Stream::class);
-        $result = \Mockery::mock(Result::class);
+        $stream = Mockery::mock(Stream::class);
+        $result = Mockery::mock(Result::class);
         $result->shouldReceive('get')->with('Body')->andReturn($stream);
 
         $this->s3Client->expects('getObject')->with([
@@ -220,8 +223,8 @@ class S3UploadHelperTest extends MockeryTestCase
     {
         $uploadId = 'test-123';
 
-        $stream = \Mockery::mock(Stream::class);
-        $result = \Mockery::mock(Result::class);
+        $stream = Mockery::mock(Stream::class);
+        $result = Mockery::mock(Result::class);
         $result->shouldReceive('get')->with('Body')->andReturn($stream);
 
         $this->s3Client->expects('getObject')->with([

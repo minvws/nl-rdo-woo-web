@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Logging;
 
+use Mockery;
 use Mockery\MockInterface;
 use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Handler\FormattableHandlerInterface;
@@ -13,6 +14,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Service\Logging\EnrichedPsrLogger;
 use Shared\Service\Security\User;
 use Shared\Tests\Unit\UnitTestCase;
+use Stringable;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -34,24 +36,24 @@ final class EnrichedPsrLoggerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->request = \Mockery::mock(Request::class);
+        $this->request = Mockery::mock(Request::class);
         $this->request->shouldReceive('getClientIps')->andReturn(self::IPS);
 
-        $this->logger = \Mockery::mock(Logger::class);
+        $this->logger = Mockery::mock(Logger::class);
 
         $this->userId = Uuid::v6();
 
-        $this->user = \Mockery::mock(User::class);
+        $this->user = Mockery::mock(User::class);
         $this->user->shouldReceive('getId')->andReturn($this->userId);
         $this->user->shouldReceive('getRoles')->andReturn(self::MY_ROLES);
 
-        $this->token = \Mockery::mock(TokenInterface::class);
+        $this->token = Mockery::mock(TokenInterface::class);
         $this->token->shouldReceive('getUser')->andReturn($this->user);
 
-        $this->tokenStorage = \Mockery::mock(TokenStorageInterface::class);
+        $this->tokenStorage = Mockery::mock(TokenStorageInterface::class);
         $this->tokenStorage->shouldReceive('getToken')->andReturn($this->token);
 
-        $this->requestStack = \Mockery::mock(RequestStack::class);
+        $this->requestStack = Mockery::mock(RequestStack::class);
         $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($this->request);
     }
 
@@ -78,7 +80,7 @@ final class EnrichedPsrLoggerTest extends UnitTestCase
 
     public function testLoggingWithStringable(): void
     {
-        $message = new class implements \Stringable {
+        $message = new class implements Stringable {
             public function __toString(): string
             {
                 return 'my message';
@@ -144,14 +146,14 @@ final class EnrichedPsrLoggerTest extends UnitTestCase
 
     private function getLogger(): EnrichedPsrLogger
     {
-        $normalizerFormatter = \Mockery::mock(NormalizerFormatter::class);
+        $normalizerFormatter = Mockery::mock(NormalizerFormatter::class);
         $normalizerFormatter->shouldReceive('setMaxNormalizeDepth')->once()->with(20);
 
         /** @var FormattableHandlerInterface&MockInterface $formattableHandler */
-        $formattableHandler = \Mockery::mock(FormattableHandlerInterface::class);
+        $formattableHandler = Mockery::mock(FormattableHandlerInterface::class);
         $formattableHandler->shouldReceive('getFormatter')->andReturn($normalizerFormatter);
 
-        $handler = \Mockery::mock(HandlerInterface::class);
+        $handler = Mockery::mock(HandlerInterface::class);
         $handler->shouldNotReceive('getFormatter');
 
         $this->logger

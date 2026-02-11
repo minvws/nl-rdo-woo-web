@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace Shared\Service;
 
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\History\History;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Uid\Uuid;
+
+use function is_array;
+use function is_string;
+use function join;
+use function str_ends_with;
+use function str_starts_with;
+use function substr;
 
 class HistoryService
 {
@@ -61,7 +69,7 @@ class HistoryService
     protected function addEntry(string $type, Uuid $identifier, string $key, array $context, string $mode, bool $flush): void
     {
         $history = new History();
-        $history->setCreatedDt(new \DateTimeImmutable());
+        $history->setCreatedDt(new DateTimeImmutable());
         $history->setType($type);
         $history->setIdentifier($identifier);
         $history->setContextKey($key);

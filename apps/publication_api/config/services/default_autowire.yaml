@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            $itemsPerPage: 100
+
+    PublicationApi\:
+        resource: '../../src/'

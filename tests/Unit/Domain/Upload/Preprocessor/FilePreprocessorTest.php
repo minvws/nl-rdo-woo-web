@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload\Preprocessor;
 
+use ArrayIterator;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Upload\Preprocessor\FilePreprocessor;
 use Shared\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function iterator_to_array;
 
 final class FilePreprocessorTest extends UnitTestCase
 {
@@ -23,9 +27,9 @@ final class FilePreprocessorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->file = \Mockery::mock(UploadedFile::class);
-        $this->firstPreprocessor = \Mockery::mock(FilePreprocessorStrategyInterface::class);
-        $this->secondPreprocessor = \Mockery::mock(FilePreprocessorStrategyInterface::class);
+        $this->file = Mockery::mock(UploadedFile::class);
+        $this->firstPreprocessor = Mockery::mock(FilePreprocessorStrategyInterface::class);
+        $this->secondPreprocessor = Mockery::mock(FilePreprocessorStrategyInterface::class);
     }
 
     public function testProcessPassingArrayOfStrategies(): void
@@ -45,7 +49,7 @@ final class FilePreprocessorTest extends UnitTestCase
         $this->secondPreprocessor
             ->shouldReceive('process')
             ->with($this->file)
-            ->andReturn($this->iterableToGenerator($expectedResult = [\Mockery::mock(UploadedFile::class), \Mockery::mock(UploadedFile::class)]));
+            ->andReturn($this->iterableToGenerator($expectedResult = [Mockery::mock(UploadedFile::class), Mockery::mock(UploadedFile::class)]));
 
         $preprocessor = new FilePreprocessor([$this->firstPreprocessor, $this->secondPreprocessor]);
         $result = $preprocessor->process($this->file);
@@ -65,10 +69,10 @@ final class FilePreprocessorTest extends UnitTestCase
         $this->firstPreprocessor
             ->shouldReceive('process')
             ->with($this->file)
-            ->andReturn($this->iterableToGenerator($expectedResult = [\Mockery::mock(UploadedFile::class), \Mockery::mock(UploadedFile::class)]));
+            ->andReturn($this->iterableToGenerator($expectedResult = [Mockery::mock(UploadedFile::class), Mockery::mock(UploadedFile::class)]));
         $this->secondPreprocessor->shouldNotReceive('process');
 
-        $preprocessor = new FilePreprocessor(new \ArrayIterator([$this->firstPreprocessor, $this->secondPreprocessor]));
+        $preprocessor = new FilePreprocessor(new ArrayIterator([$this->firstPreprocessor, $this->secondPreprocessor]));
         $result = $preprocessor->process($this->file);
 
         $this->assertEquals($expectedResult, iterator_to_array($result, false));

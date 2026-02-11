@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Api\Admin\Uploader\WooDecision\Status;
 
+use Admin\Api\Admin\Uploader\WooDecision\Status\UploadedFileDto;
+use Admin\Api\Admin\Uploader\WooDecision\Status\UploadStatusDtoFactory;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
-use Shared\Api\Admin\Uploader\WooDecision\Status\UploadedFileDto;
-use Shared\Api\Admin\Uploader\WooDecision\Status\UploadStatusDtoFactory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
@@ -21,6 +22,8 @@ use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
+use function array_map;
+
 final class UploadStatusDtoFactoryTest extends UnitTestCase
 {
     private DocumentFileService&MockInterface $documentFileService;
@@ -29,25 +32,25 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->documentFileService = \Mockery::mock(DocumentFileService::class);
+        $this->documentFileService = Mockery::mock(DocumentFileService::class);
     }
 
     public function testMake(): void
     {
-        $doc = \Mockery::mock(Document::class);
-        $uploadStatus = \Mockery::mock(DossierUploadStatus::class);
+        $doc = Mockery::mock(Document::class);
+        $uploadStatus = Mockery::mock(DossierUploadStatus::class);
         $uploadStatus->shouldReceive('getExpectedUploadCount')->andReturn(4);
         $uploadStatus->shouldReceive('getUploadedDocuments')->andReturn(new ArrayCollection([$doc]));
         $uploadStatus->shouldReceive('getMissingDocumentIds')->andReturn(new ArrayCollection(['1002', '1004', '1005']));
 
         /** @var WooDecision&MockInterface $wooDecision */
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('getId')->andReturn(Uuid::fromString('00000000-0000-0000-0000-000000000001'));
         $wooDecision->shouldReceive('getDocuments')->andReturn($this->getDocuments());
         $wooDecision->expects('getUploadStatus')->andReturn($uploadStatus);
 
         /** @var DocumentFileSet&MockInterface $documentFileSet */
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet->shouldReceive('getStatus')->andReturn(DocumentFileSetStatus::OPEN_FOR_UPLOADS);
         $documentFileSet->shouldReceive('getUploads')->andReturn($this->getUploads());
 
@@ -76,20 +79,20 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
 
     public function testMakeWithChanges(): void
     {
-        $doc = \Mockery::mock(Document::class);
-        $uploadStatus = \Mockery::mock(DossierUploadStatus::class);
+        $doc = Mockery::mock(Document::class);
+        $uploadStatus = Mockery::mock(DossierUploadStatus::class);
         $uploadStatus->shouldReceive('getExpectedUploadCount')->andReturn(4);
         $uploadStatus->shouldReceive('getUploadedDocuments')->andReturn(new ArrayCollection([$doc]));
         $uploadStatus->shouldReceive('getMissingDocumentIds')->andReturn(new ArrayCollection(['1002', '1004', '1005']));
 
         /** @var WooDecision&MockInterface $wooDecision */
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('getId')->andReturn(Uuid::fromString('00000000-0000-0000-0000-000000000001'));
         $wooDecision->shouldReceive('getDocuments')->andReturn($this->getDocuments());
         $wooDecision->expects('getUploadStatus')->andReturn($uploadStatus);
 
         /** @var DocumentFileSet&MockInterface $documentFileSet */
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet->shouldReceive('getStatus')->andReturn(DocumentFileSetStatus::NEEDS_CONFIRMATION);
         $documentFileSet->shouldReceive('getUploads')->andReturn(new ArrayCollection());
         $documentFileSet->shouldReceive('getUpdates')->andReturn($this->getUpdates());
@@ -134,7 +137,7 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
     private function getDocument(string $documentId, string $name, bool $shouldBeUploaded, bool $isUploaded): Document&MockInterface
     {
         /** @var Document&MockInterface $document */
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo')->andReturn($this->getFileInfo($name));
         $document->shouldReceive('getDocumentId')->andReturn($documentId);
         $document->shouldReceive('shouldBeUploaded')->andReturn($shouldBeUploaded);
@@ -157,7 +160,7 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
 
     private function getDocumentFileUpload(string $name, string $mimeType, string $uuid): DocumentFileUpload&MockInterface
     {
-        $upload = \Mockery::mock(DocumentFileUpload::class);
+        $upload = Mockery::mock(DocumentFileUpload::class);
         $upload->shouldReceive('getId')->andReturn(Uuid::fromString($uuid));
         $upload->shouldReceive('getFileInfo')->andReturn($this->getFileInfo($name, $mimeType));
 
@@ -167,7 +170,7 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
     private function getFileInfo(string $name, ?string $mimeType = null): FileInfo&MockInterface
     {
         /** @var FileInfo&MockInterface $fileInfo */
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getName')->andReturn($name);
         $fileInfo->shouldReceive('getMimeType')->andReturn($mimeType);
 
@@ -187,7 +190,7 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
 
     private function getDocumentFileUpdate(DocumentFileUpdateType $updateType): DocumentFileUpdate&MockInterface
     {
-        $update = \Mockery::mock(DocumentFileUpdate::class);
+        $update = Mockery::mock(DocumentFileUpdate::class);
         $update->shouldReceive('getType')->andReturn($updateType);
 
         return $update;

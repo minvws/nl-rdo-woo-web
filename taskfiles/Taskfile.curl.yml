@@ -1,0 +1,18 @@
+# https;?/taskfile.dev
+version: "3"
+
+tasks:
+
+  curl:*:
+    desc: Make a curl request to the Publication Api
+    vars:
+      CLIENT: "{{index .MATCH 0}}"
+    cmds:
+      - curl
+        --cacert ./docker/certs/generated/client-bundle.pem
+        --cert ./docker/certs/generated/curl/client-{{.CLIENT}}-bundled.pem
+        {{.PUBLICATION_API_URL}}/api/publication/v1/{{.CLI_ARGS}}
+    requires:
+      vars:
+        - name: CLIENT
+          enum: [vws, fin, bzk]

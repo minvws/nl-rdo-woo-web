@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Validator;
 
+use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\Validator\CommonList;
@@ -16,9 +17,9 @@ class CommonListValidatorTest extends UnitTestCase
     #[DataProvider('validatorProvider')]
     public function testValidator(string $input, bool $expectViolation): void
     {
-        $context = \Mockery::mock(ExecutionContextInterface::class);
+        $context = Mockery::mock(ExecutionContextInterface::class);
         if ($expectViolation) {
-            $builder = \Mockery::mock(ConstraintViolationBuilderInterface::class);
+            $builder = Mockery::mock(ConstraintViolationBuilderInterface::class);
             $context->expects('buildViolation')->andReturn($builder);
             $builder->expects('setParameter');
             $builder->expects('addViolation');

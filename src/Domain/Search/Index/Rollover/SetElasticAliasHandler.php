@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\Rollover;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -28,7 +29,7 @@ readonly class SetElasticAliasHandler
                 srcIndex: '*',
                 dstIndex: $message->indexName,
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to switch elasticsearch alias', [
                 'index_name' => $message->indexName,
                 'alias_name' => $message->aliasName,

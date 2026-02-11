@@ -41,14 +41,13 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
 
     public function testSave(): void
     {
-        $covenant = CovenantFactory::createOne()->_real();
+        $covenant = CovenantFactory::createOne();
 
         $covenantAttachment = CovenantAttachmentFactory::new()
             ->withoutPersisting()
             ->createOne([
                 'dossier' => $covenant,
-            ])
-            ->_real();
+            ]);
 
         $this->getRepository()->save($covenantAttachment, true);
 
@@ -58,11 +57,11 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
 
     public function testFindForDossierByPrefixAndNrFindsMatch(): void
     {
-        $covenant = CovenantFactory::createOne()->_real();
+        $covenant = CovenantFactory::createOne();
 
         $covenantAttachment = CovenantAttachmentFactory::createOne([
             'dossier' => $covenant,
-        ])->_real();
+        ]);
 
         $repository = $this->getRepository();
 
@@ -91,10 +90,10 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
 
     public function testRemove(): void
     {
-        $dossier = CovenantFactory::createOne()->_real();
+        $dossier = CovenantFactory::createOne();
         $attachment = CovenantAttachmentFactory::createOne([
             'dossier' => $dossier,
-        ])->_real();
+        ]);
 
         $repository = $this->getRepository();
 
@@ -117,10 +116,10 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
 
     public function testFindOneOrNullForDossier(): void
     {
-        $dossier = CovenantFactory::createOne()->_real();
+        $dossier = CovenantFactory::createOne();
         $attachment = CovenantAttachmentFactory::createOne([
             'dossier' => $dossier,
-        ])->_real();
+        ]);
 
         $result = $this->getRepository()->findOneOrNullForDossier(
             $dossier->getId(),
@@ -140,10 +139,10 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
 
     public function testFindForDossierByPrefixAndNrResultsNullOnDossierMismatch(): void
     {
-        $dossier = CovenantFactory::createOne()->_real();
+        $dossier = CovenantFactory::createOne();
         $attachment = CovenantAttachmentFactory::createOne([
             'dossier' => $dossier,
-        ])->_real();
+        ]);
 
         $result = $this->getRepository()->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
@@ -156,9 +155,9 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
 
     public function testCreate(): void
     {
-        $covenant = CovenantFactory::createOne()->_real();
+        $covenant = CovenantFactory::createOne();
 
-        $covenantAttachment = CovenantAttachmentFactory::new()->withoutPersisting()->createOne()->_real();
+        $covenantAttachment = CovenantAttachmentFactory::new()->withoutPersisting()->createOne();
 
         $createAttachmentCommand = new CreateAttachmentCommand(
             dossierId: $covenant->getId(),

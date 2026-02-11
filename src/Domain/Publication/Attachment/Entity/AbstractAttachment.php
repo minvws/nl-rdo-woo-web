@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Attachment\Entity;
 
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
@@ -21,6 +22,7 @@ use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAtta
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\Uploader\UploadGroupId;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 #[ORM\Entity(repositoryClass: AttachmentRepository::class)]
@@ -38,6 +40,7 @@ use Webmozart\Assert\Assert;
     'request_for_advice_attachment' => RequestForAdviceAttachment::class,
 ])]
 #[ORM\HasLifecycleCallbacks]
+#[ORM\UniqueConstraint(columns: ['dossier_id', 'external_id'])]
 abstract class AbstractAttachment implements EntityWithFileInfo
 {
     use AttachmentAndMainDocumentEntityTrait;
@@ -60,13 +63,28 @@ abstract class AbstractAttachment implements EntityWithFileInfo
     private ?string $withdrawExplanation = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $withdrawDate = null;
+    private ?DateTimeImmutable $withdrawDate = null;
+
+    #[ORM\Column(name: 'external_id', type: 'external_id', length: 128, nullable: true)]
+    protected ?ExternalId $externalId = null;
 
     public function getDossier(): AbstractDossier&EntityWithAttachments
     {
         Assert::isInstanceOf($this->dossier, EntityWithAttachments::class);
 
         return $this->dossier;
+    }
+
+    public function getExternalId(): ?ExternalId
+    {
+        return $this->externalId;
+    }
+
+    public function setExternalId(?ExternalId $externalId): self
+    {
+        $this->externalId = $externalId;
+
+        return $this;
     }
 
     /**
@@ -99,7 +117,7 @@ abstract class AbstractAttachment implements EntityWithFileInfo
         return $this->withdrawExplanation;
     }
 
-    public function getWithdrawDate(): ?\DateTimeImmutable
+    public function getWithdrawDate(): ?DateTimeImmutable
     {
         return $this->withdrawDate;
     }
@@ -119,7 +137,7 @@ abstract class AbstractAttachment implements EntityWithFileInfo
         $this->withdrawn = true;
         $this->withdrawReason = $reason;
         $this->withdrawExplanation = $explanation;
-        $this->withdrawDate = new \DateTimeImmutable();
+        $this->withdrawDate = new DateTimeImmutable();
 
         $this->fileInfo->removeFileProperties();
     }

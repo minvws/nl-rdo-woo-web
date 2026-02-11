@@ -10,7 +10,9 @@ use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Story\WooIndexAnnualReportStory;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Persistence\Proxy;
+
+use function array_map;
+use function iterator_to_array;
 
 final class AttachmentRepositoryTest extends SharedWebTestCase
 {
@@ -31,11 +33,11 @@ final class AttachmentRepositoryTest extends SharedWebTestCase
         /** @var list<AbstractAttachment> $allAttachments */
         $allAttachments = iterator_to_array($iterable, false);
 
-        /** @var non-empty-list<Proxy<AnnualReportAttachment>> $attachments */
+        /** @var non-empty-list<AnnualReportAttachment> $attachments */
         $attachments = WooIndexAnnualReportStory::getPool('attachments');
 
         $expectedAttachmentUuids = array_map(
-            fn (Proxy $attachment): string => $attachment->_real()->getId()->toRfc4122(),
+            fn (AbstractAttachment $attachment): string => $attachment->getId()->toRfc4122(),
             $attachments,
         );
 

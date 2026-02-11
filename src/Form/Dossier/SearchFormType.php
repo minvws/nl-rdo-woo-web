@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Form\Dossier;
 
+use Override;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Publication\Dossier\Admin\DossierFilterParameters;
@@ -18,6 +19,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use function count;
+
 /**
  * @template-extends AbstractType<SearchFormType>
  */
@@ -30,15 +33,12 @@ class SearchFormType extends AbstractType
     ) {
     }
 
-    #[\Override]
+    #[Override]
     public function getBlockPrefix(): string
     {
         return '';
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Workflow\Guard;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
@@ -24,7 +25,7 @@ class ScheduleGuardTest extends UnitTestCase
 
     public function testGuardScheduleAllowsOtherTransitions(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $event = new GuardEvent(
             $dossier,
             new Marking([]),
@@ -38,7 +39,7 @@ class ScheduleGuardTest extends UnitTestCase
 
     public function testGuardScheduleBlocksIncompleteDossier(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('isCompleted')->andReturnFalse();
 
         $event = new GuardEvent(
@@ -54,7 +55,7 @@ class ScheduleGuardTest extends UnitTestCase
 
     public function testGuardScheduleAllowsValidDossier(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('isCompleted')->andReturnTrue();
 
         $event = new GuardEvent(

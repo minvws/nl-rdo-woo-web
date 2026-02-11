@@ -27,9 +27,9 @@ final class WooDecisionMainDocumentRepositoryTest extends SharedWebTestCase
 
     public function testCreate(): void
     {
-        $dossier = WooDecisionFactory::createOne()->_real();
+        $dossier = WooDecisionFactory::createOne();
 
-        $document = WooDecisionMainDocumentFactory::new()->withoutPersisting()->createOne()->_real();
+        $document = WooDecisionMainDocumentFactory::new()->withoutPersisting()->createOne();
 
         $createMainDocumentCommand = new CreateMainDocumentCommand(
             dossierId: $dossier->getId(),

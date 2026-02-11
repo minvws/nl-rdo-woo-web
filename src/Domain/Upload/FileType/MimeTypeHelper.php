@@ -11,6 +11,9 @@ use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\File\File;
 use Webmozart\Assert\Assert;
 
+use function in_array;
+use function json_encode;
+
 readonly class MimeTypeHelper
 {
     public const int SAMPLE_SIZE = 16 * 1024 * 1024;
@@ -27,7 +30,7 @@ readonly class MimeTypeHelper
         UploadGroupId $groupId,
     ): bool {
         $groupExtensions = $groupId->getExtensions();
-        if (! \in_array($fileExtension, $groupExtensions, true)) {
+        if (! in_array($fileExtension, $groupExtensions, true)) {
             $this->logger->warning('fileExtension not allowed in groupExtensions', [
                 'fileExtension' => $fileExtension,
                 'uploadGroupId' => $groupId->value,
@@ -37,7 +40,7 @@ readonly class MimeTypeHelper
         }
 
         $groupMimeTypes = $groupId->getMimeTypes();
-        if ($mimeType === null || ! \in_array($mimeType, $groupMimeTypes, true)) {
+        if ($mimeType === null || ! in_array($mimeType, $groupMimeTypes, true)) {
             $this->logger->warning('mimeType not allowed in groupMimTypes', [
                 'mimeType' => $mimeType,
                 'uploadGroupId' => $groupId->value,
@@ -49,10 +52,10 @@ readonly class MimeTypeHelper
         $fileExtensionsFromMimeType = FileType::fromMimeType($mimeType);
         Assert::isInstanceOf($fileExtensionsFromMimeType, FileType::class);
 
-        if (! \in_array($fileExtension, $fileExtensionsFromMimeType->getExtensions())) {
+        if (! in_array($fileExtension, $fileExtensionsFromMimeType->getExtensions())) {
             $this->logger->warning('fileExtension not allowed for fileExtensionsFromMimeType', [
                 'fileExtension' => $fileExtension,
-                'fileExtensionsFromMimeType' => \json_encode($fileExtensionsFromMimeType),
+                'fileExtensionsFromMimeType' => json_encode($fileExtensionsFromMimeType),
             ]);
 
             return false;

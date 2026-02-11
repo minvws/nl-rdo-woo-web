@@ -7,3 +7,5 @@ subject:
   organizationIdentifier: NTRNL-99999991  # This is the KvK Registration number in an ETSI format
 subjectAltNames:
   - woo.local
+  - localhost
+  - publication-api-woo.local

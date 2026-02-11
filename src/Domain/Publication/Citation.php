@@ -6,6 +6,14 @@ namespace Shared\Domain\Publication;
 
 use Webmozart\Assert\Assert;
 
+use function array_flip;
+use function array_keys;
+use function key_exists;
+use function str_replace;
+use function strcmp;
+use function strtolower;
+use function usort;
+
 /**
  * Converts citation codes to human-readable classifications.
  */

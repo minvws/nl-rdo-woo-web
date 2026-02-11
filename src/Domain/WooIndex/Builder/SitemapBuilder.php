@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex\Builder;
 
+use Closure;
 use Webmozart\Assert\Assert;
+
+use function implode;
 
 final class SitemapBuilder
 {
     /**
-     * @var ?\Closure(DiWooXMLWriter):void
+     * @var ?Closure(DiWooXMLWriter):void
      */
-    private ?\Closure $writerFactoryConfigurator = null;
+    private ?Closure $writerFactoryConfigurator = null;
 
     /**
      * @param resource $stream
@@ -50,9 +53,9 @@ final class SitemapBuilder
     }
 
     /**
-     * @param ?\Closure(DiWooXMLWriter):void $closure
+     * @param ?Closure(DiWooXMLWriter):void $closure
      */
-    public function setXMLWriterConfigurator(?\Closure $closure): self
+    public function setXMLWriterConfigurator(?Closure $closure): self
     {
         $this->writerFactoryConfigurator = $closure;
 

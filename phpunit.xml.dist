@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.4/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="./tests/bootstrap.php"
          cacheDirectory=".phpunit.cache"
          executionOrder="depends,defects"
@@ -10,6 +10,7 @@
          failOnRisky="true"
          failOnWarning="true"
          colors="true"
+         displayDetailsOnAllIssues="true"
     >
     <php>
         <ini name="display_errors" value="1" />
@@ -42,12 +43,20 @@
     <source>
         <include>
             <directory>src</directory>
+            <directory>apps/admin/src</directory>
+            <directory>apps/public/src</directory>
+            <directory>apps/publication_api/src</directory>
+            <directory>apps/shared/src</directory>
+            <directory>apps/worker/src</directory>
         </include>
         <exclude>
             <directory>src/Controller</directory>
             <directory>src/Form</directory>
-            <directory suffix="Dto.php">src/Api</directory>
             <file>src/class_aliases.php</file>
+            <directory suffix="Dto.php">apps/publication/src/Api</directory>
+            <directory suffix="Dto.php">apps/admin/src/Api</directory>
+            <directory>apps/admin/src/Controller</directory>
+            <directory>apps/admin/src/Form</directory>
         </exclude>
     </source>
 

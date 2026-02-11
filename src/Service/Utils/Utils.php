@@ -6,6 +6,9 @@ namespace Shared\Service\Utils;
 
 use Shared\Domain\Publication\EntityWithFileInfo;
 
+use function number_format;
+use function round;
+
 class Utils
 {
     public static function size(string|int $value): string

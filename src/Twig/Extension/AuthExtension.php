@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Twig\Extension;
 
+use Override;
 use Shared\Domain\Department\DepartmentService;
 use Shared\Twig\Runtime\AuthExtensionRuntime;
 use Twig\Extension\AbstractExtension;
@@ -20,7 +21,7 @@ class AuthExtension extends AbstractExtension
     ) {
     }
 
-    #[\Override]
+    #[Override]
     public function getFunctions(): array
     {
         return [

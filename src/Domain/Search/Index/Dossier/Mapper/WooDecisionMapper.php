@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\Dossier\Mapper;
 
+use DateTimeInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -35,7 +36,7 @@ readonly class WooDecisionMapper implements ElasticDossierMapperInterface
         $fields = $defaultDocument->getFields();
 
         $fields[ElasticField::PUBLICATION_REASON->value] = $dossier->getPublicationReason();
-        $fields[ElasticField::DECISION_DATE->value] = $dossier->getDecisionDate()?->format(\DateTimeInterface::ATOM);
+        $fields[ElasticField::DECISION_DATE->value] = $dossier->getDecisionDate()?->format(DateTimeInterface::ATOM);
         $fields[ElasticField::DECISION->value] = $dossier->getDecision();
 
         $fields[ElasticField::INQUIRY_IDS->value] = $dossier->getInquiries()->map(

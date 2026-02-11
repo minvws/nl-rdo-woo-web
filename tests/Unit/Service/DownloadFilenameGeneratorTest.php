@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Service\DownloadFilenameGenerator;
@@ -13,7 +14,7 @@ class DownloadFilenameGeneratorTest extends UnitTestCase
 {
     public function testGetFileNameForDocument(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDocumentNr')->andReturn('123');
         $document->shouldReceive('getFileInfo->getType')->andReturn('csv');
 
@@ -27,7 +28,7 @@ class DownloadFilenameGeneratorTest extends UnitTestCase
 
     public function testGetFileNameForAttachment(): void
     {
-        $attachment = \Mockery::mock(WooDecisionAttachment::class);
+        $attachment = Mockery::mock(WooDecisionAttachment::class);
         $attachment->shouldReceive('getFileInfo->getName')->andReturn('foo-b@r.bla.docx');
 
         $generator = new DownloadFilenameGenerator();

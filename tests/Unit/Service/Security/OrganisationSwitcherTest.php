@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Security;
 
+use Mockery;
 use Mockery\MockInterface;
+use RuntimeException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Service\Security\OrganisationSwitcher;
@@ -26,13 +28,13 @@ class OrganisationSwitcherTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->user = \Mockery::mock(User::class);
+        $this->user = Mockery::mock(User::class);
 
-        $this->organisationRepository = \Mockery::mock(OrganisationRepository::class);
+        $this->organisationRepository = Mockery::mock(OrganisationRepository::class);
 
-        $this->session = \Mockery::mock(Session::class);
+        $this->session = Mockery::mock(Session::class);
 
-        $this->requestStack = \Mockery::mock(RequestStack::class);
+        $this->requestStack = Mockery::mock(RequestStack::class);
         $this->requestStack->shouldReceive('getSession')->andReturns($this->session);
 
         $this->organisationSwitcher = new OrganisationSwitcher(
@@ -43,7 +45,7 @@ class OrganisationSwitcherTest extends UnitTestCase
 
     public function testGetActiveOrganisationReturnsUserOrganisationForNormalUsers(): void
     {
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
 
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnFalse();
         $this->user->expects('getOrganisation')->andReturn($organisation);
@@ -58,9 +60,9 @@ class OrganisationSwitcherTest extends UnitTestCase
     {
         $uuid = Uuid::v6();
 
-        $organisationA = \Mockery::mock(Organisation::class);
+        $organisationA = Mockery::mock(Organisation::class);
         $organisationA->expects('getId')->andReturn($uuid);
-        $organisationB = \Mockery::mock(Organisation::class);
+        $organisationB = Mockery::mock(Organisation::class);
 
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->twice()->andReturnTrue();
         $this->organisationRepository->expects('getAllSortedByName')->andReturn([$organisationA, $organisationB]);
@@ -78,14 +80,14 @@ class OrganisationSwitcherTest extends UnitTestCase
     {
         $uuid = Uuid::v6();
 
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
 
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnTrue();
 
         $this->session->expects('has')->with('organisation')->andReturnTrue();
         $this->session->expects('get')->with('organisation')->andReturn($uuid->toRfc4122());
 
-        $this->organisationRepository->expects('find')->with(\Mockery::on(
+        $this->organisationRepository->expects('find')->with(Mockery::on(
             static fn (Uuid $queryUuid) => $queryUuid->toRfc4122() === $uuid->toRfc4122()
         ))->andReturn($organisation);
 
@@ -101,14 +103,14 @@ class OrganisationSwitcherTest extends UnitTestCase
 
         $this->user->shouldReceive('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnTrue();
 
-        $organisationA = \Mockery::mock(Organisation::class);
-        $organisationB = \Mockery::mock(Organisation::class);
+        $organisationA = Mockery::mock(Organisation::class);
+        $organisationB = Mockery::mock(Organisation::class);
         $this->organisationRepository->expects('getAllSortedByName')->andReturn([$organisationA, $organisationB]);
 
         $this->session->expects('has')->with('organisation')->andReturnTrue();
         $this->session->expects('get')->with('organisation')->andReturn($uuid->toRfc4122());
 
-        $this->organisationRepository->expects('find')->with(\Mockery::on(
+        $this->organisationRepository->expects('find')->with(Mockery::on(
             static fn (Uuid $queryUuid) => $queryUuid->toRfc4122() === $uuid->toRfc4122()
         ))->andReturnNull();
 
@@ -129,18 +131,18 @@ class OrganisationSwitcherTest extends UnitTestCase
 
         $this->organisationRepository->expects('getAllSortedByName')->andReturn([]);
 
-        $this->organisationRepository->expects('find')->with(\Mockery::on(
+        $this->organisationRepository->expects('find')->with(Mockery::on(
             static fn (Uuid $queryUuid) => $queryUuid->toRfc4122() === $uuid->toRfc4122()
         ))->andReturnNull();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->organisationSwitcher->getActiveOrganisation($this->user);
     }
 
     public function testGetOrganisationsReturnsOnlyTheUserOrganisationForNormalUsers(): void
     {
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
 
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnFalse();
         $this->user->expects('getOrganisation')->andReturn($organisation);
@@ -153,8 +155,8 @@ class OrganisationSwitcherTest extends UnitTestCase
 
     public function testGetOrganisationsReturnsAllOrganisationsForSuperAdmins(): void
     {
-        $organisationA = \Mockery::mock(Organisation::class);
-        $organisationB = \Mockery::mock(Organisation::class);
+        $organisationA = Mockery::mock(Organisation::class);
+        $organisationB = Mockery::mock(Organisation::class);
 
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnTrue();
         $this->organisationRepository->expects('getAllSortedByName')->andReturn([$organisationA, $organisationB]);
@@ -169,7 +171,7 @@ class OrganisationSwitcherTest extends UnitTestCase
     {
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnFalse();
 
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
 
         $this->expectException(AccessDeniedException::class);
 
@@ -179,7 +181,7 @@ class OrganisationSwitcherTest extends UnitTestCase
     public function testSwitchToOrganisationIsAppliedForSuperAdmins(): void
     {
         $uuid = Uuid::v6();
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
         $organisation->expects('getId')->andReturn($uuid);
 
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnTrue();

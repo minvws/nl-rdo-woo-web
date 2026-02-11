@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\SourceType;
 use Shared\Service\Inquiry\CaseNumbers;
 
-/**
- * @SuppressWarnings("PHPMD.ExcessiveParameterList")
- */
 readonly class DocumentMetadata
 {
     public function __construct(
-        private ?\DateTimeImmutable $date,
+        private ?DateTimeImmutable $date,
         private string $filename,
         private ?int $familyId,
         private SourceType $sourceType,
@@ -35,7 +33,7 @@ readonly class DocumentMetadata
     ) {
     }
 
-    public function getDate(): ?\DateTimeImmutable
+    public function getDate(): ?DateTimeImmutable
     {
         return $this->date;
     }

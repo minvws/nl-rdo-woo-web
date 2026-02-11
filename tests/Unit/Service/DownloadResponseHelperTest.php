@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service;
 
+use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\BatchDownload\BatchDownload;
@@ -15,6 +16,12 @@ use Shared\Service\Storage\EntityStorageService;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+use function fopen;
+use function fwrite;
+use function ob_get_clean;
+use function ob_start;
+use function rewind;
+
 class DownloadResponseHelperTest extends UnitTestCase
 {
     private DownloadResponseHelper $responseHelper;
@@ -24,9 +31,9 @@ class DownloadResponseHelperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->batchDownloadStorage = \Mockery::mock(BatchDownloadStorage::class);
-        $this->filenameGenerator = \Mockery::mock(DownloadFilenameGenerator::class);
+        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
+        $this->batchDownloadStorage = Mockery::mock(BatchDownloadStorage::class);
+        $this->filenameGenerator = Mockery::mock(DownloadFilenameGenerator::class);
 
         $this->responseHelper = new DownloadResponseHelper(
             $this->entityStorageService,
@@ -46,7 +53,7 @@ class DownloadResponseHelperTest extends UnitTestCase
 
     public function testGetResponseForEntityWithFileInfoThrowsExceptionWhenEntityHasNoUpload(): void
     {
-        $entity = \Mockery::mock(Document::class);
+        $entity = Mockery::mock(Document::class);
         $entity->shouldReceive('getFileInfo->isUploaded')->andReturnFalse();
 
         $this->expectException(NotFoundHttpException::class);
@@ -56,7 +63,7 @@ class DownloadResponseHelperTest extends UnitTestCase
 
     public function testGetResponseForEntityWithFileInfoThrowsExceptionWhenUploadCannotBeRetrievedFromStorage(): void
     {
-        $entity = \Mockery::mock(Document::class);
+        $entity = Mockery::mock(Document::class);
         $entity->shouldReceive('getFileInfo->isUploaded')->andReturnTrue();
 
         $this->entityStorageService->expects('retrieveResourceEntity')->with($entity)->andReturnNull();
@@ -69,7 +76,7 @@ class DownloadResponseHelperTest extends UnitTestCase
     #[DataProvider('getResponseProvider')]
     public function testGetResponseForEntityWithPdf(string $type, string $mimetype): void
     {
-        $entity = \Mockery::mock(Document::class);
+        $entity = Mockery::mock(Document::class);
         $entity->shouldReceive('getFileInfo->isUploaded')->andReturnTrue();
         $entity->shouldReceive('getFileInfo->getType')->andReturn($type);
         $entity->shouldReceive('getFileInfo->getMimeType')->andReturn($mimetype);
@@ -122,7 +129,7 @@ class DownloadResponseHelperTest extends UnitTestCase
 
     public function testGetResponseForBatchDownloadSuccessful(): void
     {
-        $batch = \Mockery::mock(BatchDownload::class);
+        $batch = Mockery::mock(BatchDownload::class);
         $batch->shouldReceive('getSize')->andReturn($size = '123');
         $batch->shouldReceive('getFilename')->andReturn('foo.bar');
 
@@ -146,7 +153,7 @@ class DownloadResponseHelperTest extends UnitTestCase
 
     public function testGetResponseForBatchDownloadThrowsNotFoundWhenStreamIsMissing(): void
     {
-        $batch = \Mockery::mock(BatchDownload::class);
+        $batch = Mockery::mock(BatchDownload::class);
 
         $this->batchDownloadStorage->expects('getFileStreamForBatch')->with($batch)->andReturnFalse();
 

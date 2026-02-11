@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\S3;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\S3\S3StreamFactory;
 use Shared\Domain\S3\StreamMode;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function fopen;
 
 final class S3StreamFactoryTest extends UnitTestCase
 {
@@ -17,7 +20,7 @@ final class S3StreamFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->s3StreamFactory = \Mockery::mock(S3StreamFactory::class)
+        $this->s3StreamFactory = Mockery::mock(S3StreamFactory::class)
             ->shouldAllowMockingProtectedMethods()
             ->makePartial();
     }

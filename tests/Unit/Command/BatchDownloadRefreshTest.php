@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Command;
 
+use Mockery;
 use Shared\Command\BatchDownloadRefresh;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
@@ -16,24 +17,24 @@ class BatchDownloadRefreshTest extends UnitTestCase
 {
     public function testRun(): void
     {
-        $dossierA = \Mockery::mock(WooDecision::class);
-        $dossierB = \Mockery::mock(WooDecision::class);
-        $wooDecisionRepository = \Mockery::mock(WooDecisionRepository::class);
-        $wooDecisionRepository->expects('getPubliclyAvailable')->andReturn([$dossierA, $dossierB]);
+        $dossierA = Mockery::mock(WooDecision::class);
+        $dossierB = Mockery::mock(WooDecision::class);
 
-        $batchDownloadService = \Mockery::mock(BatchDownloadService::class);
+        $wooDecisionRepository = Mockery::mock(WooDecisionRepository::class);
+        $wooDecisionRepository->expects('getPubliclyAvailable')
+            ->andReturn([$dossierA, $dossierB]);
 
-        $batchDownloadService->expects('refresh')->with(\Mockery::on(
-            static function (BatchDownloadScope $scope) use ($dossierA): bool {
+        $batchDownloadService = Mockery::mock(BatchDownloadService::class);
+
+        $batchDownloadService->expects('refresh')
+            ->with(Mockery::on(static function (BatchDownloadScope $scope) use ($dossierA): bool {
                 return $scope->wooDecision === $dossierA && $scope->inquiry === null;
-            }
-        ));
+            }));
 
-        $batchDownloadService->expects('refresh')->with(\Mockery::on(
-            static function (BatchDownloadScope $scope) use ($dossierB): bool {
+        $batchDownloadService->expects('refresh')
+            ->with(Mockery::on(static function (BatchDownloadScope $scope) use ($dossierB): bool {
                 return $scope->wooDecision === $dossierB && $scope->inquiry === null;
-            }
-        ));
+            }));
 
         $command = new BatchDownloadRefresh($wooDecisionRepository, $batchDownloadService);
 

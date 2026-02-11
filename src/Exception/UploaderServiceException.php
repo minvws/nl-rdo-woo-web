@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Exception;
 
+use RuntimeException;
 use Shared\Domain\Publication\EntityWithFileInfo;
 
-class UploaderServiceException extends \RuntimeException
+use function sprintf;
+
+class UploaderServiceException extends RuntimeException
 {
     public static function forCouldNotAttachFileToEntity(EntityWithFileInfo $entity): self
     {

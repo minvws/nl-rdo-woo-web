@@ -7,6 +7,8 @@ namespace Shared\Domain\Department\ViewModel;
 use Shared\Domain\Department\Department as DepartmentEntity;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+use function array_map;
+
 readonly class DepartmentViewFactory
 {
     public function __construct(

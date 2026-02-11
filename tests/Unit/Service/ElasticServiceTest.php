@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Service;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use MinVWS\TypeArray\TypeArray;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -24,8 +25,8 @@ class ElasticServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
         $this->elasticService = new ElasticService(
             $this->elasticClient,
@@ -39,7 +40,7 @@ class ElasticServiceTest extends UnitTestCase
     {
         $id = 'foo-123';
         $docValues = ['foo' => 123];
-        $document = \Mockery::mock(ElasticDocument::class);
+        $document = Mockery::mock(ElasticDocument::class);
         $document->shouldReceive('getId')->andReturn($id);
         $document->shouldReceive('getDocumentValues')->andReturn($docValues);
 
@@ -60,7 +61,7 @@ class ElasticServiceTest extends UnitTestCase
         $id = 'foo-123';
         $documentData = ['foo' => 'bar'];
 
-        $result = \Mockery::mock(Elasticsearch::class);
+        $result = Mockery::mock(Elasticsearch::class);
         $result->shouldReceive('asArray')->andReturn($documentData);
 
         $this->elasticClient->expects('get')->with([
@@ -81,7 +82,7 @@ class ElasticServiceTest extends UnitTestCase
             $this->elasticService->getLogger(),
         );
 
-        $newLogger = \Mockery::mock(LoggerInterface::class);
+        $newLogger = Mockery::mock(LoggerInterface::class);
         $this->elasticService->setLogger($newLogger);
 
         self::assertSame(
@@ -94,7 +95,7 @@ class ElasticServiceTest extends UnitTestCase
     {
         $id = 'foo-123';
 
-        $result = \Mockery::mock(Elasticsearch::class);
+        $result = Mockery::mock(Elasticsearch::class);
         $result->shouldReceive('asBool')->andReturnFalse();
 
         $this->elasticClient->expects('exists')->with([
@@ -109,7 +110,7 @@ class ElasticServiceTest extends UnitTestCase
     {
         $id = 'foo-123';
 
-        $result = \Mockery::mock(Elasticsearch::class);
+        $result = Mockery::mock(Elasticsearch::class);
         $result->shouldReceive('asBool')->andReturnTrue();
 
         $this->elasticClient->expects('exists')->with([
@@ -127,7 +128,7 @@ class ElasticServiceTest extends UnitTestCase
 
     public function testRemoveDossierSuccessful(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->shouldReceive('getId->toRfc4122')->andReturn($id = 'foo-123');
 
         $this->elasticClient->expects('delete')->with([
@@ -140,7 +141,7 @@ class ElasticServiceTest extends UnitTestCase
 
     public function testRemoveDossierNotFoundIsSilentlyIgnored(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->shouldReceive('getId->toRfc4122')->andReturn($id = 'foo-123');
 
         $this->elasticClient->expects('delete')->with([
@@ -153,7 +154,7 @@ class ElasticServiceTest extends UnitTestCase
 
     public function testRemoveDossierExceptionIsThrown(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->shouldReceive('getId->toRfc4122')->andReturn($id = 'foo-123');
 
         $this->elasticClient->expects('delete')->with([

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Search\Query\Sort\ViewModel;
 
+use Mockery;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Sort\SortField;
@@ -15,7 +16,7 @@ class SortItemTest extends TestCase
     public function testIsActiveReturnsTrue(): void
     {
         $sortItem = new SortItem(
-            \Mockery::mock(SearchParameters::class),
+            Mockery::mock(SearchParameters::class),
             true,
             SortField::SCORE,
             SortOrder::ASC,
@@ -28,7 +29,7 @@ class SortItemTest extends TestCase
     public function testIsActiveReturnsFalse(): void
     {
         $sortItem = new SortItem(
-            \Mockery::mock(SearchParameters::class),
+            Mockery::mock(SearchParameters::class),
             false,
             SortField::SCORE,
             SortOrder::ASC,
@@ -41,7 +42,7 @@ class SortItemTest extends TestCase
     public function testShowSortOrderReturnsTrue(): void
     {
         $sortItem = new SortItem(
-            \Mockery::mock(SearchParameters::class),
+            Mockery::mock(SearchParameters::class),
             true,
             SortField::SCORE,
             SortOrder::ASC,
@@ -54,7 +55,7 @@ class SortItemTest extends TestCase
     public function testShowSortOrderReturnsFalse(): void
     {
         $sortItem = new SortItem(
-            \Mockery::mock(SearchParameters::class),
+            Mockery::mock(SearchParameters::class),
             false,
             SortField::SCORE,
             SortOrder::ASC,

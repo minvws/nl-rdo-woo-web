@@ -16,9 +16,6 @@ class AdministrationActionsType extends AbstractType
 {
     public const ACTION_REGENERATE_INVENTORY = 'regenerate_inventory';
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder

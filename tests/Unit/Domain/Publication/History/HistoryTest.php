@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\History;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\History\History;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
@@ -29,7 +30,7 @@ class HistoryTest extends UnitTestCase
     public function testSetAndGetCreatedDt(): void
     {
         $entity = new History();
-        $entity->setCreatedDt($date = new \DateTimeImmutable());
+        $entity->setCreatedDt($date = new DateTimeImmutable());
 
         $this->assertEquals($date, $entity->getCreatedDt());
     }

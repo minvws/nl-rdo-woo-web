@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Result;
 
+use RuntimeException;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 
-class SearchResultException extends \RuntimeException
+use function sprintf;
+
+class SearchResultException extends RuntimeException
 {
     public static function forUnsupportedDocumentType(ElasticDocumentType $documentType): self
     {

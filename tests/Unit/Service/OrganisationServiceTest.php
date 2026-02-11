@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Organisation\Event\OrganisationCreatedEvent;
@@ -27,10 +28,10 @@ class OrganisationServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->tokenStorage = \Mockery::mock(TokenStorageInterface::class);
-        $this->eventDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->tokenStorage = Mockery::mock(TokenStorageInterface::class);
+        $this->eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
 
         $this->organisationService = new OrganisationService(
             $this->entityManager,
@@ -52,14 +53,14 @@ class OrganisationServiceTest extends UnitTestCase
 
         $this->logger->expects('log');
 
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->shouldReceive('getAuditId')->andReturn('audit-id-foo');
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')->andReturn($user);
 
         $this->tokenStorage->expects('getToken')->andReturn($token);
 
-        $this->eventDispatcher->expects('dispatch')->with(\Mockery::on(
+        $this->eventDispatcher->expects('dispatch')->with(Mockery::on(
             static function (OrganisationCreatedEvent $event) use ($user, $organisation): bool {
                 self::assertEquals($user, $event->actor);
                 self::assertEquals($organisation, $event->organisation);
@@ -83,14 +84,14 @@ class OrganisationServiceTest extends UnitTestCase
 
         $this->logger->expects('log');
 
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->shouldReceive('getAuditId')->andReturn('audit-id-foo');
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')->andReturn($user);
 
         $this->tokenStorage->expects('getToken')->andReturn($token);
 
-        $this->eventDispatcher->expects('dispatch')->with(\Mockery::on(
+        $this->eventDispatcher->expects('dispatch')->with(Mockery::on(
             static function (OrganisationUpdatedEvent $event) use ($user, $organisation): bool {
                 self::assertEquals($user, $event->actor);
                 self::assertEquals($organisation, $event->organisation);

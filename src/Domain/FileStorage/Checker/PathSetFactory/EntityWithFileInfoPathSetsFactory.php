@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\FileStorage\Checker\PathSetFactory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Generator;
 use Shared\Domain\FileStorage\Checker\FileStorageType;
 use Shared\Domain\FileStorage\Checker\PathSet;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
@@ -20,9 +21,6 @@ use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Webmozart\Assert\Assert;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 readonly class EntityWithFileInfoPathSetsFactory implements PathSetsFactoryInterface
 {
     public function __construct(
@@ -32,7 +30,7 @@ readonly class EntityWithFileInfoPathSetsFactory implements PathSetsFactoryInter
     ) {
     }
 
-    public function getPathSets(): \Generator
+    public function getPathSets(): Generator
     {
         yield from $this->getPathSetsForEntity('Document', Document::class);
         yield from $this->getPathSetsForEntity('DocumentFileUpload', DocumentFileUpload::class);
@@ -48,9 +46,9 @@ readonly class EntityWithFileInfoPathSetsFactory implements PathSetsFactoryInter
     /**
      * @param class-string<EntityWithFileInfo> $entityClass
      *
-     * @return \Generator<PathSet>
+     * @return Generator<PathSet>
      */
-    private function getPathSetsForEntity(string $name, string $entityClass): \Generator
+    private function getPathSetsForEntity(string $name, string $entityClass): Generator
     {
         $repository = $this->entityManager->getRepository($entityClass);
         $entities = $repository->createQueryBuilder('e')->getQuery()->toIterable();

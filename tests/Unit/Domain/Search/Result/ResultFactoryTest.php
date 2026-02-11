@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Search\Result;
 
 use MinVWS\TypeArray\TypeArray;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Result\ResultEntryInterface;
@@ -22,20 +23,20 @@ class ResultFactoryTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->firstMapper = \Mockery::mock(SearchResultMapperInterface::class);
-        $this->secondMapper = \Mockery::mock(SearchResultMapperInterface::class);
+        $this->firstMapper = Mockery::mock(SearchResultMapperInterface::class);
+        $this->secondMapper = Mockery::mock(SearchResultMapperInterface::class);
 
         $this->factory = new ResultFactory([$this->firstMapper, $this->secondMapper]);
     }
 
     public function testMapIsForwardedToFirstSupportingMapper(): void
     {
-        $hit = \Mockery::mock(TypeArray::class);
+        $hit = Mockery::mock(TypeArray::class);
         $hit->shouldReceive('getString')->with('[fields][type][0]')->andReturn(ElasticDocumentType::WOO_DECISION->value);
 
         $mode = ApplicationMode::ADMIN;
 
-        $result = \Mockery::mock(ResultEntryInterface::class);
+        $result = Mockery::mock(ResultEntryInterface::class);
         $this->firstMapper->expects('supports')->with(ElasticDocumentType::WOO_DECISION)->andReturnFalse();
         $this->secondMapper->expects('supports')->with(ElasticDocumentType::WOO_DECISION)->andReturnTrue();
         $this->secondMapper->expects('map')->with($hit, $mode)->andReturn($result);
@@ -45,7 +46,7 @@ class ResultFactoryTest extends UnitTestCase
 
     public function testMapThrowsExceptionWhenNoMapperSupportsTheHit(): void
     {
-        $hit = \Mockery::mock(TypeArray::class);
+        $hit = Mockery::mock(TypeArray::class);
         $hit->shouldReceive('getString')->with('[fields][type][0]')->andReturn(ElasticDocumentType::WOO_DECISION->value);
 
         $this->firstMapper->expects('supports')->with(ElasticDocumentType::WOO_DECISION)->andReturnFalse();

@@ -10,6 +10,8 @@ use Shared\Domain\Search\Result\Dossier\InvestigationReport\InvestigationReportS
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
+use function sprintf;
+
 /**
  * @extends AbstractDossierRepository<InvestigationReport>
  */
@@ -46,8 +48,7 @@ class InvestigationReportRepository extends AbstractDossierRepository implements
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
-        ;
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
 
         /** @var ?InvestigationReportSearchResult */
         return $qb->getQuery()->getOneOrNullResult();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory;
 
+use Exception;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -11,6 +12,9 @@ use Shared\Exception\ProcessInventoryException;
 use Shared\Exception\TranslatableException;
 use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
+
+use function array_fill_keys;
+use function array_keys;
 
 class InventoryComparator
 {
@@ -20,9 +24,6 @@ class InventoryComparator
     ) {
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.CyclomaticComplexity")
-     */
     public function determineChangeset(
         ProductionReportProcessRun $run,
         InventoryReaderInterface $reader,
@@ -39,7 +40,7 @@ class InventoryComparator
             $runProgress->update($rowIndex);
 
             $exception = $inventoryItem->getException();
-            if ($exception instanceof \Exception) {
+            if ($exception instanceof Exception) {
                 $this->handleRowError($rowIndex, $run, $exception);
 
                 continue;
@@ -88,7 +89,7 @@ class InventoryComparator
     private function handleRowError(
         int $rowIndex,
         ProductionReportProcessRun $run,
-        \Exception $exception,
+        Exception $exception,
     ): void {
         // Exception occurred, but we still continue with the next row. Just log the error
         if (! $exception instanceof TranslatableException) {

@@ -1,0 +1,347 @@
+meta {
+  name: Retrieves the collection of DispositionDto resources.
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/disposition
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~pagination[cursor]:
+}
+
+params:path {
+  organisationId: {{organisationId}}
+}
+
+example {
+  name: 200 Response
+  description: DispositionDto collection
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/disposition
+    method: GET
+    mode: none
+    params:query: {
+      ~pagination[cursor]:
+    }
+
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+
+    status: {
+      code: 200
+      text: OK
+    }
+
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "id": "",
+            "externalId": "",
+            "organisation": {
+              "id": "",
+              "name": ""
+            },
+            "prefix": "",
+            "dossierNumber": "",
+            "internalReference": "",
+            "title": "",
+            "summary": "",
+            "subject": "",
+            "department": {
+              "id": "",
+              "name": ""
+            },
+            "publicationDate": "",
+            "status": "",
+            "mainDocument": {
+              "id": "",
+              "type": "",
+              "language": "",
+              "formalDate": "",
+              "internalReference": "",
+              "grounds": []
+            },
+            "attachments": [
+              {
+                "id": "",
+                "type": "",
+                "language": "",
+                "formalDate": "",
+                "internalReference": "",
+                "grounds": []
+              }
+            ],
+            "dossierDate": ""
+          }
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 Response
+  description: Bad request
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/disposition
+    method: GET
+    mode: none
+    params:query: {
+      ~pagination[cursor]:
+    }
+
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 400
+      text: Bad Request
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 401 Response
+  description: Unauthorized
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/disposition
+    method: GET
+    mode: none
+    params:query: {
+      ~pagination[cursor]:
+    }
+
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 401
+      text: Unauthorized
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 403 Response
+  description: Forbidden
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/disposition
+    method: GET
+    mode: none
+    params:query: {
+      ~pagination[cursor]:
+    }
+
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 403
+      text: Forbidden
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Not found
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/disposition
+    method: GET
+    mode: none
+    params:query: {
+      ~pagination[cursor]:
+    }
+
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 404
+      text: Not Found
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 405 Response
+  description: Method not allowed
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/disposition
+    method: GET
+    mode: none
+    params:query: {
+      ~pagination[cursor]:
+    }
+
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 405
+      text: Method Not Allowed
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 500 Response
+  description: Server error
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/disposition
+    method: GET
+    mode: none
+    params:query: {
+      ~pagination[cursor]:
+    }
+
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 500
+      text: Internal Server Error
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}

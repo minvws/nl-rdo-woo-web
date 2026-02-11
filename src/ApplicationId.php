@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared;
 
+use function strtolower;
+
 enum ApplicationId: string
 {
     case ADMIN = 'admin';

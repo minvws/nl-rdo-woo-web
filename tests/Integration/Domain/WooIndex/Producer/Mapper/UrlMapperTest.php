@@ -11,6 +11,8 @@ use Shared\Tests\Story\WooIndexAnnualReportStory;
 use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Zenstruck\Foundry\Attribute\WithStory;
 
+use function iterator_to_array;
+
 final class UrlMapperTest extends SharedWebTestCase
 {
     private UrlRepository $urlRepository;
@@ -68,6 +70,8 @@ final class UrlMapperTest extends SharedWebTestCase
      */
     private function getFirstItem(iterable $i)
     {
+        $i = iterator_to_array($i, false); // prevents segmentation fault on xdebug.mode=develop
+
         foreach ($i as $v) {
             return $v;
         }

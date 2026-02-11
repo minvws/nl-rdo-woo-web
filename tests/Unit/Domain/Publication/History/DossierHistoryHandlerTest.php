@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\History;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\DossierStatus;
@@ -24,8 +25,8 @@ final class DossierHistoryHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->historyService = \Mockery::mock(HistoryService::class);
-        $this->repository = \Mockery::mock(DossierRepository::class);
+        $this->historyService = Mockery::mock(HistoryService::class);
+        $this->repository = Mockery::mock(DossierRepository::class);
         $this->applicationMode = ApplicationMode::ALL;
 
         $this->handler = new DossierHistoryHandler(
@@ -41,7 +42,7 @@ final class DossierHistoryHandlerTest extends UnitTestCase
     {
         $dossierStatus = DossierStatus::CONCEPT;
 
-        $dossier = \Mockery::mock(AnnualReport::class);
+        $dossier = Mockery::mock(AnnualReport::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
         $dossier->shouldReceive('getStatus')->andReturn($dossierStatus);
 

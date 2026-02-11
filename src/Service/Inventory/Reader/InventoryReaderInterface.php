@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory\Reader;
 
+use Exception;
+use Generator;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 interface InventoryReaderInterface
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function open(string $filepath): void;
 
     /**
-     * @return \Generator<InventoryReadItem>
+     * @return Generator<InventoryReadItem>
      */
-    public function getDocumentMetadataGenerator(WooDecision $dossier): \Generator;
+    public function getDocumentMetadataGenerator(WooDecision $dossier): Generator;
 
     public function getCount(): int;
 }

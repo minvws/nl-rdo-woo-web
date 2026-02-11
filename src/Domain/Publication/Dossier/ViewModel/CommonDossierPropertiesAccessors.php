@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\ViewModel;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 
 trait CommonDossierPropertiesAccessors
@@ -43,7 +44,7 @@ trait CommonDossierPropertiesAccessors
         return $this->getCommonDossier()->pageTitle;
     }
 
-    public function getPublicationDate(): \DateTimeImmutable
+    public function getPublicationDate(): DateTimeImmutable
     {
         return $this->getCommonDossier()->publicationDate;
     }

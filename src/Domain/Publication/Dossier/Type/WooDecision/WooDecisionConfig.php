@@ -16,9 +16,6 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionM
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Workflow\WorkflowInterface;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 readonly class WooDecisionConfig implements DossierTypeConfigInterface
 {
     public function __construct(

@@ -9,27 +9,26 @@ use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+use function array_column;
+
 readonly class AttachmentService
 {
     public function __construct(
-        private ValidatorInterface $validator,
+        private ValidatorInterface $validatorInterface,
     ) {
     }
 
     /**
-     * @param array<array-key,AbstractAttachment> $attachments
+     * @param list<AbstractAttachment> $attachments
      *
      * @throws ValidationFailedException
      */
     public function validate(array $attachments): void
     {
-        $validationGroups = \array_column(DossierValidationGroup::cases(), 'value');
-        foreach ($attachments as $attachment) {
-            $errors = $this->validator->validate($attachment, groups: $validationGroups);
-
-            if ($errors->count() > 0) {
-                throw new ValidationFailedException($attachment, $errors);
-            }
+        $validationGroups = array_column(DossierValidationGroup::cases(), 'value');
+        $errors = $this->validatorInterface->validate($attachments, groups: $validationGroups);
+        if ($errors->count() > 0) {
+            throw new ValidationFailedException($attachments, $errors);
         }
     }
 }

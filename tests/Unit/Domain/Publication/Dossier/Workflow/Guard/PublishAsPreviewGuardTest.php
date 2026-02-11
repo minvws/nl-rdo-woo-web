@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Workflow\Guard;
 
+use DateTimeImmutable;
+use Mockery;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
@@ -24,7 +26,7 @@ class PublishAsPreviewGuardTest extends UnitTestCase
 
     public function testGuardPublicationAsPreviewAllowsOtherTransitions(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $event = new GuardEvent(
             $dossier,
             new Marking([]),
@@ -38,7 +40,7 @@ class PublishAsPreviewGuardTest extends UnitTestCase
 
     public function testGuardPublicationAsPreviewBlocksDossierTypeWithoutPreview(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $event = new GuardEvent(
             $dossier,
             new Marking([]),
@@ -52,7 +54,7 @@ class PublishAsPreviewGuardTest extends UnitTestCase
 
     public function testGuardPublicationAsPreviewBlocksDossierWithoutPreviewDate(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getPreviewDate')->andReturnNull();
 
         $event = new GuardEvent(
@@ -68,8 +70,8 @@ class PublishAsPreviewGuardTest extends UnitTestCase
 
     public function testGuardPublicationAsPreviewBlocksDossierWithFuturePreviewDate(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $dossier->expects('getPreviewDate')->twice()->andReturn(new \DateTimeImmutable('+1 year'));
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getPreviewDate')->twice()->andReturn(new DateTimeImmutable('+1 year'));
 
         $event = new GuardEvent(
             $dossier,
@@ -84,8 +86,8 @@ class PublishAsPreviewGuardTest extends UnitTestCase
 
     public function testGuardPublicationAsPreviewAllowsValidDossier(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $dossier->expects('getPreviewDate')->twice()->andReturn(new \DateTimeImmutable('-1 day'));
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getPreviewDate')->twice()->andReturn(new DateTimeImmutable('-1 day'));
 
         $event = new GuardEvent(
             $dossier,

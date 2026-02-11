@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Shared\Domain\Ingest\Process\MetadataOnly;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Doctrine\LegacyNamespaceHelper;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+
+use function is_null;
 
 #[AsMessageHandler]
 final readonly class IngestMetadataOnlyHandler
@@ -40,7 +43,7 @@ final readonly class IngestMetadataOnlyHandler
                 $message->getForceRefresh() ? [] : null,
                 $message->getForceRefresh() ? [] : null
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to update ES document in IngestMetadataOnlyHandler', [
                 'id' => $message->getEntityId()->toRfc4122(),
                 'class' => $message->getEntityClass(),

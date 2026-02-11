@@ -11,6 +11,8 @@ use Shared\Domain\WooIndex\Exception\WooIndexFileNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
 
+use function basename;
+
 readonly class WooIndexSitemapService
 {
     public function __construct(

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Inventory;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
@@ -25,7 +26,7 @@ final class InventoryDossierFileProviderTest extends UnitTestCase
 
     public function testGetEntityForPublicUseThrowsExceptionForDossierTypeMismatch(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $this->expectException(DossierFileNotFoundException::class);
@@ -35,7 +36,7 @@ final class InventoryDossierFileProviderTest extends UnitTestCase
 
     public function testGetEntityForAdminUseThrowsExceptionWhenWooDecisionHasNoInventory(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
         $dossier->shouldReceive('getInventory')->andReturnNull();
 
@@ -46,9 +47,9 @@ final class InventoryDossierFileProviderTest extends UnitTestCase
 
     public function testGetEntityForPublicUse(): void
     {
-        $inventory = \Mockery::mock(Inventory::class);
+        $inventory = Mockery::mock(Inventory::class);
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
         $dossier->shouldReceive('getInventory')->andReturn($inventory);
 
@@ -60,9 +61,9 @@ final class InventoryDossierFileProviderTest extends UnitTestCase
 
     public function testGetEntityForAdminUse(): void
     {
-        $inventory = \Mockery::mock(Inventory::class);
+        $inventory = Mockery::mock(Inventory::class);
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
         $dossier->shouldReceive('getInventory')->andReturn($inventory);
 

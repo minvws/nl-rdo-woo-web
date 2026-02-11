@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Command\Cron;
 
+use Mockery;
 use Shared\Command\Cron\CleanUploads;
 use Shared\Domain\Upload\UploadCleaner;
 use Shared\Tests\Unit\UnitTestCase;
@@ -13,7 +14,7 @@ class CleanUploadsTest extends UnitTestCase
 {
     public function testDocumentFileSetRemoverIsCalled(): void
     {
-        $cleaner = \Mockery::mock(UploadCleaner::class);
+        $cleaner = Mockery::mock(UploadCleaner::class);
         $cleaner->expects('cleanup');
 
         $command = new CleanUploads($cleaner);

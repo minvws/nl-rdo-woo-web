@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Inquiry;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inquiry\CaseNumbers;
@@ -21,7 +22,7 @@ class InquiryChangesetTest extends UnitTestCase
     {
         $organisationId = Uuid::v6();
 
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
         $organisation->shouldReceive('getId')->andReturn($organisationId);
 
         $this->changeset = new InquiryChangeset(
@@ -49,7 +50,7 @@ class InquiryChangesetTest extends UnitTestCase
 
         // Dossier is added to case 3 and 4
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn($dossierId);
         $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection());
         $this->changeset->addCaseNrsForDossier($dossier, new CaseNumbers(['case-3', 'case-4']));

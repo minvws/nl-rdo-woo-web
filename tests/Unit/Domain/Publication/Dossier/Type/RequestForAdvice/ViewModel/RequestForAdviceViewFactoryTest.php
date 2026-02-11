@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\RequestForAdvice\ViewModel;
 
+use DateTimeImmutable;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
@@ -22,13 +24,13 @@ final class RequestForAdviceViewFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->commonDossierViewFactory = \Mockery::mock(CommonDossierPropertiesViewFactory::class);
+        $this->commonDossierViewFactory = Mockery::mock(CommonDossierPropertiesViewFactory::class);
     }
 
     public function testMake(): void
     {
         /** @var Department&MockInterface $expectedMainDepartment */
-        $expectedMainDepartment = \Mockery::mock(Department::class);
+        $expectedMainDepartment = Mockery::mock(Department::class);
 
         $this->commonDossierViewFactory
             ->shouldReceive('make')
@@ -39,16 +41,16 @@ final class RequestForAdviceViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new \DateTimeImmutable(),
+                publicationDate: $publicationDate = new DateTimeImmutable(),
                 mainDepartment: $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::REQUEST_FOR_ADVICE,
-                subject: $expectedSubject = \Mockery::mock(Subject::class),
+                subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
         /** @var RequestForAdvice&MockInterface $dossier */
-        $dossier = \Mockery::mock(RequestForAdvice::class);
-        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new \DateTimeImmutable());
+        $dossier = Mockery::mock(RequestForAdvice::class);
+        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable());
         $dossier->shouldReceive('getLink')->andReturn($expectedLink = 'http://foo.bar');
         $dossier->shouldReceive('getAdvisoryBodies')->andReturn($expectedAdvisoryBodies = ['FooBar']);
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Search\Result\Dossier\Disposition;
 
 use MinVWS\TypeArray\TypeArray;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionRepository;
 use Shared\Domain\Search\Index\ElasticDocumentType;
@@ -23,8 +24,8 @@ class DispositionSearchResultMapperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->baseMapper = \Mockery::mock(DossierSearchResultBaseMapper::class);
-        $this->repository = \Mockery::mock(DispositionRepository::class);
+        $this->baseMapper = Mockery::mock(DossierSearchResultBaseMapper::class);
+        $this->repository = Mockery::mock(DispositionRepository::class);
 
         $this->mapper = new DispositionSearchResultMapper(
             $this->baseMapper,
@@ -40,9 +41,9 @@ class DispositionSearchResultMapperTest extends UnitTestCase
 
     public function testMapForwardsToBaseMapper(): void
     {
-        $hit = \Mockery::mock(TypeArray::class);
+        $hit = Mockery::mock(TypeArray::class);
 
-        $expectedResult = \Mockery::mock(ResultEntryInterface::class);
+        $expectedResult = Mockery::mock(ResultEntryInterface::class);
 
         $this->baseMapper
             ->expects('map')

@@ -17,35 +17,29 @@ Resource            Public.resource
 
 
 *** Variables ***
-${ENVIRONMENT}      ${EMPTY}
-${HEADLESS}         ${EMPTY}
-${OTP_SECRET_PATH}  .otp_secret
+${HEADLESS}                 ${EMPTY}
+${OTP_SECRET_PATH}          .otp_secret
+${ADMIN_CONTAINER_NAME}     nl-rdo-woo-web-private-admin-1
 
 
 *** Keywords ***
 Suite Setup Generic
   [Documentation]  Creates an admin user if there isn't any, then logs in to the admin interface.
   Set DateTime Variables
-  Set URL Variables
-  IF  '${ENVIRONMENT}' == 'docker-local' or '${ENVIRONMENT}' == 'docker-ci'
+  IF  '%{ENVIRONMENT}' == 'local' or '%{ENVIRONMENT}' == 'ci' or '%{ENVIRONMENT}' == 'docker'
     Open Browser And BaseUrl
     ${admin_otp_secret} =  Get OTP Secret
     Set Credential Variables  ${TST_BALIE_USER}  ${TST_BALIE_PASSWORD}  ${admin_otp_secret}
-  ELSE IF  '${ENVIRONMENT}' == 'test'
+  ELSE IF  '%{ENVIRONMENT}' == 'test'
     Open Browser And BaseUrl  http_username=%{USERNAME_WOO_TEST}  http_password=%{PASSWORD_WOO_TEST}
     Set Credential Variables  %{EMAIL_WOO_TEST_BALIE}  %{PASSWORD_WOO_TEST_BALIE}  %{SECRET_WOO_TEST_BALIE}
-  ELSE IF  '${ENVIRONMENT}' == 'acc'
+  ELSE IF  '%{ENVIRONMENT}' == 'acc'
     Open Browser And BaseUrl  http_username=%{USERNAME_WOO_STAGING}  http_password=%{PASSWORD_WOO_STAGING}
     Set Credential Variables  %{EMAIL_WOO_STAGING_BALIE}  %{PASSWORD_WOO_STAGING_BALIE}  %{SECRET_WOO_STAGING_BALIE}
   ELSE
-    Fatal Error  Env var ENVIRONMENT returned unsupported value '${ENVIRONMENT}'.
+    Fatal Error  Env var ENVIRONMENT returned unsupported value '%{ENVIRONMENT}'.
   END
-  Close Symfony Dev Bar
   Set Browser Timeout  1 min
-
-Set URL Variables
-  VAR  ${URL_PUBLIC} =  %{URL_PUBLIC}  scope=global
-  VAR  ${URL_ADMIN} =  %{URL_ADMIN}  scope=global
 
 Set Credential Variables
   [Arguments]  ${username}  ${password}  ${otp_secret}
@@ -85,7 +79,7 @@ Open Browser And BaseUrl
   [Arguments]  ${slow_mo}=50ms  ${http_username}=${EMPTY}  ${http_password}=${EMPTY}
   VAR  ${device} =  %{DEVICE=Desktop Chrome}
   ${device_context} =  Get Device  ${device}
-  IF  'Desktop' in '${device}' and '${ENVIRONMENT}' != 'docker-local'
+  IF  'Desktop' in '${device}' and '%{ENVIRONMENT}' != 'local'
     # When not running locally on potentially a laptop screen, we resize the viewport so it fits within a 1920x1080 resolution.
     VAR  ${viewport} =  { "width": 1920, "height": 970 }
   ELSE
@@ -94,7 +88,7 @@ Open Browser And BaseUrl
   New Browser
   ...  browser=${device_context}[defaultBrowserType]
   ...  headless=%{HEADLESS=false}
-  ...  args=["--ignore-certificate-errors", "--lang=nl"]
+  ...  args=["--ignore-certificate-errors", "--lang=nl", "--disable-dev-shm-usage", "--no-sandbox"]
   ...  slowMo=${slow_mo}
   IF  '${http_username}' != '${EMPTY}'
     VAR  ${username} =  ${http_username}
@@ -108,25 +102,26 @@ Open Browser And BaseUrl
     New Context  &{device_context}  locale=nl-NL  viewport=${viewport}
   END
   New Page
-  Set Browser Timeout  20s
   Go To Public
 
 Create Woo Admin User
   [Documentation]  Creates a super admin user using the CLI, that can be used for all robot tests. Returns the temporary password.
-  VAR  ${make_user_command} =  task app:user:create -- "${TST_BALIE_USER}" "Robot Admin" --super-admin
+  VAR  ${make_user_command} =
+  ...  docker exec ${ADMIN_CONTAINER_NAME} bin/console woopie:user:create "${TST_BALIE_USER}" "Robot Admin" --super-admin
   Run Process  ${make_user_command}  shell=True  alias=create_admin
   ${stdout}  ${stderr} =  Get Process Result  create_admin  stdout=True  stderr=True
   Should Be Empty  ${stderr}  Error creating admin user: ${stdout}
-  ${regel_password} =  Get Line  ${stdout}  1
-  ${password} =  Get Substring  ${regel_password}  13
-  ${otp_line} =  Get Line  ${stdout}  3
-  ${otp_secret} =  Get Substring  ${otp_line}  13
+  ${password}  ${otp_secret} =  Get Password And OTP Secret From Console Output  ${stdout}
   VAR  ${TST_BALIE_OTP_SECRET} =  ${otp_secret}  scope=global
   RETURN  ${password}
 
-Close Symfony Dev Bar
-  ${c} =  Get Element Count  //body/div/div[3]/button
-  IF  ${c}>0  Click  //body/div/div[3]/button
+Get Password And OTP Secret From Console Output
+  [Arguments]  ${console_output}
+  ${regel_password} =  Get Line  ${console_output}  1
+  ${password} =  Get Substring  ${regel_password}  13
+  ${otp_line} =  Get Line  ${console_output}  3
+  ${otp_secret} =  Get Substring  ${otp_line}  13
+  RETURN  ${password}  ${otp_secret}
 
 Store OTP Secret
   [Arguments]  ${otp_secret}
@@ -138,13 +133,3 @@ Get OTP Secret
 
 Clear OTP Secret
   Remove File  ${OTP_SECRET_PATH}
-
-Load VWS Fixtures
-  Run Process  task rf:fixtures:load:vws  shell=True  alias=shell
-  ${result} =  Get Process Result  shell
-  Should Be Empty  ${result.stderr}
-
-Load E2E Fixtures
-  Run Process  task rf:fixtures:load:e2e  shell=True  alias=shell
-  ${result} =  Get Process Result  shell
-  Should Be Empty  ${result.stderr}

@@ -6,6 +6,8 @@ namespace Shared\Twig\Components\Admin;
 
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
+use function in_array;
+
 #[AsTwigComponent]
 class Alert
 {

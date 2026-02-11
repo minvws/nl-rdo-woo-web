@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Theme;
 
+use Generator;
 use Shared\Domain\Search\Theme\ViewModel\Theme;
 use Shared\Domain\Search\Theme\ViewModel\ThemeViewFactory;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
@@ -39,9 +40,9 @@ class ThemeManager
     }
 
     /**
-     * @return \Generator<Theme>
+     * @return Generator<Theme>
      */
-    public function getViewsForAllThemes(): \Generator
+    public function getViewsForAllThemes(): Generator
     {
         foreach ($this->themes as $theme) {
             yield $this->viewFactory->make($theme);

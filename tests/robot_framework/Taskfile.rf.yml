@@ -4,6 +4,7 @@ version: "3"
 vars:
   URL_PUBLIC: '{{eq .ORBSTACK_ENABLED "1" | ternary .ORBSTACK_PUBLIC_URL "http://localhost:8000"}}'
   URL_ADMIN: '{{eq .ORBSTACK_ENABLED "1" | ternary .ORBSTACK_ADMIN_URL "http://localhost:8001/balie"}}'
+  ROBOT_PARAMS: --outputdir results  --name 'E2E Tests' ./tests
 
 env:
   VIRTUAL_ENV: ""
@@ -11,77 +12,102 @@ env:
   URL_ADMIN: '{{.URL_ADMIN}}'
 
 tasks:
-  venv:
+  dependency:upgrade:
+    desc: Upgrade all RF dependencies
+    cmds:
+     - uv lock --upgrade
+
+  local:venv:
     desc: Create virtual environment
     cmds:
       - uv venv --clear
       - uv sync
       - uv run rfbrowser init
 
-  dependency:upgrade:
-    desc: Upgrade all RF dependencies
-    cmds:
-     - uv lock --upgrade
-
-  init:
-    desc: Initiates your local app for the E2E tests. Run after a `task reset` or your initial setup.
+  local:init:
+    desc: Initiates the local instance for the E2E tests.
     cmds:
       - task: fixtures:load:e2e
-      - task: run-local
+      - task: local:run
         vars:
           tag: init
 
-  run-local:
-    desc: Run Robot tests with browser on Docker
+  local:otp:
+    desc: Returns an OTP code from the secret in .otp_secret
+    cmds:
+      - uv run python -c "import pyotp; print(pyotp.TOTP(open('.otp_secret').read().strip()).now())"
+
+  local:run:
+    aliases: [run-local]
+    desc: Run Robot tests with browser on local
     env:
+      ENVIRONMENT: local
       HEADLESS: false
     cmds:
       - task: :up
       - task: clear-results
       - task: disable-toolbar
-      - uv run robot --outputdir results --include '{{.tag}}' --variable ENVIRONMENT:docker-local .
+      - cmd: uv run robot --include '{{.tag | default "single"}}' {{.ROBOT_PARAMS}}
 
-  run-test:
-    aliases: [run-tst]
-    desc: Run Robot tests with browser on TEST
+  local:run:api:
+    aliases: [run-api]
+    desc: Run all API Robot tests
     env:
-      URL_PUBLIC: https://web.test.woo.rdobeheer.nl
-      URL_ADMIN: https://balie.test.woo.rdobeheer.nl/balie
-      HEADLESS: false
-    cmds:
-      - uv run robot --outputdir results --include '{{.tag}}' --variable ENVIRONMENT:test .
-
-  run-acc:
-    desc: Run Robot tests with browser on ACC
-    env:
-      URL_PUBLIC: https://web.acc.woo.irealisatie.nl
-      URL_ADMIN: https://balie.acc.woo.irealisatie.nl/balie
-      HEADLESS: false
-    cmds:
-      - uv run robot --outputdir results --include '{{.tag}}' --variable ENVIRONMENT:acc .
-
-  run-mobile:
-    desc: Run Robot tests with browser on Docker
-    env:
-      HEADLESS: false
-      DEVICE: iPhone 14
-    cmds:
-      - task: :up
-      - task: clear-results
-      - task: disable-toolbar
-      - uv run robot --outputdir results --include '{{.tag}}' --variable ENVIRONMENT:docker-local .
-
-  run-ci-sequential:
-    desc: Run all CI Robot tests with headless browser on Docker, parallel where possible.
-    env:
+      ENVIRONMENT: local
       HEADLESS: true
     cmds:
       - task: :up
       - task: clear-results
       - task: disable-toolbar
-      - uv run robot --outputdir results --include '{{ .tag | default "ci" }}' --exclude 'init' --variable ENVIRONMENT:docker-local .
+      - cmd: uv run pabot --processes 8 --artifactsinsubfolders --include api {{.ROBOT_PARAMS}}
 
-  run-ci-parallel:
+  local:run:mobile:
+    desc: Run Robot tests with browser on Docker
+    env:
+      ENVIRONMENT: local
+      HEADLESS: false
+      DEVICE: iPhone 14
+    cmds:
+      - task: run-local
+        env:
+          tag: {{.tag}}
+
+  docker:build:
+    desc:
+    cmds:
+      - task: :dc
+        vars: { SUB_CMD: "build robot" }
+
+  docker:init:
+    desc: Initiates the docker app for the E2E tests.
+    cmds:
+      - task: fixtures:load:e2e
+      - touch .otp_secret
+      - task: run-docker
+        vars:
+          tag: init
+
+  docker:otp:
+    desc: Returns an OTP code from the secret in .otp_secret
+    cmds:
+      - task: :dc
+        vars: { SUB_CMD: "run --rm robot uv run python -c 'import pyotp; print(pyotp.TOTP(open(\".otp_secret\").read().strip()).now())'" }
+
+  docker:run:
+    aliases: [run-docker]
+    desc: Run Robot Framework tests in headless mode inside a docker container
+    cmds:
+      - task: :up
+      - task: clear-results
+      - task: disable-toolbar
+      - task: :dc
+        vars:
+          SUB_CMD: >
+            run --rm robot
+            /bin/bash -c "export PATH=/home/pwuser/.local/bin:/home/pwuser/.venv/bin:\$PATH &&
+                          uv run robot --include '{{.tag | default "single"}}' {{.ROBOT_PARAMS}}"
+
+  docker:run:ci:
     aliases: [run-ci]
     desc: Run all CI Robot tests with headless browser on Docker, parallel where possible.
     env:
@@ -90,20 +116,59 @@ tasks:
       - task: :up
       - task: clear-results
       - task: disable-toolbar
-      - cmd: uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include ci --exclude init --ordering order.txt --variable ENVIRONMENT:docker-local .
+      - task: :dc
+        vars:
+          SUB_CMD: >
+            run --rm robot
+            /bin/bash -c "export PATH=/home/pwuser/.local/bin:/home/pwuser/.venv/bin:\$PATH &&
+                          uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include ci --exclude init --exclude sitemap --ordering order.txt {{.ROBOT_PARAMS}}"
 
-  run-api:
-    desc: Run all API Robot tests
+  docker:run:api:
+    aliases: [run-api]
+    desc: Run all API Robot tests in docker
     env:
       HEADLESS: true
     cmds:
       - task: :up
       - task: clear-results
       - task: disable-toolbar
-      - cmd: uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --variable ENVIRONMENT:docker-local .
+      - task: :dc
+        vars:
+          SUB_CMD: >
+            run --rm robot
+            /bin/bash -c "export PATH=/home/pwuser/.local/bin:/home/pwuser/.venv/bin:\$PATH &&
+                          uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api {{.ROBOT_PARAMS}}"
 
-  check:
-    desc: Run Robocop check
+  docker:shell:
+    cmds:
+      - task: :dc
+        vars:
+          SUB_CMD: "run --rm robot /bin/bash"
+
+  test:run:
+    aliases: [run-test]
+    desc: Run Robot tests with browser on TEST
+    env:
+      ENVIRONMENT: test
+      URL_PUBLIC: https://web.test.woo.rdobeheer.nl
+      URL_ADMIN: https://balie.test.woo.rdobeheer.nl/balie
+      HEADLESS: false
+    cmds:
+      - uv run robot --include '{{.tag | default "testdossiers"}}' {{.ROBOT_PARAMS}}
+
+  acc:run:
+    aliases: [run-acc]
+    desc: Run Robot tests with browser on ACC
+    env:
+      ENVIRONMENT: acc
+      URL_PUBLIC: https://web.acc.woo.irealisatie.nl
+      URL_ADMIN: https://balie.acc.woo.irealisatie.nl/balie
+      HEADLESS: false
+    cmds:
+      - uv run robot --include '{{.tag | default "testdossiers"}}' {{.ROBOT_PARAMS}}
+
+  lint:
+    desc: Run Robocop linter
     cmds:
       - uv run robocop check
 
@@ -119,13 +184,9 @@ tasks:
         vars: { SUB_CMD: "admin bin/console woopie:dev:clean-sheet --force {{.CLI_ARGS}}" }
       - task: :minio:clear-buckets
 
-  sitemap:
-    desc: Generate the sitemap in one command
-    cmds:
-      - task: :app:generate-sitemap
-
   fixtures:load:vws:
     desc: Load the VWS fixtures, used by the Covid19 theme page
+    internal: true
     cmds:
       - task: :dc:shell
         vars: { SUB_CMD: "admin bin/console doctrine:fixtures:load --no-interaction --append --group=vws" }
@@ -136,15 +197,11 @@ tasks:
       - task: :dc:shell
         vars: { SUB_CMD: "admin bin/console doctrine:fixtures:load --no-interaction --append --group=e2e" }
 
-  otp:
-    desc: Returns an OTP code from the secret in .otp_secret
-    cmds:
-      - uv run python -c "import pyotp; print(pyotp.TOTP(open('.otp_secret').read().strip()).now())"
-
   clear-results:
-    desc: Empties the results folder
+    desc: Empties the results folder, as well as creating it if it does not exist
     internal: true
     cmds:
+      - cmd: mkdir -p results
       - cmd: rm -rf results/*
 
   disable-toolbar:

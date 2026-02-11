@@ -19,9 +19,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class WithdrawDocumentFormType extends AbstractType
 {
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder

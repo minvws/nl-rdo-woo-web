@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
@@ -14,7 +15,7 @@ class DocumentFileSetTest extends UnitTestCase
 {
     public function testGetters(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $documentFileSet = new DocumentFileSet($dossier);
 
         self::assertEquals(DocumentFileSetStatus::OPEN_FOR_UPLOADS, $documentFileSet->getStatus());
@@ -25,7 +26,7 @@ class DocumentFileSetTest extends UnitTestCase
 
     public function testSetAndGetStatus(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $documentFileSet = new DocumentFileSet($dossier);
         $documentFileSet->setStatus(DocumentFileSetStatus::COMPLETED);
 
@@ -34,7 +35,7 @@ class DocumentFileSetTest extends UnitTestCase
 
     public function testCanConfirmDocumentFileSetThatNeedsConfirmation(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $documentFileSet = new DocumentFileSet($dossier);
 
         $documentFileSet->setStatus(DocumentFileSetStatus::NEEDS_CONFIRMATION);
@@ -43,7 +44,7 @@ class DocumentFileSetTest extends UnitTestCase
 
     public function testCannotConfirmDocumentFileSetThatIsOpenForUploads(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $documentFileSet = new DocumentFileSet($dossier);
 
         $documentFileSet->setStatus(DocumentFileSetStatus::OPEN_FOR_UPLOADS);
@@ -52,7 +53,7 @@ class DocumentFileSetTest extends UnitTestCase
 
     public function testCannotConfirmDocumentFileSetThatIsAlreadyConfirmed(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $documentFileSet = new DocumentFileSet($dossier);
 
         $documentFileSet->setStatus(DocumentFileSetStatus::CONFIRMED);
@@ -61,7 +62,7 @@ class DocumentFileSetTest extends UnitTestCase
 
     public function testCannotConfirmDocumentFileSetThatIsAlreadyCompleted(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $documentFileSet = new DocumentFileSet($dossier);
 
         $documentFileSet->setStatus(DocumentFileSetStatus::COMPLETED);
@@ -70,7 +71,7 @@ class DocumentFileSetTest extends UnitTestCase
 
     public function testCanConfirmDocumentFileSetThatIsProcessingUploadsForAConceptDossier(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
         $documentFileSet = new DocumentFileSet($dossier);
 
@@ -80,7 +81,7 @@ class DocumentFileSetTest extends UnitTestCase
 
     public function testCannotConfirmDocumentFileSetThatIsProcessingUploadsForAPublishedDossier(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
         $documentFileSet = new DocumentFileSet($dossier);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\Worker\Pdf\Extractor\EntityMetaDataExtractor;
@@ -19,7 +20,7 @@ final class PdfProcessorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->docContentExtractor = \Mockery::mock(EntityMetaDataExtractor::class);
+        $this->docContentExtractor = Mockery::mock(EntityMetaDataExtractor::class);
         $this->processor = new PdfProcessor(
             $this->docContentExtractor,
         );
@@ -27,7 +28,7 @@ final class PdfProcessorTest extends UnitTestCase
 
     public function testProcessEntity(): void
     {
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
 
         $this->docContentExtractor
             ->expects('extract')

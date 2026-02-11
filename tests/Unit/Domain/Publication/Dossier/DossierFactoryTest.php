@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierFactory;
@@ -22,8 +23,8 @@ class DossierFactoryTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossierTypeManager = \Mockery::mock(DossierTypeManager::class);
-        $this->authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
+        $this->dossierTypeManager = Mockery::mock(DossierTypeManager::class);
+        $this->authorizationMatrix = Mockery::mock(AuthorizationMatrix::class);
 
         $this->factory = new DossierFactory(
             $this->dossierTypeManager,
@@ -35,12 +36,12 @@ class DossierFactoryTest extends UnitTestCase
 
     public function testCreate(): void
     {
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
         $this->authorizationMatrix->expects('getActiveOrganisation')->andReturn($organisation);
 
         $type = DossierType::DISPOSITION;
 
-        $config = \Mockery::mock(DossierTypeConfigInterface::class);
+        $config = Mockery::mock(DossierTypeConfigInterface::class);
         $config->expects('getEntityClass')->andReturn(Disposition::class);
 
         $this->dossierTypeManager->expects('getConfigWithAccessCheck')->with($type)->andReturn($config);

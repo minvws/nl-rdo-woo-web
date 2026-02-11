@@ -10,6 +10,8 @@ use Symfony\Component\Workflow\Marking;
 use Symfony\Component\Workflow\MarkingStore\MarkingStoreInterface;
 use Webmozart\Assert\Assert;
 
+use function key;
+
 final class DossierMarkingStore implements MarkingStoreInterface
 {
     /**
@@ -23,7 +25,7 @@ final class DossierMarkingStore implements MarkingStoreInterface
     }
 
     /**
-     * @param AbstractDossier         $subject
+     * @param AbstractDossier $subject
      * @param array<array-key, mixed> $context
      */
     public function setMarking(object $subject, Marking $marking, array $context = []): void

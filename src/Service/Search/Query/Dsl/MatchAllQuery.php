@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Shared\Service\Search\Query\Dsl;
 
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+use Override;
+use stdClass;
 
 class MatchAllQuery extends BoolQuery
 {
     /**
      * @return array<string, mixed>
      */
-    #[\Override]
+    #[Override]
     public function build(): array
     {
-        return ['match_all' => new \stdClass()];
+        return ['match_all' => new stdClass()];
     }
 }

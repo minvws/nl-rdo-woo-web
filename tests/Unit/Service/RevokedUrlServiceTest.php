@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -13,6 +14,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\RevokedUrlService;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\RouterInterface;
+
+use function iterator_to_array;
 
 class RevokedUrlServiceTest extends UnitTestCase
 {
@@ -23,8 +26,8 @@ class RevokedUrlServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->documentRepository = \Mockery::mock(DocumentRepository::class);
-        $this->router = \Mockery::mock(RouterInterface::class);
+        $this->documentRepository = Mockery::mock(DocumentRepository::class);
+        $this->router = Mockery::mock(RouterInterface::class);
 
         $this->service = new RevokedUrlService(
             $this->documentRepository,
@@ -37,24 +40,24 @@ class RevokedUrlServiceTest extends UnitTestCase
 
     public function testGetUrls(): void
     {
-        $conceptDossier = \Mockery::mock(WooDecision::class);
+        $conceptDossier = Mockery::mock(WooDecision::class);
         $conceptDossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
 
-        $publishedDossier = \Mockery::mock(WooDecision::class);
+        $publishedDossier = Mockery::mock(WooDecision::class);
         $publishedDossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
         $publishedDossier->shouldReceive('getDocumentPrefix')->andReturn($docPrefix = 'FOO');
         $publishedDossier->shouldReceive('getDossierNr')->andReturn($dossierNr = '123');
 
-        $documentInConceptDossier = \Mockery::mock(Document::class);
+        $documentInConceptDossier = Mockery::mock(Document::class);
         $documentInConceptDossier->shouldReceive('getDossiers')
             ->andReturn(new ArrayCollection([$conceptDossier]));
 
-        $documentInPublishedDossier = \Mockery::mock(Document::class);
+        $documentInPublishedDossier = Mockery::mock(Document::class);
         $documentInPublishedDossier->shouldReceive('getDossiers')
             ->andReturn(new ArrayCollection([$publishedDossier]));
         $documentInPublishedDossier->shouldReceive('getDocumentNr')->andReturn($docNrA = 'D1');
 
-        $documentInConceptAndPublishedDossier = \Mockery::mock(Document::class);
+        $documentInConceptAndPublishedDossier = Mockery::mock(Document::class);
         $documentInConceptAndPublishedDossier->shouldReceive('getDossiers')
             ->andReturn(new ArrayCollection([$conceptDossier, $publishedDossier]));
         $documentInConceptAndPublishedDossier->shouldReceive('getDocumentNr')->andReturn($docNrB = 'D2');

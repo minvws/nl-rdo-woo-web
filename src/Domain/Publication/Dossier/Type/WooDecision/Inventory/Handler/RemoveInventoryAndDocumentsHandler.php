@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Handler;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
@@ -54,7 +55,7 @@ class RemoveInventoryAndDocumentsHandler
             }
 
             $this->dossierService->validateCompletion($dossier);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to remove dossier inventory and documents', [
                 'id' => $message->getUuid(),
                 'exception' => $e->getMessage(),

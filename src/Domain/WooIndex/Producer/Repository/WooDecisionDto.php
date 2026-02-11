@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex\Producer\Repository;
 
+use DateTimeInterface;
 use Symfony\Component\Uid\Uuid;
 
 final readonly class WooDecisionDto
@@ -12,7 +13,7 @@ final readonly class WooDecisionDto
         public Uuid $id,
         public string $documentPrefix,
         public string $dossierNr,
-        public \DateTimeInterface $publicationDate,
+        public DateTimeInterface $publicationDate,
         public ?RawReferenceDto $mainDocumentReference = null,
     ) {
     }

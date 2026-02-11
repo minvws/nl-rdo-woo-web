@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\EventHandler;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
@@ -23,7 +24,7 @@ class DocumentEventHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
+        $this->batchDownloadService = Mockery::mock(BatchDownloadService::class);
 
         $this->handler = new DocumentEventHandler(
             $this->batchDownloadService,
@@ -34,16 +35,16 @@ class DocumentEventHandlerTest extends UnitTestCase
 
     public function testHandleDocumentWithdrawn(): void
     {
-        $dossierA = \Mockery::mock(WooDecision::class);
-        $dossierB = \Mockery::mock(WooDecision::class);
+        $dossierA = Mockery::mock(WooDecision::class);
+        $dossierB = Mockery::mock(WooDecision::class);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossierA, $dossierB]));
 
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+        $this->batchDownloadService->expects('refresh')->with(Mockery::on(
             static fn (BatchDownloadScope $scope) => $scope->wooDecision === $dossierA,
         ));
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+        $this->batchDownloadService->expects('refresh')->with(Mockery::on(
             static fn (BatchDownloadScope $scope) => $scope->wooDecision === $dossierB,
         ));
 
@@ -54,7 +55,7 @@ class DocumentEventHandlerTest extends UnitTestCase
 
     public function testHandleDocumentWithdrawnSkipsBulkWithdraw(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
 
         $event = new DocumentWithDrawnEvent($document, DocumentWithdrawReason::DATA_IN_DOCUMENT, 'foo', true);
 
@@ -65,9 +66,9 @@ class DocumentEventHandlerTest extends UnitTestCase
 
     public function testHandleAllDocumentsWithdrawn(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+        $this->batchDownloadService->expects('refresh')->with(Mockery::on(
             static fn (BatchDownloadScope $scope) => $scope->wooDecision === $dossier,
         ));
 

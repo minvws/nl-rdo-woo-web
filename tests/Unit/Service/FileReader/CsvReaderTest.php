@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\FileReader;
 
+use DateTimeImmutable;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Exception\FileReaderException;
 use Shared\Service\FileReader\CsvReader;
 use Shared\Service\FileReader\HeaderMap;
 use Shared\Service\Inventory\MetadataField;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function end;
+use function iterator_to_array;
+use function key;
+
+use const DIRECTORY_SEPARATOR;
 
 class CsvReaderTest extends UnitTestCase
 {
@@ -18,7 +26,7 @@ class CsvReaderTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->headerMap = \Mockery::mock(HeaderMap::class);
+        $this->headerMap = Mockery::mock(HeaderMap::class);
 
         $this->csvReader = new CsvReader(
             __DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.csv',
@@ -107,7 +115,7 @@ class CsvReaderTest extends UnitTestCase
 
         // First row has a valid date
         self::assertEquals(
-            new \DateTimeImmutable('2022-10-09 13:34'),
+            new DateTimeImmutable('2022-10-09 13:34'),
             $this->csvReader->getDateTime(key($rows), 'date'),
         );
 
@@ -140,7 +148,7 @@ class CsvReaderTest extends UnitTestCase
         }
 
         self::assertEquals(
-            [new \DateTimeImmutable('2022-10-09 13:34'), null],
+            [new DateTimeImmutable('2022-10-09 13:34'), null],
             $dates,
         );
     }

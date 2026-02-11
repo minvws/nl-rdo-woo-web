@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\MainDocument\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
@@ -20,6 +21,7 @@ use Shared\Domain\Publication\MainDocument\Handler\DeleteMainDocumentHandler;
 use Shared\Domain\Publication\MainDocument\MainDocumentDeleteStrategyInterface;
 use Shared\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 use Shared\Tests\Unit\UnitTestCase;
+use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -37,12 +39,12 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->annualReportDocumentRepository = \Mockery::mock(AnnualReportMainDocumentRepository::class);
-        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
-        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
-        $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
-        $this->deleteStrategy = \Mockery::mock(MainDocumentDeleteStrategyInterface::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->annualReportDocumentRepository = Mockery::mock(AnnualReportMainDocumentRepository::class);
+        $this->dossierRepository = Mockery::mock(DossierRepository::class);
+        $this->messageBus = Mockery::mock(MessageBusInterface::class);
+        $this->dossierWorkflowManager = Mockery::mock(DossierWorkflowManager::class);
+        $this->deleteStrategy = Mockery::mock(MainDocumentDeleteStrategyInterface::class);
 
         $this->handler = new DeleteMainDocumentHandler(
             $this->messageBus,
@@ -57,18 +59,18 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
 
     public function testEntityIsDeleted(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getName')->andReturn('x');
         $fileInfo->shouldReceive('getType')->andReturn('y');
         $fileInfo->shouldReceive('getSize')->andReturn('z');
 
         $docUuid = Uuid::v6();
-        $annualReportDocument = \Mockery::mock(AnnualReportMainDocument::class);
+        $annualReportDocument = Mockery::mock(AnnualReportMainDocument::class);
         $annualReportDocument->shouldReceive('getId')->andReturn($docUuid);
         $annualReportDocument->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $dossierUuid = Uuid::v6();
-        $dossier = \Mockery::mock(AnnualReport::class)->makePartial();
+        $dossier = Mockery::mock(AnnualReport::class)->makePartial();
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
         $dossier->shouldReceive('getMainDocument')->andReturn($annualReportDocument);
         $dossier->expects('setMainDocument')->with(null);
@@ -88,9 +90,9 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
         $this->annualReportDocumentRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($annualReportDocument);
         $this->annualReportDocumentRepository->expects('remove')->with($annualReportDocument, true);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
             static fn (MainDocumentDeletedEvent $message) => $message->documentId === $annualReportDocument->getId()
-        ))->andReturns(new Envelope(new \stdClass()));
+        ))->andReturns(new Envelope(new stdClass()));
 
         $this->deleteStrategy->expects('delete')->with($annualReportDocument);
 
@@ -102,11 +104,11 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
     public function testEntityIsNotDeletedWhenTheWorkflowTransitionFails(): void
     {
         $docUuid = Uuid::v6();
-        $annualReportDocument = \Mockery::mock(AnnualReportMainDocument::class);
+        $annualReportDocument = Mockery::mock(AnnualReportMainDocument::class);
         $annualReportDocument->shouldReceive('getId')->andReturn($docUuid);
 
         $dossierUuid = Uuid::v6();
-        $dossier = \Mockery::mock(AnnualReport::class)->makePartial();
+        $dossier = Mockery::mock(AnnualReport::class)->makePartial();
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
         $dossier->shouldReceive('getMainDocument')->andReturn($annualReportDocument);
         $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
@@ -126,7 +128,7 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
                 DossierWorkflowException::forTransitionFailed(
                     $dossier,
                     $transition,
-                    \Mockery::mock(TransitionException::class),
+                    Mockery::mock(TransitionException::class),
                 )
             );
 
@@ -142,7 +144,7 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
     public function testExceptionIsThrownWhenDocumentCannotBeFound(): void
     {
         $dossierUuid = Uuid::v6();
-        $dossier = \Mockery::mock(AnnualReport::class)->makePartial();
+        $dossier = Mockery::mock(AnnualReport::class)->makePartial();
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
         $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
 

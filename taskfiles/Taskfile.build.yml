@@ -3,7 +3,7 @@ version: "3"
 
 tasks:
   php:
-    desc: Run the PHP image locally
+    desc: Build the PHP image locally
     cmds:
       - >-
         docker build

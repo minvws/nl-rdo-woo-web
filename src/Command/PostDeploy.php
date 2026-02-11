@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Shared\Command;
 
 use Shared\Domain\Content\Page\ContentPageService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'woopie:post-deploy', description: 'Executes post deploy actions')]
 class PostDeploy extends Command
 {
     public function __construct(
@@ -19,9 +21,6 @@ class PostDeploy extends Command
 
     protected function configure(): void
     {
-        $this->setName('woopie:post-deploy')
-            ->setDescription('Executes post deploy actions')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -30,6 +29,6 @@ class PostDeploy extends Command
 
         $this->contentPageService->createMissingPages();
 
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 }

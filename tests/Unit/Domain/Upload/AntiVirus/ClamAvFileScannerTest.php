@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload\AntiVirus;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Upload\AntiVirus\ClamAvClientFactory;
 use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
 use Shared\Domain\Upload\AntiVirus\FileScannedEvent;
@@ -15,6 +17,9 @@ use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Xenolope\Quahog\Client;
 use Xenolope\Quahog\Result;
+
+use function fopen;
+use function fwrite;
 
 final class ClamAvFileScannerTest extends UnitTestCase
 {
@@ -27,14 +32,14 @@ final class ClamAvFileScannerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->clamAvClient = \Mockery::mock(Client::class);
-        $this->clientFactory = \Mockery::mock(ClamAvClientFactory::class);
+        $this->clamAvClient = Mockery::mock(Client::class);
+        $this->clientFactory = Mockery::mock(ClamAvClientFactory::class);
         $this->clientFactory->shouldReceive('getClient')->andReturn($this->clamAvClient);
 
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->filesystem = \Mockery::mock(LocalFilesystem::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->filesystem = Mockery::mock(LocalFilesystem::class);
 
-        $this->eventDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $this->eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
 
         $this->scanner = new ClamAvFileScanner(
             $this->clientFactory,
@@ -108,7 +113,7 @@ final class ClamAvFileScannerTest extends UnitTestCase
         fwrite($stream, 'some data');
         $this->filesystem->expects('createStream')->with($path, 'r')->andReturn($stream);
 
-        $this->clamAvClient->expects('scanResourceStream')->with($stream)->andThrow(new \RuntimeException('oops'));
+        $this->clamAvClient->expects('scanResourceStream')->with($stream)->andThrow(new RuntimeException('oops'));
 
         $this->logger->expects('error');
 
@@ -127,7 +132,7 @@ final class ClamAvFileScannerTest extends UnitTestCase
         fwrite($stream, 'some data');
         $this->filesystem->expects('createStream')->with($path, 'r')->andReturn($stream);
 
-        $result = \Mockery::mock(Result::class);
+        $result = Mockery::mock(Result::class);
         $result->shouldReceive('hasFailed')->andReturnTrue();
         $result->shouldReceive('getReason')->andReturns($reason = 'foo bar');
 
@@ -135,7 +140,7 @@ final class ClamAvFileScannerTest extends UnitTestCase
 
         $this->logger->expects('error');
 
-        $this->eventDispatcher->expects('dispatch')->with(\Mockery::on(
+        $this->eventDispatcher->expects('dispatch')->with(Mockery::on(
             static function (FileScannedEvent $event) use ($reason): bool {
                 self::assertTrue($event->hasFailed);
                 self::assertEquals($reason, $event->reason);
@@ -159,13 +164,13 @@ final class ClamAvFileScannerTest extends UnitTestCase
         fwrite($stream, 'some data');
         $this->filesystem->expects('createStream')->with($path, 'r')->andReturn($stream);
 
-        $result = \Mockery::mock(Result::class);
+        $result = Mockery::mock(Result::class);
         $result->shouldReceive('hasFailed')->andReturnFalse();
         $result->shouldReceive('getReason')->andReturnNull();
 
         $this->clamAvClient->expects('scanResourceStream')->with($stream)->andReturn($result);
 
-        $this->eventDispatcher->expects('dispatch')->with(\Mockery::on(
+        $this->eventDispatcher->expects('dispatch')->with(Mockery::on(
             static function (FileScannedEvent $event): bool {
                 self::assertFalse($event->hasFailed);
                 self::assertEquals('', $event->reason);

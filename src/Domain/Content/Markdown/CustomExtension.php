@@ -38,9 +38,6 @@ use Shared\Domain\Content\Markdown\Renderer\CustomEmphasisRenderer;
 use Shared\Domain\Content\Markdown\Renderer\CustomHeadingRenderer;
 use Shared\Domain\Content\Markdown\Renderer\CustomStrongRenderer;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 final class CustomExtension implements ConfigurableExtensionInterface
 {
     public function configureSchema(ConfigurationBuilderInterface $builder): void
@@ -78,8 +75,7 @@ final class CustomExtension implements ConfigurableExtensionInterface
             ->addRenderer(Link::class, new LinkRenderer(), 0)
             ->addRenderer(Newline::class, new NewlineRenderer(), 0)
             ->addRenderer(Strong::class, new CustomStrongRenderer(), 0)
-            ->addRenderer(Text::class, new TextRenderer(), 0)
-        ;
+            ->addRenderer(Text::class, new TextRenderer(), 0);
 
         $environment->addDelimiterProcessor(new EmphasisDelimiterProcessor('*'));
         $environment->addDelimiterProcessor(new EmphasisDelimiterProcessor('_'));

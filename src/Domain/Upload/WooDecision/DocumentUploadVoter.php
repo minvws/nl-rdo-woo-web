@@ -28,8 +28,6 @@ class DocumentUploadVoter extends Voter
 
     /**
      * @param UploadRequest $subject
-     *
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {

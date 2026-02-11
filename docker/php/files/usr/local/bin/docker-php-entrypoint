@@ -14,6 +14,7 @@ elif [ "${APP_ID,,}" = "admin" ]; then
     sudo a2ensite admin-woo 1> /dev/null
 elif [ "${APP_ID,,}" = "publication_api" ]; then
     sudo a2ensite publication-api-woo 1> /dev/null
+    sudo a2ensite publication-api-woo-ssl 1> /dev/null
 fi
 
 exec "$@"

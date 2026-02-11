@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker;
 
+use Closure;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
@@ -28,10 +30,10 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->entityStorage = \Mockery::mock(EntityStorageService::class);
-        $this->statsService = \Mockery::mock(WorkerStatsService::class);
-        $this->localFilesytem = \Mockery::mock(LocalFilesystem::class);
-        $this->fileInfo = \Mockery::mock(FileInfo::class);
+        $this->entityStorage = Mockery::mock(EntityStorageService::class);
+        $this->statsService = Mockery::mock(WorkerStatsService::class);
+        $this->localFilesytem = Mockery::mock(LocalFilesystem::class);
+        $this->fileInfo = Mockery::mock(FileInfo::class);
         $this->factory = new PdfPageProcessingContextFactory(
             $this->entityStorage,
             $this->statsService,
@@ -43,7 +45,7 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
     {
         $this->fileInfo->shouldReceive('isUploaded')->andReturnTrue();
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
         $entity->shouldReceive('getId')->andReturn(Uuid::v6());
         $pageNumber = 123;
@@ -51,7 +53,7 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('download.entity', \Mockery::on(function (\Closure $closure) {
+            ->with('download.entity', Mockery::on(function (Closure $closure) {
                 $closure();
 
                 return true;
@@ -69,7 +71,7 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
     {
         $this->fileInfo->shouldReceive('isUploaded')->andReturnTrue();
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
         $entity->shouldReceive('getId')->andReturn(Uuid::v6());
 
@@ -79,7 +81,7 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('download.entity', \Mockery::on(function (\Closure $closure) use ($localFile) {
+            ->with('download.entity', Mockery::on(function (Closure $closure) use ($localFile) {
                 $result = $closure();
 
                 self::assertEquals($localFile, $result);
@@ -101,7 +103,7 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
     {
         $this->fileInfo->shouldReceive('isUploaded')->andReturnTrue();
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
         $entity->shouldReceive('getId')->andReturn(Uuid::v6());
 
@@ -112,7 +114,7 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('download.entity', \Mockery::on(function (\Closure $closure) use ($localFile) {
+            ->with('download.entity', Mockery::on(function (Closure $closure) use ($localFile) {
                 $result = $closure();
 
                 self::assertEquals($localFile, $result);
@@ -137,7 +139,7 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
     {
         $this->fileInfo->shouldReceive('isUploaded')->andReturnFalse();
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
 
         $pageNumber = 123;
@@ -149,7 +151,7 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
 
     public function testTeardown(): void
     {
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
+        $context = Mockery::mock(PdfPageProcessingContext::class);
         $context->shouldReceive('getLocalDocument')->andReturn($localDocument = '/local/file.pdf');
         $context->shouldReceive('getWorkDirPath')->andReturn($workDir = '/temp/dir');
 

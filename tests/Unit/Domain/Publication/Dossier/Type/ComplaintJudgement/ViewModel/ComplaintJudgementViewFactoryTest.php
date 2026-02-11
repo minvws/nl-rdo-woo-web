@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\ComplaintJudgement\ViewModel;
 
+use DateTimeImmutable;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ViewModel\ComplaintJudgementViewFactory;
@@ -22,13 +24,13 @@ final class ComplaintJudgementViewFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->commonDossierViewFactory = \Mockery::mock(CommonDossierPropertiesViewFactory::class);
+        $this->commonDossierViewFactory = Mockery::mock(CommonDossierPropertiesViewFactory::class);
     }
 
     public function testMake(): void
     {
         /** @var Department&MockInterface $expectedMainDepartment */
-        $expectedMainDepartment = \Mockery::mock(Department::class);
+        $expectedMainDepartment = Mockery::mock(Department::class);
 
         $this->commonDossierViewFactory
             ->shouldReceive('make')
@@ -39,16 +41,16 @@ final class ComplaintJudgementViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new \DateTimeImmutable(),
+                publicationDate: $publicationDate = new DateTimeImmutable(),
                 mainDepartment: $expectedMainDepartment = $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::COMPLAINT_JUDGEMENT,
-                subject: $expectedSubject = \Mockery::mock(Subject::class),
+                subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
         /** @var ComplaintJudgement&MockInterface $dossier */
-        $dossier = \Mockery::mock(ComplaintJudgement::class);
-        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new \DateTimeImmutable());
+        $dossier = Mockery::mock(ComplaintJudgement::class);
+        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable());
 
         $result = (new ComplaintJudgementViewFactory($this->commonDossierViewFactory))->make($dossier);
 

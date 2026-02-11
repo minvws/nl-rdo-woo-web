@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\Covenant;
 
 use Carbon\CarbonImmutable;
+use DateTimeImmutable;
+use Mockery;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
@@ -23,8 +25,8 @@ final class CovenantTest extends SharedWebTestCase
 
     public function testStartDateValidationAllowsADate10YearsBeforeCreationDate(): void
     {
-        $department = \Mockery::mock(Department::class);
-        $date = new \DateTimeImmutable('2020-04-21');
+        $department = Mockery::mock(Department::class);
+        $date = new DateTimeImmutable('2020-04-21');
 
         $covenant = new Covenant();
         $covenant->setDossierNr('foo-123');
@@ -43,8 +45,8 @@ final class CovenantTest extends SharedWebTestCase
 
     public function testStartDateValidationWithoutACreatedAt(): void
     {
-        $department = \Mockery::mock(Department::class);
-        $date = new \DateTimeImmutable('2020-04-21');
+        $department = Mockery::mock(Department::class);
+        $date = new DateTimeImmutable('2020-04-21');
         CarbonImmutable::setTestNow($date);
 
         $covenant = new Covenant();

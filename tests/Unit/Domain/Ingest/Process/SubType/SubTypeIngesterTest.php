@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Process\SubType;
 
+use ArrayIterator;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\Process\IngestProcessException;
 use Shared\Domain\Ingest\Process\IngestProcessOptions;
@@ -25,12 +27,12 @@ class SubTypeIngesterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->strategyA = \Mockery::mock(SubTypeIngestStrategyInterface::class);
-        $this->strategyB = \Mockery::mock(SubTypeIngestStrategyInterface::class);
-        $this->strategyC = \Mockery::mock(SubTypeIngestStrategyInterface::class);
+        $this->strategyA = Mockery::mock(SubTypeIngestStrategyInterface::class);
+        $this->strategyB = Mockery::mock(SubTypeIngestStrategyInterface::class);
+        $this->strategyC = Mockery::mock(SubTypeIngestStrategyInterface::class);
 
         $this->ingester = new SubTypeIngester(
-            new \ArrayIterator([$this->strategyA, $this->strategyB, $this->strategyC]),
+            new ArrayIterator([$this->strategyA, $this->strategyB, $this->strategyC]),
         );
 
         parent::setUp();
@@ -38,7 +40,7 @@ class SubTypeIngesterTest extends UnitTestCase
 
     public function testIngestUsesFirstMatchingStrategy(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
 
         $options = new IngestProcessOptions();
 
@@ -53,7 +55,7 @@ class SubTypeIngesterTest extends UnitTestCase
 
     public function testIngestChecksAllStrategiesAndThrowsExceptionIfNoneCanHandleTheIngest(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $options = new IngestProcessOptions();

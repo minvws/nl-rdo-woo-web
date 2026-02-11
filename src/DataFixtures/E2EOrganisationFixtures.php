@@ -29,6 +29,13 @@ class E2EOrganisationFixtures extends Fixture implements DependentFixtureInterfa
 
     public function load(ObjectManager $manager): void
     {
+        $organisationName = 'E2E Test Organisation';
+
+        $existingOrg = $manager->getRepository(Organisation::class)->findOneBy(['name' => $organisationName]);
+        if ($existingOrg) {
+            return;
+        }
+
         $documentPrefix1 = new DocumentPrefix();
         $documentPrefix1->setPrefix('E2E-A');
 
@@ -36,7 +43,7 @@ class E2EOrganisationFixtures extends Fixture implements DependentFixtureInterfa
         $documentPrefix2->setPrefix('E2E-B');
 
         $entity = new Organisation();
-        $entity->setName('E2E Test Organisation');
+        $entity->setName($organisationName);
         $entity->addDocumentPrefix($documentPrefix1);
         $entity->addDocumentPrefix($documentPrefix2);
         $entity->addDepartment(

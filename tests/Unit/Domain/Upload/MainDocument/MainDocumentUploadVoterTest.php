@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload\MainDocument;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Upload\Attachment\AttachmentUploadVoter;
 use Shared\Domain\Upload\Dossier\DossierUploadRequestValidator;
@@ -23,7 +24,7 @@ class MainDocumentUploadVoterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->validator = \Mockery::mock(DossierUploadRequestValidator::class);
+        $this->validator = Mockery::mock(DossierUploadRequestValidator::class);
 
         $this->voter = new AttachmentUploadVoter(
             $this->validator,
@@ -34,12 +35,12 @@ class MainDocumentUploadVoterTest extends UnitTestCase
 
     public function testReturnsAbstainForUnsupportedInput(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
         $request = new UploadRequest(
             2,
             3,
             'foo-bar-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::ATTACHMENTS,
             new InputBag(),
         );
@@ -56,12 +57,12 @@ class MainDocumentUploadVoterTest extends UnitTestCase
 
     public function testReturnsDeniedForInvalidRequest(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
         $request = new UploadRequest(
             2,
             3,
             'foo-bar-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::ATTACHMENTS,
             new InputBag(),
         );
@@ -80,12 +81,12 @@ class MainDocumentUploadVoterTest extends UnitTestCase
 
     public function testReturnsGrantedForValidInput(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
         $request = new UploadRequest(
             2,
             3,
             'foo-bar-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::ATTACHMENTS,
             new InputBag(),
         );

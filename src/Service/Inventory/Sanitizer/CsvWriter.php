@@ -6,6 +6,12 @@ namespace Shared\Service\Inventory\Sanitizer;
 
 use Shared\Exception\InventorySanitizerException;
 
+use function fclose;
+use function fopen;
+use function fputcsv;
+use function implode;
+use function is_array;
+
 class CsvWriter implements InventoryWriterInterface
 {
     /**

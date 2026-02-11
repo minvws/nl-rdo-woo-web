@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Ingest\Process\TikaOnly;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Doctrine\LegacyNamespaceHelper;
 use Shared\Domain\Ingest\Content\ContentExtractCache;
@@ -14,6 +15,8 @@ use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Webmozart\Assert\Assert;
+
+use function is_null;
 
 #[AsMessageHandler]
 final readonly class IngestTikaOnlyHandler
@@ -58,7 +61,7 @@ final readonly class IngestTikaOnlyHandler
                     ],
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to index tika content as page', [
                 'id' => $entity->getId(),
                 'class' => $entity::class,

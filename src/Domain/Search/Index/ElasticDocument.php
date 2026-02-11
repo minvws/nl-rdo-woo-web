@@ -6,6 +6,8 @@ namespace Shared\Domain\Search\Index;
 
 use Shared\Domain\Search\Index\Schema\ElasticField;
 
+use function array_merge;
+
 readonly class ElasticDocument
 {
     /**

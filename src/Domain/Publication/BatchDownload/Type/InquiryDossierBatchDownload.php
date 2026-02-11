@@ -11,6 +11,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Webmozart\Assert\Assert;
 
+use function sprintf;
+
 readonly class InquiryDossierBatchDownload implements BatchDownloadTypeInterface
 {
     public function __construct(

@@ -17,6 +17,9 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 
+use function sprintf;
+use function strlen;
+
 final class DepartmentAssetsControllerTest extends SharedWebTestCase
 {
     use VfsStreamHelpers;
@@ -42,7 +45,7 @@ final class DepartmentAssetsControllerTest extends SharedWebTestCase
     {
         $department = DepartmentFactory::createOne([
             'name' => 'Department of Magic',
-        ])->_real();
+        ]);
 
         $fileInfo = FileInfoFactory::createOne([
             'name' => $name = 'logo.svg',
@@ -92,7 +95,7 @@ final class DepartmentAssetsControllerTest extends SharedWebTestCase
         $department = DepartmentFactory::createOne([
             'name' => 'Department of Magic',
             'fileInfo' => new FileInfo(),
-        ])->_real();
+        ]);
 
         $this->client->request(
             'GET',

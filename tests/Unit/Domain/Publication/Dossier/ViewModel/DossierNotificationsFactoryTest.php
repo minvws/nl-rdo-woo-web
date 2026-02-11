@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -21,7 +22,7 @@ class DossierNotificationsFactoryTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->wooDecisionRepository = \Mockery::mock(WooDecisionRepository::class);
+        $this->wooDecisionRepository = Mockery::mock(WooDecisionRepository::class);
         $this->factory = new DossierNotificationsFactory(
             $this->wooDecisionRepository,
         );
@@ -29,7 +30,7 @@ class DossierNotificationsFactoryTest extends UnitTestCase
 
     public function testMakeForWooDecision(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('isCompleted')->andReturnFalse();
 
         $this->wooDecisionRepository
@@ -48,7 +49,7 @@ class DossierNotificationsFactoryTest extends UnitTestCase
 
     public function testMakeForIncompleteCovenant(): void
     {
-        $covenant = \Mockery::mock(Covenant::class);
+        $covenant = Mockery::mock(Covenant::class);
         $covenant->shouldReceive('isCompleted')->andReturnFalse();
 
         $result = $this->factory->make($covenant);
@@ -58,7 +59,7 @@ class DossierNotificationsFactoryTest extends UnitTestCase
 
     public function testMakeForCompletedCovenant(): void
     {
-        $covenant = \Mockery::mock(Covenant::class);
+        $covenant = Mockery::mock(Covenant::class);
         $covenant->shouldReceive('isCompleted')->andReturnTrue();
 
         $result = $this->factory->make($covenant);

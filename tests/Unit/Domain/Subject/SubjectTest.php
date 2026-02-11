@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Subject;
 
 use Doctrine\Common\Collections\Collection;
+use Mockery;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Tests\Unit\UnitTestCase;
@@ -19,10 +20,10 @@ class SubjectTest extends UnitTestCase
         $subject->setName($name = 'foo');
         self::assertEquals($name, $subject->getName());
 
-        $subject->setOrganisation($organisation = \Mockery::mock(Organisation::class));
+        $subject->setOrganisation($organisation = Mockery::mock(Organisation::class));
         self::assertEquals($organisation, $subject->getOrganisation());
 
-        $subject->setDossiers($dossiers = \Mockery::mock(Collection::class));
+        $subject->setDossiers($dossiers = Mockery::mock(Collection::class));
         self::assertEquals($dossiers, $subject->getDossiers());
     }
 }

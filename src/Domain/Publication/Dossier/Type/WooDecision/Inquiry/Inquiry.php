@@ -107,9 +107,6 @@ class Inquiry
         return $this;
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function removeDocument(Document $document): self
     {
         // Document removal for inquiries is disabled as part of #2868:

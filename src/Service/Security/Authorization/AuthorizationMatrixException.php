@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Service\Security\Authorization;
 
-class AuthorizationMatrixException extends \RuntimeException
+use RuntimeException;
+
+use function sprintf;
+
+class AuthorizationMatrixException extends RuntimeException
 {
     public static function forUnknownFilter(AuthorizationMatrixFilter $filter): self
     {

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Shared\Command\Cron;
 
 use Shared\Domain\Upload\UploadCleaner;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'woopie:cron:clean-uploads', description: 'Cleans up Upload entities and related files')]
 class CleanUploads extends Command
 {
     public function __construct(
@@ -19,9 +21,6 @@ class CleanUploads extends Command
 
     protected function configure(): void
     {
-        $this->setName('woopie:cron:clean-uploads')
-            ->setDescription('Cleans up Upload entities and related files')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -32,6 +31,6 @@ class CleanUploads extends Command
 
         $output->writeln('Done cleaning uploads!');
 
-        return 0;
+        return self::SUCCESS;
     }
 }

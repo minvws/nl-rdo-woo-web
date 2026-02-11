@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload\Department;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Department\DepartmentRepository;
@@ -31,10 +32,10 @@ final class DepartmentUploadVoterTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->repository = \Mockery::mock(DepartmentRepository::class);
-        $this->departmentService = \Mockery::mock(DepartmentService::class);
-        $this->token = \Mockery::mock(TokenInterface::class);
-        $this->uploadedFile = \Mockery::mock(UploadedFile::class);
+        $this->repository = Mockery::mock(DepartmentRepository::class);
+        $this->departmentService = Mockery::mock(DepartmentService::class);
+        $this->token = Mockery::mock(TokenInterface::class);
+        $this->uploadedFile = Mockery::mock(UploadedFile::class);
 
         $this->voter = new DepartmentUploadVoter(
             $this->repository,
@@ -130,7 +131,7 @@ final class DepartmentUploadVoterTest extends UnitTestCase
             ->shouldReceive('find')
             ->with($departmentId)
             ->once()
-            ->andReturn($department = \Mockery::mock(Department::class));
+            ->andReturn($department = Mockery::mock(Department::class));
 
         $this->departmentService
             ->shouldReceive('userCanEditLandingpage')
@@ -158,7 +159,7 @@ final class DepartmentUploadVoterTest extends UnitTestCase
             ->shouldReceive('find')
             ->with($departmentId)
             ->once()
-            ->andReturn($department = \Mockery::mock(Department::class));
+            ->andReturn($department = Mockery::mock(Department::class));
 
         $this->departmentService
             ->shouldReceive('userCanEditLandingpage')

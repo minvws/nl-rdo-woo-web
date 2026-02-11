@@ -21,12 +21,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 class InquiryController extends AbstractController
 {
     private const int MAX_DOCUMENTS_PER_PAGE = 10;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication;
 
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\FileCacheKeyBasedOnClassAndIdTrait;
@@ -14,6 +15,8 @@ use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+
+use function array_values;
 
 /**
  * This trait contains shared properties and methods for main document entities and attachment entities.
@@ -35,7 +38,7 @@ trait AttachmentAndMainDocumentEntityTrait
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     #[Assert\LessThanOrEqual(value: 'now')]
-    protected \DateTimeImmutable $formalDate;
+    protected DateTimeImmutable $formalDate;
 
     #[ORM\Column(length: 255, enumType: AttachmentType::class)]
     #[Assert\Choice(callback: 'getAllowedTypes')]
@@ -66,12 +69,12 @@ trait AttachmentAndMainDocumentEntityTrait
         $this->fileInfo = new FileInfo();
     }
 
-    public function getFormalDate(): \DateTimeImmutable
+    public function getFormalDate(): DateTimeImmutable
     {
         return $this->formalDate;
     }
 
-    public function setFormalDate(\DateTimeImmutable $formalDate): void
+    public function setFormalDate(DateTimeImmutable $formalDate): void
     {
         $this->formalDate = $formalDate;
     }

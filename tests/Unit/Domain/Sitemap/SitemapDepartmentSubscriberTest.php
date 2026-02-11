@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Sitemap;
 
+use Mockery;
 use Mockery\MockInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
@@ -21,7 +22,7 @@ class SitemapDepartmentSubscriberTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->departmentRepository = \Mockery::mock(DepartmentRepository::class);
+        $this->departmentRepository = Mockery::mock(DepartmentRepository::class);
 
         $this->subscriber = new SitemapDepartmentSubscriber(
             $this->departmentRepository,
@@ -30,17 +31,17 @@ class SitemapDepartmentSubscriberTest extends UnitTestCase
 
     public function testPopulate(): void
     {
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
         $department->shouldReceive('getSlug')->andReturn($slug = 'foobar');
 
-        $urlContainer = \Mockery::mock(UrlContainerInterface::class);
+        $urlContainer = Mockery::mock(UrlContainerInterface::class);
 
         $this->departmentRepository
             ->expects('getAllPublicDepartments')
             ->once()
             ->andReturn([$department]);
 
-        $urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
+        $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
         $urlGenerator->expects('generate')->with(
             'app_departments_index',
             [],
@@ -48,7 +49,7 @@ class SitemapDepartmentSubscriberTest extends UnitTestCase
         )->andReturn($departmentOverviewUrl = '/departments');
 
         $urlContainer->expects('addUrl')->with(
-            \Mockery::on(
+            Mockery::on(
                 static function (UrlConcrete $urlConcrete) use ($departmentOverviewUrl): bool {
                     self::assertEquals($departmentOverviewUrl, $urlConcrete->getLoc());
 
@@ -67,7 +68,7 @@ class SitemapDepartmentSubscriberTest extends UnitTestCase
         )->andReturn($departmentDetailUrl = '/departments/foobar');
 
         $urlContainer->expects('addUrl')->with(
-            \Mockery::on(
+            Mockery::on(
                 static function (UrlConcrete $urlConcrete) use ($departmentDetailUrl): bool {
                     self::assertEquals($departmentDetailUrl, $urlConcrete->getLoc());
 

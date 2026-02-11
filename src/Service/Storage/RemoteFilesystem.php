@@ -8,9 +8,9 @@ use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use Psr\Log\LoggerInterface;
 
-/**
- * @SuppressWarnings("PHPMD.TooManyPublicMethods")
- */
+use function fclose;
+use function is_resource;
+
 readonly class RemoteFilesystem
 {
     public function __construct(

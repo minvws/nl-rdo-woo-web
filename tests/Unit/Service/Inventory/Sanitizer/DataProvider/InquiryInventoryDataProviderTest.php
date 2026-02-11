@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inventory\Sanitizer\DataProvider;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
@@ -20,9 +21,9 @@ class InquiryInventoryDataProviderTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->inquiry = \Mockery::mock(Inquiry::class);
-        $this->docA = \Mockery::mock(Document::class);
-        $this->docB = \Mockery::mock(Document::class);
+        $this->inquiry = Mockery::mock(Inquiry::class);
+        $this->docA = Mockery::mock(Document::class);
+        $this->docB = Mockery::mock(Document::class);
 
         $this->dataProvider = new InquiryInventoryDataProvider(
             $this->inquiry,
@@ -42,7 +43,7 @@ class InquiryInventoryDataProviderTest extends UnitTestCase
 
     public function testGetInventoryUsesExistingInventory(): void
     {
-        $inventory = \Mockery::mock(InquiryInventory::class);
+        $inventory = Mockery::mock(InquiryInventory::class);
 
         $this->inquiry->expects('getInventory')->andReturn($inventory);
 

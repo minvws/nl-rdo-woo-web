@@ -14,6 +14,8 @@ use Shared\Tests\Story\WooIndexCovenantStory;
 use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Zenstruck\Foundry\Attribute\WithStory;
 
+use function iterator_to_array;
+
 final class UrlProducerTest extends SharedWebTestCase
 {
     private UrlProducer $urlProducer;

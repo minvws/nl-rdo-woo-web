@@ -8,12 +8,12 @@ use Carbon\CarbonImmutable;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Tests\Factory\OrganisationFactory;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<InvestigationReport>
+ * @extends PersistentObjectFactory<InvestigationReport>
  */
-final class InvestigationReportFactory extends PersistentProxyObjectFactory
+final class InvestigationReportFactory extends PersistentObjectFactory
 {
     /**
      * @return array<string, mixed>

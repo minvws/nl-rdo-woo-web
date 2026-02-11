@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Workflow\Guard;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -20,7 +21,7 @@ final class PublishGuard
 
         /** @var AbstractDossier $dossier */
         $dossier = $event->getSubject();
-        if ($dossier->getPublicationDate() === null || $dossier->getPublicationDate() > new \DateTimeImmutable('now midnight')) {
+        if ($dossier->getPublicationDate() === null || $dossier->getPublicationDate() > new DateTimeImmutable('now midnight')) {
             $event->setBlocked(true, 'A dossier with an empty or future publication date cannot be published');
         }
     }

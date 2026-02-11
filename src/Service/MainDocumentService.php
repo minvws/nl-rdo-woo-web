@@ -9,6 +9,8 @@ use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+use function array_column;
+
 readonly class MainDocumentService
 {
     public function __construct(
@@ -21,7 +23,7 @@ readonly class MainDocumentService
      */
     public function validate(AbstractMainDocument $mainDocument): void
     {
-        $errors = $this->validator->validate($mainDocument, groups: \array_column(DossierValidationGroup::cases(), 'value'));
+        $errors = $this->validator->validate($mainDocument, groups: array_column(DossierValidationGroup::cases(), 'value'));
 
         if ($errors->count() > 0) {
             throw new ValidationFailedException($mainDocument, $errors);

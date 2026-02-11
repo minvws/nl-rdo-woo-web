@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Query\Facet\Input;
 
+use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
@@ -27,7 +28,7 @@ final class DateFacetInputTest extends UnitTestCase
         parent::setUp();
 
         $this->facet = new DateFacet();
-        $this->bag = \Mockery::mock(ParameterBag::class);
+        $this->bag = Mockery::mock(ParameterBag::class);
         $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn([])->byDefault();
     }
 

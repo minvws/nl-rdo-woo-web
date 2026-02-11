@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Department\LandingPage\ViewModel;
 
+use DateTimeImmutable;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Department\LandingPage\ViewModel\DepartmentLandingPageViewFactory;
@@ -12,27 +14,29 @@ use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
+use function hash;
+
 final class DepartmentLandingPageViewFactoryTest extends UnitTestCase
 {
     private UrlGeneratorInterface&MockInterface $urlGenerator;
 
     protected function setUp(): void
     {
-        $this->urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
+        $this->urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
     }
 
     public function testMake(): void
     {
         /** @var FileInfo&MockInterface $fileInfo */
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
 
         /** @var Department&MockInterface $department */
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
         $department->shouldReceive('getName')->andReturn('my name');
         $department->shouldReceive('getId')->andReturn($expectedId = Uuid::fromRfc4122('1f040b49-271c-6a7c-9421-c9c7fcf0c37d'));
         $department->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $department->shouldReceive('getUpdatedAt')->andReturn($updatedAt = new \DateTimeImmutable('2023-10-01 12:00:00'));
+        $department->shouldReceive('getUpdatedAt')->andReturn($updatedAt = new DateTimeImmutable('2023-10-01 12:00:00'));
 
         $hash = hash('sha256', (string) $updatedAt->getTimestamp());
 

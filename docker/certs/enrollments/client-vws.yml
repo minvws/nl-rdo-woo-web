@@ -1,0 +1,9 @@
+---
+profile: profiles/G4TRIALEEPrivGTLSSYS2025.yaml
+subject:
+  C: NL
+  O: TRIAL VWS
+  CN: TRIAL VWS
+  organizationIdentifier: NTRNL-99999994  # This is the KvK Registration number in an ETSI format
+subjectAltNames:
+  - minvws.nl

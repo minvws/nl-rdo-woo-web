@@ -11,7 +11,7 @@ use Shared\Domain\Upload\UploadRequest;
 
 interface UploadHandlerInterface
 {
-    public function handleUploadRequest(UploadEntity $uploadEntity, UploadRequest $request): UploadResultInterface;
+    public function handleUpload(UploadEntity $uploadEntity, UploadRequest $request): UploadResultInterface;
 
     public function moveUploadedFileToStorage(
         UploadEntity $uploadEntity,

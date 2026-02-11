@@ -16,9 +16,6 @@ use Shared\Service\HistoryService;
 use Shared\Service\Inquiry\InquiryService;
 use Symfony\Component\Workflow\Exception\TransitionException;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 readonly class DossierWorkflowManager
 {
     public function __construct(

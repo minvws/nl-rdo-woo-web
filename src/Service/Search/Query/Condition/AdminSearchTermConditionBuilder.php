@@ -6,6 +6,7 @@ namespace Shared\Service\Search\Query\Condition;
 
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
 use Erichard\ElasticQueryBuilder\Query\NestedQuery;
+use Override;
 use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Index\Schema\ElasticNestedField;
 use Shared\Domain\Search\Index\Schema\ElasticPath;
@@ -14,7 +15,7 @@ use Shared\Service\Search\Query\Dsl\Query;
 
 class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
 {
-    #[\Override]
+    #[Override]
     public function createDocumentQuery(SearchParameters $searchParameters): BoolQuery
     {
         return Query::bool(
@@ -31,7 +32,7 @@ class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
         )->setParams(['minimum_should_match' => 1]);
     }
 
-    #[\Override]
+    #[Override]
     public function createMainTypesQuery(SearchParameters $searchParameters): BoolQuery
     {
         $query = parent::createMainTypesQuery($searchParameters);

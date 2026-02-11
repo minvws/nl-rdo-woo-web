@@ -4,23 +4,16 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory;
 
+use DateTimeImmutable;
+use Override;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<InquiryInventory>
+ * @extends PersistentObjectFactory<InquiryInventory>
  */
-final class InquiryInventoryFactory extends PersistentProxyObjectFactory
+final class InquiryInventoryFactory extends PersistentObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
-    public function __construct()
-    {
-    }
-
     public static function class(): string
     {
         return InquiryInventory::class;
@@ -36,19 +29,18 @@ final class InquiryInventoryFactory extends PersistentProxyObjectFactory
         return [
             'inquiry' => InquiryFactory::new(),
             'fileInfo' => FileInfoFactory::new(),
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    #[\Override]
+    #[Override]
     protected function initialize(): static
     {
-        return $this
-            // ->afterInstantiate(function(InquiryInventory $inquiryInventory): void {})
-        ;
+        return $this;
+        // ->afterInstantiate(function(InquiryInventory $inquiryInventory): void {})
     }
 }

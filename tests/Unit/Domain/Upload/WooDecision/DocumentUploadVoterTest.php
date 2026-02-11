@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload\WooDecision;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Upload\Dossier\DossierUploadRequestValidator;
 use Shared\Domain\Upload\UploadRequest;
@@ -23,7 +24,7 @@ class DocumentUploadVoterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->validator = \Mockery::mock(DossierUploadRequestValidator::class);
+        $this->validator = Mockery::mock(DossierUploadRequestValidator::class);
 
         $this->voter = new DocumentUploadVoter(
             $this->validator,
@@ -34,12 +35,12 @@ class DocumentUploadVoterTest extends UnitTestCase
 
     public function testReturnsAbstainForUnsupportedInput(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
         $request = new UploadRequest(
             2,
             3,
             'foo-bar-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::MAIN_DOCUMENTS,
             new InputBag(),
         );
@@ -56,12 +57,12 @@ class DocumentUploadVoterTest extends UnitTestCase
 
     public function testReturnsDeniedForInvalidRequest(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
         $request = new UploadRequest(
             2,
             3,
             'foo-bar-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::WOO_DECISION_DOCUMENTS,
             new InputBag(),
         );
@@ -80,12 +81,12 @@ class DocumentUploadVoterTest extends UnitTestCase
 
     public function testReturnsGrantedForValidInput(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
         $request = new UploadRequest(
             2,
             3,
             'foo-bar-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::WOO_DECISION_DOCUMENTS,
             new InputBag(),
         );

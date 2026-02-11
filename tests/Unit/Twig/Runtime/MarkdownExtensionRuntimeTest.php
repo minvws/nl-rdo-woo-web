@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Twig\Runtime;
 
 use League\CommonMark\Output\RenderedContentInterface;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Shared\Domain\Content\Markdown\MarkdownConverter;
@@ -17,7 +18,7 @@ class MarkdownExtensionRuntimeTest extends MockeryTestCase
 
     protected function setUp(): void
     {
-        $this->converter = \Mockery::mock(MarkdownConverter::class);
+        $this->converter = Mockery::mock(MarkdownConverter::class);
 
         $this->runtime = new MarkdownExtensionRuntime(
             $this->converter,
@@ -27,7 +28,7 @@ class MarkdownExtensionRuntimeTest extends MockeryTestCase
     public function testRenderMarkdown(): void
     {
         $input = 'foo';
-        $renderedContent = \Mockery::mock(RenderedContentInterface::class);
+        $renderedContent = Mockery::mock(RenderedContentInterface::class);
         $renderedContent->expects('getContent')->andReturn($expectedOutput = 'bar');
         $this->converter->expects('convert')->with($input)->andReturn($renderedContent);
 
@@ -40,7 +41,7 @@ class MarkdownExtensionRuntimeTest extends MockeryTestCase
     public function testRenderMarkdownWithNullInput(): void
     {
         $input = null;
-        $renderedContent = \Mockery::mock(RenderedContentInterface::class);
+        $renderedContent = Mockery::mock(RenderedContentInterface::class);
         $renderedContent->shouldNotReceive('getContent');
         $this->converter->shouldNotReceive('convert');
 

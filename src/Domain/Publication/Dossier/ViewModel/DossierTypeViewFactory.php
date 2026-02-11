@@ -8,6 +8,11 @@ use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function array_reduce;
+use function array_values;
+use function sprintf;
+use function uksort;
+
 final readonly class DossierTypeViewFactory
 {
     public function __construct(

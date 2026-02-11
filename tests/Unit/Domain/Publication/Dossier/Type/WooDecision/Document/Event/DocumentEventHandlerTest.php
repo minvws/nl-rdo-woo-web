@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document\Event;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
@@ -23,7 +24,7 @@ class DocumentEventHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossierService = \Mockery::mock(DossierService::class);
+        $this->dossierService = Mockery::mock(DossierService::class);
 
         $this->handler = new DocumentEventHandler(
             $this->dossierService,
@@ -34,10 +35,10 @@ class DocumentEventHandlerTest extends UnitTestCase
 
     public function testHandleDocumentWithdrawn(): void
     {
-        $dossierA = \Mockery::mock(WooDecision::class);
-        $dossierB = \Mockery::mock(WooDecision::class);
+        $dossierA = Mockery::mock(WooDecision::class);
+        $dossierB = Mockery::mock(WooDecision::class);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossierA, $dossierB]));
 
         $this->dossierService->expects('validateCompletion')->with($dossierA);
@@ -50,7 +51,7 @@ class DocumentEventHandlerTest extends UnitTestCase
 
     public function testHandleDocumentWithdrawnSkipsBulkWithdraw(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
 
         $event = new DocumentWithDrawnEvent($document, DocumentWithdrawReason::DATA_IN_DOCUMENT, 'foo', true);
 
@@ -61,7 +62,7 @@ class DocumentEventHandlerTest extends UnitTestCase
 
     public function testHandleAllDocumentsWithdrawn(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
         $this->dossierService->expects('validateCompletion')->with($dossier);
 
@@ -72,10 +73,10 @@ class DocumentEventHandlerTest extends UnitTestCase
 
     public function testHandleDocumentRepublished(): void
     {
-        $dossierA = \Mockery::mock(WooDecision::class);
-        $dossierB = \Mockery::mock(WooDecision::class);
+        $dossierA = Mockery::mock(WooDecision::class);
+        $dossierB = Mockery::mock(WooDecision::class);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossierA, $dossierB]));
 
         $this->dossierService->expects('validateCompletion')->with($dossierA);

@@ -6,6 +6,11 @@ namespace Shared\Domain\Publication\Dossier\ViewModel;
 
 use Shared\Domain\Publication\Citation;
 
+use function array_keys;
+use function array_map;
+use function array_values;
+use function key_exists;
+
 readonly class GroundViewFactory
 {
     /**

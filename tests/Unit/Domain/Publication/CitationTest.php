@@ -12,7 +12,7 @@ final class CitationTest extends UnitTestCase
 {
     /**
      * @param array<array-key,string> $input
-     * @param list<string>            $expected
+     * @param list<string> $expected
      */
     #[DataProvider('getSortWooCitationsData')]
     public function testSortWooCitations(array $input, array $expected): void

@@ -9,6 +9,8 @@ use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
+use function array_key_exists;
+
 class DossierTypeManager
 {
     /**

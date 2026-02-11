@@ -23,13 +23,13 @@ class DocumentPrefixRepositoryTest extends SharedWebTestCase
 
     public function testGetPaginated(): void
     {
-        $organisation = OrganisationFactory::createOne()->_real();
+        $organisation = OrganisationFactory::createOne();
         $documentPrefixCount = $this->getFaker()->numberBetween(1, 5);
         DocumentPrefixFactory::createMany($documentPrefixCount, [
             'organisation' => $organisation,
         ]);
 
-        $otherOrganisation = OrganisationFactory::createOne()->_real();
+        $otherOrganisation = OrganisationFactory::createOne();
         DocumentPrefixFactory::createMany($this->getFaker()->numberBetween(1, 5), [
             'organisation' => $otherOrganisation,
         ]);

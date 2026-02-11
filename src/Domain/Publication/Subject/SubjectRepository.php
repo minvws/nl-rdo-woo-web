@@ -10,6 +10,11 @@ use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Organisation\Organisation;
 use Symfony\Component\Uid\Uuid;
 
+use function array_key_exists;
+use function base64_decode;
+use function is_array;
+use function json_decode;
+
 /**
  * @extends ServiceEntityRepository<Subject>
  */
@@ -69,8 +74,8 @@ class SubjectRepository extends ServiceEntityRepository
             ->setParameter('organisation', $organisation);
 
         if ($cursor !== null) {
-            $decodedCursor = \json_decode(\base64_decode($cursor), true);
-            if (\is_array($decodedCursor) && \array_key_exists('id', $decodedCursor)) {
+            $decodedCursor = json_decode(base64_decode($cursor), true);
+            if (is_array($decodedCursor) && array_key_exists('id', $decodedCursor)) {
                 $id = $decodedCursor['id'];
 
                 $queryBuilder->andWhere('subject.id > :id')

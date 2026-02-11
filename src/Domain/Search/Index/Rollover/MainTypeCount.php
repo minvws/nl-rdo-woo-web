@@ -6,6 +6,8 @@ namespace Shared\Domain\Search\Index\Rollover;
 
 use Shared\Domain\Search\Index\ElasticDocumentType;
 
+use function round;
+
 readonly class MainTypeCount
 {
     /**

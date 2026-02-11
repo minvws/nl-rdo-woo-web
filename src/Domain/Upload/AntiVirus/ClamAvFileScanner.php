@@ -7,6 +7,11 @@ namespace Shared\Domain\Upload\AntiVirus;
 use Psr\Log\LoggerInterface;
 use Shared\Service\Storage\LocalFilesystem;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Throwable;
+
+use function fstat;
+use function is_resource;
+use function sprintf;
 
 readonly class ClamAvFileScanner
 {
@@ -67,7 +72,7 @@ readonly class ClamAvFileScanner
         try {
             $client = $this->clientFactory->getClient();
             $result = $client->scanResourceStream($handle);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             $this->logger->error('An error occurred during antivirus validation: ' . $throwable->getMessage());
 
             return FileScanResult::TECHNICAL_ERROR;

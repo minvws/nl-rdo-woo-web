@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Shared\Service\Security;
 
+use Override;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
+use function in_array;
+
 class DocumentVoter extends WooDecisionVoter
 {
-    #[\Override]
+    #[Override]
     protected function supports(string $attribute, mixed $subject): bool
     {
         return $attribute === DossierVoter::VIEW
@@ -18,10 +21,7 @@ class DocumentVoter extends WooDecisionVoter
             && $subject->getDossiers()->count() === 1;
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
-    #[\Override]
+    #[Override]
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $document = $subject;

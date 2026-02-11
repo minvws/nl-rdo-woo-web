@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Exception;
 
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 
-class DocumentWorkflowException extends \RuntimeException
+class DocumentWorkflowException extends RuntimeException
 {
     public function __construct(
         string $message,

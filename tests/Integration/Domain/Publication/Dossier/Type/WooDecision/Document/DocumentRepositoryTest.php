@@ -17,10 +17,15 @@ use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Story\WooIndexWooDecisionStory;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Persistence\Proxy;
+
+use function array_map;
+use function iterator_to_array;
+use function strtoupper;
+use function Zenstruck\Foundry\Persistence\save;
 
 final class DocumentRepositoryTest extends SharedWebTestCase
 {
@@ -83,21 +88,21 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         ]);
 
         $result = $this->repository->findByFamilyId(
-            $dossierA->_real(),
+            $dossierA,
             123,
         );
         self::assertCount(1, $result);
         self::assertEquals($documentNrA, $result[0]->getDocumentNr());
 
         $result = $this->repository->findByFamilyId(
-            $dossierA->_real(),
+            $dossierA,
             456,
         );
         self::assertCount(1, $result);
         self::assertEquals($documentNrB, $result[0]->getDocumentNr());
 
         $result = $this->repository->findByFamilyId(
-            $dossierC->_real(),
+            $dossierC,
             123,
         );
         self::assertCount(0, $result);
@@ -133,21 +138,21 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         ]);
 
         $result = $this->repository->findByThreadId(
-            $dossierA->_real(),
+            $dossierA,
             123,
         );
         self::assertCount(1, $result);
         self::assertEquals($documentNrA, $result[0]->getDocumentNr());
 
         $result = $this->repository->findByThreadId(
-            $dossierA->_real(),
+            $dossierA,
             456,
         );
         self::assertCount(1, $result);
         self::assertEquals($documentNrB, $result[0]->getDocumentNr());
 
         $result = $this->repository->findByThreadId(
-            $dossierC->_real(),
+            $dossierC,
             123,
         );
         self::assertCount(0, $result);
@@ -203,8 +208,8 @@ final class DocumentRepositoryTest extends SharedWebTestCase
          * @var QueryBuilder $queryBuilder
          */
         $queryBuilder = $this->repository->getRelatedDocumentsByThread(
-            $dossierA->_real(),
-            $documentA->_real(),
+            $dossierA,
+            $documentA,
         );
 
         /**
@@ -248,8 +253,8 @@ final class DocumentRepositoryTest extends SharedWebTestCase
          * @var QueryBuilder $queryBuilder
          */
         $queryBuilder = $this->repository->getRelatedDocumentsByFamily(
-            $dossierA->_real(),
-            $documentA->_real(),
+            $dossierA,
+            $documentA,
         );
 
         /**
@@ -273,7 +278,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'dossiers' => [$dossierA],
         ]);
         $docA->withdraw(DocumentWithdrawReason::DATA_IN_DOCUMENT, '');
-        $docA->_save();
+        save($docA);
 
         DocumentFactory::createOne([
             'documentNr' => $documentNrB = 'FOO-456',
@@ -402,9 +407,9 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'dossiers' => [$dossier],
         ]);
 
-        $result = $this->repository->findOneByDossierAndId($dossier->_real(), $document->getId());
+        $result = $this->repository->findOneByDossierAndId($dossier, $document->getId());
 
-        self::assertSame($document->_real(), $result);
+        self::assertSame($document, $result);
     }
 
     public function testFindOneByDossierNrAndDocumentNr(): void
@@ -424,7 +429,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             $documentNr,
         );
 
-        self::assertSame($document->_real(), $result);
+        self::assertSame($document, $result);
     }
 
     public function testGetDossierDocumentsForPaginationQueryBuilder(): void
@@ -466,14 +471,14 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         /** @var list<Document> $allDocuments */
         $allDocuments = iterator_to_array($iterable, false);
 
-        /** @var non-empty-list<Proxy<Document>> $documents */
+        /** @var non-empty-list<Document> $documents */
         $documents = [
             ...WooIndexWooDecisionStory::getPool('documents-1'),
             ...WooIndexWooDecisionStory::getPool('documents-2'),
         ];
 
         $expectedDocumentUuids = array_map(
-            fn (Proxy $document): string => $document->_real()->getId()->toRfc4122(),
+            fn (Document $document): string => $document->getId()->toRfc4122(),
             $documents,
         );
 
@@ -503,7 +508,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         InquiryFactory::createOne([
             'caseNr' => $caseNr = 'FOO-123',
-            'documents' => [$document->_real()],
+            'documents' => [$document],
         ]);
 
         $documentCaseNrs = $this->repository->getDocumentCaseNrs(strtoupper($documentNr));
@@ -555,5 +560,34 @@ final class DocumentRepositoryTest extends SharedWebTestCase
                 $this->repository->getPublicInquiryDocumentsWithDossiers($inquiry),
             ),
         );
+    }
+
+    public function testFindByDossierAndExternalId(): void
+    {
+        $externalId = ExternalId::create($this->getFaker()->uuid());
+
+        $dossier = WooDecisionFactory::createOne();
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'externalId' => $externalId,
+        ]);
+
+        $result = $this->repository->findByDossierAndExternalId($dossier, $externalId);
+
+        self::assertEquals($externalId, $result?->getExternalId());
+    }
+
+    public function testFindByDossierAndExternalIdWhenNotLinkedReturnsNull(): void
+    {
+        $externalId = ExternalId::create($this->getFaker()->uuid());
+
+        $dossier = WooDecisionFactory::createOne();
+        DocumentFactory::createOne([
+            'externalId' => $externalId,
+        ]);
+
+        $result = $this->repository->findByDossierAndExternalId($dossier, $externalId);
+
+        self::assertNull($result);
     }
 }

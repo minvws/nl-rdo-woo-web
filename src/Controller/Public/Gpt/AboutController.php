@@ -8,7 +8,7 @@ use Shared\Domain\Content\Page\ContentPageService;
 use Shared\Domain\Content\Page\ContentPageType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class AboutController extends AbstractController
 {

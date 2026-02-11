@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\DependencyInjection;
 
+use Override;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 
@@ -17,7 +18,7 @@ class AuthMatrixExtension extends Extension
         $container->setParameter('authorization_matrix', $config);
     }
 
-    #[\Override]
+    #[Override]
     public function getAlias(): string
     {
         return 'auth_matrix';

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Disposition;
 
 use Carbon\CarbonImmutable;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
@@ -23,7 +24,7 @@ final class DispositionReportTest extends TestCase
         $dossier = new Disposition();
         self::assertNull($dossier->getMainDocument());
 
-        $document = \Mockery::mock(DispositionMainDocument::class);
+        $document = Mockery::mock(DispositionMainDocument::class);
         $dossier->setMainDocument($document);
 
         self::assertEquals($document, $dossier->getMainDocument());

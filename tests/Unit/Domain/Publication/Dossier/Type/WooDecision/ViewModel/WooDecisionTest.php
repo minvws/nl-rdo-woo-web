@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
@@ -58,8 +60,8 @@ final class WooDecisionTest extends UnitTestCase
      */
     private function getWooDecision(ArrayCollection $departments): WooDecision
     {
-        $dossierCounts = \Mockery::mock(DossierCounts::class);
-        $mainDocument = \Mockery::mock(MainDocument::class);
+        $dossierCounts = Mockery::mock(DossierCounts::class);
+        $mainDocument = Mockery::mock(MainDocument::class);
 
         $mainDepartment = $departments->first();
         Assert::isInstanceOf($mainDepartment, Department::class);
@@ -72,7 +74,7 @@ final class WooDecisionTest extends UnitTestCase
                 isPreview: true,
                 title: 'title',
                 pageTitle: 'pageTitle',
-                publicationDate: new \DateTimeImmutable(),
+                publicationDate: new DateTimeImmutable(),
                 mainDepartment: $mainDepartment,
                 summary: 'summary',
                 type: DossierType::WOO_DECISION,
@@ -84,10 +86,10 @@ final class WooDecisionTest extends UnitTestCase
             isInventoryOptional: false,
             canProvideInventory: true,
             decision: DecisionType::PUBLIC,
-            decisionDate: new \DateTimeImmutable(),
+            decisionDate: new DateTimeImmutable(),
             mainDocument: $mainDocument,
-            dateFrom: new \DateTimeImmutable(),
-            dateTo: new \DateTimeImmutable(),
+            dateFrom: new DateTimeImmutable(),
+            dateTo: new DateTimeImmutable(),
             publicationReason: PublicationReason::WOO_REQUEST,
             documentSearchUrl: '/foo/bar',
         );

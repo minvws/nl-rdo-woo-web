@@ -11,6 +11,10 @@ use Shared\Domain\Search\Result\HighlightMapperTrait;
 use Shared\Domain\Search\Result\ResultEntryInterface;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
+use function array_map;
+use function is_null;
+use function sprintf;
+
 readonly class DossierSearchResultBaseMapper
 {
     use HighlightMapperTrait;

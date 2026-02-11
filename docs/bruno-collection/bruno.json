@@ -1,0 +1,23 @@
+{
+  "version": "1",
+  "name": "OpenVWS Publication V1 API",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "size": 0.010927200317382812,
+  "filesCount": 32,
+  "clientCertificates": {
+    "enabled": true,
+    "certs": [
+      {
+        "domain": "localhost",
+        "type": "cert",
+        "certFilePath": "../../docker/certs/generated/client-vws.pem",
+        "keyFilePath": "../../docker/certs/generated/private/client-vws.key",
+        "passphrase": ""
+      }
+    ]
+  }
+}

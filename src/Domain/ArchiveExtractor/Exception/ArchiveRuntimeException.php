@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace Shared\Domain\ArchiveExtractor\Exception;
 
-final class ArchiveRuntimeException extends \RuntimeException implements ArchiveExceptionInterface
+use RuntimeException;
+use SplFileInfo;
+use Throwable;
+
+use function sprintf;
+
+final class ArchiveRuntimeException extends RuntimeException implements ArchiveExceptionInterface
 {
-    public static function forExtractionFailure(?\Throwable $e = null): self
+    public static function forExtractionFailure(?Throwable $e = null): self
     {
         $previousMessagePart = $e === null
             ? ''
@@ -18,7 +24,7 @@ final class ArchiveRuntimeException extends \RuntimeException implements Archive
         );
     }
 
-    public static function forFailedToOpenArchive(\SplFileInfo $file): self
+    public static function forFailedToOpenArchive(SplFileInfo $file): self
     {
         return new self(sprintf('Failed to open archive at "%s".', $file->getPathname()));
     }

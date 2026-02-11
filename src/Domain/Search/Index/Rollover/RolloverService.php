@@ -8,6 +8,9 @@ use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+use function date;
+use function in_array;
+
 readonly class RolloverService
 {
     public function __construct(

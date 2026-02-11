@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Query\Facet;
 
+use ArrayIterator;
+use IteratorAggregate;
+use OutOfBoundsException;
 use Shared\Service\Search\Model\FacetKey;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
+use Traversable;
 
-readonly class FacetDefinitions implements \IteratorAggregate
+use function array_key_exists;
+use function sprintf;
+
+readonly class FacetDefinitions implements IteratorAggregate
 {
     /**
      * @var array<array-key, FacetDefinitionInterface>
@@ -30,17 +37,17 @@ readonly class FacetDefinitions implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable<FacetDefinitionInterface>
+     * @return Traversable<FacetDefinitionInterface>
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->definitions);
+        return new ArrayIterator($this->definitions);
     }
 
     public function get(FacetKey $facetKey): FacetDefinitionInterface
     {
         if (! array_key_exists($facetKey->value, $this->definitions)) {
-            throw new \OutOfBoundsException(sprintf('No facet definition found with key %s', $facetKey->value));
+            throw new OutOfBoundsException(sprintf('No facet definition found with key %s', $facetKey->value));
         }
 
         return $this->definitions[$facetKey->value];

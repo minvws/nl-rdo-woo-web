@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\FileProvider;
 
-class DossierFileProviderException extends \RuntimeException
+use RuntimeException;
+
+use function sprintf;
+
+class DossierFileProviderException extends RuntimeException
 {
     public static function forNoProviderAvailable(DossierFileType $type): self
     {

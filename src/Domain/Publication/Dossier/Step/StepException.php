@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Step;
 
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 
-class StepException extends \RuntimeException
+use function sprintf;
+
+class StepException extends RuntimeException
 {
     public static function forIncompatibleDossierInstance(
         StepDefinitionInterface $step,

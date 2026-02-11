@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload;
 
+use Mockery;
 use Shared\Domain\Upload\UploadRequest;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Unit\UnitTestCase;
@@ -19,7 +20,7 @@ class UploadRequestTest extends UnitTestCase
             $chunkIndex = 1,
             $chunkCount = 3,
             $uploadId = 'foo-bar-123',
-            $uploadedFile = \Mockery::mock(UploadedFile::class),
+            $uploadedFile = Mockery::mock(UploadedFile::class),
             $groupId = UploadGroupId::WOO_DECISION_DOCUMENTS,
             $params = new InputBag([
                 'foo' => 'bar',
@@ -56,7 +57,7 @@ class UploadRequestTest extends UnitTestCase
                 'groupId' => UploadGroupId::WOO_DECISION_DOCUMENTS->value,
             ],
             files: [
-                'file' => $uploadedFile = \Mockery::mock(UploadedFile::class),
+                'file' => $uploadedFile = Mockery::mock(UploadedFile::class),
             ],
         );
 
@@ -91,7 +92,7 @@ class UploadRequestTest extends UnitTestCase
                 'dossierId' => 'dossier-456',
             ],
             files: [
-                'file' => \Mockery::mock(UploadedFile::class),
+                'file' => Mockery::mock(UploadedFile::class),
             ],
         );
 
@@ -116,7 +117,7 @@ class UploadRequestTest extends UnitTestCase
                 'departmentId' => 'department-456',
             ],
             files: [
-                'file' => \Mockery::mock(UploadedFile::class),
+                'file' => Mockery::mock(UploadedFile::class),
             ],
         );
 

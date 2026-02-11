@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -12,17 +13,17 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\ValueObject\ExternalId;
 
-/**
- * @SuppressWarnings("PHPMD.TooManyFields")
- * @SuppressWarnings("PHPMD.TooManyPublicMethods")
- * @SuppressWarnings("PHPMD.ExcessiveClassComplexity")
- * @SuppressWarnings("PHPMD.ExcessivePublicCount")
- */
+use function array_values;
+
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Document extends AbstractPublicationItem
 {
+    #[ORM\Column(name: 'external_id', type: 'external_id', length: 128, unique: true, nullable: true)]
+    protected ?ExternalId $externalId = null;
+
     /** @var Collection<array-key,WooDecision> */
     #[ORM\ManyToMany(targetEntity: WooDecision::class, inversedBy: 'documents')]
     #[ORM\JoinTable(
@@ -36,7 +37,7 @@ class Document extends AbstractPublicationItem
     private string $documentNr;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, index: true)]
-    private ?\DateTimeImmutable $documentDate = null;
+    private ?DateTimeImmutable $documentDate = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $familyId = null;
@@ -70,7 +71,7 @@ class Document extends AbstractPublicationItem
     private ?string $withdrawExplanation = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $withdrawDate = null;
+    private ?DateTimeImmutable $withdrawDate = null;
 
     /** @var Collection<array-key,Inquiry> */
     #[ORM\ManyToMany(targetEntity: Inquiry::class, mappedBy: 'documents')]
@@ -105,6 +106,18 @@ class Document extends AbstractPublicationItem
         $this->fileInfo->setPaginatable(true);
     }
 
+    public function getExternalId(): ?ExternalId
+    {
+        return $this->externalId;
+    }
+
+    public function setExternalId(?ExternalId $externalId): self
+    {
+        $this->externalId = $externalId;
+
+        return $this;
+    }
+
     public function getDocumentNr(): string
     {
         return $this->documentNr;
@@ -117,12 +130,12 @@ class Document extends AbstractPublicationItem
         return $this;
     }
 
-    public function getDocumentDate(): ?\DateTimeImmutable
+    public function getDocumentDate(): ?DateTimeImmutable
     {
         return $this->documentDate;
     }
 
-    public function setDocumentDate(?\DateTimeImmutable $documentDate): self
+    public function setDocumentDate(?DateTimeImmutable $documentDate): self
     {
         $this->documentDate = $documentDate;
 
@@ -358,7 +371,7 @@ class Document extends AbstractPublicationItem
         return $this->withdrawExplanation;
     }
 
-    public function getWithdrawDate(): ?\DateTimeImmutable
+    public function getWithdrawDate(): ?DateTimeImmutable
     {
         return $this->withdrawDate;
     }
@@ -368,7 +381,7 @@ class Document extends AbstractPublicationItem
         $this->withdrawn = true;
         $this->withdrawReason = $reason;
         $this->withdrawExplanation = $explanation;
-        $this->withdrawDate = new \DateTimeImmutable();
+        $this->withdrawDate = new DateTimeImmutable();
 
         $this->fileInfo->removeFileProperties();
     }
@@ -389,7 +402,7 @@ class Document extends AbstractPublicationItem
         return $this->refersTo;
     }
 
-    public function addReferralTo(Document $document): self
+    public function addRefersTo(Document $document): self
     {
         if (! $this->refersTo->contains($document)) {
             $this->refersTo->add($document);
@@ -398,7 +411,7 @@ class Document extends AbstractPublicationItem
         return $this;
     }
 
-    public function removeReferralTo(Document $document): self
+    public function removeRefersTo(Document $document): self
     {
         $this->refersTo->removeElement($document);
 

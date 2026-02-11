@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\SubType\Mapper;
 
+use DateTimeInterface;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Search\Index\Dossier\DossierIndexer;
@@ -28,7 +29,7 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
     }
 
     /**
-     * @param string[]               $metadata
+     * @param string[] $metadata
      * @param array<int, mixed>|null $pages
      */
     public function map(object $entity, ?array $metadata = null, ?array $pages = null): ElasticDocument
@@ -44,7 +45,7 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
             ElasticField::FILE_SIZE->value => $file->getSize(),
             ElasticField::FILE_TYPE->value => $file->getType(),
             ElasticField::SOURCE_TYPE->value => $file->getSourceType(),
-            ElasticField::DATE->value => $entity->getFormalDate()->format(\DateTimeInterface::ATOM),
+            ElasticField::DATE->value => $entity->getFormalDate()->format(DateTimeInterface::ATOM),
             ElasticField::FILENAME->value => $file->getName(),
             ElasticField::GROUNDS->value => $entity->getGrounds(),
             ElasticNestedField::DOSSIERS->value => [

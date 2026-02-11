@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Storage;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\Storage\StorageRootPathGenerator;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
+
+use function array_map;
 
 final class StorageRootPathGeneratorTest extends UnitTestCase
 {
@@ -59,7 +62,7 @@ final class StorageRootPathGeneratorTest extends UnitTestCase
     private function getEntity(string $uuid): EntityWithFileInfo&MockInterface
     {
         /** @var EntityWithFileInfo&MockInterface $entity */
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getId')->andReturn(Uuid::fromString($uuid));
 
         return $entity;

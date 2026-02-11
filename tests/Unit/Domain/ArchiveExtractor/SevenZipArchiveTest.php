@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\ArchiveExtractor;
 
 use Archive7z\Archive7z;
+use Exception;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\ArchiveExtractor\Exception\ArchiveLogicException;
 use Shared\Domain\ArchiveExtractor\Exception\ArchiveMissingDestinationException;
@@ -12,6 +14,7 @@ use Shared\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
 use Shared\Domain\ArchiveExtractor\Factory\SevenZipArchiveFactory;
 use Shared\Domain\ArchiveExtractor\SevenZipArchive;
 use Shared\Tests\Unit\UnitTestCase;
+use SplFileInfo;
 
 final class SevenZipArchiveTest extends UnitTestCase
 {
@@ -19,15 +22,15 @@ final class SevenZipArchiveTest extends UnitTestCase
 
     private SevenZipArchiveFactory&MockInterface $factory;
     private Archive7z&MockInterface $factoryResult;
-    private \SplFileInfo&MockInterface $file;
+    private SplFileInfo&MockInterface $file;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->factory = \Mockery::mock(SevenZipArchiveFactory::class);
-        $this->factoryResult = \Mockery::mock(Archive7z::class);
-        $this->file = \Mockery::mock(\SplFileInfo::class);
+        $this->factory = Mockery::mock(SevenZipArchiveFactory::class);
+        $this->factoryResult = Mockery::mock(Archive7z::class);
+        $this->file = Mockery::mock(SplFileInfo::class);
     }
 
     public function testOpen(): void
@@ -144,7 +147,7 @@ final class SevenZipArchiveTest extends UnitTestCase
             ->shouldReceive('setOutputDirectory')
             ->once()
             ->with($destination = 'destination')
-            ->andThrow(new \Exception('Somthing went wrong'));
+            ->andThrow(new Exception('Somthing went wrong'));
 
         $this->factoryResult->shouldNotReceive('extract');
 
@@ -176,7 +179,7 @@ final class SevenZipArchiveTest extends UnitTestCase
         $this->factoryResult
             ->shouldReceive('extract')
             ->once()
-            ->andThrow($ex = new \Exception('Somthing went wrong'));
+            ->andThrow($ex = new Exception('Somthing went wrong'));
 
         $archive = new SevenZipArchive($this->factory);
         $archive->open($this->file);

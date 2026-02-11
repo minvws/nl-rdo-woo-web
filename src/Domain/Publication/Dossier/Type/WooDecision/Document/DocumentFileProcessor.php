@@ -13,6 +13,8 @@ use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\HistoryService;
 use Shared\Service\Utils\Utils;
 
+use function sprintf;
+
 readonly class DocumentFileProcessor
 {
     public function __construct(

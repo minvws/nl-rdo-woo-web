@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\ComplaintJudgement;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -18,7 +19,7 @@ class ComplaintJudgementMainDocument extends AbstractMainDocument
 {
     public function __construct(
         ComplaintJudgement $dossier,
-        \DateTimeImmutable $formalDate,
+        DateTimeImmutable $formalDate,
         AttachmentType $type,
         AttachmentLanguage $language,
     ) {

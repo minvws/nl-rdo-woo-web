@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Api\Publication\V1;
 
+use DateTimeImmutable;
+use Mockery;
 use Monolog\Level;
 use Monolog\LogRecord;
-use Shared\Api\Publication\V1\RequestLogProcessor;
-use Shared\Service\Security\Api\ApiUser;
+use PublicationApi\Api\Publication\RequestLogProcessor;
+use PublicationApi\Domain\Security\ApiUser;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -19,13 +21,13 @@ class RequestLogProcessorTest extends UnitTestCase
         $commonName = 'valid.minvws.nl';
         $user = new ApiUser($commonName);
 
-        $security = \Mockery::mock(Security::class);
+        $security = Mockery::mock(Security::class);
         $security->expects('getUser')
             ->once()
             ->andReturn($user);
 
         $record = new LogRecord(
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             'channel',
             Level::Info,
             'message',
@@ -40,10 +42,10 @@ class RequestLogProcessorTest extends UnitTestCase
 
     public function testCommonNameNotInLogRecordIfNotApi(): void
     {
-        $security = \Mockery::mock(Security::class);
+        $security = Mockery::mock(Security::class);
 
         $record = new LogRecord(
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             'channel',
             Level::Info,
             'message',
@@ -57,13 +59,13 @@ class RequestLogProcessorTest extends UnitTestCase
 
     public function testCommonNameNotInLogRecordIfNoApiUser(): void
     {
-        $security = \Mockery::mock(Security::class);
+        $security = Mockery::mock(Security::class);
         $security->expects('getUser')
             ->once()
             ->andReturnNull();
 
         $record = new LogRecord(
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             'channel',
             Level::Info,
             'message',

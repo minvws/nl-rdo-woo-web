@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Content\Page;
 
-class ContentPageException extends \RuntimeException
+use RuntimeException;
+
+use function sprintf;
+
+class ContentPageException extends RuntimeException
 {
     public static function forMissing(ContentPageType $type): self
     {

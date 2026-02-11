@@ -6,6 +6,8 @@ namespace Shared\Domain\Search\Result;
 
 use MinVWS\TypeArray\TypeArray;
 
+use function array_merge;
+
 trait HighlightMapperTrait
 {
     /**

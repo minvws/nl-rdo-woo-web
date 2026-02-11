@@ -11,7 +11,7 @@ use Shared\Form\SubjectType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -56,7 +56,7 @@ class SubjectController extends AbstractController
         }
 
         return $this->render('admin/subjects/create.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 
@@ -77,7 +77,7 @@ class SubjectController extends AbstractController
 
         return $this->render('admin/subjects/edit.html.twig', [
             'subject' => $subject,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 }

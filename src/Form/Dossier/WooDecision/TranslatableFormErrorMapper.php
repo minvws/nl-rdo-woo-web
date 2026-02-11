@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Form\Dossier\WooDecision;
 
+use DateTimeZone;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+
+use function array_map;
 
 readonly class TranslatableFormErrorMapper
 {
@@ -21,7 +24,7 @@ readonly class TranslatableFormErrorMapper
         $form->addError(new FormError(
             $this->translator->trans(
                 'publication.dossier.error.date_header',
-                ['date' => $run->getEndedAt()?->setTimezone(new \DateTimeZone('Europe/Amsterdam'))->format('Y-m-d H:i')],
+                ['date' => $run->getEndedAt()?->setTimezone(new DateTimeZone('Europe/Amsterdam'))->format('Y-m-d H:i')],
             )
         ));
         $this->mapGenericErrorsToForm($run->getGenericErrors(), $form);

@@ -9,7 +9,6 @@ Resource            TestData.resource
 
 
 *** Variables ***
-${ENVIRONMENT}          ${EMPTY}
 ${PRODUCTION_REPORT}    ${EMPTY}
 ${DOCUMENTS}            ${EMPTY}
 ${NUMBER_OF_DOCUMENTS}  ${EMPTY}
@@ -175,7 +174,7 @@ Fill Publication Date
   ${day} =  Convert Date  ${date}  result_format=%d
   ${month} =  Convert Date  ${date}  result_format=%m
   ${year} =  Convert Date  ${date}  result_format=%Y
-  IF  '${ENVIRONMENT}' == 'docker-local'
+  IF  '%{ENVIRONMENT}' == 'local'
     Type Text  id=publish_publication_date  ${day}${month}${year}
   ELSE
     Type Text  id=publish_publication_date  ${month}${day}${year}

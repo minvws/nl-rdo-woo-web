@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\Schema;
 
-/**
- * @SuppressWarnings("PHPMD.TooManyPublicMethods")
- */
+use function array_map;
+use function implode;
+
 readonly class ElasticPath
 {
     public string $value;

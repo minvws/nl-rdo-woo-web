@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Integration\Service\Search\Query\Definition;
 
 use Elastic\Elasticsearch\Response\Elasticsearch;
+use Mockery;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Domain\Search\Query\SearchParametersFactory;
@@ -25,13 +26,13 @@ trait QueryDefinitionTestTrait
      */
     private function matchDefinitionToSnapshot(string $definitionClass, ?SearchParameters $searchParameters = null): void
     {
-        $elasticResponse = \Mockery::mock(Elasticsearch::class);
-        $resultTransformer = \Mockery::mock(ResultTransformer::class);
-        $resultTransformer->expects('transform')->andReturn(\Mockery::mock(Result::class));
+        $elasticResponse = Mockery::mock(Elasticsearch::class);
+        $resultTransformer = Mockery::mock(ResultTransformer::class);
+        $resultTransformer->expects('transform')->andReturn(Mockery::mock(Result::class));
 
         $searchData = [];
-        $elasticClient = \Mockery::mock(ElasticClientInterface::class);
-        $elasticClient->expects('search')->with(\Mockery::capture($searchData))->andReturn($elasticResponse);
+        $elasticClient = Mockery::mock(ElasticClientInterface::class);
+        $elasticClient->expects('search')->with(Mockery::capture($searchData))->andReturn($elasticResponse);
 
         $searchService = new SearchService(
             $elasticClient,

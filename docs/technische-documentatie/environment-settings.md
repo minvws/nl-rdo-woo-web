@@ -21,17 +21,18 @@ The following environment variables are used by the application:
 
 ### Global settings
 
-| Variable             | Description                                                   | Default value           |
-| -------------------- | ------------------------------------------------------------- |-------------------------|
-| `APP_ENV`            | The application environment.                                  | `prod`                  |
-| `APP_DEBUG`          | Whether the application is in debug mode.                     | `false`                 |
-| `APP_SECRET`         | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                  |
-| `SITE_NAME`          | The name of the site. Used only for displaying purposes.      | het publicatieplatform  |
-| `COOKIE_NAME`        | The name of session cookie to use.                            | `WOOPID`                |
-| `TOTP_ISSUER`        | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`             |
-| `APP_MODE`           | Application mode (see below)                                  | `ALL`                   |
-| `PUBLIC_BASE_URL`    | The url of the FRONTEND site                                  | `http://localhost:8000` |
-| `PIWIK_ANALYTICS_ID` | Identification number for Piwik analytics                     | `0`                     |
+| Variable                  | Description                                                   | Default value           |
+|---------------------------|---------------------------------------------------------------|-------------------------|
+| `APP_ENV`                 | The application environment.                                  | `prod`                  |
+| `APP_DEBUG`               | Whether the application is in debug mode.                     | `false`                 |
+| `APP_SECRET`              | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                  |
+| `SITE_NAME`               | The name of the site. Used only for displaying purposes.      | het publicatieplatform  |
+| `COOKIE_NAME`             | The name of session cookie to use.                            | `WOOPID`                |
+| `SESSION_COOKIE_LIFETIME` | The lifetime of session cookies.                              | `86400`                 |
+| `TOTP_ISSUER`             | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`             |
+| `APP_MODE`                | Application mode (see below)                                  | `ALL`                   |
+| `PUBLIC_BASE_URL`         | The url of the FRONTEND site                                  | `http://localhost:8000` |
+| `PIWIK_ANALYTICS_ID`      | Identification number for Piwik analytics                     | `0`                     |
 
 Cookie names should be prefixed with `__Host-` when running on HTTPS. However, this will break the application when running on
 HTTP, for instance, during development.

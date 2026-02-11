@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Inventory\Sanitizer;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
@@ -23,8 +24,8 @@ class InventoryDocumentMapperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->translator = \Mockery::mock(TranslatorInterface::class);
-        $this->urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
+        $this->translator = Mockery::mock(TranslatorInterface::class);
+        $this->urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
 
         $this->documentMapper = new InventoryDocumentMapper(
             $this->translator,
@@ -39,17 +40,17 @@ class InventoryDocumentMapperTest extends UnitTestCase
     {
         $urls = ['http://dummy.url', 'https://x.y.z'];
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getDossierNr')->andReturn('tst-123');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
         $dossier->shouldReceive('getTitle')->andReturn('Foo Bar');
 
-        $referredDocA = \Mockery::mock(Document::class);
+        $referredDocA = Mockery::mock(Document::class);
         $referredDocA->shouldReceive('getDocumentNr')->andReturn($refDocIdA = 'PREFIX-matterA-A');
         $referredDocA->shouldReceive('getDocumentId')->andReturn('A');
         $referredDocA->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossier]));
 
-        $referredDocB = \Mockery::mock(Document::class);
+        $referredDocB = Mockery::mock(Document::class);
         $referredDocB->shouldReceive('getDocumentNr')->andReturn($refDocIdB = 'PREFIX-matterB-B');
         $referredDocB->shouldReceive('getDocumentId')->andReturn('B');
         $referredDocB->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossier]));
@@ -64,7 +65,7 @@ class InventoryDocumentMapperTest extends UnitTestCase
             ->with('app_document_detail', ['prefix' => 'PREFIX', 'dossierId' => 'tst-123', 'documentId' => $refDocIdB])
             ->andReturn('test-url-B');
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDocumentId')->andReturn(123);
         $document->shouldReceive('getDocumentNr')->andReturn($docNr = 'PREFIX-matterA-123');
         $document->shouldReceive('getFileInfo->getName')->andReturn('test-doc-name');

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Content;
 
+use InvalidArgumentException;
+use Mockery;
 use Shared\Domain\Ingest\Content\ContentExtractCacheKeyGenerator;
 use Shared\Domain\Ingest\Content\ContentExtractOptions;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
@@ -24,7 +26,7 @@ class ContentExtractCacheKeyGeneratorTest extends UnitTestCase
     {
         $options = ContentExtractOptions::create();
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('55ae5de9-55f4-3420-b50b-5cde6e07fc5a'));
         $entity->shouldReceive('getFileCacheKey')->andReturn('entitykey');
         $entity->shouldReceive('getFileInfo->getHash')->andReturn('FooBar');
@@ -45,7 +47,7 @@ class ContentExtractCacheKeyGeneratorTest extends UnitTestCase
     {
         $options = ContentExtractOptions::create()->withPageNumber(123);
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('55ae5de9-55f4-3420-b50b-5cde6e07fc5a'));
         $entity->shouldReceive('getFileCacheKey')->andReturn('entitykey');
         $entity->shouldReceive('getFileInfo->getHash')->andReturn('FooBar');
@@ -66,12 +68,12 @@ class ContentExtractCacheKeyGeneratorTest extends UnitTestCase
     {
         $options = ContentExtractOptions::create()->withPageNumber(123);
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('55ae5de9-55f4-3420-b50b-5cde6e07fc5a'));
         $entity->shouldReceive('getFileCacheKey')->andReturn('entitykey');
         $entity->shouldReceive('getFileInfo->getHash')->andReturnNull();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $this->keyGenerator->generate(
             ContentExtractorKey::TIKA,

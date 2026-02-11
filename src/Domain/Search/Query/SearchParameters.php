@@ -17,9 +17,6 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 readonly class SearchParameters
 {
-    /**
-     * @SuppressWarnings("PHPMD.ExcessiveParameterList")
-     */
     public function __construct(
         public FacetInputCollection $facetInputs,
         public SearchOperator $operator = SearchOperator::DEFAULT,

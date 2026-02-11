@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -23,7 +24,7 @@ final class DossierPathHelperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->router = \Mockery::mock(RouterInterface::class);
+        $this->router = Mockery::mock(RouterInterface::class);
 
         $this->pathHelper = new DossierPathHelper(
             $this->router,
@@ -58,7 +59,7 @@ final class DossierPathHelperTest extends UnitTestCase
 
     public function testGetDetailsPathWithDossier(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getDossierNr')->andReturn('dos-nr');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('dos-prefix');
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
@@ -102,7 +103,7 @@ final class DossierPathHelperTest extends UnitTestCase
 
     public function testGetDetailsPathWithOtherPublication(): void
     {
-        $dossier = \Mockery::mock(OtherPublication::class);
+        $dossier = Mockery::mock(OtherPublication::class);
         $dossier->shouldReceive('getDossierNr')->andReturn('dos-nr');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('dos-prefix');
         $dossier->shouldReceive('getType')->andReturn(DossierType::OTHER_PUBLICATION);
@@ -123,7 +124,7 @@ final class DossierPathHelperTest extends UnitTestCase
 
     public function testGetDetailsPathWithAdvice(): void
     {
-        $dossier = \Mockery::mock(Advice::class);
+        $dossier = Mockery::mock(Advice::class);
         $dossier->shouldReceive('getDossierNr')->andReturn('dos-nr');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('dos-prefix');
         $dossier->shouldReceive('getType')->andReturn(DossierType::ADVICE);
@@ -144,7 +145,7 @@ final class DossierPathHelperTest extends UnitTestCase
 
     public function testGetDetailsPathWithRequestForAdvice(): void
     {
-        $dossier = \Mockery::mock(RequestForAdvice::class);
+        $dossier = Mockery::mock(RequestForAdvice::class);
         $dossier->shouldReceive('getDossierNr')->andReturn('dos-nr');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('dos-prefix');
         $dossier->shouldReceive('getType')->andReturn(DossierType::REQUEST_FOR_ADVICE);

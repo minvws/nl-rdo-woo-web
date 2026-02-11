@@ -7,6 +7,10 @@ namespace Shared\Service\Storage;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\Uid\Uuid;
 
+use function hash;
+use function sprintf;
+use function substr;
+
 class StorageRootPathGenerator
 {
     /**

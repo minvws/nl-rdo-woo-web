@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Twig\Extension;
 
+use Generator;
+use Override;
 use Shared\Domain\Search\Theme\ThemeManager;
 use Shared\Domain\Search\Theme\ViewModel\Theme;
 use Twig\Extension\AbstractExtension;
@@ -16,7 +18,7 @@ class ThemeExtension extends AbstractExtension
     ) {
     }
 
-    #[\Override]
+    #[Override]
     public function getFunctions(): array
     {
         return [
@@ -25,9 +27,9 @@ class ThemeExtension extends AbstractExtension
     }
 
     /**
-     * @return \Generator<Theme>
+     * @return Generator<Theme>
      */
-    public function getAllThemes(): \Generator
+    public function getAllThemes(): Generator
     {
         return $this->themeManager->getViewsForAllThemes();
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\Handler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\AttachmentDeleter;
 use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
@@ -28,10 +29,10 @@ class WithdrawAttachmentHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
-        $this->attachmentDispatcher = \Mockery::mock(AttachmentDispatcher::class);
-        $this->entityLoader = \Mockery::mock(AttachmentEntityLoader::class);
-        $this->deleter = \Mockery::mock(AttachmentDeleter::class);
+        $this->attachmentRepository = Mockery::mock(AttachmentRepository::class);
+        $this->attachmentDispatcher = Mockery::mock(AttachmentDispatcher::class);
+        $this->entityLoader = Mockery::mock(AttachmentEntityLoader::class);
+        $this->deleter = Mockery::mock(AttachmentDeleter::class);
 
         $this->handler = new WithdrawAttachmentHandler(
             $this->attachmentRepository,
@@ -51,7 +52,7 @@ class WithdrawAttachmentHandlerTest extends UnitTestCase
         $explanation = 'foo bar';
 
         $attachmentId = Uuid::v6();
-        $attachment = \Mockery::mock(CovenantAttachment::class);
+        $attachment = Mockery::mock(CovenantAttachment::class);
         $attachment->shouldReceive('canWithdraw')->andReturnTrue();
         $attachment->expects('withdraw')->with($reason, $explanation);
 
@@ -79,7 +80,7 @@ class WithdrawAttachmentHandlerTest extends UnitTestCase
         $explanation = 'foo bar';
 
         $attachmentId = Uuid::v6();
-        $attachment = \Mockery::mock(CovenantAttachment::class);
+        $attachment = Mockery::mock(CovenantAttachment::class);
         $attachment->shouldReceive('canWithdraw')->andReturnFalse();
 
         $this->entityLoader

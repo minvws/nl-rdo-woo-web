@@ -20,9 +20,11 @@ use Shared\Service\Search\Model\Suggestion;
 use Shared\Service\Search\Model\SuggestionEntry;
 use Shared\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function array_filter;
+use function array_merge;
+use function is_array;
+use function strval;
+
 readonly class ResultTransformer
 {
     public function __construct(

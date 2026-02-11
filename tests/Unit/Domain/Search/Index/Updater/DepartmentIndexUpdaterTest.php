@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Updater;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Search\Index\Updater\DepartmentIndexUpdater;
@@ -18,7 +19,7 @@ class DepartmentIndexUpdaterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
+        $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
 
         $this->indexUpdater = new DepartmentIndexUpdater(
             $this->elasticClient,
@@ -30,12 +31,12 @@ class DepartmentIndexUpdaterTest extends UnitTestCase
     public function testUpdateDepartment(): void
     {
         $departmentId = Uuid::v6();
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
         $department->shouldReceive('getId')->andReturn($departmentId);
         $department->shouldReceive('getName')->andReturn('Foo Bar');
         $department->shouldReceive('getShortTag')->andReturn('FB');
 
-        $this->elasticClient->expects('updateByQuery')->with(\Mockery::on(
+        $this->elasticClient->expects('updateByQuery')->with(Mockery::on(
             static fn (array $input) => $input['body']['query']['bool']['should'][0]['match']['departments.id'] === $departmentId
                 && $input['body']['script']['params']['department']['name'] === 'FB|Foo Bar'
         ));

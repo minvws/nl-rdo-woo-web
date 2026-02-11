@@ -9,6 +9,10 @@ use org\bovigo\vfs\vfsStreamDirectory;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Webmozart\Assert\Assert;
 
+use function dirname;
+use function sprintf;
+use function trim;
+
 trait VfsStreamHelpers
 {
     private function createFileForEntityOnVfs(

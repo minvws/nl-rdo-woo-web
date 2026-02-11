@@ -44,6 +44,6 @@ runs:
     - name: Create virtual environment
       shell: bash
       run: |
-        task rf:venv
+        task rf:local:venv
         task rf:fixtures:load:e2e
 

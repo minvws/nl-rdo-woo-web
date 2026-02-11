@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\ApplicationId;
 use Shared\Tests\Unit\UnitTestCase;
+use ValueError;
 
 final class ApplicationIdTest extends UnitTestCase
 {
@@ -23,7 +24,7 @@ final class ApplicationIdTest extends UnitTestCase
 
     public function testFromStringWithInvalidValuesThrowsException(): void
     {
-        $this->expectException(\ValueError::class);
+        $this->expectException(ValueError::class);
 
         ApplicationId::fromString('ACME');
     }

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Admin\Action;
 
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 
-class DossierAdminActionException extends \RuntimeException
+use function sprintf;
+
+class DossierAdminActionException extends RuntimeException
 {
     public static function forActionNotAvailable(AbstractDossier $dossier, DossierAdminAction $adminAction): self
     {

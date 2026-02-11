@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Security\Authorization;
 
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -23,11 +24,11 @@ class AuthorizationEntryRequestStore
     {
         $request = $this->requestStack->getCurrentRequest();
         if ($request === null) {
-            throw new \RuntimeException('No request available.');
+            throw new RuntimeException('No request available.');
         }
 
         if (! $request->attributes->has(self::REQUEST_ATTRIBUTE)) {
-            throw new \RuntimeException('No auth matrix attrib available in the request');
+            throw new RuntimeException('No auth matrix attrib available in the request');
         }
 
         /** @var Entry[] */

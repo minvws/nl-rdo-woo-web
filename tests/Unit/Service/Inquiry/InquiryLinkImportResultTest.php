@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inquiry;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Exception\InquiryLinkImportException;
 use Shared\Service\Inquiry\InquiryChangeset;
@@ -17,7 +18,7 @@ class InquiryLinkImportResultTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->changeset = \Mockery::mock(InquiryChangeset::class);
+        $this->changeset = Mockery::mock(InquiryChangeset::class);
         $this->result = new InquiryLinkImportResult($this->changeset);
 
         parent::setUp();

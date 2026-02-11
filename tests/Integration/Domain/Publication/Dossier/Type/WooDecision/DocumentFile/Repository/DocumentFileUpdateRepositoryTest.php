@@ -29,8 +29,8 @@ final class DocumentFileUpdateRepositoryTest extends SharedWebTestCase
 
     public function testHasUpdateForFileSetAndDocument(): void
     {
-        $documentFileSet = DocumentFileSetFactory::createOne()->_real();
-        $document = DocumentFactory::createOne()->_real();
+        $documentFileSet = DocumentFileSetFactory::createOne();
+        $document = DocumentFactory::createOne();
 
         self::assertFalse(
             $this->repository->hasUpdateForFileSetAndDocument($documentFileSet, $document),
@@ -39,7 +39,7 @@ final class DocumentFileUpdateRepositoryTest extends SharedWebTestCase
         $documentFileUpdate = DocumentFileUpdateFactory::createOne([
             'documentFileSet' => $documentFileSet,
             'document' => $document,
-        ])->_real();
+        ]);
 
         $this->repository->save($documentFileUpdate, true);
 

@@ -9,7 +9,7 @@ Het publicatieplatform bestaat uit twee onderdelen: een uploadportaal en een pub
 ## Rollen
 
 Deze documentatie is bedoeld voor beheerders die het uploadportaal gebruiken om informatie te uploaden, of administrators die het portaal zelf beheren.
-Er zijn verchillende rollen gedefinieerd, elk met hun eigen rechten. Onderstaande tabel geeft een overzicht van deze rollen, welke in de documentatie her en der terug komen.
+Er zijn verschillende rollen gedefinieerd, elk met hun eigen rechten. Onderstaande tabel geeft een overzicht van deze rollen, welke in de documentatie her en der terug komen.
 
 | Rol                   | Bevoegdheden                                                                                                                                                                                                                                                                                                                        |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

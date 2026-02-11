@@ -7,22 +7,18 @@ Resource            ../../resources/Setup.resource
 Test Tags           ci  sitemap  sitemap-init
 
 
-*** Variables ***
-${URL_PUBLIC}   ${EMPTY}
-
-
 *** Test Cases ***
 Validate DiWoo Sitemap
-  Set URL Variables
   Command Generate WooIndex
-  ${sitemap_index} =  Get WooIndex Sitemap Index From Robots  ${URL_PUBLIC}/robots.txt
+  ${sitemap_index} =  Get WooIndex Sitemap Index From Robots  %{URL_PUBLIC}/robots.txt
   ${sitemap} =  Get First Sitemap From Sitemap Index  ${sitemap_index}
   Sitemap Should Contain Multiple URLs  ${sitemap}  30
 
 
 *** Keywords ***
 Command Generate WooIndex
-  Run Process  task rf:sitemap  shell=True  alias=shell
+  VAR  ${command} =  docker exec ${ADMIN_CONTAINER_NAME} bin/console Woo-index:generate
+  Run Process  ${command}  shell=True  alias=shell
   ${result} =  Get Process Result  shell
   Should Be Empty  ${result.stderr}
 

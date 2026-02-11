@@ -5,24 +5,28 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Inquiry;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use InvalidArgumentException;
+use Mockery;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inquiry\CaseNumbers;
 use Shared\Tests\Unit\UnitTestCase;
 
+use function iterator_to_array;
+
 class CaseNumbersTest extends UnitTestCase
 {
     public function testConstructorThrowsExceptionForEmptyValue(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         new CaseNumbers(['foo', '']);
     }
 
     public function testConstructorThrowsExceptionForTooLongValue(): void
     {
         // 256 chars
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         new CaseNumbers([
             'foo',
             'dddasdfadskfjhdasfkjhdasfkjhadskfjhadskjfhakjdsfkajsdhfkjadshfkjahsdflkjadflkdsajflkajdflkasjdlfkjadslkfja'
@@ -33,7 +37,7 @@ class CaseNumbersTest extends UnitTestCase
 
     public function testConstructorThrowsExceptionForValueWithInvalidChars(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         new CaseNumbers(['foo', 'bl*^%t']);
     }
 
@@ -78,13 +82,13 @@ class CaseNumbersTest extends UnitTestCase
 
     public function testForDocument(): void
     {
-        $inquiryA = \Mockery::mock(Inquiry::class);
+        $inquiryA = Mockery::mock(Inquiry::class);
         $inquiryA->expects('getCasenr')->andReturn($caseNrA = '123-foo');
 
-        $inquiryB = \Mockery::mock(Inquiry::class);
+        $inquiryB = Mockery::mock(Inquiry::class);
         $inquiryB->expects('getCasenr')->andReturn($caseNrB = '456-bar');
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->expects('getInquiries')->andReturn(new ArrayCollection([$inquiryA, $inquiryB]));
 
         self::assertEquals(
@@ -95,13 +99,13 @@ class CaseNumbersTest extends UnitTestCase
 
     public function testForWoodecision(): void
     {
-        $inquiryA = \Mockery::mock(Inquiry::class);
+        $inquiryA = Mockery::mock(Inquiry::class);
         $inquiryA->expects('getCasenr')->andReturn($caseNrA = '123-foo');
 
-        $inquiryB = \Mockery::mock(Inquiry::class);
+        $inquiryB = Mockery::mock(Inquiry::class);
         $inquiryB->expects('getCasenr')->andReturn($caseNrB = '456-bar');
 
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->expects('getInquiries')->andReturn(new ArrayCollection([$inquiryA, $inquiryB]));
 
         self::assertEquals(

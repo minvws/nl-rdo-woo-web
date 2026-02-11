@@ -19,6 +19,10 @@ use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory
 use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Component\Uid\Uuid;
 
+use function array_map;
+use function reset;
+use function Zenstruck\Foundry\Persistence\save;
+
 final class WooDecisionRepositoryTest extends SharedWebTestCase
 {
     protected function setUp(): void
@@ -53,7 +57,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
             'judgement' => Judgement::NOT_PUBLIC,
         ]);
 
-        $result = $this->getRepository()->getDossierCounts($wooDecision->_real());
+        $result = $this->getRepository()->getDossierCounts($wooDecision);
 
         $this->assertSame(3, $result->getTotalDocumentCount());
         $this->assertTrue($result->hasDocuments());
@@ -110,13 +114,13 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
         ]);
 
         $result = $this->getRepository()->getSearchResultViewModel(
-            $wooDecision->_real()->getDocumentPrefix(),
-            $wooDecision->_real()->getDossierNr(),
+            $wooDecision->getDocumentPrefix(),
+            $wooDecision->getDossierNr(),
             ApplicationMode::PUBLIC,
         );
 
         $this->assertNotNull($result);
-        $this->assertEquals($wooDecision->_real()->getTitle(), $result->title);
+        $this->assertEquals($wooDecision->getTitle(), $result->title);
         $this->assertEquals(3, $result->documentCount);
     }
 
@@ -139,7 +143,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
         ]);
 
         $result = $this->getRepository()->findAllForOrganisation(
-            $organisationA->_real()
+            $organisationA
         );
 
         $this->assertCount(2, $result);
@@ -155,7 +159,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
 
     public function testFindOne(): void
     {
-        $wooDecision = WooDecisionFactory::createOne()->_real();
+        $wooDecision = WooDecisionFactory::createOne();
 
         $result = $this->getRepository()->findOne($wooDecision->getId());
 
@@ -207,12 +211,12 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
         ]);
 
         $result = $this->getRepository()
-            ->getDocumentsForBatchDownload($wooDecision->_real())
+            ->getDocumentsForBatchDownload($wooDecision)
             ->getQuery()
             ->getResult();
 
         $this->assertEquals(
-            $document->_real()->getId(),
+            $document->getId(),
             $result[0]->getId(),
         );
     }
@@ -260,7 +264,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
             'suspended' => true,
         ]);
         $docB->withdraw(DocumentWithdrawReason::DATA_IN_DOCUMENT, '');
-        $docB->_save();
+        save($docB);
 
         DocumentFactory::createone([
             'dossiers' => [$wooDecision],

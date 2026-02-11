@@ -1,0 +1,308 @@
+meta {
+  name: Replaces the WooDecisionUploadAttachment resource
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E:dossierExternalId/uploads/attachment/E::attachmentExternalId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  organisationId: {{organisationId}}
+  attachmentExternalId: attachmentExternalId
+  dossierExternalId: dossierExternalId
+}
+
+script:post-response {
+  if (res.status === 204) {
+  }
+  if (res.status === 400) {
+  }
+  if (res.status === 404) {
+  }
+  if (res.status === 422) {
+  }
+}
+
+example {
+  name: 204 Response
+  description: WooDecisionUploadAttacment resource updated
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    method: PUT
+    mode: none
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId:
+      attachmentExternalId:
+    }
+  }
+
+  response: {
+    status: {
+      code: 204
+      text: No Content
+    }
+
+    body: {
+      type: text
+      content: '''
+
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 Response
+  description: Invalid input
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    method: PUT
+    mode: none
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId:
+      attachmentExternalId:
+    }
+  }
+
+  response: {
+    status: {
+      code: 400
+      text: Bad Request
+    }
+
+    body: {
+      type: text
+      content: '''
+
+      '''
+    }
+  }
+}
+
+example {
+  name: 401 Response
+  description: Unauthorized
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    method: PUT
+    mode: none
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId:
+      attachmentExternalId:
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 401
+      text: Unauthorized
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 403 Response
+  description: Forbidden
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    method: PUT
+    mode: none
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId:
+      attachmentExternalId:
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 403
+      text: Forbidden
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Not found
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    method: PUT
+    mode: none
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId:
+      attachmentExternalId:
+    }
+  }
+
+  response: {
+    status: {
+      code: 404
+      text: Not Found
+    }
+
+    body: {
+      type: text
+      content: '''
+
+      '''
+    }
+  }
+}
+
+example {
+  name: 405 Response
+  description: Method not allowed
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    method: PUT
+    mode: none
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId:
+      attachmentExternalId:
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 405
+      text: Method Not Allowed
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 422 Response
+  description: An error occurred
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    method: PUT
+    mode: none
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId:
+      attachmentExternalId:
+    }
+  }
+
+  response: {
+    status: {
+      code: 422
+      text: Unprocessable Entity
+    }
+
+    body: {
+      type: text
+      content: '''
+
+      '''
+    }
+  }
+}
+
+example {
+  name: 500 Response
+  description: Server error
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    method: PUT
+    mode: none
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId:
+      attachmentExternalId:
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 500
+      text: Internal Server Error
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}

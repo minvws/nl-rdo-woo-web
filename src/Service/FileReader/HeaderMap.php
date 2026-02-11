@@ -6,6 +6,8 @@ namespace Shared\Service\FileReader;
 
 use Shared\Exception\FileReaderException;
 
+use function array_key_exists;
+
 /**
  * This class provides a lookup of cell coordinate by mapping.
  * It is the result of applying the ColumnMapping(s) input in ExcelReaderFactory, and used by the ExcelReader instance for data lookups.

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload\Process;
 
+use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Log\LoggerInterface;
@@ -27,9 +28,9 @@ final class DocumentNumberExtractorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->dossier = \Mockery::mock(WooDecision::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->documentRepository = \Mockery::mock(DocumentRepository::class);
+        $this->dossier = Mockery::mock(WooDecision::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->documentRepository = Mockery::mock(DocumentRepository::class);
 
         $this->extractor = new DocumentNumberExtractor(
             $this->logger,
@@ -118,9 +119,9 @@ final class DocumentNumberExtractorTest extends UnitTestCase
 
     public function testMatchDocumentForFile(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
 
-        $file = \Mockery::mock(UploadedFile::class);
+        $file = Mockery::mock(UploadedFile::class);
         $file->shouldReceive('getOriginalFilename')->andReturn('1234.pdf');
 
         $this->documentRepository
@@ -138,7 +139,7 @@ final class DocumentNumberExtractorTest extends UnitTestCase
     {
         $this->dossier->shouldReceive('getId')->andReturn(Uuid::v6());
 
-        $file = \Mockery::mock(UploadedFile::class);
+        $file = Mockery::mock(UploadedFile::class);
         $file->shouldReceive('getOriginalFilename')->andReturn('.pdf');
 
         $this->logger->expects('error');

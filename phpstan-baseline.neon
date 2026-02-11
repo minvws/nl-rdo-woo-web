@@ -1,112 +1,34 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Parameter \$title of class Shared\\Api\\Admin\\Publication\\Search\\SearchResultDto constructor expects string, mixed given\.$#'
-			identifier: argument.type
+			message: '#^PHPDoc tag @var with type MinVWS\\AuditLogger\\Contracts\\LoggableUser is not subtype of native type Symfony\\Component\\Security\\Core\\User\\UserInterface\|null\.$#'
+			identifier: varTag.nativeType
 			count: 1
-			path: src/Api/Admin/Publication/Search/SearchResultDtoFactory.php
-
-		-
-			message: '#^Cannot use \+\+ on mixed\.$#'
-			identifier: postInc.type
-			count: 1
-			path: src/Api/Admin/Uploader/WooDecision/Status/UploadStatusDtoFactory.php
-
-		-
-			message: '#^Method Shared\\Api\\Admin\\Uploader\\WooDecision\\Status\\UploadStatusDtoFactory\:\:getStatus\(\) should return ArrayObject\<''add''\|''republish''\|''update'', int\> but returns ArrayObject\<\(int\|string\), mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Api/Admin/Uploader/WooDecision/Status/UploadStatusDtoFactory.php
+			path: apps/admin/src/Controller/SecurityController.php
 
 		-
 			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 2
-			path: src/Command/Index/Alias.php
+			path: apps/admin/src/Controller/SecurityController.php
 
 		-
-			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 1
-			path: src/Command/Index/Create.php
+			path: apps/admin/src/Form/User/RoleType.php
 
 		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/Index/Create.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/Index/Delete.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			message: '#^Parameter \#2 \$array of function array_map expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 2
-			path: src/Command/Ingest/IngestDossier.php
+			path: apps/admin/src/Form/User/RoleType.php
 
 		-
-			message: '#^Parameter \#1 \$string of function trim expects string, mixed given\.$#'
+			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
-			path: src/Command/NormalizeDocumentGrounds.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/NormalizeDocumentGrounds.php
-
-		-
-			message: '#^Parameter \#2 \$string of function explode expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/NormalizeDocumentGrounds.php
-
-		-
-			message: '#^Cannot call method getInt\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Command/PageCheck.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Command/User/Create.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/User/Reset.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/User/View.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Command/Where.php
-
-		-
-			message: '#^Part \$match\[''_route''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: src/Command/Where.php
-
-		-
-			message: '#^Part \$match\[''dossierId''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: src/Command/Where.php
+			path: apps/admin/src/Form/User/RoleType.php
 
 		-
 			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
@@ -119,18 +41,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Controller/Admin/InquiryController.php
-
-		-
-			message: '#^PHPDoc tag @var with type MinVWS\\AuditLogger\\Contracts\\LoggableUser is not subtype of native type Symfony\\Component\\Security\\Core\\User\\UserInterface\|null\.$#'
-			identifier: varTag.nativeType
-			count: 1
-			path: src/Controller/Admin/SecurityController.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Controller/Admin/SecurityController.php
 
 		-
 			message: '#^Parameter \#3 \$response of method Shared\\DataCollector\\ElasticCollector\:\:addCall\(\) expects Elastic\\Elasticsearch\\Response\\Elasticsearch, mixed given\.$#'
@@ -287,24 +197,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Form/ChoiceTypeWithHelp.php
-
-		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 1
-			path: src/Form/User/RoleType.php
-
-		-
-			message: '#^Parameter \#2 \$array of function array_map expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Form/User/RoleType.php
-
-		-
-			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Form/User/RoleType.php
 
 		-
 			message: '#^Cannot call method get\(\) on mixed\.$#'
@@ -499,6 +391,12 @@ parameters:
 			path: src/Twig/Runtime/CspExtensionRuntime.php
 
 		-
+			message: '#^Parameter \#1 \$callback of method Zenstruck\\Foundry\\ObjectFactory\<Shared\\Domain\\Publication\\Dossier\\Type\\WooDecision\\Document\\Document\>\:\:beforeInstantiate\(\) expects callable\(array\<string, mixed\>, class\-string\<Shared\\Domain\\Publication\\Dossier\\Type\\WooDecision\\Document\\Document\>, Shared\\Tests\\Factory\\DocumentFactory\)\: array\<string, mixed\>, Closure\(array\)\: array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Factory/DocumentFactory.php
+
+		-
 			message: '#^Method Shared\\Tests\\Faker\\GroundsFakerProvider\:\:ground\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
@@ -515,12 +413,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: tests/Faker/GroundsFakerProvider.php
-
-		-
-			message: '#^Trait Shared\\Tests\\Integration\\Api\\Admin\\TestFileTrait is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: tests/Integration/Api/Admin/TestFileTrait.php
 
 		-
 			message: '#^Anonymous function should return bool but returns mixed\.$#'

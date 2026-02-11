@@ -4,12 +4,13 @@
 - [Woo Platform](#woo-platform)
   - [Step 1: Clone the repository](#step-1-clone-the-repository)
   - [Step 2: Install dependencies](#step-2-install-dependencies)
-  - [Step 3: Setup and start docker containers](#step-3-setup-and-start-docker-containers)
+  - [Step 3: Authenticate with GitHub Container Registry](#step-3-authenticate-with-github-container-registry)
+  - [Step 4: Setup and start docker containers](#step-4-setup-and-start-docker-containers)
     - [Note: The Docker containers in this repository are for development purposes only and they are not meant for production use](#note-the-docker-containers-in-this-repository-are-for-development-purposes-only-and-they-are-not-meant-for-production-use)
-  - [Step 3: Setup initial user](#step-3-setup-initial-user)
+  - [Step 5: Setup initial user](#step-5-setup-initial-user)
     - [a. Using Task](#a-using-task)
     - [b. Using the shell](#b-using-the-shell)
-  - [Step 4: Browse to the site](#step-4-browse-to-the-site)
+  - [Step 6: Browse to the site](#step-6-browse-to-the-site)
   - [Misc](#misc)
     - [Developing frontend](#developing-frontend)
     - [Tasks](#tasks)
@@ -46,6 +47,7 @@ The token can be created at <https://github.com/settings/tokens>. It will at lea
 
 - repo
 - read:packages
+- read:org
 
 You can add more scopes, but the list contains the absolute minimal scopes needed.
 
@@ -79,7 +81,21 @@ echo "export CR_PAT='<replace this with your token>'" >> ~/.zshrc
 
 </details>
 
-## Step 3: Setup and start docker containers
+## Step 3: Authenticate with GitHub Container Registry
+
+Before starting the Docker containers, you need to authenticate with the GitHub Container Registry to pull the private container images.
+
+Follow the instructions in the [GitHub Packages documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic):
+
+1. Create a Personal Access Token (PAT) with `read:packages` and `read:org` scope at <https://github.com/settings/tokens>
+2. Authenticate Docker with the token:
+
+```shell
+export CR_PAT=YOUR_TOKEN
+echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
+```
+
+## Step 4: Setup and start docker containers
 
 Start the docker containers we need to run (app, elasticsearch, tika, postgres, rabbitmq):
 
@@ -94,7 +110,7 @@ You can replace `up` with `stop`, `down` and `restart`.
 > To administer your elasticsearch instance, you can use <https://app.elasticvue.com>
 > To administer your rabbitmq instance, you can use <https://localhost:15672> (guest/guest)
 
-## Step 3: Setup initial user
+## Step 5: Setup initial user
 
 To set up an initial user, you can use one of the following methods:
 
@@ -118,10 +134,10 @@ bin/console woopie:user:create "email@example.org" "full name" --super-admin
 
 Both methods will generate a password and a 2FA token with which you can log into the website.
 
-## Step 4: Browse to the site
+## Step 6: Browse to the site
 
 - Open the Website at `http://localhost:8000`
-- Open the Balie at `http://localhost:8000/balie/login`
+- Open the Balie at `http://localhost:8001/balie/login` (see compose.ports.yml for the ports)
   - You can log in with your generated credentials.
 
 See [usage](usage.md) for more information on how to use the application.
@@ -133,8 +149,10 @@ See [usage](usage.md) for more information on how to use the application.
 When developing frontend code (either CSS or JS), you can run the following command to watch for changes:
 
 ```shell
-docker-compose exec app npm run watch
+npm run watch
 ```
+
+This means you need to have NPM installed on your machine.
 
 ### Tasks
 

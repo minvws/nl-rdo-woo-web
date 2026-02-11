@@ -6,6 +6,10 @@ namespace Shared\Domain\Search\Index\Dossier\Mapper;
 
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 
+use function strpos;
+use function substr;
+use function trim;
+
 readonly class PrefixedDossierNr
 {
     public static function forDossier(AbstractDossier $dossier): string

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory;
 
+use Exception;
 use Shared\Domain\Ingest\IngestDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
@@ -11,6 +12,13 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentReposito
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\ValueObject\ExternalId;
+
+use function array_diff;
+use function array_map;
+use function is_null;
+use function strlen;
+use function substr;
 
 /**
  * This class will process updates to documents based on DocumentMetadata parsed from an inventory.
@@ -31,7 +39,7 @@ readonly class DocumentUpdater
      *
      * NOTE: this method does not flush the changes to the database.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function databaseUpdate(DocumentMetadata $documentMetadata, WooDecision $dossier, Document $document): Document
     {
@@ -115,7 +123,7 @@ readonly class DocumentUpdater
     /**
      * @param string[] $refersTo
      */
-    public function updateDocumentReferrals(WooDecision $dossier, Document $document, array $refersTo): void
+    public function updateDocumentReferralsByDocumentNumber(WooDecision $dossier, Document $document, array $refersTo): void
     {
         // First convert '[matter]-[documentId]' string format to DocumentNumber instances that include the dossier prefix.
         $newReferrals = array_map(
@@ -127,17 +135,51 @@ readonly class DocumentUpdater
             fn (Document $doc): DocumentNumber => DocumentNumber::fromDossierAndDocument($dossier, $doc),
         )->toArray();
 
-        foreach (array_diff($currentReferrals, $newReferrals) as $referralToRemove) {
-            $documentToRemove = $this->documentRepository->findByDocumentNumber($referralToRemove);
+        foreach (array_diff($currentReferrals, $newReferrals) as $refersToRemove) {
+            $documentToRemove = $this->documentRepository->findByDocumentNumber($refersToRemove);
             if ($documentToRemove) {
-                $document->removeReferralTo($documentToRemove);
+                $document->removeRefersTo($documentToRemove);
             }
         }
 
-        foreach (array_diff($newReferrals, $currentReferrals) as $referralToAdd) {
-            $documentToAdd = $this->documentRepository->findByDocumentNumber($referralToAdd);
+        foreach (array_diff($newReferrals, $currentReferrals) as $refersToAdd) {
+            $documentToAdd = $this->documentRepository->findByDocumentNumber($refersToAdd);
+
             if ($documentToAdd) {
-                $document->addReferralTo($documentToAdd);
+                $document->addRefersTo($documentToAdd);
+            }
+        }
+    }
+
+    /**
+     * @param ExternalId[] $refersTo
+     */
+    public function updateDocumentReferralsByDocumentExternalId(Document $document, array $refersTo): void
+    {
+        /** @var ExternalId[] $currentReferrals */
+        $currentReferrals = $document->getRefersTo()
+            ->map(static function (Document $document): ?ExternalId {
+                if ($document->getExternalId() === null) {
+                    return null;
+                }
+
+                return $document->getExternalId();
+            })
+            ->filter(static fn (?ExternalId $value): bool => $value !== null)
+            ->toArray();
+
+        foreach (array_diff($currentReferrals, $refersTo) as $refersToRemove) {
+            $documentToRemove = $this->documentRepository->findByExternalId($refersToRemove);
+            if ($documentToRemove) {
+                $document->removeRefersTo($documentToRemove);
+            }
+        }
+
+        foreach (array_diff($refersTo, $currentReferrals) as $refersToAdd) {
+            $documentToAdd = $this->documentRepository->findByExternalId($refersToAdd);
+
+            if ($documentToAdd) {
+                $document->addRefersTo($documentToAdd);
             }
         }
     }

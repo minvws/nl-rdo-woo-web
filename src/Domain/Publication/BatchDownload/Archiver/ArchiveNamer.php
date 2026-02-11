@@ -7,6 +7,8 @@ namespace Shared\Domain\Publication\BatchDownload\Archiver;
 use Shared\Domain\Publication\BatchDownload\BatchDownload;
 use Shared\Service\FilenameSanitizer;
 
+use function sprintf;
+
 readonly class ArchiveNamer
 {
     public function getArchiveName(string $basename, BatchDownload $batchDownload): string

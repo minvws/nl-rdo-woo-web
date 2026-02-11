@@ -10,6 +10,8 @@ use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+use function range;
+
 readonly class DossierFileViewFactory
 {
     public function __construct(

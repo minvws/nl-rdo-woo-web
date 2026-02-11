@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\OtherPublication;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationRepository;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication\OtherPublicationFactory;
@@ -27,7 +28,7 @@ final class OtherPublicationRepositoryTest extends SharedWebTestCase
     public function testGetSearchResultViewModel(): void
     {
         $dossier = OtherPublicationFactory::createOne([
-            'dateFrom' => new \DateTimeImmutable(),
+            'dateFrom' => new DateTimeImmutable(),
         ]);
 
         $result = $this->getRepository()->getSearchResultViewModel(

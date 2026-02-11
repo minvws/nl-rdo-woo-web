@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex;
 
+use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -50,7 +51,7 @@ class WooIndexSitemapRepository extends ServiceEntityRepository
     /**
      * @return iterable<int,WooIndexSitemap>
      */
-    public function getSitemapsForCleanup(int $treshold, \DateTimeInterface $date): iterable
+    public function getSitemapsForCleanup(int $treshold, DateTimeInterface $date): iterable
     {
         yield from $this->getAllFinishedSitemapsExceptForLast($treshold);
         yield from $this->getAllUnfinishedSitemapsOlderThan($date);
@@ -73,7 +74,7 @@ class WooIndexSitemapRepository extends ServiceEntityRepository
     /**
      * @return iterable<int,WooIndexSitemap>
      */
-    private function getAllUnfinishedSitemapsOlderThan(\DateTimeInterface $date): iterable
+    private function getAllUnfinishedSitemapsOlderThan(DateTimeInterface $date): iterable
     {
         return $this->createQueryBuilder('sm')
             ->where('sm.status = :status')

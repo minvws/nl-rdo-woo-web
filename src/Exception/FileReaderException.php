@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Exception;
 
+use Exception;
+
+use function implode;
+use function sprintf;
+use function strval;
+
 class FileReaderException extends TranslatableException
 {
     /**
@@ -22,7 +28,7 @@ class FileReaderException extends TranslatableException
         );
     }
 
-    public static function forRowProcessingException(int $rowIndex, \Exception $exception): TranslatableException
+    public static function forRowProcessingException(int $rowIndex, Exception $exception): TranslatableException
     {
         if ($exception instanceof TranslatableException) {
             return $exception;
@@ -37,7 +43,7 @@ class FileReaderException extends TranslatableException
         );
     }
 
-    public static function forOpenSpreadsheetException(\Exception $exception): self
+    public static function forOpenSpreadsheetException(Exception $exception): self
     {
         return new self(
             'Error while opening the spreadsheet: ' . $exception->getMessage(),

@@ -81,16 +81,16 @@ final class InquiryRepositoryTest extends SharedWebTestCase
         ]);
 
         $inquiry = InquiryFactory::createOne([
-            'dossiers' => [$wooDecisionA->_real()],
+            'dossiers' => [$wooDecisionA],
             'documents' => [$docA, $docB, $docC, $docD, $docE],
         ]);
 
         $result = $this->repository
-            ->getDocumentsForBatchDownload($inquiry->_real(), $wooDecisionA->_real())
+            ->getDocumentsForBatchDownload($inquiry, $wooDecisionA)
             ->getQuery()
             ->getResult();
 
-        $this->assertEquals([$docB->_real()], $result);
+        $this->assertEquals([$docB], $result);
     }
 
     public function testCountDocumentsByJudgement(): void
@@ -125,7 +125,7 @@ final class InquiryRepositoryTest extends SharedWebTestCase
             'documents' => [
                 ...$documentsForWooDecision,
             ],
-        ])->_real();
+        ]);
 
         $result = $this->repository->countDocumentsByJudgement($inquiry);
 
@@ -157,24 +157,24 @@ final class InquiryRepositoryTest extends SharedWebTestCase
 
     public function testGetDossiersForInquiryQueryBuilder(): void
     {
-        $conceptWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::CONCEPT])->_real();
-        $previewWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PREVIEW])->_real();
-        $publishedWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED])->_real();
-        $otherWooDecision = WooDecisionFactory::createOne()->_real();
+        $conceptWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::CONCEPT]);
+        $previewWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PREVIEW]);
+        $publishedWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED]);
+        $otherWooDecision = WooDecisionFactory::createOne();
 
-        $docInConcept = DocumentFactory::createone(['dossiers' => [$conceptWooDecision]])->_real();
-        $docInPreviewAndInquiryA = DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
-        $docInPreviewAndInquiryB = DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
-        $docInPreviewWithoutInquiry = DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
-        $docInPublishedAndInquiry = DocumentFactory::createone(['dossiers' => [$publishedWooDecision]])->_real();
-        $docInOther = DocumentFactory::createone(['dossiers' => [$otherWooDecision]])->_real();
+        $docInConcept = DocumentFactory::createone(['dossiers' => [$conceptWooDecision]]);
+        $docInPreviewAndInquiryA = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
+        $docInPreviewAndInquiryB = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
+        $docInPreviewWithoutInquiry = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
+        $docInPublishedAndInquiry = DocumentFactory::createone(['dossiers' => [$publishedWooDecision]]);
+        $docInOther = DocumentFactory::createone(['dossiers' => [$otherWooDecision]]);
 
         $inquiry = InquiryFactory::createOne([
             'dossiers' => [$conceptWooDecision, $publishedWooDecision, $previewWooDecision],
             'documents' => [$docInPreviewAndInquiryA, $docInPreviewAndInquiryB, $docInPublishedAndInquiry],
         ]);
 
-        $result = $this->repository->getDossiersForInquiryQueryBuilder($inquiry->_real())
+        $result = $this->repository->getDossiersForInquiryQueryBuilder($inquiry)
             ->getQuery()
             ->getResult();
 
@@ -197,22 +197,22 @@ final class InquiryRepositoryTest extends SharedWebTestCase
 
     public function testGetQueryWithDocCountAndDossierCount(): void
     {
-        $conceptWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::CONCEPT])->_real();
-        $previewWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PREVIEW])->_real();
-        $publishedWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED])->_real();
-        $otherWooDecision = WooDecisionFactory::createOne()->_real();
+        $conceptWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::CONCEPT]);
+        $previewWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PREVIEW]);
+        $publishedWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED]);
+        $otherWooDecision = WooDecisionFactory::createOne();
 
-        DocumentFactory::createone(['dossiers' => [$conceptWooDecision]])->_real();
-        $docInPreviewAndInquiryA = DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
-        $docInPreviewAndInquiryB = DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
-        DocumentFactory::createone(['dossiers' => [$previewWooDecision]])->_real();
-        $docInPublishedAndInquiry = DocumentFactory::createone(['dossiers' => [$publishedWooDecision]])->_real();
-        DocumentFactory::createone(['dossiers' => [$otherWooDecision]])->_real();
+        DocumentFactory::createone(['dossiers' => [$conceptWooDecision]]);
+        $docInPreviewAndInquiryA = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
+        $docInPreviewAndInquiryB = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
+        DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
+        $docInPublishedAndInquiry = DocumentFactory::createone(['dossiers' => [$publishedWooDecision]]);
+        DocumentFactory::createone(['dossiers' => [$otherWooDecision]]);
 
         $inquiry = InquiryFactory::createOne([
             'dossiers' => [$conceptWooDecision, $publishedWooDecision, $previewWooDecision],
             'documents' => [$docInPreviewAndInquiryA, $docInPreviewAndInquiryB, $docInPublishedAndInquiry],
-        ])->_real();
+        ]);
 
         /** @var array<array{inquiry: Inquiry, documentCount: int, dossierCount: int}> $result */
         $result = $this->repository->getQueryWithDocCountAndDossierCount($inquiry->getOrganisation())

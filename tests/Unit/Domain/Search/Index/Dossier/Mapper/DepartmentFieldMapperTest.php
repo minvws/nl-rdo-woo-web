@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
+use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
@@ -13,7 +14,7 @@ class DepartmentFieldMapperTest extends UnitTestCase
 {
     public function testFromDepartment(): void
     {
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
         $department->expects('getName')->andReturn('Foo');
         $department->expects('getShortTag')->andReturn('F');
 

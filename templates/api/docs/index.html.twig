@@ -1,9 +1,0 @@
-{% extends 'api/docs/base.html.twig' %}
-
-{% block content %}
-    <div {{ vue_component('ApiDocs', {
-        openApiUrl: openApiUrl,
-    }) }}>
-        <div class="min-h-14"></div>
-    </div>
-{% endblock %}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
 
+use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Tests\Unit\UnitTestCase;
@@ -19,11 +20,11 @@ final class PublicationReasonTest extends UnitTestCase
     #[DataProvider('transDataProvider')]
     public function testTransKey(PublicationReason $publicationReason, string $expectedKey, ?string $locale): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator
             ->shouldReceive('trans')
             ->with(
-                \Mockery::on(function (string $key) use ($expectedKey): bool {
+                Mockery::on(function (string $key) use ($expectedKey): bool {
                     $this->assertSame($expectedKey, $key, 'The translation key does not match expected value');
 
                     return true;

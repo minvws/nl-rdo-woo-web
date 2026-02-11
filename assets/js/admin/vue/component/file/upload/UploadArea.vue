@@ -173,11 +173,7 @@ const onDragEnter = (event) => {
     return;
   }
 
-  if (isThisTheOnlyVisibleUploadArea()) {
-    return;
-  }
-
-  uploadVisualElement.value?.coverWholePage(false);
+  uploadVisualElement.value?.coverWholePage(isThisTheOnlyVisibleUploadArea());
   uploadVisualElement.value?.slideInUp();
 };
 

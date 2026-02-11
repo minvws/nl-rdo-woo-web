@@ -6,6 +6,8 @@ namespace Shared\Service;
 
 use Shared\Service\Security\User;
 
+use function sprintf;
+
 class Totp
 {
     public function __construct(protected string $issuer)

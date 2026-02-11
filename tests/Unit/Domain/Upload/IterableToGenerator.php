@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload;
 
+use Generator;
+
 trait IterableToGenerator
 {
     /**
@@ -12,9 +14,9 @@ trait IterableToGenerator
      *
      * @param iterable<K,T> $values
      *
-     * @return \Generator<K,T>
+     * @return Generator<K,T>
      */
-    private function iterableToGenerator(iterable $values): \Generator
+    private function iterableToGenerator(iterable $values): Generator
     {
         yield from $values;
     }

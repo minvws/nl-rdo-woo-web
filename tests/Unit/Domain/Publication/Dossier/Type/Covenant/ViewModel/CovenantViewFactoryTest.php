@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Covenant\ViewModel;
 
+use DateTimeImmutable;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\ViewModel\CovenantViewFactory;
@@ -22,13 +24,13 @@ final class CovenantViewFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->commonDossierViewFactory = \Mockery::mock(CommonDossierPropertiesViewFactory::class);
+        $this->commonDossierViewFactory = Mockery::mock(CommonDossierPropertiesViewFactory::class);
     }
 
     public function testMake(): void
     {
         /** @var Department&MockInterface $expectedMainDepartment */
-        $expectedMainDepartment = \Mockery::mock(Department::class);
+        $expectedMainDepartment = Mockery::mock(Department::class);
 
         $this->commonDossierViewFactory
             ->shouldReceive('make')
@@ -39,15 +41,15 @@ final class CovenantViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new \DateTimeImmutable(),
+                publicationDate: $publicationDate = new DateTimeImmutable(),
                 mainDepartment: $expectedMainDepartment = $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::COVENANT,
-                subject: $expectedSubject = \Mockery::mock(Subject::class),
+                subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
         /** @var Covenant&MockInterface $dossier */
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getDateFrom')->andReturn($expectedDateFrom = null);
         $dossier->shouldReceive('getDateTo')->andReturn($expecedDateTo = $this->getRandomDate());
         $dossier->shouldReceive('getPreviousVersionLink')->andReturn($expectedPreviousVersionLink = 'my previous version link');
@@ -73,8 +75,8 @@ final class CovenantViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedParties, $result->parties);
     }
 
-    private function getRandomDate(string $startDate = '-2 years'): \DateTimeImmutable
+    private function getRandomDate(string $startDate = '-2 years'): DateTimeImmutable
     {
-        return \DateTimeImmutable::createFromInterface($this->getFaker()->dateTimeBetween($startDate));
+        return DateTimeImmutable::createFromInterface($this->getFaker()->dateTimeBetween($startDate));
     }
 }

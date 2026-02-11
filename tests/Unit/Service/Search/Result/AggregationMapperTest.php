@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Search\Result;
 
 use MinVWS\TypeArray\TypeArray;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\SourceType;
@@ -30,35 +31,35 @@ class AggregationMapperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->facetDefinitions = \Mockery::mock(FacetDefinitions::class);
-        $this->facetInputFactory = \Mockery::mock(FacetInputFactory::class);
+        $this->facetDefinitions = Mockery::mock(FacetDefinitions::class);
+        $this->facetInputFactory = Mockery::mock(FacetInputFactory::class);
 
         $this->mapper = new AggregationMapper($this->facetInputFactory, $this->facetDefinitions);
     }
 
     public function testMapGrounds(): void
     {
-        $searchParameters = \Mockery::mock(SearchParameters::class);
+        $searchParameters = Mockery::mock(SearchParameters::class);
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::GROUNDS, '5.1.1a')
-            ->andReturn($facetInputA = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputA = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::GROUNDS, $facetInputA)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::GROUNDS, 'foo.bar')
-            ->andReturn($facetInputB = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputB = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::GROUNDS, $facetInputB)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetDefinitions->expects('get')->with(FacetKey::GROUNDS)->andReturn(new GroundsFacet());
 
@@ -86,27 +87,27 @@ class AggregationMapperTest extends UnitTestCase
 
     public function testMapDepartment(): void
     {
-        $searchParameters = \Mockery::mock(SearchParameters::class);
+        $searchParameters = Mockery::mock(SearchParameters::class);
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::DEPARTMENT, 'FOO|bar baz')
-            ->andReturn($facetInputA = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputA = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::DEPARTMENT, $facetInputA)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::DEPARTMENT, 'BAR|baz foo')
-            ->andReturn($facetInputB = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputB = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::DEPARTMENT, $facetInputB)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetDefinitions->expects('get')->with(FacetKey::DEPARTMENT)->andReturn(new DepartmentFacet());
 
@@ -130,27 +131,27 @@ class AggregationMapperTest extends UnitTestCase
 
     public function testMapType(): void
     {
-        $searchParameters = \Mockery::mock(SearchParameters::class);
+        $searchParameters = Mockery::mock(SearchParameters::class);
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::TYPE, 'dossier')
-            ->andReturn($facetInputA = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputA = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::TYPE, $facetInputA)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::TYPE, 'covenant')
-            ->andReturn($facetInputB = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputB = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::TYPE, $facetInputB)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetDefinitions->expects('get')->with(FacetKey::TYPE)->andReturn(new TypeFacet());
 
@@ -174,17 +175,17 @@ class AggregationMapperTest extends UnitTestCase
 
     public function testMapSource(): void
     {
-        $searchParameters = \Mockery::mock(SearchParameters::class);
+        $searchParameters = Mockery::mock(SearchParameters::class);
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::SOURCE, SourceType::EMAIL->value)
-            ->andReturn($facetInputB = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputB = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::SOURCE, $facetInputB)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetDefinitions->expects('get')->with(FacetKey::SOURCE)->andReturn(new SourceFacet());
 
@@ -204,47 +205,47 @@ class AggregationMapperTest extends UnitTestCase
 
     public function testMapToplevelType(): void
     {
-        $searchParameters = \Mockery::mock(SearchParameters::class);
+        $searchParameters = Mockery::mock(SearchParameters::class);
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::TYPE, 'dossier', 'dossier.publication')
-            ->andReturn($facetInputA = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputA = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::TYPE, $facetInputA)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::TYPE, 'dossier')
-            ->andReturn($facetInputB = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputB = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::TYPE, $facetInputB)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::TYPE, 'document')
-            ->andReturn($facetInputC = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputC = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::TYPE, $facetInputC)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::TYPE, 'attachment')
-            ->andReturn($facetInputD = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputD = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::TYPE, $facetInputD)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetDefinitions->expects('get')->with(FacetKey::TYPE)->andReturn(new TypeFacet());
 
@@ -291,37 +292,37 @@ class AggregationMapperTest extends UnitTestCase
 
     public function testMapToplevelTypeWithoutPublications(): void
     {
-        $searchParameters = \Mockery::mock(SearchParameters::class);
+        $searchParameters = Mockery::mock(SearchParameters::class);
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::TYPE, 'dossier', 'dossier.publication')
-            ->andReturn($facetInputA = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputA = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::TYPE, $facetInputA)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::TYPE, 'document')
-            ->andReturn($facetInputC = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputC = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::TYPE, $facetInputC)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetInputFactory
             ->expects('createStringFacetInputForValue')
             ->with(FacetKey::TYPE, 'attachment')
-            ->andReturn($facetInputD = \Mockery::mock(StringValuesFacetInput::class));
+            ->andReturn($facetInputD = Mockery::mock(StringValuesFacetInput::class));
 
         $searchParameters
             ->expects('withFacetInput')
             ->with(FacetKey::TYPE, $facetInputD)
-            ->andReturn(\Mockery::mock(SearchParameters::class));
+            ->andReturn(Mockery::mock(SearchParameters::class));
 
         $this->facetDefinitions->expects('get')->with(FacetKey::TYPE)->andReturn(new TypeFacet());
 

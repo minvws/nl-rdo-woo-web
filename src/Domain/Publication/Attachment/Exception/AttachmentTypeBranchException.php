@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Attachment\Exception;
 
-final class AttachmentTypeBranchException extends \RuntimeException implements AttachmentExceptionInterface
+use RuntimeException;
+
+final class AttachmentTypeBranchException extends RuntimeException implements AttachmentExceptionInterface
 {
     public static function mandatoryArguments(): self
     {

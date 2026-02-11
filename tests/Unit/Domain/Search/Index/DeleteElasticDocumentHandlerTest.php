@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index;
 
+use Mockery;
 use Shared\Domain\Search\Index\DeleteElasticDocumentCommand;
 use Shared\Domain\Search\Index\DeleteElasticDocumentHandler;
 use Shared\Service\Elastic\ElasticService;
@@ -15,7 +16,7 @@ class DeleteElasticDocumentHandlerTest extends UnitTestCase
     {
         $id = 'foo-123';
 
-        $elasticService = \Mockery::mock(ElasticService::class);
+        $elasticService = Mockery::mock(ElasticService::class);
         $elasticService->expects('removeDocument')->with($id);
 
         $handler = new DeleteElasticDocumentHandler($elasticService);

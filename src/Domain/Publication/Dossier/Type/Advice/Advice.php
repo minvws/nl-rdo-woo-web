@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\Advice;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Override;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
@@ -30,13 +32,13 @@ class Advice extends AbstractDossier implements EntityWithAttachments, EntityWit
     /** @use HasMainDocument<AdviceMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AdviceMainDocument::class, cascade: ['remove'])]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AdviceMainDocument::class, cascade: ['persist', 'remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?AdviceMainDocument $document;
 
     /** @var Collection<array-key,AdviceAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: AdviceAttachment::class)]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: AdviceAttachment::class, cascade: ['persist'], orphanRemoval: true)]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 
@@ -48,8 +50,8 @@ class Advice extends AbstractDossier implements EntityWithAttachments, EntityWit
         $this->document = null;
     }
 
-    #[\Override]
-    public function setDateFrom(?\DateTimeImmutable $dateFrom): static
+    #[Override]
+    public function setDateFrom(?DateTimeImmutable $dateFrom): static
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateFrom;

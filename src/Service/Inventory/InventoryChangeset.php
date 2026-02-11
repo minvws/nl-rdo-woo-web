@@ -4,7 +4,16 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory;
 
+use OutOfBoundsException;
 use Shared\Exception\ProcessInventoryException;
+
+use function array_filter;
+use function array_key_exists;
+use function array_keys;
+use function array_reduce;
+use function count;
+use function key_exists;
+use function strtolower;
 
 class InventoryChangeset
 {
@@ -53,7 +62,7 @@ class InventoryChangeset
     {
         $key = strtolower($documentNr->getValue());
         if (! array_key_exists($key, $this->documentStatus)) {
-            throw new \OutOfBoundsException("DocumentNr $key not found in InventoryChangeset");
+            throw new OutOfBoundsException("DocumentNr $key not found in InventoryChangeset");
         }
 
         return $this->documentStatus[$key];

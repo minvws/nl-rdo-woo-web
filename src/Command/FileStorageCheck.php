@@ -7,15 +7,19 @@ namespace Shared\Command;
 use Shared\Domain\FileStorage\Checker\FileStorageChecker;
 use Shared\Domain\FileStorage\Checker\FileStorageCheckResult;
 use Shared\Service\Utils\Utils;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * @codeCoverageIgnore This command contains only display logic, actual implementation within domain is fully covered.
- */
+use function count;
+use function round;
+use function sprintf;
+use function strtoupper;
+
+#[AsCommand(name: 'woopie:check:storage', description: 'Checks if files in storage can be matched to the database')]
 class FileStorageCheck extends Command
 {
     public function __construct(
@@ -26,10 +30,6 @@ class FileStorageCheck extends Command
 
     protected function configure(): void
     {
-        $this
-            ->setName('woopie:check:storage')
-            ->setDescription('Checks if files in storage can be matched to the database')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -46,7 +46,7 @@ class FileStorageCheck extends Command
             $this->listOrphanedFiles($result, $output);
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 
     private function listTotals(OutputInterface $output, FileStorageCheckResult $result): void

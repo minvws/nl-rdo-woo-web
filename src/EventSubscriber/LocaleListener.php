@@ -8,6 +8,9 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
+use function in_array;
+use function strval;
+
 /**
  * This listener will set the locale based on the session or the _locale query parameter.
  */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\DossierWizard;
 
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Step\StepName;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
@@ -72,7 +73,7 @@ readonly class WizardStatusFactory
         }
 
         if ($stepDefinition === null) {
-            throw new \RuntimeException('No StepDefinition found for current step');
+            throw new RuntimeException('No StepDefinition found for current step');
         }
 
         return new DossierWizardStatus(

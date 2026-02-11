@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Query;
 
-use Shared\Api\Admin\Publication\Search\SearchResultType;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
@@ -20,9 +19,11 @@ use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function array_map;
+use function max;
+use function min;
+use function sprintf;
+
 readonly class SearchParametersFactory
 {
     private const int DEFAULT_PAGE_SIZE = 10;

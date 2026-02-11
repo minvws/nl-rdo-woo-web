@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\History\History;
 use Shared\Service\HistoryService;
@@ -22,14 +23,14 @@ class HistoryServiceTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->translator = \Mockery::mock(Translator::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->translator = Mockery::mock(Translator::class);
     }
 
     public function testAddDossierEntry(): void
     {
         /** @var HistoryService&MockInterface $service */
-        $service = \Mockery::mock(HistoryService::class, [
+        $service = Mockery::mock(HistoryService::class, [
             $this->entityManager,
             $this->translator,
         ])
@@ -62,7 +63,7 @@ class HistoryServiceTest extends UnitTestCase
         ], 'en');
 
         $service = new HistoryService(
-            \Mockery::mock(EntityManagerInterface::class),
+            Mockery::mock(EntityManagerInterface::class),
             $translator
         );
 

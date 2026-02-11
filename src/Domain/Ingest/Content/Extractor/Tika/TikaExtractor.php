@@ -10,6 +10,8 @@ use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use Shared\Domain\Ingest\Content\FileReferenceInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
 
+use function trim;
+
 readonly class TikaExtractor implements ContentExtractorInterface
 {
     public function __construct(

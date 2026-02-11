@@ -9,7 +9,7 @@ use Shared\Service\Search\Query\Definition\BrowseAllAggregationsQueryDefinition;
 use Shared\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class SitemapController extends AbstractController
 {

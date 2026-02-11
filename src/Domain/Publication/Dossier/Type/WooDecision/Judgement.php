@@ -7,6 +7,10 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function in_array;
+use function strtolower;
+use function trim;
+
 enum Judgement: string implements TranslatableInterface
 {
     case PUBLIC = 'public';

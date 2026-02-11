@@ -35,6 +35,10 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function array_map;
+use function array_values;
+use function in_array;
+
 enum ElasticDocumentType: string implements TranslatableInterface
 {
     case WOO_DECISION = 'dossier';

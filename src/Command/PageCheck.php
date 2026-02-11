@@ -8,10 +8,15 @@ use MinVWS\TypeArray\TypeArray;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Domain\Search\Index\ElasticDocumentId;
 use Shared\Service\Elastic\ElasticService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Webmozart\Assert\Assert;
 
+use function sprintf;
+
+#[AsCommand(name: 'woopie:page:check', description: 'Checks if there are pages that are not yet indexed')]
 class PageCheck extends Command
 {
     public function __construct(
@@ -23,10 +28,8 @@ class PageCheck extends Command
 
     protected function configure(): void
     {
-        $this->setName('woopie:page:check')
-            ->setDescription('Checks if there are pages that are not yet indexed')
-            ->setHelp('Checks if there are pages that are not yet indexed')
-        ;
+        $this
+            ->setHelp('Checks if there are pages that are not yet indexed');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -56,12 +59,14 @@ class PageCheck extends Command
             }
         }
 
-        return $failed ? Command::FAILURE : Command::SUCCESS;
+        return $failed ? self::FAILURE : self::SUCCESS;
     }
 
     protected function pageExists(TypeArray $esDocument, int $pageNr): bool
     {
         foreach ($esDocument->getIterable('[_source][pages]') as $page) {
+            Assert::isInstanceOf($page, TypeArray::class);
+
             if ($page->getInt('[page_nr]') == $pageNr) {
                 return true;
             }

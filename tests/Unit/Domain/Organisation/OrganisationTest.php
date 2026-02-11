@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Organisation;
 
 use Doctrine\Common\Collections\Collection;
+use Mockery;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
@@ -23,7 +24,7 @@ class OrganisationTest extends UnitTestCase
 
     public function testAddAndRemoveDepartment(): void
     {
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
 
         $organisation = new Organisation();
         $organisation->addDepartment($department);
@@ -41,7 +42,7 @@ class OrganisationTest extends UnitTestCase
     {
         $organisation = new Organisation();
 
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->expects('setOrganisation')->with($organisation);
 
         $organisation->addUser($user);
@@ -57,12 +58,12 @@ class OrganisationTest extends UnitTestCase
     {
         $organisation = new Organisation();
 
-        $activePrefix = \Mockery::mock(DocumentPrefix::class);
+        $activePrefix = Mockery::mock(DocumentPrefix::class);
         $activePrefix->expects('setOrganisation')->with($organisation);
         $activePrefix->shouldReceive('isArchived')->andReturn(false);
         $activePrefix->shouldReceive('getPrefix')->andReturn('foo');
 
-        $archivedPrefix = \Mockery::mock(DocumentPrefix::class);
+        $archivedPrefix = Mockery::mock(DocumentPrefix::class);
         $archivedPrefix->expects('setOrganisation')->with($organisation);
         $archivedPrefix->shouldReceive('isArchived')->andReturn(true);
         $archivedPrefix->shouldReceive('getPrefix')->andReturn('bar');
@@ -78,7 +79,7 @@ class OrganisationTest extends UnitTestCase
     {
         $organisation = new Organisation();
 
-        $prefix = \Mockery::mock(DocumentPrefix::class);
+        $prefix = Mockery::mock(DocumentPrefix::class);
         $prefix->expects('setOrganisation')->with($organisation);
 
         $organisation->addDocumentPrefix($prefix);
@@ -90,7 +91,7 @@ class OrganisationTest extends UnitTestCase
 
     public function testSetAndGetInquiries(): void
     {
-        $inquiries = \Mockery::mock(Collection::class);
+        $inquiries = Mockery::mock(Collection::class);
 
         $organisation = new Organisation();
         $organisation->setInquiries($inquiries);
@@ -100,7 +101,7 @@ class OrganisationTest extends UnitTestCase
 
     public function testSetAndGetDossiers(): void
     {
-        $dossiers = \Mockery::mock(Collection::class);
+        $dossiers = Mockery::mock(Collection::class);
 
         $organisation = new Organisation();
         $organisation->setDossiers($dossiers);

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\BatchDownload;
 
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Uid\Uuid;
@@ -43,7 +45,7 @@ class BatchDownload
     public function __construct(
         BatchDownloadScope $scope,
         #[ORM\Column]
-        private \DateTimeImmutable $expiration,
+        private DateTimeImmutable $expiration,
     ) {
         $this->id = Uuid::v6();
         $this->status = BatchDownloadStatus::PENDING;
@@ -57,7 +59,7 @@ class BatchDownload
         }
 
         if ($this->dossier === null && $this->inquiry === null) {
-            throw new \RuntimeException('A BatchDownload entity needs at least one dossier or inquiry relationship');
+            throw new RuntimeException('A BatchDownload entity needs at least one dossier or inquiry relationship');
         }
     }
 
@@ -66,7 +68,7 @@ class BatchDownload
         return $this->id;
     }
 
-    public function getExpiration(): \DateTimeImmutable
+    public function getExpiration(): DateTimeImmutable
     {
         return $this->expiration;
     }
@@ -114,13 +116,13 @@ class BatchDownload
     public function markAsOutdated(): void
     {
         $this->status = BatchDownloadStatus::OUTDATED;
-        $this->expiration = new \DateTimeImmutable('+15 minutes');
+        $this->expiration = new DateTimeImmutable('+15 minutes');
     }
 
     public function markAsFailed(): void
     {
         $this->status = BatchDownloadStatus::FAILED;
-        $this->expiration = new \DateTimeImmutable('+15 minutes');
+        $this->expiration = new DateTimeImmutable('+15 minutes');
         $this->size = 0;
     }
 
@@ -135,7 +137,7 @@ class BatchDownload
     public function canBeDownloaded(): bool
     {
         return ($this->status->isCompleted() || $this->status->isOutdated())
-            && $this->expiration > new \DateTimeImmutable()
+            && $this->expiration > new DateTimeImmutable()
             && $this->fileCount > 0;
     }
 }

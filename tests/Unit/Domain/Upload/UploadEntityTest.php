@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Upload\Exception\UploadException;
 use Shared\Domain\Upload\Exception\UploadValidationException;
@@ -21,7 +22,7 @@ class UploadEntityTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->user = \Mockery::mock(User::class);
+        $this->user = Mockery::mock(User::class);
         $this->context = new InputBag(['foo' => 'bar']);
     }
 

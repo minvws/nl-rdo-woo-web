@@ -12,6 +12,8 @@ use Shared\Domain\Publication\MainDocument\MainDocumentRepository;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+use function sprintf;
+
 readonly class SitemapMainDocumentSubscriber
 {
     public function __construct(

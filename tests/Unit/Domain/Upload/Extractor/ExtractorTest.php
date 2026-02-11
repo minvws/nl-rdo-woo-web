@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload\Extractor;
 
+use ArrayIterator;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\ArchiveExtractor\ArchiveInterface;
 use Shared\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
@@ -12,25 +14,28 @@ use Shared\Domain\Upload\Extractor\ExtractorException;
 use Shared\Domain\Upload\Extractor\ExtractorFinderFactory;
 use Shared\Service\Storage\LocalFilesystem;
 use Shared\Tests\Unit\UnitTestCase;
+use SplFileInfo;
 use Symfony\Component\Finder\Finder;
+
+use function iterator_to_array;
 
 final class ExtractorTest extends UnitTestCase
 {
     private ArchiveInterface&MockInterface $archive;
     private LocalFilesystem&MockInterface $filesystem;
     private ExtractorFinderFactory&MockInterface $finderFactory;
-    private \SplFileInfo&MockInterface $file;
+    private SplFileInfo&MockInterface $file;
     private Finder&MockInterface $finder;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->archive = \Mockery::mock(ArchiveInterface::class);
-        $this->filesystem = \Mockery::mock(LocalFilesystem::class);
-        $this->finderFactory = \Mockery::mock(ExtractorFinderFactory::class);
-        $this->file = \Mockery::mock(\SplFileInfo::class);
-        $this->finder = \Mockery::mock(Finder::class);
+        $this->archive = Mockery::mock(ArchiveInterface::class);
+        $this->filesystem = Mockery::mock(LocalFilesystem::class);
+        $this->finderFactory = Mockery::mock(ExtractorFinderFactory::class);
+        $this->file = Mockery::mock(SplFileInfo::class);
+        $this->finder = Mockery::mock(Finder::class);
     }
 
     public function testGetFiles(): void
@@ -60,7 +65,7 @@ final class ExtractorTest extends UnitTestCase
         $this->finder
             ->shouldReceive('getIterator')
             ->once()
-            ->andReturn(new \ArrayIterator($expectedResult = [\Mockery::mock(\SplFileInfo::class)]));
+            ->andReturn(new ArrayIterator($expectedResult = [Mockery::mock(SplFileInfo::class)]));
 
         $this->archive
             ->shouldReceive('close')

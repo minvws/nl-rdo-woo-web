@@ -8,6 +8,7 @@ use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToDeleteFile;
 use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToWriteFile;
+use Mockery;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -27,8 +28,8 @@ class BatchDownloadStorageTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->filesystemOperator = \Mockery::mock(FilesystemOperator::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->filesystemOperator = Mockery::mock(FilesystemOperator::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
         $this->virtualFilesystem = vfsStream::setup(
             structure: [
@@ -46,12 +47,12 @@ class BatchDownloadStorageTest extends UnitTestCase
 
     public function testGetFileStreamForBatch(): void
     {
-        $batch = \Mockery::mock(BatchDownload::class);
+        $batch = Mockery::mock(BatchDownload::class);
         $batch
             ->shouldReceive('getFilename')
             ->andReturn($filename = 'foo/bar.zip');
 
-        $stream = \Mockery::mock(StreamInterface::class);
+        $stream = Mockery::mock(StreamInterface::class);
 
         $this->filesystemOperator
             ->expects('readStream')
@@ -66,7 +67,7 @@ class BatchDownloadStorageTest extends UnitTestCase
 
     public function testGetFileStreamForBatchReturnsFalseOnFailure(): void
     {
-        $batch = \Mockery::mock(BatchDownload::class);
+        $batch = Mockery::mock(BatchDownload::class);
         $batch
             ->shouldReceive('getFilename')
             ->andReturn($filename = 'foo/bar.pdf');
@@ -88,7 +89,7 @@ class BatchDownloadStorageTest extends UnitTestCase
 
     public function testRemoveFileForBatch(): void
     {
-        $batch = \Mockery::mock(BatchDownload::class);
+        $batch = Mockery::mock(BatchDownload::class);
         $batch
             ->shouldReceive('getFilename')
             ->andReturn($filename = 'foo/bar.pdf');
@@ -104,7 +105,7 @@ class BatchDownloadStorageTest extends UnitTestCase
 
     public function testRemoveFileForBatchWhenFilenameIsNotSet(): void
     {
-        $batch = \Mockery::mock(BatchDownload::class);
+        $batch = Mockery::mock(BatchDownload::class);
         $batch->shouldReceive('getFilename')->andReturn('');
 
         $this->filesystemOperator->shouldNotReceive('delete');
@@ -116,7 +117,7 @@ class BatchDownloadStorageTest extends UnitTestCase
 
     public function testRemoveFileForBatchReturnsFalseOnError(): void
     {
-        $batch = \Mockery::mock(BatchDownload::class);
+        $batch = Mockery::mock(BatchDownload::class);
         $batch
             ->shouldReceive('getFilename')
             ->andReturn($filename = 'foo/bar.pdf');
@@ -143,7 +144,7 @@ class BatchDownloadStorageTest extends UnitTestCase
 
         $this->filesystemOperator
             ->expects('writeStream')
-            ->with($destinationPath, \Mockery::type('resource'));
+            ->with($destinationPath, Mockery::type('resource'));
 
         self::assertTrue(
             $this->storage->add($sourcePath, $destinationPath),
@@ -157,7 +158,7 @@ class BatchDownloadStorageTest extends UnitTestCase
 
         $this->filesystemOperator
             ->expects('writeStream')
-            ->with($destinationPath, \Mockery::type('resource'))
+            ->with($destinationPath, Mockery::type('resource'))
             ->andThrow(new UnableToWriteFile());
 
         $this->logger->expects('error');

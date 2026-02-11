@@ -8,6 +8,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Symfony\Component\Form\DataTransformerInterface;
 
+use function is_array;
+use function is_null;
+
 /**
  * @template-implements DataTransformerInterface<string, DocumentPrefix|null>
  */

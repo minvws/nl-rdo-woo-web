@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier;
 
 use Carbon\CarbonImmutable;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -29,7 +30,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use function strtolower;
+
 /**
+ * @template T of object
+ *
  * This is the base class for dossier type entities. It contains only the common properties and relationships.
  */
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
@@ -54,6 +59,12 @@ use Symfony\Component\Validator\Constraints as Assert;
     entityClass: AbstractDossier::class,
     groups: [DossierValidationGroup::DETAILS->value],
 )]
+#[ORM\UniqueConstraint(name: 'dossier_unique_external_id', columns: ['external_id', 'organisation_id'])]
+#[UniqueEntity(
+    fields: ['externalId', 'organisation'],
+    entityClass: AbstractDossier::class,
+    ignoreNull: true,
+)]
 abstract class AbstractDossier
 {
     use TimestampableTrait;
@@ -61,6 +72,13 @@ abstract class AbstractDossier
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
     protected Uuid $id;
+
+    #[ORM\Column(length: 128, nullable: true, index: true)]
+    #[Assert\Regex(
+        pattern: '/^[A-Za-z0-9\-._~]*$/',
+        message: 'external_id_invalid_characters',
+    )]
+    protected ?string $externalId = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\Length(min: 3, max: 50, groups: [DossierValidationGroup::DETAILS->value])]
@@ -123,7 +141,7 @@ abstract class AbstractDossier
             DossierValidationGroup::REQUEST_FOR_ADVICE_DETAILS->value,
         ],
     )]
-    protected ?\DateTimeImmutable $dateFrom = null;
+    protected ?DateTimeImmutable $dateFrom = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     #[Assert\GreaterThanOrEqual(
@@ -136,7 +154,7 @@ abstract class AbstractDossier
         message: 'date_max_5_year_in_future',
         groups: [DossierValidationGroup::DETAILS->value]
     )]
-    protected ?\DateTimeImmutable $dateTo = null;
+    protected ?DateTimeImmutable $dateTo = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value, DossierValidationGroup::CONTENT->value])]
@@ -149,7 +167,7 @@ abstract class AbstractDossier
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     #[Assert\NotBlank(groups: [DossierValidationGroup::PUBLICATION->value])]
-    protected ?\DateTimeImmutable $publicationDate = null;
+    protected ?DateTimeImmutable $publicationDate = null;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
     protected bool $completed = false;
@@ -177,6 +195,18 @@ abstract class AbstractDossier
     public function getId(): Uuid
     {
         return $this->id;
+    }
+
+    public function getExternalId(): ?string
+    {
+        return $this->externalId;
+    }
+
+    public function setExternalId(?string $externalId): self
+    {
+        $this->externalId = $externalId;
+
+        return $this;
     }
 
     public function getDossierNr(): string
@@ -257,24 +287,24 @@ abstract class AbstractDossier
         return $this;
     }
 
-    public function getDateFrom(): ?\DateTimeImmutable
+    public function getDateFrom(): ?DateTimeImmutable
     {
         return $this->dateFrom;
     }
 
-    public function setDateFrom(?\DateTimeImmutable $dateFrom): static
+    public function setDateFrom(?DateTimeImmutable $dateFrom): static
     {
         $this->dateFrom = $dateFrom;
 
         return $this;
     }
 
-    public function getDateTo(): ?\DateTimeImmutable
+    public function getDateTo(): ?DateTimeImmutable
     {
         return $this->dateTo;
     }
 
-    public function setDateTo(?\DateTimeImmutable $dateTo): static
+    public function setDateTo(?DateTimeImmutable $dateTo): static
     {
         $this->dateTo = $dateTo;
 
@@ -305,12 +335,12 @@ abstract class AbstractDossier
         return $this;
     }
 
-    public function getPublicationDate(): ?\DateTimeImmutable
+    public function getPublicationDate(): ?DateTimeImmutable
     {
         return $this->publicationDate;
     }
 
-    public function setPublicationDate(?\DateTimeImmutable $publicationDate): void
+    public function setPublicationDate(?DateTimeImmutable $publicationDate): void
     {
         $this->publicationDate = $publicationDate;
     }
@@ -329,7 +359,7 @@ abstract class AbstractDossier
 
     public function hasFuturePublicationDate(): bool
     {
-        return $this->publicationDate >= new \DateTimeImmutable('today midnight');
+        return $this->publicationDate >= new DateTimeImmutable('today midnight');
     }
 
     public function getOrganisation(): Organisation

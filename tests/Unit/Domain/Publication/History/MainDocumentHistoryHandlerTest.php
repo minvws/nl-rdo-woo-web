@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\History;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -26,8 +27,8 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->historyService = \Mockery::mock(HistoryService::class);
-        $this->repository = \Mockery::mock(DossierRepository::class);
+        $this->historyService = Mockery::mock(HistoryService::class);
+        $this->repository = Mockery::mock(DossierRepository::class);
 
         $this->handler = new MainDocumentHistoryHandler(
             $this->historyService,
@@ -120,7 +121,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
 
     private function getDossier(): Covenant
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
 
@@ -129,7 +130,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
 
     private function getFileInfo(string $name): FileInfo
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getName')->andReturn($name);
 
         return $fileInfo;
@@ -137,7 +138,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
 
     private function getMainDocument(FileInfo $fileInfo, Covenant $dossier): AbstractMainDocument
     {
-        $document = \Mockery::mock(AbstractMainDocument::class);
+        $document = Mockery::mock(AbstractMainDocument::class);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $document->shouldReceive('getId')->andReturn(Uuid::v6());

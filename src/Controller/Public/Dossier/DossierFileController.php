@@ -14,7 +14,13 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+
+use function filesize;
+use function fopen;
+use function fpassthru;
+use function intval;
+use function sprintf;
 
 class DossierFileController extends AbstractController
 {

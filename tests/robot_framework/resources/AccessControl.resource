@@ -1,5 +1,5 @@
 *** Comments ***
-# robocop: off=no-suite-variable,non-local-variables-should-be-uppercase
+# robocop: off=no-suite-variable
 
 
 *** Settings ***
@@ -9,6 +9,7 @@ Library             ${CURDIR}/../libraries/QR.py
 Library             Browser
 Library             DebugLibrary
 Resource            Admin.resource
+Resource            Dossier.resource
 Resource            Organisations.resource
 
 
@@ -121,3 +122,39 @@ Get User Name Of User By Org
 Get Current Logged In Username
   ${user_name} =  Get Text  //nav[@id="main-nav"]//a[@href='/balie/profiel']
   RETURN  ${user_name}
+
+Login Admin With Role
+  [Arguments]  ${role}
+  ${email}  ${password}  ${otp} =  Get Admin Credential Variables  ${role}
+  Login Admin  username=${email}  password=${password}  otp_secret=${otp}
+
+Get Admin Credential Variables
+  [Arguments]  ${role}
+  RETURN  ${${role}_EMAIL}  ${${role}_PASSWORD}  ${${role}_OTP}
+
+Can Update A Dossier
+  [Arguments]  ${dossier_reference}
+  Search For A Publication  ${dossier_reference}
+  Get Element States  //a[@data-e2e-name="edit-basic-details"]  contains  attached
+  Click Publications
+
+Can Not Update A Dossier
+  [Arguments]  ${dossier_reference}
+  Search For A Publication  ${dossier_reference}
+  Get Element States  //a[@data-e2e-name="edit-basic-details"]  contains  detached
+  Click Publications
+
+Can Delete A Dossier
+  [Arguments]  ${dossier_reference}
+  Search For A Publication  ${dossier_reference}
+  Get Element States  //a[@data-e2e-name="delete-dossier-link"]  contains  attached
+  Click Publications
+
+Can Not Delete A Dossier
+  [Arguments]  ${dossier_reference}
+  Search For A Publication  ${dossier_reference}
+  Get Text
+  ...  //section[@data-e2e-name="danger-zone"]
+  ...  contains
+  ...  Dit besluit is gepubliceerd en kan daarom niet meer verwijderd worden.
+  Click Publications

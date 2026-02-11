@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Twig\Runtime;
 
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -17,6 +18,8 @@ use Shared\Twig\Runtime\WooExtensionRuntime;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+use function urldecode;
+
 class WooExtensionRuntimeTest extends MockeryTestCase
 {
     private RequestStack&MockInterface $requestStack;
@@ -25,14 +28,14 @@ class WooExtensionRuntimeTest extends MockeryTestCase
 
     protected function setUp(): void
     {
-        $this->requestStack = \Mockery::mock(RequestStack::class);
-        $this->dossierNotificationsFactory = \Mockery::mock(DossierNotificationsFactory::class);
+        $this->requestStack = Mockery::mock(RequestStack::class);
+        $this->dossierNotificationsFactory = Mockery::mock(DossierNotificationsFactory::class);
 
         $this->runtime = new WooExtensionRuntime(
             $this->requestStack,
-            \Mockery::mock(OrganisationSwitcher::class),
-            \Mockery::mock(HistoryService::class),
-            \Mockery::mock(DossierPathHelper::class),
+            Mockery::mock(OrganisationSwitcher::class),
+            Mockery::mock(HistoryService::class),
+            Mockery::mock(DossierPathHelper::class),
             $this->dossierNotificationsFactory,
         );
     }
@@ -44,7 +47,7 @@ class WooExtensionRuntimeTest extends MockeryTestCase
         string $valueToRemove,
         string $expectedQuery,
     ): void {
-        $request = \Mockery::mock(Request::class);
+        $request = Mockery::mock(Request::class);
         $request->shouldReceive('getQueryString')->andReturn($queryString);
 
         $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($request);
@@ -90,8 +93,8 @@ class WooExtensionRuntimeTest extends MockeryTestCase
 
     public function testGetDossierNotifications(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $notifications = \Mockery::mock(DossierNotifications::class);
+        $dossier = Mockery::mock(WooDecision::class);
+        $notifications = Mockery::mock(DossierNotifications::class);
 
         $this->dossierNotificationsFactory->expects('make')->with($dossier)->andReturn($notifications);
 

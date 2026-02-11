@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
 use Shared\Tests\Unit\UnitTestCase;
@@ -12,7 +13,7 @@ class PrefixedDossierNrTest extends UnitTestCase
 {
     public function testForDossier(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier
             ->shouldReceive('getDocumentPrefix')
             ->andReturn('prefix');

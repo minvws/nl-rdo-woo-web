@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Department\Twig;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Department\Twig\Departments;
@@ -21,22 +22,22 @@ final class DepartmentsTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->repository = \Mockery::mock(DepartmentRepository::class);
-        $this->item = \Mockery::mock(ItemInterface::class);
-        $this->cache = \Mockery::mock(CacheInterface::class);
+        $this->repository = Mockery::mock(DepartmentRepository::class);
+        $this->item = Mockery::mock(ItemInterface::class);
+        $this->cache = Mockery::mock(CacheInterface::class);
     }
 
     public function testHasAny(): void
     {
         $this->repository->shouldReceive('countPublicDepartments')->andReturn(1);
 
-        $this->item->shouldReceive('expiresAfter')->with(\Mockery::type('integer'))->andReturn($this->item);
+        $this->item->shouldReceive('expiresAfter')->with(Mockery::type('integer'))->andReturn($this->item);
 
         $this->cache
             ->shouldReceive('get')
             ->with(
                 'DEPARTMENTS_HAS_ANY',
-                \Mockery::on(fn (callable $callback): bool => $callback($this->item))
+                Mockery::on(fn (callable $callback): bool => $callback($this->item))
             )
             ->andReturn(true);
 

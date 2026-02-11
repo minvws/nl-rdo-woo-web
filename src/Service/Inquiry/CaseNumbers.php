@@ -4,16 +4,23 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inquiry;
 
+use ArrayIterator;
+use IteratorAggregate;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inventory\InventoryDataHelper;
+use Traversable;
 use Webmozart\Assert\Assert;
 
+use function array_diff;
+use function array_values;
+use function count;
+
 /**
- * @implements \IteratorAggregate<array-key,string>
+ * @implements IteratorAggregate<array-key,string>
  */
-readonly class CaseNumbers implements \IteratorAggregate
+readonly class CaseNumbers implements IteratorAggregate
 {
     /**
      * @var list<string>
@@ -48,9 +55,9 @@ readonly class CaseNumbers implements \IteratorAggregate
         return new self(array_diff($this->values, $compareWith->values));
     }
 
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->values);
+        return new ArrayIterator($this->values);
     }
 
     public function isNotEmpty(): bool

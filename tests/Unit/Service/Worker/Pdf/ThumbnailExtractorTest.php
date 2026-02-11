@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
+use Mockery;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
@@ -29,9 +30,9 @@ final class ThumbnailExtractorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->thumbnailStorageService = \Mockery::mock(ThumbnailStorageService::class);
-        $this->pdfToPpmService = \Mockery::mock(PdftoppmService::class);
-        $this->entity = \Mockery::mock(EntityWithFileInfo::class);
+        $this->thumbnailStorageService = Mockery::mock(ThumbnailStorageService::class);
+        $this->pdfToPpmService = Mockery::mock(PdftoppmService::class);
+        $this->entity = Mockery::mock(EntityWithFileInfo::class);
 
         $this->extractor = new ThumbnailExtractor(
             $this->thumbnailStorageService,
@@ -69,7 +70,7 @@ final class ThumbnailExtractorTest extends UnitTestCase
             ->expects('store')
             ->with(
                 $this->entity,
-                \Mockery::on(function (File $file) use ($targetPath) {
+                Mockery::on(function (File $file) use ($targetPath) {
                     $this->assertSame($targetPath . '.png', $file->getPathname());
 
                     return true;
@@ -130,7 +131,7 @@ final class ThumbnailExtractorTest extends UnitTestCase
     public function testNeedsThumbGenerationReturnsFalseForPageNumberExceedingLimit(): void
     {
         $pageNr = 345;
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
+        $context = Mockery::mock(PdfPageProcessingContext::class);
         $context->shouldReceive('getPageNumber')->andReturn($pageNr);
 
         self::assertFalse($this->extractor->needsThumbGeneration($context));
@@ -139,9 +140,9 @@ final class ThumbnailExtractorTest extends UnitTestCase
     public function testNeedsThumbGenerationReturnsTrueWhenThumbIsMissing(): void
     {
         $pageNr = 1;
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
 
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
+        $context = Mockery::mock(PdfPageProcessingContext::class);
         $context->shouldReceive('getPageNumber')->andReturn($pageNr);
         $context->shouldReceive('getEntity')->andReturn($entity);
 
@@ -153,9 +154,9 @@ final class ThumbnailExtractorTest extends UnitTestCase
     public function testNeedsThumbGenerationReturnsFalseWhenThumbAlreadyExists(): void
     {
         $pageNr = 1;
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
 
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
+        $context = Mockery::mock(PdfPageProcessingContext::class);
         $context->shouldReceive('getPageNumber')->andReturn($pageNr);
         $context->shouldReceive('getEntity')->andReturn($entity);
 

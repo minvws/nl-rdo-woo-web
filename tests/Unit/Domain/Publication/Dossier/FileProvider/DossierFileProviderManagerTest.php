@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\FileProvider;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileProviderException;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileProviderInterface;
@@ -21,8 +22,8 @@ class DossierFileProviderManagerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->providerA = \Mockery::mock(DossierFileProviderInterface::class);
-        $this->providerB = \Mockery::mock(DossierFileProviderInterface::class);
+        $this->providerA = Mockery::mock(DossierFileProviderInterface::class);
+        $this->providerB = Mockery::mock(DossierFileProviderInterface::class);
 
         $this->manager = new DossierFileProviderManager([
             $this->providerA,
@@ -34,7 +35,7 @@ class DossierFileProviderManagerTest extends UnitTestCase
 
     public function testGetEntityForPublicUseThrowsExceptionWhenNoProviderIsAvailable(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $id = 'foo-123';
 
         $this->providerA->expects('getType')->andReturn(DossierFileType::MAIN_DOCUMENT);
@@ -47,10 +48,10 @@ class DossierFileProviderManagerTest extends UnitTestCase
 
     public function testGetEntityForPublicUseUsesMatchingProvider(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $id = 'foo-123';
 
-        $entity = \Mockery::mock(CovenantAttachment::class);
+        $entity = Mockery::mock(CovenantAttachment::class);
 
         $this->providerA->expects('getType')->andReturn(DossierFileType::MAIN_DOCUMENT);
         $this->providerB->expects('getType')->andReturn(DossierFileType::ATTACHMENT);
@@ -64,10 +65,10 @@ class DossierFileProviderManagerTest extends UnitTestCase
 
     public function testGetEntityForAdminUse(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $id = 'foo-123';
 
-        $entity = \Mockery::mock(CovenantAttachment::class);
+        $entity = Mockery::mock(CovenantAttachment::class);
 
         $this->providerA->expects('getType')->andReturn(DossierFileType::MAIN_DOCUMENT);
         $this->providerB->expects('getType')->andReturn(DossierFileType::ATTACHMENT);

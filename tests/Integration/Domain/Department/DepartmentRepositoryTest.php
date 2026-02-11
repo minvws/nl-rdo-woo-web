@@ -11,7 +11,8 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Webmozart\Assert\Assert;
-use Zenstruck\Foundry\Persistence\Proxy;
+
+use function array_map;
 
 final class DepartmentRepositoryTest extends SharedWebTestCase
 {
@@ -51,7 +52,7 @@ final class DepartmentRepositoryTest extends SharedWebTestCase
 
         self::assertCount(3, $departments);
 
-        $departments = \array_map(fn (Department $department): array => [
+        $departments = array_map(fn (Department $department): array => [
             'name' => $department->getName(),
             'shortTag' => $department->getShortTag(),
             'slug' => $department->getSlug(),
@@ -90,7 +91,7 @@ final class DepartmentRepositoryTest extends SharedWebTestCase
 
         self::assertCount(4, $departments);
 
-        $departments = \array_map(fn (Department $department): array => [
+        $departments = array_map(fn (Department $department): array => [
             'name' => $department->getName(),
             'shortTag' => $department->getShortTag(),
             'slug' => $department->getSlug(),
@@ -135,11 +136,11 @@ final class DepartmentRepositoryTest extends SharedWebTestCase
         ]);
 
         /** @var iterable<Department> $departments */
-        $departments = $this->repository->getDepartmentsQuery($organisationA->_real())->getResult();
+        $departments = $this->repository->getDepartmentsQuery($organisationA)->getResult();
 
-        self::assertContains($departmentA->_real(), $departments);
-        self::assertNotContains($departmentB->_real(), $departments);
-        self::assertContains($departmentC->_real(), $departments);
+        self::assertContains($departmentA, $departments);
+        self::assertNotContains($departmentB, $departments);
+        self::assertContains($departmentC, $departments);
     }
 
     public function testFindAllSortedByName(): void
@@ -159,7 +160,7 @@ final class DepartmentRepositoryTest extends SharedWebTestCase
     }
 
     /**
-     * @return array<array-key,Department&Proxy<Department>>
+     * @return Department[]
      */
     private function createDepartments(): array
     {

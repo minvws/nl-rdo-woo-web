@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use RuntimeException;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
@@ -27,9 +29,9 @@ use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use function in_array;
+
 /**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- *
  * @implements EntityWithMainDocument<WooDecisionMainDocument>
  * @implements EntityWithAttachments<WooDecisionAttachment>
  */
@@ -43,7 +45,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     use HasAttachments;
 
     /** @var Collection<array-key, Document> */
-    #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'dossiers', fetch: 'EXTRA_LAZY')]
+    #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'dossiers', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
     #[ORM\OrderBy(['documentNr' => 'ASC'])]
     protected Collection $documents;
 
@@ -62,7 +64,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     protected ?ProductionReport $productionReport = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $previewDate = null;
+    private ?DateTimeImmutable $previewDate = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ProductionReportProcessRun::class, cascade: ['remove'])]
     private ?ProductionReportProcessRun $processRun = null;
@@ -74,7 +76,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value])]
     #[Assert\LessThanOrEqual(value: 'today', message: 'date_must_not_be_in_future', groups: [DossierValidationGroup::DECISION->value])]
-    private ?\DateTimeImmutable $decisionDate = null;
+    private ?DateTimeImmutable $decisionDate = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: WooDecisionMainDocument::class, cascade: ['remove', 'persist'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value])]
@@ -82,7 +84,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     private ?WooDecisionMainDocument $document;
 
     /** @var Collection<array-key,WooDecisionAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: WooDecisionAttachment::class, cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: WooDecisionAttachment::class, cascade: ['persist'], orphanRemoval: true)]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 
@@ -176,12 +178,12 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
         return $this->hasProductionReport() && $this->getUploadStatus()->isComplete();
     }
 
-    public function getPreviewDate(): ?\DateTimeImmutable
+    public function getPreviewDate(): ?DateTimeImmutable
     {
         return $this->previewDate;
     }
 
-    public function setPreviewDate(?\DateTimeImmutable $previewDate): static
+    public function setPreviewDate(?DateTimeImmutable $previewDate): static
     {
         $this->previewDate = $previewDate;
 
@@ -190,7 +192,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
 
     public function hasFuturePreviewDate(): bool
     {
-        return $this->previewDate > new \DateTimeImmutable('today midnight');
+        return $this->previewDate > new DateTimeImmutable('today midnight');
     }
 
     public function getProcessRun(): ?ProductionReportProcessRun
@@ -201,7 +203,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     public function setProcessRun(ProductionReportProcessRun $run): self
     {
         if ($this->processRun?->isNotFinal()) {
-            throw new \RuntimeException('Cannot overwrite a non-final InventoryProcessRun');
+            throw new RuntimeException('Cannot overwrite a non-final InventoryProcessRun');
         }
 
         $this->processRun = $run;
@@ -221,12 +223,12 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
         return $this;
     }
 
-    public function getDecisionDate(): ?\DateTimeImmutable
+    public function getDecisionDate(): ?DateTimeImmutable
     {
         return $this->decisionDate;
     }
 
-    public function setDecisionDate(?\DateTimeImmutable $decisionDate): static
+    public function setDecisionDate(?DateTimeImmutable $decisionDate): static
     {
         $this->decisionDate = $decisionDate;
 

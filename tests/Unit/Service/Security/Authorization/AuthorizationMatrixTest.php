@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Security\Authorization;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Service\Security\Authorization\AuthorizationEntryRequestStore;
@@ -37,12 +38,12 @@ class AuthorizationMatrixTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->user = \Mockery::mock(User::class);
+        $this->user = Mockery::mock(User::class);
 
-        $this->mockSecurity = \Mockery::mock(Security::class);
+        $this->mockSecurity = Mockery::mock(Security::class);
         $this->mockSecurity->shouldReceive('getUser')->andReturn($this->user);
 
-        $this->mockRequestStack = \Mockery::mock(RequestStack::class);
+        $this->mockRequestStack = Mockery::mock(RequestStack::class);
         $this->entryStore = new AuthorizationEntryRequestStore($this->mockRequestStack);
 
         $this->tokenStorage = new TokenStorage();
@@ -50,7 +51,7 @@ class AuthorizationMatrixTest extends UnitTestCase
         $decisionManager = new AccessDecisionManager([$voter]);
         $this->authorizationChecker = new AuthorizationChecker($this->tokenStorage, $decisionManager);
 
-        $this->organisationSwitcher = \Mockery::mock(OrganisationSwitcher::class);
+        $this->organisationSwitcher = Mockery::mock(OrganisationSwitcher::class);
 
         $this->authorizationMatrix = new AuthorizationMatrix(
             $this->mockSecurity,
@@ -127,7 +128,7 @@ class AuthorizationMatrixTest extends UnitTestCase
     {
         $this->setupRoles(['ROLE_BALIE']);
 
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
 
         $this->organisationSwitcher->expects('getActiveOrganisation')->with($this->user)->andReturn($organisation);
 
@@ -139,7 +140,7 @@ class AuthorizationMatrixTest extends UnitTestCase
 
     public function testGetActiveOrganisationThrowsExceptionWhenThereIsNoUser(): void
     {
-        $mockSecurity = \Mockery::mock(Security::class);
+        $mockSecurity = Mockery::mock(Security::class);
         $mockSecurity->shouldReceive('getUser')->andReturnNull();
 
         $authorizationMatrix = new AuthorizationMatrix(

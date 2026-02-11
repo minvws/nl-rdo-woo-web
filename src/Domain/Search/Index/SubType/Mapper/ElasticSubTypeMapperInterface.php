@@ -13,7 +13,7 @@ interface ElasticSubTypeMapperInterface
     public function supports(object $entity): bool;
 
     /**
-     * @param string[]               $metadata
+     * @param string[] $metadata
      * @param array<int, mixed>|null $pages
      */
     public function map(object $entity, ?array $metadata = null, ?array $pages = null): ElasticDocument;

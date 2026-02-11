@@ -6,8 +6,10 @@ namespace Shared\Tests\Unit\Domain\Ingest\Process\TikaOnly;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Ingest\Content\ContentExtractCache;
 use Shared\Domain\Ingest\Content\ContentExtractOptions;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
@@ -17,6 +19,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
+
+use function array_values;
 
 final class IngestTikaOnlyHandlerTest extends UnitTestCase
 {
@@ -31,11 +35,11 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
-        $this->contentExtractCache = \Mockery::mock(ContentExtractCache::class);
-        $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->repository = \Mockery::mock(EntityRepository::class);
+        $this->doctrine = Mockery::mock(EntityManagerInterface::class);
+        $this->contentExtractCache = Mockery::mock(ContentExtractCache::class);
+        $this->subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->repository = Mockery::mock(EntityRepository::class);
 
         $this->handler = new IngestTikaOnlyHandler(
             $this->doctrine,
@@ -64,7 +68,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
 
     public function testInvokeSuccessfully(): void
     {
-        $entity = \Mockery::mock(Document::class);
+        $entity = Mockery::mock(Document::class);
         $entity->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $command = new IngestTikaOnlyCommand(
@@ -81,7 +85,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
 
         $this->contentExtractCache
             ->expects('getCombinedExtracts')
-            ->with($entity, \Mockery::on(
+            ->with($entity, Mockery::on(
                 static function (ContentExtractOptions $options): bool {
                     self::assertEquals([ContentExtractorKey::TIKA], array_values($options->getEnabledExtractors()));
 
@@ -108,10 +112,10 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
 
     public function testInvokeLogsErrorWhenElasticIndexFails(): void
     {
-        $entity = \Mockery::mock(Document::class);
+        $entity = Mockery::mock(Document::class);
         $entity
             ->shouldReceive('getId')
-            ->andReturn($entityId = \Mockery::mock(Uuid::class));
+            ->andReturn($entityId = Mockery::mock(Uuid::class));
 
         $command = new IngestTikaOnlyCommand(
             Uuid::v6(),
@@ -127,7 +131,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
 
         $this->contentExtractCache
             ->expects('getCombinedExtracts')
-            ->with($entity, \Mockery::on(
+            ->with($entity, Mockery::on(
                 static function (ContentExtractOptions $options): bool {
                     self::assertEquals([ContentExtractorKey::TIKA], array_values($options->getEnabledExtractors()));
 
@@ -148,7 +152,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
                     ],
                 ],
             )
-            ->andThrow($thrownException = new \RuntimeException('oops'));
+            ->andThrow($thrownException = new RuntimeException('oops'));
 
         $this->logger
             ->shouldReceive('error')

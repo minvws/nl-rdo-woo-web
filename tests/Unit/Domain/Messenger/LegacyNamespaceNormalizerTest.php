@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Messenger;
 
+use InvalidArgumentException;
+use Mockery;
 use Shared\Domain\Messenger\LegacyNamespaceNormalizer;
 use Shared\Tests\Unit\UnitTestCase;
+use stdClass;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -22,7 +25,7 @@ final class LegacyNamespaceNormalizerTest extends UnitTestCase
 
     public function testSetSerializerWithValidDenormalizer(): void
     {
-        $serializer = \Mockery::mock(SerializerInterface::class, DenormalizerInterface::class);
+        $serializer = Mockery::mock(SerializerInterface::class, DenormalizerInterface::class);
 
         $this->normalizer->setSerializer($serializer);
 
@@ -31,23 +34,23 @@ final class LegacyNamespaceNormalizerTest extends UnitTestCase
 
     public function testSetSerializerWithInvalidSerializerThrowsException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
-        $invalidSerializer = \Mockery::mock(SerializerInterface::class);
+        $invalidSerializer = Mockery::mock(SerializerInterface::class);
 
         $this->normalizer->setSerializer($invalidSerializer);
     }
 
     public function testGetSerializerThrowsExceptionWhenNotSet(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $this->normalizer->getSerializer();
     }
 
     public function testDenormalizeConvertsLegacyAppNamespaceToShared(): void
     {
-        $serializer = \Mockery::mock(SerializerInterface::class, DenormalizerInterface::class);
+        $serializer = Mockery::mock(SerializerInterface::class, DenormalizerInterface::class);
         $this->normalizer->setSerializer($serializer);
 
         $data = ['id' => '123'];
@@ -56,7 +59,7 @@ final class LegacyNamespaceNormalizerTest extends UnitTestCase
         $format = 'json';
         $context = [];
 
-        $expectedObject = new \stdClass();
+        $expectedObject = new stdClass();
 
         $serializer
             ->shouldReceive('denormalize')
@@ -76,7 +79,7 @@ final class LegacyNamespaceNormalizerTest extends UnitTestCase
 
     public function testDenormalizeDoesNotConvertNonLegacyNamespace(): void
     {
-        $serializer = \Mockery::mock(SerializerInterface::class, DenormalizerInterface::class);
+        $serializer = Mockery::mock(SerializerInterface::class, DenormalizerInterface::class);
         $this->normalizer->setSerializer($serializer);
 
         $data = ['id' => '123'];
@@ -84,7 +87,7 @@ final class LegacyNamespaceNormalizerTest extends UnitTestCase
         $format = 'json';
         $context = [];
 
-        $expectedObject = new \stdClass();
+        $expectedObject = new stdClass();
 
         $serializer
             ->shouldReceive('denormalize')
@@ -104,7 +107,7 @@ final class LegacyNamespaceNormalizerTest extends UnitTestCase
 
     public function testDenormalizeDoesNotConvertWhenNewClassDoesNotExist(): void
     {
-        $serializer = \Mockery::mock(SerializerInterface::class, DenormalizerInterface::class);
+        $serializer = Mockery::mock(SerializerInterface::class, DenormalizerInterface::class);
         $this->normalizer->setSerializer($serializer);
 
         $data = ['data' => 'test'];
@@ -121,7 +124,7 @@ final class LegacyNamespaceNormalizerTest extends UnitTestCase
                 $format,
                 ['legacy_namespace_normalized' => [$legacyType => true]]
             )
-            ->andReturn(new \stdClass());
+            ->andReturn(new stdClass());
 
         $this->normalizer->denormalize($data, $legacyType, $format, $context);
     }

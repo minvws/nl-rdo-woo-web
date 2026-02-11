@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Result\Dossier\Covenant;
 
+use DateTimeImmutable;
 use Shared\Domain\Search\Result\Dossier\AbstractDossierTypeSearchResult;
 use Symfony\Component\Uid\Uuid;
 
@@ -15,11 +16,11 @@ readonly class CovenantSearchResult extends AbstractDossierTypeSearchResult
         string $documentPrefix,
         public string $title,
         public ?string $summary,
-        public ?\DateTimeImmutable $publicationDate,
+        public ?DateTimeImmutable $publicationDate,
         // This count is actually the attachment count + 1 (for the main covenant document)
         public int $documentCount,
-        public ?\DateTimeImmutable $dateFrom,
-        public ?\DateTimeImmutable $dateTo,
+        public ?DateTimeImmutable $dateFrom,
+        public ?DateTimeImmutable $dateTo,
     ) {
         parent::__construct($id, $dossierNr, $documentPrefix);
     }

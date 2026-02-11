@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory\Publication\Dossier\Type\WooDecision;
 
+use DateTimeImmutable;
+use Override;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUploadStatus;
 use Shared\Tests\Factory\FileInfoFactory;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<DocumentFileUpload>
+ * @extends PersistentObjectFactory<DocumentFileUpload>
  */
-final class DocumentFileUploadFactory extends PersistentProxyObjectFactory
+final class DocumentFileUploadFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
@@ -22,8 +24,8 @@ final class DocumentFileUploadFactory extends PersistentProxyObjectFactory
     protected function defaults(): array
     {
         return [
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'status' => DocumentFileUploadStatus::UPLOADED,
             'fileInfo' => FileInfoFactory::new(),
         ];
@@ -32,7 +34,7 @@ final class DocumentFileUploadFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    #[\Override]
+    #[Override]
     protected function initialize(): static
     {
         return $this;

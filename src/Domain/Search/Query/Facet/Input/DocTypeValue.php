@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Query\Facet\Input;
 
+use RuntimeException;
+
+use function count;
+use function explode;
+use function trim;
+
 readonly class DocTypeValue
 {
     private function __construct(
@@ -18,7 +24,7 @@ readonly class DocTypeValue
 
         $valueParts = explode('.', $rawValue);
         if (count($valueParts) > 2) {
-            throw new \RuntimeException('Unexpected format for DocType: ' . $rawValue);
+            throw new RuntimeException('Unexpected format for DocType: ' . $rawValue);
         }
 
         return new self(

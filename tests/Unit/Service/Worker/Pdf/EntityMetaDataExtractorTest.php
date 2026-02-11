@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
+use Closure;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Ingest\Content\ContentExtractLogContext;
 use Shared\Domain\Ingest\Content\Extractor\Tika\TikaService;
 use Shared\Domain\Publication\EntityWithFileInfo;
@@ -17,6 +20,7 @@ use Shared\Service\Worker\Pdf\Extractor\EntityMetaDataExtractor;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Cache\CacheInterface;
+use Throwable;
 
 final class EntityMetaDataExtractorTest extends UnitTestCase
 {
@@ -33,27 +37,27 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
-        $this->tika = \Mockery::mock(TikaService::class);
-        $this->statsService = \Mockery::mock(WorkerStatsService::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
+        $this->subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
+        $this->tika = Mockery::mock(TikaService::class);
+        $this->statsService = Mockery::mock(WorkerStatsService::class);
 
-        $this->fileInfo = \Mockery::mock(FileInfo::class);
+        $this->fileInfo = Mockery::mock(FileInfo::class);
         $this->fileInfo->shouldReceive('getHash')->andReturn('foobar');
 
-        $this->entity = \Mockery::mock(EntityWithFileInfo::class);
+        $this->entity = Mockery::mock(EntityWithFileInfo::class);
         $this->entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
 
-        $this->cache = \Mockery::mock(CacheInterface::class);
+        $this->cache = Mockery::mock(CacheInterface::class);
     }
 
     public function testExtractWithCacheMiss(): void
     {
         $this->cache
             ->shouldReceive('get')
-            ->with('foobar-tika-metadata', \Mockery::type('callable'))
-            ->andReturnUsing(fn (string $key, \Closure $closure) => $closure());
+            ->with('foobar-tika-metadata', Mockery::type('callable'))
+            ->andReturnUsing(fn (string $key, Closure $closure) => $closure());
 
         $this->entityStorageService
             ->shouldReceive('downloadEntity')
@@ -64,7 +68,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('download.entity', \Mockery::on(function (\Closure $closure) use ($localPdfPath) {
+            ->with('download.entity', Mockery::on(function (Closure $closure) use ($localPdfPath) {
                 $result = $closure();
 
                 $this->assertSame($localPdfPath, $result);
@@ -81,7 +85,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             ->with(
                 $localPdfPath,
                 'application/pdf',
-                \Mockery::on(
+                Mockery::on(
                     static function (ContentExtractLogContext $context) use ($id): bool {
                         self::assertEquals($id->toRfc4122(), $context->id);
 
@@ -94,7 +98,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('tika', \Mockery::on(function (\Closure $closure) use ($tikaData) {
+            ->with('tika', Mockery::on(function (Closure $closure) use ($tikaData) {
                 $result = $closure();
 
                 $this->assertSame($tikaData, $result);
@@ -111,7 +115,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->subTypeIndexer
             ->shouldReceive('index')
             ->once()
-            ->with($this->entity, \Mockery::on(function (array $data) use ($tikaData) {
+            ->with($this->entity, Mockery::on(function (array $data) use ($tikaData) {
                 $expectedData = $tikaData;
 
                 unset($expectedData['X-TIKA:content']);
@@ -124,7 +128,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('index.entity', \Mockery::on(function (\Closure $closure) {
+            ->with('index.entity', Mockery::on(function (Closure $closure) {
                 $closure();
 
                 return true;
@@ -137,13 +141,13 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
     {
         $this->cache
             ->shouldReceive('get')
-            ->with('foobar-tika-metadata', \Mockery::type('callable'))
+            ->with('foobar-tika-metadata', Mockery::type('callable'))
             ->andReturn($metadata = ['key' => 'value']);
 
         $this->subTypeIndexer
             ->shouldReceive('index')
             ->once()
-            ->with($this->entity, \Mockery::on(function (array $data) use ($metadata) {
+            ->with($this->entity, Mockery::on(function (array $data) use ($metadata) {
                 $this->assertSame($metadata, $data);
 
                 return true;
@@ -152,7 +156,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('index.entity', \Mockery::on(function (\Closure $closure) {
+            ->with('index.entity', Mockery::on(function (Closure $closure) {
                 $closure();
 
                 return true;
@@ -165,8 +169,8 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
     {
         $this->cache
             ->shouldReceive('get')
-            ->with('foobar-tika-metadata', \Mockery::type('callable'))
-            ->andReturnUsing(fn (string $key, \Closure $closure) => $closure());
+            ->with('foobar-tika-metadata', Mockery::type('callable'))
+            ->andReturnUsing(fn (string $key, Closure $closure) => $closure());
 
         $this->entityStorageService
             ->shouldReceive('downloadEntity')
@@ -177,7 +181,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('download.entity', \Mockery::on(function (\Closure $closure) {
+            ->with('download.entity', Mockery::on(function (Closure $closure) {
                 $result = $closure();
 
                 $this->assertFalse($result);
@@ -207,7 +211,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('index.entity', \Mockery::on(function (\Closure $closure) {
+            ->with('index.entity', Mockery::on(function (Closure $closure) {
                 $closure();
 
                 return true;
@@ -220,8 +224,8 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
     {
         $this->cache
             ->shouldReceive('get')
-            ->with('foobar-tika-metadata', \Mockery::type('callable'))
-            ->andReturnUsing(fn (string $key, \Closure $closure) => $closure());
+            ->with('foobar-tika-metadata', Mockery::type('callable'))
+            ->andReturnUsing(fn (string $key, Closure $closure) => $closure());
 
         $this->entityStorageService
             ->shouldReceive('downloadEntity')
@@ -232,7 +236,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('download.entity', \Mockery::on(function (\Closure $closure) use ($localPdfPath) {
+            ->with('download.entity', Mockery::on(function (Closure $closure) use ($localPdfPath) {
                 $result = $closure();
 
                 $this->assertSame($localPdfPath, $result);
@@ -249,7 +253,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             ->with(
                 $localPdfPath,
                 'application/pdf',
-                \Mockery::on(
+                Mockery::on(
                     static function (ContentExtractLogContext $context) use ($entityUuid): bool {
                         self::assertEquals($entityUuid->toRfc4122(), $context->id);
 
@@ -262,7 +266,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('tika', \Mockery::on(function (\Closure $closure) use ($tikaData) {
+            ->with('tika', Mockery::on(function (Closure $closure) use ($tikaData) {
                 $result = $closure();
 
                 $this->assertSame($tikaData, $result);
@@ -279,7 +283,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->subTypeIndexer
             ->shouldReceive('index')
             ->once()
-            ->with($this->entity, \Mockery::on(function (array $data) use ($tikaData) {
+            ->with($this->entity, Mockery::on(function (array $data) use ($tikaData) {
                 $expectedData = $tikaData;
 
                 unset($expectedData['X-TIKA:content']);
@@ -288,15 +292,15 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
 
                 return true;
             }))
-            ->andThrow($exception = new \RuntimeException('Failed to create document'));
+            ->andThrow($exception = new RuntimeException('Failed to create document'));
 
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('index.entity', \Mockery::on(static function (\Closure $closure) use ($exception) {
+            ->with('index.entity', Mockery::on(static function (Closure $closure) use ($exception) {
                 try {
                     $closure();
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     return $exception === $e;
                 }
 

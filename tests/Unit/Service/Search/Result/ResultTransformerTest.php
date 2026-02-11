@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Service\Search\Result;
 
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Knp\Component\Pager\PaginatorInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Search\Query\Facet\Definition\DateFacet;
@@ -23,6 +24,11 @@ use Shared\Service\Search\Result\ResultTransformer;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
+use function file_get_contents;
+use function json_decode;
+
+use const DIRECTORY_SEPARATOR;
+
 class ResultTransformerTest extends UnitTestCase
 {
     private LoggerInterface&MockInterface $logger;
@@ -34,11 +40,11 @@ class ResultTransformerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->paginator = \Mockery::mock(PaginatorInterface::class);
-        $this->aggregationMapper = \Mockery::mock(AggregationMapper::class);
-        $this->resultFactory = \Mockery::mock(ResultFactory::class);
-        $this->sortItemViewFactory = \Mockery::mock(SortItemViewFactory::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->paginator = Mockery::mock(PaginatorInterface::class);
+        $this->aggregationMapper = Mockery::mock(AggregationMapper::class);
+        $this->resultFactory = Mockery::mock(ResultFactory::class);
+        $this->sortItemViewFactory = Mockery::mock(SortItemViewFactory::class);
 
         $this->transformer = new ResultTransformer(
             $this->logger,
@@ -60,7 +66,7 @@ class ResultTransformerTest extends UnitTestCase
             facetInputs: $facetInputs,
         );
 
-        $response = \Mockery::mock(Elasticsearch::class);
+        $response = Mockery::mock(Elasticsearch::class);
 
         $json = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'response.json');
         if ($json === false) {
@@ -73,7 +79,7 @@ class ResultTransformerTest extends UnitTestCase
         $this->aggregationMapper->shouldReceive('map');
         $this->resultFactory->shouldReceive('map');
 
-        $sortItems = \Mockery::mock(SortItems::class);
+        $sortItems = Mockery::mock(SortItems::class);
         $this->sortItemViewFactory->shouldReceive('make')->with($searchParameters)->andReturn($sortItems);
 
         $result = $this->transformer->transform(

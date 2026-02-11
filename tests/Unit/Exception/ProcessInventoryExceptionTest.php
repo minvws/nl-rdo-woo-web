@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Exception;
 
+use Mockery;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Exception\ProcessInventoryException;
 use Shared\Exception\TranslatableException;
@@ -39,7 +41,7 @@ final class ProcessInventoryExceptionTest extends TestCase
     {
         self::assertStringContainsString(
             'foo-123',
-            ProcessInventoryException::forOtherException(new \RuntimeException('foo-123'))->getMessage(),
+            ProcessInventoryException::forOtherException(new RuntimeException('foo-123'))->getMessage(),
         );
     }
 
@@ -77,7 +79,7 @@ final class ProcessInventoryExceptionTest extends TestCase
 
     public function forDocumentExistsInAnotherDossier(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDocumentId')->andReturn('foo-456');
 
         self::assertStringContainsString(
@@ -90,7 +92,7 @@ final class ProcessInventoryExceptionTest extends TestCase
     {
         self::assertStringContainsString(
             'foo-123',
-            ProcessInventoryException::forGenericRowException(new \RuntimeException('foo-123'))->getMessage(),
+            ProcessInventoryException::forGenericRowException(new RuntimeException('foo-123'))->getMessage(),
         );
     }
 }

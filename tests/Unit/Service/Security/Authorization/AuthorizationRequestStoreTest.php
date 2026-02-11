@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Security\Authorization;
 
+use Mockery;
 use Mockery\MockInterface;
+use RuntimeException;
 use Shared\Service\Security\Authorization\AuthorizationEntryRequestStore;
 use Shared\Service\Security\Authorization\Entry;
 use Shared\Tests\Unit\UnitTestCase;
@@ -20,10 +22,10 @@ class AuthorizationRequestStoreTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->request = \Mockery::mock(Request::class);
+        $this->request = Mockery::mock(Request::class);
         $this->request->attributes = new ParameterBag();
 
-        $this->requestStack = \Mockery::mock(RequestStack::class);
+        $this->requestStack = Mockery::mock(RequestStack::class);
 
         $this->store = new AuthorizationEntryRequestStore($this->requestStack);
     }
@@ -32,7 +34,7 @@ class AuthorizationRequestStoreTest extends UnitTestCase
     {
         $this->requestStack->shouldReceive('getCurrentRequest')->andReturnNull();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->store->getEntries();
     }
@@ -41,7 +43,7 @@ class AuthorizationRequestStoreTest extends UnitTestCase
     {
         $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($this->request);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->store->getEntries();
     }
@@ -49,7 +51,7 @@ class AuthorizationRequestStoreTest extends UnitTestCase
     public function testGetEntries(): void
     {
         $entries = [
-            \Mockery::mock(Entry::class),
+            Mockery::mock(Entry::class),
         ];
 
         $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($this->request);
@@ -61,7 +63,7 @@ class AuthorizationRequestStoreTest extends UnitTestCase
     public function testStoreEntriesReturnsFalseWhenThereIsNoRequest(): void
     {
         $entries = [
-            \Mockery::mock(Entry::class),
+            Mockery::mock(Entry::class),
         ];
 
         $this->requestStack->shouldReceive('getCurrentRequest')->andReturnNull();
@@ -72,7 +74,7 @@ class AuthorizationRequestStoreTest extends UnitTestCase
     public function testStoreEntriesSetsRequestAttributeAndReturnsTrue(): void
     {
         $entries = [
-            \Mockery::mock(Entry::class),
+            Mockery::mock(Entry::class),
         ];
 
         $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($this->request);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload\Result;
 
+use Mockery;
 use Shared\Domain\Upload\Result\UploadCompletedResult;
 use Shared\Domain\Upload\UploadRequest;
 use Shared\Service\Uploader\UploadGroupId;
@@ -18,7 +19,7 @@ class UploadCompletedResultTest extends UnitTestCase
 
     public function testCreate(): void
     {
-        $uploadedFile = \Mockery::mock(UploadedFile::class);
+        $uploadedFile = Mockery::mock(UploadedFile::class);
         $uploadedFile->expects('getClientOriginalName')->andReturn('foo.bar');
         $uploadedFile->expects('getClientMimeType')->andReturn('foo/bar');
 

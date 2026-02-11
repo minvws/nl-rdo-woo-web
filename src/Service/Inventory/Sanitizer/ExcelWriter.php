@@ -8,6 +8,9 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+use function implode;
+use function is_array;
+
 class ExcelWriter implements InventoryWriterInterface
 {
     private string $filename;

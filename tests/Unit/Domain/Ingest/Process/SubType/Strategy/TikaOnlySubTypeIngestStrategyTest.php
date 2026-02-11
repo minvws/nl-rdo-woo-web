@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Process\SubType\Strategy;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\IngestDispatcher;
@@ -21,18 +22,18 @@ final class TikaOnlySubTypeIngestStrategyTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->ingestDispatcher = Mockery::mock(IngestDispatcher::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
         $this->strategy = new TikaOnlySubTypeIngestStrategy($this->ingestDispatcher, $this->logger);
     }
 
     public function testHandle(): void
     {
-        $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->andReturn($id = \Mockery::mock(Uuid::class));
+        $document = Mockery::mock(Document::class);
+        $document->shouldReceive('getId')->andReturn($id = Mockery::mock(Uuid::class));
 
-        $options = \Mockery::mock(IngestProcessOptions::class);
+        $options = Mockery::mock(IngestProcessOptions::class);
         $options->shouldReceive('forceRefresh')->andReturn($forceRefresh = true);
 
         $this->logger->shouldReceive('info')->once()->with('Dispatching tika-only ingest for entity', [
@@ -47,7 +48,7 @@ final class TikaOnlySubTypeIngestStrategyTest extends UnitTestCase
 
     public function testCanHandleReturnsTrueWhenFileIsUploaded(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo->isUploaded')->andReturnTrue();
 
         $this->assertTrue($this->strategy->canHandle($document));
@@ -55,7 +56,7 @@ final class TikaOnlySubTypeIngestStrategyTest extends UnitTestCase
 
     public function testCanHandleReturnsFalseWhenFileIsNotUploaded(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo->isUploaded')->andReturnFalse();
 
         $this->assertFalse($this->strategy->canHandle($document));

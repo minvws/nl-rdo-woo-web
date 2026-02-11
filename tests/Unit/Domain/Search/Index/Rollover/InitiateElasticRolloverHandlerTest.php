@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Rollover;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Ingest\IngestDispatcher;
 use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
@@ -22,9 +24,9 @@ class InitiateElasticRolloverHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->elasticIndexManager = \Mockery::mock(ElasticIndexManager::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
+        $this->elasticIndexManager = Mockery::mock(ElasticIndexManager::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->ingestDispatcher = Mockery::mock(IngestDispatcher::class);
 
         $this->handler = new InitiateElasticRolloverHandler(
             $this->elasticIndexManager,
@@ -40,7 +42,7 @@ class InitiateElasticRolloverHandlerTest extends UnitTestCase
             'foo',
         );
 
-        $this->elasticIndexManager->expects('create')->andThrow(new \RuntimeException('oops'));
+        $this->elasticIndexManager->expects('create')->andThrow(new RuntimeException('oops'));
 
         $this->logger->expects('error');
 

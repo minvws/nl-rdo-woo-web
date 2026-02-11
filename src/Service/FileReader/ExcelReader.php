@@ -4,19 +4,27 @@ declare(strict_types=1);
 
 namespace Shared\Service\FileReader;
 
+use DateTimeImmutable;
+use Exception;
+use Generator;
+use IteratorAggregate;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Shared\Exception\FileReaderException;
 use Shared\Service\Inventory\InventoryDataHelper;
 use Webmozart\Assert\Assert;
 
+use function intval;
+use function strval;
+use function trim;
+
 /**
  * Wraps Worksheet to provide some helper methods to make it easier to use.
  * Also skips empty rows silently.
  *
- * @template-implements \IteratorAggregate<Row>
+ * @template-implements IteratorAggregate<Row>
  */
-class ExcelReader implements \IteratorAggregate, FileReaderInterface
+class ExcelReader implements IteratorAggregate, FileReaderInterface
 {
     public function __construct(
         private readonly Worksheet $worksheet,
@@ -25,9 +33,9 @@ class ExcelReader implements \IteratorAggregate, FileReaderInterface
     }
 
     /**
-     * @return \Generator<Row>
+     * @return Generator<Row>
      */
-    public function getIterator(): \Generator
+    public function getIterator(): Generator
     {
         foreach ($this->worksheet->getRowIterator(2) as $row) {
             if ($this->isEmptyRow($row)) {
@@ -63,18 +71,18 @@ class ExcelReader implements \IteratorAggregate, FileReaderInterface
         return intval($this->getCell($rowIndex, $columnName));
     }
 
-    public function getDateTime(int $rowIndex, string $columnName): \DateTimeImmutable
+    public function getDateTime(int $rowIndex, string $columnName): DateTimeImmutable
     {
         $value = $this->getString($rowIndex, $columnName);
 
         try {
             return InventoryDataHelper::toDateTimeImmutable($value);
-        } catch (\Exception) {
+        } catch (Exception) {
             throw FileReaderException::forCannotParseDate($value);
         }
     }
 
-    public function getOptionalDateTime(int $rowIndex, string $columnName): ?\DateTimeImmutable
+    public function getOptionalDateTime(int $rowIndex, string $columnName): ?DateTimeImmutable
     {
         $value = $this->getOptionalString($rowIndex, $columnName);
         if ($value === null || $value === '') {
@@ -83,7 +91,7 @@ class ExcelReader implements \IteratorAggregate, FileReaderInterface
 
         try {
             return InventoryDataHelper::toDateTimeImmutable($value);
-        } catch (\Exception) {
+        } catch (Exception) {
             throw FileReaderException::forCannotParseDate($value);
         }
     }

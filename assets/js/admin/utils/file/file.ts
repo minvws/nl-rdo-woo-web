@@ -28,7 +28,7 @@ export const MimeTypes: Readonly<Record<string, string[]>> = {
     'application/vnd.oasis.opendocument.spreadsheet',
     'application/vnd.oasis.opendocument.formula',
   ],
-  Text: ['text/plain', 'text/rdf'],
+  Text: ['text/plain', 'text/rtf'],
   Video: ['video/mp4'],
   Word: [
     'application/msword',

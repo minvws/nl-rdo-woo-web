@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\AnnualReport\ViewModel;
 
+use DateTimeImmutable;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\ViewModel\AnnualReportViewFactory;
@@ -22,13 +24,13 @@ final class AnnualReportViewFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->commonDossierViewFactory = \Mockery::mock(CommonDossierPropertiesViewFactory::class);
+        $this->commonDossierViewFactory = Mockery::mock(CommonDossierPropertiesViewFactory::class);
     }
 
     public function testMake(): void
     {
         /** @var Department&MockInterface $expectedMainDepartment */
-        $expectedMainDepartment = \Mockery::mock(Department::class);
+        $expectedMainDepartment = Mockery::mock(Department::class);
 
         $this->commonDossierViewFactory
             ->shouldReceive('make')
@@ -39,16 +41,16 @@ final class AnnualReportViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new \DateTimeImmutable(),
+                publicationDate: $publicationDate = new DateTimeImmutable(),
                 mainDepartment: $expectedMainDepartment = $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::ANNUAL_REPORT,
-                subject: $expectedSubject = \Mockery::mock(Subject::class),
+                subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
         /** @var AnnualReport&MockInterface $dossier */
-        $dossier = \Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new \DateTimeImmutable('2023-05-27 10:56:03'));
+        $dossier = Mockery::mock(AnnualReport::class);
+        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable('2023-05-27 10:56:03'));
 
         $result = (new AnnualReportViewFactory($this->commonDossierViewFactory))->make($dossier);
 

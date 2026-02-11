@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker\Pdf\Tools\Pdftoppm;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmService;
 use Shared\Tests\Unit\UnitTestCase;
@@ -17,7 +18,7 @@ final class PdftoppmServiceTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->process = \Mockery::mock(Process::class);
+        $this->process = Mockery::mock(Process::class);
     }
 
     public function testCreateThumbnail(): void
@@ -96,7 +97,7 @@ final class PdftoppmServiceTest extends UnitTestCase
     private function getService(): PdftoppmService&MockInterface
     {
         /** @var PdftoppmService&MockInterface $instance */
-        $instance = \Mockery::mock(PdftoppmService::class)
+        $instance = Mockery::mock(PdftoppmService::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 

@@ -7,6 +7,11 @@ namespace Shared\Domain\Publication\Attachment\Enum;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function array_filter;
+use function array_values;
+use function in_array;
+use function strtolower;
+
 /**
  * @phpstan-type AttachmentTypeArray array{
  *   type: string,

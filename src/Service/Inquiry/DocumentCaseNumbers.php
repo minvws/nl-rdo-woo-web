@@ -7,6 +7,8 @@ namespace Shared\Service\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Symfony\Component\Uid\Uuid;
 
+use function count;
+
 class DocumentCaseNumbers
 {
     public function __construct(

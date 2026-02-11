@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Service\Storage\Streams;
 
+use function sprintf;
+use function stream_wrapper_register;
+use function stream_wrapper_unregister;
+
 /**
  * @see https://www.php.net/manual/en/class.streamwrapper.php
  */

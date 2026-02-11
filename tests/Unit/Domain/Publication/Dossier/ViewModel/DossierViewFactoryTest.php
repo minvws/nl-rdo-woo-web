@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use DateTimeImmutable;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -19,7 +21,7 @@ final class DossierViewFactoryTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(DossierRepository::class);
+        $this->repository = Mockery::mock(DossierRepository::class);
 
         $this->factory = new DossierViewFactory(
             $this->repository,
@@ -30,19 +32,19 @@ final class DossierViewFactoryTest extends UnitTestCase
 
     public function testGetRecentDossiers(): void
     {
-        $dossierA = \Mockery::mock(AbstractDossier::class);
+        $dossierA = Mockery::mock(AbstractDossier::class);
         $dossierA->shouldReceive('getDossierNr')->andReturn('foo-123');
         $dossierA->shouldReceive('getDocumentPrefix')->andReturn('BAR');
         $dossierA->shouldReceive('getTitle')->andReturn('foo bar baz');
         $dossierA->shouldReceive('getType')->andReturn($typeA = DossierType::COVENANT);
-        $dossierA->shouldReceive('getPublicationDate')->andReturn(new \DateTimeImmutable());
+        $dossierA->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
 
-        $dossierB = \Mockery::mock(AbstractDossier::class);
+        $dossierB = Mockery::mock(AbstractDossier::class);
         $dossierB->shouldReceive('getDossierNr')->andReturn('foo-123');
         $dossierB->shouldReceive('getDocumentPrefix')->andReturn('BAR');
         $dossierB->shouldReceive('getTitle')->andReturn('foo bar baz');
         $dossierB->shouldReceive('getType')->andReturn($typeB = DossierType::WOO_DECISION);
-        $dossierB->shouldReceive('getPublicationDate')->andReturn(new \DateTimeImmutable());
+        $dossierB->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
 
         $this->repository->expects('getRecentDossiers')->with(5, null)->andReturn([
             $dossierA,
@@ -58,21 +60,21 @@ final class DossierViewFactoryTest extends UnitTestCase
 
     public function testGetRecentDossiersForDepartment(): void
     {
-        $dossierA = \Mockery::mock(AbstractDossier::class);
+        $dossierA = Mockery::mock(AbstractDossier::class);
         $dossierA->shouldReceive('getDossierNr')->andReturn('foo-123');
         $dossierA->shouldReceive('getDocumentPrefix')->andReturn('BAR');
         $dossierA->shouldReceive('getTitle')->andReturn('foo bar baz');
         $dossierA->shouldReceive('getType')->andReturn($typeA = DossierType::COVENANT);
-        $dossierA->shouldReceive('getPublicationDate')->andReturn(new \DateTimeImmutable());
+        $dossierA->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
 
-        $dossierB = \Mockery::mock(AbstractDossier::class);
+        $dossierB = Mockery::mock(AbstractDossier::class);
         $dossierB->shouldReceive('getDossierNr')->andReturn('foo-123');
         $dossierB->shouldReceive('getDocumentPrefix')->andReturn('BAR');
         $dossierB->shouldReceive('getTitle')->andReturn('foo bar baz');
         $dossierB->shouldReceive('getType')->andReturn($typeB = DossierType::WOO_DECISION);
-        $dossierB->shouldReceive('getPublicationDate')->andReturn(new \DateTimeImmutable());
+        $dossierB->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
 
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
 
         $this->repository->expects('getRecentDossiers')->with(5, $department)->andReturn([
             $dossierA,

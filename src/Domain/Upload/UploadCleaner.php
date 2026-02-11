@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Upload;
 
 use Carbon\CarbonImmutable;
+use Exception;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\StorageAttributes;
 
@@ -36,7 +37,7 @@ readonly class UploadCleaner
         foreach ($uploads as $upload) {
             try {
                 $this->uploadService->deleteUploadedFile($upload);
-            } catch (\Exception) {
+            } catch (Exception) {
                 // Ignore, already deleted or never stored
             }
 

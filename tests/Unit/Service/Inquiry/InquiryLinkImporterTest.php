@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inquiry;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
@@ -33,9 +34,9 @@ class InquiryLinkImporterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->inquiryService = \Mockery::mock(InquiryService::class);
-        $this->documentRepository = \Mockery::mock(DocumentRepository::class);
-        $this->parser = \Mockery::mock(InquiryLinkImportParser::class);
+        $this->inquiryService = Mockery::mock(InquiryService::class);
+        $this->documentRepository = Mockery::mock(DocumentRepository::class);
+        $this->parser = Mockery::mock(InquiryLinkImportParser::class);
 
         $this->importer = new InquiryLinkImporter(
             $this->inquiryService,
@@ -48,12 +49,12 @@ class InquiryLinkImporterTest extends UnitTestCase
 
     public function testParseFailsWithAGenericExceptionIfPrefixDoesNotMatchTheActiveOrganisation(): void
     {
-        $upload = \Mockery::mock(UploadedFile::class);
+        $upload = Mockery::mock(UploadedFile::class);
 
-        $organisationA = \Mockery::mock(Organisation::class);
-        $organisationB = \Mockery::mock(Organisation::class);
+        $organisationA = Mockery::mock(Organisation::class);
+        $organisationB = Mockery::mock(Organisation::class);
 
-        $prefix = \Mockery::mock(DocumentPrefix::class);
+        $prefix = Mockery::mock(DocumentPrefix::class);
         $prefix->shouldReceive('getOrganisation')->andReturn($organisationB);
 
         $result = $this->importer->import($organisationA, $upload, $prefix);
@@ -64,10 +65,10 @@ class InquiryLinkImporterTest extends UnitTestCase
 
     public function testParseSuccessful(): void
     {
-        $upload = \Mockery::mock(UploadedFile::class);
-        $organisation = \Mockery::mock(Organisation::class);
+        $upload = Mockery::mock(UploadedFile::class);
+        $organisation = Mockery::mock(Organisation::class);
 
-        $prefix = \Mockery::mock(DocumentPrefix::class);
+        $prefix = Mockery::mock(DocumentPrefix::class);
         $prefix->shouldReceive('getOrganisation')->andReturn($organisation);
 
         $documentNrA = 'foo-xx-123';
@@ -95,7 +96,7 @@ class InquiryLinkImporterTest extends UnitTestCase
                 new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), CaseNumbers::empty())
             );
 
-        $this->inquiryService->expects('applyChangesetAsync')->with(\Mockery::on(
+        $this->inquiryService->expects('applyChangesetAsync')->with(Mockery::on(
             function (InquiryChangeset $changeset): bool {
                 $this->assertMatchesJsonSnapshot($changeset->getChanges());
 
@@ -111,11 +112,11 @@ class InquiryLinkImporterTest extends UnitTestCase
 
     public function testParseReportsInvalidCaseNumber(): void
     {
-        $upload = \Mockery::mock(UploadedFile::class);
+        $upload = Mockery::mock(UploadedFile::class);
 
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
 
-        $prefix = \Mockery::mock(DocumentPrefix::class);
+        $prefix = Mockery::mock(DocumentPrefix::class);
         $prefix->shouldReceive('getOrganisation')->andReturn($organisation);
 
         $documentNrA = 'foo-xx-123';
@@ -143,7 +144,7 @@ class InquiryLinkImporterTest extends UnitTestCase
                 new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), CaseNumbers::empty())
             );
 
-        $this->inquiryService->expects('applyChangesetAsync')->with(\Mockery::on(
+        $this->inquiryService->expects('applyChangesetAsync')->with(Mockery::on(
             function (InquiryChangeset $changeset): bool {
                 $this->assertMatchesJsonSnapshot($changeset->getChanges());
 

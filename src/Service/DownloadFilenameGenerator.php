@@ -8,6 +8,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Webmozart\Assert\Assert;
 
+use function sprintf;
+
 readonly class DownloadFilenameGenerator
 {
     public function getFileName(EntityWithFileInfo $entity): string

@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Service\Inventory\Sanitizer;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
@@ -28,13 +29,13 @@ class InventorySanitizerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->writer = \Mockery::mock(InventoryWriterInterface::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
+        $this->writer = Mockery::mock(InventoryWriterInterface::class);
 
-        $this->dataProvider = \Mockery::mock(InventoryDataProviderInterface::class);
+        $this->dataProvider = Mockery::mock(InventoryDataProviderInterface::class);
 
-        $this->documentMapper = \Mockery::mock(InventoryDocumentMapper::class);
+        $this->documentMapper = Mockery::mock(InventoryDocumentMapper::class);
 
         $this->sanitizer = new InventorySanitizer(
             $this->entityManager,
@@ -48,7 +49,7 @@ class InventorySanitizerTest extends UnitTestCase
 
     public function testFileIsWrittenAndInventoryPersisted(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $this->documentMapper
             ->expects('map')
             ->with($document)
@@ -60,8 +61,8 @@ class InventorySanitizerTest extends UnitTestCase
         $this->writer->expects('close');
         $this->writer->expects('getFileExtension')->twice()->andReturn('csv');
 
-        $inventory = \Mockery::mock(Inventory::class);
-        $inventory->expects('setFileInfo')->with(\Mockery::on(
+        $inventory = Mockery::mock(Inventory::class);
+        $inventory->expects('setFileInfo')->with(Mockery::on(
             static function (FileInfo $fileInfo) {
                 self::assertEquals('foo-bar.csv', $fileInfo->getName());
 

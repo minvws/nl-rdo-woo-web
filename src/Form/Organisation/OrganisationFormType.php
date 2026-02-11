@@ -21,16 +21,13 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
+use function in_array;
+
 /**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- *
  * @template-extends AbstractType<OrganisationFormType>
  */
 class OrganisationFormType extends AbstractType
 {
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         /** @var Organisation|null $organisation */
@@ -94,8 +91,7 @@ class OrganisationFormType extends AbstractType
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'global.save',
-            ])
-        ;
+            ]);
     }
 
     /**

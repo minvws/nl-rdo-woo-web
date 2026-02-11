@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Workflow;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
@@ -38,21 +39,21 @@ class DossierWorkflowManagerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
-        $this->inquiryService = \Mockery::mock(InquiryService::class);
-        $this->historyService = \Mockery::mock(HistoryService::class);
+        $this->inquiryService = Mockery::mock(InquiryService::class);
+        $this->historyService = Mockery::mock(HistoryService::class);
 
-        $this->dossierTypeManager = \Mockery::mock(DossierTypeManager::class);
+        $this->dossierTypeManager = Mockery::mock(DossierTypeManager::class);
 
-        $this->dossierService = \Mockery::mock(DossierService::class);
+        $this->dossierService = Mockery::mock(DossierService::class);
 
-        $this->dossier = \Mockery::mock(WooDecision::class);
+        $this->dossier = Mockery::mock(WooDecision::class);
         $this->dossier->shouldReceive('getId')->andReturn(Uuid::v6());
 
-        $this->workflow = \Mockery::mock(WorkflowInterface::class);
+        $this->workflow = Mockery::mock(WorkflowInterface::class);
 
-        $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
+        $this->batchDownloadService = Mockery::mock(BatchDownloadService::class);
 
         $this->manager = new DossierWorkflowManager(
             $this->logger,
@@ -93,7 +94,7 @@ class DossierWorkflowManagerTest extends UnitTestCase
             DossierWorkflowException::forTransitionFailed(
                 $this->dossier,
                 DossierStatusTransition::PUBLISH,
-                \Mockery::mock(TransitionException::class),
+                Mockery::mock(TransitionException::class),
             )
         );
         $this->manager->applyTransition($this->dossier, DossierStatusTransition::PUBLISH);
@@ -101,7 +102,7 @@ class DossierWorkflowManagerTest extends UnitTestCase
 
     public function testApplyTransitionUpdatesStatus(): void
     {
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $inquiry = Mockery::mock(Inquiry::class);
 
         $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT, DossierStatus::PUBLISHED);
         $this->dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([$inquiry]));
@@ -113,7 +114,7 @@ class DossierWorkflowManagerTest extends UnitTestCase
         $this->logger->shouldReceive('info');
 
         $this->dossierService->expects('handleEntityUpdate')->with($this->dossier);
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+        $this->batchDownloadService->expects('refresh')->with(Mockery::on(
             fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $this->dossier
         ));
 

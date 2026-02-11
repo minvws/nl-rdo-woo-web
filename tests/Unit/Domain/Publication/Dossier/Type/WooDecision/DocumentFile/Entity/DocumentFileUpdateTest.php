@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate;
@@ -16,9 +17,9 @@ class DocumentFileUpdateTest extends UnitTestCase
 {
     public function testGetters(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
         $document->shouldReceive('isUploaded')->andReturnFalse();
 
@@ -32,9 +33,9 @@ class DocumentFileUpdateTest extends UnitTestCase
 
     public function testSetAndGetStatus(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
         $document->shouldReceive('isUploaded')->andReturnFalse();
 
@@ -46,9 +47,9 @@ class DocumentFileUpdateTest extends UnitTestCase
 
     public function testSetAndGetFileInfo(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
         $document->shouldReceive('isUploaded')->andReturnFalse();
 

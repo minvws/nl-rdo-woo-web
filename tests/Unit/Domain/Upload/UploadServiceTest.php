@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Upload;
 
 use League\Flysystem\FilesystemOperator;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Shared\Domain\Upload\Event\UploadCompletedEvent;
@@ -22,7 +23,6 @@ use Shared\Domain\Upload\UploadStatus;
 use Shared\Service\Security\User;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Unit\UnitTestCase;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\Uid\Uuid;
@@ -32,60 +32,37 @@ class UploadServiceTest extends UnitTestCase
     private UploadHandlerInterface&MockInterface $uploadHandler;
     private EventDispatcherInterface&MockInterface $eventDispatcher;
     private UploadEntityRepository&MockInterface $uploadEntityRepository;
-    private Security&MockInterface $security;
     private FilesystemOperator&MockInterface $workingCopyStorage;
     private UploadService $uploadService;
 
     protected function setUp(): void
     {
-        $this->uploadHandler = \Mockery::mock(UploadHandlerInterface::class);
-        $this->eventDispatcher = \Mockery::mock(EventDispatcherInterface::class);
-        $this->uploadEntityRepository = \Mockery::mock(UploadEntityRepository::class);
-        $this->security = \Mockery::mock(Security::class);
-        $this->workingCopyStorage = \Mockery::mock(FilesystemOperator::class);
+        $this->uploadHandler = Mockery::mock(UploadHandlerInterface::class);
+        $this->eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $this->uploadEntityRepository = Mockery::mock(UploadEntityRepository::class);
+        $this->workingCopyStorage = Mockery::mock(FilesystemOperator::class);
 
         $this->uploadService = new UploadService(
             $this->uploadHandler,
             $this->eventDispatcher,
             $this->uploadEntityRepository,
-            $this->security,
             $this->workingCopyStorage,
         );
     }
 
-    public function testHandleUploadRequestThrowsExceptionForNotGranted(): void
-    {
-        $request = new UploadRequest(
-            2,
-            3,
-            'foo-bar-123',
-            \Mockery::mock(UploadedFile::class),
-            UploadGroupId::WOO_DECISION_DOCUMENTS,
-            new InputBag(),
-        );
-
-        $this->security->expects('getUser')->andReturn(\Mockery::mock(User::class));
-        $this->security->expects('isGranted')->with(UploadService::SECURITY_ATTRIBUTE, $request)->andReturnFalse();
-
-        $this->expectException(UploadException::class);
-        $this->uploadService->handleUploadRequest($request);
-    }
-
     public function testHandleUploadRequestThrowsExceptionForAbortedUpload(): void
     {
-        $this->security->expects('getUser')->andReturn($user = \Mockery::mock(User::class));
-        $this->security->expects('isGranted')->andReturnTrue();
-
+        $user = Mockery::mock(User::class);
         $request = new UploadRequest(
             2,
             3,
             $uploadId = 'foo-bar-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             $groupId = UploadGroupId::WOO_DECISION_DOCUMENTS,
             $params = new InputBag(),
         );
 
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
         $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::ABORTED);
@@ -96,61 +73,57 @@ class UploadServiceTest extends UnitTestCase
             ->andReturn($uploadEntity);
 
         $this->expectException(UploadException::class);
-        $this->uploadService->handleUploadRequest($request);
+        $this->uploadService->handleUploadRequest($request, $user);
     }
 
     public function testHandleUploadRequestWithIncompleteResult(): void
     {
-        $this->security->expects('getUser')->andReturn($user = \Mockery::mock(User::class));
-        $this->security->expects('isGranted')->andReturnTrue();
-
+        $user = Mockery::mock(User::class);
         $request = new UploadRequest(
             2,
             3,
             $uploadId = 'foo-bar-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             $groupId = UploadGroupId::WOO_DECISION_DOCUMENTS,
             $params = new InputBag(),
         );
 
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
         $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::INCOMPLETE);
 
         $this->uploadEntityRepository
-            ->expects('findOrCreate')
-            ->with($uploadId, $groupId, $user, $params)
-            ->andReturn($uploadEntity);
+        ->expects('findOrCreate')
+        ->with($uploadId, $groupId, $user, $params)
+        ->andReturn($uploadEntity);
 
         $this->uploadHandler
-            ->expects('handleUploadRequest')
-            ->with($uploadEntity, $request)
-            ->andReturn($result = new PartialUploadResult($uploadId, 'foo.bar', $groupId));
+        ->expects('handleUpload')
+        ->with($uploadEntity, $request)
+        ->andReturn($result = new PartialUploadResult($uploadId, 'foo.bar', $groupId));
 
         $this->uploadEntityRepository->expects('save')->with($uploadEntity, true);
 
         self::assertSame(
             $result,
-            $this->uploadService->handleUploadRequest($request),
+            $this->uploadService->handleUploadRequest($request, $user),
         );
     }
 
     public function testHandleUploadRequestWithCompleteResult(): void
     {
-        $this->security->expects('getUser')->andReturn($user = \Mockery::mock(User::class));
-        $this->security->expects('isGranted')->andReturnTrue();
-
+        $user = Mockery::mock(User::class);
         $request = new UploadRequest(
             2,
             3,
             $uploadId = 'foo-bar-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             $groupId = UploadGroupId::WOO_DECISION_DOCUMENTS,
             $params = new InputBag(),
         );
 
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
         $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::INCOMPLETE);
@@ -161,7 +134,7 @@ class UploadServiceTest extends UnitTestCase
             ->andReturn($uploadEntity);
 
         $this->uploadHandler
-            ->expects('handleUploadRequest')
+            ->expects('handleUpload')
             ->with($uploadEntity, $request)
             ->andReturn($result = new UploadCompletedResult(
                 uploadId: $uploadId,
@@ -174,7 +147,7 @@ class UploadServiceTest extends UnitTestCase
 
         $uploadEntity->expects('finishUploading')->with($filename, $size);
 
-        $this->eventDispatcher->expects('dispatch')->with(\Mockery::on(
+        $this->eventDispatcher->expects('dispatch')->with(Mockery::on(
             static function (UploadCompletedEvent $event) use ($uploadEntity) {
                 self::assertEquals($uploadEntity, $event->uploadEntity);
 
@@ -186,13 +159,13 @@ class UploadServiceTest extends UnitTestCase
 
         self::assertSame(
             $result,
-            $this->uploadService->handleUploadRequest($request),
+            $this->uploadService->handleUploadRequest($request, $user),
         );
     }
 
     public function testAbortUpload(): void
     {
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->expects('abort');
 
         $this->uploadHandler->expects('deleteUploadedFile')->with($uploadEntity);
@@ -204,7 +177,7 @@ class UploadServiceTest extends UnitTestCase
 
     public function testDeleteUploadedFile(): void
     {
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $this->uploadHandler->expects('deleteUploadedFile')->with($uploadEntity);
 
         $this->uploadService->deleteUploadedFile($uploadEntity);
@@ -212,12 +185,12 @@ class UploadServiceTest extends UnitTestCase
 
     public function testCopyUploadToFilesystemThrowsExceptionWhenUploadIsNotDownloadable(): void
     {
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getUploadId')->andReturn('foo-123');
         $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::ABORTED);
 
-        $targetFilesystem = \Mockery::mock(FilesystemOperator::class);
+        $targetFilesystem = Mockery::mock(FilesystemOperator::class);
 
         $this->expectException(UploadException::class);
 
@@ -226,13 +199,13 @@ class UploadServiceTest extends UnitTestCase
 
     public function testCopyUploadToFilesystemSuccessfully(): void
     {
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getUploadId')->andReturn('foo-123');
         $uploadEntity->shouldReceive('getStatus')->andReturn(UploadStatus::UPLOADED);
 
         $targetFilename = 'foo.bar';
-        $targetFilesystem = \Mockery::mock(FilesystemOperator::class);
+        $targetFilesystem = Mockery::mock(FilesystemOperator::class);
         $limit = 123;
 
         $this->uploadHandler->expects('copyUploadedFileToFilesystem')->with($uploadEntity, $limit, $targetFilesystem, $targetFilename);
@@ -242,11 +215,11 @@ class UploadServiceTest extends UnitTestCase
 
     public function testMoveUploadToStorage(): void
     {
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->expects('markAsStored');
 
         $targetFilename = 'foo.bar';
-        $targetFilesystem = \Mockery::mock(FilesystemOperator::class);
+        $targetFilesystem = Mockery::mock(FilesystemOperator::class);
 
         $this->uploadHandler
             ->expects('moveUploadedFileToStorage')
@@ -259,7 +232,7 @@ class UploadServiceTest extends UnitTestCase
 
     public function testPassValidation(): void
     {
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->expects('passValidation')->andReturn($mimetype = 'application/pdf');
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId = 'foo-123');
 
@@ -267,7 +240,7 @@ class UploadServiceTest extends UnitTestCase
 
         $this->workingCopyStorage->expects('delete')->with($uploadId);
 
-        $this->eventDispatcher->expects('dispatch')->with(\Mockery::on(
+        $this->eventDispatcher->expects('dispatch')->with(Mockery::on(
             static function (UploadValidatedEvent $event) use ($uploadEntity) {
                 self::assertEquals($uploadEntity, $event->uploadEntity);
 
@@ -280,7 +253,7 @@ class UploadServiceTest extends UnitTestCase
 
     public function testFailValidation(): void
     {
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getUploadGroupId')->andReturn(UploadGroupId::WOO_DECISION_DOCUMENTS);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId = 'foo-123');
 

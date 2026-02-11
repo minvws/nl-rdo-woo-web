@@ -9,6 +9,10 @@ use Faker\Provider\Base;
 use Shared\Domain\Publication\Citation;
 use Webmozart\Assert\Assert;
 
+use function array_keys;
+use function array_unique;
+use function array_values;
+
 final class GroundsFakerProvider extends Base
 {
     /**

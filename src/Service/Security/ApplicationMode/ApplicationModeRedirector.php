@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
+use function str_starts_with;
+
 /**
  * This listener will check the application mode and redirect any requests outside the configured mode.
  */
@@ -55,6 +57,11 @@ readonly class ApplicationModeRedirector
         }
 
         $path = $event->getRequest()->getPathInfo();
+
+        if ($this->isSymfonyProfilerRoute($path)) {
+            return true;
+        }
+
         if (str_starts_with($path, '/health')) {
             return true;
         }
@@ -64,5 +71,12 @@ readonly class ApplicationModeRedirector
         }
 
         return false;
+    }
+
+    private function isSymfonyProfilerRoute(string $path): bool
+    {
+        return str_starts_with($path, '/_profiler')
+            || str_starts_with($path, '/_wdt')
+            || str_starts_with($path, '/_fragment');
     }
 }

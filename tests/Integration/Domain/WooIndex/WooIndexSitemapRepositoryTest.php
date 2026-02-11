@@ -10,7 +10,8 @@ use Shared\Domain\WooIndex\WooIndexSitemapRepository;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Story\WooIndexSitemapsStory;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Persistence\Proxy;
+
+use function iterator_to_array;
 
 final class WooIndexSitemapRepositoryTest extends SharedWebTestCase
 {
@@ -30,11 +31,11 @@ final class WooIndexSitemapRepositoryTest extends SharedWebTestCase
     {
         $result = $this->wooIndexSitemapRepository->lastFinished();
 
-        /** @var list<WooIndexSitemap&Proxy<WooIndexSitemap>> $finishedSitemaps */
+        /** @var list<WooIndexSitemap> $finishedSitemaps */
         $finishedSitemaps = WooIndexSitemapsStory::getPool('finishedSitemaps');
 
         $this->assertNotNull($result);
-        $this->assertSame($finishedSitemaps[0]->_real()->getId()->toRfc4122(), $result->getId()->toRfc4122());
+        $this->assertSame($finishedSitemaps[0]->getId()->toRfc4122(), $result->getId()->toRfc4122());
     }
 
     public function testLastFinishedReturnsNullOnNoRecords(): void
@@ -57,33 +58,33 @@ final class WooIndexSitemapRepositoryTest extends SharedWebTestCase
             preserve_keys: false,
         );
 
-        /** @var list<WooIndexSitemap&Proxy<WooIndexSitemap>> $finishedSitemaps */
+        /** @var list<WooIndexSitemap> $finishedSitemaps */
         $finishedSitemaps = WooIndexSitemapsStory::getPool('finishedSitemaps');
 
-        $this->assertNotContains($finishedSitemaps[0]->_real(), $result, 'FinishedSitemap #0 is not returned');
-        $this->assertNotContains($finishedSitemaps[1]->_real(), $result, 'FinishedSitemap #1 is not returned');
-        $this->assertNotContains($finishedSitemaps[2]->_real(), $result, 'FinishedSitemap #2 is not returned');
-        $this->assertContains($finishedSitemaps[3]->_real(), $result, 'FinishedSitemap #3 is returned');
-        $this->assertContains($finishedSitemaps[4]->_real(), $result, 'FinishedSitemap #4 is returned');
-        $this->assertContains($finishedSitemaps[5]->_real(), $result, 'FinishedSitemap #5 is returned');
-        $this->assertContains($finishedSitemaps[6]->_real(), $result, 'FinishedSitemap #6 is returned');
-        $this->assertContains($finishedSitemaps[7]->_real(), $result, 'FinishedSitemap #7 is returned');
-        $this->assertContains($finishedSitemaps[8]->_real(), $result, 'FinishedSitemap #8 is returned');
-        $this->assertContains($finishedSitemaps[9]->_real(), $result, 'FinishedSitemap #9 is returned');
+        $this->assertNotContains($finishedSitemaps[0], $result, 'FinishedSitemap #0 is not returned');
+        $this->assertNotContains($finishedSitemaps[1], $result, 'FinishedSitemap #1 is not returned');
+        $this->assertNotContains($finishedSitemaps[2], $result, 'FinishedSitemap #2 is not returned');
+        $this->assertContains($finishedSitemaps[3], $result, 'FinishedSitemap #3 is returned');
+        $this->assertContains($finishedSitemaps[4], $result, 'FinishedSitemap #4 is returned');
+        $this->assertContains($finishedSitemaps[5], $result, 'FinishedSitemap #5 is returned');
+        $this->assertContains($finishedSitemaps[6], $result, 'FinishedSitemap #6 is returned');
+        $this->assertContains($finishedSitemaps[7], $result, 'FinishedSitemap #7 is returned');
+        $this->assertContains($finishedSitemaps[8], $result, 'FinishedSitemap #8 is returned');
+        $this->assertContains($finishedSitemaps[9], $result, 'FinishedSitemap #9 is returned');
 
-        /** @var list<WooIndexSitemap&Proxy<WooIndexSitemap>> $unfinishedSitemaps */
+        /** @var list<WooIndexSitemap> $unfinishedSitemaps */
         $unfinishedSitemaps = WooIndexSitemapsStory::getPool('unfinishedSitemaps');
 
-        $this->assertNotContains($unfinishedSitemaps[0]->_real(), $result, 'UnfinishedSitemap #0 is not returned');
-        $this->assertNotContains($unfinishedSitemaps[1]->_real(), $result, 'UnfinishedSitemap #1 is not returned');
-        $this->assertNotContains($unfinishedSitemaps[2]->_real(), $result, 'UnfinishedSitemap #2 is not returned');
-        $this->assertNotContains($unfinishedSitemaps[3]->_real(), $result, 'UnfinishedSitemap #3 is returned');
-        $this->assertNotContains($unfinishedSitemaps[4]->_real(), $result, 'UnfinishedSitemap #4 is returned');
-        $this->assertContains($unfinishedSitemaps[5]->_real(), $result, 'UnfinishedSitemap #5 is returned');
-        $this->assertContains($unfinishedSitemaps[6]->_real(), $result, 'UnfinishedSitemap #6 is returned');
-        $this->assertContains($unfinishedSitemaps[7]->_real(), $result, 'UnfinishedSitemap #7 is returned');
-        $this->assertContains($unfinishedSitemaps[8]->_real(), $result, 'UnfinishedSitemap #8 is returned');
-        $this->assertContains($unfinishedSitemaps[9]->_real(), $result, 'UnfinishedSitemap #9 is returned');
+        $this->assertNotContains($unfinishedSitemaps[0], $result, 'UnfinishedSitemap #0 is not returned');
+        $this->assertNotContains($unfinishedSitemaps[1], $result, 'UnfinishedSitemap #1 is not returned');
+        $this->assertNotContains($unfinishedSitemaps[2], $result, 'UnfinishedSitemap #2 is not returned');
+        $this->assertNotContains($unfinishedSitemaps[3], $result, 'UnfinishedSitemap #3 is returned');
+        $this->assertNotContains($unfinishedSitemaps[4], $result, 'UnfinishedSitemap #4 is returned');
+        $this->assertContains($unfinishedSitemaps[5], $result, 'UnfinishedSitemap #5 is returned');
+        $this->assertContains($unfinishedSitemaps[6], $result, 'UnfinishedSitemap #6 is returned');
+        $this->assertContains($unfinishedSitemaps[7], $result, 'UnfinishedSitemap #7 is returned');
+        $this->assertContains($unfinishedSitemaps[8], $result, 'UnfinishedSitemap #8 is returned');
+        $this->assertContains($unfinishedSitemaps[9], $result, 'UnfinishedSitemap #9 is returned');
     }
 
     public function testGetSitemapsForCleanupWithoutAnyRecords(): void

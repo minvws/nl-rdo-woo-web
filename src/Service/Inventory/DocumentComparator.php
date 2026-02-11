@@ -9,6 +9,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentReposito
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inquiry\CaseNumbers;
 
+use function array_diff;
+use function count;
+
 readonly class DocumentComparator
 {
     public function __construct(

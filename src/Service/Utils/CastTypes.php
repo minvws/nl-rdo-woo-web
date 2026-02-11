@@ -4,9 +4,16 @@ declare(strict_types=1);
 
 namespace Shared\Service\Utils;
 
+use DateTimeImmutable;
+use Exception;
+
+use function is_null;
+use function is_string;
+use function trim;
+
 final readonly class CastTypes
 {
-    public static function asImmutableDate(mixed $value, ?string $format = null): ?\DateTimeImmutable
+    public static function asImmutableDate(mixed $value, ?string $format = null): ?DateTimeImmutable
     {
         if (! is_string($value)) {
             return null;
@@ -20,17 +27,17 @@ final readonly class CastTypes
 
         try {
             if (is_null($format)) {
-                return new \DateTimeImmutable($value);
+                return new DateTimeImmutable($value);
             }
 
-            $date = \DateTimeImmutable::createFromFormat($format, $value);
+            $date = DateTimeImmutable::createFromFormat($format, $value);
 
             if ($date === false) {
                 return null;
             }
 
             return $date;
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }

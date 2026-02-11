@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tesseract;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Content\Extractor\Tesseract\TesseractService;
@@ -20,8 +21,8 @@ final class TesseractServiceTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->localFilesystem = \Mockery::mock(LocalFilesystem::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->localFilesystem = Mockery::mock(LocalFilesystem::class);
     }
 
     public function testExtract(): void
@@ -172,7 +173,7 @@ final class TesseractServiceTest extends UnitTestCase
     private function getTesseract(): TesseractService&MockInterface
     {
         /** @var TesseractService&MockInterface $tesseract */
-        $tesseract = \Mockery::mock(TesseractService::class, [$this->logger, $this->localFilesystem])
+        $tesseract = Mockery::mock(TesseractService::class, [$this->logger, $this->localFilesystem])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -182,7 +183,7 @@ final class TesseractServiceTest extends UnitTestCase
     private function getProcess(): Process&MockInterface
     {
         /** @var Process&MockInterface $process */
-        $process = \Mockery::mock(Process::class);
+        $process = Mockery::mock(Process::class);
         $process->shouldReceive('setTimeout')->with(120);
         $process->shouldReceive('run');
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex;
 
+use function sprintf;
+
 readonly class WooIndexNamer
 {
     public function getStorageSubpath(WooIndexSitemap $wooIndexSitemap): string

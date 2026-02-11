@@ -8,6 +8,7 @@ use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\UserLoginLogEvent;
 use MinVWS\AuditLogger\Events\Logging\UserLoginTwoFactorFailedEvent;
 use MinVWS\AuditLogger\Loggers\LoggerInterface as AuditLoggerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvent;
 use Shared\Service\Security\User;
@@ -24,7 +25,7 @@ class TwoFactorAuditLoggerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->internalAuditLogger = \Mockery::mock(AuditLoggerInterface::class);
+        $this->internalAuditLogger = Mockery::mock(AuditLoggerInterface::class);
         $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
         $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
 
@@ -35,13 +36,13 @@ class TwoFactorAuditLoggerTest extends UnitTestCase
 
     public function testOnSuccessLogsMessage(): void
     {
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->shouldReceive('getName')->andReturn('Foo Bar');
         $user->shouldReceive('getUserIdentifier')->andReturn('foo-123');
         $user->shouldReceive('getRoles')->andReturn(['FOO', 'BAR']);
 
-        $request = \Mockery::mock(Request::class);
-        $token = \Mockery::mock(TokenInterface::class);
+        $request = Mockery::mock(Request::class);
+        $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')->andReturn($user);
 
         $event = new TwoFactorAuthenticationEvent(
@@ -49,7 +50,7 @@ class TwoFactorAuditLoggerTest extends UnitTestCase
             $token,
         );
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             function (UserLoginLogEvent $event) use ($user): bool {
                 $this->assertEquals($user, $event->getActor());
 
@@ -62,9 +63,9 @@ class TwoFactorAuditLoggerTest extends UnitTestCase
 
     public function testOnFailureLogsMessage(): void
     {
-        $user = \Mockery::mock(User::class);
-        $request = \Mockery::mock(Request::class);
-        $token = \Mockery::mock(TokenInterface::class);
+        $user = Mockery::mock(User::class);
+        $request = Mockery::mock(Request::class);
+        $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')->andReturn($user);
 
         $event = new TwoFactorAuthenticationEvent(
@@ -72,7 +73,7 @@ class TwoFactorAuditLoggerTest extends UnitTestCase
             $token,
         );
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             function (UserLoginTwoFactorFailedEvent $event) use ($user): bool {
                 $this->assertEquals($user, $event->getActor());
 

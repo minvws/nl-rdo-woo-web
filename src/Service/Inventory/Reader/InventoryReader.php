@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory\Reader;
 
+use Exception;
+use Generator;
+use InvalidArgumentException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\SourceType;
 use Shared\Exception\InventoryReaderException;
@@ -15,9 +18,14 @@ use Shared\Service\Inventory\DocumentMetadata;
 use Shared\Service\Inventory\InventoryDataHelper;
 use Shared\Service\Inventory\MetadataField;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function count;
+use function intval;
+use function is_string;
+use function mb_strlen;
+use function preg_match;
+use function str_starts_with;
+use function strlen;
+
 class InventoryReader implements InventoryReaderInterface
 {
     private const int MAX_LINK_LENGTH = 2048;
@@ -42,7 +50,7 @@ class InventoryReader implements InventoryReaderInterface
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function open(string $filepath): void
     {
@@ -50,9 +58,9 @@ class InventoryReader implements InventoryReaderInterface
     }
 
     /**
-     * @return \Generator<InventoryReadItem>
+     * @return Generator<InventoryReadItem>
      */
-    public function getDocumentMetadataGenerator(WooDecision $dossier): \Generator
+    public function getDocumentMetadataGenerator(WooDecision $dossier): Generator
     {
         foreach ($this->reader as $rowIdx => $row) {
             unset($row);
@@ -61,7 +69,7 @@ class InventoryReader implements InventoryReaderInterface
             $exception = null;
             try {
                 $documentMetadata = $this->mapRow($rowIdx);
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 // Exception occurred, but we still continue with the next row to discover and report any other errors
                 // To not break the generator yield instead of throwing the exception
                 $exception = InventoryReaderException::forRowProcessingException($rowIdx, $exception);
@@ -74,7 +82,7 @@ class InventoryReader implements InventoryReaderInterface
     /**
      * Map a single row of the spreadsheet to DocumentMetadata VO.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function mapRow(int $rowIdx): DocumentMetadata
     {
@@ -119,7 +127,7 @@ class InventoryReader implements InventoryReaderInterface
         $links = InventoryDataHelper::separateValues($this->reader->getOptionalString($rowIdx, MetadataField::LINK->value), '|');
 
         foreach ($links as $link) {
-            if ($link && \strlen($link) > self::MAX_LINK_LENGTH) {
+            if ($link && strlen($link) > self::MAX_LINK_LENGTH) {
                 throw InventoryReaderException::forLinkTooLong($link, $rowIdx);
             }
         }
@@ -179,7 +187,7 @@ class InventoryReader implements InventoryReaderInterface
     private function getFilename(int $rowIdx): string
     {
         $filename = $this->reader->getString($rowIdx, MetadataField::DOCUMENT->value);
-        if (\strlen($filename) > self::MAX_FILENAME_LENGTH) {
+        if (strlen($filename) > self::MAX_FILENAME_LENGTH) {
             throw InventoryReaderException::forFileTooLong($filename, $rowIdx);
         }
 
@@ -191,7 +199,7 @@ class InventoryReader implements InventoryReaderInterface
         $caseNumbersInput = $this->reader->getOptionalString($rowIdx, MetadataField::CASENR->value);
         try {
             $caseNumbers = CaseNumbers::fromCommaSeparatedString($caseNumbersInput);
-        } catch (\InvalidArgumentException) {
+        } catch (InvalidArgumentException) {
             throw InventoryReaderException::forCaseNumbersInvalid($caseNumbersInput ?? '', $rowIdx);
         }
 

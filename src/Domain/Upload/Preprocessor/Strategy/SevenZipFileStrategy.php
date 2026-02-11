@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Upload\Preprocessor\Strategy;
 
+use Generator;
 use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
 use Shared\Domain\Upload\Extractor\Extractor;
 use Shared\Domain\Upload\Preprocessor\FilePreprocessorStrategyInterface;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\LocalFilesystem;
 use Symfony\Component\Mime\MimeTypesInterface;
+
+use function in_array;
 
 readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface
 {
@@ -32,9 +35,9 @@ readonly class SevenZipFileStrategy implements FilePreprocessorStrategyInterface
     }
 
     /**
-     * @return \Generator<array-key,UploadedFile>
+     * @return Generator<array-key,UploadedFile>
      */
-    public function process(UploadedFile $file): \Generator
+    public function process(UploadedFile $file): Generator
     {
         foreach ($this->sevenZipExtractor->getFiles($file) as $extractedFile) {
             if ($this->localFilesystem->isSymlink($extractedFile->getPathname())) {

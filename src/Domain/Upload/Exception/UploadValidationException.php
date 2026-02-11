@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Upload\Exception;
 
+use RuntimeException;
 use Shared\Domain\Upload\FileType\FileType;
 use Shared\Domain\Upload\UploadEntity;
 
-class UploadValidationException extends \RuntimeException
+use function sprintf;
+
+class UploadValidationException extends RuntimeException
 {
     public static function forInvalidMimetype(UploadEntity $uploadEntity, string $mimetype): self
     {

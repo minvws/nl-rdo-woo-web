@@ -6,6 +6,8 @@ namespace Shared\Tests\Unit\Domain\Publication\Dossier;
 
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use DateTimeImmutable;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\DossierStatus;
@@ -29,7 +31,7 @@ final class AbstractDossierTest extends TestCase
         $covenant = new Covenant();
         self::assertNull($covenant->getSubject());
 
-        $covenant->setSubject($subject = \Mockery::mock(Subject::class));
+        $covenant->setSubject($subject = Mockery::mock(Subject::class));
 
         self::assertEquals($subject, $covenant->getSubject());
     }
@@ -49,7 +51,7 @@ final class AbstractDossierTest extends TestCase
         $covenant = new Covenant();
         self::assertCount(0, $covenant->getDepartments());
 
-        $covenant->addDepartment($department = \Mockery::mock(Department::class));
+        $covenant->addDepartment($department = Mockery::mock(Department::class));
         self::assertCount(1, $covenant->getDepartments());
 
         $covenant->removeDepartment($department);
@@ -59,7 +61,7 @@ final class AbstractDossierTest extends TestCase
     public function testHasFuturePublicationDateReturnsTrueForToday(): void
     {
         $covenant = new Covenant();
-        $covenant->setPublicationDate(new \DateTimeImmutable());
+        $covenant->setPublicationDate(new DateTimeImmutable());
 
         self::assertTrue($covenant->hasFuturePublicationDate());
     }
@@ -67,7 +69,7 @@ final class AbstractDossierTest extends TestCase
     public function testHasFuturePublicationDateReturnsFalseForYesterday(): void
     {
         $covenant = new Covenant();
-        $covenant->setPublicationDate(new \DateTimeImmutable('-1 day'));
+        $covenant->setPublicationDate(new DateTimeImmutable('-1 day'));
 
         self::assertFalse($covenant->hasFuturePublicationDate());
     }
@@ -75,7 +77,7 @@ final class AbstractDossierTest extends TestCase
     public function testHasFuturePublicationDateReturnsTrueForTomorrow(): void
     {
         $covenant = new Covenant();
-        $covenant->setPublicationDate(new \DateTimeImmutable('+1 day'));
+        $covenant->setPublicationDate(new DateTimeImmutable('+1 day'));
 
         self::assertTrue($covenant->hasFuturePublicationDate());
     }

@@ -6,19 +6,26 @@ namespace Shared\Service\Storage;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Ingest\Content\Event\EntityFileUpdateEvent;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use SplFileInfo;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Webmozart\Assert\Assert;
+
+use function basename;
+use function hash_file;
+use function is_readable;
+use function sprintf;
+use function str_ends_with;
 
 /**
  * This class is responsible for storing and retrieving files attached to entities using FileInfo. See StorageService
  * for more information.
  *
  * @SuppressWarnings("TooManyPublicMethods")
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 class EntityStorageService extends StorageService
 {
@@ -44,7 +51,7 @@ class EntityStorageService extends StorageService
     /**
      * Store a file in the storage adapter.
      */
-    public function store(\SplFileInfo $localFile, string $remotePath): bool
+    public function store(SplFileInfo $localFile, string $remotePath): bool
     {
         return $this->doStore($localFile, $remotePath);
     }
@@ -59,7 +66,7 @@ class EntityStorageService extends StorageService
         return $this->remoteFilesystem->readStream($remotePath);
     }
 
-    public function storeEntity(\SplFileInfo $localFile, EntityWithFileInfo $entity, bool $flush = true): bool
+    public function storeEntity(SplFileInfo $localFile, EntityWithFileInfo $entity, bool $flush = true): bool
     {
         if ($entity->getFileInfo()->getHash() !== null) {
             $this->messageBus->dispatch(
@@ -101,12 +108,12 @@ class EntityStorageService extends StorageService
     public function setHash(EntityWithFileInfo $entity, string $path, bool $flush = true): void
     {
         if (! is_readable($path)) {
-            throw new \RuntimeException('Cannot read file for hash generation: ' . $path);
+            throw new RuntimeException('Cannot read file for hash generation: ' . $path);
         }
 
         $hash = hash_file('sha256', $path);
         if ($hash === false) {
-            throw new \RuntimeException('Cannot generate hash for file: ' . $path);
+            throw new RuntimeException('Cannot generate hash for file: ' . $path);
         }
 
         $fileInfo = $entity->getFileInfo();

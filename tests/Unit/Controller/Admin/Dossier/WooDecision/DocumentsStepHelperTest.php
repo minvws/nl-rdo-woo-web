@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Controller\Admin\Dossier\WooDecision;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Controller\Admin\Dossier\WooDecision\DocumentsStepHelper;
 use Shared\Domain\Publication\Dossier\DossierStatus;
@@ -29,9 +30,9 @@ class DocumentsStepHelperTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->formErrorMapper = \Mockery::mock(TranslatableFormErrorMapper::class);
-        $this->twig = \Mockery::mock(Environment::class);
-        $this->formFactory = \Mockery::mock(FormFactoryInterface::class);
+        $this->formErrorMapper = Mockery::mock(TranslatableFormErrorMapper::class);
+        $this->twig = Mockery::mock(Environment::class);
+        $this->formFactory = Mockery::mock(FormFactoryInterface::class);
 
         $this->helper = new DocumentsStepHelper(
             $this->formErrorMapper,
@@ -42,15 +43,15 @@ class DocumentsStepHelperTest extends UnitTestCase
 
     public function testGetProductionReportProcessResponse(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
-        $formView = \Mockery::mock(FormView::class);
-        $form = \Mockery::mock(FormInterface::class);
+        $formView = Mockery::mock(FormView::class);
+        $form = Mockery::mock(FormInterface::class);
         $form->shouldReceive('createView')->andReturn($formView);
 
         $this->formFactory->expects('create')->with(InventoryType::class, $dossier)->andReturn($form);
 
-        $processRun = \Mockery::mock(ProductionReportProcessRun::class);
+        $processRun = Mockery::mock(ProductionReportProcessRun::class);
         $processRun->shouldReceive('isFailed')->andReturnTrue();
         $processRun->shouldReceive('hasErrors')->andReturnTrue();
         $processRun->shouldReceive('isPending')->andReturnFalse();

@@ -10,6 +10,10 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentReposito
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Upload\UploadedFile;
 
+use function basename;
+use function is_null;
+use function preg_match;
+
 readonly class DocumentNumberExtractor
 {
     public function __construct(

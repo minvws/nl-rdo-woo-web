@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
 
+use DateTimeImmutable;
+use Mockery;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
@@ -18,7 +20,7 @@ final class DocumentTest extends UnitTestCase
     public function testAddAndRemoveDossier(): void
     {
         $document = new Document();
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
 
         $document->addDossier($wooDecision);
         self::assertFalse($document->getDossiers()->isEmpty());
@@ -39,7 +41,7 @@ final class DocumentTest extends UnitTestCase
     {
         $document = new Document();
 
-        $document->setDocumentDate($date = new \DateTimeImmutable());
+        $document->setDocumentDate($date = new DateTimeImmutable());
         self::assertEquals($date, $document->getDocumentDate());
     }
 
@@ -131,14 +133,14 @@ final class DocumentTest extends UnitTestCase
 
     public function testHasPubliclyAvailableDossier(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
 
         $document = new Document();
         $document->addDossier($wooDecision);
         self::assertFalse($document->hasPubliclyAvailableDossier());
 
-        $wooDecisionB = \Mockery::mock(WooDecision::class);
+        $wooDecisionB = Mockery::mock(WooDecision::class);
         $wooDecisionB->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $document->addDossier($wooDecisionB);
@@ -148,7 +150,7 @@ final class DocumentTest extends UnitTestCase
     public function testAddAndRemoveInquiry(): void
     {
         $document = new Document();
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $inquiry = Mockery::mock(Inquiry::class);
 
         $document->addInquiry($inquiry);
         self::assertFalse($document->getInquiries()->isEmpty());
@@ -260,10 +262,10 @@ final class DocumentTest extends UnitTestCase
         $document = new Document();
         $referredDocument = new Document();
 
-        $document->addReferralTo($referredDocument);
+        $document->addRefersTo($referredDocument);
         self::assertEquals([$referredDocument], $document->getRefersTo()->toArray());
 
-        $document->removeReferralTo($referredDocument);
+        $document->removeRefersTo($referredDocument);
         self::assertTrue($document->getRefersTo()->isEmpty());
     }
 }

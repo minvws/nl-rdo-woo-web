@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -19,7 +20,7 @@ class WooDecisionMainDocument extends AbstractMainDocument
 {
     public function __construct(
         WooDecision $dossier,
-        \DateTimeImmutable $formalDate,
+        DateTimeImmutable $formalDate,
         AttachmentLanguage $language,
     ) {
         parent::__construct();
@@ -39,7 +40,7 @@ class WooDecisionMainDocument extends AbstractMainDocument
         return [AttachmentType::JUDGEMENT_ON_WOB_WOO_REQUEST];
     }
 
-    public function setFormalDate(\DateTimeImmutable $formalDate): void
+    public function setFormalDate(DateTimeImmutable $formalDate): void
     {
         $this->formalDate = $formalDate;
 

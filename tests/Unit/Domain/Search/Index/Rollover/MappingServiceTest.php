@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Rollover;
 
+use RuntimeException;
 use Shared\Domain\Search\Index\Rollover\MappingService;
 use Shared\Tests\Unit\UnitTestCase;
 
@@ -25,13 +26,13 @@ class MappingServiceTest extends UnitTestCase
 
     public function testGetMappingThrowsExceptionForNonExistingVersion(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->mappingService->getMapping(999);
     }
 
     public function testGetMappingThrowsExceptionForInvalidJson(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->mappingService->getMapping(2);
     }
 

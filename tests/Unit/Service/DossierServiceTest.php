@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -16,21 +17,23 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+use function array_column;
+
 class DossierServiceTest extends UnitTestCase
 {
     public function testValidateCompletionForPublishedWooDecision(): void
     {
-        $doctrine = \Mockery::mock(EntityManagerInterface::class);
-        $statusFactory = \Mockery::mock(WizardStatusFactory::class);
+        $doctrine = Mockery::mock(EntityManagerInterface::class);
+        $statusFactory = Mockery::mock(WizardStatusFactory::class);
 
         $dossierService = new DossierService(
             $doctrine,
             $statusFactory,
-            \Mockery::mock(SearchDispatcher::class),
-            \Mockery::mock(ValidatorInterface::class),
+            Mockery::mock(SearchDispatcher::class),
+            Mockery::mock(ValidatorInterface::class),
         );
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
         $dossier->shouldReceive('hasWithdrawnOrSuspendedDocuments')->andReturnTrue();
         $dossier->expects('setCompleted')->with(false);
@@ -45,20 +48,20 @@ class DossierServiceTest extends UnitTestCase
 
     public function testValidate(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $constraintViolationList = \Mockery::mock(ConstraintViolationListInterface::class);
+        $dossier = Mockery::mock(WooDecision::class);
+        $constraintViolationList = Mockery::mock(ConstraintViolationListInterface::class);
         $constraintViolationList->expects('count')
             ->andReturn(0);
 
-        $validator = \Mockery::mock(ValidatorInterface::class);
+        $validator = Mockery::mock(ValidatorInterface::class);
         $validator->expects('validate')
-            ->with($dossier, null, \array_column(DossierValidationGroup::cases(), 'value'))
+            ->with($dossier, null, array_column(DossierValidationGroup::cases(), 'value'))
             ->andReturn($constraintViolationList);
 
         $dossierService = new DossierService(
-            \Mockery::mock(EntityManagerInterface::class),
-            \Mockery::mock(WizardStatusFactory::class),
-            \Mockery::mock(SearchDispatcher::class),
+            Mockery::mock(EntityManagerInterface::class),
+            Mockery::mock(WizardStatusFactory::class),
+            Mockery::mock(SearchDispatcher::class),
             $validator,
         );
 
@@ -67,20 +70,20 @@ class DossierServiceTest extends UnitTestCase
 
     public function testValidateWithErrors(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $constraintViolationList = \Mockery::mock(ConstraintViolationListInterface::class);
+        $dossier = Mockery::mock(WooDecision::class);
+        $constraintViolationList = Mockery::mock(ConstraintViolationListInterface::class);
         $constraintViolationList->expects('count')
             ->andReturn(1);
 
-        $validator = \Mockery::mock(ValidatorInterface::class);
+        $validator = Mockery::mock(ValidatorInterface::class);
         $validator->expects('validate')
-            ->with($dossier, null, \array_column(DossierValidationGroup::cases(), 'value'))
+            ->with($dossier, null, array_column(DossierValidationGroup::cases(), 'value'))
             ->andReturn($constraintViolationList);
 
         $dossierService = new DossierService(
-            \Mockery::mock(EntityManagerInterface::class),
-            \Mockery::mock(WizardStatusFactory::class),
-            \Mockery::mock(SearchDispatcher::class),
+            Mockery::mock(EntityManagerInterface::class),
+            Mockery::mock(WizardStatusFactory::class),
+            Mockery::mock(SearchDispatcher::class),
             $validator,
         );
 

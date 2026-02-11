@@ -4,8 +4,20 @@ declare(strict_types=1);
 
 namespace Shared\Service\FileReader;
 
+use DateTimeImmutable;
+use Exception;
+use Generator;
+use RuntimeException;
 use Shared\Exception\FileReaderException;
 use Shared\Service\Inventory\InventoryDataHelper;
+
+use function array_filter;
+use function count;
+use function fclose;
+use function fgetcsv;
+use function fopen;
+use function intval;
+use function strval;
 
 /**
  * CSV reader. This class will read the CSV file in its entirety and store it in memory.
@@ -19,7 +31,7 @@ class CsvReader implements FileReaderInterface
     {
         $handle = fopen($this->filepath, 'r');
         if (! $handle) {
-            throw new \RuntimeException('Failed to open file: ' . $this->filepath);
+            throw new RuntimeException('Failed to open file: ' . $this->filepath);
         }
         // read/skip the header row
         fgetcsv($handle);
@@ -41,7 +53,7 @@ class CsvReader implements FileReaderInterface
         unset($this->rows[0]);
     }
 
-    public function getIterator(): \Generator
+    public function getIterator(): Generator
     {
         foreach ($this->rows as $idx => $row) {
             yield $idx => $row;
@@ -69,18 +81,18 @@ class CsvReader implements FileReaderInterface
         return intval($this->getCell($rowIndex, $columnName));
     }
 
-    public function getDateTime(int $rowIndex, string $columnName): \DateTimeImmutable
+    public function getDateTime(int $rowIndex, string $columnName): DateTimeImmutable
     {
         $value = $this->getString($rowIndex, $columnName);
 
         try {
             return InventoryDataHelper::toDateTimeImmutable($value);
-        } catch (\Exception) {
+        } catch (Exception) {
             throw FileReaderException::forCannotParseDate($value);
         }
     }
 
-    public function getOptionalDateTime(int $rowIndex, string $columnName): ?\DateTimeImmutable
+    public function getOptionalDateTime(int $rowIndex, string $columnName): ?DateTimeImmutable
     {
         $value = $this->getOptionalString($rowIndex, $columnName);
         if ($value === null || $value === '') {
@@ -89,7 +101,7 @@ class CsvReader implements FileReaderInterface
 
         try {
             return InventoryDataHelper::toDateTimeImmutable($value);
-        } catch (\Exception) {
+        } catch (Exception) {
             throw FileReaderException::forCannotParseDate($value);
         }
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Security\ApplicationMode;
 
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
@@ -22,7 +23,7 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
     ): void {
         $redirector = new ApplicationModeRedirector($applicationMode);
 
-        $event = \Mockery::mock(RequestEvent::class);
+        $event = Mockery::mock(RequestEvent::class);
         $event->shouldReceive('getRequest')->andReturn(
             new Request(
                 attributes: ['_firewall_context' => 'some.other.firewall.context'],
@@ -33,7 +34,7 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
         if ($expectedRedirectPath === null) {
             $event->shouldNotHaveReceived('setResponse');
         } else {
-            $event->expects('setResponse')->with(\Mockery::on(
+            $event->expects('setResponse')->with(Mockery::on(
                 static function (RedirectResponse $response) use ($expectedRedirectPath): bool {
                     return $response->getTargetUrl() === $expectedRedirectPath;
                 }
@@ -120,7 +121,7 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
     {
         $redirector = new ApplicationModeRedirector(ApplicationMode::ADMIN);
 
-        $event = \Mockery::mock(RequestEvent::class);
+        $event = Mockery::mock(RequestEvent::class);
         $event->shouldReceive('getRequest')->andReturn(
             new Request(attributes: ['_firewall_context' => 'security.firewall.map.context.dev'])
         );
@@ -134,7 +135,7 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
     {
         $redirector = new ApplicationModeRedirector(ApplicationMode::ADMIN);
 
-        $event = \Mockery::mock(RequestEvent::class);
+        $event = Mockery::mock(RequestEvent::class);
         $event->shouldReceive('getRequest')->andReturn(
             new Request(
                 attributes: ['_firewall_context' => 'some.other.firewall.context'],
@@ -145,5 +146,44 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
         $event->shouldNotHaveReceived('setResponse');
 
         $redirector->onKernelRequest($event);
+    }
+
+    #[DataProvider('getProfilerPaths')]
+    public function testApplicationModeRedirectForSymfonyProfilerRoutes(string $path): void
+    {
+        $redirector = new ApplicationModeRedirector(ApplicationMode::ADMIN);
+
+        $event = Mockery::mock(RequestEvent::class);
+        $event->shouldReceive('getRequest')->andReturn(
+            new Request(
+                attributes: ['_firewall_context' => 'some.other.firewall.context'],
+                server: ['REQUEST_URI' => $path]
+            ),
+        );
+
+        $event->shouldNotHaveReceived('setResponse');
+
+        $redirector->onKernelRequest($event);
+    }
+
+    /**
+     * @return array<string,array{path:string}>
+     */
+    public static function getProfilerPaths(): array
+    {
+        return [
+            'profiler path' => [
+                'path' => '/_profiler',
+            ],
+            'profiler path with extra parameters' => [
+                'path' => '/_profiler/foobar/acme',
+            ],
+            'wdt_path' => [
+                'path' => '/_wdt',
+            ],
+            'fragment_path' => [
+                'path' => '/_fragment',
+            ],
+        ];
     }
 }

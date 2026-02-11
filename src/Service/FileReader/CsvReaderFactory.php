@@ -5,6 +5,13 @@ declare(strict_types=1);
 namespace Shared\Service\FileReader;
 
 use PhpOffice\PhpSpreadsheet\Exception;
+use RuntimeException;
+
+use function fclose;
+use function fgetcsv;
+use function fopen;
+use function in_array;
+use function strtolower;
 
 /**
  * Creates a file reader for CSV files.
@@ -34,7 +41,7 @@ class CsvReaderFactory implements ReaderFactoryInterface
     {
         $handle = fopen($filepath, 'r');
         if (! $handle) {
-            throw new \RuntimeException('Failed to open file: ' . $filepath);
+            throw new RuntimeException('Failed to open file: ' . $filepath);
         }
         $headers = fgetcsv($handle);
         fclose($handle);

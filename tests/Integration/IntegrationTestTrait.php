@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Shared\Tests\Integration;
 
 use Faker\Generator;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Override;
 use Shared\ApplicationId;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Kernel;
@@ -29,12 +31,12 @@ trait IntegrationTestTrait
 
     protected Generator $faker;
 
-    abstract public static function getAppId(): ApplicationId;
+    abstract protected static function getAppId(): ApplicationId;
 
     /**
      * @param array{environment?:string,debug?:bool} $options
      */
-    #[\Override]
+    #[Override]
     protected static function createKernel(array $options = []): KernelInterface
     {
         $env = $options['environment'] ?? $_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? 'test';
@@ -68,7 +70,7 @@ trait IntegrationTestTrait
 
     public static function setActiveOrganisation(Organisation $organisation): void
     {
-        $organisationSwitcher = \Mockery::mock(OrganisationSwitcher::class);
+        $organisationSwitcher = Mockery::mock(OrganisationSwitcher::class);
         $organisationSwitcher->expects('getActiveOrganisation')
             ->andReturn($organisation);
 

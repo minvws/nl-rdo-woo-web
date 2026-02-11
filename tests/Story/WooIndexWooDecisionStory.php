@@ -16,6 +16,8 @@ use Symfony\Component\Uid\UuidV6;
 use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Story;
 
+use function range;
+use function sprintf;
 use function Zenstruck\Foundry\faker;
 
 final class WooIndexWooDecisionStory extends Story

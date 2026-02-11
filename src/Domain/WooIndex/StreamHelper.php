@@ -6,6 +6,9 @@ namespace Shared\Domain\WooIndex;
 
 use Webmozart\Assert\Assert;
 
+use function fopen;
+use function fstat;
+
 readonly class StreamHelper
 {
     /**

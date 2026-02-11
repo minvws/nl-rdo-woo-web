@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Search\Result\SubType\Attachment;
 
 use MinVWS\TypeArray\TypeArray;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
@@ -25,8 +26,8 @@ class AttachmentSearchResultMapperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
-        $this->attachmentViewFactory = \Mockery::mock(AttachmentViewFactory::class);
+        $this->attachmentRepository = Mockery::mock(AttachmentRepository::class);
+        $this->attachmentViewFactory = Mockery::mock(AttachmentViewFactory::class);
 
         $this->mapper = new AttachmentSearchResultMapper(
             $this->attachmentRepository,
@@ -42,7 +43,7 @@ class AttachmentSearchResultMapperTest extends UnitTestCase
 
     public function testMapReturnsNullWhenIdIsMissing(): void
     {
-        $hit = \Mockery::mock(TypeArray::class);
+        $hit = Mockery::mock(TypeArray::class);
         $hit->shouldReceive('getStringOrNull')->with('[_id]')->andReturnNull();
 
         $this->assertNull($this->mapper->map($hit));
@@ -50,7 +51,7 @@ class AttachmentSearchResultMapperTest extends UnitTestCase
 
     public function testMapReturnsNullWhenAttachmentCannotBeLoaded(): void
     {
-        $hit = \Mockery::mock(TypeArray::class);
+        $hit = Mockery::mock(TypeArray::class);
         $hit->shouldReceive('getStringOrNull')->with('[_id]')->andReturn('foo');
 
         $this->attachmentRepository->shouldReceive('find')->with('foo')->andReturnNull();
@@ -60,24 +61,24 @@ class AttachmentSearchResultMapperTest extends UnitTestCase
 
     public function testMapSuccessful(): void
     {
-        $hit = \Mockery::mock(TypeArray::class);
+        $hit = Mockery::mock(TypeArray::class);
         $hit->shouldReceive('getStringOrNull')->with('[_id]')->andReturn('foo');
         $hit->shouldReceive('exists')->with('[highlight][pages.content]')->andReturnTrue();
         $hit->shouldReceive('getTypeArray->toArray')->andReturn(['x', 'y']);
         $hit->shouldReceive('exists')->with('[highlight][dossiers.title]')->andReturnFalse();
         $hit->shouldReceive('exists')->with('[highlight][dossiers.summary]')->andReturnFalse();
 
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = '123');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($documentPrefix = 'foo');
         $dossier->shouldReceive('getTitle')->andReturn($title = 'bar');
         $dossier->shouldReceive('getType')->andReturn($dossierType = DossierType::COVENANT);
 
-        $attachment = \Mockery::mock(AbstractAttachment::class);
+        $attachment = Mockery::mock(AbstractAttachment::class);
         $attachment->shouldReceive('getDossier')->andReturn($dossier);
 
         /** @var Attachment&MockInterface $viewModel */
-        $viewModel = \Mockery::mock(Attachment::class);
+        $viewModel = Mockery::mock(Attachment::class);
 
         $this->attachmentRepository->shouldReceive('find')->with('foo')->andReturn($attachment);
         $this->attachmentViewFactory->expects('make')->with($dossier, $attachment)->andReturn($viewModel);

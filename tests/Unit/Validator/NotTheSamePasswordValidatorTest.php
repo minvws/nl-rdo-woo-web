@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Validator;
 
+use Mockery;
 use Shared\Service\Security\User;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\Validator\NotTheSamePassword;
@@ -17,9 +18,9 @@ class NotTheSamePasswordValidatorTest extends UnitTestCase
 {
     public function testValidatorAddsNoViolationsForNullValue(): void
     {
-        $context = \Mockery::mock(ExecutionContextInterface::class);
-        $hasher = \Mockery::mock(UserPasswordHasherInterface::class);
-        $security = \Mockery::mock(Security::class);
+        $context = Mockery::mock(ExecutionContextInterface::class);
+        $hasher = Mockery::mock(UserPasswordHasherInterface::class);
+        $security = Mockery::mock(Security::class);
 
         $validator = new NotTheSamePasswordValidator($hasher, $security);
         $validator->initialize($context);
@@ -31,10 +32,10 @@ class NotTheSamePasswordValidatorTest extends UnitTestCase
 
     public function testValidatorAddsViolationForSamePassword(): void
     {
-        $context = \Mockery::mock(ExecutionContextInterface::class);
-        $hasher = \Mockery::mock(UserPasswordHasherInterface::class);
-        $user = \Mockery::mock(User::class);
-        $security = \Mockery::mock(Security::class);
+        $context = Mockery::mock(ExecutionContextInterface::class);
+        $hasher = Mockery::mock(UserPasswordHasherInterface::class);
+        $user = Mockery::mock(User::class);
+        $security = Mockery::mock(Security::class);
         $security->expects('getUser')->andReturn($user);
 
         $validator = new NotTheSamePasswordValidator($hasher, $security);
@@ -43,7 +44,7 @@ class NotTheSamePasswordValidatorTest extends UnitTestCase
         $input = 'foo';
         $hasher->expects('isPasswordValid')->with($user, $input)->andReturnTrue();
 
-        $builder = \Mockery::mock(ConstraintViolationBuilderInterface::class);
+        $builder = Mockery::mock(ConstraintViolationBuilderInterface::class);
         $context->expects('buildViolation')->andReturn($builder);
         $builder->expects('setParameter');
         $builder->expects('addViolation');
@@ -53,10 +54,10 @@ class NotTheSamePasswordValidatorTest extends UnitTestCase
 
     public function testValidatorAddsNoViolationForDifferentPassword(): void
     {
-        $context = \Mockery::mock(ExecutionContextInterface::class);
-        $hasher = \Mockery::mock(UserPasswordHasherInterface::class);
-        $user = \Mockery::mock(User::class);
-        $security = \Mockery::mock(Security::class);
+        $context = Mockery::mock(ExecutionContextInterface::class);
+        $hasher = Mockery::mock(UserPasswordHasherInterface::class);
+        $user = Mockery::mock(User::class);
+        $security = Mockery::mock(Security::class);
         $security->expects('getUser')->andReturn($user);
 
         $validator = new NotTheSamePasswordValidator($hasher, $security);

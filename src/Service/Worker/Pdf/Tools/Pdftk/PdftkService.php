@@ -6,6 +6,10 @@ namespace Shared\Service\Worker\Pdf\Tools\Pdftk;
 
 use Symfony\Component\Process\Process;
 
+use function preg_match;
+
+use const PREG_UNMATCHED_AS_NULL;
+
 class PdftkService
 {
     public const PDFTK_PATH = '/usr/bin/pdftk';

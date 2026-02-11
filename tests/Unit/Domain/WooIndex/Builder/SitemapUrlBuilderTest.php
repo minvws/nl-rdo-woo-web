@@ -21,6 +21,10 @@ use Shared\Domain\WooIndex\Tooi\SoortHandeling;
 use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 
+use function fopen;
+use function rewind;
+use function stream_get_contents;
+
 final class SitemapUrlBuilderTest extends UnitTestCase
 {
     /**

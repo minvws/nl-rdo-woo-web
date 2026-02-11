@@ -10,6 +10,10 @@ use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
+use function count;
+use function in_array;
+use function str_starts_with;
+
 /**
  * This listener ensures all admin endpoints check an AuthMatrix permission, except whitelisted urls.
  */

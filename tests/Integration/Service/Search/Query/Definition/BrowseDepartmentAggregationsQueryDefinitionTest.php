@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Service\Search\Query\Definition;
 
+use Mockery;
 use PHPUnit\Framework\Attributes\Group;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Search\Query\SearchParametersFactory;
@@ -17,7 +18,7 @@ final class BrowseDepartmentAggregationsQueryDefinitionTest extends SharedWebTes
 
     public function testElasticQueryBuiltFromDefinition(): void
     {
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
         $department->shouldReceive('getShortTag')->andReturn('foo');
         $department->shouldReceive('getName')->andReturn('bar');
 

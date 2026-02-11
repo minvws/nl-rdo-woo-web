@@ -15,6 +15,8 @@ use Shared\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+use function array_column;
+
 readonly class DossierService
 {
     public function __construct(
@@ -65,7 +67,7 @@ readonly class DossierService
      */
     public function validate(AbstractDossier $dossier): void
     {
-        $errors = $this->validator->validate($dossier, groups: \array_column(DossierValidationGroup::cases(), 'value'));
+        $errors = $this->validator->validate($dossier, groups: array_column(DossierValidationGroup::cases(), 'value'));
 
         if ($errors->count() > 0) {
             throw new ValidationFailedException($dossier, $errors);

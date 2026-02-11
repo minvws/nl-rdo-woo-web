@@ -10,6 +10,8 @@ use Shared\Domain\Search\Result\Dossier\ComplaintJudgement\ComplaintJudgementSea
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
+use function sprintf;
+
 /**
  * @extends AbstractDossierRepository<ComplaintJudgement>
  */
@@ -45,8 +47,7 @@ class ComplaintJudgementRepository extends AbstractDossierRepository implements 
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
-        ;
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
 
         /** @var ?ComplaintJudgementSearchResult */
         return $qb->getQuery()->getOneOrNullResult();

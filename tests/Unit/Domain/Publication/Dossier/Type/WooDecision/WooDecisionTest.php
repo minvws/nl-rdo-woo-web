@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
 
 use Carbon\CarbonImmutable;
+use DateTimeImmutable;
+use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
@@ -15,6 +18,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Producti
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function array_map;
+use function in_array;
 
 final class WooDecisionTest extends UnitTestCase
 {
@@ -36,7 +42,7 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testAddAndRemoveDocument(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
 
         self::assertTrue($this->wooDecision->getDocuments()->isEmpty());
 
@@ -51,7 +57,7 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testAddAndRemoveInquiry(): void
     {
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $inquiry = Mockery::mock(Inquiry::class);
 
         self::assertTrue($this->wooDecision->getDocuments()->isEmpty());
 
@@ -68,7 +74,7 @@ final class WooDecisionTest extends UnitTestCase
     {
         $otherDossier = new WooDecision();
 
-        $productionReport = \Mockery::mock(ProductionReport::class);
+        $productionReport = Mockery::mock(ProductionReport::class);
         $productionReport->expects('getDossier')->andReturn($otherDossier);
 
         $productionReport->expects('setDossier')->with($this->wooDecision);
@@ -78,7 +84,7 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testSetAndGetInventory(): void
     {
-        $inventory = \Mockery::mock(Inventory::class);
+        $inventory = Mockery::mock(Inventory::class);
 
         $this->wooDecision->setInventory($inventory);
         self::assertSame($inventory, $this->wooDecision->getInventory());
@@ -154,7 +160,7 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testSetAndGetPreviewDate(): void
     {
-        $previewDate = new \DateTimeImmutable();
+        $previewDate = new DateTimeImmutable();
 
         $this->wooDecision->setPreviewDate($previewDate);
         self::assertEquals($previewDate, $this->wooDecision->getPreviewDate());
@@ -178,7 +184,7 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testSetAndGetProcessRun(): void
     {
-        $processRun = \Mockery::mock(ProductionReportProcessRun::class);
+        $processRun = Mockery::mock(ProductionReportProcessRun::class);
 
         $this->wooDecision->setProcessRun($processRun);
         self::assertSame($processRun, $this->wooDecision->getProcessRun());
@@ -186,12 +192,12 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testSetAndGetProcessRunOverwritesFinalRun(): void
     {
-        $finalProcessRun = \Mockery::mock(ProductionReportProcessRun::class);
+        $finalProcessRun = Mockery::mock(ProductionReportProcessRun::class);
         $finalProcessRun->expects('isNotFinal')->andReturnFalse();
 
         $this->wooDecision->setProcessRun($finalProcessRun);
 
-        $newProcessRun = \Mockery::mock(ProductionReportProcessRun::class);
+        $newProcessRun = Mockery::mock(ProductionReportProcessRun::class);
         $this->wooDecision->setProcessRun($newProcessRun);
 
         self::assertSame($newProcessRun, $this->wooDecision->getProcessRun());
@@ -199,14 +205,14 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testSetAndGetProcessRunThrowsExceptionWhenOverwritingANonFinalRun(): void
     {
-        $finalProcessRun = \Mockery::mock(ProductionReportProcessRun::class);
+        $finalProcessRun = Mockery::mock(ProductionReportProcessRun::class);
         $finalProcessRun->expects('isNotFinal')->andReturnTrue();
 
         $this->wooDecision->setProcessRun($finalProcessRun);
 
-        $newProcessRun = \Mockery::mock(ProductionReportProcessRun::class);
+        $newProcessRun = Mockery::mock(ProductionReportProcessRun::class);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->wooDecision->setProcessRun($newProcessRun);
     }
@@ -221,7 +227,7 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testSetAndGetDecisionDate(): void
     {
-        $decisionDate = new \DateTimeImmutable();
+        $decisionDate = new DateTimeImmutable();
 
         $this->wooDecision->setDecisionDate($decisionDate);
         self::assertEquals($decisionDate, $this->wooDecision->getDecisionDate());
@@ -231,7 +237,7 @@ final class WooDecisionTest extends UnitTestCase
     {
         self::assertFalse($this->wooDecision->hasWithdrawnOrSuspendedDocuments());
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('addDossier')->with($this->wooDecision);
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
         $document->shouldReceive('isSuspended')->andReturnFalse();
@@ -239,7 +245,7 @@ final class WooDecisionTest extends UnitTestCase
 
         self::assertFalse($this->wooDecision->hasWithdrawnOrSuspendedDocuments());
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('addDossier')->with($this->wooDecision);
         $document->shouldReceive('isWithdrawn')->andReturnFalse();
         $document->shouldReceive('isSuspended')->andReturnTrue();

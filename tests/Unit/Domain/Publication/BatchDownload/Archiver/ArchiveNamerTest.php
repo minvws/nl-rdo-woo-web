@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\Archiver;
 
+use Mockery;
 use Shared\Domain\Publication\BatchDownload\Archiver\ArchiveNamer;
 use Shared\Domain\Publication\BatchDownload\BatchDownload;
 use Shared\Tests\Unit\UnitTestCase;
@@ -15,7 +16,7 @@ final class ArchiveNamerTest extends UnitTestCase
     {
         $basename = 'my-base-name';
 
-        $batchDownload = \Mockery::mock(BatchDownload::class);
+        $batchDownload = Mockery::mock(BatchDownload::class);
         $batchDownload->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('1f009841-b03a-6a12-b294-b1a98c0dda11'));
 
         $archiveNamer = new ArchiveNamer();

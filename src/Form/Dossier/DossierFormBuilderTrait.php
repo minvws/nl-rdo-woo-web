@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Form\Dossier;
 
+use DateTimeImmutable;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Subject\Subject;
@@ -199,11 +200,11 @@ trait DossierFormBuilderTrait
             'required' => true,
             'widget' => 'single_text',
             'input' => 'datetime_immutable',
-            'data' => $dossier->getPublicationDate() ?? new \DateTimeImmutable(),
+            'data' => $dossier->getPublicationDate() ?? new DateTimeImmutable(),
             'constraints' => [
                 new NotBlank(),
                 new GreaterThanOrEqual(
-                    new \DateTimeImmutable('today midnight'),
+                    new DateTimeImmutable('today midnight'),
                     message: 'publication_date_must_be_today_or_future'
                 ),
             ],

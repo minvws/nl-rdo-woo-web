@@ -18,9 +18,6 @@ use Symfony\Component\Validator\Constraints\Regex;
  */
 class DocumentPrefixType extends AbstractType
 {
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -39,8 +36,7 @@ class DocumentPrefixType extends AbstractType
                     new Length(['min' => 5, 'max' => 30]),
                     new Regex('/^[0-9a-zA-Z-]+$/', 'alpha_numeric_dash_only'),
                 ],
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

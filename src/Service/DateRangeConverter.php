@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Service;
 
+use DateTimeImmutable;
+use IntlDateFormatter;
+
+use function ucfirst;
+
 /**
  * This class will convert a date range into a human-readable string.
  *
@@ -17,7 +22,7 @@ class DateRangeConverter
     /**
      * Converts a date range into a human-readable string.
      */
-    public static function convertToString(?\DateTimeImmutable $from, ?\DateTimeImmutable $to): string
+    public static function convertToString(?DateTimeImmutable $from, ?DateTimeImmutable $to): string
     {
         if ($from === null || $to === null) {
             return self::handleRangeWithNull($from, $to);
@@ -26,27 +31,27 @@ class DateRangeConverter
         return self::handleRangeWithTwoDates($from, $to);
     }
 
-    protected static function getMonth(\DateTimeImmutable $date): string
+    protected static function getMonth(DateTimeImmutable $date): string
     {
         return self::formatDate($date, 'MMMM');
     }
 
-    protected static function getYear(\DateTimeImmutable $date): string
+    protected static function getYear(DateTimeImmutable $date): string
     {
         return self::formatDate($date, 'yyyy');
     }
 
-    protected static function getMonthAndYear(\DateTimeImmutable $date): string
+    protected static function getMonthAndYear(DateTimeImmutable $date): string
     {
         return self::formatDate($date, 'MMMM yyyy');
     }
 
-    protected static function formatDate(\DateTimeImmutable $date, string $pattern): string
+    protected static function formatDate(DateTimeImmutable $date, string $pattern): string
     {
-        return \IntlDateFormatter::formatObject($date, $pattern, 'nl_NL');
+        return IntlDateFormatter::formatObject($date, $pattern, 'nl_NL');
     }
 
-    protected static function handleRangeWithNull(?\DateTimeImmutable $from, ?\DateTimeImmutable $to): string
+    protected static function handleRangeWithNull(?DateTimeImmutable $from, ?DateTimeImmutable $to): string
     {
         if ($from === null && $to === null) {
             return 'Alles';
@@ -59,7 +64,7 @@ class DateRangeConverter
         return 'Vanaf ' . self::getMonthAndYear($from);
     }
 
-    protected static function handleRangeWithTwoDates(\DateTimeImmutable $from, \DateTimeImmutable $to): string
+    protected static function handleRangeWithTwoDates(DateTimeImmutable $from, DateTimeImmutable $to): string
     {
         // Spanning multiple years
         if ($from->format('y') !== $to->format('y')) {

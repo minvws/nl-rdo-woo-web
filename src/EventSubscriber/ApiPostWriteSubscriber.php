@@ -10,10 +10,14 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-final class ApiPostWriteSubscriber implements EventSubscriberInterface
+use function get_debug_type;
+use function in_array;
+use function is_object;
+
+final readonly class ApiPostWriteSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly LoggerInterface $logger,
+        private LoggerInterface $logger,
     ) {
     }
 

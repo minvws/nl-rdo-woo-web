@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory\Publication\Dossier\Type\Advice;
 
+use DateTimeImmutable;
+use Override;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<AdviceAttachment>
+ * @extends PersistentObjectFactory<AdviceAttachment>
  */
-final class AdviceAttachmentFactory extends PersistentProxyObjectFactory
+final class AdviceAttachmentFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
@@ -23,22 +25,22 @@ final class AdviceAttachmentFactory extends PersistentProxyObjectFactory
     protected function defaults(): array
     {
         return [
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'dossier' => CovenantFactory::new(),
             'fileInfo' => FileInfoFactory::new(),
-            'formalDate' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'formalDate' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()->setTime(0, 0)),
             'type' => self::faker()->randomElement(AdviceAttachment::getAllowedTypes()),
             'internalReference' => self::faker()->optional(default: '')->words(asText: true),
             'language' => self::faker()->randomElement(AttachmentLanguage::cases()),
             'grounds' => self::faker()->optional(default: [])->words(),
-            'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    #[\Override]
+    #[Override]
     protected function initialize(): static
     {
         return $this;

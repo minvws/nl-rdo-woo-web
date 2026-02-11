@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DossierUploadStatus;
@@ -21,19 +22,19 @@ class DossierUploadStatusTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->missingUpload = \Mockery::mock(Document::class);
+        $this->missingUpload = Mockery::mock(Document::class);
         $this->missingUpload->shouldReceive('shouldBeUploaded')->andReturnTrue();
         $this->missingUpload->shouldReceive('isUploaded')->andReturnFalse();
 
-        $this->completedUpload = \Mockery::mock(Document::class);
+        $this->completedUpload = Mockery::mock(Document::class);
         $this->completedUpload->shouldReceive('shouldBeUploaded')->andReturnTrue();
         $this->completedUpload->shouldReceive('isUploaded')->andReturnTrue();
 
-        $this->unwantedUpload = \Mockery::mock(Document::class);
+        $this->unwantedUpload = Mockery::mock(Document::class);
         $this->unwantedUpload->shouldReceive('shouldBeUploaded')->andReturnFalse();
         $this->unwantedUpload->shouldReceive('isUploaded')->andReturnFalse();
 
-        $this->dossier = \Mockery::mock(WooDecision::class);
+        $this->dossier = Mockery::mock(WooDecision::class);
 
         $this->dossierUploadStatus = new DossierUploadStatus($this->dossier);
 
@@ -194,7 +195,7 @@ class DossierUploadStatusTest extends UnitTestCase
     private function getDocument(string $documentId, bool $shouldBeUploaded, bool $isUploaded): Document&MockInterface
     {
         /** @var Document&MockInterface $document */
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDocumentId')->andReturn($documentId);
         $document->shouldReceive('shouldBeUploaded')->andReturn($shouldBeUploaded);
         $document->shouldReceive('isUploaded')->andReturn($isUploaded);

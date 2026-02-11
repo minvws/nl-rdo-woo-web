@@ -7,6 +7,8 @@ namespace Shared\Form;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonPeriod;
+use DateTimeInterface;
+use Override;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeImmutableToDateTimeTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -14,19 +16,21 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Webmozart\Assert\Assert;
 
+use function array_reverse;
+
 class YearType extends ChoiceType
 {
     public const MIN_YEARS = 'min_years';
     public const PLUS_YEARS = 'plus_years';
     public const REVERSE = 'reverse';
 
-    #[\Override]
+    #[Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $options['choices'] = $this->getChoices(...$this->getChoicesArgsFromOptions($options));
 
         $builder->addModelTransformer(
-            new DateTimeToStringTransformer(null, null, \DateTimeInterface::ATOM),
+            new DateTimeToStringTransformer(null, null, DateTimeInterface::ATOM),
         );
 
         $builder->addModelTransformer(
@@ -55,7 +59,7 @@ class YearType extends ChoiceType
 
             $date = $date->firstOfYear();
             $year = (int) $date->format('Y');
-            $options[$year] = $date->format(\DateTimeInterface::ATOM);
+            $options[$year] = $date->format(DateTimeInterface::ATOM);
         }
 
         if ($reverse) {
@@ -65,7 +69,7 @@ class YearType extends ChoiceType
         return $options;
     }
 
-    #[\Override]
+    #[Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);

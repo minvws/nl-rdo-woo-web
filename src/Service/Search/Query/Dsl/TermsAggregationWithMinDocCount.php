@@ -8,6 +8,7 @@ use Erichard\ElasticQueryBuilder\Aggregation\TermsAggregation;
 use Erichard\ElasticQueryBuilder\Constants\SortDirections;
 use Erichard\ElasticQueryBuilder\Options\Field;
 use Erichard\ElasticQueryBuilder\Options\InlineScript;
+use Override;
 
 /**
  * The TermsAggregation class does not support adding a min_doc_count value, this adds it.
@@ -44,7 +45,7 @@ class TermsAggregationWithMinDocCount extends TermsAggregation
     /**
      * @return array<string, string>
      */
-    #[\Override]
+    #[Override]
     protected function buildAggregation(): array
     {
         $build = parent::buildAggregation();

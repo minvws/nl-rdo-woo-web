@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Service\Inventory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -13,6 +14,7 @@ use Shared\Exception\ProcessInventoryException;
 use Shared\Service\Inventory\Reader\InventoryReaderFactory;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Shared\Service\Storage\EntityStorageService;
+use SplFileInfo;
 
 /**
  * This class will process an inventory and generates document entities from the given data.
@@ -30,7 +32,7 @@ class InventoryService
     public function getReader(ProductionReportProcessRun $run): InventoryReaderInterface
     {
         if (! $run->getFileInfo()->isUploaded()) {
-            throw new \RuntimeException('Input file missing, cannot process inventory');
+            throw new RuntimeException('Input file missing, cannot process inventory');
         }
 
         $tmpFilename = $this->entityStorageService->downloadEntity($run);
@@ -100,9 +102,9 @@ class InventoryService
             throw ProcessInventoryException::forInventoryCannotBeLoadedFromStorage();
         }
 
-        $fileInfo = new \SplFileInfo($tmpFilename);
+        $fileInfo = new SplFileInfo($tmpFilename);
         if (! $this->entityStorageService->storeEntity($fileInfo, $inventory, false)) {
-            throw new \RuntimeException('Cannot store production report');
+            throw new RuntimeException('Cannot store production report');
         }
     }
 }

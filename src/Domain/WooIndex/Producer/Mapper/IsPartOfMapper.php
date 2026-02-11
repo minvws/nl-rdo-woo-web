@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex\Producer\Mapper;
 
-use ApiPlatform\Metadata\UrlGeneratorInterface;
 use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
 use Shared\Domain\WooIndex\Producer\UrlReference;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
 
 final readonly class IsPartOfMapper

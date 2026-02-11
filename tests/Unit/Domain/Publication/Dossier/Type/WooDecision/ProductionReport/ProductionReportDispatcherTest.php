@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ProductionReport;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\GenerateInventoryCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ConfirmProductionReportUpdateCommand;
@@ -13,6 +14,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Unit\UnitTestCase;
+use stdClass;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -25,7 +27,7 @@ class ProductionReportDispatcherTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
+        $this->messageBus = Mockery::mock(MessageBusInterface::class);
 
         $this->dispatcher = new ProductionReportDispatcher(
             $this->messageBus,
@@ -34,17 +36,17 @@ class ProductionReportDispatcherTest extends UnitTestCase
 
     public function testDispatchInitiateProductionReportUpdateCommand(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
-        $upload = \Mockery::mock(UploadedFile::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
+        $upload = Mockery::mock(UploadedFile::class);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (InitiateProductionReportUpdateCommand $command) use ($wooDecision, $upload) {
                 self::assertEquals($wooDecision, $command->dossier);
                 self::assertEquals($upload, $command->upload);
 
                 return true;
             }
-        ))->andReturns(new Envelope(new \stdClass()));
+        ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchInitiateProductionReportUpdateCommand($wooDecision, $upload);
     }
@@ -53,43 +55,43 @@ class ProductionReportDispatcherTest extends UnitTestCase
     {
         $id = Uuid::v6();
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (ProductionReportProcessRunCommand $command) use ($id) {
                 self::assertEquals($id, $command->getUuid());
 
                 return true;
             }
-        ))->andReturns(new Envelope(new \stdClass()));
+        ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchProductionReportProcessRunCommand($id);
     }
 
     public function testDispatchConfirmProductionReportUpdateCommand(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (ConfirmProductionReportUpdateCommand $command) use ($wooDecision) {
                 self::assertEquals($wooDecision, $command->dossier);
 
                 return true;
             }
-        ))->andReturns(new Envelope(new \stdClass()));
+        ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchConfirmProductionReportUpdateCommand($wooDecision);
     }
 
     public function testDispatchRejectProductionReportUpdateCommand(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (RejectProductionReportUpdateCommand $command) use ($wooDecision) {
                 self::assertEquals($wooDecision, $command->dossier);
 
                 return true;
             }
-        ))->andReturns(new Envelope(new \stdClass()));
+        ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchRejectProductionReportUpdateCommand($wooDecision);
     }
@@ -98,13 +100,13 @@ class ProductionReportDispatcherTest extends UnitTestCase
     {
         $id = Uuid::v6();
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (GenerateInventoryCommand $command) use ($id) {
                 self::assertEquals($id, $command->getUuid());
 
                 return true;
             }
-        ))->andReturns(new Envelope(new \stdClass()));
+        ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchGenerateInventoryCommand($id);
     }

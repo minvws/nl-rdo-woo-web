@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Domain\Publication\Dossier\Admin;
 
 use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\QueryBuilder;
+use Mockery;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\Admin\DossierQueryConditions;
 use Shared\Domain\Publication\Dossier\DossierStatus;
@@ -25,9 +26,9 @@ class DossierQueryConditionsTest extends UnitTestCase
     {
         $statuses = [DossierStatus::CONCEPT, DossierStatus::PUBLISHED];
 
-        $expression = \Mockery::mock(Func::class);
+        $expression = Mockery::mock(Func::class);
 
-        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
         $queryBuilder->expects('expr->in')->with('dos.status', ':statuses')->andReturn($expression);
         $queryBuilder->expects('andWhere')->with($expression)->andReturnSelf();
         $queryBuilder->expects('setParameter')->with('statuses', $statuses);
@@ -39,7 +40,7 @@ class DossierQueryConditionsTest extends UnitTestCase
     {
         $types = [DossierType::COVENANT, DossierType::DISPOSITION];
 
-        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
         $queryBuilder->expects('andWhere')->with('dos INSTANCE OF :typeFilters')->andReturnSelf();
         $queryBuilder->expects('setParameter')->with('typeFilters', $types);
 
@@ -49,13 +50,13 @@ class DossierQueryConditionsTest extends UnitTestCase
     public function testFilterOnDepartments(): void
     {
         $departments = [
-            \Mockery::mock(Department::class),
-            \Mockery::mock(Department::class),
+            Mockery::mock(Department::class),
+            Mockery::mock(Department::class),
         ];
 
-        $expression = \Mockery::mock(Func::class);
+        $expression = Mockery::mock(Func::class);
 
-        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
         $queryBuilder->expects('expr->in')->with('dep.id', ':departments')->andReturn($expression);
         $queryBuilder->expects('innerJoin')->with('dos.departments', 'dep')->andReturnSelf();
         $queryBuilder->expects('andWhere')->with($expression)->andReturnSelf();

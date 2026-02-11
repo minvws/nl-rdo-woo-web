@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\BatchDownload;
 
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -40,7 +41,7 @@ class BatchDownloadRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('b')
             ->andWhere('b.expiration < :now')
-            ->setParameter('now', new \DateTimeImmutable())
+            ->setParameter('now', new DateTimeImmutable())
             ->getQuery()
             ->getResult();
     }
@@ -62,7 +63,7 @@ class BatchDownloadRepository extends ServiceEntityRepository
             ->setParameter('outdated', BatchDownloadStatus::OUTDATED)
             ->setParameter('pending', BatchDownloadStatus::PENDING)
             ->setParameter('failed', BatchDownloadStatus::FAILED)
-            ->setParameter('now', new \DateTimeImmutable())
+            ->setParameter('now', new DateTimeImmutable())
             ->orderBy('priority', 'DESC')
             ->addOrderBy('b.expiration', 'DESC')
             ->setMaxResults(1);

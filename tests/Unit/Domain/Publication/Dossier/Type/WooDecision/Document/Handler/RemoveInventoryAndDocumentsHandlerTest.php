@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document\Handler;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -32,12 +34,12 @@ class RemoveInventoryAndDocumentsHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->wooDecisionRepository = \Mockery::mock(WooDecisionRepository::class);
-        $this->inventoryService = \Mockery::mock(InventoryService::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
-        $this->documentService = \Mockery::mock(DocumentService::class);
-        $this->dossierService = \Mockery::mock(DossierService::class);
+        $this->wooDecisionRepository = Mockery::mock(WooDecisionRepository::class);
+        $this->inventoryService = Mockery::mock(InventoryService::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->batchDownloadService = Mockery::mock(BatchDownloadService::class);
+        $this->documentService = Mockery::mock(DocumentService::class);
+        $this->dossierService = Mockery::mock(DossierService::class);
 
         $this->handler = new RemoveInventoryAndDocumentsHandler(
             $this->wooDecisionRepository,
@@ -68,7 +70,7 @@ class RemoveInventoryAndDocumentsHandlerTest extends UnitTestCase
             $dossierId = Uuid::v6(),
         );
 
-        $this->wooDecisionRepository->expects('find')->with($dossierId)->andThrows(new \RuntimeException('oops'));
+        $this->wooDecisionRepository->expects('find')->with($dossierId)->andThrows(new RuntimeException('oops'));
 
         $this->logger->expects('error');
 
@@ -81,15 +83,15 @@ class RemoveInventoryAndDocumentsHandlerTest extends UnitTestCase
             $dossierId = Uuid::v6(),
         );
 
-        $document = \Mockery::mock(Document::class);
-        $dossier = \Mockery::mock(WooDecision::class);
+        $document = Mockery::mock(Document::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
 
         $this->wooDecisionRepository->expects('find')->with($dossierId)->andReturn($dossier);
 
         $this->inventoryService->expects('removeInventories')->with($dossier)->andReturnTrue();
         $this->documentService->expects('removeDocumentFromDossier')->with($dossier, $document);
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+        $this->batchDownloadService->expects('refresh')->with(Mockery::on(
             static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier
         ));
         $this->dossierService->expects('validateCompletion')->with($dossier);

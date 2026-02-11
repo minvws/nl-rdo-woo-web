@@ -17,6 +17,8 @@ use Shared\Domain\Search\Query\SearchType;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Search\Query\Dsl\Query;
 
+use function array_map;
+
 class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
 {
     public function applyToQuery(FacetList $facetList, SearchParameters $searchParameters, BoolQuery $query): void

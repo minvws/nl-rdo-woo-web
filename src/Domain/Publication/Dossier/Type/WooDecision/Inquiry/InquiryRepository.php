@@ -15,6 +15,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
+use function intval;
+use function sprintf;
+
 /**
  * @extends ServiceEntityRepository<Inquiry>
  */
@@ -87,8 +90,7 @@ class InquiryRepository extends ServiceEntityRepository
             ->where('inq.organisation = :organisation')
             ->orderBy('inq.updatedAt', 'DESC')
             ->setParameter('organisation', $organisation)
-            ->getQuery()
-        ;
+            ->getQuery();
     }
 
     public function getDocsForInquiryDossierQueryBuilder(Inquiry $inquiry, WooDecision $dossier): QueryBuilder
@@ -104,8 +106,7 @@ class InquiryRepository extends ServiceEntityRepository
             ->setParameter('statuses', [
                 DossierStatus::PREVIEW,
                 DossierStatus::PUBLISHED,
-            ])
-        ;
+            ]);
     }
 
     /**

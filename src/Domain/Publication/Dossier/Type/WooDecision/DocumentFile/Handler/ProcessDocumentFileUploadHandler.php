@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handler;
 
+use Generator;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUploadCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
@@ -19,9 +20,6 @@ use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 #[AsMessageHandler]
 readonly class ProcessDocumentFileUploadHandler
 {
@@ -84,9 +82,9 @@ readonly class ProcessDocumentFileUploadHandler
     }
 
     /**
-     * @param \Generator<array-key,UploadedFile> $fileIterator
+     * @param Generator<array-key,UploadedFile> $fileIterator
      */
-    private function handleFiles(\Generator $fileIterator, DocumentFileSet $documentFileSet): void
+    private function handleFiles(Generator $fileIterator, DocumentFileSet $documentFileSet): void
     {
         $dossier = $documentFileSet->getDossier();
         foreach ($fileIterator as $file) {

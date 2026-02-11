@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin;
 
+use OutOfBoundsException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
 use Shared\Form\Inquiry\AdministrationActionsType;
@@ -12,7 +13,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
@@ -49,7 +50,7 @@ class InquiryAdmininistrationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             match ($form->get('action')->getData()) {
                 AdministrationActionsType::ACTION_REGENERATE_INVENTORY => $this->inquiryService->generateInventory($inquiry),
-                default => throw new \OutOfBoundsException('Unknown inquiry administration action'),
+                default => throw new OutOfBoundsException('Unknown inquiry administration action'),
             };
 
             $this->addFlash('backend', ['success' => 'The action has been scheduled for execution']);

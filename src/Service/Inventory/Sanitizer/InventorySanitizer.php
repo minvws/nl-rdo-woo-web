@@ -11,6 +11,10 @@ use Shared\Domain\Publication\SourceType;
 use Shared\Exception\InventorySanitizerException;
 use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
 use Shared\Service\Storage\EntityStorageService;
+use SplFileInfo;
+
+use function sys_get_temp_dir;
+use function tempnam;
 
 readonly class InventorySanitizer
 {
@@ -53,7 +57,7 @@ readonly class InventorySanitizer
 
         $inventoryEntity = $dataProvider->getInventoryEntity();
         $this->persistInventory($inventoryEntity, $dataProvider->getFilename());
-        if (! $this->entityStorageService->storeEntity(new \SplFileInfo($tmpFilename), $inventoryEntity)) {
+        if (! $this->entityStorageService->storeEntity(new SplFileInfo($tmpFilename), $inventoryEntity)) {
             throw new InventorySanitizerException('Could not store the sanitized inventory spreadsheet.');
         }
     }

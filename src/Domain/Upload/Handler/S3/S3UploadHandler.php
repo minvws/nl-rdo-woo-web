@@ -13,6 +13,8 @@ use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadRequest;
 use Webmozart\Assert\Assert;
 
+use function filesize;
+
 readonly class S3UploadHandler implements UploadHandlerInterface
 {
     public function __construct(
@@ -20,7 +22,7 @@ readonly class S3UploadHandler implements UploadHandlerInterface
     ) {
     }
 
-    public function handleUploadRequest(UploadEntity $uploadEntity, UploadRequest $request): UploadResultInterface
+    public function handleUpload(UploadEntity $uploadEntity, UploadRequest $request): UploadResultInterface
     {
         if ($request->isChunked()) {
             return $this->handleMultipartUpload($uploadEntity, $request);

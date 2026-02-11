@@ -12,6 +12,7 @@ use Shared\Domain\Search\Index\ElasticDocumentId;
 use Shared\Domain\Search\Index\Schema\ElasticNestedField;
 use Shared\Domain\Search\Index\Schema\ElasticPath;
 use Shared\Service\Elastic\ElasticClientInterface;
+use Throwable;
 
 /**
  * DocumentHandler would be a better Elasticsearch name
@@ -80,7 +81,7 @@ readonly class ObjectHandler
             $response = new TypeArray($response->asArray());
 
             return $response->getString('[hits][hits][0][inner_hits][pages][hits][hits][0][_source][content]', '');
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return '';
         }
     }

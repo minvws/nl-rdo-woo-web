@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Command;
 
+use Mockery;
 use Shared\Command\PlatformCheck;
 use Shared\Service\PlatformCheck\PlatformCheckerInterface;
 use Shared\Service\PlatformCheck\PlatformCheckResult;
@@ -14,16 +15,18 @@ class PlatformCheckTest extends UnitTestCase
 {
     public function testPlatformCheckReturnsErrorStatusCodeIfOneCheckFails(): void
     {
-        $checkerA = \Mockery::mock(PlatformCheckerInterface::class);
-        $checkerA->expects('getResults')->andReturn([
-            PlatformCheckResult::success('foo'),
-            PlatformCheckResult::success('bar'),
-        ]);
+        $checkerA = Mockery::mock(PlatformCheckerInterface::class);
+        $checkerA->expects('getResults')
+            ->andReturn([
+                PlatformCheckResult::success('foo'),
+                PlatformCheckResult::success('bar'),
+            ]);
 
-        $checkerB = \Mockery::mock(PlatformCheckerInterface::class);
-        $checkerB->expects('getResults')->andReturn([
-            PlatformCheckResult::error('baz', 'oops'),
-        ]);
+        $checkerB = Mockery::mock(PlatformCheckerInterface::class);
+        $checkerB->expects('getResults')
+            ->andReturn([
+                PlatformCheckResult::error('baz', 'oops'),
+            ]);
 
         $command = new PlatformCheck([$checkerA, $checkerB]);
 

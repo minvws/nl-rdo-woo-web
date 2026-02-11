@@ -13,13 +13,13 @@ use Shared\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\S3\StreamFactory;
 use Shared\Service\DownloadFilenameGenerator;
+use Throwable;
 use Webmozart\Assert\Assert;
 use ZipStream\Exception as ZipStreamException;
 use ZipStream\ZipStream;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function sprintf;
+
 final class ZipStreamBatchArchiver implements BatchArchiver
 {
     private ZipStream $zipStream;
@@ -117,7 +117,6 @@ final class ZipStreamBatchArchiver implements BatchArchiver
                 $this->zipStream->finish();
                 unset($this->zipStream);
             } catch (ZipStreamException) {
-                // @SuppressWarnings("PHPMD.EmptyCatchBlock")
             }
         }
 
@@ -139,7 +138,7 @@ final class ZipStreamBatchArchiver implements BatchArchiver
         return true;
     }
 
-    private function logException(\Throwable $e): void
+    private function logException(Throwable $e): void
     {
         $this->logger->error(sprintf('"%s" exception thrown', $e::class), [
             'exceptionMessage' => $e->getMessage(),

@@ -1,5 +1,7 @@
 FROM minio/mc:RELEASE.2025-02-15T10-36-16Z AS mc
 
+FROM composer:2 AS composer
+
 FROM php:8.3.28-apache-bookworm
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -8,35 +10,24 @@ ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
-# Workaround for apt-get issue, see https://github.com/minvws/nl-rdo-woo-web-private/issues/2588
-RUN echo "Acquire::http::Pipeline-Depth 0;" > /etc/apt/apt.conf.d/99custom && \
-    echo "Acquire::http::No-Cache true;" >> /etc/apt/apt.conf.d/99custom && \
-    echo "Acquire::BrokenProxy    true;" >> /etc/apt/apt.conf.d/99custom
-
 RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --assume-yes --no-install-recommends \
-        openjdk-17-jdk \
+    && apt-get install --assume-yes --no-install-recommends \
+        apt-transport-https \
+        ca-certificates \
+        openssl \
+        curl \
+        sudo \
         git \
-        libicu-dev \
-        libpq-dev \
-        libonig-dev \
+        wait-for-it \
+        unzip \
+        locales \
+        pdftk \
         tesseract-ocr \
         tesseract-ocr-nld \
         poppler-utils \
-        pdftk \
-        librabbitmq-dev \
-        p7zip-full \
         xlsx2csv \
-        libzip-dev \
-        libpng-dev \
-        postgresql-client-common \
-        postgresql-client \
-        locales \
-        wait-for-it \
-        unzip \
-        sudo \
-        qrencode \
+        p7zip-full \
+        vim \
     # Cleanup
     && rm -rf /var/www/* \
     && apt-get autoremove --assume-yes \
@@ -44,7 +35,39 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/*
 
-RUN docker-php-ext-install \
+RUN apt-get update \
+    # Install packages that are needed for building PHP extensions
+    && apt-get install --assume-yes --no-install-recommends \
+        $PHPIZE_DEPS \
+        # Dependency of the PHP intl-extension
+        libicu72 \
+        # Dependency of PHP pdo_pgsql-extension
+        libpq5 \
+        # Dependency of PHP amqp-extension
+        librabbitmq4 \
+        # Dependency of PHP zip-extension
+        libzip4 \
+        # Dependency of the PHP gd-extension
+        libpng16-16 \
+        # Dependency of the PHP mbstring-extension
+        libonig5 \
+    # Install packages that are needed for building PHP extensions
+    && apt-get install --assume-yes --no-install-recommends \
+        # Dependencies only needed while building the PHP extensions
+        $PHPIZE_DEPS \
+        # Dependency of the PHP intl-extension
+        libicu-dev \
+        # Dependency of PHP pdo_pgsql-extension
+        libpq-dev \
+        # Dependency of PHP amqp-extension
+        librabbitmq-dev \
+        # Dependency of PHP zip-extension
+        libzip-dev \
+        # Dependency of PHP gd-extension
+        libpng-dev \
+        # Dependency of PHP mbstring-extension
+        libonig-dev \
+    && docker-php-ext-install -j "$(nproc --all)" \
         intl \
         mbstring \
         pdo_pgsql \
@@ -56,13 +79,29 @@ RUN docker-php-ext-install \
     && pecl install amqp \
     && pecl install apcu \
     && pecl install pcov \
-    && docker-php-ext-enable \
+    && pecl install xdebug \
+    && docker-php-ext-enable --ini-name docker-php-ext-zz-custom.ini \
         amqp \
         apcu \
         pcov \
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen \
+        xdebug \
+    # Purge packages that where only needed for building php extensions
+    && apt-get purge --assume-yes \
+        $PHPIZE_DEPS \
+        libicu-dev \
+        libpq-dev \
+        librabbitmq-dev \
+        libzip-dev \
+        libpng-dev \
+        libonig-dev \
+    # Cleanup
+    && apt-get autoremove --assume-yes \
+    && apt-get clean --assume-yes \
+    && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/*
+
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen \
+    && cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 ARG NODE_MAJOR=22
 
@@ -128,8 +167,10 @@ RUN curl -fsSLo /tmp/fixuid.tar.gz "https://github.com/boxboat/fixuid/releases/d
 COPY --link ./docker/php/files/ /
 
 RUN a2dissite 000-default \
-    && a2enconf server-name
+    && a2enconf server-name \
+    && a2enmod ssl headers rewrite
 
 COPY --from=mc /usr/bin/mc /usr/local/bin/mc
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
 USER woopie

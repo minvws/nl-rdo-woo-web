@@ -23,8 +23,15 @@ class E2ESubjectFixtures extends Fixture implements DependentFixtureInterface, F
 
     public function load(ObjectManager $manager): void
     {
+        $subjectName = 'E2E Test Subject';
+
+        $existingSubject = $manager->getRepository(Subject::class)->findOneBy(['name' => $subjectName]);
+        if ($existingSubject) {
+            return;
+        }
+
         $entity = new Subject();
-        $entity->setName('E2E Test Subject');
+        $entity->setName($subjectName);
         $entity->setOrganisation(
             $this->getReference(E2EOrganisationFixtures::REFERENCE, Organisation::class),
         );

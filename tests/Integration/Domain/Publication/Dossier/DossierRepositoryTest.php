@@ -15,6 +15,8 @@ use Shared\Tests\Factory\Publication\Dossier\Type\InvestigationReport\Investigat
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
 
+use function array_map;
+
 final class DossierRepositoryTest extends SharedWebTestCase
 {
     private DossierRepository $repository;
@@ -32,13 +34,13 @@ final class DossierRepositoryTest extends SharedWebTestCase
     {
         $dossier = CovenantFactory::createOne();
 
-        $result = $this->repository->findOneByDossierId($dossier->_real()->getId());
-        self::assertEquals($dossier->_real()->getId(), $result->getId());
+        $result = $this->repository->findOneByDossierId($dossier->getId());
+        self::assertEquals($dossier->getId(), $result->getId());
 
         $this->repository->remove($result);
 
         $this->expectException(NoResultException::class);
-        $this->repository->findOneByDossierId($dossier->_real()->getId());
+        $this->repository->findOneByDossierId($dossier->getId());
     }
 
     public function testGetDossiersForOrganisationQueryBuilder(): void
@@ -46,9 +48,9 @@ final class DossierRepositoryTest extends SharedWebTestCase
         $covenant = CovenantFactory::createOne();
 
         $result = $this->repository->getDossiersForOrganisationQueryBuilder(
-            $covenant->_real()->getOrganisation(),
-            [$covenant->_real()->getStatus()],
-            [$covenant->_real()->getType()],
+            $covenant->getOrganisation(),
+            [$covenant->getStatus()],
+            [$covenant->getType()],
         )->getQuery()->getResult();
 
         self::assertCount(1, $result);
@@ -68,11 +70,11 @@ final class DossierRepositoryTest extends SharedWebTestCase
             $result,
         );
 
-        self::assertContains($covenant->_real()->getId()->toRfc4122(), $ids);
-        self::assertContains($wooDecision->_real()->getId()->toRfc4122(), $ids);
-        self::assertContains($annualReport->_real()->getId()->toRfc4122(), $ids);
-        self::assertNotContains($published->_real()->getId()->toRfc4122(), $ids);
-        self::assertContains($uncompleted->_real()->getId()->toRfc4122(), $ids);
+        self::assertContains($covenant->getId()->toRfc4122(), $ids);
+        self::assertContains($wooDecision->getId()->toRfc4122(), $ids);
+        self::assertContains($annualReport->getId()->toRfc4122(), $ids);
+        self::assertNotContains($published->getId()->toRfc4122(), $ids);
+        self::assertContains($uncompleted->getId()->toRfc4122(), $ids);
     }
 
     public function testGetRecentDossiersWithoutDepartmentFiltersUnpublishedAndLimitsResults(): void
@@ -91,7 +93,7 @@ final class DossierRepositoryTest extends SharedWebTestCase
         );
 
         self::assertCount(4, $result);
-        self::assertNotContains($unpublished->_real()->getId()->toRfc4122(), $ids);
+        self::assertNotContains($unpublished->getId()->toRfc4122(), $ids);
     }
 
     public function testGetRecentDossiersWithDepartmentFilter(): void
@@ -102,12 +104,12 @@ final class DossierRepositoryTest extends SharedWebTestCase
         $publishedForDepartment = CovenantFactory::createOne(['status' => DossierStatus::PUBLISHED, 'departments' => [$department]]);
         CovenantFactory::createOne(['status' => DossierStatus::PUBLISHED, 'departments' => []]);
 
-        $result = $this->repository->getRecentDossiers(4, $department->_real());
+        $result = $this->repository->getRecentDossiers(4, $department);
         $ids = array_map(
             static fn (AbstractDossier $dossier) => $dossier->getId()->toRfc4122(),
             $result,
         );
 
-        self::assertEquals([$publishedForDepartment->_real()->getId()->toRfc4122()], $ids);
+        self::assertEquals([$publishedForDepartment->getId()->toRfc4122()], $ids);
     }
 }

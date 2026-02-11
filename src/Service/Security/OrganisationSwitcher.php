@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Shared\Service\Security;
 
+use RuntimeException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Uid\Uuid;
+
+use function reset;
+use function strval;
 
 class OrganisationSwitcher
 {
@@ -76,7 +80,7 @@ class OrganisationSwitcher
         $organisations = $this->getOrganisations($user);
         $defaultOrganisation = reset($organisations);
         if (! $defaultOrganisation instanceof Organisation) {
-            throw new \RuntimeException('Could not select a default organisation');
+            throw new RuntimeException('Could not select a default organisation');
         }
 
         return $defaultOrganisation;

@@ -8,6 +8,8 @@ use Carbon\CarbonImmutable;
 use Shared\Tests\Factory\WooIndex\WooIndexSitemapFactory;
 use Zenstruck\Foundry\Story;
 
+use function range;
+
 /**
  * @method static CarbonImmutable now()
  */

@@ -10,7 +10,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 (new Dotenv())->bootEnv(__DIR__ . '/.env');
 
-$applicationId = ApplicationId::fromString($_SERVER['APP_ID']);
+$applicationId = ApplicationId::fromString($_SERVER['APP_ID'] ?? null);
 
 $kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG'], $applicationId);
 $kernel->boot();

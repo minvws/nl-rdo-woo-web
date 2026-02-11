@@ -11,6 +11,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Shared\Doctrine\SortNullsLastWalker;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
@@ -18,13 +19,16 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use Shared\Service\Inquiry\DocumentCaseNumbers;
 use Shared\Service\Inventory\DocumentNumber;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
 
+use function intval;
+use function sprintf;
+
 /**
- * @SuppressWarnings("PHPMD.TooManyPublicMethods")
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ * @template T of Document
  *
- * @extends ServiceEntityRepository<Document>
+ * @extends ServiceEntityRepository<T>
  */
 class DocumentRepository extends ServiceEntityRepository
 {
@@ -64,8 +68,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->orderBy('d.documentDate', 'ASC')
             ->setParameter('threadId', $threadId)
             ->setParameter('dossier', $dossier)
-            ->setParameter('status', DossierStatus::PUBLISHED)
-        ;
+            ->setParameter('status', DossierStatus::PUBLISHED);
 
         return $qb->getQuery()->getResult();
     }
@@ -83,8 +86,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->orderBy('d.documentDate', 'ASC')
             ->setParameter('familyId', $familyId)
             ->setParameter('dossier', $dossier)
-            ->setParameter('status', DossierStatus::PUBLISHED)
-        ;
+            ->setParameter('status', DossierStatus::PUBLISHED);
 
         return $qb->getQuery()->getResult();
     }
@@ -117,8 +119,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('threadId', $threadId)
             ->setParameter('dossier', $dossier)
             ->setParameter('document', $document)
-            ->setParameter('status', DossierStatus::PUBLISHED)
-        ;
+            ->setParameter('status', DossierStatus::PUBLISHED);
     }
 
     public function getRelatedDocumentsByFamily(WooDecision $dossier, Document $document): ArrayCollection|QueryBuilder
@@ -139,8 +140,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('familyId', $familyId)
             ->setParameter('dossier', $dossier)
             ->setParameter('document', $document)
-            ->setParameter('status', DossierStatus::PUBLISHED)
-        ;
+            ->setParameter('status', DossierStatus::PUBLISHED);
     }
 
     public function findOneByDossierAndDocumentId(WooDecision $dossier, string $documentId): ?Document
@@ -150,8 +150,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->where('d.documentId = :documentId')
             ->andWhere('ds.id = :dossierId')
             ->setParameter('documentId', $documentId)
-            ->setParameter('dossierId', $dossier->getId())
-        ;
+            ->setParameter('dossierId', $dossier->getId());
 
         /** @var ?Document */
         return $qb->getQuery()->getOneOrNullResult();
@@ -164,8 +163,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->where('d.id = :id')
             ->andWhere('ds.id = :dossierId')
             ->setParameter('id', $id)
-            ->setParameter('dossierId', $dossier->getId())
-        ;
+            ->setParameter('dossierId', $dossier->getId());
 
         /** @var ?Document */
         return $qb->getQuery()->getOneOrNullResult();
@@ -180,8 +178,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->andWhere('ds.documentPrefix = :prefix')
             ->setParameter('documentNr', $documentNr)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('prefix', $prefix)
-        ;
+            ->setParameter('prefix', $prefix);
 
         /** @var ?Document */
         return $qb->getQuery()->getOneOrNullResult();
@@ -192,8 +189,7 @@ class DocumentRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('doc')
             ->innerJoin('doc.dossiers', 'dos')
             ->where('dos.id = :dossierId')
-            ->setParameter('dossierId', $dossier->getId())
-        ;
+            ->setParameter('dossierId', $dossier->getId());
     }
 
     public function getDossierDocumentsForPaginationQuery(WooDecision $dossier): Query
@@ -224,8 +220,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->orderBy('d.updatedAt', 'DESC')
             ->setMaxResults($limit)
             ->setParameter('searchTerm', '%' . $searchTerm . '%')
-            ->setParameter('dossierId', $dossier->getId())
-        ;
+            ->setParameter('dossierId', $dossier->getId());
 
         return $qb->getQuery()->getResult();
     }
@@ -253,8 +248,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->where('doc_inq.id = :inquiryId')
             ->andWhere('dos.status IN (:statuses)')
             ->setParameter('inquiryId', $inquiry->getId())
-            ->setParameter('statuses', DossierStatus::publiclyAvailableCases())
-        ;
+            ->setParameter('statuses', DossierStatus::publiclyAvailableCases());
 
         return $qb->getQuery()->getResult();
     }
@@ -320,8 +314,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->innerJoin('doc.dossiers', 'dos')
             ->groupBy('doc.id')
             ->setParameter('documentNr', $documentNr)
-            ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
-        ;
+            ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED]);
 
         /** @var ?DocumentViewModel */
         return $qb->getQuery()->getOneOrNullResult();
@@ -345,8 +338,7 @@ class DocumentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('d')
             ->where('LOWER(d.documentNr) = LOWER(:documentNr)')
-            ->setParameter('documentNr', $documentNr)
-        ;
+            ->setParameter('documentNr', $documentNr);
 
         /** @var ?Document */
         return $qb->getQuery()->getOneOrNullResult();
@@ -366,5 +358,26 @@ class DocumentRepository extends ServiceEntityRepository
             ->getArrayResult();
 
         return DocumentCaseNumbers::fromArray($result);
+    }
+
+    public function findByExternalId(ExternalId $externalId): ?Document
+    {
+        return $this->findOneBy(['externalId' => $externalId]);
+    }
+
+    /**
+     * @return ?T
+     */
+    public function findByDossierAndExternalId(AbstractDossier $dossier, ExternalId $externalId): ?Document
+    {
+        /** @var ?T */
+        return $this->createQueryBuilder('document')
+            ->innerJoin('document.dossiers', 'dossier')
+            ->where('dossier = :dossier')
+            ->setParameter('dossier', $dossier)
+            ->andWhere('document.externalId = :externalId')
+            ->setParameter('externalId', $externalId)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

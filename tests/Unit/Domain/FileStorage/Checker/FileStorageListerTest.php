@@ -7,10 +7,13 @@ namespace Shared\Tests\Unit\Domain\FileStorage\Checker;
 use League\Flysystem\DirectoryListing;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\StorageAttributes;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\FileStorage\Checker\FileStorageLister;
 use Shared\Domain\FileStorage\Checker\FileStorageType;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function iterator_to_array;
 
 class FileStorageListerTest extends UnitTestCase
 {
@@ -21,8 +24,8 @@ class FileStorageListerTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->fileStorageLister = new FileStorageLister(
-            $this->documentStorage = \Mockery::mock(FilesystemOperator::class),
-            $this->batchStorage = \Mockery::mock(FilesystemOperator::class),
+            $this->documentStorage = Mockery::mock(FilesystemOperator::class),
+            $this->batchStorage = Mockery::mock(FilesystemOperator::class),
         );
     }
 
@@ -32,8 +35,8 @@ class FileStorageListerTest extends UnitTestCase
             ->expects('listContents->filter')
             ->andReturn(
                 new DirectoryListing([
-                    $fileA = \Mockery::mock(StorageAttributes::class),
-                    $fileB = \Mockery::mock(StorageAttributes::class),
+                    $fileA = Mockery::mock(StorageAttributes::class),
+                    $fileB = Mockery::mock(StorageAttributes::class),
                 ]),
             );
 
@@ -60,8 +63,8 @@ class FileStorageListerTest extends UnitTestCase
             ->expects('listContents->filter')
             ->andReturn(
                 new DirectoryListing([
-                    $fileA = \Mockery::mock(StorageAttributes::class),
-                    $fileB = \Mockery::mock(StorageAttributes::class),
+                    $fileA = Mockery::mock(StorageAttributes::class),
+                    $fileB = Mockery::mock(StorageAttributes::class),
                 ]),
             );
 

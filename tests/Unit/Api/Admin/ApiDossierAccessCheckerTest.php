@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Api\Admin;
 
+use Admin\Api\Admin\ApiDossierAccessChecker;
 use ApiPlatform\Symfony\Security\Exception\AccessDeniedException;
+use Mockery;
 use Mockery\MockInterface;
-use Shared\Api\Admin\ApiDossierAccessChecker;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Unit\UnitTestCase;
@@ -23,8 +24,8 @@ final class ApiDossierAccessCheckerTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
-        $this->authorizationChecker = \Mockery::mock(AuthorizationCheckerInterface::class);
+        $this->dossierRepository = Mockery::mock(DossierRepository::class);
+        $this->authorizationChecker = Mockery::mock(AuthorizationCheckerInterface::class);
         $this->dossierAccessChecker = new ApiDossierAccessChecker(
             $this->dossierRepository,
             $this->authorizationChecker,
@@ -34,7 +35,7 @@ final class ApiDossierAccessCheckerTest extends UnitTestCase
     public function testEnsureUserIsAllowedToUpdateDossierThrowsExceptionWhenNotAllowed(): void
     {
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
         $this->dossierRepository
             ->expects('findOneByDossierId')
@@ -53,7 +54,7 @@ final class ApiDossierAccessCheckerTest extends UnitTestCase
     public function testEnsureUserIsAllowedToUpdateDossierThrowsNoExceptionWhenAllowed(): void
     {
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
         $this->dossierRepository
             ->expects('findOneByDossierId')

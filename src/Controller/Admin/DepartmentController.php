@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -72,7 +72,7 @@ class DepartmentController extends AbstractController
         }
 
         return $this->render('admin/departments/create.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 
@@ -95,7 +95,7 @@ class DepartmentController extends AbstractController
 
         return $this->render('admin/departments/edit.html.twig', [
             'department' => $currentDepartment,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 }

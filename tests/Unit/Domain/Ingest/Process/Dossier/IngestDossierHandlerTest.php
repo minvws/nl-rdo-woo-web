@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Ingest\Process\Dossier;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\Process\Dossier\DossierIngester;
 use Shared\Domain\Ingest\Process\Dossier\IngestDossierCommand;
@@ -22,8 +23,8 @@ class IngestDossierHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
-        $this->ingester = \Mockery::mock(DossierIngester::class);
+        $this->doctrine = Mockery::mock(EntityManagerInterface::class);
+        $this->ingester = Mockery::mock(DossierIngester::class);
 
         $this->handler = new IngestDossierHandler(
             $this->doctrine,
@@ -36,7 +37,7 @@ class IngestDossierHandlerTest extends UnitTestCase
         $refresh = true;
 
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
         $this->doctrine->shouldReceive('getRepository->find')->with($dossierId)->andReturn($dossier);
 

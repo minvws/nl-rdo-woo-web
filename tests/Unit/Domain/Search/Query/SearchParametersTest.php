@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Query;
 
+use ArrayIterator;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Search\Query\Facet\Definition\DateFacet;
 use Shared\Domain\Search\Query\Facet\Definition\InquiryDocumentsFacet;
@@ -27,13 +29,13 @@ class SearchParametersTest extends UnitTestCase
     public function testWithFacetInput(): void
     {
         $parameters = new SearchParameters(
-            facetInputs: $facetInputs = \Mockery::mock(FacetInputCollection::class),
+            facetInputs: $facetInputs = Mockery::mock(FacetInputCollection::class),
         );
 
         $facetKey = FacetKey::DEPARTMENT;
-        $newFacetInput = \Mockery::mock(FacetInput::class);
+        $newFacetInput = Mockery::mock(FacetInput::class);
 
-        $updatedFacetInputs = \Mockery::mock(FacetInputCollection::class);
+        $updatedFacetInputs = Mockery::mock(FacetInputCollection::class);
         $facetInputs->expects('withFacetInput')->with($facetKey, $newFacetInput)->andReturn($updatedFacetInputs);
 
         $newParameters = $parameters->withFacetInput($facetKey, $newFacetInput);
@@ -45,7 +47,7 @@ class SearchParametersTest extends UnitTestCase
     public function testWithQueryString(): void
     {
         $parameters = new SearchParameters(
-            facetInputs: \Mockery::mock(FacetInputCollection::class),
+            facetInputs: Mockery::mock(FacetInputCollection::class),
             query: 'foo',
         );
 
@@ -58,26 +60,26 @@ class SearchParametersTest extends UnitTestCase
     public function testGetQueryParameters(): void
     {
         /** @var FacetInputInterface&MockInterface $enabledFacet */
-        $enabledFacet = \Mockery::mock(StringValuesFacetInput::class);
+        $enabledFacet = Mockery::mock(StringValuesFacetInput::class);
         $enabledFacet->expects('isNotActive')->andReturnFalse();
         $enabledFacet->expects('getRequestParameters')->andReturn(['x' => 'y']);
 
         /** @var FacetInputInterface&MockInterface $disabledFacet */
-        $disabledFacet = \Mockery::mock(StringValuesFacetInput::class);
+        $disabledFacet = Mockery::mock(StringValuesFacetInput::class);
         $disabledFacet->expects('isNotActive')->andReturnTrue();
 
         /** @var InquiryDocumentsFacet&MockInterface $documentInquiryFacet */
-        $documentInquiryFacet = \Mockery::mock(InquiryDocumentsFacet::class);
+        $documentInquiryFacet = Mockery::mock(InquiryDocumentsFacet::class);
         $documentInquiryFacet->shouldReceive('isNotActive')->andReturnFalse();
         $documentInquiryFacet->shouldReceive('getRequestParameters')->andReturn(['doc1', 'doc2']);
 
         /** @var InquiryDossiersFacet&MockInterface $dossierInquiryFacet */
-        $dossierInquiryFacet = \Mockery::mock(InquiryDossiersFacet::class);
+        $dossierInquiryFacet = Mockery::mock(InquiryDossiersFacet::class);
         $dossierInquiryFacet->shouldReceive('isNotActive')->andReturnFalse();
         $dossierInquiryFacet->shouldReceive('getRequestParameters')->andReturn(['doc1', 'doc2']);
 
-        $facetInputCollection = \Mockery::mock(FacetInputCollection::class);
-        $facetInputCollection->shouldReceive('getIterator')->andReturn(new \ArrayIterator([
+        $facetInputCollection = Mockery::mock(FacetInputCollection::class);
+        $facetInputCollection->shouldReceive('getIterator')->andReturn(new ArrayIterator([
             FacetKey::DEPARTMENT->value => $enabledFacet,
             FacetKey::PREFIXED_DOSSIER_NR->value => $disabledFacet,
             FacetKey::INQUIRY_DOCUMENTS->value => $documentInquiryFacet,
@@ -98,8 +100,8 @@ class SearchParametersTest extends UnitTestCase
 
     public function testWithSort(): void
     {
-        $facetInputCollection = \Mockery::mock(FacetInputCollection::class);
-        $facetInputCollection->shouldReceive('getIterator')->andReturn(new \ArrayIterator([]));
+        $facetInputCollection = Mockery::mock(FacetInputCollection::class);
+        $facetInputCollection->shouldReceive('getIterator')->andReturn(new ArrayIterator([]));
 
         $parameters = new SearchParameters(
             facetInputs: $facetInputCollection,
@@ -135,19 +137,19 @@ class SearchParametersTest extends UnitTestCase
     public function testWithBaseQuery(): void
     {
         /** @var InquiryDocumentsFacet&MockInterface $documentInquiryFacet */
-        $documentInquiryFacet = \Mockery::mock(InquiryDocumentsFacet::class)->makePartial();
+        $documentInquiryFacet = Mockery::mock(InquiryDocumentsFacet::class)->makePartial();
         $documentInquiryFacet->shouldReceive('isNotActive')->andReturnFalse();
         $documentInquiryFacet->shouldReceive('isActive')->andReturnTrue();
         $documentInquiryFacet->shouldReceive('getRequestParameters')->andReturn(['doc1', 'doc2']);
 
         /** @var InquiryDossiersFacet&MockInterface $dossierInquiryFacet */
-        $dossierInquiryFacet = \Mockery::mock(InquiryDossiersFacet::class)->makePartial();
+        $dossierInquiryFacet = Mockery::mock(InquiryDossiersFacet::class)->makePartial();
         $dossierInquiryFacet->shouldReceive('isNotActive')->andReturnFalse();
         $dossierInquiryFacet->shouldReceive('isActive')->andReturnTrue();
         $dossierInquiryFacet->shouldReceive('getRequestParameters')->andReturn(['doc1', 'doc2']);
 
-        $facetInputCollection = \Mockery::mock(FacetInputCollection::class);
-        $facetInputCollection->shouldReceive('getIterator')->andReturn(new \ArrayIterator([
+        $facetInputCollection = Mockery::mock(FacetInputCollection::class);
+        $facetInputCollection->shouldReceive('getIterator')->andReturn(new ArrayIterator([
             FacetKey::INQUIRY_DOCUMENTS->value => $documentInquiryFacet,
             FacetKey::INQUIRY_DOSSIERS->value => $dossierInquiryFacet,
         ]));
@@ -159,7 +161,7 @@ class SearchParametersTest extends UnitTestCase
             searchType: SearchType::DOSSIER,
         );
 
-        $queryConditions = \Mockery::mock(QueryConditionBuilderInterface::class);
+        $queryConditions = Mockery::mock(QueryConditionBuilderInterface::class);
         $newParameters = $parameters->withBaseQueryConditions($queryConditions);
 
         $this->assertMatchesObjectSnapshot($newParameters);
@@ -168,10 +170,10 @@ class SearchParametersTest extends UnitTestCase
 
     public function testHasActiveFacetsReturnsTrueForFirstActiveFacet(): void
     {
-        $facetInputA = \Mockery::mock(FacetInputInterface::class);
+        $facetInputA = Mockery::mock(FacetInputInterface::class);
         $facetInputA->expects('isActive')->andReturnTrue();
 
-        $facetInputB = \Mockery::mock(FacetInputInterface::class);
+        $facetInputB = Mockery::mock(FacetInputInterface::class);
         $facetInputB->shouldNotHaveBeenCalled();
 
         $parameters = new SearchParameters(
@@ -183,10 +185,10 @@ class SearchParametersTest extends UnitTestCase
 
     public function testHasActiveFacetsReturnsFalseWhenAllFacetsAreInactive(): void
     {
-        $facetInputA = \Mockery::mock(FacetInputInterface::class);
+        $facetInputA = Mockery::mock(FacetInputInterface::class);
         $facetInputA->expects('isActive')->andReturnFalse();
 
-        $facetInputB = \Mockery::mock(FacetInputInterface::class);
+        $facetInputB = Mockery::mock(FacetInputInterface::class);
         $facetInputB->expects('isActive')->andReturnFalse();
 
         $parameters = new SearchParameters(

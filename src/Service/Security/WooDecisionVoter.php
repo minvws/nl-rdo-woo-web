@@ -9,6 +9,8 @@ use Shared\Service\Inquiry\InquirySessionService;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
+use function in_array;
+
 class WooDecisionVoter extends Voter
 {
     public function __construct(
@@ -21,9 +23,6 @@ class WooDecisionVoter extends Voter
         return $attribute === DossierVoter::VIEW && $subject instanceof WooDecision;
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         if (! $subject instanceof WooDecision) {

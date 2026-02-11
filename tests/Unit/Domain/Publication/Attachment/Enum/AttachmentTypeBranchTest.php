@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\Enum;
 
+use Mockery;
 use PHPUnit\Framework\Attributes\Group;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentTypeBranch;
@@ -16,7 +17,7 @@ final class AttachmentTypeBranchTest extends UnitTestCase
 {
     public function testItCanBeInitialized(): void
     {
-        $branch = \Mockery::mock(AttachmentTypeBranch::class);
+        $branch = Mockery::mock(AttachmentTypeBranch::class);
 
         $dto = new AttachmentTypeBranch(name: 'test', branch: $branch);
 
@@ -25,7 +26,7 @@ final class AttachmentTypeBranchTest extends UnitTestCase
 
     public function testHasBranchAndNoAttachmentTypes(): void
     {
-        $child = \Mockery::mock(AttachmentTypeBranch::class);
+        $child = Mockery::mock(AttachmentTypeBranch::class);
         $dto = new AttachmentTypeBranch(
             name: 'test',
             branch: $child,
@@ -55,10 +56,10 @@ final class AttachmentTypeBranchTest extends UnitTestCase
 
     public function testToArrayWithABranchAndWithoutAttachmentTypes(): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator->shouldReceive('trans')->andReturnArg(0);
 
-        $branch = \Mockery::mock(AttachmentTypeBranch::class);
+        $branch = Mockery::mock(AttachmentTypeBranch::class);
         $branch->shouldReceive('toArray')->with($translator)->once()->andReturn(['placeholder']);
 
         $dto = new AttachmentTypeBranch(
@@ -78,7 +79,7 @@ final class AttachmentTypeBranchTest extends UnitTestCase
 
     public function testToArrayWithoutABranchAndWithAttachmentTypes(): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator->shouldReceive('trans')->andReturnArg(0)->byDefault();
         $translator->shouldReceive('trans')->with('advice', [], AttachmentType::TRANS_DOMAIN, null)->once()->andReturnArg(0);
         $translator->shouldReceive('trans')->with('request_for_advice', [], AttachmentType::TRANS_DOMAIN, null)->once()->andReturnArg(0);
@@ -120,7 +121,7 @@ final class AttachmentTypeBranchTest extends UnitTestCase
             attachmentTypes: $attachmentTypes,
         );
 
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator->shouldReceive('trans')->andReturnArg(0);
 
         $result = $dto->toArray($translator);
@@ -146,14 +147,14 @@ final class AttachmentTypeBranchTest extends UnitTestCase
 
     public function testToArrayWithABranchAndWithAttachmentTypes(): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator->shouldReceive('trans')->andReturnArg(0)->byDefault();
         $translator->shouldReceive('trans')->with('advice', [], AttachmentType::TRANS_DOMAIN, null)->once()->andReturnArg(0);
         $translator->shouldReceive('trans')->with('request_for_advice', [], AttachmentType::TRANS_DOMAIN, null)->once()->andReturnArg(0);
 
         $attachmentTypes = [AttachmentType::ADVICE, AttachmentType::REQUEST_FOR_ADVICE];
 
-        $branch = \Mockery::mock(AttachmentTypeBranch::class);
+        $branch = Mockery::mock(AttachmentTypeBranch::class);
         $branch->shouldReceive('toArray')->with($translator)->once()->andReturn(['placeholder']);
 
         $dto = new AttachmentTypeBranch(
@@ -191,7 +192,7 @@ final class AttachmentTypeBranchTest extends UnitTestCase
             AttachmentType::SPEECH,
         ];
 
-        $mockedbranch = \Mockery::mock(AttachmentTypeBranch::class);
+        $mockedbranch = Mockery::mock(AttachmentTypeBranch::class);
         $mockedbranch->shouldReceive('filter')->with($allowedTypes)->once()->andReturn($mockedbranch);
 
         $dto = new AttachmentTypeBranch(
@@ -213,7 +214,7 @@ final class AttachmentTypeBranchTest extends UnitTestCase
 
     public function testFilterWithoutPassingAnyAllowedTypes(): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator->shouldReceive('trans')->andReturnArg(0);
 
         $dto = new AttachmentTypeBranch(
@@ -228,7 +229,7 @@ final class AttachmentTypeBranchTest extends UnitTestCase
 
     public function testFilterPassingEmptyAllowedTypesArray(): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator->shouldReceive('trans')->andReturnArg(0);
 
         $dto = new AttachmentTypeBranch(

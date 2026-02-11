@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Worker\Pdf\Extractor;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Content\ContentExtractCache;
 use Shared\Domain\Ingest\Content\ContentExtractOptions;
@@ -49,7 +50,7 @@ readonly class PageContentExtractor
     {
         try {
             $this->subTypeIndexer->updatePage($entity, $pageNr, $content);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to index page', [
                 'id' => $entity->getId(),
                 'class' => $entity::class,

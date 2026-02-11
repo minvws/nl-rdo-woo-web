@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Service\Logging;
 
+use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
+
+use function array_key_exists;
+use function array_keys;
 
 class LoggingHelper
 {
@@ -44,7 +48,7 @@ class LoggingHelper
         $loggingType = $this->getLoggingTypeByClassname($loggingTypeClass);
 
         if (! $loggingType->isDisabled()) {
-            throw new \RuntimeException("Cannot restore LoggingType $loggingTypeClass, it is not disabled");
+            throw new RuntimeException("Cannot restore LoggingType $loggingTypeClass, it is not disabled");
         }
 
         $loggingType->restore();
@@ -60,7 +64,7 @@ class LoggingHelper
     private function getLoggingTypeByClassname(string $className): LoggingTypeInterface
     {
         if (! array_key_exists($className, $this->loggers)) {
-            throw new \RuntimeException("No LoggingType of class $className registered");
+            throw new RuntimeException("No LoggingType of class $className registered");
         }
 
         return $this->loggers[$className];

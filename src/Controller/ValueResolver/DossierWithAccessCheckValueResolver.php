@@ -14,6 +14,8 @@ use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
+use function is_a;
+
 #[AsTargetedValueResolver('dossierWithAccessCheck')]
 readonly class DossierWithAccessCheckValueResolver implements ValueResolverInterface
 {

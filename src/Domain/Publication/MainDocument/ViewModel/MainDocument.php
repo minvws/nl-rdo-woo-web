@@ -13,8 +13,6 @@ readonly class MainDocument implements SubTypeViewModelInterface
 {
     /**
      * @param list<string> $grounds
-     *
-     * @SuppressWarnings("PHPMD.ExcessiveParameterList")
      */
     public function __construct(
         public string $id,

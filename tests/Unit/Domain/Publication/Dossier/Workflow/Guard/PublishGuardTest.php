@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Workflow\Guard;
 
+use DateTimeImmutable;
+use Mockery;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
@@ -24,7 +26,7 @@ class PublishGuardTest extends UnitTestCase
 
     public function testGuardPublicationAllowsOtherTransitions(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $event = new GuardEvent(
             $dossier,
             new Marking([]),
@@ -38,7 +40,7 @@ class PublishGuardTest extends UnitTestCase
 
     public function testGuardPublicationBlocksDossierWithoutPublicationDate(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getPublicationDate')->andReturnNull();
 
         $event = new GuardEvent(
@@ -54,8 +56,8 @@ class PublishGuardTest extends UnitTestCase
 
     public function testGuardPublicationBlocksDossierWithFuturePublicationDate(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $dossier->expects('getPublicationDate')->twice()->andReturn(new \DateTimeImmutable('+1 year'));
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getPublicationDate')->twice()->andReturn(new DateTimeImmutable('+1 year'));
 
         $event = new GuardEvent(
             $dossier,
@@ -70,8 +72,8 @@ class PublishGuardTest extends UnitTestCase
 
     public function testGuardPublicationAllowsValidDossier(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $dossier->expects('getPublicationDate')->twice()->andReturn(new \DateTimeImmutable('-1 day'));
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getPublicationDate')->twice()->andReturn(new DateTimeImmutable('-1 day'));
 
         $event = new GuardEvent(
             $dossier,

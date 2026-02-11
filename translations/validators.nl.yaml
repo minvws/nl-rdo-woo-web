@@ -161,3 +161,4 @@ admin.user.reset.at_lease_one_of: 'Vul tenminste 1 waarde in'
 subject_already_exists: 'Dit onderwerp bestaat al'
 alpha_numeric_dash_only: 'Prefix mag alleen bestaan uit letters, cijfers en streepjes'
 casenumbers_invalid: "Zaaknummers mogen alleen letters, cijfers en verbindingstekens bevatten. Maximale lengte is 255 tekens."
+external_id_invalid_characters: 'Het externe id mag alleen bestaan uit letters, cijfers en de tekens: -, ., _, ~'

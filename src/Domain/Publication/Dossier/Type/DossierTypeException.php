@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type;
 
-class DossierTypeException extends \RuntimeException
+use RuntimeException;
+
+class DossierTypeException extends RuntimeException
 {
     public static function forDossierTypeNotAvailable(DossierType $type): self
     {

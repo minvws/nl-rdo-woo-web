@@ -8,6 +8,8 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 
+use function array_map;
+
 readonly class DossierViewFactory
 {
     public function __construct(

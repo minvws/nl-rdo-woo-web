@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\Advice;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceRepository;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Factory\Publication\Dossier\Type\Advice\AdviceFactory;
@@ -27,7 +28,7 @@ final class AdviceRepositoryTest extends SharedWebTestCase
     public function testGetSearchResultViewModel(): void
     {
         $dossier = AdviceFactory::createOne([
-            'dateFrom' => new \DateTimeImmutable(),
+            'dateFrom' => new DateTimeImmutable(),
         ]);
 
         $result = $this->getRepository()->getSearchResultViewModel(

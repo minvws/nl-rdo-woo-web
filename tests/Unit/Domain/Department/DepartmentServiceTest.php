@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Department;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department as DepartmentEntity;
 use Shared\Domain\Department\DepartmentRepository;
@@ -25,9 +26,9 @@ final class DepartmentServiceTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->repository = \Mockery::mock(DepartmentRepository::class);
-        $this->departmentViewFactory = \Mockery::mock(DepartmentViewFactory::class);
-        $this->authorizationMatrix = \Mockery::mock(AuthorizationMatrix::class);
+        $this->repository = Mockery::mock(DepartmentRepository::class);
+        $this->departmentViewFactory = Mockery::mock(DepartmentViewFactory::class);
+        $this->authorizationMatrix = Mockery::mock(AuthorizationMatrix::class);
 
         $this->departmentService = new DepartmentService(
             $this->repository,
@@ -41,16 +42,16 @@ final class DepartmentServiceTest extends UnitTestCase
         $this->repository
             ->shouldReceive('getAllPublicDepartments')
             ->andReturn($departmentEntities = [
-                \Mockery::mock(DepartmentEntity::class),
-                \Mockery::mock(DepartmentEntity::class),
+                Mockery::mock(DepartmentEntity::class),
+                Mockery::mock(DepartmentEntity::class),
             ]);
 
         $this->departmentViewFactory
             ->shouldReceive('makeCollection')
             ->with($departmentEntities)
             ->andReturn($expected = [
-                \Mockery::mock(Department::class),
-                \Mockery::mock(Department::class),
+                Mockery::mock(Department::class),
+                Mockery::mock(Department::class),
             ]);
 
         self::assertSame(
@@ -61,7 +62,7 @@ final class DepartmentServiceTest extends UnitTestCase
 
     public function testUserCanEditLandingpageReturnsFalseWithoutMatrixPermission(): void
     {
-        $department = \Mockery::mock(DepartmentEntity::class);
+        $department = Mockery::mock(DepartmentEntity::class);
         $department->shouldReceive('getSlug')->andReturn('foo');
 
         $this->authorizationMatrix
@@ -76,7 +77,7 @@ final class DepartmentServiceTest extends UnitTestCase
 
     public function testUserCanEditLandingpageReturnsTrueWhenUserHasPermissionAndNoOrganisationFilter(): void
     {
-        $department = \Mockery::mock(DepartmentEntity::class);
+        $department = Mockery::mock(DepartmentEntity::class);
         $department->shouldReceive('getSlug')->andReturn('foo');
 
         $this->authorizationMatrix
@@ -96,7 +97,7 @@ final class DepartmentServiceTest extends UnitTestCase
 
     public function testUserCanEditLandingpageReturnsFalseWhenUserHasPermissionButAnOrganisationFilterMismatch(): void
     {
-        $department = \Mockery::mock(DepartmentEntity::class);
+        $department = Mockery::mock(DepartmentEntity::class);
         $department->shouldReceive('getSlug')->andReturn('foo');
 
         $this->authorizationMatrix
@@ -121,7 +122,7 @@ final class DepartmentServiceTest extends UnitTestCase
 
     public function testUserCanEditLandingpageReturnsTrueWhenUserHasPermissionButAndOrganisationFilterMatches(): void
     {
-        $department = \Mockery::mock(DepartmentEntity::class);
+        $department = Mockery::mock(DepartmentEntity::class);
         $department->shouldReceive('getSlug')->andReturn('foo');
 
         $this->authorizationMatrix

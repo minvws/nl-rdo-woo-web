@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain\Department;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Department\DepartmentFileService;
@@ -14,6 +15,8 @@ use Shared\Domain\Department\Exception\DepartmentAssetNotFound;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
+
+use function fopen;
 
 final class DepartmentFileServiceTest extends UnitTestCase
 {
@@ -27,11 +30,11 @@ final class DepartmentFileServiceTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->assetsStorage = \Mockery::mock(FilesystemOperator::class);
-        $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
+        $this->assetsStorage = Mockery::mock(FilesystemOperator::class);
+        $this->doctrine = Mockery::mock(EntityManagerInterface::class);
 
-        $this->department = \Mockery::mock(Department::class);
-        $this->fileInfo = \Mockery::mock(FileInfo::class);
+        $this->department = Mockery::mock(Department::class);
+        $this->fileInfo = Mockery::mock(FileInfo::class);
 
         $this->departmentFileService = new DepartmentFileService(
             $this->assetsStorage,

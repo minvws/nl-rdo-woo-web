@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload\Preprocessor\Strategy;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
 use Shared\Domain\Upload\AntiVirus\FileScanResult;
@@ -13,7 +14,10 @@ use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\LocalFilesystem;
 use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
 use Shared\Tests\Unit\UnitTestCase;
+use SplFileInfo;
 use Symfony\Component\Mime\MimeTypesInterface;
+
+use function iterator_to_array;
 
 final class SevenZipFileStrategyTest extends UnitTestCase
 {
@@ -29,10 +33,10 @@ final class SevenZipFileStrategyTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->extractor = \Mockery::mock(Extractor::class);
-        $this->mimeTypes = \Mockery::mock(MimeTypesInterface::class);
-        $this->scanner = \Mockery::mock(ClamAvFileScanner::class);
-        $this->localFilesystem = \Mockery::mock(LocalFilesystem::class);
+        $this->extractor = Mockery::mock(Extractor::class);
+        $this->mimeTypes = Mockery::mock(MimeTypesInterface::class);
+        $this->scanner = Mockery::mock(ClamAvFileScanner::class);
+        $this->localFilesystem = Mockery::mock(LocalFilesystem::class);
 
         $this->strategy = new SevenZipFileStrategy(
             $this->extractor,
@@ -45,13 +49,13 @@ final class SevenZipFileStrategyTest extends UnitTestCase
     public function testProcess(): void
     {
         /** @var UploadedFile&MockInterface $file */
-        $file = \Mockery::mock(UploadedFile::class);
+        $file = Mockery::mock(UploadedFile::class);
 
-        $extractedFileOne = \Mockery::mock(\SplFileInfo::class);
+        $extractedFileOne = Mockery::mock(SplFileInfo::class);
         $extractedFileOne->shouldReceive('getPathname')->andReturn($pathOne = 'my/path/file_one.pdf');
         $extractedFileOne->shouldReceive('getBasename')->andReturn('file_one.pdf');
 
-        $extractedFileTwo = \Mockery::mock(\SplFileInfo::class);
+        $extractedFileTwo = Mockery::mock(SplFileInfo::class);
         $extractedFileTwo->shouldReceive('getPathname')->andReturn($pathTwo = 'my/path/file_two.doc');
         $extractedFileTwo->shouldReceive('getBasename')->andReturn('file_two.doc');
 
@@ -82,9 +86,9 @@ final class SevenZipFileStrategyTest extends UnitTestCase
     public function testProcessDoesNotYieldIfSymlink(): void
     {
         /** @var UploadedFile&MockInterface $file */
-        $file = \Mockery::mock(UploadedFile::class);
+        $file = Mockery::mock(UploadedFile::class);
 
-        $extractedFile = \Mockery::mock(\SplFileInfo::class);
+        $extractedFile = Mockery::mock(SplFileInfo::class);
         $extractedFile->shouldReceive('getPathname')->andReturn('my/path/file_one.pdf');
 
         $this->extractor
@@ -105,21 +109,21 @@ final class SevenZipFileStrategyTest extends UnitTestCase
     public function testProcessYieldsOnlySafeFiles(): void
     {
         /** @var UploadedFile&MockInterface $file */
-        $file = \Mockery::mock(UploadedFile::class);
+        $file = Mockery::mock(UploadedFile::class);
 
-        $extractedFileOne = \Mockery::mock(\SplFileInfo::class);
+        $extractedFileOne = Mockery::mock(SplFileInfo::class);
         $extractedFileOne->shouldReceive('getPathname')->andReturn($pathOne = 'my/path/file_one.pdf');
         $extractedFileOne->shouldReceive('getBasename')->andReturn('file_one.pdf');
 
-        $extractedFileTwo = \Mockery::mock(\SplFileInfo::class);
+        $extractedFileTwo = Mockery::mock(SplFileInfo::class);
         $extractedFileTwo->shouldReceive('getPathname')->andReturn($pathTwo = 'my/path/file_two.doc');
         $extractedFileTwo->shouldReceive('getBasename')->andReturn('file_two.doc');
 
-        $extractedFileThree = \Mockery::mock(\SplFileInfo::class);
+        $extractedFileThree = Mockery::mock(SplFileInfo::class);
         $extractedFileThree->shouldReceive('getPathname')->andReturn($pathThree = 'my/path/file_three.doc');
         $extractedFileThree->shouldReceive('getBasename')->andReturn('file_three.doc');
 
-        $extractedFileFour = \Mockery::mock(\SplFileInfo::class);
+        $extractedFileFour = Mockery::mock(SplFileInfo::class);
         $extractedFileFour->shouldReceive('getPathname')->andReturn($pathFour = 'my/path/file_four.doc');
         $extractedFileFour->shouldReceive('getBasename')->andReturn('file_four.doc');
 
@@ -150,7 +154,7 @@ final class SevenZipFileStrategyTest extends UnitTestCase
     public function testCanProcessReturnsTrueOn7zExt(): void
     {
         /** @var UploadedFile&MockInterface $file */
-        $file = \Mockery::mock(UploadedFile::class);
+        $file = Mockery::mock(UploadedFile::class);
         $file->shouldReceive('getOriginalFileExtension')->andReturn('7z');
         $file->shouldReceive('getPathname')->andReturn($path = 'test.7z');
 
@@ -166,7 +170,7 @@ final class SevenZipFileStrategyTest extends UnitTestCase
     public function testCanProcessReturnsTrueOnZipExt(): void
     {
         /** @var UploadedFile&MockInterface $file */
-        $file = \Mockery::mock(UploadedFile::class);
+        $file = Mockery::mock(UploadedFile::class);
         $file->shouldReceive('getOriginalFileExtension')->andReturn('zip');
         $file->shouldReceive('getPathname')->andReturn($path = 'test.zip');
 
@@ -184,7 +188,7 @@ final class SevenZipFileStrategyTest extends UnitTestCase
         $path = 'my/path/file.pdf';
 
         /** @var UploadedFile&MockInterface $file */
-        $file = \Mockery::mock(UploadedFile::class);
+        $file = Mockery::mock(UploadedFile::class);
         $file->shouldReceive('getOriginalFileExtension')->andReturn('pdf');
         $file->shouldReceive('getPathname')->andReturn($path);
 

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Service\PlatformCheck;
 
+use function extension_loaded;
+use function strtoupper;
+
 readonly class PhpExtensionPlatformChecker implements PlatformCheckerInterface
 {
     private const array REQUIRED_EXTENSIONS = ['amqp', 'json', 'pdo_pgsql', 'intl', 'zip'];

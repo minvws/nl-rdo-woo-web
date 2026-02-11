@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Query\Facet\Input;
 
+use Mockery;
 use PHPUnit\Framework\Attributes\Group;
 use Shared\Domain\Search\Query\Facet\FacetDefinitionInterface;
 use Shared\Domain\Search\Query\Facet\Input\FacetInput;
@@ -12,13 +13,15 @@ use Shared\Service\Search\Model\FacetKey;
 use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\InvalidArgumentException;
 
+use function iterator_to_array;
+
 #[Group('facet')]
 #[Group('facetInput')]
 final class FacetInputCollectionTest extends UnitTestCase
 {
     public function testGetByFacetKey(): void
     {
-        $facetInput = \Mockery::mock(FacetInput::class);
+        $facetInput = Mockery::mock(FacetInput::class);
 
         $collection = new FacetInputCollection(...[
             FacetKey::PREFIXED_DOSSIER_NR->value => $facetInput,
@@ -40,13 +43,13 @@ final class FacetInputCollectionTest extends UnitTestCase
 
     public function testGetByFacetDefinition(): void
     {
-        $facetInput = \Mockery::mock(FacetInput::class);
+        $facetInput = Mockery::mock(FacetInput::class);
 
         $collection = new FacetInputCollection(...[
             FacetKey::PREFIXED_DOSSIER_NR->value => $facetInput,
         ]);
 
-        $facetDefinition = \Mockery::mock(FacetDefinitionInterface::class);
+        $facetDefinition = Mockery::mock(FacetDefinitionInterface::class);
         $facetDefinition->shouldReceive('getKey')->andReturn(FacetKey::PREFIXED_DOSSIER_NR);
 
         self::assertSame($facetInput, $collection->getByFacetDefinition($facetDefinition));
@@ -56,7 +59,7 @@ final class FacetInputCollectionTest extends UnitTestCase
     {
         $collection = new FacetInputCollection();
 
-        $facetDefinition = \Mockery::mock(FacetDefinitionInterface::class);
+        $facetDefinition = Mockery::mock(FacetDefinitionInterface::class);
         $facetDefinition->shouldReceive('getKey')->andReturn(FacetKey::DEPARTMENT);
 
         $this->expectException(InvalidArgumentException::class);
@@ -65,8 +68,8 @@ final class FacetInputCollectionTest extends UnitTestCase
 
     public function testIterator(): void
     {
-        $facetInputA = \Mockery::mock(FacetInput::class);
-        $facetInputB = \Mockery::mock(FacetInput::class);
+        $facetInputA = Mockery::mock(FacetInput::class);
+        $facetInputB = Mockery::mock(FacetInput::class);
 
         $facets = [
             FacetKey::PREFIXED_DOSSIER_NR->value => $facetInputA,
@@ -83,9 +86,9 @@ final class FacetInputCollectionTest extends UnitTestCase
 
     public function testWithFacetInput(): void
     {
-        $facetInputA = \Mockery::mock(FacetInput::class);
-        $facetInputB = \Mockery::mock(FacetInput::class);
-        $facetInputC = \Mockery::mock(FacetInput::class);
+        $facetInputA = Mockery::mock(FacetInput::class);
+        $facetInputB = Mockery::mock(FacetInput::class);
+        $facetInputC = Mockery::mock(FacetInput::class);
 
         $facets = [
             FacetKey::PREFIXED_DOSSIER_NR->value => $facetInputA,

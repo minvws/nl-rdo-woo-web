@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\Type\Covenant;
 
 use Doctrine\Persistence\ManagerRegistry;
+use Override;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
@@ -22,7 +23,7 @@ class CovenantMainDocumentRepository extends AbstractMainDocumentRepository impl
         parent::__construct($registry, CovenantMainDocument::class);
     }
 
-    #[\Override]
+    #[Override]
     public function create(AbstractDossier $dossier, CreateMainDocumentCommand $command): AbstractMainDocument
     {
         Assert::isInstanceOf($dossier, Covenant::class);

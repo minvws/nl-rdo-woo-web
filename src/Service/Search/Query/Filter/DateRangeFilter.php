@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Shared\Service\Search\Query\Filter;
 
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+use RuntimeException;
 use Shared\Domain\Search\Index\Schema\ElasticNestedField;
 use Shared\Domain\Search\Query\Facet\Facet;
 use Shared\Domain\Search\Query\Facet\Input\DateRangeInputInterface;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Dsl\Query;
+
+use function is_null;
 
 class DateRangeFilter implements FilterInterface
 {
@@ -42,7 +45,7 @@ class DateRangeFilter implements FilterInterface
         match ($this->comparisonOperator) {
             'lte' => $rangeQuery->lte($rangeDate),
             'gte' => $rangeQuery->gte($rangeDate),
-            default => throw new \RuntimeException('Unknown DateRangeFilter comparison operator: ' . $this->comparisonOperator),
+            default => throw new RuntimeException('Unknown DateRangeFilter comparison operator: ' . $this->comparisonOperator),
         };
 
         $query->addFilter($rangeQuery);

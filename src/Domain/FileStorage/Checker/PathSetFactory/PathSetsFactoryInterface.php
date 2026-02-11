@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\FileStorage\Checker\PathSetFactory;
 
+use Generator;
 use Shared\Domain\FileStorage\Checker\PathSet;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
@@ -11,7 +12,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 interface PathSetsFactoryInterface
 {
     /**
-     * @return \Generator<PathSet>
+     * @return Generator<PathSet>
      */
-    public function getPathSets(): \Generator;
+    public function getPathSets(): Generator;
 }

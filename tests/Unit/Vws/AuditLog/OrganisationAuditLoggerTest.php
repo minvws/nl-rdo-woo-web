@@ -9,6 +9,7 @@ use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\OrganisationChangeLogEvent;
 use MinVWS\AuditLogger\Events\Logging\OrganisationCreatedLogEvent;
 use MinVWS\AuditLogger\Loggers\LoggerInterface as AuditLoggerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Event\OrganisationCreatedEvent;
@@ -30,7 +31,7 @@ class OrganisationAuditLoggerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->internalAuditLogger = \Mockery::mock(AuditLoggerInterface::class);
+        $this->internalAuditLogger = Mockery::mock(AuditLoggerInterface::class);
         $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
         $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
 
@@ -41,19 +42,19 @@ class OrganisationAuditLoggerTest extends UnitTestCase
 
     public function testOnCreated(): void
     {
-        $actor = \Mockery::mock(User::class);
+        $actor = Mockery::mock(User::class);
 
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
         $department->shouldReceive('getName')->andReturn('department Foo');
 
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
         $organisation->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('1efe88cf-1e86-6a86-a022-dfa43a74a2ab'));
         $organisation->shouldReceive('getName')->andReturn('Foo');
         $organisation->shouldReceive('getDepartments')->andReturn(new ArrayCollection([
             $department,
         ]));
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             function (OrganisationCreatedLogEvent $event) use ($actor): bool {
                 self::assertEquals($actor, $event->actor);
                 $this->assertMatchesSnapshot($event->data);
@@ -67,19 +68,19 @@ class OrganisationAuditLoggerTest extends UnitTestCase
 
     public function testOnUpdated(): void
     {
-        $actor = \Mockery::mock(User::class);
+        $actor = Mockery::mock(User::class);
 
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
         $department->shouldReceive('getName')->andReturn('department Foo');
 
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
         $organisation->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('1efe88cf-1e86-6a86-a022-dfa43a74a2ab'));
         $organisation->shouldReceive('getName')->andReturn('Foo');
         $organisation->shouldReceive('getDepartments')->andReturn(new ArrayCollection([
             $department,
         ]));
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             function (OrganisationChangeLogEvent $event) use ($actor): bool {
                 self::assertEquals($actor, $event->actor);
                 $this->assertMatchesSnapshot($event->data);

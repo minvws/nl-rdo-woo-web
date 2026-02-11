@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload\Department;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Department\DepartmentRepository;
@@ -27,15 +28,15 @@ final class DepartmentUploadHandlerTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->departmentRepository = \Mockery::mock(DepartmentRepository::class);
-        $this->entityUploadStorer = \Mockery::mock(EntityUploadStorer::class);
+        $this->departmentRepository = Mockery::mock(DepartmentRepository::class);
+        $this->entityUploadStorer = Mockery::mock(EntityUploadStorer::class);
 
         $this->departmentUploadHandler = new DepartmentUploadHandler(
             $this->departmentRepository,
             $this->entityUploadStorer,
         );
 
-        $this->uploadEntity = \Mockery::mock(UploadEntity::class);
+        $this->uploadEntity = Mockery::mock(UploadEntity::class);
         $this->event = new UploadValidatedEvent(
             uploadEntity: $this->uploadEntity,
         );
@@ -55,12 +56,12 @@ final class DepartmentUploadHandlerTest extends UnitTestCase
             ->with('departmentId')
             ->andReturn($departmentIdString);
 
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
 
         $this->departmentRepository
             ->shouldReceive('findOne')
             ->once()
-            ->with(\Mockery::on(fn (Uuid $uuid): bool => $uuid->toRfc4122() === $departmentIdString))
+            ->with(Mockery::on(fn (Uuid $uuid): bool => $uuid->toRfc4122() === $departmentIdString))
             ->andReturn($department);
 
         $this->entityUploadStorer

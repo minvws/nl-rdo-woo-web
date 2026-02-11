@@ -1,0 +1,321 @@
+meta {
+  name: Retrieves a DepartmentDto resource.
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/publication/v1/department/:departmentId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  departmentId: 
+}
+
+script:post-response {
+  if (res.status === 404) {
+  }
+}
+
+example {
+  name: 200 Response
+  description: DepartmentDto resource
+  
+  request: {
+    url: {{baseUrl}}/api/publication/v1/department/:departmentId
+    method: GET
+    mode: none
+    params:path: {
+      departmentId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "id": "",
+          "name": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 Response
+  description: Bad request
+  
+  request: {
+    url: {{baseUrl}}/api/publication/v1/department/:departmentId
+    method: GET
+    mode: none
+    params:path: {
+      departmentId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 400
+      text: Bad Request
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 401 Response
+  description: Unauthorized
+  
+  request: {
+    url: {{baseUrl}}/api/publication/v1/department/:departmentId
+    method: GET
+    mode: none
+    params:path: {
+      departmentId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 401
+      text: Unauthorized
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 403 Response
+  description: Forbidden
+  
+  request: {
+    url: {{baseUrl}}/api/publication/v1/department/:departmentId
+    method: GET
+    mode: none
+    params:path: {
+      departmentId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 403
+      text: Forbidden
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Not found
+  
+  request: {
+    url: {{baseUrl}}/api/publication/v1/department/:departmentId
+    method: GET
+    mode: none
+    params:path: {
+      departmentId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 404
+      text: Not Found
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "title": "",
+          "detail": "",
+          "status": "",
+          "instance": "",
+          "type": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Not found
+  
+  request: {
+    url: {{baseUrl}}/api/publication/v1/department/:departmentId
+    method: GET
+    mode: none
+    params:path: {
+      departmentId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 404
+      text: Not Found
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "title": "",
+          "detail": "",
+          "status": "",
+          "instance": "",
+          "type": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 405 Response
+  description: Method not allowed
+  
+  request: {
+    url: {{baseUrl}}/api/publication/v1/department/:departmentId
+    method: GET
+    mode: none
+    params:path: {
+      departmentId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 405
+      text: Method Not Allowed
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 500 Response
+  description: Server error
+  
+  request: {
+    url: {{baseUrl}}/api/publication/v1/department/:departmentId
+    method: GET
+    mode: none
+    params:path: {
+      departmentId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 500
+      text: Internal Server Error
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}

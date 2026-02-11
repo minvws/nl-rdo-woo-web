@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\AnnualReport;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportRepository;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
@@ -27,7 +28,7 @@ final class AnnualReportRepositoryTest extends SharedWebTestCase
     public function testGetSearchResultViewModel(): void
     {
         $dossier = AnnualReportFactory::createOne([
-            'dateFrom' => new \DateTimeImmutable(),
+            'dateFrom' => new DateTimeImmutable(),
         ]);
 
         $result = $this->getRepository()->getSearchResultViewModel(

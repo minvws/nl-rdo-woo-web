@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Domain\FileStorage\Checker;
 
+use function array_key_exists;
+
 class PathSet
 {
     public int $totalSize = 0;

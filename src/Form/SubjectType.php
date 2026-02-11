@@ -14,9 +14,6 @@ use Symfony\Component\Form\FormBuilderInterface;
  */
 class SubjectType extends AbstractType
 {
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -28,7 +25,6 @@ class SubjectType extends AbstractType
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'global.save',
-            ])
-        ;
+            ]);
     }
 }

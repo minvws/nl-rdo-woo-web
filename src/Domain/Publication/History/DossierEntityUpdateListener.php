@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\History;
 
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
@@ -13,6 +14,8 @@ use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeWithPreview;
 use Shared\Service\HistoryService;
 use Webmozart\Assert\Assert;
+
+use function count;
 
 #[AsEntityListener(event: Events::preUpdate, method: 'preUpdate', entity: AbstractDossier::class)]
 #[AsEntityListener(event: Events::postUpdate, method: 'postUpdate', entity: AbstractDossier::class)]
@@ -76,8 +79,6 @@ final class DossierEntityUpdateListener
      *
      * See the restrictions for preUpdate documented here:
      * https://www.doctrine-project.org/projects/doctrine-orm/en/3.2/reference/events.html#preupdate
-     *
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function postUpdate(AbstractDossier $dossier, PostUpdateEventArgs $event): void
     {
@@ -134,7 +135,7 @@ final class DossierEntityUpdateListener
     private function addHistoryEntry(AbstractDossier $dossier, string $contextKey, array $context): void
     {
         $history = new History();
-        $history->setCreatedDt(new \DateTimeImmutable());
+        $history->setCreatedDt(new DateTimeImmutable());
         $history->setType(HistoryService::TYPE_DOSSIER);
         $history->setIdentifier($dossier->getId());
         $history->setContextKey($contextKey);

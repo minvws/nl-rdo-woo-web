@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\Advice;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
@@ -16,7 +17,7 @@ class AdviceAttachment extends AbstractAttachment
 {
     public function __construct(
         AbstractDossier $dossier,
-        \DateTimeImmutable $formalDate,
+        DateTimeImmutable $formalDate,
         AttachmentType $type,
         AttachmentLanguage $language,
     ) {

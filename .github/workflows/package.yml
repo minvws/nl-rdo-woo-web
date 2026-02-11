@@ -42,9 +42,9 @@ jobs:
         run: |
           echo "{ \"version\": \"${{ env.RELEASE_VERSION }}\", \"git_ref\": \"$GITHUB_SHA\"}" > public/version.json
       - name: Create tar
-        run: tar -czf woo-web_${{ env.RELEASE_VERSION }}.tar.gz ./config ./public/ ./src/ ./templates ./translations ./vendor/ ./.db_requirements ./var/cache ./var/log ./worker-*.conf ./bin/console
+        run: tar -czf woo-web_${{ env.RELEASE_VERSION }}.tar.gz ./apps ./config ./public ./src ./templates ./translations ./vendor ./.db_requirements ./var/cache ./var/log ./bin/console
       - name: Upload release tar
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: woo-web_${{ env.RELEASE_VERSION }}
           path: woo-web_${{ env.RELEASE_VERSION }}.tar.gz

@@ -9,6 +9,10 @@ use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Webmozart\Assert\Assert;
 
+use function class_exists;
+use function str_starts_with;
+use function substr;
+
 final class LegacyNamespaceNormalizer implements DenormalizerInterface, SerializerAwareInterface
 {
     private ?DenormalizerInterface $normalizer = null;

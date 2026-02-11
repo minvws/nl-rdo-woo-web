@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Dossier;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Search\Index\Dossier\DossierIndexer;
@@ -23,9 +25,9 @@ class IndexDossierHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
-        $this->dossierIndexer = \Mockery::mock(DossierIndexer::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->dossierRepository = Mockery::mock(DossierRepository::class);
+        $this->dossierIndexer = Mockery::mock(DossierIndexer::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
         $this->handler = new IndexDossierHandler(
             $this->dossierRepository,
@@ -37,7 +39,7 @@ class IndexDossierHandlerTest extends UnitTestCase
     public function testInvoke(): void
     {
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
         $this->dossierRepository->shouldReceive('find')->with($dossierId)->andReturn($dossier);
 
@@ -61,7 +63,7 @@ class IndexDossierHandlerTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
 
-        $this->dossierRepository->shouldReceive('find')->with($dossierId)->andThrow(new \RuntimeException('oops'));
+        $this->dossierRepository->shouldReceive('find')->with($dossierId)->andThrow(new RuntimeException('oops'));
 
         $this->logger->expects('error');
 

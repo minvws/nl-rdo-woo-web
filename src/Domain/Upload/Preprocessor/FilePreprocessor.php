@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Upload\Preprocessor;
 
+use Generator;
 use Shared\Domain\Upload\UploadedFile;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
@@ -19,9 +20,9 @@ readonly class FilePreprocessor
     }
 
     /**
-     * @return \Generator<array-key,UploadedFile>
+     * @return Generator<array-key,UploadedFile>
      */
-    public function process(UploadedFile $file): \Generator
+    public function process(UploadedFile $file): Generator
     {
         foreach ($this->strategies as $strategy) {
             if ($strategy->canProcess($file)) {

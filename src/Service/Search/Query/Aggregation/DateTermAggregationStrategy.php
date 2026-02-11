@@ -11,6 +11,8 @@ use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Dsl\Aggregation;
 use Shared\Service\Search\Query\Filter\PeriodFilter;
 
+use function is_null;
+
 final readonly class DateTermAggregationStrategy implements AggregationStrategyInterface
 {
     public function getAggregation(Facet $facet, SearchParameters $searchParameters, int $maxCount): ?AbstractAggregation

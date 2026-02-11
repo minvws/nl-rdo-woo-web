@@ -7,6 +7,13 @@ namespace Shared\Domain\Publication\Attachment\Enum;
 use Shared\Domain\Publication\Attachment\Exception\AttachmentTypeBranchException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function array_filter;
+use function array_map;
+use function array_values;
+use function count;
+use function in_array;
+use function is_null;
+
 /**
  * @phpstan-type AttachmentTypeBranchArray array{
  *   type: string,

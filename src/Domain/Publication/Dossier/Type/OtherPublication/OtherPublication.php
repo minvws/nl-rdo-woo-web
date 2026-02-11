@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\OtherPublication;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Override;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
@@ -36,7 +38,7 @@ class OtherPublication extends AbstractDossier implements EntityWithAttachments,
     private ?OtherPublicationMainDocument $document;
 
     /** @var Collection<array-key,OtherPublicationAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: OtherPublicationAttachment::class, cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: OtherPublicationAttachment::class, cascade: ['persist'], orphanRemoval: true)]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 
@@ -48,8 +50,8 @@ class OtherPublication extends AbstractDossier implements EntityWithAttachments,
         $this->document = null;
     }
 
-    #[\Override]
-    public function setDateFrom(?\DateTimeImmutable $dateFrom): static
+    #[Override]
+    public function setDateFrom(?DateTimeImmutable $dateFrom): static
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateFrom;

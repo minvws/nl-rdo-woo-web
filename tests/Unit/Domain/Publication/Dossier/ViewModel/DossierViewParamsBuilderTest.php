@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
@@ -32,12 +33,12 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossier = \Mockery::mock(Covenant::class);
-        $this->workflowManager = \Mockery::mock(DossierWorkflowManager::class);
-        $this->attachmentTypeFactory = \Mockery::mock(AttachmentTypeFactory::class);
-        $this->attachmentLanguageFactory = \Mockery::mock(AttachmentLanguageFactory::class);
-        $this->groundViewFactory = \Mockery::mock(GroundViewFactory::class);
-        $this->departmentRepository = \Mockery::mock(DepartmentRepository::class);
+        $this->dossier = Mockery::mock(Covenant::class);
+        $this->workflowManager = Mockery::mock(DossierWorkflowManager::class);
+        $this->attachmentTypeFactory = Mockery::mock(AttachmentTypeFactory::class);
+        $this->attachmentLanguageFactory = Mockery::mock(AttachmentLanguageFactory::class);
+        $this->groundViewFactory = Mockery::mock(GroundViewFactory::class);
+        $this->departmentRepository = Mockery::mock(DepartmentRepository::class);
 
         $this->builder = new DossierViewParamsBuilder(
             $this->workflowManager,
@@ -144,7 +145,7 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
 
     public function testWithForm(): void
     {
-        $form = \Mockery::mock(FormInterface::class);
+        $form = Mockery::mock(FormInterface::class);
 
         $this->builder->forDossier($this->dossier)->withForm($form);
 
@@ -159,7 +160,7 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
 
     public function testWithWizardStatus(): void
     {
-        $status = \Mockery::mock(DossierWizardStatus::class);
+        $status = Mockery::mock(DossierWizardStatus::class);
 
         $this->builder->forDossier($this->dossier)->withWizardStatus($status);
 
@@ -187,7 +188,7 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
 
     public function testWithBreadcrumbs(): void
     {
-        $breadcrumbs = \Mockery::mock(Breadcrumbs::class);
+        $breadcrumbs = Mockery::mock(Breadcrumbs::class);
 
         $this->builder->forDossier($this->dossier)->withBreadcrumbs($breadcrumbs);
 

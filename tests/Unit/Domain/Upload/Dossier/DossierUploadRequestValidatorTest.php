@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload\Dossier;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\DossierStatus;
@@ -26,8 +27,8 @@ class DossierUploadRequestValidatorTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
-        $this->security = \Mockery::mock(Security::class);
+        $this->dossierRepository = Mockery::mock(DossierRepository::class);
+        $this->security = Mockery::mock(Security::class);
 
         $this->requestValidator = new DossierUploadRequestValidator(
             $this->dossierRepository,
@@ -65,7 +66,7 @@ class DossierUploadRequestValidatorTest extends UnitTestCase
             1,
             1,
             'foo-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::MAIN_DOCUMENTS,
             new InputBag(),
         );
@@ -85,7 +86,7 @@ class DossierUploadRequestValidatorTest extends UnitTestCase
             1,
             1,
             'foo-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::WOO_DECISION_DOCUMENTS,
             new InputBag(),
         );
@@ -105,7 +106,7 @@ class DossierUploadRequestValidatorTest extends UnitTestCase
             1,
             1,
             'foo-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::WOO_DECISION_DOCUMENTS,
             new InputBag(['dossierId' => 123]),
         );
@@ -125,7 +126,7 @@ class DossierUploadRequestValidatorTest extends UnitTestCase
             1,
             1,
             'foo-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::WOO_DECISION_DOCUMENTS,
             new InputBag(['dossierId' => 123]),
         );
@@ -143,12 +144,12 @@ class DossierUploadRequestValidatorTest extends UnitTestCase
             1,
             1,
             'foo-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::WOO_DECISION_DOCUMENTS,
             new InputBag(['dossierId' => 123]),
         );
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $this->dossierRepository->expects('find')->with(123)->andReturn($dossier);
@@ -166,12 +167,12 @@ class DossierUploadRequestValidatorTest extends UnitTestCase
             1,
             1,
             'foo-123',
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
             UploadGroupId::WOO_DECISION_DOCUMENTS,
             new InputBag(['dossierId' => 123]),
         );
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $this->dossierRepository->expects('find')->with(123)->andReturn($dossier);

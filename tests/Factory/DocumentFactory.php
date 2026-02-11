@@ -4,17 +4,26 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory;
 
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Override;
+use ReflectionClass;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Service\Storage\StorageRootPathGenerator;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Shared\ValueObject\ExternalId;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+
+use function array_filter;
+use function in_array;
+use function is_scalar;
+use function sprintf;
 
 /**
- * @extends PersistentProxyObjectFactory<Document>
+ * @extends PersistentObjectFactory<Document>
  */
-final class DocumentFactory extends PersistentProxyObjectFactory
+final class DocumentFactory extends PersistentObjectFactory
 {
     public function __construct(
         private readonly StorageRootPathGenerator $storageRootPathGenerator,
@@ -40,24 +49,25 @@ final class DocumentFactory extends PersistentProxyObjectFactory
             ]);
 
         return [
-            'documentDate' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'documentDate' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'familyId' => $documentId,
             'documentId' => $documentId,
+            'externalId' => self::faker()->boolean() ? ExternalId::create(self::faker()->uuid()) : null,
             'threadId' => 0,
             'grounds' => self::faker()->groundsBetween(),
             'judgement' => $judgement,
             'links' => array_filter([$this->faker()->optional()->url()]),
             'remark' => $this->faker()->optional()->text(),
 
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    #[\Override]
+    #[Override]
     protected function initialize(): static
     {
         return $this
@@ -91,7 +101,7 @@ final class DocumentFactory extends PersistentProxyObjectFactory
                 if (isset($attributes['overwrite_id'])) {
                     $this->entityManager->detach($document);
 
-                    $reflection = new \ReflectionClass($document);
+                    $reflection = new ReflectionClass($document);
                     $property = $reflection->getProperty('id');
                     $property->setAccessible(true);
                     $property->setValue($document, $attributes['overwrite_id']);

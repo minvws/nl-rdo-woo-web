@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport;
 
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Embedded;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
@@ -15,9 +17,9 @@ use Shared\Service\Inventory\InventoryChangeset;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
-/**
- * @SuppressWarnings("PHPMD.ExcessiveClassComplexity")
- */
+use function array_key_exists;
+use function count;
+
 #[ORM\Entity(repositoryClass: ProductionReportProcessRunRepository::class)]
 class ProductionReportProcessRun implements EntityWithFileInfo
 {
@@ -37,13 +39,13 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     private Uuid $id;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: false)]
-    private \DateTimeImmutable $createdAt;
+    private DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $startedAt = null;
+    private ?DateTimeImmutable $startedAt = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $endedAt = null;
+    private ?DateTimeImmutable $endedAt = null;
 
     /** @var array<int, array{message: string, translation: string, placeholders: array<string, string>}> */
     #[ORM\Column(type: Types::JSON, nullable: false)]
@@ -73,7 +75,7 @@ class ProductionReportProcessRun implements EntityWithFileInfo
         #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
         private WooDecision $dossier,
     ) {
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = new DateTimeImmutable();
         $this->status = self::STATUS_PENDING;
         $this->progress = 0;
         $this->file = new FileInfo();
@@ -84,11 +86,11 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     public function startComparing(): self
     {
         if ($this->status !== self::STATUS_PENDING) {
-            throw new \RuntimeException('Can only start an production report comparison when the run is pending');
+            throw new RuntimeException('Can only start an production report comparison when the run is pending');
         }
 
         $this->status = self::STATUS_COMPARING;
-        $this->startedAt = new \DateTimeImmutable();
+        $this->startedAt = new DateTimeImmutable();
 
         return $this;
     }
@@ -96,11 +98,11 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     public function startUpdating(): self
     {
         if ($this->status !== self::STATUS_CONFIRMED) {
-            throw new \RuntimeException('Can only start production report updating when the run is confirmed');
+            throw new RuntimeException('Can only start production report updating when the run is confirmed');
         }
 
         $this->status = self::STATUS_UPDATING;
-        $this->startedAt = new \DateTimeImmutable();
+        $this->startedAt = new DateTimeImmutable();
 
         return $this;
     }
@@ -108,7 +110,7 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     public function addGenericException(TranslatableException $exception): self
     {
         if ($this->isFinal()) {
-            throw new \RuntimeException('Cannot add errors to a run in a final state');
+            throw new RuntimeException('Cannot add errors to a run in a final state');
         }
 
         $this->genericErrors[] = [
@@ -123,7 +125,7 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     public function addRowException(int $rowNumber, TranslatableException $exception): self
     {
         if ($this->isFinal()) {
-            throw new \RuntimeException('Cannot add errors to a run in a final state');
+            throw new RuntimeException('Cannot add errors to a run in a final state');
         }
 
         if (! array_key_exists($rowNumber, $this->rowErrors)) {
@@ -151,7 +153,7 @@ class ProductionReportProcessRun implements EntityWithFileInfo
 
     private function end(string $status): self
     {
-        $this->endedAt = new \DateTimeImmutable();
+        $this->endedAt = new DateTimeImmutable();
         $this->status = $status;
         $this->progress = 100;
 
@@ -168,17 +170,17 @@ class ProductionReportProcessRun implements EntityWithFileInfo
         return $this->dossier;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function getStartedAt(): ?\DateTimeImmutable
+    public function getStartedAt(): ?DateTimeImmutable
     {
         return $this->startedAt;
     }
 
-    public function getEndedAt(): ?\DateTimeImmutable
+    public function getEndedAt(): ?DateTimeImmutable
     {
         return $this->endedAt;
     }
@@ -274,9 +276,9 @@ class ProductionReportProcessRun implements EntityWithFileInfo
         return 'inventory-process-run-' . $this->id->toBase58();
     }
 
-    public function getUpdatedAt(): \DateTimeImmutable
+    public function getUpdatedAt(): DateTimeImmutable
     {
-        return new \DateTimeImmutable();
+        return new DateTimeImmutable();
     }
 
     public function hasErrors(): bool
@@ -326,7 +328,7 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     public function confirm(): void
     {
         if ($this->status !== self::STATUS_NEEDS_CONFIRMATION) {
-            throw new \RuntimeException('Cannot confirm production report run with status ' . $this->status);
+            throw new RuntimeException('Cannot confirm production report run with status ' . $this->status);
         }
 
         $this->status = self::STATUS_CONFIRMED;
@@ -336,7 +338,7 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     public function reject(): void
     {
         if ($this->status !== self::STATUS_NEEDS_CONFIRMATION && $this->status !== self::STATUS_FAILED) {
-            throw new \RuntimeException('Cannot reject production report run with status ' . $this->status);
+            throw new RuntimeException('Cannot reject production report run with status ' . $this->status);
         }
 
         $this->status = self::STATUS_REJECTED;

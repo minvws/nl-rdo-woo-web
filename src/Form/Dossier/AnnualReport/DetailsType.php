@@ -19,9 +19,6 @@ class DetailsType extends AbstractDossierStepType
         return AnnualReport::class;
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         /** @var AnnualReport $dossier */
@@ -42,8 +39,7 @@ class DetailsType extends AbstractDossierStepType
                 'property_path' => 'dateFrom',
                 'min_years' => 9,
                 'plus_years' => 2,
-            ])
-        ;
+            ]);
 
         $this->addInternalReferenceField($builder);
         $this->addDepartmentsField($builder);

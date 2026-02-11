@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\BatchDownload;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownload;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadDispatcher;
@@ -29,11 +30,11 @@ class BatchDownloadServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->batchRepository = \Mockery::mock(BatchDownloadRepository::class);
-        $this->dispatcher = \Mockery::mock(BatchDownloadDispatcher::class);
-        $this->storage = \Mockery::mock(BatchDownloadStorage::class);
-        $this->typeA = \Mockery::mock(BatchDownloadTypeInterface::class);
-        $this->typeB = \Mockery::mock(BatchDownloadTypeInterface::class);
+        $this->batchRepository = Mockery::mock(BatchDownloadRepository::class);
+        $this->dispatcher = Mockery::mock(BatchDownloadDispatcher::class);
+        $this->storage = Mockery::mock(BatchDownloadStorage::class);
+        $this->typeA = Mockery::mock(BatchDownloadTypeInterface::class);
+        $this->typeB = Mockery::mock(BatchDownloadTypeInterface::class);
 
         $this->service = new BatchDownloadService(
             $this->batchRepository,
@@ -47,19 +48,19 @@ class BatchDownloadServiceTest extends UnitTestCase
 
     public function testRefreshForDossierRemovesAllBatchesAndCreatesANewBatchWithAllDocuments(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $scope = BatchDownloadScope::forWooDecision($dossier);
 
-        $oldBatchA = \Mockery::mock(BatchDownload::class);
+        $oldBatchA = Mockery::mock(BatchDownload::class);
         $oldBatchA->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
         $oldBatchA->expects('markAsOutdated');
 
-        $oldBatchB = \Mockery::mock(BatchDownload::class);
+        $oldBatchB = Mockery::mock(BatchDownload::class);
         $oldBatchB->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
         $oldBatchB->expects('markAsOutdated');
 
         // Already outdated so should not be updated again
-        $oldBatchC = \Mockery::mock(BatchDownload::class);
+        $oldBatchC = Mockery::mock(BatchDownload::class);
         $oldBatchC->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::OUTDATED);
 
         $this->batchRepository->expects('getAllForScope')->with($scope)->andReturns([$oldBatchA, $oldBatchB, $oldBatchC]);
@@ -72,7 +73,7 @@ class BatchDownloadServiceTest extends UnitTestCase
         $this->typeB->shouldReceive('isAvailableForBatchDownload')->with($scope)->andReturnTrue();
         $this->typeB->shouldReceive('getFileBaseName')->with($scope)->andReturn('123');
 
-        $batchValidator = \Mockery::on(
+        $batchValidator = Mockery::on(
             static function (BatchDownload $batch) use ($dossier): bool {
                 self::assertEquals($dossier, $batch->getDossier());
 
@@ -90,14 +91,14 @@ class BatchDownloadServiceTest extends UnitTestCase
 
     public function testRefreshForDossierDoesNotGenerateNewArchiveForEntityThatIsNotAvailableForBatchDownload(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $scope = BatchDownloadScope::forWooDecision($dossier);
 
-        $oldBatchA = \Mockery::mock(BatchDownload::class);
+        $oldBatchA = Mockery::mock(BatchDownload::class);
         $oldBatchA->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
         $oldBatchA->expects('markAsOutdated');
 
-        $oldBatchB = \Mockery::mock(BatchDownload::class);
+        $oldBatchB = Mockery::mock(BatchDownload::class);
         $oldBatchB->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
         $oldBatchB->expects('markAsOutdated');
 
@@ -115,13 +116,13 @@ class BatchDownloadServiceTest extends UnitTestCase
 
     public function refreshForScopeWithBothADossierAndInquiryDoesNothing(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $dossier = Mockery::mock(WooDecision::class);
+        $inquiry = Mockery::mock(Inquiry::class);
         $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier);
 
-        $oldBatchA = \Mockery::mock(BatchDownload::class);
+        $oldBatchA = Mockery::mock(BatchDownload::class);
         $oldBatchA->expects('markAsOutdated');
-        $oldBatchB = \Mockery::mock(BatchDownload::class);
+        $oldBatchB = Mockery::mock(BatchDownload::class);
         $oldBatchB->expects('markAsOutdated');
 
         $this->batchRepository->expects('getAllForScope')->with($scope)->andReturns([$oldBatchA, $oldBatchB]);
@@ -135,7 +136,7 @@ class BatchDownloadServiceTest extends UnitTestCase
         // $this->typeB->shouldReceive('getFileBaseName')->with($scope)->andReturn('123');
 
         /** @var BatchDownloadService&MockInterface $service */
-        $service = \Mockery::mock(BatchDownloadService::class, [
+        $service = Mockery::mock(BatchDownloadService::class, [
             $this->batchRepository,
             $this->dispatcher,
             $this->storage,
@@ -149,12 +150,12 @@ class BatchDownloadServiceTest extends UnitTestCase
 
     public function testCreateWithScopeWithBothADossierAndInquiry(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $dossier = Mockery::mock(WooDecision::class);
+        $inquiry = Mockery::mock(Inquiry::class);
         $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier);
 
         /** @var BatchDownloadService&MockInterface $service */
-        $service = \Mockery::mock(BatchDownloadService::class, [
+        $service = Mockery::mock(BatchDownloadService::class, [
             $this->batchRepository,
             $this->dispatcher,
             $this->storage,
@@ -163,7 +164,7 @@ class BatchDownloadServiceTest extends UnitTestCase
 
         $service
             ->shouldReceive('findOrCreate')
-            ->with(\Mockery::on(function (BatchDownloadScope $scope) use ($dossier) {
+            ->with(Mockery::on(function (BatchDownloadScope $scope) use ($dossier) {
                 if ($scope->containsBothInquiryAndWooDecision()) {
                     return false;
                 }
@@ -175,17 +176,17 @@ class BatchDownloadServiceTest extends UnitTestCase
                 return true;
             }))
             ->once()
-            ->andReturn(\Mockery::mock(BatchDownload::class));
+            ->andReturn(Mockery::mock(BatchDownload::class));
 
         $service->create($scope);
     }
 
     public function testFindOrCreateReusesExistingBatch(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $scope = BatchDownloadScope::forWooDecision($dossier);
 
-        $expectedBatch = \Mockery::mock(BatchDownload::class);
+        $expectedBatch = Mockery::mock(BatchDownload::class);
 
         $this->batchRepository->expects('getBestAvailableBatchDownloadForScope')->with($scope)->andReturns($expectedBatch);
 
@@ -196,12 +197,12 @@ class BatchDownloadServiceTest extends UnitTestCase
 
     public function testFindOrCreateMakesNewBatch(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $scope = BatchDownloadScope::forWooDecision($dossier);
 
         $this->batchRepository->expects('getBestAvailableBatchDownloadForScope')->with($scope)->andReturnNull();
 
-        $batchValidator = \Mockery::on(
+        $batchValidator = Mockery::on(
             static function (BatchDownload $batch) use ($dossier): bool {
                 self::assertEquals($dossier, $batch->getDossier());
 
@@ -221,7 +222,7 @@ class BatchDownloadServiceTest extends UnitTestCase
 
     public function testExists(): void
     {
-        $batchDownload = \Mockery::mock(BatchDownload::class);
+        $batchDownload = Mockery::mock(BatchDownload::class);
         $batchDownload->shouldReceive('getId')->once()->andReturn($uuid = Uuid::v6());
 
         $this->batchRepository->shouldReceive('exists')->once()->with($uuid)->andReturnTrue();

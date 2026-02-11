@@ -9,6 +9,8 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
+use function levenshtein;
+
 /**
  * This validator checks if the password is too similar to the user's email address.
  */

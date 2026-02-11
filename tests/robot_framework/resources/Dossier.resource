@@ -54,6 +54,7 @@ Select Random Subject
 Generate Dossier Reference Number
   ${reference_number} =  Generate Random String  10  [NUMBERS][UPPER]
   VAR  ${DOSSIER_REFERENCE} =  ${reference_number}  scope=suite
+  RETURN  ${DOSSIER_REFERENCE}
 
 Search For A Publication
   [Documentation]  Clicks the link with matching text, if multiple are present it will fail.

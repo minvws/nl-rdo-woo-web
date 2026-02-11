@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Sitemap;
 
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
@@ -26,8 +28,8 @@ class SitemapAttachmentSubscriberTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->attachmentRepository = Mockery::mock(AttachmentRepository::class);
 
         $this->subscriber = new SitemapAttachmentSubscriber(
             $this->entityManager,
@@ -37,24 +39,24 @@ class SitemapAttachmentSubscriberTest extends UnitTestCase
 
     public function testPopulate(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($prefix = 'foo');
         $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = 'bar');
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
 
-        $attachment = \Mockery::mock(AbstractAttachment::class);
+        $attachment = Mockery::mock(AbstractAttachment::class);
         $attachment->shouldReceive('getDossier')->andReturn($dossier);
         $attachment->shouldReceive('getId')->andReturn($attachmentId = Uuid::v6());
-        $attachment->shouldReceive('getUpdatedAt')->andReturn($updatedAt = new \DateTimeImmutable());
+        $attachment->shouldReceive('getUpdatedAt')->andReturn($updatedAt = new DateTimeImmutable());
 
-        $urlContainer = \Mockery::mock(UrlContainerInterface::class);
+        $urlContainer = Mockery::mock(UrlContainerInterface::class);
 
         $this->attachmentRepository
             ->expects('getAllPublishedQuery->toIterable')
             ->once()
             ->andReturn([$attachment]);
 
-        $urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
+        $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
         $urlGenerator->expects('generate')->with(
             'app_covenant_attachment_detail',
             [
@@ -66,7 +68,7 @@ class SitemapAttachmentSubscriberTest extends UnitTestCase
         )->andReturn($attachmentUrl = '/foo/bar/attachment-123');
 
         $urlContainer->expects('addUrl')->with(
-            \Mockery::on(
+            Mockery::on(
                 static function (UrlConcrete $urlConcrete) use ($attachmentUrl, $updatedAt): bool {
                     self::assertEquals($attachmentUrl, $urlConcrete->getLoc());
                     self::assertEquals($updatedAt, $urlConcrete->getLastmod());

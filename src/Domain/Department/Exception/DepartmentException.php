@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Department\Exception;
 
-interface DepartmentException extends \Throwable
+use Throwable;
+
+interface DepartmentException extends Throwable
 {
 }

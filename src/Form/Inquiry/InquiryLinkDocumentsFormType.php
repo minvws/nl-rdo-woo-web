@@ -20,9 +20,6 @@ use Symfony\Component\Validator\Constraints\Required;
  */
 class InquiryLinkDocumentsFormType extends AbstractType
 {
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder

@@ -6,12 +6,12 @@ namespace Shared\Tests\Factory\Publication\Dossier;
 
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Tests\Factory\OrganisationFactory;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<DocumentPrefix>
+ * @extends PersistentObjectFactory<DocumentPrefix>
  */
-final class DocumentPrefixFactory extends PersistentProxyObjectFactory
+final class DocumentPrefixFactory extends PersistentObjectFactory
 {
     /**
      * @return array<string, mixed>

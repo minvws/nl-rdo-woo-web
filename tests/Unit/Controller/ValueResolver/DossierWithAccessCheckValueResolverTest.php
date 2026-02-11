@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Controller\ValueResolver;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Controller\ValueResolver\DossierWithAccessCheckValueResolver;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -24,8 +25,8 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->authorizationChecker = \Mockery::mock(AuthorizationCheckerInterface::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->authorizationChecker = Mockery::mock(AuthorizationCheckerInterface::class);
 
         $this->resolver = new DossierWithAccessCheckValueResolver(
             $this->entityManager,
@@ -38,7 +39,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverThrowsExceptionForUnsupportedArgumentType(): void
     {
         $request = new Request();
-        $argument = \Mockery::mock(ArgumentMetadata::class);
+        $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->shouldReceive('getType')->andReturn(self::class);
 
         $this->expectException(ViewingNotAllowedException::class);
@@ -48,7 +49,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverThrowsExceptionForMissingPrefix(): void
     {
         $request = new Request(attributes: ['dossierId' => 'bar']);
-        $argument = \Mockery::mock(ArgumentMetadata::class);
+        $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->shouldReceive('getType')->andReturn(Covenant::class);
 
         $this->expectException(ViewingNotAllowedException::class);
@@ -58,7 +59,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverThrowsExceptionForMissingDocumentId(): void
     {
         $request = new Request(attributes: ['prefix' => 'foo']);
-        $argument = \Mockery::mock(ArgumentMetadata::class);
+        $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->shouldReceive('getType')->andReturn(Covenant::class);
 
         $this->expectException(ViewingNotAllowedException::class);
@@ -68,10 +69,10 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverThrowsExceptionWhenDossierCannotBeFound(): void
     {
         $request = new Request(attributes: ['prefix' => 'foo', 'dossierId' => 'bar']);
-        $argument = \Mockery::mock(ArgumentMetadata::class);
+        $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->shouldReceive('getType')->andReturn(Covenant::class);
 
-        $repository = \Mockery::mock(ServiceEntityRepository::class);
+        $repository = Mockery::mock(ServiceEntityRepository::class);
         $repository->expects('findOneBy')->with(
             [
                 'documentPrefix' => 'foo',
@@ -88,12 +89,12 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverThrowsExceptionWhenDossierIsNotAccessible(): void
     {
         $request = new Request(attributes: ['prefix' => 'foo', 'dossierId' => 'bar']);
-        $argument = \Mockery::mock(ArgumentMetadata::class);
+        $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->shouldReceive('getType')->andReturn(Covenant::class);
 
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
 
-        $repository = \Mockery::mock(ServiceEntityRepository::class);
+        $repository = Mockery::mock(ServiceEntityRepository::class);
         $repository->expects('findOneBy')->with(
             [
                 'documentPrefix' => 'foo',
@@ -112,12 +113,12 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverReturnsDossierWhenFoundAndAccessible(): void
     {
         $request = new Request(attributes: ['prefix' => 'foo', 'dossierId' => 'bar']);
-        $argument = \Mockery::mock(ArgumentMetadata::class);
+        $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->shouldReceive('getType')->andReturn(Covenant::class);
 
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
 
-        $repository = \Mockery::mock(ServiceEntityRepository::class);
+        $repository = Mockery::mock(ServiceEntityRepository::class);
         $repository->expects('findOneBy')->with(
             [
                 'documentPrefix' => 'foo',

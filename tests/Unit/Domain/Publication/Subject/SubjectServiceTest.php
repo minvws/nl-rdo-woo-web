@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Subject;
 
 use Doctrine\ORM\Query;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Subject\Event\SubjectUpdatedEvent;
@@ -13,6 +14,7 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Domain\Publication\Subject\SubjectService;
 use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Shared\Tests\Unit\UnitTestCase;
+use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -26,9 +28,9 @@ class SubjectServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(SubjectRepository::class);
-        $this->authMatrix = \Mockery::mock(AuthorizationMatrix::class);
-        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
+        $this->repository = Mockery::mock(SubjectRepository::class);
+        $this->authMatrix = Mockery::mock(AuthorizationMatrix::class);
+        $this->messageBus = Mockery::mock(MessageBusInterface::class);
 
         $this->subjectService = new SubjectService(
             $this->repository,
@@ -41,7 +43,7 @@ class SubjectServiceTest extends UnitTestCase
 
     public function testCreateNew(): void
     {
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
 
         $this->authMatrix->expects('getActiveOrganisation')->andReturn($organisation);
 
@@ -52,7 +54,7 @@ class SubjectServiceTest extends UnitTestCase
 
     public function testSaveNew(): void
     {
-        $subject = \Mockery::mock(Subject::class);
+        $subject = Mockery::mock(Subject::class);
 
         $this->repository->expects('save')->with($subject, true);
 
@@ -61,25 +63,25 @@ class SubjectServiceTest extends UnitTestCase
 
     public function testSave(): void
     {
-        $subject = \Mockery::mock(Subject::class);
+        $subject = Mockery::mock(Subject::class);
         $subject->shouldReceive('getId')->andReturn($subjectId = Uuid::v6());
 
         $this->repository->expects('save')->with($subject, true);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
             static fn (SubjectUpdatedEvent $message) => $message->getUuid() === $subjectId
-        ))->andReturns(new Envelope(new \stdClass()));
+        ))->andReturns(new Envelope(new stdClass()));
 
         $this->subjectService->save($subject);
     }
 
     public function testGetSubjectsQueryForActiveOrganisation(): void
     {
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
 
         $this->authMatrix->expects('getActiveOrganisation')->andReturn($organisation);
 
-        $query = \Mockery::mock(Query::class);
+        $query = Mockery::mock(Query::class);
         $this->repository->expects('getQueryForOrganisation')->with($organisation)->andReturn($query);
 
         self::assertEquals(

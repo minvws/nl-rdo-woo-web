@@ -12,6 +12,8 @@ use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+use function sprintf;
+
 readonly class AttachmentViewFactory
 {
     public function __construct(

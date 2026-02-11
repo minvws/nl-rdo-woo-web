@@ -8,6 +8,8 @@ use Shared\Doctrine\LegacyNamespaceHelper;
 use Shared\Domain\Department\Department;
 use Shared\Tests\Unit\UnitTestCase;
 
+use function class_exists;
+
 final class LegacyNamespaceHelperTest extends UnitTestCase
 {
     public function testNormalizeClassNameConvertsAppNamespaceToShared(): void

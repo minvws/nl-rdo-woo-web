@@ -23,7 +23,7 @@ class ContentPageRepositoryTest extends SharedWebTestCase
 
     public function testSave(): void
     {
-        $contentPage = ContentPageFactory::createOne(['slug' => 'foo'])->_real();
+        $contentPage = ContentPageFactory::createOne(['slug' => 'foo']);
 
         $this->repository->save($contentPage, true);
 

@@ -17,6 +17,10 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function array_map;
+use function is_subclass_of;
+use function str_replace;
+
 enum DossierType: string implements TranslatableInterface
 {
     case COVENANT = 'covenant';                         // Convenant

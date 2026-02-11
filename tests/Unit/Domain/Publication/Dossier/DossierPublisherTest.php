@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\DossierPublisher;
 use Shared\Domain\Publication\Dossier\Event\DossierPublishedEvent;
@@ -11,6 +12,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Tests\Unit\UnitTestCase;
+use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -24,11 +26,11 @@ class DossierPublisherTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossier = \Mockery::mock(WooDecision::class);
+        $this->dossier = Mockery::mock(WooDecision::class);
         $this->dossier->shouldReceive('getId')->andReturn(Uuid::v6());
 
-        $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
-        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
+        $this->dossierWorkflowManager = Mockery::mock(DossierWorkflowManager::class);
+        $this->messageBus = Mockery::mock(MessageBusInterface::class);
 
         $this->publisher = new DossierPublisher(
             $this->dossierWorkflowManager,
@@ -53,8 +55,8 @@ class DossierPublisherTest extends UnitTestCase
             ->with($this->dossier, DossierStatusTransition::PUBLISH);
 
         $this->messageBus->expects('dispatch')
-            ->with(\Mockery::type(DossierPublishedEvent::class))
-            ->andReturns(new Envelope(new \stdClass()));
+            ->with(Mockery::type(DossierPublishedEvent::class))
+            ->andReturns(new Envelope(new stdClass()));
 
         $this->publisher->publish($this->dossier);
     }

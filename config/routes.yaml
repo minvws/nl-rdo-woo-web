@@ -79,21 +79,3 @@ app_report_vulnerability:
             priority: 0.7
             changefreq: monthly
             section: legal
-
-app_admin_accessibility:
-    path:          /balie/toegankelijkheid
-    controller:    Shared\Controller\Admin\IndexController::contentPage
-    defaults:
-        slug: 'toegankelijkheid'
-
-app_admin_privacy:
-    path:          /balie/privacy
-    controller:    Shared\Controller\Admin\IndexController::contentPage
-    defaults:
-        slug: 'privacy'
-
-app_admin_contact:
-    path:          /balie/contact
-    controller:    Shared\Controller\Admin\IndexController::contentPage
-    defaults:
-        slug: 'balie-contact'

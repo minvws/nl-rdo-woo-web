@@ -15,6 +15,12 @@ use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Shared\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function array_map;
+use function array_merge;
+use function count;
+use function strnatcmp;
+use function usort;
+
 readonly class DossierListingService
 {
     public function __construct(

@@ -19,9 +19,6 @@ class DetailsType extends AbstractDossierStepType
         return Covenant::class;
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $this->addTitleField($builder);

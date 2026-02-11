@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory;
 
+use DateTimeImmutable;
+use Override;
 use Shared\Service\Security\Roles;
 use Shared\Service\Security\User;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+
+use function sprintf;
 
 /**
- * @extends PersistentProxyObjectFactory<User>
+ * @extends PersistentObjectFactory<User>
  */
-final class UserFactory extends PersistentProxyObjectFactory
+final class UserFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -68,28 +72,27 @@ final class UserFactory extends PersistentProxyObjectFactory
     {
         return [
             'changepwd' => self::faker()->boolean(),
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'email' => sprintf('%s@example.local', self::faker()->uuid()),
             'enabled' => self::faker()->boolean(),
             'name' => self::faker()->name(),
             'organisation' => OrganisationFactory::new(),
             'password' => self::faker()->words(asText: true),
             'roles' => [],
-            'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    #[\Override]
+    #[Override]
     protected function initialize(): static
     {
         return $this
             ->afterInstantiate(function (User $user): void {
                 $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
-            })
-        ;
+            });
     }
 
     public static function class(): string

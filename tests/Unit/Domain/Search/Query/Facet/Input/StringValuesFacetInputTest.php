@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Query\Facet\Input;
 
+use InvalidArgumentException;
+use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Group;
 use Shared\Domain\Search\Query\Facet\Definition\SourceFacet;
@@ -12,6 +14,8 @@ use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInputInterface;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
+
+use function current;
 
 #[Group('facet')]
 #[Group('facetInput')]
@@ -27,7 +31,7 @@ final class StringValuesFacetInputTest extends UnitTestCase
 
         $this->key = current(FacetKey::cases());
         $this->facet = new SourceFacet();
-        $this->bag = \Mockery::mock(ParameterBag::class);
+        $this->bag = Mockery::mock(ParameterBag::class);
         $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn([])->byDefault();
     }
 
@@ -82,7 +86,7 @@ final class StringValuesFacetInputTest extends UnitTestCase
 
     public function testItThrowsAnExceptionIfNotAllValuesAreAString(): void
     {
-        $this->expectExceptionObject(new \InvalidArgumentException('Expected a string. Got: integer'));
+        $this->expectExceptionObject(new InvalidArgumentException('Expected a string. Got: integer'));
 
         $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn(['one' => 1]);
 

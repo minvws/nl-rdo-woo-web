@@ -82,7 +82,7 @@ Parse TXT Files Into Excel Rows
   [Documentation]  All TXT files excluding any starting with VWS_, since those are used as attachments.
   [Arguments]  ${test_data_location}  ${case_id}
   ${files} =  List Files In Directory  ${test_data_location}  pattern=[!V][!W][!S]*.txt
-  VAR  @{rows} =
+  VAR  @{rows} =  @{EMPTY}
   FOR  ${file}  IN  @{files}
     ${filename}  ${_} =  Split String  ${file}  .
     @{row_data} =  Create New Row Data  ${filename}  ${case_id}
@@ -95,7 +95,7 @@ Generate Dummy Production Report
   [Arguments]  ${nr_of_rows}
   ${test_data_location} =  Create Unique TestData Location
   VAR  ${excel_file} =  ${test_data_location}/production_report.xlsx
-  VAR  @{rows} =
+  VAR  @{rows} =  @{EMPTY}
   Copy File  ${PRODUCTION_REPORT_TEMPLATE}  ${excel_file}
   Open Excel Document  ${excel_file}  prodrep
   FOR  ${_}  IN RANGE  ${nr_of_rows}

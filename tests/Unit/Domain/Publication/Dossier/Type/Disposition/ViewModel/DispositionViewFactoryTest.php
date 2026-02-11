@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Disposition\ViewModel;
 
+use DateTimeImmutable;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\ViewModel\DispositionViewFactory;
@@ -22,13 +24,13 @@ final class DispositionViewFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->commonDossierViewFactory = \Mockery::mock(CommonDossierPropertiesViewFactory::class);
+        $this->commonDossierViewFactory = Mockery::mock(CommonDossierPropertiesViewFactory::class);
     }
 
     public function testMake(): void
     {
         /** @var Department&MockInterface $expectedMainDepartment */
-        $expectedMainDepartment = \Mockery::mock(Department::class);
+        $expectedMainDepartment = Mockery::mock(Department::class);
 
         $this->commonDossierViewFactory
             ->shouldReceive('make')
@@ -39,16 +41,16 @@ final class DispositionViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new \DateTimeImmutable(),
+                publicationDate: $publicationDate = new DateTimeImmutable(),
                 mainDepartment: $expectedMainDepartment = $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::DISPOSITION,
-                subject: $expectedSubject = \Mockery::mock(Subject::class),
+                subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
         /** @var Disposition&MockInterface $dossier */
-        $dossier = \Mockery::mock(Disposition::class);
-        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new \DateTimeImmutable());
+        $dossier = Mockery::mock(Disposition::class);
+        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable());
 
         $result = (new DispositionViewFactory($this->commonDossierViewFactory))->make($dossier);
 

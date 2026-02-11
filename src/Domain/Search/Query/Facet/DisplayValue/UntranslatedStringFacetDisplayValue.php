@@ -6,6 +6,8 @@ namespace Shared\Domain\Search\Query\Facet\DisplayValue;
 
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function trim;
+
 readonly class UntranslatedStringFacetDisplayValue implements FacetDisplayValueInterface
 {
     private function __construct(
@@ -20,9 +22,6 @@ readonly class UntranslatedStringFacetDisplayValue implements FacetDisplayValueI
         return new self($value);
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
         return $this->value;

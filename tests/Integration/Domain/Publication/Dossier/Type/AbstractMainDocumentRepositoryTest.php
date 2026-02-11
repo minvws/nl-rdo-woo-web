@@ -41,11 +41,11 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
 
     public function testSave(): void
     {
-        $dossier = AnnualReportFactory::createOne()->_real();
+        $dossier = AnnualReportFactory::createOne();
 
         $document = AnnualReportMainDocumentFactory::createOne([
             'dossier' => $dossier,
-        ])->_real();
+        ]);
 
         $repository = $this->getRepository();
         $repository->save($document, true);
@@ -56,10 +56,10 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
 
     public function testRemove(): void
     {
-        $dossier = AnnualReportFactory::createOne()->_real();
+        $dossier = AnnualReportFactory::createOne();
         AnnualReportMainDocumentFactory::createOne([
             'dossier' => $dossier,
-        ])->_real();
+        ]);
 
         $repository = $this->getRepository();
 
@@ -80,11 +80,11 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
 
     public function testFindOneByDossierId(): void
     {
-        $dossier = AnnualReportFactory::createOne()->_real();
+        $dossier = AnnualReportFactory::createOne();
 
         $document = AnnualReportMainDocumentFactory::createOne([
             'dossier' => $dossier,
-        ])->_real();
+        ]);
 
         self::assertEquals(
             $document->getId(),
@@ -98,11 +98,11 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
 
     public function testFindForDossierByPrefixAndNrFindsMatch(): void
     {
-        $dossier = AnnualReportFactory::createOne()->_real();
+        $dossier = AnnualReportFactory::createOne();
 
         $document = AnnualReportMainDocumentFactory::createOne([
             'dossier' => $dossier,
-        ])->_real();
+        ]);
 
         $result = $this->getRepository()->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
@@ -125,9 +125,9 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
 
     public function testCreate(): void
     {
-        $dossier = AnnualReportFactory::createOne()->_real();
+        $dossier = AnnualReportFactory::createOne();
 
-        $document = AnnualReportMainDocumentFactory::new()->withoutPersisting()->createOne()->_real();
+        $document = AnnualReportMainDocumentFactory::new()->withoutPersisting()->createOne();
 
         $createMainDocumentCommand = new CreateMainDocumentCommand(
             dossierId: $dossier->getId(),

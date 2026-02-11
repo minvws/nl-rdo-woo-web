@@ -9,6 +9,11 @@ use Shared\Service\Search\Model\FacetKey;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Webmozart\Assert\Assert;
 
+use function array_filter;
+use function array_values;
+use function count;
+use function in_array;
+
 final readonly class StringValuesFacetInput extends FacetInput implements StringValuesFacetInputInterface
 {
     public static function fromParameterBag(FacetDefinitionInterface $facet, ParameterBag $bag): self

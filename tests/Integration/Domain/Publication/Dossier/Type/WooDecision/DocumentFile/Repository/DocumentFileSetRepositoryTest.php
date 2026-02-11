@@ -34,7 +34,7 @@ final class DocumentFileSetRepositoryTest extends SharedWebTestCase
 
     public function testSaveAndRemove(): void
     {
-        $dossier = WooDecisionFactory::createOne()->_real();
+        $dossier = WooDecisionFactory::createOne();
         $documentFileSet = new DocumentFileSet($dossier);
 
         $this->repository->save($documentFileSet, true);
@@ -48,8 +48,8 @@ final class DocumentFileSetRepositoryTest extends SharedWebTestCase
 
     public function testFindUncompletedByDossier(): void
     {
-        $dossierA = WooDecisionFactory::createOne()->_real();
-        $dossierB = WooDecisionFactory::createOne()->_real();
+        $dossierA = WooDecisionFactory::createOne();
+        $dossierB = WooDecisionFactory::createOne();
 
         $documentFileSetA = new DocumentFileSet($dossierA);
         $this->repository->save($documentFileSetA, true);
@@ -69,7 +69,7 @@ final class DocumentFileSetRepositoryTest extends SharedWebTestCase
 
     public function testFindUncompletedByDossierReturnsNullWhenNoMatchIsFound(): void
     {
-        $dossier = WooDecisionFactory::createOne()->_real();
+        $dossier = WooDecisionFactory::createOne();
 
         $documentFileSet = new DocumentFileSet($dossier);
         $documentFileSet->setStatus(DocumentFileSetStatus::COMPLETED);
@@ -82,7 +82,7 @@ final class DocumentFileSetRepositoryTest extends SharedWebTestCase
 
     public function testCountUploadsToProcess(): void
     {
-        $documentFileSet = DocumentFileSetFactory::createOne()->_real();
+        $documentFileSet = DocumentFileSetFactory::createOne();
 
         DocumentFileUploadFactory::createOne([
             'status' => DocumentFileUploadStatus::PROCESSED,
@@ -109,7 +109,7 @@ final class DocumentFileSetRepositoryTest extends SharedWebTestCase
 
     public function testCountUpdatesToProcess(): void
     {
-        $documentFileSet = DocumentFileSetFactory::createOne()->_real();
+        $documentFileSet = DocumentFileSetFactory::createOne();
 
         DocumentFileUpdateFactory::createOne([
             'status' => DocumentFileUpdateStatus::COMPLETED,

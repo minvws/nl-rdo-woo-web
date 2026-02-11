@@ -14,6 +14,8 @@ use Shared\Domain\Search\Query\Facet\Input\DateFacetInputInterface;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Dsl\Query;
 
+use function is_null;
+
 /**
  * This filter will match dates in both dossiers and documents, even though both date fields are named differently and act differently.
  *

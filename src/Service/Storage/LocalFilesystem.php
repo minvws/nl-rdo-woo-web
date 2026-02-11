@@ -4,8 +4,33 @@ declare(strict_types=1);
 
 namespace Shared\Service\Storage;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Webmozart\Assert\Assert;
+
+use function fclose;
+use function feof;
+use function file_exists;
+use function filesize;
+use function fnmatch;
+use function fopen;
+use function fread;
+use function fwrite;
+use function in_array;
+use function is_dir;
+use function is_link;
+use function is_resource;
+use function mkdir;
+use function rmdir;
+use function rtrim;
+use function scandir;
+use function sprintf;
+use function str_ends_with;
+use function sys_get_temp_dir;
+use function tempnam;
+use function trim;
+use function uniqid;
+use function unlink;
 
 readonly class LocalFilesystem
 {
@@ -35,7 +60,7 @@ readonly class LocalFilesystem
                     throw new StorageRuntimeException('Could not write data to target stream');
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Could not copy data between streams', [
                 'exception' => $e->getMessage(),
             ]);
@@ -165,7 +190,7 @@ readonly class LocalFilesystem
 
     public function isSymlink(string $path): bool
     {
-        return \is_link($path);
+        return is_link($path);
     }
 
     /**
@@ -211,7 +236,7 @@ readonly class LocalFilesystem
 
     protected function filesize(string $filename): int|false
     {
-        return \filesize($filename);
+        return filesize($filename);
     }
     // @codeCoverageIgnoreEnd
 }

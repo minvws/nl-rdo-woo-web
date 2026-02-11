@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Service\Search;
 
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -34,11 +35,11 @@ class SearchServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->objectHandler = \Mockery::mock(ObjectHandler::class);
-        $this->resultTransformer = \Mockery::mock(ResultTransformer::class);
-        $this->searchParametersFactory = \Mockery::mock(SearchParametersFactory::class);
+        $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->objectHandler = Mockery::mock(ObjectHandler::class);
+        $this->resultTransformer = Mockery::mock(ResultTransformer::class);
+        $this->searchParametersFactory = Mockery::mock(SearchParametersFactory::class);
 
         $this->searchService = new SearchService(
             $this->elasticClient,
@@ -57,14 +58,14 @@ class SearchServiceTest extends UnitTestCase
             offset: 2,
         );
 
-        $queryDefinition = \Mockery::mock(QueryDefinitionInterface::class);
+        $queryDefinition = Mockery::mock(QueryDefinitionInterface::class);
         $queryDefinition->expects('configure')->with(
-            \Mockery::type(QueryBuilder::class),
+            Mockery::type(QueryBuilder::class),
             $searchParameters,
         );
 
-        $elasticResponse = \Mockery::mock(Elasticsearch::class);
-        $this->elasticClient->expects('search')->with(\Mockery::on(
+        $elasticResponse = Mockery::mock(Elasticsearch::class);
+        $this->elasticClient->expects('search')->with(Mockery::on(
             function (array $searchData): bool {
                 $this->assertMatchesJsonSnapshot($searchData);
 
@@ -98,14 +99,14 @@ class SearchServiceTest extends UnitTestCase
 
         $this->searchParametersFactory->expects('createDefault')->andReturn($searchParameters);
 
-        $queryDefinition = \Mockery::mock(QueryDefinitionInterface::class);
+        $queryDefinition = Mockery::mock(QueryDefinitionInterface::class);
         $queryDefinition->expects('configure')->with(
-            \Mockery::type(QueryBuilder::class),
+            Mockery::type(QueryBuilder::class),
             $searchParameters,
         );
 
-        $elasticResponse = \Mockery::mock(Elasticsearch::class);
-        $this->elasticClient->expects('search')->with(\Mockery::on(
+        $elasticResponse = Mockery::mock(Elasticsearch::class);
+        $this->elasticClient->expects('search')->with(Mockery::on(
             function (array $searchData): bool {
                 $this->assertMatchesJsonSnapshot($searchData);
 
@@ -130,7 +131,7 @@ class SearchServiceTest extends UnitTestCase
 
     public function testIsIngested(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $this->objectHandler->expects('isIngested')->with($document)->andReturnFalse();
 
         self::assertFalse($this->searchService->isIngested($document));
@@ -138,7 +139,7 @@ class SearchServiceTest extends UnitTestCase
 
     public function testGetPageContent(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $this->objectHandler->expects('getPageContent')->with($document, 123)->andReturn($expectedResult = 'foo bar');
 
         self::assertEquals(

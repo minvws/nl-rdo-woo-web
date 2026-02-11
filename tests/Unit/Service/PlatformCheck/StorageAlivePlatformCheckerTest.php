@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\PlatformCheck;
 
+use Mockery;
 use Shared\Service\PlatformCheck\StorageAlivePlatformChecker;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
@@ -13,10 +14,10 @@ class StorageAlivePlatformCheckerTest extends UnitTestCase
 {
     public function testChecker(): void
     {
-        $entityStorage = \Mockery::mock(EntityStorageService::class);
+        $entityStorage = Mockery::mock(EntityStorageService::class);
         $entityStorage->expects('isAlive')->andReturnTrue();
 
-        $thumbStorage = \Mockery::mock(ThumbnailStorageService::class);
+        $thumbStorage = Mockery::mock(ThumbnailStorageService::class);
         $thumbStorage->expects('isAlive')->andReturnFalse();
 
         $checker = new StorageAlivePlatformChecker(

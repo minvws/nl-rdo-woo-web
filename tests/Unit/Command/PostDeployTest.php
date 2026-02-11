@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Command;
 
+use Mockery;
 use Shared\Command\PostDeploy;
 use Shared\Domain\Content\Page\ContentPageService;
 use Shared\Tests\Unit\UnitTestCase;
@@ -14,7 +15,7 @@ class PostDeployTest extends UnitTestCase
 {
     public function testDocumentFileSetRemoverIsCalled(): void
     {
-        $contentPageService = \Mockery::mock(ContentPageService::class);
+        $contentPageService = Mockery::mock(ContentPageService::class);
         $contentPageService->expects('createMissingPages');
 
         $command = new PostDeploy($contentPageService);

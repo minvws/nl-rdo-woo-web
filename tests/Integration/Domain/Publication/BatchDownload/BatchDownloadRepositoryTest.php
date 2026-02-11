@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Domain\Publication\BatchDownload;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\BatchDownload\BatchDownload;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
@@ -12,6 +13,8 @@ use Shared\Tests\Factory\Publication\BatchDownload\BatchDownloadFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Component\Uid\Uuid;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 class BatchDownloadRepositoryTest extends SharedWebTestCase
 {
@@ -31,8 +34,8 @@ class BatchDownloadRepositoryTest extends SharedWebTestCase
         $wooDecision = WooDecisionFactory::createOne();
 
         $download = new BatchDownload(
-            scope: BatchDownloadScope::forWooDecision($wooDecision->_real()),
-            expiration: new \DateTimeImmutable('+1 day'),
+            scope: BatchDownloadScope::forWooDecision($wooDecision),
+            expiration: new DateTimeImmutable('+1 day'),
         );
 
         $id = $download->getId();
@@ -56,18 +59,18 @@ class BatchDownloadRepositoryTest extends SharedWebTestCase
         $wooDecision = WooDecisionFactory::createOne();
 
         $downloadA = BatchDownloadFactory::createOne([
-            'scope' => BatchDownloadScope::forWooDecision($wooDecision->_real()),
-            'expiration' => new \DateTimeImmutable('+1 day'),
+            'scope' => BatchDownloadScope::forWooDecision($wooDecision),
+            'expiration' => new DateTimeImmutable('+1 day'),
         ]);
         $downloadB = BatchDownloadFactory::createOne([
-            'scope' => BatchDownloadScope::forWooDecision($wooDecision->_real()),
-            'expiration' => new \DateTimeImmutable('-1 day'),
+            'scope' => BatchDownloadScope::forWooDecision($wooDecision),
+            'expiration' => new DateTimeImmutable('-1 day'),
         ]);
 
         $result = $this->repository->findExpiredBatchDownloads();
 
         self::assertCount(1, $result);
-        self::assertEquals($downloadB->_real(), $result[0]);
+        self::assertEquals($downloadB, $result[0]);
     }
 
     public function testGetBestAvailableBatchDownloadForScopeWithWooDecision(): void
@@ -75,7 +78,7 @@ class BatchDownloadRepositoryTest extends SharedWebTestCase
         $dossierA = WooDecisionFactory::createOne();
         $dossierB = WooDecisionFactory::createOne();
 
-        $dossierScope = BatchDownloadScope::forWooDecision($dossierA->_real());
+        $dossierScope = BatchDownloadScope::forWooDecision($dossierA);
         $pendingDownload = BatchDownloadFactory::createOne([
             'scope' => $dossierScope,
         ]);
@@ -84,36 +87,36 @@ class BatchDownloadRepositoryTest extends SharedWebTestCase
             'scope' => $dossierScope,
         ]);
         $failedDownload->markAsFailed();
-        $failedDownload->_save();
+        save($failedDownload);
 
         $olderDownload = BatchDownloadFactory::createOne([
             'scope' => $dossierScope,
         ]);
         $olderDownload->complete('123.zip', 456, 789);
-        $olderDownload->_save();
+        save($olderDownload);
 
         $expectedDownload = BatchDownloadFactory::createOne([
-            'expiration' => new \DateTimeImmutable('+2 month'),
+            'expiration' => new DateTimeImmutable('+2 month'),
             'scope' => $dossierScope,
         ]);
         $expectedDownload->complete('123.zip', 456, 789);
-        $expectedDownload->_save();
+        save($expectedDownload);
 
         $otherDossierDownload = BatchDownloadFactory::createOne([
-            'expiration' => new \DateTimeImmutable('+3 month'),
-            'scope' => BatchDownloadScope::forWooDecision($dossierB->_real()),
+            'expiration' => new DateTimeImmutable('+3 month'),
+            'scope' => BatchDownloadScope::forWooDecision($dossierB),
         ]);
         $otherDossierDownload->complete('123.zip', 456, 789);
-        $otherDossierDownload->_save();
+        save($otherDossierDownload);
 
         $inquiry = InquiryFactory::createOne();
-        BatchDownloadScope::forInquiryAndWooDecision($inquiry->_real(), $dossierA->_real());
+        BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossierA);
         BatchDownloadFactory::createOne([
             'scope' => $dossierScope,
         ]);
 
         self::assertEquals(
-            $expectedDownload->_real(),
+            $expectedDownload,
             $this->repository->getBestAvailableBatchDownloadForScope($dossierScope),
         );
     }
@@ -121,7 +124,7 @@ class BatchDownloadRepositoryTest extends SharedWebTestCase
     public function testExists(): void
     {
         $batchDownload = BatchDownloadFactory::createOne([
-            'scope' => BatchDownloadScope::forWooDecision(WooDecisionFactory::createOne()->_real()),
+            'scope' => BatchDownloadScope::forWooDecision(WooDecisionFactory::createOne()),
         ]);
 
         $this->assertTrue($this->repository->exists($batchDownload->getId()));

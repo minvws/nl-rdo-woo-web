@@ -8,6 +8,7 @@ use Elastic\Elasticsearch\Response\Elasticsearch;
 use Symfony\Bundle\FrameworkBundle\DataCollector\AbstractDataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * A data collector for elasticsearch calls so we can display them in the debug profiler toolbar.
@@ -16,10 +17,7 @@ class ElasticCollector extends AbstractDataCollector
 {
     protected bool $enabled = true;
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
-    public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
+    public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
     }
 

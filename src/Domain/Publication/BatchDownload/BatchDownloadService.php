@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\BatchDownload;
 
+use DateTimeImmutable;
+use OutOfBoundsException;
 use Shared\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
@@ -63,7 +65,7 @@ readonly class BatchDownloadService
 
         $batch = new BatchDownload(
             $scope,
-            new \DateTimeImmutable('+10 years'),
+            new DateTimeImmutable('+10 years'),
         );
 
         $this->batchRepository->save($batch);
@@ -90,7 +92,7 @@ readonly class BatchDownloadService
             }
         }
 
-        throw new \OutOfBoundsException('Scope not supported');
+        throw new OutOfBoundsException('Scope not supported');
     }
 
     public function exists(BatchDownload $batch): bool

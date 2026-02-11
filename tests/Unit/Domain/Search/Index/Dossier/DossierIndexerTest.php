@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Dossier;
 
+use ArrayIterator;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -25,29 +27,29 @@ class DossierIndexerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->firstMapper = \Mockery::mock(ElasticDossierMapperInterface::class);
-        $this->secondMapper = \Mockery::mock(ElasticDossierMapperInterface::class);
+        $this->firstMapper = Mockery::mock(ElasticDossierMapperInterface::class);
+        $this->secondMapper = Mockery::mock(ElasticDossierMapperInterface::class);
 
-        $this->elasticService = \Mockery::mock(ElasticService::class);
-        $this->nestedDossierUpdater = \Mockery::mock(NestedDossierIndexUpdater::class);
+        $this->elasticService = Mockery::mock(ElasticService::class);
+        $this->nestedDossierUpdater = Mockery::mock(NestedDossierIndexUpdater::class);
 
         $this->indexer = new DossierIndexer(
             $this->elasticService,
             $this->nestedDossierUpdater,
-            new \ArrayIterator([$this->firstMapper, $this->secondMapper]),
+            new ArrayIterator([$this->firstMapper, $this->secondMapper]),
         );
     }
 
     public function testIndex(): void
     {
         $dossierNr = 'test-123';
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
         $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr);
 
         $docValues = ['foo' => 'bar'];
 
-        $document = \Mockery::mock(ElasticDocument::class);
+        $document = Mockery::mock(ElasticDocument::class);
         $document->shouldReceive('getDocumentValues')->andReturn($docValues);
 
         $this->firstMapper->expects('supports')->with($dossier)->andReturnTrue();
@@ -61,7 +63,7 @@ class DossierIndexerTest extends UnitTestCase
 
     public function testMapThrowsExceptionWhenNoMapperSupportsTheDossier(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
 
         $this->firstMapper->expects('supports')->with($dossier)->andReturnFalse();
@@ -74,10 +76,10 @@ class DossierIndexerTest extends UnitTestCase
 
     public function testMapUsesFirstMapperWhenItSupportsTheDossier(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
 
-        $document = \Mockery::mock(ElasticDocument::class);
+        $document = Mockery::mock(ElasticDocument::class);
 
         $this->firstMapper->expects('supports')->with($dossier)->andReturnTrue();
         $this->firstMapper->expects('map')->with($dossier)->andReturn($document);
@@ -90,10 +92,10 @@ class DossierIndexerTest extends UnitTestCase
 
     public function testMapUsesSecondMapperWhenFirstDoesNotSupportTheDossier(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
 
-        $document = \Mockery::mock(ElasticDocument::class);
+        $document = Mockery::mock(ElasticDocument::class);
 
         $this->firstMapper->expects('supports')->with($dossier)->andReturnFalse();
         $this->secondMapper->expects('supports')->with($dossier)->andReturnTrue();

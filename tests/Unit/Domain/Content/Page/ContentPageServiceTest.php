@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Content\Page;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Content\Page\ContentPage;
 use Shared\Domain\Content\Page\ContentPageException;
@@ -19,7 +20,7 @@ class ContentPageServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->contentPageRepository = \Mockery::mock(ContentPageRepository::class);
+        $this->contentPageRepository = Mockery::mock(ContentPageRepository::class);
         $this->service = new ContentPageService($this->contentPageRepository);
 
         parent::setUp();
@@ -41,7 +42,7 @@ class ContentPageServiceTest extends UnitTestCase
             }
 
             $this->contentPageRepository->expects('save')->with(
-                \Mockery::on(
+                Mockery::on(
                     static function (ContentPage $entity) use ($type): bool {
                         return $entity->getSlug() === $type->getSlug() && $entity->getTitle() === $type->getDefaultTitle();
                     }

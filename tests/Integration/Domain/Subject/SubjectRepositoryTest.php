@@ -30,7 +30,7 @@ class SubjectRepositoryTest extends SharedWebTestCase
 
         $subject = new Subject();
         $subject->setName('foo');
-        $subject->setOrganisation($organisation->_real());
+        $subject->setOrganisation($organisation);
 
         $repository = $this->getRepository();
         self::assertNull(
@@ -56,15 +56,15 @@ class SubjectRepositoryTest extends SharedWebTestCase
 
         $subjectA = new Subject();
         $subjectA->setName('foo');
-        $subjectA->setOrganisation($organisationA->_real());
+        $subjectA->setOrganisation($organisationA);
         $repository->save($subjectA, true);
 
         $subjectB = new Subject();
         $subjectB->setName('bar');
-        $subjectB->setOrganisation($organisationB->_real());
+        $subjectB->setOrganisation($organisationB);
         $repository->save($subjectB, true);
 
-        $query = $repository->getQueryForOrganisation($organisationA->_real());
+        $query = $repository->getQueryForOrganisation($organisationA);
         $result = $query->getResult();
 
         self::assertEquals([$subjectA], $result);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Admin\Action;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
 use Shared\Domain\Publication\Dossier\Admin\Action\ValidateCompletionDossierAdminAction;
@@ -19,7 +20,7 @@ final class ValidateCompletionDossierAdminActionTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossierService = \Mockery::mock(DossierService::class);
+        $this->dossierService = Mockery::mock(DossierService::class);
 
         $this->action = new ValidateCompletionDossierAdminAction(
             $this->dossierService,
@@ -38,8 +39,8 @@ final class ValidateCompletionDossierAdminActionTest extends UnitTestCase
 
     public function testSupports(): void
     {
-        self::assertTrue($this->action->supports(\Mockery::mock(WooDecision::class)));
-        self::assertTrue($this->action->supports(\Mockery::mock(Covenant::class)));
+        self::assertTrue($this->action->supports(Mockery::mock(WooDecision::class)));
+        self::assertTrue($this->action->supports(Mockery::mock(Covenant::class)));
     }
 
     public function testNeedsConfirmation(): void
@@ -49,7 +50,7 @@ final class ValidateCompletionDossierAdminActionTest extends UnitTestCase
 
     public function testExecute(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
         $this->dossierService->expects('validateCompletion')->with($dossier);
 

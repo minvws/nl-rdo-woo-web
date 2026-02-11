@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Command\ContentExtractCommand;
 use Shared\Domain\Ingest\Content\ContentExtract;
@@ -19,6 +20,8 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
+use function count;
+
 class ContentExtractTest extends UnitTestCase
 {
     private Command $command;
@@ -27,8 +30,8 @@ class ContentExtractTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->contentExtractService = \Mockery::mock(ContentExtractService::class);
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
+        $this->contentExtractService = Mockery::mock(ContentExtractService::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
 
         $application = new Application();
         $application->add(
@@ -49,11 +52,12 @@ class ContentExtractTest extends UnitTestCase
             $uuid = '1ef42b68-68d2-682a-b16e-bd5397103001',
         ]);
 
-        $covenantDocumentRepository = \Mockery::mock(CovenantMainDocumentRepository::class);
-        $covenantDocumentRepository->expects('find')->with($uuid)->andReturnNull();
+        $covenantDocumentRepository = Mockery::mock(CovenantMainDocumentRepository::class);
+        $covenantDocumentRepository->expects('find')
+            ->with($uuid)
+            ->andReturnNull();
 
-        $this->entityManager
-            ->shouldReceive('getRepository')
+        $this->entityManager->expects('getRepository')
             ->with(CovenantMainDocument::class)
             ->andReturn($covenantDocumentRepository);
 
@@ -67,10 +71,12 @@ class ContentExtractTest extends UnitTestCase
 
     public function testExecuteOutputsAllContents(): void
     {
+        $uuid = '1ef42b68-68d2-682a-b16e-bd5397103001';
+
         $commandTester = new CommandTester($this->command);
         $commandTester->setInputs([
             3,
-            $uuid = '1ef42b68-68d2-682a-b16e-bd5397103001',
+            $uuid,
         ]);
 
         $extract1 = new ContentExtract(ContentExtractorKey::TIKA, 'foo');
@@ -79,20 +85,21 @@ class ContentExtractTest extends UnitTestCase
         $collection->append($extract1);
         $collection->append($extract2);
 
-        $covenantDocument = \Mockery::mock(CovenantMainDocument::class);
-        $covenantDocumentRepository = \Mockery::mock(CovenantMainDocumentRepository::class);
-        $covenantDocumentRepository->expects('find')->with($uuid)->andReturn($covenantDocument);
+        $covenantDocument = Mockery::mock(CovenantMainDocument::class);
 
-        $this->entityManager
-            ->shouldReceive('getRepository')
+        $covenantDocumentRepository = Mockery::mock(CovenantMainDocumentRepository::class);
+        $covenantDocumentRepository->expects('find')
+            ->with($uuid)
+            ->andReturn($covenantDocument);
+
+        $this->entityManager->expects('getRepository')
             ->with(CovenantMainDocument::class)
             ->andReturn($covenantDocumentRepository);
 
-        $this->contentExtractService
-            ->expects('getExtracts')
-            ->with($covenantDocument, \Mockery::on(
-                static fn (ContentExtractOptions $options) => count($options->getEnabledExtractors()) === count(ContentExtractorKey::cases())
-            ))
+        $this->contentExtractService->expects('getExtracts')
+            ->with($covenantDocument, Mockery::on(static function (ContentExtractOptions $options): bool {
+                return count($options->getEnabledExtractors()) === count(ContentExtractorKey::cases());
+            }))
             ->andReturn($collection);
 
         $commandTester->execute([__FILE__]);

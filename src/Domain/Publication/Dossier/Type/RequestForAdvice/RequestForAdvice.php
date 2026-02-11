@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\RequestForAdvice;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Override;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
@@ -17,6 +19,8 @@ use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Symfony\Component\Validator\Constraints as Assert;
+
+use function array_values;
 
 /**
  * @implements EntityWithAttachments<RequestForAdviceAttachment>
@@ -31,13 +35,13 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     /** @use HasMainDocument<RequestForAdviceMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(targetEntity: RequestForAdviceMainDocument::class, mappedBy: 'dossier', cascade: ['remove'])]
+    #[ORM\OneToOne(targetEntity: RequestForAdviceMainDocument::class, mappedBy: 'dossier', cascade: ['remove', 'persist'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?RequestForAdviceMainDocument $document;
 
     /** @var Collection<array-key,RequestForAdviceAttachment> */
-    #[ORM\OneToMany(targetEntity: RequestForAdviceAttachment::class, mappedBy: 'dossier')]
+    #[ORM\OneToMany(targetEntity: RequestForAdviceAttachment::class, mappedBy: 'dossier', cascade: ['persist'])]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 
@@ -69,8 +73,8 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
         $this->document = null;
     }
 
-    #[\Override]
-    public function setDateFrom(?\DateTimeImmutable $dateFrom): static
+    #[Override]
+    public function setDateFrom(?DateTimeImmutable $dateFrom): static
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateFrom;

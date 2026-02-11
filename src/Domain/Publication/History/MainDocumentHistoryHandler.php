@@ -12,6 +12,8 @@ use Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
 use Shared\Service\HistoryService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+use function sprintf;
+
 final readonly class MainDocumentHistoryHandler
 {
     public function __construct(

@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory;
 
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Stringable;
 
-readonly class DocumentNumber implements \Stringable
+use function count;
+use function preg_match;
+use function str_starts_with;
+use function strlen;
+use function substr;
+
+readonly class DocumentNumber implements Stringable
 {
     private string $value;
 
@@ -18,7 +26,7 @@ readonly class DocumentNumber implements \Stringable
     ) {
         $value = $prefix . '-' . $matter . '-' . $id;
         if (strlen($value) > 255) {
-            throw new \RuntimeException('Document number maximum length exceeded');
+            throw new RuntimeException('Document number maximum length exceeded');
         }
 
         $this->value = $value;
@@ -75,7 +83,7 @@ readonly class DocumentNumber implements \Stringable
     public static function fromDossierAndDocument(WooDecision $dossier, Document $document): self
     {
         if ($document->getDocumentId() === null) {
-            throw new \RuntimeException('Document has no documentId');
+            throw new RuntimeException('Document has no documentId');
         }
 
         // Cut prefix and it's separator from the documentNr start, leaving matter and documentId

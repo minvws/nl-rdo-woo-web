@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\MainDocument;
 
-class MainDocumentNotFoundException extends \RuntimeException
+use RuntimeException;
+
+class MainDocumentNotFoundException extends RuntimeException
 {
     public function __construct()
     {

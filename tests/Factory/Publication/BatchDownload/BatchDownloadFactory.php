@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory\Publication\BatchDownload;
 
+use DateTimeImmutable;
+use Override;
 use Shared\Domain\Publication\BatchDownload\BatchDownload;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<BatchDownload>
+ * @extends PersistentObjectFactory<BatchDownload>
  */
-final class BatchDownloadFactory extends PersistentProxyObjectFactory
+final class BatchDownloadFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
@@ -20,14 +22,14 @@ final class BatchDownloadFactory extends PersistentProxyObjectFactory
     protected function defaults(): array
     {
         return [
-            'expiration' => new \DateTimeImmutable('+1 month'),
+            'expiration' => new DateTimeImmutable('+1 month'),
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    #[\Override]
+    #[Override]
     protected function initialize(): static
     {
         return $this;

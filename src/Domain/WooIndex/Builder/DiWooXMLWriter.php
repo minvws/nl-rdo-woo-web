@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Shared\Domain\WooIndex\Builder;
 
 use Webmozart\Assert\Assert;
+use XMLWriter;
 
-/**
- * @SuppressWarnings("PHPMD.TooManyPublicMethods")
- */
+use function fwrite;
+use function strlen;
+
 final class DiWooXMLWriter
 {
     private const string DIWOO_NS = 'diwoo';
@@ -16,7 +17,7 @@ final class DiWooXMLWriter
     /**
      * @param resource $stream
      */
-    private function __construct(private $stream, protected \XMLWriter $writer = new \XMLWriter())
+    private function __construct(private $stream, private XMLWriter $writer = new XMLWriter())
     {
     }
 

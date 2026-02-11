@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document\Handler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand;
@@ -28,11 +29,11 @@ class WithDrawAllDocumentsHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossier = \Mockery::mock(WooDecision::class);
-        $this->repository = \Mockery::mock(WooDecisionRepository::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->documentWithdrawService = \Mockery::mock(DocumentWithdrawService::class);
-        $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
+        $this->dossier = Mockery::mock(WooDecision::class);
+        $this->repository = Mockery::mock(WooDecisionRepository::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->documentWithdrawService = Mockery::mock(DocumentWithdrawService::class);
+        $this->dossierWorkflowManager = Mockery::mock(DossierWorkflowManager::class);
 
         $this->handler = new WithDrawAllDocumentsHandler(
             $this->repository,

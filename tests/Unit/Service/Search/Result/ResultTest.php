@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Search\Result;
 
+use Mockery;
 use Shared\Service\Search\Model\Aggregation;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Search\Result\Result;
@@ -13,10 +14,10 @@ class ResultTest extends UnitTestCase
 {
     public function testGetAggregationReturnsMatchingAggregation(): void
     {
-        $aggregationA = \Mockery::mock(Aggregation::class);
+        $aggregationA = Mockery::mock(Aggregation::class);
         $aggregationA->shouldReceive('getName')->andReturn(FacetKey::TYPE->value);
 
-        $aggregationB = \Mockery::mock(Aggregation::class);
+        $aggregationB = Mockery::mock(Aggregation::class);
         $aggregationB->shouldReceive('getName')->andReturn(FacetKey::DATE->value);
 
         $result = new Result();
@@ -33,7 +34,7 @@ class ResultTest extends UnitTestCase
 
     public function testGetAggregationReturnsNullForNoMatchingAggregation(): void
     {
-        $aggregation = \Mockery::mock(Aggregation::class);
+        $aggregation = Mockery::mock(Aggregation::class);
         $aggregation->shouldReceive('getName')->andReturn(FacetKey::TYPE->value);
 
         $result = new Result();

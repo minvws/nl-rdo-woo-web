@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Shared\Command;
 
 use Shared\Service\PlatformCheck\PlatformCheckerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
+#[AsCommand(name: 'woopie:check:platform', description: 'Checks if the current platform is ready for running', aliases: ['woopie:check:production'])]
 class PlatformCheck extends Command
 {
     /**
@@ -24,17 +26,14 @@ class PlatformCheck extends Command
 
     protected function configure(): void
     {
-        $this->setName('woopie:check:platform')
-            ->setAliases(['woopie:check:production'])
-            ->setDescription('Checks if the current platform is ready for running')
-            ->setHelp('Sanity checks for the current platform')
-        ;
+        $this
+            ->setHelp('Sanity checks for the current platform');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         unset($input);
-        $returnCode = 0;
+        $returnCode = self::SUCCESS;
 
         $output->writeln('Woo platform sanity check status');
         $output->writeln('=========================================');
@@ -46,7 +45,7 @@ class PlatformCheck extends Command
 
                 if (! $result->successful) {
                     $output->writeln('<error>💀 ' . $result->output . '</error>');
-                    $returnCode = 1;
+                    $returnCode = self::FAILURE;
                 } elseif ($result->output !== '') {
                     $output->writeln('<info>👍 ' . $result->output . '</info>');
                 }

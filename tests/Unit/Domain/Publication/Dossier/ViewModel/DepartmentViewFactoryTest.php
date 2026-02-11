@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
 use Shared\Tests\Unit\UnitTestCase;
@@ -13,7 +14,7 @@ final class DepartmentViewFactoryTest extends UnitTestCase
 {
     public function testMake(): void
     {
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
         $department->shouldReceive('getName')->andReturn($expectedName = 'my name');
         $department
             ->shouldReceive('getFeedbackContent')
@@ -31,7 +32,7 @@ final class DepartmentViewFactoryTest extends UnitTestCase
 
     public function testMakeCollection(): void
     {
-        $departmentOne = \Mockery::mock(Department::class);
+        $departmentOne = Mockery::mock(Department::class);
         $departmentOne->shouldReceive('getName')->andReturn($expectedNameOne = 'my name one');
         $departmentOne
             ->shouldReceive('getFeedbackContent')
@@ -40,7 +41,7 @@ final class DepartmentViewFactoryTest extends UnitTestCase
             ->shouldReceive('getResponsibilityContent')
             ->andReturn($responsibilityContentOne = 'some responsibility content');
 
-        $departmentTwo = \Mockery::mock(Department::class);
+        $departmentTwo = Mockery::mock(Department::class);
         $departmentTwo->shouldReceive('getName')->andReturn($expectedNameTwo = 'my name two');
         $departmentTwo
             ->shouldReceive('getFeedbackContent')

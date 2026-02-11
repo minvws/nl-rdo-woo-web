@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory;
 
+use DateTimeImmutable;
+use Override;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Zenstruck\Foundry\LazyValue;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Inquiry>
+ * @extends PersistentObjectFactory<Inquiry>
  */
-final class InquiryFactory extends PersistentProxyObjectFactory
+final class InquiryFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -39,8 +41,8 @@ final class InquiryFactory extends PersistentProxyObjectFactory
 
         return [
             'casenr' => self::faker()->text(255),
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'organisation' => $org,
             'documents' => DocumentFactory::new()->range(0, 3),
             'dossiers' => WooDecisionFactory::new([
@@ -52,15 +54,14 @@ final class InquiryFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    #[\Override]
+    #[Override]
     protected function initialize(): static
     {
         return $this
             ->afterPersist(function (Inquiry $inquiry) {
                 $inquiry->setInventory(InquiryInventoryFactory::new()->create([
                     'inquiry' => $inquiry,
-                ])->_real());
-            })
-        ;
+                ]));
+            });
     }
 }

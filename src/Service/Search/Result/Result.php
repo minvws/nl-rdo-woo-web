@@ -15,90 +15,88 @@ use Shared\Service\Search\Query\Sort\ViewModel\SortItems;
 
 /**
  * This class is the result that is returned after a search has been performed.
- *
- * @SuppressWarnings("PHPMD.TooManyFields")
  */
 final class Result
 {
     /**
      * Offset used for the search.
      */
-    protected int $offset = 0;
+    private int $offset = 0;
 
     /**
      * Limit used for the search.
      */
-    protected int $limit = 10;
+    private int $limit = 10;
 
     /**
      * Not null when pagination is enabled.
      *
      * @var PaginationInterface<int,AbstractPagination>|null
      */
-    protected ?PaginationInterface $paginator = null;
+    private ?PaginationInterface $paginator = null;
 
     /**
      * Total of unique dossiers found.
      */
-    protected int $dossierCount = 0;
+    private int $dossierCount = 0;
 
     /**
      * Total number of documents found without a date (will be null if already filtered on documents without date).
      */
-    protected ?int $documentCountWithoutDate = null;
+    private ?int $documentCountWithoutDate = null;
 
     /**
      * True when the document count without date message should be displayed.
      */
-    protected bool $displayWithoutDateMessage = false;
+    private bool $displayWithoutDateMessage = false;
 
     /**
      * Time it has taken to search (in ms).
      */
-    protected int $timeTaken = 0;
+    private int $timeTaken = 0;
 
     /**
      * Actual search results (limited per page, so max 10).
      *
      * @var ResultEntryInterface[]
      */
-    protected array $entries = [];
+    private array $entries = [];
 
     /**
      * True when the search has failed.
      */
-    protected bool $failed = false;
+    private bool $failed = false;
 
     /**
      * Error message when the search has failed.
      */
-    protected string $message = '';
+    private string $message = '';
 
     /**
      * Type of documents that have been found (see SearchType enum).
      */
-    protected string $type;
+    private string $type;
 
     /**
      * Aggregations found.
      *
      * @var Aggregation[]
      */
-    protected array $aggregations = [];
+    private array $aggregations = [];
 
     /**
      * Suggestions found.
      *
      * @var Suggestion[]
      */
-    protected array $suggestions = [];
+    private array $suggestions = [];
 
     /**
      * Actual query used to search.
      *
      * @var mixed[]
      */
-    protected array $query;
+    private array $query;
 
     /**
      * Total number of result items.

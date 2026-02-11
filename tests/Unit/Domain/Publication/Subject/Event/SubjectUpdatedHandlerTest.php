@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Subject\Event;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Subject\Event\SubjectUpdatedEvent;
 use Shared\Domain\Publication\Subject\Event\SubjectUpdatedHandler;
@@ -22,8 +23,8 @@ class SubjectUpdatedHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(SubjectRepository::class);
-        $this->indexUpdater = \Mockery::mock(SubjectIndexUpdater::class);
+        $this->repository = Mockery::mock(SubjectRepository::class);
+        $this->indexUpdater = Mockery::mock(SubjectIndexUpdater::class);
 
         $this->handler = new SubjectUpdatedHandler(
             $this->repository,
@@ -35,7 +36,7 @@ class SubjectUpdatedHandlerTest extends UnitTestCase
 
     public function testInvokeSuccessfully(): void
     {
-        $subject = \Mockery::mock(Subject::class);
+        $subject = Mockery::mock(Subject::class);
         $subject->shouldReceive('getId')->andReturn($subjectId = Uuid::v6());
 
         $this->repository->expects('find')->with($subjectId)->andReturn($subject);
@@ -48,7 +49,7 @@ class SubjectUpdatedHandlerTest extends UnitTestCase
 
     public function testInvokeThrowsExceptionWhenEntityCannotBeLoaded(): void
     {
-        $subject = \Mockery::mock(Subject::class);
+        $subject = Mockery::mock(Subject::class);
         $subject->shouldReceive('getId')->andReturn($subjectId = Uuid::v6());
 
         $this->repository->expects('find')->with($subjectId)->andReturnNull();

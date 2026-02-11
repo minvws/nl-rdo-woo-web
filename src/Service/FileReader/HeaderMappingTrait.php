@@ -7,13 +7,21 @@ namespace Shared\Service\FileReader;
 use PhpOffice\PhpSpreadsheet\Exception;
 use Shared\Exception\FileReaderException;
 
+use function array_filter;
+use function array_keys;
+use function count;
+use function in_array;
+use function ltrim;
+use function strtolower;
+use function trim;
+
 trait HeaderMappingTrait
 {
     /**
      * Resolve the header mapping into an array of mapped headers (name => column)
      * Will throw an exception for missing mandatory headers.
      *
-     * @param string[]        $headers
+     * @param string[] $headers
      * @param ColumnMapping[] $columnMappings
      *
      * @throws FileReaderException|Exception

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\Handler;
 
 use Doctrine\ORM\NoResultException;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
 use Shared\Domain\Publication\Attachment\Handler\AttachmentEntityLoader;
@@ -27,9 +28,9 @@ class AttachmentEntityLoaderTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->workflowManager = \Mockery::mock(DossierWorkflowManager::class);
-        $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
-        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
+        $this->workflowManager = Mockery::mock(DossierWorkflowManager::class);
+        $this->attachmentRepository = Mockery::mock(AttachmentRepository::class);
+        $this->dossierRepository = Mockery::mock(DossierRepository::class);
 
         $this->loader = new AttachmentEntityLoader(
             $this->workflowManager,
@@ -41,7 +42,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     public function testLoadAndValidateDossierSuccessful(): void
     {
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $transition = DossierStatusTransition::UPDATE_ATTACHMENT;
 
         $this->dossierRepository
@@ -61,7 +62,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     public function testLoadAndValidateDossierThrowsExceptionWhenTransitionCannotBeApplied(): void
     {
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $transition = DossierStatusTransition::UPDATE_ATTACHMENT;
 
         $this->dossierRepository->expects('findOneByDossierId')->with($dossierId)->andReturn($dossier);
@@ -92,11 +93,11 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     public function testLoadAndValidateAttachmentSuccessful(): void
     {
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
-        $attachment = \Mockery::mock(CovenantAttachment::class);
+        $attachment = Mockery::mock(CovenantAttachment::class);
 
         $transition = DossierStatusTransition::UPDATE_ATTACHMENT;
 
@@ -122,7 +123,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     public function testLoadAndValidateAttachmentThrowsExceptionWhenAttachmentIsNotFound(): void
     {
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
@@ -146,11 +147,11 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     public function testLoadAndValidateAttachmentThrowsExceptionWhenTransitionCannotBeApplied(): void
     {
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
-        $attachment = \Mockery::mock(CovenantAttachment::class);
+        $attachment = Mockery::mock(CovenantAttachment::class);
 
         $transition = DossierStatusTransition::UPDATE_ATTACHMENT;
 
@@ -176,11 +177,11 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     public function testLoadAttachmentSuccessful(): void
     {
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
-        $attachment = \Mockery::mock(CovenantAttachment::class);
+        $attachment = Mockery::mock(CovenantAttachment::class);
 
         $this->dossierRepository
             ->expects('findOneByDossierId')
@@ -200,7 +201,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     public function testLoadAttachmentThrowsExceptionWhenAttachmentIsNotFound(): void
     {
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();

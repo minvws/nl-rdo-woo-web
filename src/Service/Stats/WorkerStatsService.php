@@ -8,6 +8,9 @@ use Carbon\CarbonImmutable;
 use Shared\Service\Stats\Handler\StatsHandlerInterface;
 use Webmozart\Assert\Assert;
 
+use function call_user_func_array;
+use function gethostname;
+
 class WorkerStatsService
 {
     /**

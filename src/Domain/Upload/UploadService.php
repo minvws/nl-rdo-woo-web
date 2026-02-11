@@ -14,11 +14,7 @@ use Shared\Domain\Upload\Handler\UploadHandlerInterface;
 use Shared\Domain\Upload\Result\UploadCompletedResult;
 use Shared\Domain\Upload\Result\UploadResultInterface;
 use Shared\Service\Security\User;
-use Symfony\Bundle\SecurityBundle\Security;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 readonly class UploadService
 {
     public const string SECURITY_ATTRIBUTE = 'uploader.upload_request';
@@ -26,33 +22,25 @@ readonly class UploadService
     public function __construct(
         private UploadHandlerInterface $uploadHandler,
         private EventDispatcherInterface $eventDispatcher,
-        private UploadEntityRepository $repository,
-        private Security $security,
+        private UploadEntityRepository $uploadEntityRepository,
         private FilesystemOperator $workingCopyStorage,
     ) {
     }
 
-    public function handleUploadRequest(UploadRequest $request): UploadResultInterface
+    public function handleUploadRequest(UploadRequest $uploadRequest, ?User $user): UploadResultInterface
     {
-        /** @var User $user */
-        $user = $this->security->getUser();
-
-        if (! $this->security->isGranted(self::SECURITY_ATTRIBUTE, $request)) {
-            throw UploadException::forNotAllowed();
-        }
-
-        $uploadEntity = $this->repository->findOrCreate(
-            $request->uploadId,
-            $request->groupId,
+        $uploadEntity = $this->uploadEntityRepository->findOrCreate(
+            $uploadRequest->uploadId,
+            $uploadRequest->groupId,
             $user,
-            $request->additionalParameters,
+            $uploadRequest->additionalParameters,
         );
 
         if (! $uploadEntity->getStatus()->isIncomplete()) {
             throw UploadException::forCannotUpload($uploadEntity);
         }
 
-        $result = $this->uploadHandler->handleUploadRequest($uploadEntity, $request);
+        $result = $this->uploadHandler->handleUpload($uploadEntity, $uploadRequest);
 
         if ($result instanceof UploadCompletedResult) {
             $uploadEntity->finishUploading($result->filename, $result->size);
@@ -62,7 +50,7 @@ readonly class UploadService
             );
         }
 
-        $this->repository->save($uploadEntity, true);
+        $this->uploadEntityRepository->save($uploadEntity, true);
 
         return $result;
     }
@@ -73,7 +61,7 @@ readonly class UploadService
 
         $this->deleteUploadedFile($uploadEntity);
 
-        $this->repository->save($uploadEntity, true);
+        $this->uploadEntityRepository->save($uploadEntity, true);
     }
 
     public function deleteUploadedFile(UploadEntity $uploadEntity): void
@@ -108,14 +96,14 @@ readonly class UploadService
 
         $this->uploadHandler->moveUploadedFileToStorage($uploadEntity, $fileSystem, $filePath);
 
-        $this->repository->save($uploadEntity, true);
+        $this->uploadEntityRepository->save($uploadEntity, true);
     }
 
     public function passValidation(UploadEntity $uploadEntity, string $mimeType): void
     {
         $uploadEntity->passValidation($mimeType);
 
-        $this->repository->save($uploadEntity, true);
+        $this->uploadEntityRepository->save($uploadEntity, true);
 
         $this->workingCopyStorage->delete($uploadEntity->getUploadId());
 
@@ -128,7 +116,7 @@ readonly class UploadService
     {
         $uploadEntity->failValidation($exception);
 
-        $this->repository->save($uploadEntity, true);
+        $this->uploadEntityRepository->save($uploadEntity, true);
 
         $this->uploadHandler->deleteUploadedFile($uploadEntity);
 

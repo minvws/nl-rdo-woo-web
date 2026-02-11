@@ -7,6 +7,8 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
+use function array_key_exists;
+
 readonly class TotalDocumentFileSizeValidator
 {
     private int $maxAllowedDocumentsSizeInKib;

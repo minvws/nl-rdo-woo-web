@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Tests\Unit\UnitTestCase;
+use SplFileInfo;
 use Symfony\Component\HttpFoundation\File\File;
 
 final class UploadedFileTest extends UnitTestCase
@@ -16,21 +18,21 @@ final class UploadedFileTest extends UnitTestCase
         $uploadedFile = new UploadedFile($expectedFilename = 'filename', $expectedOriginalFilename = 'originalFilename');
 
         $this->assertInstanceOf(UploadedFile::class, $uploadedFile);
-        $this->assertInstanceOf(\SplFileInfo::class, $uploadedFile);
+        $this->assertInstanceOf(SplFileInfo::class, $uploadedFile);
         $this->assertSame($expectedFilename, $uploadedFile->getPathname());
         $this->assertSame($expectedOriginalFilename, $uploadedFile->getOriginalFilename());
     }
 
     public function testFromFileWithSplFile(): void
     {
-        /** @var \SplFileInfo&MockInterface $splFileInfo */
-        $splFileInfo = \Mockery::mock(\SplFileInfo::class);
+        /** @var SplFileInfo&MockInterface $splFileInfo */
+        $splFileInfo = Mockery::mock(SplFileInfo::class);
         $splFileInfo->shouldReceive('getPathname')->andReturn($expectedFilename = 'filename');
 
         $uploadedFile = UploadedFile::fromFile($splFileInfo, $expectedOriginalFilename = 'originalFilename.txt');
 
         $this->assertInstanceOf(UploadedFile::class, $uploadedFile);
-        $this->assertInstanceOf(\SplFileInfo::class, $uploadedFile);
+        $this->assertInstanceOf(SplFileInfo::class, $uploadedFile);
         $this->assertSame($expectedFilename, $uploadedFile->getPathname());
         $this->assertSame($expectedOriginalFilename, $uploadedFile->getOriginalFilename());
     }
@@ -38,13 +40,13 @@ final class UploadedFileTest extends UnitTestCase
     public function testFromFileWithSymfonyFile(): void
     {
         /** @var File&MockInterface $symfonyFile */
-        $symfonyFile = \Mockery::mock(File::class);
+        $symfonyFile = Mockery::mock(File::class);
         $symfonyFile->shouldReceive('getPathname')->andReturn($expectedFilename = 'filename');
 
         $uploadedFile = UploadedFile::fromFile($symfonyFile, $expectedOriginalFilename = 'originalFilename.txt');
 
         $this->assertInstanceOf(UploadedFile::class, $uploadedFile);
-        $this->assertInstanceOf(\SplFileInfo::class, $uploadedFile);
+        $this->assertInstanceOf(SplFileInfo::class, $uploadedFile);
         $this->assertSame($expectedFilename, $uploadedFile->getPathname());
         $this->assertSame($expectedOriginalFilename, $uploadedFile->getOriginalFilename());
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker\Pdf\Tools\Pdftk;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkRuntimeException;
 use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
@@ -18,7 +19,7 @@ final class PdftkServiceTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->process = \Mockery::mock(Process::class);
+        $this->process = Mockery::mock(Process::class);
     }
 
     public function testExtractPage(): void
@@ -94,7 +95,7 @@ final class PdftkServiceTest extends UnitTestCase
     private function getService(): PdftkService&MockInterface
     {
         /** @var PdftkService&MockInterface $instance */
-        $instance = \Mockery::mock(PdftkService::class)
+        $instance = Mockery::mock(PdftkService::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 

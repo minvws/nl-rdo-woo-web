@@ -25,19 +25,15 @@ use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function strval;
+
 class InquiryController extends AbstractController
 {
     protected const MAX_ITEMS_PER_PAGE = 100;
 
-    /**
-     * @SuppressWarnings("PHPMD.ExcessiveParameterList")
-     */
     public function __construct(
         private readonly InquiryRepository $repository,
         private readonly PaginatorInterface $paginator,
@@ -105,7 +101,7 @@ class InquiryController extends AbstractController
 
         return $this->render('admin/dossier/woo-decision/inquiry/link_documents.html.twig', [
             'placeholder' => '',
-            'link_documents' => $form->createView(),
+            'link_documents' => $form,
             'result' => $result,
         ]);
     }
@@ -145,7 +141,7 @@ class InquiryController extends AbstractController
 
         return $this->render('admin/dossier/woo-decision/inquiry/link_dossiers.html.twig', [
             'placeholder' => '',
-            'inquiry_link_form' => $form->createView(),
+            'inquiry_link_form' => $form,
         ]);
     }
 }

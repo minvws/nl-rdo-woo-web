@@ -7,6 +7,8 @@ namespace Shared\Domain\Ingest\Content;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 
+use function in_array;
+
 class ContentExtractOptions
 {
     /**

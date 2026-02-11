@@ -8,11 +8,14 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Symfony\Component\Uid\Uuid;
 
 /**
- * @extends ServiceEntityRepository<AbstractAttachment>
+ * @template T of AbstractAttachment
+ *
+ * @extends ServiceEntityRepository<T>
  */
 class AttachmentRepository extends ServiceEntityRepository
 {
@@ -46,8 +49,7 @@ class AttachmentRepository extends ServiceEntityRepository
             ->andWhere('dos.id = :dossierId')
             ->innerJoin('a.dossier', 'dos')
             ->setParameter('id', $id)
-            ->setParameter('dossierId', $dossierId)
-        ;
+            ->setParameter('dossierId', $dossierId);
 
         /** @var AbstractAttachment */
         return $qb->getQuery()->getSingleResult();
@@ -76,5 +78,20 @@ class AttachmentRepository extends ServiceEntityRepository
             ->setParameter('status', DossierStatus::PUBLISHED);
 
         return $qb->getQuery()->toIterable();
+    }
+
+    /**
+     * @return ?T
+     */
+    public function findByDossierAndExternalId(AbstractDossier $dossier, string $externalId): ?AbstractAttachment
+    {
+        /** @var ?T */
+        return $this->createQueryBuilder('attachment')
+            ->where('attachment.dossier = :dossier')
+            ->setParameter('dossier', $dossier)
+            ->andWhere('attachment.externalId = :externalId')
+            ->setParameter('externalId', $externalId)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

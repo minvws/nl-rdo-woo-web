@@ -1,6 +1,10 @@
 {
+    "python.defaultInterpreterPath": "${workspaceFolder}/tests/robot_framework/.venv/bin/python",
     "sonarlint.connectedMode.project": {
         "connectionId": "vws",
         "projectKey": "nl-rdo-woo-web-private"
-    }
+    },
+    "robotcode.analysis.diagnosticModifiers.ignore": [
+        "EnvironmentVariableNotFound"
+    ]
 }

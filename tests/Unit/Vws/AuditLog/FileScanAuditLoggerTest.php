@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Vws\AuditLog;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\FileUploadLogEvent;
 use MinVWS\AuditLogger\Loggers\LoggerInterface as AuditLoggerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Upload\AntiVirus\FileScannedEvent;
 use Shared\Service\Security\User;
@@ -23,12 +24,12 @@ final class FileScanAuditLoggerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->internalAuditLogger = \Mockery::mock(AuditLoggerInterface::class);
+        $this->internalAuditLogger = Mockery::mock(AuditLoggerInterface::class);
         $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
 
         $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
 
-        $this->security = \Mockery::mock(Security::class);
+        $this->security = Mockery::mock(Security::class);
 
         $this->fileScanLogger = new FileScanAuditLogger(
             $this->auditLogger,
@@ -43,11 +44,11 @@ final class FileScanAuditLoggerTest extends UnitTestCase
         $path = '/foo/bar/test.txt';
         $reason = 'test reason';
 
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->shouldReceive('getAuditId')->andReturn('user-id');
         $this->security->shouldReceive('getUser')->andReturn($user);
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             static function (FileUploadLogEvent $event) use ($reason): bool {
                 self::assertTrue($event->getLogData()['failed']);
                 self::assertEquals($reason, $event->getLogData()['failed_reason']);

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Shared\Service\Inventory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Exception\ProcessInventoryException;
 use Shared\Exception\TranslatableException;
@@ -17,8 +20,6 @@ use Shared\Service\Logging\LoggingHelper;
 /**
  * This class will process an inventory and generates document entities from the given data.
  * Note that this class does not handle the content of the documents itself, just the metadata.
- *
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
  */
 readonly class InventoryRunProcessor
 {
@@ -26,6 +27,7 @@ readonly class InventoryRunProcessor
 
     public function __construct(
         private EntityManagerInterface $doctrine,
+        private LoggerInterface $logger,
         private LoggingHelper $loggingHelper,
         private InventoryComparator $inventoryComparator,
         private InventoryUpdater $inventoryUpdater,
@@ -38,7 +40,7 @@ readonly class InventoryRunProcessor
     /**
      * Process an initial inventory file and attach found documents to the dossier.
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function process(ProductionReportProcessRun $run): void
     {
@@ -54,20 +56,30 @@ readonly class InventoryRunProcessor
             if ($run->isConfirmed()) {
                 $this->processUpdates($run, $inventoryReader);
             }
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             if (! $exception instanceof TranslatableException) {
                 $exception = ProcessInventoryException::forOtherException($exception);
             }
 
             $run->addGenericException($exception);
             $run->fail();
+
+            $this->logger->error(
+                // @phpcs:ignore Generic.Files.LineLength.TooLong
+                'ProductionReportProcessRun failed. See the ProductionReportProcessRun table for more details on the failure including the exception.',
+                [
+                    'uuid' => $run->getId(),
+                ]
+            );
         } finally {
             if ($run->isFinal()) {
                 $this->inventoryService->cleanupTmpFile($run);
             }
 
-            $this->doctrine->persist($run);
-            $this->doctrine->flush();
+            if ($this->doctrine->isOpen()) {
+                $this->doctrine->persist($run);
+                $this->doctrine->flush();
+            }
         }
     }
 
@@ -108,7 +120,7 @@ readonly class InventoryRunProcessor
         $dossier = $run->getDossier();
         $changeset = $run->getChangeset();
         if ($changeset === null) {
-            throw new \RuntimeException('No changeset available during inventory update');
+            throw new RuntimeException('No changeset available during inventory update');
         }
 
         // Since we need to do row iterations (compare + update + async messages) multiply the total count for progress

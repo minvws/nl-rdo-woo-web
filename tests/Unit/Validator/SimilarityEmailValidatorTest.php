@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Validator;
 
+use Mockery;
 use Shared\Service\Security\User;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\Validator\SimilarityEmail;
@@ -17,8 +18,8 @@ class SimilarityEmailValidatorTest extends UnitTestCase
 {
     public function testValidatorAddsNoViolationsForEmptyValue(): void
     {
-        $context = \Mockery::mock(ExecutionContextInterface::class);
-        $tokenStorage = \Mockery::mock(TokenStorageInterface::class);
+        $context = Mockery::mock(ExecutionContextInterface::class);
+        $tokenStorage = Mockery::mock(TokenStorageInterface::class);
 
         $validator = new SimilarityEmailValidator($tokenStorage);
         $validator->initialize($context);
@@ -30,8 +31,8 @@ class SimilarityEmailValidatorTest extends UnitTestCase
 
     public function testValidatorAddsNoViolationWhenTokenIsMissing(): void
     {
-        $context = \Mockery::mock(ExecutionContextInterface::class);
-        $tokenStorage = \Mockery::mock(TokenStorageInterface::class);
+        $context = Mockery::mock(ExecutionContextInterface::class);
+        $tokenStorage = Mockery::mock(TokenStorageInterface::class);
         $tokenStorage->expects('getToken')->andReturnNull();
 
         $validator = new SimilarityEmailValidator($tokenStorage);
@@ -44,10 +45,10 @@ class SimilarityEmailValidatorTest extends UnitTestCase
 
     public function testValidatorAddsNoViolationWhenUserIsMissing(): void
     {
-        $context = \Mockery::mock(ExecutionContextInterface::class);
-        $token = \Mockery::mock(TokenInterface::class);
+        $context = Mockery::mock(ExecutionContextInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')->andReturnNull();
-        $tokenStorage = \Mockery::mock(TokenStorageInterface::class);
+        $tokenStorage = Mockery::mock(TokenStorageInterface::class);
         $tokenStorage->expects('getToken')->twice()->andReturn($token);
 
         $validator = new SimilarityEmailValidator($tokenStorage);
@@ -60,12 +61,12 @@ class SimilarityEmailValidatorTest extends UnitTestCase
 
     public function testValidatorAddsViolationForPasswordSimilarToEmail(): void
     {
-        $context = \Mockery::mock(ExecutionContextInterface::class);
-        $token = \Mockery::mock(TokenInterface::class);
-        $user = \Mockery::mock(User::class);
+        $context = Mockery::mock(ExecutionContextInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
+        $user = Mockery::mock(User::class);
         $user->expects('getEmail')->andReturn('fooo@bar.text');
         $token->expects('getUser')->andReturn($user);
-        $tokenStorage = \Mockery::mock(TokenStorageInterface::class);
+        $tokenStorage = Mockery::mock(TokenStorageInterface::class);
         $tokenStorage->expects('getToken')->twice()->andReturn($token);
 
         $input = 'foo@bar.test';
@@ -73,7 +74,7 @@ class SimilarityEmailValidatorTest extends UnitTestCase
         $validator = new SimilarityEmailValidator($tokenStorage);
         $validator->initialize($context);
 
-        $builder = \Mockery::mock(ConstraintViolationBuilderInterface::class);
+        $builder = Mockery::mock(ConstraintViolationBuilderInterface::class);
         $context->expects('buildViolation')->andReturn($builder);
         $builder->expects('setParameter');
         $builder->expects('addViolation');
@@ -83,12 +84,12 @@ class SimilarityEmailValidatorTest extends UnitTestCase
 
     public function testValidatorAddsNoViolationForPasswordNotSimilarToEmail(): void
     {
-        $context = \Mockery::mock(ExecutionContextInterface::class);
-        $token = \Mockery::mock(TokenInterface::class);
-        $user = \Mockery::mock(User::class);
+        $context = Mockery::mock(ExecutionContextInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
+        $user = Mockery::mock(User::class);
         $user->expects('getEmail')->andReturn('user@some.domain');
         $token->expects('getUser')->andReturn($user);
-        $tokenStorage = \Mockery::mock(TokenStorageInterface::class);
+        $tokenStorage = Mockery::mock(TokenStorageInterface::class);
         $tokenStorage->expects('getToken')->twice()->andReturn($token);
 
         $input = 'foo@bar.test';

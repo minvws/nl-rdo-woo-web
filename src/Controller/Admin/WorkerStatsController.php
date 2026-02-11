@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin;
 
+use DateTimeInterface;
 use Shared\Service\Stats\WorkerStatsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class WorkerStatsController extends AbstractController
@@ -27,7 +28,7 @@ class WorkerStatsController extends AbstractController
         foreach ($entries as $entry) {
             $data[] = [
                 'section' => $entry->getSection(),
-                'created_at' => $entry->getCreatedAt()->format(\DateTimeInterface::ATOM),
+                'created_at' => $entry->getCreatedAt()->format(DateTimeInterface::ATOM),
                 'duration' => $entry->getDuration(),
             ];
         }

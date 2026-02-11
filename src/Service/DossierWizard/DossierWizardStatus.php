@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Service\DossierWizard;
 
+use OutOfBoundsException;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Step\StepName;
+
+use function array_key_exists;
 
 readonly class DossierWizardStatus
 {
@@ -151,7 +154,7 @@ readonly class DossierWizardStatus
 
         $step = $this->getFirstOpenStep();
         if (! $step) {
-            throw new \OutOfBoundsException('Cannot determine next dossier workflow step');
+            throw new OutOfBoundsException('Cannot determine next dossier workflow step');
         }
 
         return $step;
@@ -181,7 +184,7 @@ readonly class DossierWizardStatus
     private function getStep(StepName $stepName): StepStatus
     {
         if (! array_key_exists($stepName->value, $this->steps)) {
-            throw new \OutOfBoundsException('No workflow status defined for step ' . $stepName->value);
+            throw new OutOfBoundsException('No workflow status defined for step ' . $stepName->value);
         }
 
         return $this->steps[$stepName->value];
@@ -190,7 +193,7 @@ readonly class DossierWizardStatus
     public function getAttachmentStep(): StepStatus
     {
         if ($this->attachmentStepName === null) {
-            throw new \OutOfBoundsException('No attachment step defined');
+            throw new OutOfBoundsException('No attachment step defined');
         }
 
         return $this->getStep($this->attachmentStepName);

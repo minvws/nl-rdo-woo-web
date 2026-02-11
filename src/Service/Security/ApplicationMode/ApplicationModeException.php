@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Service\Security\ApplicationMode;
 
-class ApplicationModeException extends \RuntimeException
+use RuntimeException;
+
+use function sprintf;
+
+class ApplicationModeException extends RuntimeException
 {
     public static function forCannotDetermineAccessibleDossierStatuses(ApplicationMode $applicationMode): self
     {

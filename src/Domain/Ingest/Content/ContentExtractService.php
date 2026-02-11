@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Ingest\Content;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
@@ -64,7 +65,7 @@ readonly class ContentExtractService
             if ($extracts->isEmpty()) {
                 $this->logWithContext('No content could be extracted', $entity, LogLevel::WARNING);
             }
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->logWithContext('Content extract error: ' . $exception->getMessage(), $entity, LogLevel::ERROR);
             $extracts->markAsFailure();
         } finally {

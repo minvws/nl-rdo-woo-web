@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Shared\Service\Inventory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use RuntimeException;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -21,11 +23,8 @@ use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- * @SuppressWarnings("PHPMD.CyclomaticComplexity")
- * @SuppressWarnings("PHPMD.NPathComplexity")
- */
+use function count;
+
 readonly class InventoryUpdater
 {
     public function __construct(
@@ -42,7 +41,7 @@ readonly class InventoryUpdater
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function applyChangesetToDatabase(
         WooDecision $dossier,
@@ -200,10 +199,10 @@ readonly class InventoryUpdater
         foreach ($docReferralUpdates as $documentNr => $refersTo) {
             $document = $this->getDocument($documentNr);
             if (! $document instanceof Document) {
-                throw new \RuntimeException('State mismatch between database and document referral updates');
+                throw new RuntimeException('State mismatch between database and document referral updates');
             }
 
-            $this->documentUpdater->updateDocumentReferrals($dossier, $document, $refersTo);
+            $this->documentUpdater->updateDocumentReferralsByDocumentNumber($dossier, $document, $refersTo);
 
             $documentsToUpdate[] = $document;
             if (count($documentsToUpdate) > 1000) {

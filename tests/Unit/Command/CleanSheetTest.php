@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Command;
 
+use ArrayIterator;
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Command\CleanSheet;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
@@ -28,21 +30,29 @@ class CleanSheetTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->indexService = \Mockery::mock(ElasticIndexManager::class);
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->client = \Mockery::mock(HttpClientInterface::class);
-        $this->wooIndexSitemapService = \Mockery::mock(WooIndexSitemapService::class);
+        $this->indexService = Mockery::mock(ElasticIndexManager::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->client = Mockery::mock(HttpClientInterface::class);
+        $this->wooIndexSitemapService = Mockery::mock(WooIndexSitemapService::class);
 
-        $helperSet = \Mockery::mock(HelperSet::class);
-        $helperSet->shouldReceive('getIterator')->andReturn(new \ArrayIterator());
+        $helperSet = Mockery::mock(HelperSet::class);
+        $helperSet->expects('getIterator')
+            ->andReturn(new ArrayIterator());
 
-        $this->cacheClearCommand = \Mockery::mock(Command::class);
-        $this->cacheClearCommand->shouldReceive('setApplication');
-        $this->cacheClearCommand->shouldReceive('isEnabled')->andReturnTrue();
-        $this->cacheClearCommand->shouldReceive('getDefinition')->andReturn(new InputDefinition());
-        $this->cacheClearCommand->shouldReceive('getName')->andReturn('cache:pool:clear');
-        $this->cacheClearCommand->shouldReceive('getAliases')->andReturn([]);
-        $this->cacheClearCommand->shouldReceive('getHelperSet')->andReturn($helperSet);
+        $this->cacheClearCommand = Mockery::mock(Command::class);
+        $this->cacheClearCommand->expects('setApplication');
+        $this->cacheClearCommand->expects('isEnabled')
+            ->andReturnTrue();
+        $this->cacheClearCommand->expects('getDefinition')
+            ->andReturn(new InputDefinition());
+        $this->cacheClearCommand->expects('getName')
+            ->twice()
+            ->andReturn('cache:pool:clear');
+        $this->cacheClearCommand->expects('getAliases')
+            ->times(3)
+            ->andReturn([]);
+        $this->cacheClearCommand->expects('getHelperSet')
+            ->andReturn($helperSet);
 
         $application = new Application();
         $application->add(
@@ -63,10 +73,12 @@ class CleanSheetTest extends UnitTestCase
     {
         $commandTester = new CommandTester($this->command);
 
-        $this->indexService->expects('delete')->with('woopie');
-        $this->indexService->expects('createLatestWithAliases')->with('woopie');
+        $this->indexService->expects('delete')
+            ->with('woopie');
+        $this->indexService->expects('createLatestWithAliases')
+            ->with('woopie');
 
-        $this->wooIndexSitemapService->shouldReceive('cleanupAllSitemaps')->once();
+        $this->wooIndexSitemapService->expects('cleanupAllSitemaps');
 
         $this->cacheClearCommand->expects('run');
 

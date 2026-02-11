@@ -16,9 +16,6 @@ use Shared\Service\DossierWizard\DossierWizardStatus;
 use Symfony\Component\Form\FormInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 class DossierViewParamsBuilder
 {
     /**

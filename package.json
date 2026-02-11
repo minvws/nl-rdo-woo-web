@@ -15,7 +15,7 @@
     "dependencies": {
         "@scalar/api-reference": "^1.34.6",
         "@symfony/stimulus-bridge": "^4.0.1",
-        "@symfony/ux-vue": "file:assets/vendor/ux-vue",
+        "@symfony/ux-vue": "file:vendor/symfony/ux-vue/assets",
         "@vueuse/core": "^13.4.0",
         "chart.js": "^4.5.0",
         "chartjs-adapter-moment": "^1.0.1",

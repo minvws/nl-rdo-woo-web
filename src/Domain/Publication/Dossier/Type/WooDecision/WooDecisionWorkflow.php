@@ -12,9 +12,6 @@ use Symfony\Config\FrameworkConfig;
 
 class WooDecisionWorkflow
 {
-    /**
-     * @SuppressWarnings("PHPMD.ExcessiveMethodLength")
-     */
     public static function configure(FrameworkConfig $framework): void
     {
         $workflow = $framework->workflows()->workflows('woo_decision_workflow');

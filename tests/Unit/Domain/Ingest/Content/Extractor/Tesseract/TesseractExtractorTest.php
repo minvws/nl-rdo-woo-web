@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tesseract;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use Shared\Domain\Ingest\Content\Extractor\Tesseract\TesseractExtractor;
@@ -22,19 +23,19 @@ final class TesseractExtractorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->tesseractService = \Mockery::mock(TesseractService::class);
+        $this->tesseractService = Mockery::mock(TesseractService::class);
         $this->extractor = new TesseractExtractor($this->tesseractService);
     }
 
     public function testGetContent(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getNormalizedMimeType')->andReturn($mimeType = 'text/plain');
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
-        $fileReference = \Mockery::mock(LazyFileReference::class);
+        $fileReference = Mockery::mock(LazyFileReference::class);
         $fileReference->shouldReceive('getPath')->andReturn($file = '/foo/bar.txt');
 
         $this->tesseractService->expects('extract')->with($file)->andReturn('   foo bar  ');
@@ -47,9 +48,9 @@ final class TesseractExtractorTest extends UnitTestCase
 
     public function testSupports(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $fileInfo->shouldReceive('getNormalizedMimeType')->once()->andReturn('text/plain');

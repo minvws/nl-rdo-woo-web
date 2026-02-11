@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\Enum;
 
+use Mockery;
 use PHPUnit\Framework\Attributes\Group;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
@@ -15,7 +16,7 @@ final class AttachmentTypeFactoryTest extends UnitTestCase
 {
     public function testItCanBeInitialized(): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
 
         $factory = new AttachmentTypeFactory($translator);
 
@@ -24,7 +25,7 @@ final class AttachmentTypeFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator->shouldReceive('trans')->andReturnArg(0);
 
         $factory = new AttachmentTypeFactory($translator);
@@ -35,7 +36,7 @@ final class AttachmentTypeFactoryTest extends UnitTestCase
 
     public function testMakeAsArray(): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator->shouldReceive('trans')->andReturnArg(0);
 
         $factory = new AttachmentTypeFactory($translator);
@@ -46,7 +47,7 @@ final class AttachmentTypeFactoryTest extends UnitTestCase
 
     public function testMakeAsArrayWithAllowedTypes(): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator->shouldReceive('trans')->andReturnArg(0);
 
         $factory = new AttachmentTypeFactory($translator);

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Exception;
 
+use function implode;
+
 class InquiryLinkImportException extends TranslatableException
 {
     public static function forMissingDocument(string $documentNr): self

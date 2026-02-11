@@ -1,3 +1,7 @@
+parameters:
+    env(LOG_LEVEL): debug
+    log_level: '%env(string:LOG_LEVEL)%'
+
 monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
@@ -8,7 +12,7 @@ when@dev:
             main:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
-                level: debug
+                level: '%log_level%'
                 channels: ["!event", "!deprecation"]
             deprecation:
                 type: "null"

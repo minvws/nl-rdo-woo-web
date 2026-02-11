@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Inventory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
@@ -27,10 +29,10 @@ class InventoryServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->readerFactory = \Mockery::mock(InventoryReaderFactory::class);
-        $this->run = \Mockery::mock(ProductionReportProcessRun::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
+        $this->readerFactory = Mockery::mock(InventoryReaderFactory::class);
+        $this->run = Mockery::mock(ProductionReportProcessRun::class);
 
         $this->inventoryService = new InventoryService(
             $this->entityManager,
@@ -45,7 +47,7 @@ class InventoryServiceTest extends UnitTestCase
     {
         $this->run->shouldReceive('getFileInfo->isUploaded')->andReturnFalse();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->inventoryService->getReader($this->run);
     }
@@ -71,7 +73,7 @@ class InventoryServiceTest extends UnitTestCase
 
         $this->run->expects('setTmpFilename')->with($filename);
 
-        $reader = \Mockery::mock(InventoryReaderInterface::class);
+        $reader = Mockery::mock(InventoryReaderInterface::class);
         $reader->expects('open')->with($filename);
 
         $this->readerFactory->expects('create')->andReturn($reader);
@@ -101,7 +103,7 @@ class InventoryServiceTest extends UnitTestCase
 
     public function testRemoveInventoriesDoesNothingAndReturnsFalseWhenThereAreNoInventories(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getInventory')->andReturnNull();
         $dossier->expects('getProductionReport')->andReturnNull();
 
@@ -112,10 +114,10 @@ class InventoryServiceTest extends UnitTestCase
 
     public function testRemoveInventoriesRemovesAllInventories(): void
     {
-        $inventory = \Mockery::mock(Inventory::class);
-        $productionReport = \Mockery::mock(ProductionReport::class);
+        $inventory = Mockery::mock(Inventory::class);
+        $productionReport = Mockery::mock(ProductionReport::class);
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getInventory')->andReturn($inventory);
         $dossier->expects('getProductionReport')->andReturn($productionReport);
         $dossier->expects('setInventory')->with(null);

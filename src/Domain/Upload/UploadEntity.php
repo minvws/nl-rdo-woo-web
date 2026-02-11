@@ -38,8 +38,8 @@ class UploadEntity
     protected UploadStatus $status;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private User $user;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $user;
 
     #[ORM\Column(type: Types::BIGINT, nullable: true)]
     private ?int $size = null;
@@ -62,7 +62,7 @@ class UploadEntity
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $context;
 
-    public function __construct(string $uploadId, UploadGroupId $uploadGroupId, User $user, InputBag $context)
+    public function __construct(string $uploadId, UploadGroupId $uploadGroupId, ?User $user, InputBag $context)
     {
         $this->id = Uuid::v6();
         $this->uploadId = $uploadId;
@@ -152,7 +152,7 @@ class UploadEntity
         return $this->status;
     }
 
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }

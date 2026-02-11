@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\DossierType as DossierTypeEnum;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
@@ -11,6 +12,8 @@ use Shared\Domain\Publication\Dossier\ViewModel\DossierTypeViewFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+
+use function array_map;
 
 final class DossierTypeViewFactoryTest extends UnitTestCase
 {
@@ -20,8 +23,8 @@ final class DossierTypeViewFactoryTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->translator = \Mockery::mock(TranslatorInterface::class);
-        $this->urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
+        $this->translator = Mockery::mock(TranslatorInterface::class);
+        $this->urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
 
         $this->factory = new DossierTypeViewFactory($this->translator, $this->urlGenerator);
     }
@@ -76,7 +79,7 @@ final class DossierTypeViewFactoryTest extends UnitTestCase
         string $createUrl,
     ): DossierTypeConfigInterface&MockInterface {
         /** @var DossierTypeConfigInterface&MockInterface $dossierTypeConfig */
-        $dossierTypeConfig = \Mockery::mock(DossierTypeConfigInterface::class);
+        $dossierTypeConfig = Mockery::mock(DossierTypeConfigInterface::class);
         $dossierTypeConfig->shouldReceive('getDossierType')->andReturn($dossierType);
         $dossierTypeConfig->shouldReceive('getCreateRouteName')->andReturn($routeName);
 

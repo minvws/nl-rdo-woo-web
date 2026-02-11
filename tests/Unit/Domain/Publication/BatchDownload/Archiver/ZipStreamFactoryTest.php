@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\Archiver;
 
+use Mockery;
 use Psr\Http\Message\StreamInterface;
 use Shared\Domain\Publication\BatchDownload\Archiver\ZipStreamFactory;
 use Shared\Tests\Unit\UnitTestCase;
@@ -15,7 +16,7 @@ final class ZipStreamFactoryTest extends UnitTestCase
     {
         $factory = new ZipStreamFactory();
 
-        $stream = \Mockery::mock(StreamInterface::class);
+        $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('isReadable')->andReturnTrue();
         $stream->shouldReceive('isWritable')->andReturnTrue();
 
@@ -28,7 +29,7 @@ final class ZipStreamFactoryTest extends UnitTestCase
     {
         $factory = new ZipStreamFactory();
 
-        $stream = \Mockery::mock(StreamInterface::class);
+        $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('isReadable')->andReturnTrue();
         $stream->shouldReceive('isWritable')->andReturnTrue();
 

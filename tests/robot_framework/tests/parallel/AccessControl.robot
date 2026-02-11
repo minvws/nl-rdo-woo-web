@@ -22,7 +22,6 @@ Test Tags           ci  accesscontrol
 *** Variables ***
 ${EMAIL}        ${EMPTY}
 ${PASSWORD}     ${EMPTY}
-${OTP}          ${EMPTY}
 
 
 *** Test Cases ***
@@ -147,15 +146,6 @@ Suite Setup
   Create Test User  organisation=E2E Test Organisation  role=organisation_admin
   Create Test User  organisation=E2E Test Organisation  role=dossier_admin
   Create Test User  organisation=E2E Test Organisation  role=view_access
-
-Login Admin With Role
-  [Arguments]  ${role}
-  ${email}  ${password}  ${otp} =  Get Admin Credential Variables  ${role}
-  Login Admin  username=${email}  password=${password}  otp_secret=${otp}
-
-Get Admin Credential Variables
-  [Arguments]  ${role}
-  RETURN  ${${role}_EMAIL}  ${${role}_PASSWORD}  ${${role}_OTP}
 
 Verify Permissions On Users
   [Arguments]  ${role}  ${create}  ${read}  ${update}  ${delete}  ${organisation_only}
@@ -342,33 +332,6 @@ Verify Permissions On Dossiers
     END
   END
   No-Click Logout
-
-Can Update A Dossier
-  [Arguments]  ${dossier_reference}
-  Search For A Publication  ${dossier_reference}
-  Get Element States  //a[@data-e2e-name="edit-basic-details"]  contains  attached
-  Click Publications
-
-Can Not Update A Dossier
-  [Arguments]  ${dossier_reference}
-  Search For A Publication  ${dossier_reference}
-  Get Element States  //a[@data-e2e-name="edit-basic-details"]  contains  detached
-  Click Publications
-
-Can Delete A Dossier
-  [Arguments]  ${dossier_reference}
-  Search For A Publication  ${dossier_reference}
-  Get Element States  //a[@data-e2e-name="delete-dossier-link"]  contains  attached
-  Click Publications
-
-Can Not Delete A Dossier
-  [Arguments]  ${dossier_reference}
-  Search For A Publication  ${dossier_reference}
-  Get Text
-  ...  //section[@data-e2e-name="danger-zone"]
-  ...  contains
-  ...  Dit besluit is gepubliceerd en kan daarom niet meer verwijderd worden.
-  Click Publications
 
 Verify Permissions On Documents
   [Arguments]

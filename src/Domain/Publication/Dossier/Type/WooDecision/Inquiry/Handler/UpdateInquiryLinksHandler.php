@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
@@ -39,7 +40,7 @@ class UpdateInquiryLinksHandler
                 $message->getDocIdsToDelete(),
                 $message->getDossierIdsToAdd(),
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to update inquiry links', [
                 'casenr' => $message->getCaseNr(),
                 'adds' => $message->getDocIdsToAdd(),

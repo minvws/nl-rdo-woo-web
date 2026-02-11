@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Service;
 use Doctrine\ORM\Query;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Service\PaginatorFactory;
 use Shared\Tests\Unit\UnitTestCase;
@@ -22,8 +23,8 @@ class PaginatorFactoryTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->paginator = \Mockery::mock(PaginatorInterface::class);
-        $this->requestStack = \Mockery::mock(RequestStack::class);
+        $this->paginator = Mockery::mock(PaginatorInterface::class);
+        $this->requestStack = Mockery::mock(RequestStack::class);
 
         $this->factory = new PaginatorFactory(
             $this->paginator,
@@ -36,12 +37,12 @@ class PaginatorFactoryTest extends UnitTestCase
     public function testCreateForQuery(): void
     {
         $key = 'foo';
-        $query = \Mockery::mock(Query::class);
+        $query = Mockery::mock(Query::class);
         $sortField = 'foo.bar';
         $limit = 123;
 
-        $request = \Mockery::mock(Request::class);
-        $request->query = \Mockery::mock(InputBag::class);
+        $request = Mockery::mock(Request::class);
+        $request->query = Mockery::mock(InputBag::class);
         $request->query->expects('getInt')->with('foo_p', 1)->andReturn($pageNr = 4);
 
         $this->requestStack->expects('getCurrentRequest')->andReturn($request);
@@ -58,7 +59,7 @@ class PaginatorFactoryTest extends UnitTestCase
                     PaginatorInterface::DEFAULT_SORT_FIELD_NAME => $sortField,
                 ],
             )
-            ->andReturn(\Mockery::mock(PaginationInterface::class));
+            ->andReturn(Mockery::mock(PaginationInterface::class));
 
         $this->factory->createForQuery($key, $query, $sortField, $limit);
     }

@@ -8,6 +8,10 @@ use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use Psr\Log\LoggerInterface;
 
+use function fclose;
+use function fopen;
+use function is_resource;
+
 readonly class BatchDownloadStorage
 {
     public function __construct(

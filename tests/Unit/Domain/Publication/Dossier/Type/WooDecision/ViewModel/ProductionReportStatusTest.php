@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
@@ -20,8 +21,8 @@ class ProductionReportStatusTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->processRun = \Mockery::mock(ProductionReportProcessRun::class);
-        $this->dossier = \Mockery::mock(WooDecision::class);
+        $this->processRun = Mockery::mock(ProductionReportProcessRun::class);
+        $this->dossier = Mockery::mock(WooDecision::class);
         $this->dossier->shouldReceive('getProcessRun')->andReturn($this->processRun);
 
         $this->status = new ProductionReportStatus($this->dossier);
@@ -38,7 +39,7 @@ class ProductionReportStatusTest extends UnitTestCase
 
     public function testNeedsUploadReturnsFalseWhenThereIsAProductionReport(): void
     {
-        $this->dossier->shouldReceive('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
+        $this->dossier->shouldReceive('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
         self::assertFalse($this->status->needsUpload());
     }
@@ -47,7 +48,7 @@ class ProductionReportStatusTest extends UnitTestCase
     {
         $this->processRun->shouldReceive('isFinal')->andReturnTrue();
 
-        $this->dossier->shouldReceive('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
+        $this->dossier->shouldReceive('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
         self::assertTrue($this->status->isReadyForDocumentUpload());
     }
@@ -56,7 +57,7 @@ class ProductionReportStatusTest extends UnitTestCase
     {
         $this->processRun->shouldReceive('isFinal')->andReturnFalse();
 
-        $this->dossier->shouldReceive('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
+        $this->dossier->shouldReceive('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
         self::assertFalse($this->status->isReadyForDocumentUpload());
     }
@@ -175,7 +176,7 @@ class ProductionReportStatusTest extends UnitTestCase
 
     public function testGetChangeset(): void
     {
-        $changeset = \Mockery::mock(InventoryChangeset::class);
+        $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->shouldReceive('getCounts')->andReturn($counts = ['a' => 1, 'b' => 2, 'c' => 3]);
 
         $this->processRun->shouldReceive('getChangeset')->andReturn($changeset);

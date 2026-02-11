@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
@@ -23,9 +25,9 @@ class UpdateInquiryLinksHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->organisationRepository = \Mockery::mock(OrganisationRepository::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->inquiryService = \Mockery::mock(InquiryService::class);
+        $this->organisationRepository = Mockery::mock(OrganisationRepository::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->inquiryService = Mockery::mock(InquiryService::class);
 
         $this->handler = new UpdateInquiryLinksHandler(
             $this->organisationRepository,
@@ -61,7 +63,7 @@ class UpdateInquiryLinksHandlerTest extends UnitTestCase
             [],
         );
 
-        $this->organisationRepository->expects('find')->with($organisationId)->andThrows(new \RuntimeException('oops'));
+        $this->organisationRepository->expects('find')->with($organisationId)->andThrows(new RuntimeException('oops'));
 
         $this->logger->expects('error');
 
@@ -78,7 +80,7 @@ class UpdateInquiryLinksHandlerTest extends UnitTestCase
             $dossierIdsToAdd = [Uuid::v6()],
         );
 
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
         $this->organisationRepository->expects('find')->with($organisationId)->andReturn($organisation);
 
         $this->inquiryService->expects('updateInquiryLinks')->with(

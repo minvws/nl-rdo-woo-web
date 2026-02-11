@@ -6,6 +6,11 @@ namespace Shared\Form\Transformer;
 
 use Symfony\Component\Form\DataTransformerInterface;
 
+use function explode;
+use function is_null;
+use function is_string;
+use function join;
+
 /**
  * Converts a separated string to an array and vice versa.
  *
@@ -28,7 +33,7 @@ class TextToArrayTransformer implements DataTransformerInterface
      */
     public function transform(mixed $value): ?array
     {
-        if (! \is_string($value) || $value === '') {
+        if (! is_string($value) || $value === '') {
             return null;
         }
 

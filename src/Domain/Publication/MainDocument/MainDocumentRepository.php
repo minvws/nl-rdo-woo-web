@@ -27,8 +27,7 @@ class MainDocumentRepository extends ServiceEntityRepository
             ->andWhere('dos.id = :dossierId')
             ->innerJoin('md.dossier', 'dos')
             ->setParameter('id', $id)
-            ->setParameter('dossierId', $dossierId)
-        ;
+            ->setParameter('dossierId', $dossierId);
 
         /** @var ?AbstractMainDocument */
         return $qb->getQuery()->getOneOrNullResult();

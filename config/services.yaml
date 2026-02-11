@@ -20,8 +20,6 @@ imports:
     - { resource: services/default_autowire.yaml }
     - { resource: services/woo_index.yaml }
     - { resource: services/batch_archiver.yaml }
-    - { resource: services/openapi_validator.yaml }
-    - { resource: services/publication_api.yaml }
 
 services:
     _defaults:
@@ -39,6 +37,9 @@ services:
     Shared\Service\Security\ApplicationMode\ApplicationMode:
         factory: ['Shared\Service\Security\ApplicationMode\ApplicationMode', 'fromEnvVar']
         arguments: [ '%app_mode%' ]
+
+    Shared\ApplicationId:
+        factory: ['@kernel', 'getApplicationId']
 
     Shared\Domain\Search\Index\Rollover\MappingService:
         arguments:
@@ -104,10 +105,6 @@ services:
         arguments:
             $defaultLocale: '%kernel.default_locale%'
             $allowedLocales: '%available_locales%'
-
-    Shared\EventSubscriber\ApiVersionHeaderSubscriber:
-        arguments:
-            $apiVersion: '%api_platform.version%'
 
     Shared\Service\Totp:
         arguments:

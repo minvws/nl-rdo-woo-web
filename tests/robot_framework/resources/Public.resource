@@ -13,13 +13,9 @@ Library             DependencyLibrary
 Resource            Generic.resource
 
 
-*** Variables ***
-${URL_PUBLIC}   ${EMPTY}
-
-
 *** Keywords ***
 Go To Public
-  Go To  ${URL_PUBLIC}
+  Go To  %{URL_PUBLIC}
 
 Search On Public For
   [Documentation]  Provide the expected search results. '0 resultaten' can be used to expect no results.
@@ -178,7 +174,7 @@ Selecting Results Sorting
     VAR  ${sorting_option_text} =  Besluitdatum
   END
   Click  //details[@data-e2e-name="sorting-selector"]//li[contains(.,'${sorting_option_text}')]
-  Get Element States  //details[@data-e2e-name="sorting-selector"]/div  contains  hidden
+  Get Element States  //*[@data-e2e-name="sorting-selector-options"]  contains  hidden
 
 Click Bekijk Per Bestuursorgaan
   Click With Reload Retry  //ul[@data-e2e-name="main-nav"]//a[contains(.,'Bekijk per bestuursorgaan')]  sleep=1s

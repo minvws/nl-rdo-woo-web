@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use MinVWS\AuditLogger\AuditLogger;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\AuditLog\DossierDeleteLogEvent;
@@ -15,6 +16,8 @@ use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+
+use function sprintf;
 
 #[AsMessageHandler]
 readonly class DeleteDossierHandler
@@ -60,7 +63,7 @@ readonly class DeleteDossierHandler
                     } else {
                         $strategy->delete($dossier);
                     }
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     $this->logger->error(
                         sprintf('Error while deleting dossier in strategy %s', $strategy::class),
                         [
@@ -77,7 +80,7 @@ readonly class DeleteDossierHandler
 
             $this->repository->remove($dossier);
             $this->entityManager->commit();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->entityManager->rollback();
 
             $failed = true;

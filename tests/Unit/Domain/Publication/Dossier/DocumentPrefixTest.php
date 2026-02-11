@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier;
 
+use Mockery;
+use RuntimeException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Tests\Unit\UnitTestCase;
@@ -23,13 +25,13 @@ class DocumentPrefixTest extends UnitTestCase
         $entity = new DocumentPrefix();
         $entity->setPrefix('foo');
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $entity->setPrefix('bar');
     }
 
     public function testGetAndSetOrganisation(): void
     {
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
 
         $entity = new DocumentPrefix();
         $entity->setOrganisation($organisation);

@@ -7,6 +7,14 @@ namespace Shared\Validator;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
+use function file;
+use function in_array;
+use function is_array;
+use function is_null;
+use function levenshtein;
+
+use const FILE_IGNORE_NEW_LINES;
+
 /**
  * This validator validates the password against a list of common passwords. If it matches or fuzzy matches, it fails.
  */

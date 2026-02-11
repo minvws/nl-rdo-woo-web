@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\SubType\Mapper;
 
+use DateTimeImmutable;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
@@ -24,7 +26,7 @@ class AttachmentAndMainDocumentMapperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossierIndexer = \Mockery::mock(DossierIndexer::class);
+        $this->dossierIndexer = Mockery::mock(DossierIndexer::class);
         $this->mapper = new AttachmentAndMainDocumentMapper($this->dossierIndexer);
 
         parent::setUp();
@@ -32,14 +34,14 @@ class AttachmentAndMainDocumentMapperTest extends UnitTestCase
 
     public function testMap(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
         $dossier->shouldReceive('getDossierNr')->andReturn('foo-123');
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
         $dossier->shouldReceive('getOrganisation->getId')
             ->andReturn(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'));
 
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getMimetype')->andReturn('text/plain');
         $fileInfo->shouldReceive('getSize')->andReturn(1234);
         $fileInfo->shouldReceive('getType')->andReturn('txt');
@@ -47,12 +49,12 @@ class AttachmentAndMainDocumentMapperTest extends UnitTestCase
         $fileInfo->shouldReceive('getName')->andReturn('foo.bar');
 
         $attachmentId = Uuid::v6();
-        $attachment = \Mockery::mock(WooDecisionAttachment::class);
+        $attachment = Mockery::mock(WooDecisionAttachment::class);
         $attachment->shouldReceive('getId')->andReturn($attachmentId);
         $attachment->shouldReceive('getDossier')->andReturn($dossier);
         $attachment->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $attachment->shouldReceive('getGrounds')->andReturn(['x', 'y']);
-        $attachment->shouldReceive('getFormalDate')->andReturn(new \DateTimeImmutable('2024-06-18 19:31:12'));
+        $attachment->shouldReceive('getFormalDate')->andReturn(new DateTimeImmutable('2024-06-18 19:31:12'));
 
         $this->dossierIndexer->shouldReceive('map')->with($dossier)->andReturn(
             new ElasticDocument('foo-123', ElasticDocumentType::COVENANT, null, ['mapped-dossier-data' => 'dummy'])

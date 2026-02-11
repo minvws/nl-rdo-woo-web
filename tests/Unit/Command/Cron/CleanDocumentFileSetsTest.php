@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Command\Cron;
 
+use Mockery;
 use Shared\Command\Cron\CleanDocumentFileSets;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileSetRemover;
 use Shared\Tests\Unit\UnitTestCase;
@@ -13,8 +14,9 @@ class CleanDocumentFileSetsTest extends UnitTestCase
 {
     public function testDocumentFileSetRemoverIsCalled(): void
     {
-        $remover = \Mockery::mock(DocumentFileSetRemover::class);
-        $remover->expects('removeAllFinalSets')->andReturn(123);
+        $remover = Mockery::mock(DocumentFileSetRemover::class);
+        $remover->expects('removeAllFinalSets')
+            ->andReturn(123);
 
         $command = new CleanDocumentFileSets($remover);
 

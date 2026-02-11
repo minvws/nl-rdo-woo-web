@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index;
 
+use DateTimeImmutable;
+use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
@@ -35,6 +37,7 @@ use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\IndexException;
 use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
+use stdClass;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ElasticDocumentTypeTest extends UnitTestCase
@@ -74,7 +77,7 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'OtherPublicationMainDocument' => [
                 'entity' => new OtherPublicationMainDocument(
                     new OtherPublication(),
-                    new \DateTimeImmutable(),
+                    new DateTimeImmutable(),
                     AttachmentType::ADVICE,
                     AttachmentLanguage::DUTCH,
                 ),
@@ -83,7 +86,7 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'OtherPublicationAttachment' => [
                 'entity' => new OtherPublicationAttachment(
                     new OtherPublication(),
-                    new \DateTimeImmutable(),
+                    new DateTimeImmutable(),
                     AttachmentType::ADVICE,
                     AttachmentLanguage::DUTCH,
                 ),
@@ -96,7 +99,7 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'AdviceMainDocument' => [
                 'entity' => new AdviceMainDocument(
                     new Advice(),
-                    new \DateTimeImmutable(),
+                    new DateTimeImmutable(),
                     AttachmentType::ADVICE,
                     AttachmentLanguage::DUTCH,
                 ),
@@ -105,7 +108,7 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'AdviceAttachment' => [
                 'entity' => new AdviceAttachment(
                     new Advice(),
-                    new \DateTimeImmutable(),
+                    new DateTimeImmutable(),
                     AttachmentType::ADVICE,
                     AttachmentLanguage::DUTCH,
                 ),
@@ -118,7 +121,7 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'RequestForAdviceMainDocument' => [
                 'entity' => new RequestForAdviceMainDocument(
                     new RequestForAdvice(),
-                    new \DateTimeImmutable(),
+                    new DateTimeImmutable(),
                     AttachmentType::ADVICE,
                     AttachmentLanguage::DUTCH,
                 ),
@@ -127,7 +130,7 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'RequestForAdviceAttachment' => [
                 'entity' => new RequestForAdviceAttachment(
                     new RequestForAdvice(),
-                    new \DateTimeImmutable(),
+                    new DateTimeImmutable(),
                     AttachmentType::ADVICE,
                     AttachmentLanguage::DUTCH,
                 ),
@@ -237,7 +240,7 @@ class ElasticDocumentTypeTest extends UnitTestCase
 
     public function testFromEntityForUnmappedClass(): void
     {
-        $entity = new \stdClass();
+        $entity = new stdClass();
 
         $this->expectException(IndexException::class);
         ElasticDocumentType::fromEntity($entity);
@@ -267,7 +270,7 @@ class ElasticDocumentTypeTest extends UnitTestCase
     public function testTransForMainType(): void
     {
         $locale = 'en_GB';
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator
             ->expects('trans')
             ->with('public.documents.type.' . ElasticDocumentType::COVENANT->value, [], null, $locale)
@@ -282,7 +285,7 @@ class ElasticDocumentTypeTest extends UnitTestCase
     public function testTransForSubType(): void
     {
         $locale = 'en_GB';
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator
             ->expects('trans')
             ->with('public.search.type.' . ElasticDocumentType::COVENANT_MAIN_DOCUMENT->value, [], null, $locale)

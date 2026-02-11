@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Search\Index\ElasticDocumentId;
 use Shared\Domain\Search\Index\IndexException;
 use Shared\Tests\Unit\UnitTestCase;
+use stdClass;
 
 class ElasticDocumentIdTest extends UnitTestCase
 {
     public function testForDossier(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
 
         self::assertEquals(
@@ -25,7 +27,7 @@ class ElasticDocumentIdTest extends UnitTestCase
 
     public function testForEntityWithFileInfo(): void
     {
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getId->toRfc4122')->andReturn($entityId = 'foo-123');
 
         self::assertEquals(
@@ -36,7 +38,7 @@ class ElasticDocumentIdTest extends UnitTestCase
 
     public function testForObjectWithDossier(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
 
         self::assertEquals(
@@ -47,7 +49,7 @@ class ElasticDocumentIdTest extends UnitTestCase
 
     public function testForObjectWithEntityWithFileInfo(): void
     {
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getId->toRfc4122')->andReturn($entityId = 'foo-123');
 
         self::assertEquals(
@@ -58,7 +60,7 @@ class ElasticDocumentIdTest extends UnitTestCase
 
     public function testForObjectWithUnsupportedObject(): void
     {
-        $entity = new \stdClass();
+        $entity = new stdClass();
 
         $this->expectException(IndexException::class);
 

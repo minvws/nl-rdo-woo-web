@@ -17,6 +17,10 @@ use Shared\Domain\Upload\UploadService;
 use Shared\Service\Storage\EntityStorageService;
 use Webmozart\Assert\Assert;
 
+use function pathinfo;
+
+use const PATHINFO_EXTENSION;
+
 readonly class EntityUploadStorer
 {
     public function __construct(

@@ -8,9 +8,13 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Exception\SerializationFailed;
 use Doctrine\DBAL\Types\Exception\ValueNotConvertible;
 use Doctrine\DBAL\Types\TextType;
+use Override;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Service\Encryption\EncryptionServiceInterface;
+use Throwable;
+
+use function strval;
 
 /**
  * This class is a Doctrine type that encrypts and decrypts data transparently. It will encrypt the string and stores
@@ -27,10 +31,7 @@ class EncryptedString extends TextType
     {
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
-    #[\Override]
+    #[Override]
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
@@ -39,7 +40,7 @@ class EncryptedString extends TextType
 
         try {
             return $this->getEncryptionService()->encrypt(strval($value));
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->getLogger()->error('cannot convert to database value', [
                 'exception' => $e->getMessage(),
             ]);
@@ -48,10 +49,7 @@ class EncryptedString extends TextType
         }
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
-    #[\Override]
+    #[Override]
     public function convertToPHPValue($value, AbstractPlatform $platform): ?string
     {
         $value = parent::convertToPHPValue($value, $platform);
@@ -62,7 +60,7 @@ class EncryptedString extends TextType
 
         try {
             return $this->getEncryptionService()->decrypt(strval($value));
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->getLogger()->error('cannot convert to php value', [
                 'exception' => $e->getMessage(),
             ]);

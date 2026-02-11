@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Form\Dossier\WooDecision;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Form\Dossier\DossierFormBuilderTrait;
 use Symfony\Component\Form\AbstractType;
@@ -19,9 +20,6 @@ class PublishType extends AbstractType
 {
     use DossierFormBuilderTrait;
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         /** @var WooDecision $dossier */
@@ -34,11 +32,11 @@ class PublishType extends AbstractType
                 'required' => true,
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
-                'data' => $dossier->getPreviewDate() ?? new \DateTimeImmutable(),
+                'data' => $dossier->getPreviewDate() ?? new DateTimeImmutable(),
                 'constraints' => [
                     new NotBlank(),
                     new GreaterThanOrEqual(
-                        new \DateTimeImmutable('today midnight'),
+                        new DateTimeImmutable('today midnight'),
                         message: 'preview_date_must_be_today_or_future'
                     ),
                 ],
@@ -49,7 +47,7 @@ class PublishType extends AbstractType
                 'required' => true,
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
-                'data' => $dossier->getPublicationDate() ?? new \DateTimeImmutable(),
+                'data' => $dossier->getPublicationDate() ?? new DateTimeImmutable(),
                 'constraints' => [
                     new NotBlank(),
                     new GreaterThanOrEqual([
@@ -67,7 +65,7 @@ class PublishType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                     new GreaterThanOrEqual(
-                        new \DateTimeImmutable('today midnight'),
+                        new DateTimeImmutable('today midnight'),
                         message: 'publication_date_must_be_today_or_future'
                     ),
                 ],

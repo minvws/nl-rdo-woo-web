@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex\Producer;
 
+use Generator;
 use Shared\Domain\WooIndex\Producer\Mapper\UrlMapper;
 use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
 use Shared\Domain\WooIndex\Producer\Repository\UrlRepository;
@@ -17,9 +18,9 @@ final readonly class UrlProducer
     }
 
     /**
-     * @return \Generator<int,Url>
+     * @return Generator<int,Url>
      */
-    public function getAll(): \Generator
+    public function getAll(): Generator
     {
         foreach ($this->fetchData() as $rawUrl) {
             yield $this->urlMapper->fromRawUrl($rawUrl);
@@ -27,9 +28,9 @@ final readonly class UrlProducer
     }
 
     /**
-     * @return \Generator<int,\Generator<int,Url>>
+     * @return Generator<int,Generator<int,Url>>
      */
-    public function getChunked(int $chunkSize = 50_000): \Generator
+    public function getChunked(int $chunkSize = 50_000): Generator
     {
         yield from $this->doChunking($this->getAll(), $chunkSize);
     }
@@ -37,11 +38,11 @@ final readonly class UrlProducer
     /**
      * @template T
      *
-     * @param \Generator<int,T> $producer
+     * @param Generator<int,T> $producer
      *
-     * @return \Generator<int,\Generator<int,T>>
+     * @return Generator<int,Generator<int,T>>
      */
-    private function doChunking(\Generator $producer, int $chunkSize): \Generator
+    private function doChunking(Generator $producer, int $chunkSize): Generator
     {
         while ($producer->valid()) {
             if (isset($chunkGen) && $chunkGen->valid()) {

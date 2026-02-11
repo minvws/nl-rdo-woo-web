@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Workflow;
 
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
 use Symfony\Component\Workflow\Exception\TransitionException;
 
-class DossierWorkflowException extends \RuntimeException
+use function sprintf;
+
+class DossierWorkflowException extends RuntimeException
 {
     public static function forTransitionFailed(
         AbstractDossier $dossier,

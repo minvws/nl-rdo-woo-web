@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
+use Closure;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Ingest\Content\ContentExtractCache;
 use Shared\Domain\Ingest\Content\ContentExtractCollection;
 use Shared\Domain\Ingest\Content\ContentExtractOptions;
@@ -18,6 +21,8 @@ use Shared\Service\Stats\WorkerStatsService;
 use Shared\Service\Worker\Pdf\Extractor\PageContentExtractor;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
+
+use function count;
 
 final class PageContentExtractorTest extends UnitTestCase
 {
@@ -33,15 +38,15 @@ final class PageContentExtractorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->contentExtractCache = \Mockery::mock(ContentExtractCache::class);
-        $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
-        $this->statsService = \Mockery::mock(WorkerStatsService::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->contentExtractCache = Mockery::mock(ContentExtractCache::class);
+        $this->subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
+        $this->statsService = Mockery::mock(WorkerStatsService::class);
 
-        $this->fileInfo = \Mockery::mock(FileInfo::class);
+        $this->fileInfo = Mockery::mock(FileInfo::class);
         $this->fileInfo->shouldReceive('getHash')->andReturn('foobar');
 
-        $this->entity = \Mockery::mock(EntityWithFileInfo::class);
+        $this->entity = Mockery::mock(EntityWithFileInfo::class);
         $this->entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
 
         $this->extractor = new PageContentExtractor(
@@ -59,7 +64,7 @@ final class PageContentExtractorTest extends UnitTestCase
 
         $this->contentExtractCache
             ->expects('getCombinedExtracts')
-            ->with($this->entity, \Mockery::on(
+            ->with($this->entity, Mockery::on(
                 static function (ContentExtractOptions $options) use ($pageNr): bool {
                     self::assertCount(count(ContentExtractorKey::cases()), $options->getEnabledExtractors());
                     self::assertEquals($pageNr, $options->getPageNumber());
@@ -79,7 +84,7 @@ final class PageContentExtractorTest extends UnitTestCase
             ->once()
             ->with(
                 'index.full.entity',
-                \Mockery::on(static function (\Closure $closure) {
+                Mockery::on(static function (Closure $closure) {
                     $closure();
 
                     return true;
@@ -101,7 +106,7 @@ final class PageContentExtractorTest extends UnitTestCase
 
         $this->contentExtractCache
             ->expects('getCombinedExtracts')
-            ->with($this->entity, \Mockery::on(
+            ->with($this->entity, Mockery::on(
                 static function (ContentExtractOptions $options) use ($pageNr): bool {
                     self::assertCount(count(ContentExtractorKey::cases()), $options->getEnabledExtractors());
                     self::assertEquals($pageNr, $options->getPageNumber());
@@ -121,7 +126,7 @@ final class PageContentExtractorTest extends UnitTestCase
             ->once()
             ->with(
                 'index.full.entity',
-                \Mockery::on(static function (\Closure $closure) {
+                Mockery::on(static function (Closure $closure) {
                     $closure();
 
                     return true;
@@ -143,7 +148,7 @@ final class PageContentExtractorTest extends UnitTestCase
 
         $this->contentExtractCache
             ->expects('getCombinedExtracts')
-            ->with($this->entity, \Mockery::on(
+            ->with($this->entity, Mockery::on(
                 static function (ContentExtractOptions $options) use ($pageNr): bool {
                     self::assertCount(count(ContentExtractorKey::cases()), $options->getEnabledExtractors());
                     self::assertEquals($pageNr, $options->getPageNumber());
@@ -158,27 +163,27 @@ final class PageContentExtractorTest extends UnitTestCase
             ->andReturn($this->fileInfo);
         $this->entity
             ->shouldReceive('getId')
-            ->andReturn($entityId = \Mockery::mock(Uuid::class));
+            ->andReturn($entityId = Mockery::mock(Uuid::class));
 
         $this->subTypeIndexer
             ->shouldReceive('updatePage')
             ->once()
             ->with($this->entity, $pageNr, $content)
-            ->andThrow($thrownException = new \RuntimeException('indexPage failed'));
+            ->andThrow($thrownException = new RuntimeException('indexPage failed'));
 
         $this->statsService
             ->shouldReceive('measure')
             ->once()
             ->with(
                 'index.full.entity',
-                \Mockery::on(static function (\Closure $closure) {
+                Mockery::on(static function (Closure $closure) {
                     $closure();
 
                     return true;
                 }),
             );
 
-        $collection = \Mockery::mock(ContentExtractCollection::class);
+        $collection = Mockery::mock(ContentExtractCollection::class);
         $collection->shouldReceive('getCombinedContent')->andReturn($content);
 
         $this->logger

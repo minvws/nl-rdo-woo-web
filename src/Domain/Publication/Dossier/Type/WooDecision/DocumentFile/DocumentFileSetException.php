@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile;
 
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
-class DocumentFileSetException extends \RuntimeException
+use function sprintf;
+
+class DocumentFileSetException extends RuntimeException
 {
     public static function forCannotStartProcessingUploads(DocumentFileSet $documentFileSet): self
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\History\WooDecision;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
@@ -29,8 +30,8 @@ class DocumentHistoryHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->historyService = \Mockery::mock(HistoryService::class);
-        $this->documentComparator = \Mockery::mock(DocumentComparator::class);
+        $this->historyService = Mockery::mock(HistoryService::class);
+        $this->documentComparator = Mockery::mock(DocumentComparator::class);
 
         $this->handler = new DocumentHistoryHandler(
             $this->historyService,
@@ -42,7 +43,7 @@ class DocumentHistoryHandlerTest extends UnitTestCase
 
     public function testHandleAllDocumentsWithdrawn(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
@@ -63,7 +64,7 @@ class DocumentHistoryHandlerTest extends UnitTestCase
 
     public function testHandleDocumentWithdrawn(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
 
@@ -83,14 +84,14 @@ class DocumentHistoryHandlerTest extends UnitTestCase
 
     public function testHandleDocumentUpdated(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
-        $document = \Mockery::mock(Document::class);
+        $dossier = Mockery::mock(WooDecision::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getJudgement')->andReturn(Judgement::NOT_PUBLIC);
-        $metadata = \Mockery::mock(DocumentMetadata::class);
+        $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->shouldReceive('getJudgement')->andReturn(Judgement::ALREADY_PUBLIC);
         $metadata->shouldReceive('isSuspended')->andReturnTrue();
 
-        $changeset = \Mockery::mock(PropertyChangeset::class);
+        $changeset = Mockery::mock(PropertyChangeset::class);
 
         $event = new DocumentUpdateEvent($dossier, $metadata, $document);
 

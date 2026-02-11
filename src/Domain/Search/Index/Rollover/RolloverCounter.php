@@ -19,9 +19,8 @@ use Shared\Service\Elastic\ElasticClientInterface;
 use Shared\Service\Search\Query\Dsl\Aggregation;
 use Shared\Service\Search\Query\Dsl\Query;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function is_subclass_of;
+
 readonly class RolloverCounter
 {
     public function __construct(

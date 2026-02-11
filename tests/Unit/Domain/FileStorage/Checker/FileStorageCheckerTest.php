@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\FileStorage\Checker;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\FileStorage\Checker\FileStorageChecker;
 use Shared\Domain\FileStorage\Checker\FileStorageLister;
@@ -25,10 +26,10 @@ class FileStorageCheckerTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->fileStorageChecker = new FileStorageChecker(
-            $this->fileStorageLister = \Mockery::mock(FileStorageLister::class),
+            $this->fileStorageLister = Mockery::mock(FileStorageLister::class),
             [
-                $this->pathSetFactoryA = \Mockery::mock(PathSetsFactoryInterface::class),
-                $this->pathSetFactoryB = \Mockery::mock(PathSetsFactoryInterface::class),
+                $this->pathSetFactoryA = Mockery::mock(PathSetsFactoryInterface::class),
+                $this->pathSetFactoryB = Mockery::mock(PathSetsFactoryInterface::class),
             ],
         );
     }

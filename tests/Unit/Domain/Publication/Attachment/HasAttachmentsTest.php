@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Attachment;
 
 use Doctrine\Common\Collections\Collection;
+use Mockery;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
@@ -16,7 +17,7 @@ final class HasAttachmentsTest extends UnitTestCase
 {
     public function testGetAttachments(): void
     {
-        $collection = \Mockery::mock(Collection::class);
+        $collection = Mockery::mock(Collection::class);
         $entity = $this->getEntityWithAttachments($collection);
 
         $this->assertSame($collection, $entity->getAttachments());
@@ -24,8 +25,8 @@ final class HasAttachmentsTest extends UnitTestCase
 
     public function testAddAttachment(): void
     {
-        $attachment = \Mockery::mock(AbstractAttachment::class);
-        $collection = \Mockery::mock(Collection::class);
+        $attachment = Mockery::mock(AbstractAttachment::class);
+        $collection = Mockery::mock(Collection::class);
         $collection->shouldReceive('contains')->once()->with($attachment)->andReturn(false);
         $collection->shouldReceive('add')->once()->with($attachment);
 
@@ -38,8 +39,8 @@ final class HasAttachmentsTest extends UnitTestCase
 
     public function testAddAttachmentWithAttachmentAlreadyExisting(): void
     {
-        $attachment = \Mockery::mock(AbstractAttachment::class);
-        $collection = \Mockery::mock(Collection::class);
+        $attachment = Mockery::mock(AbstractAttachment::class);
+        $collection = Mockery::mock(Collection::class);
         $collection->shouldReceive('contains')->once()->with($attachment)->andReturn(true);
         $collection->shouldNotReceive('add');
 
@@ -52,8 +53,8 @@ final class HasAttachmentsTest extends UnitTestCase
 
     public function testRemoveAttachment(): void
     {
-        $attachment = \Mockery::mock(AbstractAttachment::class);
-        $collection = \Mockery::mock(Collection::class);
+        $attachment = Mockery::mock(AbstractAttachment::class);
+        $collection = Mockery::mock(Collection::class);
         $collection->shouldReceive('removeElement')->once()->with($attachment);
 
         $entity = $this->getEntityWithAttachments($collection);

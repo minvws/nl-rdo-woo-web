@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Encryption;
 
+use Mockery;
 use Mockery\MockInterface;
 use ParagonIE\Halite\KeyFactory;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Service\Encryption\EncryptionService;
 use Shared\Tests\Unit\UnitTestCase;
 
@@ -20,7 +22,7 @@ class EncryptionServiceTest extends UnitTestCase
         $encKey = KeyFactory::generateEncryptionKey();
         $this->encryptionKey = KeyFactory::export($encKey)->getString();
 
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
         parent::setUp();
     }
@@ -30,7 +32,7 @@ class EncryptionServiceTest extends UnitTestCase
         $this->logger->shouldReceive('warning')->once();
         $encryptionService = new EncryptionService('', $this->logger);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->logger->shouldReceive('error')->once();
         $encryptionService->encrypt('some data');
     }
@@ -40,7 +42,7 @@ class EncryptionServiceTest extends UnitTestCase
         $this->logger->shouldReceive('warning')->once();
         $encryptionService = new EncryptionService('', $this->logger);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->logger->shouldReceive('error')->once();
         $encryptionService->decrypt('some data');
     }

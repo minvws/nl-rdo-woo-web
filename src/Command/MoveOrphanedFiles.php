@@ -7,6 +7,7 @@ namespace Shared\Command;
 use Shared\Domain\FileStorage\Checker\FileStorageChecker;
 use Shared\Domain\FileStorage\OrphanedFileMover;
 use Shared\Service\Utils\Utils;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -14,12 +15,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
+use Webmozart\Assert\Assert;
 
-/**
- * @codeCoverageIgnore This contains only basic input/output logic, the implementation within the domain is covered.
- */
+use function sprintf;
+use function trim;
+
+#[AsCommand(name: self::COMMAND_NAME, description: 'Moves orphaned files into a separate ("trash") bucket')]
 class MoveOrphanedFiles extends Command
 {
+    public const string COMMAND_NAME = 'woopie:move-orphaned-files';
+
     public function __construct(
         private readonly FileStorageChecker $checker,
         private readonly OrphanedFileMover $orphanedFileMover,
@@ -29,9 +34,6 @@ class MoveOrphanedFiles extends Command
 
     protected function configure(): void
     {
-        $this->setName('woopie:move-orphaned-files')
-            ->setDescription('Moves orphaned files into a separate ("trash") bucket')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -42,7 +44,7 @@ class MoveOrphanedFiles extends Command
         if ($orphanedPaths->totalCount === 0) {
             $output->writeln('No orphaned files found, aborting execution');
 
-            return Command::SUCCESS;
+            return self::SUCCESS;
         }
 
         $output->writeln(sprintf(
@@ -51,12 +53,13 @@ class MoveOrphanedFiles extends Command
             Utils::size($orphanedPaths->totalSize)
         ));
 
-        /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
+        Assert::isInstanceOf($helper, QuestionHelper::class);
+
         $question = new Question('Please enter the name of the target bucket (ensure this exists first!): ');
 
-        /** @var string $bucketName */
         $bucketName = $helper->ask($input, $output, $question);
+        Assert::string($bucketName);
         $bucketName = trim($bucketName);
 
         $question = new ChoiceQuestion(
@@ -71,7 +74,7 @@ class MoveOrphanedFiles extends Command
         if ($helper->ask($input, $output, $question) === 'no') {
             $output->writeln('No confirmation, aborting execution');
 
-            return Command::SUCCESS;
+            return self::SUCCESS;
         }
 
         $progressBar = new ProgressBar($output, $orphanedPaths->totalCount);
@@ -88,6 +91,6 @@ class MoveOrphanedFiles extends Command
         $output->writeln("\n");
         $output->writeln('Done, moved orphaned files into bucket ' . $bucketName);
 
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 }

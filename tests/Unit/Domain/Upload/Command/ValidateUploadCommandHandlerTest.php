@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Upload\Command;
 
 use League\Flysystem\FilesystemOperator;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
 use Shared\Domain\Upload\AntiVirus\FileScanResult;
@@ -35,12 +36,12 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->uploadEntityRepository = \Mockery::mock(UploadEntityRepository::class);
-        $this->uploadService = \Mockery::mock(UploadService::class);
-        $this->workingCopyStorage = \Mockery::mock(FilesystemOperator::class);
-        $this->clamAvFileScanner = \Mockery::mock(ClamAvFileScanner::class);
-        $this->mimeTypeHelper = \Mockery::mock(MimeTypeHelper::class);
-        $this->sevenZipFileStrategy = \Mockery::mock(SevenZipFileStrategy::class);
+        $this->uploadEntityRepository = Mockery::mock(UploadEntityRepository::class);
+        $this->uploadService = Mockery::mock(UploadService::class);
+        $this->workingCopyStorage = Mockery::mock(FilesystemOperator::class);
+        $this->clamAvFileScanner = Mockery::mock(ClamAvFileScanner::class);
+        $this->mimeTypeHelper = Mockery::mock(MimeTypeHelper::class);
+        $this->sevenZipFileStrategy = Mockery::mock(SevenZipFileStrategy::class);
 
         $this->handler = new ValidateUploadCommandHandler(
             $this->uploadEntityRepository,
@@ -56,7 +57,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
     {
         $uuid = Uuid::v6();
         $uploadId = 'foo-123';
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(123);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
@@ -80,7 +81,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
 
         $this->uploadService
             ->expects('failValidation')
-            ->with($uploadEntity, \Mockery::type(UploadValidationException::class));
+            ->with($uploadEntity, Mockery::type(UploadValidationException::class));
 
         $command = new ValidateUploadCommand($uuid);
 
@@ -91,7 +92,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
     {
         $uuid = Uuid::v6();
         $uploadId = 'foo-123';
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(123);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
@@ -110,7 +111,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
     {
         $uuid = Uuid::v6();
         $uploadId = 'foo-123';
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(FileType::PDF->getMaxUploadSize() + 1);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
@@ -145,7 +146,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
             ->expects('failValidation')
             ->with(
                 $uploadEntity,
-                \Mockery::on(fn (UploadValidationException $exception): bool => $exception->getMessage() === $expectedExceptionMessage),
+                Mockery::on(fn (UploadValidationException $exception): bool => $exception->getMessage() === $expectedExceptionMessage),
             );
 
         $command = new ValidateUploadCommand($uuid);
@@ -157,7 +158,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
     {
         $uuid = Uuid::v6();
         $uploadId = 'foo-123';
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(2048);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
@@ -192,7 +193,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
             ->expects('failValidation')
             ->with(
                 $uploadEntity,
-                \Mockery::on(fn (UploadValidationException $exception): bool => $exception->getMessage() === $expectedExceptionMessage),
+                Mockery::on(fn (UploadValidationException $exception): bool => $exception->getMessage() === $expectedExceptionMessage),
             );
 
         $command = new ValidateUploadCommand($uuid);
@@ -204,7 +205,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
     {
         $uuid = Uuid::v6();
         $uploadId = 'foo-123';
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(2048);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
@@ -245,7 +246,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
     {
         $uuid = Uuid::v6();
         $uploadId = 'foo-123';
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(124);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
@@ -275,7 +276,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
 
         $this->uploadService
             ->expects('failValidation')
-            ->with($uploadEntity, \Mockery::type(UploadValidationException::class));
+            ->with($uploadEntity, Mockery::type(UploadValidationException::class));
 
         $command = new ValidateUploadCommand($uuid);
 
@@ -286,7 +287,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
     {
         $uuid = Uuid::v6();
         $uploadId = 'foo-123';
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(124);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);
@@ -319,7 +320,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
 
         $this->uploadService
             ->expects('failValidation')
-            ->with($uploadEntity, \Mockery::type(UploadValidationException::class));
+            ->with($uploadEntity, Mockery::type(UploadValidationException::class));
 
         $command = new ValidateUploadCommand($uuid);
 
@@ -330,7 +331,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
     {
         $uuid = Uuid::v6();
         $uploadId = 'foo-123';
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getId')->andReturn(Uuid::v6());
         $uploadEntity->shouldReceive('getSize')->andReturn(124);
         $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId);

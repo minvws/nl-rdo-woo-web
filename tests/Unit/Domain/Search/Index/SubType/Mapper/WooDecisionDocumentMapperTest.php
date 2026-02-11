@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\SubType\Mapper;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -29,7 +31,7 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->wooDecisionMapper = \Mockery::mock(WooDecisionMapper::class);
+        $this->wooDecisionMapper = Mockery::mock(WooDecisionMapper::class);
 
         $this->mapper = new WooDecisionDocumentMapper($this->wooDecisionMapper);
 
@@ -39,37 +41,37 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
     public function testSupportsReturnsTrueForDocument(): void
     {
         self::assertTrue(
-            $this->mapper->supports(\Mockery::mock(Document::class))
+            $this->mapper->supports(Mockery::mock(Document::class))
         );
     }
 
     public function testSupportsReturnsFalseForAttachment(): void
     {
         self::assertFalse(
-            $this->mapper->supports(\Mockery::mock(CovenantAttachment::class))
+            $this->mapper->supports(Mockery::mock(CovenantAttachment::class))
         );
     }
 
     public function testMap(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getDossierNr')->andReturn('dos-123');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
         $dossier->shouldReceive('getOrganisation->getId')->andReturn(
             Uuid::fromRfc4122('55ae5de9-55f4-3420-b40b-5cde6e07fc5a'),
         );
 
-        $dossierDoc = \Mockery::mock(ElasticDocument::class);
+        $dossierDoc = Mockery::mock(ElasticDocument::class);
         $dossierDoc->shouldReceive('getDocumentValues')->andReturn(['mapped-dossier-data' => 'dummy']);
 
         $this->wooDecisionMapper->expects('map')->with($dossier)->andReturn($dossierDoc);
 
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $inquiry = Mockery::mock(Inquiry::class);
         $inquiry->shouldReceive('getId')->andReturn(
             Uuid::fromRfc4122('55ae5de9-55f4-3420-b50b-5cde6e07fc5a'),
         );
 
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getMimetype')->andReturn('application/pdf');
         $fileInfo->shouldReceive('getSize')->andReturn(1234);
         $fileInfo->shouldReceive('getType')->andReturn('pdf');
@@ -77,20 +79,20 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
         $fileInfo->shouldReceive('getName')->andReturn('foo.bar');
         $fileInfo->shouldReceive('getPageCount')->andReturn(13);
 
-        $referredDocumentA = \Mockery::mock(Document::class);
+        $referredDocumentA = Mockery::mock(Document::class);
         $referredDocumentA->shouldReceive('getDocumentNr')->andReturn('doc-456');
 
-        $referredDocumentB = \Mockery::mock(Document::class);
+        $referredDocumentB = Mockery::mock(Document::class);
         $referredDocumentB->shouldReceive('getDocumentNr')->andReturn('doc-789');
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getId->toRfc4122')->andReturn('doc-456');
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossier]));
         $document->shouldReceive('getInquiries')->andReturn(new ArrayCollection([$inquiry]));
         $document->shouldReceive('getReferredBy')->andReturn(new ArrayCollection([$referredDocumentA, $referredDocumentB]));
         $document->shouldReceive('getDocumentNr')->andReturn('doc-123');
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $document->shouldReceive('getDocumentDate')->andReturn(new \DateTimeImmutable('2024-04-16 10:54:15'));
+        $document->shouldReceive('getDocumentDate')->andReturn(new DateTimeImmutable('2024-04-16 10:54:15'));
         $document->shouldReceive('getFamilyId')->andReturn(789);
         $document->shouldReceive('getDocumentId')->andReturn('abc123');
         $document->shouldReceive('getThreadId')->andReturn(567);

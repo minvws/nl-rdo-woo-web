@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\EventHandler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\EventHandler\ValidateDossierCompletionEventHandler;
@@ -21,8 +22,8 @@ class ValidateDossierCompletionEventHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(DossierRepository::class);
-        $this->dossierService = \Mockery::mock(DossierService::class);
+        $this->repository = Mockery::mock(DossierRepository::class);
+        $this->dossierService = Mockery::mock(DossierService::class);
 
         $this->handler = new ValidateDossierCompletionEventHandler(
             $this->repository,
@@ -34,7 +35,7 @@ class ValidateDossierCompletionEventHandlerTest extends UnitTestCase
 
     public function testHandleDocumentFileSetProcessedEvent(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossierId = Uuid::v6();
 
         $event = new DocumentFileSetProcessedEvent($dossierId);

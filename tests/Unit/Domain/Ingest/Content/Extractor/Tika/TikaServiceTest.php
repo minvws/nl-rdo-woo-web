@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tika;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ConnectException;
+use Mockery;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -16,6 +17,11 @@ use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Content\ContentExtractLogContext;
 use Shared\Domain\Ingest\Content\Extractor\Tika\TikaService;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function json_encode;
+use function sprintf;
+
+use const JSON_THROW_ON_ERROR;
 
 final class TikaServiceTest extends UnitTestCase
 {
@@ -29,8 +35,8 @@ final class TikaServiceTest extends UnitTestCase
 
         $this->root = vfsStream::setup();
 
-        $this->client = \Mockery::mock(GuzzleClient::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->client = Mockery::mock(GuzzleClient::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
     }
 
     public function testExtract(): void
@@ -46,12 +52,12 @@ final class TikaServiceTest extends UnitTestCase
 
         $sourcePath = sprintf('%s/%s', $this->root->url(), $sourceFile);
 
-        $stream = \Mockery::mock(StreamInterface::class);
+        $stream = Mockery::mock(StreamInterface::class);
         $stream
             ->shouldReceive('getContents')
             ->andReturn($body);
 
-        $response = \Mockery::mock(ResponseInterface::class);
+        $response = Mockery::mock(ResponseInterface::class);
         $response
             ->shouldReceive('getBody')
             ->andReturn($stream);
@@ -90,7 +96,7 @@ final class TikaServiceTest extends UnitTestCase
 
         $sourcePath = sprintf('%s/%s', $this->root->url(), $sourceFile);
 
-        $request = \Mockery::mock(RequestInterface::class);
+        $request = Mockery::mock(RequestInterface::class);
 
         $this->client
             ->shouldReceive('put')
@@ -108,7 +114,7 @@ final class TikaServiceTest extends UnitTestCase
             )
             ->andThrows($exception = new ConnectException('My exception message', $request));
 
-        $logContext = \Mockery::mock(ContentExtractLogContext::class);
+        $logContext = Mockery::mock(ContentExtractLogContext::class);
 
         $this->logger
             ->shouldReceive('error')

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
@@ -31,10 +32,10 @@ class WooDecisionDeleteStrategyTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->documentService = \Mockery::mock(DocumentService::class);
-        $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
-        $this->inquiryService = \Mockery::mock(InquiryService::class);
+        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
+        $this->documentService = Mockery::mock(DocumentService::class);
+        $this->batchDownloadService = Mockery::mock(BatchDownloadService::class);
+        $this->inquiryService = Mockery::mock(InquiryService::class);
 
         $this->strategy = new WooDecisionDeleteStrategy(
             $this->entityStorageService,
@@ -46,7 +47,7 @@ class WooDecisionDeleteStrategyTest extends UnitTestCase
 
     public function testDeleteReturnsEarlyForUnsupportedType(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
 
         $this->entityStorageService->shouldNotHaveBeenCalled();
         $this->documentService->shouldNotHaveBeenCalled();
@@ -58,21 +59,21 @@ class WooDecisionDeleteStrategyTest extends UnitTestCase
 
     public function testDelete(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([$document]));
 
-        $attachments = new ArrayCollection([\Mockery::mock(CovenantAttachment::class)]);
+        $attachments = new ArrayCollection([Mockery::mock(CovenantAttachment::class)]);
         $dossier->shouldReceive('getAttachments')->andReturn($attachments);
 
-        $inventory = \Mockery::mock(Inventory::class);
+        $inventory = Mockery::mock(Inventory::class);
         $dossier->shouldReceive('getInventory')->andReturn($inventory);
 
-        $productionReport = \Mockery::mock(ProductionReport::class);
+        $productionReport = Mockery::mock(ProductionReport::class);
         $dossier->shouldReceive('getProductionReport')->andReturn($productionReport);
 
-        $processRun = \Mockery::mock(ProductionReportProcessRun::class);
+        $processRun = Mockery::mock(ProductionReportProcessRun::class);
         $dossier->shouldReceive('getProcessRun')->andReturn($processRun);
 
         $this->documentService->expects('removeDocumentFromDossier')->with($dossier, $document, false);
@@ -81,7 +82,7 @@ class WooDecisionDeleteStrategyTest extends UnitTestCase
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($productionReport);
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($processRun);
 
-        $this->batchDownloadService->expects('removeAllForScope')->with(\Mockery::on(
+        $this->batchDownloadService->expects('removeAllForScope')->with(Mockery::on(
             static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier
         ));
         $this->inquiryService->expects('removeDossierFromInquiries')->with($dossier);
@@ -92,11 +93,11 @@ class WooDecisionDeleteStrategyTest extends UnitTestCase
     public function testDeleteWithOverride(): void
     {
         /** @var WooDecisionDeleteStrategy&MockInterface $strategy */
-        $strategy = \Mockery::mock(WooDecisionDeleteStrategy::class)
+        $strategy = Mockery::mock(WooDecisionDeleteStrategy::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
         $strategy->expects('delete')->with($dossier);
 
@@ -105,25 +106,25 @@ class WooDecisionDeleteStrategyTest extends UnitTestCase
 
     public function testDeleteWithoutInventoryAndProcessRun(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([$document]));
 
-        $attachments = new ArrayCollection([\Mockery::mock(CovenantAttachment::class)]);
+        $attachments = new ArrayCollection([Mockery::mock(CovenantAttachment::class)]);
         $dossier->shouldReceive('getAttachments')->andReturn($attachments);
 
         $dossier->shouldReceive('getInventory')->andReturnNull();
         $dossier->shouldReceive('getProcessRun')->andReturnNull();
 
-        $productionReport = \Mockery::mock(ProductionReport::class);
+        $productionReport = Mockery::mock(ProductionReport::class);
         $dossier->shouldReceive('getProductionReport')->andReturn($productionReport);
 
         $this->documentService->expects('removeDocumentFromDossier')->with($dossier, $document, false);
 
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($productionReport);
 
-        $this->batchDownloadService->expects('removeAllForScope')->with(\Mockery::on(
+        $this->batchDownloadService->expects('removeAllForScope')->with(Mockery::on(
             static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier
         ));
         $this->inquiryService->expects('removeDossierFromInquiries')->with($dossier);

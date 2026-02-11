@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\History;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
 use Shared\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
@@ -30,9 +31,9 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->historyService = \Mockery::mock(HistoryService::class);
-        $this->translator = \Mockery::mock(TranslatorInterface::class);
-        $this->repository = \Mockery::mock(DossierRepository::class);
+        $this->historyService = Mockery::mock(HistoryService::class);
+        $this->translator = Mockery::mock(TranslatorInterface::class);
+        $this->repository = Mockery::mock(DossierRepository::class);
 
         $this->handler = new AttachmentHistoryHandler(
             $this->historyService,
@@ -246,7 +247,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
 
     private function getDossier(DossierStatus $status): Covenant
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
         $dossier->shouldReceive('getStatus')->andReturn($status);
 
@@ -255,7 +256,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
 
     private function getFileInfo(string $name, string $type, int $size): FileInfo
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getName')->andReturn($name);
         $fileInfo->shouldReceive('getType')->andReturn($type);
         $fileInfo->shouldReceive('getSize')->andReturn($size);
@@ -265,7 +266,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
 
     private function getAttachment(FileInfo $fileInfo, Covenant $dossier): MockInterface&CovenantAttachment
     {
-        $attachment = \Mockery::mock(CovenantAttachment::class);
+        $attachment = Mockery::mock(CovenantAttachment::class);
         $attachment->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $attachment->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $attachment->shouldReceive('getId')->andReturn(Uuid::v6());

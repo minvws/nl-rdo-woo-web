@@ -15,9 +15,6 @@ class PublishType extends AbstractType
 {
     use DossierFormBuilderTrait;
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $this->addPublicationDateField($builder);

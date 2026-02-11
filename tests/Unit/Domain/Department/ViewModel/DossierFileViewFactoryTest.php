@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Department\ViewModel;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -22,8 +23,8 @@ final class DossierFileViewFactoryTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->thumbnailStorage = \Mockery::mock(ThumbnailStorageService::class);
-        $this->urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
+        $this->thumbnailStorage = Mockery::mock(ThumbnailStorageService::class);
+        $this->urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
 
         $this->factory = new DossierFileViewFactory(
             $this->thumbnailStorage,
@@ -33,11 +34,11 @@ final class DossierFileViewFactoryTest extends UnitTestCase
 
     public function testMakeReturnsEarlyWhenEntityHasNoPages(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($prefix = 'foo');
         $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = 'bar-123');
 
-        $fileEntity = \Mockery::mock(CovenantAttachment::class);
+        $fileEntity = Mockery::mock(CovenantAttachment::class);
         $fileEntity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
         $fileEntity->shouldReceive('getFileInfo->getType')->andReturn('pdf');
         $fileEntity->shouldReceive('getFileInfo->getSize')->andReturn(456);
@@ -67,11 +68,11 @@ final class DossierFileViewFactoryTest extends UnitTestCase
 
     public function testMakeWithPages(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($prefix = 'foo');
         $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = 'bar-123');
 
-        $fileEntity = \Mockery::mock(CovenantAttachment::class);
+        $fileEntity = Mockery::mock(CovenantAttachment::class);
         $fileEntity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
         $fileEntity->shouldReceive('getFileInfo->hasPages')->andReturnTrue();
         $fileEntity->shouldReceive('getFileInfo->getPageCount')->andReturn(2);

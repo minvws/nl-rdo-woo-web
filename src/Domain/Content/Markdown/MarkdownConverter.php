@@ -20,9 +20,6 @@ use League\CommonMark\Renderer\HtmlRenderer;
 use League\CommonMark\Util\HtmlFilter;
 use League\Config\Exception\ConfigurationExceptionInterface;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 class MarkdownConverter implements ConverterInterface
 {
     private EnvironmentInterface&EnvironmentBuilderInterface $environment;

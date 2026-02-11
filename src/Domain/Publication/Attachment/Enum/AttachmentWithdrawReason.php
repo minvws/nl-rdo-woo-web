@@ -7,6 +7,8 @@ namespace Shared\Domain\Publication\Attachment\Enum;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function sprintf;
+
 enum AttachmentWithdrawReason: string implements TranslatableInterface
 {
     case UNRELATED = 'unrelated';

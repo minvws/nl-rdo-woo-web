@@ -6,6 +6,8 @@ namespace Shared\Domain\Search\Query\Facet\DisplayValue;
 
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function trim;
+
 readonly class TranslatedFacetDisplayValue implements FacetDisplayValueInterface
 {
     public function __construct(

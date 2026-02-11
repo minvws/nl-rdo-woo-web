@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex\Producer\Repository;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
@@ -18,21 +19,18 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Symfony\Component\Uid\Uuid;
 
+use function sprintf;
+
 /**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- *
  * @phpstan-type SqlRawDocument array{
  *  id: Uuid,
- *  updatedAt: \DateTimeInterface,
- *  documentDate: ?\DateTimeInterface,
+ *  updatedAt: DateTimeInterface,
+ *  documentDate: ?DateTimeInterface,
  *  documentFileName: string,
  * }
  */
 final readonly class UrlRepository
 {
-    /**
-     * @SuppressWarnings("PHPMD.CamelCaseParameterName")
-     */
     public function __construct(private EntityManagerInterface $_em)
     {
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\EventSubscriber;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\EventSubscriber\AuthMatrixEnsureSubscriber;
 use Shared\Service\Security\Authorization\AuthorizationEntryRequestStore;
@@ -23,15 +24,15 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->store = \Mockery::mock(AuthorizationEntryRequestStore::class);
-        $this->request = \Mockery::mock(Request::class);
+        $this->store = Mockery::mock(AuthorizationEntryRequestStore::class);
+        $this->request = Mockery::mock(Request::class);
         $this->subscriber = new AuthMatrixEnsureSubscriber($this->store);
     }
 
     public function testOnlyMainRequestsAreChecked(): void
     {
         $event = new ControllerArgumentsEvent(
-            \Mockery::mock(Kernel::class),
+            Mockery::mock(Kernel::class),
             fn () => true,
             [],
             $this->request,
@@ -48,7 +49,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
         $this->request->expects('getRequestUri')->andReturn('/contact');
 
         $event = new ControllerArgumentsEvent(
-            \Mockery::mock(Kernel::class),
+            Mockery::mock(Kernel::class),
             fn () => true,
             [],
             $this->request,
@@ -63,7 +64,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
         $this->request->expects('getRequestUri')->andReturn('/balie/admin');
 
         $event = new ControllerArgumentsEvent(
-            \Mockery::mock(Kernel::class),
+            Mockery::mock(Kernel::class),
             fn () => true,
             [],
             $this->request,
@@ -80,7 +81,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
         $this->store->expects('getEntries')->andReturn([]);
 
         $event = new ControllerArgumentsEvent(
-            \Mockery::mock(Kernel::class),
+            Mockery::mock(Kernel::class),
             fn () => true,
             [],
             $this->request,
@@ -96,10 +97,10 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
     {
         $this->request->expects('getRequestUri')->andReturn('/balie/dossiers');
 
-        $this->store->expects('getEntries')->andReturn([\Mockery::mock(Entry::class)]);
+        $this->store->expects('getEntries')->andReturn([Mockery::mock(Entry::class)]);
 
         $event = new ControllerArgumentsEvent(
-            \Mockery::mock(Kernel::class),
+            Mockery::mock(Kernel::class),
             fn () => true,
             [],
             $this->request,

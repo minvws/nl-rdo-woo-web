@@ -7,6 +7,8 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function sprintf;
+
 enum DocumentWithdrawReason: string implements TranslatableInterface
 {
     case DATA_IN_DOCUMENT = 'data_in_document';

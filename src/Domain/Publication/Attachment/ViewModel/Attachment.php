@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Attachment\ViewModel;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
@@ -14,8 +15,6 @@ readonly class Attachment implements SubTypeViewModelInterface
 {
     /**
      * @param list<string> $grounds
-     *
-     * @SuppressWarnings("PHPMD.ExcessiveParameterList")
      */
     public function __construct(
         public string $id,
@@ -33,7 +32,7 @@ readonly class Attachment implements SubTypeViewModelInterface
         public int $pageCount,
         public bool $withdrawn,
         public ?AttachmentWithdrawReason $withdrawReason,
-        public ?\DateTimeImmutable $withdrawDate,
+        public ?DateTimeImmutable $withdrawDate,
     ) {
     }
 }

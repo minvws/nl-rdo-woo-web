@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory;
 
+use Override;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Publication\SourceType;
 use Shared\Service\Storage\StorageRootPathGenerator;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\ObjectFactory;
+
+use function sprintf;
 
 /**
  * @extends ObjectFactory<FileInfo>
@@ -42,7 +45,7 @@ final class FileInfoFactory extends ObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    #[\Override]
+    #[Override]
     protected function initialize(): static
     {
         return $this;

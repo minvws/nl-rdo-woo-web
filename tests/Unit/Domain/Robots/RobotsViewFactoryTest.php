@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Robots;
 
+use Mockery;
 use Shared\Domain\Robots\RobotsViewFactory;
 use Shared\Domain\WooIndex\WooIndexSitemapService;
 use Shared\Tests\Unit\UnitTestCase;
@@ -14,7 +15,7 @@ final class RobotsViewFactoryTest extends UnitTestCase
     {
         $sitemapIndex = 'https://example.com/sitemapindex.xml';
 
-        $wooIndexSitemapService = \Mockery::mock(WooIndexSitemapService::class);
+        $wooIndexSitemapService = Mockery::mock(WooIndexSitemapService::class);
         $wooIndexSitemapService->expects('getCurrentSitemapIndexUrl')
             ->andReturn($sitemapIndex);
 

@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Domain\FileStorage\Checker\PathSetFactory;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\FileStorage\Checker\FileStorageType;
 use Shared\Domain\FileStorage\Checker\PathSet;
@@ -25,6 +26,8 @@ use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
+use function iterator_to_array;
+
 class EntityWithFileInfoPathSetsFactoryTest extends UnitTestCase
 {
     private EntityWithFileInfoPathSetsFactory $factory;
@@ -35,8 +38,8 @@ class EntityWithFileInfoPathSetsFactoryTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->factory = new EntityWithFileInfoPathSetsFactory(
-            $this->entityManager = \Mockery::mock(EntityManagerInterface::class),
-            $this->thumbnailStorageService = \Mockery::mock(ThumbnailStorageService::class),
+            $this->entityManager = Mockery::mock(EntityManagerInterface::class),
+            $this->thumbnailStorageService = Mockery::mock(ThumbnailStorageService::class),
             $this->thumbnailLimit,
         );
     }
@@ -45,12 +48,12 @@ class EntityWithFileInfoPathSetsFactoryTest extends UnitTestCase
     {
         $this->entityManager->expects('getRepository')
             ->with(Document::class)
-            ->andReturn($documentRepository = \Mockery::mock(DocumentRepository::class));
+            ->andReturn($documentRepository = Mockery::mock(DocumentRepository::class));
 
         $documentRepository->expects('createQueryBuilder->getQuery->toIterable')->andReturn([
-            $docA = \Mockery::mock(Document::class),
-            $docB = \Mockery::mock(Document::class),
-            $docC = \Mockery::mock(Document::class),
+            $docA = Mockery::mock(Document::class),
+            $docB = Mockery::mock(Document::class),
+            $docC = Mockery::mock(Document::class),
         ]);
 
         $fileInfoA = new FileInfo();
@@ -115,7 +118,7 @@ class EntityWithFileInfoPathSetsFactoryTest extends UnitTestCase
         $this->entityManager
             ->expects('getRepository')
             ->with($entityClass)
-            ->andReturn($repository = \Mockery::mock(ServiceEntityRepository::class));
+            ->andReturn($repository = Mockery::mock(ServiceEntityRepository::class));
 
         $repository->expects('createQueryBuilder->getQuery->toIterable')->andReturn([]);
     }

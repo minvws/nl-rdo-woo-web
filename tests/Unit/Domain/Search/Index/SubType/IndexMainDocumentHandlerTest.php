@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\SubType;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Ingest\Process\IngestProcessOptions;
 use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
@@ -26,10 +28,10 @@ class IndexMainDocumentHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(MainDocumentRepository::class);
-        $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->subTypeIngester = \Mockery::mock(SubTypeIngester::class);
+        $this->repository = Mockery::mock(MainDocumentRepository::class);
+        $this->subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->subTypeIngester = Mockery::mock(SubTypeIngester::class);
 
         $this->handler = new IndexMainDocumentHandler(
             $this->repository,
@@ -55,7 +57,7 @@ class IndexMainDocumentHandlerTest extends UnitTestCase
         $id = Uuid::v6();
         $command = new IndexMainDocumentCommand($id);
 
-        $this->repository->expects('find')->with($id)->andThrow(new \RuntimeException('oops'));
+        $this->repository->expects('find')->with($id)->andThrow(new RuntimeException('oops'));
         $this->logger->expects('error');
 
         $this->handler->__invoke($command);
@@ -64,12 +66,12 @@ class IndexMainDocumentHandlerTest extends UnitTestCase
     public function testInvokeSuccessful(): void
     {
         $id = Uuid::v6();
-        $mainDocument = \Mockery::mock(AbstractMainDocument::class);
+        $mainDocument = Mockery::mock(AbstractMainDocument::class);
         $command = new IndexMainDocumentCommand($id);
 
         $this->repository->expects('find')->with($id)->andReturn($mainDocument);
         $this->subTypeIndexer->expects('index')->with($mainDocument);
-        $this->subTypeIngester->expects('ingest')->with($mainDocument, \Mockery::type(IngestProcessOptions::class));
+        $this->subTypeIngester->expects('ingest')->with($mainDocument, Mockery::type(IngestProcessOptions::class));
 
         $this->handler->__invoke($command);
     }

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Service\Search\Query\Sort\ViewModel;
 
+use ArrayIterator;
+use IteratorAggregate;
 use Shared\Service\Search\Query\Sort\SortException;
+use Traversable;
 
-class SortItems implements \IteratorAggregate
+class SortItems implements IteratorAggregate
 {
     /**
      * @var SortItem[]
@@ -29,8 +32,8 @@ class SortItems implements \IteratorAggregate
         throw SortException::forActiveSortNotFound();
     }
 
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->sortItems);
+        return new ArrayIterator($this->sortItems);
     }
 }

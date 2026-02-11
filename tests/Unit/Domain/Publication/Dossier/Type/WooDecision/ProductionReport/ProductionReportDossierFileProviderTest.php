@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ProductionReport;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileNotFoundException;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
@@ -25,7 +26,7 @@ final class ProductionReportDossierFileProviderTest extends UnitTestCase
 
     public function testGetEntityForPublicUseThrowsException(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $this->expectException(DossierFileNotFoundException::class);
@@ -35,7 +36,7 @@ final class ProductionReportDossierFileProviderTest extends UnitTestCase
 
     public function testGetEntityForAdminUseThrowsExceptionForDossierTypeMismatch(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $this->expectException(DossierFileNotFoundException::class);
@@ -45,7 +46,7 @@ final class ProductionReportDossierFileProviderTest extends UnitTestCase
 
     public function testGetEntityForAdminUseThrowsExceptionWhenWooDecisionHasNoProductionReport(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
         $dossier->shouldReceive('getProductionReport')->andReturnNull();
 
@@ -56,9 +57,9 @@ final class ProductionReportDossierFileProviderTest extends UnitTestCase
 
     public function testGetEntityForAdminUse(): void
     {
-        $productionReport = \Mockery::mock(ProductionReport::class);
+        $productionReport = Mockery::mock(ProductionReport::class);
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
         $dossier->shouldReceive('getProductionReport')->andReturn($productionReport);
 

@@ -15,14 +15,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 class DocumentActionController extends AbstractController
 {
     public function __construct(
@@ -102,7 +99,7 @@ class DocumentActionController extends AbstractController
             'dossier' => $dossier,
             'document' => $document,
             'breadcrumbs' => $breadcrumbs,
-            'form' => $form->createView(),
+            'form' => $form,
             'workflow' => new DocumentWorkflowStatus($document),
         ]);
     }

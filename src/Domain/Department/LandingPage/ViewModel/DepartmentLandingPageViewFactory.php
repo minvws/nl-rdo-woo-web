@@ -7,6 +7,8 @@ namespace Shared\Domain\Department\LandingPage\ViewModel;
 use Shared\Domain\Department\Department;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+use function hash;
+
 final readonly class DepartmentLandingPageViewFactory
 {
     public function __construct(

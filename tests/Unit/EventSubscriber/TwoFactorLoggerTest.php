@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\EventSubscriber;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvent;
@@ -22,8 +23,8 @@ class TwoFactorLoggerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
         $this->subscriber = new TwoFactorLogger(
             $this->logger,
             $this->entityManager,
@@ -32,11 +33,11 @@ class TwoFactorLoggerTest extends UnitTestCase
 
     public function testOnSuccessLogsMessage(): void
     {
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->expects('getUserIdentifier')->andReturn($userId = 'foo123');
 
-        $request = \Mockery::mock(Request::class);
-        $token = \Mockery::mock(TokenInterface::class);
+        $request = Mockery::mock(Request::class);
+        $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')->andReturn($user);
 
         $event = new TwoFactorAuthenticationEvent(
@@ -54,11 +55,11 @@ class TwoFactorLoggerTest extends UnitTestCase
 
     public function testOnFailureLogsMessage(): void
     {
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->expects('getUserIdentifier')->andReturn($userId = 'foo123');
 
-        $request = \Mockery::mock(Request::class);
-        $token = \Mockery::mock(TokenInterface::class);
+        $request = Mockery::mock(Request::class);
+        $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')->andReturn($user);
 
         $event = new TwoFactorAuthenticationEvent(

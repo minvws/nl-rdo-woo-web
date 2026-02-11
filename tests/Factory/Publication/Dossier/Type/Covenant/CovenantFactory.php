@@ -8,12 +8,12 @@ use Carbon\CarbonImmutable;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Tests\Factory\OrganisationFactory;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Covenant>
+ * @extends PersistentObjectFactory<Covenant>
  */
-final class CovenantFactory extends PersistentProxyObjectFactory
+final class CovenantFactory extends PersistentObjectFactory
 {
     /**
      * @return array<string, mixed>

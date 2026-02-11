@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport;
 
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -29,7 +30,7 @@ class ProductionReportProcessRunRepository extends ServiceEntityRepository
             ->andWhere('r.startedAt < :expiryDate')
             ->setParameter('comparing', ProductionReportProcessRun::STATUS_COMPARING)
             ->setParameter('updating', ProductionReportProcessRun::STATUS_UPDATING)
-            ->setParameter('expiryDate', new \DateTimeImmutable('-10 minutes'));
+            ->setParameter('expiryDate', new DateTimeImmutable('-10 minutes'));
 
         return $qb->getQuery()->getResult();
     }

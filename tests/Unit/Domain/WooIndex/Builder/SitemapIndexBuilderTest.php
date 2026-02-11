@@ -9,6 +9,10 @@ use Shared\Domain\WooIndex\Builder\SitemapIndexBuilder;
 use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 
+use function fopen;
+use function rewind;
+use function stream_get_contents;
+
 final class SitemapIndexBuilderTest extends UnitTestCase
 {
     /**

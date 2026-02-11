@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Domain\FileStorage;
 
 use Aws\S3\S3Client;
 use League\Flysystem\FilesystemOperator;
+use Mockery;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -14,6 +15,8 @@ use Shared\Domain\FileStorage\Checker\FileStorageType;
 use Shared\Domain\FileStorage\Checker\OrphanedPaths;
 use Shared\Domain\FileStorage\OrphanedFileMover;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function fopen;
 
 class OrphanedFileMoverTest extends UnitTestCase
 {
@@ -27,14 +30,14 @@ class OrphanedFileMoverTest extends UnitTestCase
         $this->root = vfsStream::setup();
 
         $this->mover = new OrphanedFileMover(
-            $this->fileStorageLister = \Mockery::mock(FileStorageLister::class),
-            $this->s3client = \Mockery::mock(S3Client::class),
+            $this->fileStorageLister = Mockery::mock(FileStorageLister::class),
+            $this->s3client = Mockery::mock(S3Client::class),
         );
     }
 
     public function testMove(): void
     {
-        $paths = \Mockery::mock(OrphanedPaths::class);
+        $paths = Mockery::mock(OrphanedPaths::class);
         $paths->paths = [
             FileStorageType::DOCUMENT->value => [
                 $docA = 'foo/a.doc',
@@ -51,7 +54,7 @@ class OrphanedFileMoverTest extends UnitTestCase
             $ticketCalls++;
         };
 
-        $documentStorage = \Mockery::mock(FilesystemOperator::class);
+        $documentStorage = Mockery::mock(FilesystemOperator::class);
         $documentStorage->expects('readStream')->with($docA)->andReturn($docAStream = $this->getStream($docA));
         $documentStorage->expects('readStream')->with($docB)->andReturn($docBStream = $this->getStream($docB));
         $documentStorage->expects('delete')->with($docA);
@@ -63,7 +66,7 @@ class OrphanedFileMoverTest extends UnitTestCase
             ->twice()
             ->andReturn($documentStorage);
 
-        $batchStorage = \Mockery::mock(FilesystemOperator::class);
+        $batchStorage = Mockery::mock(FilesystemOperator::class);
         $batchStorage->expects('readStream')->with($batchA)->andReturn($batchAStream = $this->getStream($batchA));
         $batchStorage->expects('delete')->with($batchA);
 
@@ -72,9 +75,9 @@ class OrphanedFileMoverTest extends UnitTestCase
             ->with(FileStorageType::BATCH)
             ->andReturn($batchStorage);
 
-        $this->s3client->expects('upload')->with($targetBucket, 'document/' . $docA, $docAStream, 'private', \Mockery::any());
-        $this->s3client->expects('upload')->with($targetBucket, 'document/' . $docB, $docBStream, 'private', \Mockery::any());
-        $this->s3client->expects('upload')->with($targetBucket, 'batch/' . $batchA, $batchAStream, 'private', \Mockery::any());
+        $this->s3client->expects('upload')->with($targetBucket, 'document/' . $docA, $docAStream, 'private', Mockery::any());
+        $this->s3client->expects('upload')->with($targetBucket, 'document/' . $docB, $docBStream, 'private', Mockery::any());
+        $this->s3client->expects('upload')->with($targetBucket, 'batch/' . $batchA, $batchAStream, 'private', Mockery::any());
 
         $this->mover->move($paths, $targetBucket, $callable);
 

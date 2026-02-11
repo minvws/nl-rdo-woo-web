@@ -7,14 +7,28 @@ namespace Shared\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
+use Webmozart\Assert\Assert;
 
+use function array_key_exists;
+use function array_map;
+use function array_unique;
+use function explode;
+use function implode;
+use function sprintf;
+use function trim;
+
+#[AsCommand(name: self::COMMAND_NAME)]
 class NormalizeDocumentGrounds extends Command
 {
+    public const string COMMAND_NAME = 'woopie:normalize-document-grounds';
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -23,7 +37,7 @@ class NormalizeDocumentGrounds extends Command
 
     protected function configure(): void
     {
-        $this->setName('woopie:normalize-document-grounds')
+        $this
             ->setDefinition([
                 new InputArgument('mapping', InputArgument::REQUIRED, 'The value mapping excel sheet'),
                 new InputOption('dry-run', 'd', InputOption::VALUE_NONE, 'Dry run'),
@@ -32,14 +46,17 @@ class NormalizeDocumentGrounds extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $mapping = $this->loadMapping(strval($input->getArgument('mapping')));
+        $mappingArgument = $input->getArgument('mapping');
+        Assert::string($mappingArgument);
+
+        $mapping = $this->loadMapping($mappingArgument);
         $dryRun = $input->getOption('dry-run');
 
         $dossierQuery = $this->entityManager->getRepository(Document::class)->createQueryBuilder('d')->select('d')->getQuery();
         $rowCount = 0;
 
-        /** @var Document $document */
         foreach ($dossierQuery->toIterable() as $document) {
+            Assert::isInstanceOf($document, Document::class);
             $this->normalizeGrounds($output, $mapping, $document);
 
             $rowCount++;
@@ -59,7 +76,7 @@ class NormalizeDocumentGrounds extends Command
 
         $output->writeln(sprintf('<info>FINISHED, checked %d documents</info>', $rowCount));
 
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
@@ -102,7 +119,11 @@ class NormalizeDocumentGrounds extends Command
     {
         $reader = IOFactory::createReader('Xlsx');
         $reader->setReadDataOnly(true);
-        $spreadsheet = $reader->load($filename);
+        try {
+            $spreadsheet = $reader->load($filename);
+        } catch (Throwable) {
+            return [];
+        }
 
         $rows = $spreadsheet->getActiveSheet()->toArray();
         unset($rows[0]); // Skip header
@@ -116,9 +137,13 @@ class NormalizeDocumentGrounds extends Command
             if ($row[1] === null) {
                 $normalizedValues = [];
             } else {
+                Assert::string($row[1]);
+
                 $normalizedValues = explode(';', $row[1]);
                 $normalizedValues = array_map(trim(...), $normalizedValues);
             }
+
+            Assert::string($row[0]);
             $mapping[trim($row[0])] = $normalizedValues;
         }
 

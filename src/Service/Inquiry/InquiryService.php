@@ -19,9 +19,9 @@ use Shared\Service\HistoryService;
 use Shared\Service\Storage\EntityStorageService;
 use Symfony\Component\Uid\Uuid;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function count;
+use function strval;
+
 readonly class InquiryService
 {
     public function __construct(

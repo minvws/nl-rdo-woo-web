@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory;
 
+use Override;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\InputBag;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+
+use function sprintf;
 
 /**
- * @extends PersistentProxyObjectFactory<UploadEntity>
+ * @extends PersistentObjectFactory<UploadEntity>
  */
-final class UploadEntityFactory extends PersistentProxyObjectFactory
+final class UploadEntityFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
@@ -32,7 +35,7 @@ final class UploadEntityFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    #[\Override]
+    #[Override]
     protected function initialize(): static
     {
         return $this;

@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory;
 
+use DateTimeImmutable;
+use Override;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\SourceType;
 use Shared\Service\Storage\StorageRootPathGenerator;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Symfony\Component\Uid\Uuid;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+
+use function sprintf;
 
 /**
- * @extends PersistentProxyObjectFactory<ProductionReport>
+ * @extends PersistentObjectFactory<ProductionReport>
  */
-final class ProductionReportFactory extends PersistentProxyObjectFactory
+final class ProductionReportFactory extends PersistentObjectFactory
 {
     public function __construct(private readonly StorageRootPathGenerator $storageRootPathGenerator)
     {
@@ -40,15 +44,15 @@ final class ProductionReportFactory extends PersistentProxyObjectFactory
                 'path' => sprintf('%s/%s', $this->storageRootPathGenerator->fromUuid(Uuid::v6()), $fileName),
                 'size' => 1337,
             ]),
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    #[\Override]
+    #[Override]
     protected function initialize(): static
     {
         return $this->afterInstantiate(function (ProductionReport $productionReport): void {

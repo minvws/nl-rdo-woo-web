@@ -9,6 +9,7 @@ use MinVWS\AuditLogger\Events\Logging\AccountChangeLogEvent;
 use MinVWS\AuditLogger\Events\Logging\ResetCredentialsLogEvent;
 use MinVWS\AuditLogger\Events\Logging\UserCreatedLogEvent;
 use MinVWS\AuditLogger\Loggers\LoggerInterface as AuditLoggerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Service\Security\Event\UserCreatedEvent;
 use Shared\Service\Security\Event\UserDisableEvent;
@@ -30,7 +31,7 @@ class UserAdminAuditLoggerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->internalAuditLogger = \Mockery::mock(AuditLoggerInterface::class);
+        $this->internalAuditLogger = Mockery::mock(AuditLoggerInterface::class);
         $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
         $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
 
@@ -41,12 +42,12 @@ class UserAdminAuditLoggerTest extends UnitTestCase
 
     public function testOnCreated(): void
     {
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->shouldReceive('getAuditId')->andReturn('foo123');
-        $actor = \Mockery::mock(User::class);
+        $actor = Mockery::mock(User::class);
         $roles = ['FOO', 'BAR'];
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             static function (UserCreatedLogEvent $event) use ($user, $actor): bool {
                 self::assertEquals($user, $event->target);
                 self::assertEquals($actor, $event->actor);
@@ -60,11 +61,11 @@ class UserAdminAuditLoggerTest extends UnitTestCase
 
     public function testOnReset(): void
     {
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->shouldReceive('getAuditId')->andReturn('foo123');
-        $actor = \Mockery::mock(User::class);
+        $actor = Mockery::mock(User::class);
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             static function (ResetCredentialsLogEvent $event) use ($user, $actor): bool {
                 self::assertEquals($user, $event->target);
                 self::assertEquals($actor, $event->actor);
@@ -78,11 +79,11 @@ class UserAdminAuditLoggerTest extends UnitTestCase
 
     public function testOnDisable(): void
     {
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->shouldReceive('getAuditId')->andReturn('foo123');
-        $actor = \Mockery::mock(User::class);
+        $actor = Mockery::mock(User::class);
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             static function (AccountChangeLogEvent $event) use ($user, $actor): bool {
                 self::assertEquals($user, $event->target);
                 self::assertEquals($actor, $event->actor);
@@ -97,11 +98,11 @@ class UserAdminAuditLoggerTest extends UnitTestCase
 
     public function testOnEnable(): void
     {
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->shouldReceive('getAuditId')->andReturn('foo123');
-        $actor = \Mockery::mock(User::class);
+        $actor = Mockery::mock(User::class);
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             static function (AccountChangeLogEvent $event) use ($user, $actor): bool {
                 self::assertEquals($user, $event->target);
                 self::assertEquals($actor, $event->actor);
@@ -116,20 +117,20 @@ class UserAdminAuditLoggerTest extends UnitTestCase
 
     public function testOnUpdate(): void
     {
-        $oldUser = \Mockery::mock(User::class);
+        $oldUser = Mockery::mock(User::class);
         $oldUser->shouldReceive('getRoles')->andReturn(['BAR']);
         $oldUser->shouldReceive('getName')->andReturn('Bar');
         $oldUser->shouldReceive('getEmail')->andReturn('bar@foo.com');
 
-        $updatedUser = \Mockery::mock(User::class);
+        $updatedUser = Mockery::mock(User::class);
         $updatedUser->shouldReceive('getAuditId')->andReturn('foo123');
         $updatedUser->shouldReceive('getRoles')->andReturn(['FOO']);
         $updatedUser->shouldReceive('getName')->andReturn('Foo');
         $updatedUser->shouldReceive('getEmail')->andReturn('foo@bar.com');
 
-        $actor = \Mockery::mock(User::class);
+        $actor = Mockery::mock(User::class);
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             function (AccountChangeLogEvent $event) use ($updatedUser, $actor): bool {
                 self::assertEquals($updatedUser, $event->target);
                 self::assertEquals($actor, $event->actor);

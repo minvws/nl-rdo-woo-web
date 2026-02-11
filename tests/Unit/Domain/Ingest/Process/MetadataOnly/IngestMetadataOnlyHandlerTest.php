@@ -6,8 +6,10 @@ namespace Shared\Tests\Unit\Domain\Ingest\Process\MetadataOnly;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyCommand;
 use Shared\Domain\Ingest\Process\MetadataOnly\IngestMetadataOnlyHandler;
 use Shared\Domain\Publication\EntityWithFileInfo;
@@ -26,21 +28,21 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
-        $this->repository = \Mockery::mock(EntityRepository::class);
+        $this->doctrine = Mockery::mock(EntityManagerInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
+        $this->repository = Mockery::mock(EntityRepository::class);
     }
 
     public function testInvokeWithoutForce(): void
     {
         $message = new IngestMetadataOnlyCommand(
             Uuid::v6(),
-            $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
+            $entityClass = Mockery::mock(EntityWithFileInfo::class)::class,
             false,
         );
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
 
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
@@ -54,11 +56,11 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
     {
         $message = new IngestMetadataOnlyCommand(
             Uuid::v6(),
-            $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
+            $entityClass = Mockery::mock(EntityWithFileInfo::class)::class,
             true,
         );
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
 
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
@@ -72,7 +74,7 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
     {
         $message = new IngestMetadataOnlyCommand(
             $id = Uuid::v6(),
-            $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
+            $entityClass = Mockery::mock(EntityWithFileInfo::class)::class,
             false,
         );
 
@@ -92,15 +94,15 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
     {
         $message = new IngestMetadataOnlyCommand(
             $id = Uuid::v6(),
-            $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
+            $entityClass = Mockery::mock(EntityWithFileInfo::class)::class,
             false,
         );
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
 
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturn($entity);
-        $this->subTypeIndexer->shouldReceive('index')->andThrow($thrownException = new \RuntimeException('My exception'));
+        $this->subTypeIndexer->shouldReceive('index')->andThrow($thrownException = new RuntimeException('My exception'));
 
         $this->logger->shouldReceive('error')->once()->with('Failed to update ES document in IngestMetadataOnlyHandler', [
             'id' => $id->toRfc4122(),

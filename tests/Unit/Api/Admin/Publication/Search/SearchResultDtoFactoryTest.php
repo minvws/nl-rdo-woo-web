@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Api\Admin\Publication\Search;
 
+use Admin\Api\Admin\Publication\Search\SearchResultDtoFactory;
+use DateTimeImmutable;
+use InvalidArgumentException;
+use Mockery;
 use Mockery\MockInterface;
-use Shared\Api\Admin\Publication\Search\SearchResultDtoFactory;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Attachment\ViewModel\Attachment;
@@ -26,6 +29,7 @@ use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use Shared\Service\DossierWizard\DossierWizardStatus;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Shared\Tests\Unit\UnitTestCase;
+use stdClass;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -40,9 +44,9 @@ class SearchResultDtoFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
-        $this->wizardStatusFactory = \Mockery::mock(WizardStatusFactory::class);
-        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
+        $this->urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
+        $this->wizardStatusFactory = Mockery::mock(WizardStatusFactory::class);
+        $this->dossierRepository = Mockery::mock(DossierRepository::class);
 
         $this->factory = new SearchResultDtoFactory(
             $this->urlGenerator,
@@ -53,8 +57,8 @@ class SearchResultDtoFactoryTest extends UnitTestCase
 
     public function testMakeThrowsExceptionForUnsupportedType(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->factory->make(new \stdClass());
+        $this->expectException(InvalidArgumentException::class);
+        $this->factory->make(new stdClass());
     }
 
     public function testMakeCollection(): void
@@ -87,8 +91,8 @@ class SearchResultDtoFactoryTest extends UnitTestCase
                 'foo bar',
                 DecisionType::PUBLIC,
                 'summary',
-                new \DateTimeImmutable('2024-03-04 12:10:45'),
-                new \DateTimeImmutable('2023-03-04 12:10:45'),
+                new DateTimeImmutable('2024-03-04 12:10:45'),
+                new DateTimeImmutable('2023-03-04 12:10:45'),
                 10,
                 PublicationReason::WOO_REQUEST,
             ),
@@ -120,7 +124,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
                 456,
                 6,
                 Judgement::PUBLIC,
-                new \DateTimeImmutable('2024-03-07 12:10:45'),
+                new DateTimeImmutable('2024-03-07 12:10:45'),
             ),
             [
                 new DossierReference(
@@ -181,8 +185,8 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ElasticDocumentType::ATTACHMENT,
         );
 
-        $wooDecisionEntity = \Mockery::mock(WooDecision::class);
-        $wizardStatus = \Mockery::mock(DossierWizardStatus::class);
+        $wooDecisionEntity = Mockery::mock(WooDecision::class);
+        $wizardStatus = Mockery::mock(DossierWizardStatus::class);
         $wizardStatus
             ->expects('getAttachmentStep->getRouteName')
             ->andReturn($attachmentRouteName = 'attachment_route');
@@ -241,8 +245,8 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ElasticDocumentType::WOO_DECISION_MAIN_DOCUMENT,
         );
 
-        $wooDecisionEntity = \Mockery::mock(WooDecision::class);
-        $wizardStatus = \Mockery::mock(DossierWizardStatus::class);
+        $wooDecisionEntity = Mockery::mock(WooDecision::class);
+        $wizardStatus = Mockery::mock(DossierWizardStatus::class);
         $wizardStatus
             ->expects('getAttachmentStep->getRouteName')
             ->andReturn($mainDocumentRouteName = 'attachment_route');

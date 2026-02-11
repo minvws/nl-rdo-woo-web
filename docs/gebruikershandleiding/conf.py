@@ -13,7 +13,7 @@ author = 'The Woo team'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['myst_parser']
+extensions = ['myst_parser', "sphinx.ext.extlinks"]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
@@ -42,3 +42,10 @@ myst_enable_extensions = [
 
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
+
+# extlinks configuration
+extlinks = {
+    "public": ("https://open.minvws.nl/%s", "open.minvws.nl/%s"),
+    "balie": ("https://balie.woo.irealisatie.nl/balie/%s", "balie.woo.irealisatie.nl/balie/%s")
+}
+extlinks_detect_hardcoded_links = True

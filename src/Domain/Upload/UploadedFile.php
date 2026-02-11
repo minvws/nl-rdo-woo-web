@@ -4,16 +4,21 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Upload;
 
+use SplFileInfo;
 use Symfony\Component\HttpFoundation\File\File;
 
-class UploadedFile extends \SplFileInfo
+use function pathinfo;
+
+use const PATHINFO_EXTENSION;
+
+class UploadedFile extends SplFileInfo
 {
     public function __construct(string $filename, private readonly ?string $originalFilename = null)
     {
         parent::__construct($filename);
     }
 
-    public static function fromFile(\SplFileInfo|File $file, ?string $originalFilename = null): self
+    public static function fromFile(SplFileInfo|File $file, ?string $originalFilename = null): self
     {
         return new self($file->getPathname(), $originalFilename ?? $file->getBasename());
     }

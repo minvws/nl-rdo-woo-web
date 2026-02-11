@@ -13,6 +13,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -27,9 +28,6 @@ class RolloverParametersType extends AbstractType
     ) {
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -48,7 +46,7 @@ class RolloverParametersType extends AbstractType
                 $isValid = $this->mappingService->isValidMappingVersion($version);
                 if (! $isValid) {
                     $form = $event->getForm();
-                    /** @var \Symfony\Component\Form\FormInterface $mappingField */
+                    /** @var FormInterface $mappingField */
                     $mappingField = $form['mappingVersion'];
                     $mappingField->addError(new FormError($this->translator->trans('Mapping version does not exist', domain: 'validators')));
                 }

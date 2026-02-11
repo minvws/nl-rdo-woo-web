@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Attachment\Exception;
 
-class AttachmentWithdrawException extends \RuntimeException implements AttachmentExceptionInterface
+use RuntimeException;
+
+class AttachmentWithdrawException extends RuntimeException implements AttachmentExceptionInterface
 {
     public static function forCannotWithdraw(): self
     {

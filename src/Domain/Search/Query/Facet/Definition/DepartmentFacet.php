@@ -19,9 +19,8 @@ use Shared\Service\Search\Query\Filter\FilterInterface;
 use Shared\Service\Search\Query\Filter\OrTermFilter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function sprintf;
+
 readonly class DepartmentFacet implements FacetDefinitionInterface
 {
     public function getKey(): FacetKey

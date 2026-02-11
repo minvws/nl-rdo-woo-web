@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Ingest\Process\PdfPage;
 
+use RuntimeException;
 use Shared\Domain\Publication\EntityWithFileInfo;
 
-class PdfPageException extends \RuntimeException
+use function sprintf;
+
+class PdfPageException extends RuntimeException
 {
     public static function forCannotDownload(EntityWithFileInfo $entity): self
     {

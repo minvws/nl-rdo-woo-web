@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\ComplaintJudgement;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Override;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
@@ -21,7 +23,7 @@ class ComplaintJudgement extends AbstractDossier implements EntityWithMainDocume
     /** @use HasMainDocument<ComplaintJudgementMainDocument> */
     use HasMainDocument;
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ComplaintJudgementMainDocument::class, cascade: ['remove'])]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ComplaintJudgementMainDocument::class, cascade: ['remove', 'persist'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?ComplaintJudgementMainDocument $document;
@@ -33,8 +35,8 @@ class ComplaintJudgement extends AbstractDossier implements EntityWithMainDocume
         $this->document = null;
     }
 
-    #[\Override]
-    public function setDateFrom(?\DateTimeImmutable $dateFrom): static
+    #[Override]
+    public function setDateFrom(?DateTimeImmutable $dateFrom): static
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateFrom;

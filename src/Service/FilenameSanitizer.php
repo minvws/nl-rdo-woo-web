@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace Shared\Service;
 
+use Override;
+
+use function chr;
+use function htmlspecialchars;
+use function preg_replace;
+use function str_replace;
+use function strval;
+
 class FilenameSanitizer extends \IndieHD\FilenameSanitizer\FilenameSanitizer
 {
     public function stripAdditionalCharacters(): self
@@ -13,7 +21,7 @@ class FilenameSanitizer extends \IndieHD\FilenameSanitizer\FilenameSanitizer
         return $this;
     }
 
-    #[\Override]
+    #[Override]
     public function stripPhp(): static
     {
         $this->setFilename(htmlspecialchars($this->getFilename()));
@@ -21,7 +29,7 @@ class FilenameSanitizer extends \IndieHD\FilenameSanitizer\FilenameSanitizer
         return $this;
     }
 
-    #[\Override]
+    #[Override]
     public function stripRiskyCharacters(): static
     {
         $filename = $this->getFilename();

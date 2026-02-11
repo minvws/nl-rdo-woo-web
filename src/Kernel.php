@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Shared;
 
 use Doctrine\DBAL\Types\Type;
+use Override;
 use Psr\Log\LoggerInterface;
+use ReflectionObject;
 use Shared\Doctrine\EncryptedArray;
 use Shared\Doctrine\EncryptedString;
 use Shared\Service\Encryption\EncryptionService;
@@ -19,9 +21,11 @@ use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Webmozart\Assert\Assert;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function array_merge;
+use function is_dir;
+use function is_file;
+use function sprintf;
+
 class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
@@ -66,10 +70,7 @@ class Kernel extends BaseKernel
         }
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.Superglobals")
-     */
-    #[\Override]
+    #[Override]
     public function getCacheDir(): string
     {
         $appCacheDir = $_SERVER['APP_CACHE_DIR'] ?? null;
@@ -84,10 +85,7 @@ class Kernel extends BaseKernel
         );
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.Superglobals")
-     */
-    #[\Override]
+    #[Override]
     public function getLogDir(): string
     {
         $appLogDir = $_SERVER['APP_LOG_DIR'] ?? null;
@@ -145,13 +143,13 @@ class Kernel extends BaseKernel
             $routes->import($configDir . '/{routes}.php');
         }
 
-        $fileName = (new \ReflectionObject($this))->getFileName();
+        $fileName = (new ReflectionObject($this))->getFileName();
         if ($fileName !== false) {
             $routes->import($fileName, 'attribute');
         }
     }
 
-    #[\Override]
+    #[Override]
     public function boot(): void
     {
         parent::boot();
@@ -159,7 +157,7 @@ class Kernel extends BaseKernel
         $this->injectEncryptionServiceIntoDbalTypes();
     }
 
-    #[\Override]
+    #[Override]
     protected function build(ContainerBuilder $container): void
     {
         parent::build($container);

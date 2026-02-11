@@ -17,6 +17,9 @@ use Shared\Domain\Search\Result\SearchResultMapperInterface;
 use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
+use function in_array;
+use function is_null;
+
 readonly class MainDocumentSearchResultMapper implements SearchResultMapperInterface
 {
     use HighlightMapperTrait;

@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace Shared\Controller\Admin;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use GuzzleHttp\Client;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
+
+use function json_decode;
 
 class StatsController extends AbstractController
 {
@@ -37,7 +40,7 @@ class StatsController extends AbstractController
             ]);
             $response = $client->get('/api/queues');
             $rabbitmqStats = json_decode($response->getBody()->getContents(), true);
-        } catch (\Exception) {
+        } catch (Exception) {
             // ignore
         }
 

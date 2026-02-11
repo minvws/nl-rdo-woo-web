@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierReference;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
@@ -13,7 +14,7 @@ final class DossierReferenceTest extends UnitTestCase
 {
     public function testFromEntity(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = 'foo-123');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($documentPrefix = 'bar');
         $dossier->shouldReceive('getTitle')->andReturn($title = 'foo bar');

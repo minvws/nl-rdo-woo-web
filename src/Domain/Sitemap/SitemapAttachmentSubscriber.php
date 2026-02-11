@@ -12,6 +12,8 @@ use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+use function sprintf;
+
 readonly class SitemapAttachmentSubscriber
 {
     public function __construct(

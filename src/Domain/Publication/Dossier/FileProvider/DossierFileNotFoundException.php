@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\FileProvider;
 
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Throwable;
 
-class DossierFileNotFoundException extends \RuntimeException
+use function sprintf;
+
+class DossierFileNotFoundException extends RuntimeException
 {
     public static function forEntity(
         DossierFileType $type,
         AbstractDossier $dossier,
         string $id,
-        ?\Throwable $previous = null,
+        ?Throwable $previous = null,
     ): self {
         return new self(
             sprintf(

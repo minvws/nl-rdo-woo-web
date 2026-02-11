@@ -1,4 +1,4 @@
-FROM python:3.14.0-slim-trixie
+FROM python:3.14.0-slim-trixie AS base
 
 ARG G4_TRIAL_VERSION=master
 ENV G4_TRIAL_VERSION=${G4_TRIAL_VERSION}
@@ -30,23 +30,30 @@ COPY docker/certs/config.yaml /usr/src/g4-trial/config.yaml
 COPY docker/certs/enrollments /usr/src/enrollments
 COPY docker/certs/scripts /usr/src/scripts
 
+FROM base AS build
+
 RUN /usr/src/scripts/generate-certs.sh
+RUN /usr/src/scripts/generate-server-cert.sh
+RUN /usr/src/scripts/generate-client-certs.sh
 RUN /usr/src/scripts/generate-crl.sh
 
 WORKDIR /usr/src/g4-trial/ca
 
 RUN /usr/src/scripts/normalize-der-to-pem.sh
 
+RUN /usr/src/scripts/build-curl-bundles.sh
 RUN /usr/src/scripts/build-server-bundle.sh
 RUN /usr/src/scripts/build-client-bundle.sh
 RUN /usr/src/scripts/build-crl-bundle.sh
 
-RUN mkdir -p /usr/src/result/private \
+RUN mkdir -p /usr/src/result/private /usr/src/result/curl \
     && cp certs/server-bundle.pem /usr/src/result/server-bundle.pem \
     && cp certs/client-bundle.pem /usr/src/result/client-bundle.pem \
     && cp crl/crl-bundle.pem /usr/src/result/crl-bundle.pem \
     && cp private/server.key.pem /usr/src/result/private/server.key.pem \
-    && cp private/client.key /usr/src/result/private/client.key
+    && cp certs/client-*.pem /usr/src/result/ \
+    && cp curl/client-*.pem /usr/src/result/curl/ \
+    && cp private/client-*.key /usr/src/result/private/
 
 WORKDIR /usr/src/result
 

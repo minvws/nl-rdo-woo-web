@@ -19,9 +19,8 @@ use Shared\Service\Search\Query\Filter\MainTypesAndNestedMainTypesFilter;
 use Shared\Service\Search\Query\Filter\OrTermFilter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function sprintf;
+
 readonly class PeriodFacet implements FacetDefinitionInterface
 {
     public function getKey(): FacetKey

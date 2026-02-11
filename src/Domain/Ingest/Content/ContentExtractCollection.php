@@ -4,7 +4,16 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Ingest\Content;
 
-class ContentExtractCollection implements \IteratorAggregate
+use ArrayIterator;
+use IteratorAggregate;
+use Traversable;
+
+use function count;
+use function implode;
+
+use const PHP_EOL;
+
+class ContentExtractCollection implements IteratorAggregate
 {
     /**
      * @var ContentExtract[]
@@ -46,10 +55,10 @@ class ContentExtractCollection implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable<ContentExtract>
+     * @return Traversable<ContentExtract>
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->extracts);
+        return new ArrayIterator($this->extracts);
     }
 }

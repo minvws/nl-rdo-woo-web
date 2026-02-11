@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Theme\View;
 
+use Mockery;
 use Shared\Domain\Search\Theme\ViewModel\ThemeViewFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\Vws\Search\Theme\Covid19QueryConditionBuilder;
@@ -14,7 +15,7 @@ class ThemeViewFactoryTest extends UnitTestCase
     public function testMake(): void
     {
         $theme = new Covid19Theme(
-            \Mockery::mock(Covid19QueryConditionBuilder::class),
+            Mockery::mock(Covid19QueryConditionBuilder::class),
         );
 
         $factory = new ThemeViewFactory();

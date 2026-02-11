@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Shared\Domain\Ingest\Process\PdfPage;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Doctrine\LegacyNamespaceHelper;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+
+use function is_null;
 
 /**
  * Ingest a single PDF page into the system.
@@ -38,7 +41,7 @@ final readonly class IngestPdfPageHandler
 
         try {
             $this->processor->processPage($entity, $message->getPageNr());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Error processing document in IngestPdfPageHandler', [
                 'id' => $message->getEntityId()->toRfc4122(),
                 'class' => $message->getEntityClass(),

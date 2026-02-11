@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Handler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand;
@@ -26,10 +27,10 @@ class GenerateInquiryInventoryHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->inquiryRepository = \Mockery::mock(InquiryRepository::class);
-        $this->inventoryDataProviderFactory = \Mockery::mock(InventoryDataProviderFactory::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->inventorySanitizer = \Mockery::mock(InventorySanitizer::class);
+        $this->inquiryRepository = Mockery::mock(InquiryRepository::class);
+        $this->inventoryDataProviderFactory = Mockery::mock(InventoryDataProviderFactory::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->inventorySanitizer = Mockery::mock(InventorySanitizer::class);
 
         $this->handler = new GenerateInquiryInventoryHandler(
             $this->inquiryRepository,
@@ -58,11 +59,11 @@ class GenerateInquiryInventoryHandlerTest extends UnitTestCase
             $uuid = Uuid::v6(),
         );
 
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $inquiry = Mockery::mock(Inquiry::class);
 
         $this->inquiryRepository->expects('find')->with($uuid)->andReturn($inquiry);
 
-        $dataProvider = \Mockery::mock(InquiryInventoryDataProvider::class);
+        $dataProvider = Mockery::mock(InquiryInventoryDataProvider::class);
 
         $this->inventoryDataProviderFactory->expects('forInquiry')->with($inquiry)->andReturn($dataProvider);
 

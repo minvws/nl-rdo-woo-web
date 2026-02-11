@@ -6,6 +6,10 @@ namespace Shared\Domain\Search\Index\Dossier\Mapper;
 
 use Shared\Domain\Department\Department;
 
+use function strpos;
+use function substr;
+use function trim;
+
 readonly class DepartmentFieldMapper
 {
     private function __construct(

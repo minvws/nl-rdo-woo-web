@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Storage;
 
+use Mockery;
 use Mockery\Matcher\Closure as ClosureMatcher;
 use Mockery\MockInterface;
 use Shared\Service\Storage\HasAlive;
 use Shared\Service\Storage\RemoteFilesystem;
 use Shared\Service\Storage\StorageAliveInterface;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function explode;
+use function str_contains;
+use function strlen;
 
 final class HasAliveTest extends UnitTestCase
 {
@@ -19,7 +24,7 @@ final class HasAliveTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->storage = \Mockery::mock(RemoteFilesystem::class);
+        $this->storage = Mockery::mock(RemoteFilesystem::class);
     }
 
     public function testHasAlive(): void
@@ -128,7 +133,7 @@ final class HasAliveTest extends UnitTestCase
 
     private function locationMatcher(?string &$locationRef): ClosureMatcher
     {
-        return \Mockery::on(function (string $location) use (&$locationRef): bool {
+        return Mockery::on(function (string $location) use (&$locationRef): bool {
             $locationRef = $location;
 
             if (! str_contains($location, '.')) {
@@ -143,7 +148,7 @@ final class HasAliveTest extends UnitTestCase
 
     private function hashMatcher(?string &$hashRef): ClosureMatcher
     {
-        return \Mockery::on(function (string $hash) use (&$hashRef): bool {
+        return Mockery::on(function (string $hash) use (&$hashRef): bool {
             $hashRef = $hash;
 
             return strlen($hash) === 64;

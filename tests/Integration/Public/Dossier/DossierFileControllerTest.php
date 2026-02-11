@@ -28,6 +28,8 @@ use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Integration\VfsStreamHelpers;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
+use function sprintf;
+
 final class DossierFileControllerTest extends SharedWebTestCase
 {
     use VfsStreamHelpers;
@@ -52,7 +54,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
     public function testDownloadingWooDecisionDocument(): void
     {
         /** @var WooDecision $dossier */
-        $dossier = WooDecisionFactory::createOne()->_real();
+        $dossier = WooDecisionFactory::createOne();
 
         /** @var Document $document */
         $document = DocumentFactory::createOne([
@@ -61,7 +63,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
                 'uploaded' => true,
                 'type' => 'pdf',
             ]),
-        ])->_real();
+        ]);
 
         $dossier->addDocument($document);
 
@@ -76,7 +78,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
     public function testDownloadingWooDecisionDocumentUsesOriginalFileType(): void
     {
         /** @var WooDecision $dossier */
-        $dossier = WooDecisionFactory::createOne()->_real();
+        $dossier = WooDecisionFactory::createOne();
 
         /** @var Document $document */
         $document = DocumentFactory::createOne([
@@ -87,7 +89,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
                 'mimetype' => 'application/pdf',
                 'type' => 'pdf',
             ]),
-        ])->_real();
+        ]);
 
         $dossier->addDocument($document);
 
@@ -102,10 +104,10 @@ final class DossierFileControllerTest extends SharedWebTestCase
     public function testDownloadingCovenantAttachment(): void
     {
         /** @var Covenant $dossier */
-        $dossier = CovenantFactory::createOne()->_real();
+        $dossier = CovenantFactory::createOne();
 
         /** @var CovenantAttachment $attachment */
-        $attachment = CovenantAttachmentFactory::createOne(['dossier' => $dossier])->_real();
+        $attachment = CovenantAttachmentFactory::createOne(['dossier' => $dossier]);
 
         $dossier->addAttachment($attachment);
 
@@ -115,10 +117,10 @@ final class DossierFileControllerTest extends SharedWebTestCase
     public function testDownloadingWooDecisionMainDocument(): void
     {
         /** @var WooDecision $dossier */
-        $dossier = WooDecisionFactory::createOne()->_real();
+        $dossier = WooDecisionFactory::createOne();
 
         /** @var WooDecisionMainDocument $mainDocument */
-        $mainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $dossier])->_real();
+        $mainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $dossier]);
 
         $dossier->setMainDocument($mainDocument);
 
@@ -128,10 +130,10 @@ final class DossierFileControllerTest extends SharedWebTestCase
     public function testDownloadingWooDecisionInventory(): void
     {
         /** @var WooDecision $dossier */
-        $dossier = WooDecisionFactory::createOne()->_real();
+        $dossier = WooDecisionFactory::createOne();
 
         /** @var Inventory $inventory */
-        $inventory = InventoryFactory::createOne(['dossier' => $dossier])->_real();
+        $inventory = InventoryFactory::createOne(['dossier' => $dossier]);
 
         $dossier->setInventory($inventory);
 

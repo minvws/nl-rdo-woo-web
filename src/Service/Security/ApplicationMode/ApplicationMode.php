@@ -6,6 +6,8 @@ namespace Shared\Service\Security\ApplicationMode;
 
 use Shared\Domain\Publication\Dossier\DossierStatus;
 
+use function strtoupper;
+
 enum ApplicationMode: string
 {
     case PUBLIC = 'FRONTEND';

@@ -16,6 +16,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use function strtolower;
+
 #[ORM\Entity(repositoryClass: DepartmentRepository::class)]
 #[UniqueEntity('name')]
 #[UniqueEntity('slug')]

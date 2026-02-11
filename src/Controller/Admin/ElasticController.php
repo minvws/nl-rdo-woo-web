@@ -13,10 +13,12 @@ use Shared\Form\Elastic\RolloverParametersType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
+
+use function reset;
 
 class ElasticController extends AbstractController
 {
@@ -71,7 +73,7 @@ class ElasticController extends AbstractController
         }
 
         return $this->render('admin/elastic/create.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 
@@ -105,7 +107,7 @@ class ElasticController extends AbstractController
         return $this->render('admin/elastic/details.html.twig', [
             'index' => $index,
             'details' => $details,
-            'deleteForm' => $deleteForm->createView(),
+            'deleteForm' => $deleteForm,
         ]);
     }
 
@@ -173,7 +175,7 @@ class ElasticController extends AbstractController
         return $this->render('admin/elastic/live.html.twig', [
             'index' => $index,
             'details' => $details,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 }

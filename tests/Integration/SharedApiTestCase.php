@@ -11,7 +11,7 @@ abstract class SharedApiTestCase extends ApiTestCase
 {
     use IntegrationTestTrait;
 
-    public static function getAppId(): ApplicationId
+    protected static function getAppId(): ApplicationId
     {
         return ApplicationId::SHARED;
     }

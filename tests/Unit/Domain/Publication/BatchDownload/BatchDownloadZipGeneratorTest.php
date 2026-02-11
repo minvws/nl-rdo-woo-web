@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\BatchDownload;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\BatchDownload\Archiver\ArchiveNamer;
@@ -21,6 +22,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
+
+use function array_map;
+use function range;
 
 final class BatchDownloadZipGeneratorTest extends UnitTestCase
 {
@@ -43,27 +47,27 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->wooDecision = \Mockery::mock(WooDecision::class);
-        $this->inquiry = \Mockery::mock(Inquiry::class);
-        $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
-        $this->batchArchiver = \Mockery::mock(BatchArchiver::class);
-        $this->archiveNamer = \Mockery::mock(ArchiveNamer::class);
+        $this->wooDecision = Mockery::mock(WooDecision::class);
+        $this->inquiry = Mockery::mock(Inquiry::class);
+        $this->doctrine = Mockery::mock(EntityManagerInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->batchDownloadService = Mockery::mock(BatchDownloadService::class);
+        $this->batchArchiver = Mockery::mock(BatchArchiver::class);
+        $this->archiveNamer = Mockery::mock(ArchiveNamer::class);
 
-        $this->batchDownloadType = \Mockery::mock(BatchDownloadTypeInterface::class);
-        $this->batchDownload = \Mockery::mock(BatchDownload::class);
+        $this->batchDownloadType = Mockery::mock(BatchDownloadTypeInterface::class);
+        $this->batchDownload = Mockery::mock(BatchDownload::class);
 
         $this->batchDownloadService
             ->shouldReceive('getType')
-            ->with(\Mockery::on(function (BatchDownloadScope $scope): bool {
+            ->with(Mockery::on(function (BatchDownloadScope $scope): bool {
                 return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
             }))
             ->andReturn($this->batchDownloadType);
 
         $this->batchDownloadType
             ->shouldReceive('getFileBaseName')
-            ->with(\Mockery::on(function (BatchDownloadScope $scope) {
+            ->with(Mockery::on(function (BatchDownloadScope $scope) {
                 return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
             }))
             ->andReturn($this->fileBaseName);
@@ -90,8 +94,8 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
     {
         $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
 
-        $documentOne = \Mockery::mock(Document::class);
-        $documentTwo = \Mockery::mock(Document::class);
+        $documentOne = Mockery::mock(Document::class);
+        $documentTwo = Mockery::mock(Document::class);
 
         $this->batchDownloadType
             ->shouldReceive('getDocumentsQuery->getQuery->getResult')
@@ -159,8 +163,8 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
     {
         $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
 
-        $documentOne = \Mockery::mock(Document::class);
-        $documentTwo = \Mockery::mock(Document::class);
+        $documentOne = Mockery::mock(Document::class);
+        $documentTwo = Mockery::mock(Document::class);
 
         $this->batchDownloadType
             ->shouldReceive('getDocumentsQuery->getQuery->getResult')
@@ -193,7 +197,7 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
     {
         $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
 
-        $documentOne = \Mockery::mock(Document::class);
+        $documentOne = Mockery::mock(Document::class);
         $documentOne->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $this->batchDownloadType->shouldReceive('getDocumentsQuery->getQuery->getResult')->andReturn([$documentOne]);
@@ -232,7 +236,7 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
 
         $numberOfDocuments = 50;
         $documents = array_map(function () {
-            $document = \Mockery::mock(Document::class);
+            $document = Mockery::mock(Document::class);
             $document->shouldReceive('getId')->andReturn(Uuid::v6());
 
             return $document;
@@ -286,8 +290,8 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
     {
         $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
 
-        $documentOne = \Mockery::mock(Document::class);
-        $documentTwo = \Mockery::mock(Document::class);
+        $documentOne = Mockery::mock(Document::class);
+        $documentTwo = Mockery::mock(Document::class);
         $documentTwo->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $this->batchDownloadType
@@ -325,7 +329,7 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
     {
         $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
 
         $this->batchDownloadType->shouldReceive('getDocumentsQuery->getQuery->getResult')->andReturn([$document]);
 
@@ -356,8 +360,8 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
     {
         $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
 
-        $documentOne = \Mockery::mock(Document::class);
-        $documentTwo = \Mockery::mock(Document::class);
+        $documentOne = Mockery::mock(Document::class);
+        $documentTwo = Mockery::mock(Document::class);
 
         $this->batchDownloadType
             ->shouldReceive('getDocumentsQuery->getQuery->getResult')

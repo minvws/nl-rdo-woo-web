@@ -10,6 +10,10 @@ use GuzzleHttp\Psr7\Stream;
 use Shared\Domain\Upload\UploadRequest;
 use Webmozart\Assert\Assert;
 
+use function file_get_contents;
+use function sprintf;
+use function urldecode;
+
 readonly class S3UploadHelper
 {
     public function __construct(

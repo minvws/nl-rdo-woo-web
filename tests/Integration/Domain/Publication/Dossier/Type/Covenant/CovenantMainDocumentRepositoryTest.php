@@ -27,9 +27,9 @@ final class CovenantMainDocumentRepositoryTest extends SharedWebTestCase
 
     public function testCreate(): void
     {
-        $dossier = CovenantFactory::createOne()->_real();
+        $dossier = CovenantFactory::createOne();
 
-        $document = CovenantMainDocumentFactory::new()->withoutPersisting()->createOne()->_real();
+        $document = CovenantMainDocumentFactory::new()->withoutPersisting()->createOne();
 
         $createMainDocumentCommand = new CreateMainDocumentCommand(
             dossierId: $dossier->getId(),

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Sitemap;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use Mockery;
 use Mockery\MockInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
@@ -27,8 +29,8 @@ class SitemapDocumentSubscriberTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->dossierRepository = Mockery::mock(DossierRepository::class);
 
         $this->subscriber = new SitemapDocumentSubscriber(
             $this->entityManager,
@@ -38,23 +40,23 @@ class SitemapDocumentSubscriberTest extends UnitTestCase
 
     public function testPopulate(): void
     {
-        $document = \Mockery::mock(Document::class);
-        $document->expects('getUpdatedAt')->andReturn($documentUpdatedAt = new \DateTimeImmutable());
+        $document = Mockery::mock(Document::class);
+        $document->expects('getUpdatedAt')->andReturn($documentUpdatedAt = new DateTimeImmutable());
         $document->expects('getDocumentNr')->andReturn($documentNr = 'doc-123');
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
         $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'foo');
         $dossier->expects('getDossierNr')->andReturn($dossierNr = 'bar');
 
-        $query = \Mockery::mock(Query::class);
+        $query = Mockery::mock(Query::class);
         $query->expects('toIterable')->andReturn([
             $dossier,
         ]);
 
-        $urlContainer = \Mockery::mock(UrlContainerInterface::class);
+        $urlContainer = Mockery::mock(UrlContainerInterface::class);
 
-        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
         $queryBuilder->shouldReceive('select')->andReturnSelf();
         $queryBuilder->shouldReceive('where')->andReturnSelf();
         $queryBuilder->shouldReceive('andWhere')->andReturnSelf();
@@ -66,7 +68,7 @@ class SitemapDocumentSubscriberTest extends UnitTestCase
             ->shouldReceive('createQueryBuilder')
             ->andReturn($queryBuilder);
 
-        $urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
+        $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
         $urlGenerator->expects('generate')->with(
             'app_document_detail',
             [
@@ -78,7 +80,7 @@ class SitemapDocumentSubscriberTest extends UnitTestCase
         )->andReturn($docUrl = '/foo/bar/doc-123');
 
         $urlContainer->expects('addUrl')->with(
-            \Mockery::on(
+            Mockery::on(
                 static function (UrlConcrete $urlConcrete) use ($docUrl, $documentUpdatedAt): bool {
                     self::assertEquals($docUrl, $urlConcrete->getLoc());
                     self::assertEquals($documentUpdatedAt, $urlConcrete->getLastmod());

@@ -6,6 +6,8 @@ namespace Shared\Service\PlatformCheck;
 
 use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
 
+use function is_executable;
+
 readonly class ExecutablePlatformChecker implements PlatformCheckerInterface
 {
     private const array REQUIRED_EXECUTABLES = [

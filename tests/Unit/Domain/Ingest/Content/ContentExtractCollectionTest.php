@@ -9,6 +9,10 @@ use Shared\Domain\Ingest\Content\ContentExtract;
 use Shared\Domain\Ingest\Content\ContentExtractCollection;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 
+use function iterator_to_array;
+
+use const PHP_EOL;
+
 class ContentExtractCollectionTest extends TestCase
 {
     public function testAppendSuccessful(): void

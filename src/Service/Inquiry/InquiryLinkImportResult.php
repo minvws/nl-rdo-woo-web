@@ -6,6 +6,10 @@ namespace Shared\Service\Inquiry;
 
 use Shared\Exception\TranslatableException;
 
+use function array_key_exists;
+use function array_reduce;
+use function count;
+
 class InquiryLinkImportResult
 {
     /**

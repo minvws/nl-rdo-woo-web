@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Upload\Preprocessor;
 
+use Generator;
 use Shared\Domain\Upload\UploadedFile;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
@@ -11,9 +12,9 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 interface FilePreprocessorStrategyInterface
 {
     /**
-     * @return \Generator<array-key,UploadedFile>
+     * @return Generator<array-key,UploadedFile>
      */
-    public function process(UploadedFile $file): \Generator;
+    public function process(UploadedFile $file): Generator;
 
     public function canProcess(UploadedFile $file): bool;
 }

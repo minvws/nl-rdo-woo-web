@@ -11,6 +11,9 @@ use Shared\Service\Storage\EntityStorageService;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+use function fpassthru;
+use function sprintf;
+
 readonly class DownloadResponseHelper
 {
     public function __construct(

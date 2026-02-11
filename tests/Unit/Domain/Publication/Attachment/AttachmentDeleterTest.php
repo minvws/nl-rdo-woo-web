@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\AttachmentDeleter;
 use Shared\Domain\Publication\Attachment\AttachmentDeleteStrategyInterface;
@@ -18,8 +19,8 @@ class AttachmentDeleterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->deleteStrategyA = \Mockery::mock(AttachmentDeleteStrategyInterface::class);
-        $this->deleteStrategyB = \Mockery::mock(AttachmentDeleteStrategyInterface::class);
+        $this->deleteStrategyA = Mockery::mock(AttachmentDeleteStrategyInterface::class);
+        $this->deleteStrategyB = Mockery::mock(AttachmentDeleteStrategyInterface::class);
 
         $this->deleter = new AttachmentDeleter(
             [$this->deleteStrategyA, $this->deleteStrategyB],
@@ -30,7 +31,7 @@ class AttachmentDeleterTest extends UnitTestCase
 
     public function testAllStrategiesAreCalled(): void
     {
-        $attachment = \Mockery::mock(AbstractAttachment::class);
+        $attachment = Mockery::mock(AbstractAttachment::class);
 
         $this->deleteStrategyA->expects('delete')->with($attachment);
         $this->deleteStrategyB->expects('delete')->with($attachment);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ProductionReportProcessRunCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRunRepository;
@@ -45,7 +46,7 @@ readonly class ProductionReportProcessRunHandler
             $this->runProcessor->process($run);
             $this->entityManager->clear();
             unset($run);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->logger->error('Exception while processing ProductionReportProcessRun', ['exception' => $exception]);
 
             return;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\AnnualReport;
 
 use Carbon\CarbonImmutable;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
@@ -23,7 +24,7 @@ final class AnnualReportTest extends TestCase
         $annualReport = new AnnualReport();
         self::assertNull($annualReport->getMainDocument());
 
-        $document = \Mockery::mock(AnnualReportMainDocument::class);
+        $document = Mockery::mock(AnnualReportMainDocument::class);
         $annualReport->setMainDocument($document);
 
         self::assertEquals($document, $annualReport->getMainDocument());

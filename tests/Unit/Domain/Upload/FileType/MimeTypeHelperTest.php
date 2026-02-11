@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Upload\FileType;
 
 use League\MimeTypeDetection\FinfoMimeTypeDetector;
+use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Log\NullLogger;
@@ -20,7 +21,7 @@ class MimeTypeHelperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->mimeTypeDetector = \Mockery::mock(FinfoMimeTypeDetector::class);
+        $this->mimeTypeDetector = Mockery::mock(FinfoMimeTypeDetector::class);
         $this->helper = new MimeTypeHelper($this->mimeTypeDetector, new NullLogger());
 
         parent::setUp();
@@ -71,7 +72,7 @@ class MimeTypeHelperTest extends UnitTestCase
 
     public function testDetectMimetypeFromPath(): void
     {
-        $upload = \Mockery::mock(UploadedFile::class);
+        $upload = Mockery::mock(UploadedFile::class);
         $upload->shouldReceive('getOriginalFilename')->andReturn($filename = 'upload.bat');
         $upload->shouldReceive('getPathname')->andReturn('/var/www/foobar/upload.bat');
 

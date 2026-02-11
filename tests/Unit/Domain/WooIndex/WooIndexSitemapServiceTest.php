@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\WooIndex;
 
+use ArrayIterator;
 use Carbon\CarbonImmutable;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\WooIndex\Exception\WooIndexFileNotFoundException;
 use Shared\Domain\WooIndex\WooIndex;
@@ -19,6 +21,8 @@ use Shared\Domain\WooIndex\WooIndexSitemapStatus;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Uid\Uuid;
+
+use function fopen;
 
 final class WooIndexSitemapServiceTest extends UnitTestCase
 {
@@ -35,12 +39,12 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->wooIndexSitemap = \Mockery::mock(WooIndexSitemap::class);
-        $this->wooIndexStorage = \Mockery::mock(FilesystemOperator::class);
-        $this->wooIndexNamer = \Mockery::mock(WooIndexNamer::class);
-        $this->wooIndexSitemapRepository = \Mockery::mock(WooIndexSitemapRepository::class);
-        $this->urlGenerator = \Mockery::mock(UrlGenerator::class);
-        $this->wooIndex = \Mockery::mock(WooIndex::class);
+        $this->wooIndexSitemap = Mockery::mock(WooIndexSitemap::class);
+        $this->wooIndexStorage = Mockery::mock(FilesystemOperator::class);
+        $this->wooIndexNamer = Mockery::mock(WooIndexNamer::class);
+        $this->wooIndexSitemapRepository = Mockery::mock(WooIndexSitemapRepository::class);
+        $this->urlGenerator = Mockery::mock(UrlGenerator::class);
+        $this->wooIndex = Mockery::mock(WooIndex::class);
 
         $this->wooIndexSitemapService = new WooIndexSitemapService(
             $this->wooIndexStorage,
@@ -59,20 +63,20 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
 
         $this->wooIndexSitemapRepository
             ->shouldReceive('save')
-            ->with(\Mockery::capture($wooIndexSitemap), true)
+            ->with(Mockery::capture($wooIndexSitemap), true)
             ->once();
 
         $this->wooIndex
             ->shouldReceive('create')
-            ->with(\Mockery::on(function (WooIndexSitemap $i) use (&$wooIndexSitemap): bool {
+            ->with(Mockery::on(function (WooIndexSitemap $i) use (&$wooIndexSitemap): bool {
                 return $i === $wooIndexSitemap;
-            }), \Mockery::type(WooIndexRunOptions::class))
+            }), Mockery::type(WooIndexRunOptions::class))
             ->once()
             ->andReturnTrue();
 
         $this->wooIndexSitemapRepository
             ->shouldReceive('save')
-            ->with(\Mockery::on(function (WooIndexSitemap $i) use (&$wooIndexSitemap): bool {
+            ->with(Mockery::on(function (WooIndexSitemap $i) use (&$wooIndexSitemap): bool {
                 if ($i->getStatus() !== WooIndexSitemapStatus::DONE) {
                     return false;
                 }
@@ -179,11 +183,11 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
         $this->setTestNow($now = CarbonImmutable::parse('2025-02-18 10:00'));
 
         $wooIndexSitemaps = [
-            \Mockery::mock(WooIndexSitemap::class),
-            \Mockery::mock(WooIndexSitemap::class),
-            \Mockery::mock(WooIndexSitemap::class),
-            \Mockery::mock(WooIndexSitemap::class),
-            \Mockery::mock(WooIndexSitemap::class),
+            Mockery::mock(WooIndexSitemap::class),
+            Mockery::mock(WooIndexSitemap::class),
+            Mockery::mock(WooIndexSitemap::class),
+            Mockery::mock(WooIndexSitemap::class),
+            Mockery::mock(WooIndexSitemap::class),
         ];
 
         $treshold = 3;
@@ -193,13 +197,13 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
             ->shouldReceive('getSitemapsForCleanup')
             ->with(
                 $treshold,
-                \Mockery::on(fn (CarbonImmutable $givenDate): bool => $givenDate->eq($now->subDays($cleanupUnfinishedAfterDay))),
+                Mockery::on(fn (CarbonImmutable $givenDate): bool => $givenDate->eq($now->subDays($cleanupUnfinishedAfterDay))),
             )
             ->once()
-            ->andReturn(new \ArrayIterator($wooIndexSitemaps));
+            ->andReturn(new ArrayIterator($wooIndexSitemaps));
 
         /** @var WooIndexSitemapService&MockInterface $wooIndexSitemapService */
-        $wooIndexSitemapService = \Mockery::mock(WooIndexSitemapService::class, [
+        $wooIndexSitemapService = Mockery::mock(WooIndexSitemapService::class, [
             $this->wooIndexStorage,
             $this->wooIndexNamer,
             $this->wooIndexSitemapRepository,
@@ -220,7 +224,7 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
     public function testCleanupAllSitemaps(): void
     {
         /** @var WooIndexSitemapService&MockInterface $wooIndexSitemapService */
-        $wooIndexSitemapService = \Mockery::mock(WooIndexSitemapService::class, [
+        $wooIndexSitemapService = Mockery::mock(WooIndexSitemapService::class, [
             $this->wooIndexStorage,
             $this->wooIndexNamer,
             $this->wooIndexSitemapRepository,

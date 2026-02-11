@@ -2,6 +2,7 @@
 
 tests/robot_framework @minvws/rdo-robotframework-codeowners
 tests/robot_framework/uv.lock @minvws/rdo-robotframework-codeowners @minvws/rdo-woo-codeowners
+docs/bruno-collection @minvws/rdo-robotframework-codeowners @minvws/rdo-woo-codeowners
 
 # Last match takes precedence
 .github/CODEOWNERS @minvws/irealisatie-operations

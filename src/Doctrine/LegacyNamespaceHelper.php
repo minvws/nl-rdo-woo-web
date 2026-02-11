@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Doctrine;
 
+use function class_exists;
+use function str_starts_with;
+use function substr;
+
 final class LegacyNamespaceHelper
 {
     /**

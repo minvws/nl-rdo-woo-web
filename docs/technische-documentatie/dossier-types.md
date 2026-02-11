@@ -84,7 +84,7 @@ Optionally the new dossier type could support a main document. In that case thes
   - The `hasMainDocument` trait can be used to simplify this.
   - You should define the doctrine relationship and initialize the collection in the constructor.
 - Implement admin API endpoints for the editor. Use an existing implementation as reference, for instance `Shared\Api\Admin\AnnualReportMainDocument```
-  - Also include test coverage, see the `Shared\Tests\Integration\Api\Admin\AnnualReportMainDocumentTest` as an example.
+  - Also include test coverage, see the `Admin\Tests\Integration\Api\Admin\AnnualReportMainDocumentTest` as an example.
 
 ## Attachment support
 
@@ -96,7 +96,7 @@ Optionally the new dossier type could support attachments. In that case these ad
   - The `hasAttachments` trait can be used to simplify this.
   - You should define the doctrine relationship and initialize the collection in the constructor.
 - Implement admin API endpoints for the editor. Use an existing implementation as reference, for instance `Shared\Api\Admin\AnnualReportAttachment```
-  - Also include test coverage, see the `Shared\Tests\Integration\Api\Admin\AnnualReportAttachmentTest` as an example.
+  - Also include test coverage, see the `Admin\Tests\Integration\Api\Admin\AnnualReportAttachmentTest` as an example.
 
 ## Admin pages
 

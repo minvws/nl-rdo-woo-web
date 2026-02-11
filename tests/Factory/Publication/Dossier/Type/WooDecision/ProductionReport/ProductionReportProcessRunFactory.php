@@ -6,12 +6,12 @@ namespace Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\ProductionRe
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<ProductionReportProcessRun>
+ * @extends PersistentObjectFactory<ProductionReportProcessRun>
  */
-final class ProductionReportProcessRunFactory extends PersistentProxyObjectFactory
+final class ProductionReportProcessRunFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories

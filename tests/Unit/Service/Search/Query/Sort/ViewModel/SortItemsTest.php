@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Search\Query\Sort\ViewModel;
 
+use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use Shared\Service\Search\Query\Sort\SortException;
 use Shared\Service\Search\Query\Sort\ViewModel\SortItem;
 use Shared\Service\Search\Query\Sort\ViewModel\SortItems;
+
+use function iterator_to_array;
 
 class SortItemsTest extends TestCase
 {
@@ -18,8 +21,8 @@ class SortItemsTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->sortItemA = \Mockery::mock(SortItem::class);
-        $this->sortItemB = \Mockery::mock(SortItem::class);
+        $this->sortItemA = Mockery::mock(SortItem::class);
+        $this->sortItemB = Mockery::mock(SortItem::class);
 
         $this->sortItems = new SortItems($this->sortItemA, $this->sortItemB);
 

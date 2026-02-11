@@ -45,8 +45,7 @@ abstract class AbstractAttachmentRepository extends ServiceEntityRepository
             ->where('dos.id = :dossierId')
             ->andWhere('a.withdrawn = false')
             ->innerJoin('a.dossier', 'dos')
-            ->setParameter('dossierId', $dossierId)
-        ;
+            ->setParameter('dossierId', $dossierId);
 
         /** @var ArrayCollection<array-key,covariant T> */
         return new ArrayCollection($qb->getQuery()->getResult());
@@ -59,8 +58,7 @@ abstract class AbstractAttachmentRepository extends ServiceEntityRepository
             ->andWhere('dos.id = :dossierId')
             ->innerJoin('a.dossier', 'dos')
             ->setParameter('id', $id)
-            ->setParameter('dossierId', $dossierId)
-        ;
+            ->setParameter('dossierId', $dossierId);
 
         /** @var AbstractAttachment */
         return $qb->getQuery()->getSingleResult();
@@ -73,8 +71,7 @@ abstract class AbstractAttachmentRepository extends ServiceEntityRepository
             ->andWhere('dos.id = :dossierId')
             ->innerJoin('a.dossier', 'dos')
             ->setParameter('id', $id)
-            ->setParameter('dossierId', $dossierId)
-        ;
+            ->setParameter('dossierId', $dossierId);
 
         /** @var ?AbstractAttachment */
         return $qb->getQuery()->getOneOrNullResult();

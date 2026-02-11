@@ -8,6 +8,9 @@ use Shared\Domain\Upload\FileType\FileType;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function strtolower;
+use function trim;
+
 enum SourceType: string implements TranslatableInterface
 {
     case PDF = 'pdf';

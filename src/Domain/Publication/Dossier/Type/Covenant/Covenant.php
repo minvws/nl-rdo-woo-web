@@ -18,6 +18,8 @@ use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use function array_values;
+
 /**
  * @implements EntityWithAttachments<CovenantAttachment>
  * @implements EntityWithMainDocument<CovenantMainDocument>
@@ -53,13 +55,13 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
     )]
     private array $parties = [];
 
-    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: CovenantMainDocument::class, cascade: ['remove'])]
+    #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: CovenantMainDocument::class, cascade: ['persist', 'remove'])]
     #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
     #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
     private ?CovenantMainDocument $document;
 
     /** @var Collection<array-key,CovenantAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: CovenantAttachment::class)]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: CovenantAttachment::class, cascade: ['persist'], orphanRemoval: true)]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 

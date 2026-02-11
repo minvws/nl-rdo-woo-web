@@ -8,10 +8,12 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'woopie:inventory:refresh', description: 'Triggers an inventory refresh for all woo-decisions and inquiries')]
 class InventoryRefresh extends Command
 {
     public function __construct(
@@ -25,10 +27,6 @@ class InventoryRefresh extends Command
 
     protected function configure(): void
     {
-        $this
-            ->setName('woopie:inventory:refresh')
-            ->setDescription('Triggers an inventory refresh for all woo-decisions and inquiries')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -47,6 +45,6 @@ class InventoryRefresh extends Command
 
         $output->writeln("All refreshes have been scheduled, processing by workers might take some time\n");
 
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 }

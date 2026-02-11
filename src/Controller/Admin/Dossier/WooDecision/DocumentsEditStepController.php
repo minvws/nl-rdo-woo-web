@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin\Dossier\WooDecision;
 
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
 use Shared\Domain\Publication\Dossier\Step\StepName;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
@@ -17,13 +18,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function intval;
+
 class DocumentsEditStepController extends AbstractController
 {
     public function __construct(
@@ -120,7 +120,7 @@ class DocumentsEditStepController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('inventory')->getData();
             if (! $uploadedFile instanceof UploadedFile) {
-                throw new \RuntimeException('Missing inventory uploadfile');
+                throw new RuntimeException('Missing inventory uploadfile');
             }
 
             $this->dispatcher->dispatchInitiateProductionReportUpdateCommand($dossier, $uploadedFile);

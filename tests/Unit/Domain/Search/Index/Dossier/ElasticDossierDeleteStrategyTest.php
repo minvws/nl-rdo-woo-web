@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Dossier;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Search\Index\Dossier\ElasticDossierDeleteStrategy;
@@ -17,7 +18,7 @@ final class ElasticDossierDeleteStrategyTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->elasticService = \Mockery::mock(ElasticService::class);
+        $this->elasticService = Mockery::mock(ElasticService::class);
         $this->strategy = new ElasticDossierDeleteStrategy($this->elasticService);
 
         parent::setUp();
@@ -25,7 +26,7 @@ final class ElasticDossierDeleteStrategyTest extends UnitTestCase
 
     public function testDelete(): void
     {
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
 
         $this->elasticService->expects('removeDossier')->with($dossier);
 
@@ -35,11 +36,11 @@ final class ElasticDossierDeleteStrategyTest extends UnitTestCase
     public function testDeleteWithOverride(): void
     {
         /** @var ElasticDossierDeleteStrategy&MockInterface $strategy */
-        $strategy = \Mockery::mock(ElasticDossierDeleteStrategy::class)
+        $strategy = Mockery::mock(ElasticDossierDeleteStrategy::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
 
         $strategy->expects('delete')->with($dossier);
 

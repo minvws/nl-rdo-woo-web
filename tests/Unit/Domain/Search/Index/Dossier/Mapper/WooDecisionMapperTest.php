@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
@@ -26,7 +28,7 @@ class WooDecisionMapperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->defaultMapper = \Mockery::mock(DefaultDossierMapper::class);
+        $this->defaultMapper = Mockery::mock(DefaultDossierMapper::class);
 
         $this->mapper = new WooDecisionMapper(
             $this->defaultMapper,
@@ -49,17 +51,17 @@ class WooDecisionMapperTest extends UnitTestCase
     {
         $inquiryId = Uuid::v6();
         $caseNr = '123-45';
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $inquiry = Mockery::mock(Inquiry::class);
         $inquiry->shouldReceive('getId')->andReturn($inquiryId);
         $inquiry->shouldReceive('getCasenr')->andReturn($caseNr);
 
         $dossierNr = 'test-123';
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr);
         $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([$inquiry]));
         $dossier->shouldReceive('getPublicationReason')->andReturn(PublicationReason::WOO_REQUEST);
-        $dossier->shouldReceive('getDecisionDate')->andReturn(new \DateTimeImmutable('2024-04-16 10:54:15'));
+        $dossier->shouldReceive('getDecisionDate')->andReturn(new DateTimeImmutable('2024-04-16 10:54:15'));
         $dossier->shouldReceive('getDecision')->andReturn(DecisionType::PUBLIC);
 
         $this->defaultMapper

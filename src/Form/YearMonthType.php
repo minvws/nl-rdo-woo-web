@@ -7,6 +7,8 @@ namespace Shared\Form;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonPeriod;
+use DateTimeInterface;
+use Override;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeImmutableToDateTimeTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
@@ -14,6 +16,11 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Webmozart\Assert\Assert;
+
+use function array_key_exists;
+use function array_reverse;
+use function datefmt_format_object;
+use function strval;
 
 class YearMonthType extends ChoiceType
 {
@@ -26,13 +33,13 @@ class YearMonthType extends ChoiceType
     public const REVERSE = 'reverse';
     public const DOSSIER = 'dossier';
 
-    #[\Override]
+    #[Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $options['choices'] = $this->getChoices(...$this->getChoicesArgsFromOptions($options));
 
         $builder->addModelTransformer(
-            new DateTimeToStringTransformer(null, null, \DateTimeInterface::ATOM)
+            new DateTimeToStringTransformer(null, null, DateTimeInterface::ATOM)
         );
 
         $builder->addModelTransformer(
@@ -69,7 +76,7 @@ class YearMonthType extends ChoiceType
                 : $date->firstOfMonth();
 
             $description = strval(datefmt_format_object($date, 'MMMM y'));
-            $options[$year][$description] = $date->format(\DateTimeInterface::ATOM);
+            $options[$year][$description] = $date->format(DateTimeInterface::ATOM);
         }
 
         if ($reverse) {
@@ -79,7 +86,7 @@ class YearMonthType extends ChoiceType
         return $options;
     }
 
-    #[\Override]
+    #[Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);

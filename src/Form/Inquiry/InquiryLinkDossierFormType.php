@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Form\Inquiry;
 
+use InvalidArgumentException;
 use Shared\Service\Inquiry\CaseNumbers;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -20,9 +21,6 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class InquiryLinkDossierFormType extends AbstractType
 {
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -87,7 +85,7 @@ class InquiryLinkDossierFormType extends AbstractType
     {
         try {
             CaseNumbers::fromCommaSeparatedString($input);
-        } catch (\InvalidArgumentException) {
+        } catch (InvalidArgumentException) {
             $context
                 ->buildViolation('casenumbers_invalid')
                 ->addViolation();

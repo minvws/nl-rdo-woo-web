@@ -52,7 +52,7 @@ describe('The "FileLimits" component', () => {
 
     test('should display a list of only allowed file types (without their max size) when there is only one max file size defined', () => {
       const component = createComponent(mockedFileLimits.slice(-2));
-      expect(component.text()).toContain('Bestand van het type PNG of JPG');
+      expect(component.text()).toContain('Bestand van het type JPG of PNG');
     });
 
     test('should display a list of only allowed file types (without their max size) when there is no max file size defined', () => {
@@ -66,7 +66,7 @@ describe('The "FileLimits" component', () => {
           mimeTypes: ['image/jpeg'],
         },
       ]);
-      expect(component.text()).toContain('Bestand van het type PNG of JPG');
+      expect(component.text()).toContain('Bestand van het type JPG of PNG');
     });
   });
 

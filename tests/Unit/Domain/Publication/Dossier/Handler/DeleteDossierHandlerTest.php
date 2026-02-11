@@ -8,8 +8,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\GeneralLogEvent;
 use MinVWS\AuditLogger\Loggers\LoggerInterface as AuditLoggerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\AuditLog\DossierDeleteLogEvent;
 use Shared\Domain\Publication\Dossier\Command\DeleteDossierCommand;
@@ -46,16 +48,16 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossierRepository = \Mockery::mock(DossierRepository::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->internalAuditLogger = \Mockery::mock(AuditLoggerInterface::class);
+        $this->dossierRepository = Mockery::mock(DossierRepository::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->dossierWorkflowManager = Mockery::mock(DossierWorkflowManager::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->internalAuditLogger = Mockery::mock(AuditLoggerInterface::class);
         $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
         $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
 
-        $this->strategyA = \Mockery::mock(DossierDeleteStrategyInterface::class);
-        $this->strategyB = \Mockery::mock(DossierDeleteStrategyInterface::class);
+        $this->strategyA = Mockery::mock(DossierDeleteStrategyInterface::class);
+        $this->strategyB = Mockery::mock(DossierDeleteStrategyInterface::class);
 
         $this->dossierUuid = Uuid::v6();
         $this->documentPrefix = 'foo-bar';
@@ -64,7 +66,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
         $this->dossierStatus = DossierStatus::PUBLISHED;
 
         $this->dossierId = Uuid::v6();
-        $this->dossier = \Mockery::mock(AbstractDossier::class);
+        $this->dossier = Mockery::mock(AbstractDossier::class);
         $this->dossier->shouldReceive('getType')->andReturn(DossierType::WOO_DECISION);
         $this->dossier->shouldReceive('getId')->andReturn($this->dossierId);
         $this->dossier->shouldReceive('getDocumentPrefix')->andReturn($this->documentPrefix);
@@ -84,7 +86,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
     public function testLogsWarningWhenDossierIsNotFound(): void
     {
-        $userDetails = \Mockery::mock(AuditUserDetails::class);
+        $userDetails = Mockery::mock(AuditUserDetails::class);
         $command = new DeleteDossierCommand($this->dossierUuid, $userDetails);
 
         $this->dossierRepository->expects('find')->with($this->dossierUuid)->andReturnNull();
@@ -95,7 +97,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
     public function testDeleteSuccessful(): void
     {
-        $userDetails = \Mockery::mock(AuditUserDetails::class);
+        $userDetails = Mockery::mock(AuditUserDetails::class);
         $command = new DeleteDossierCommand($this->dossierUuid, $userDetails);
 
         $this->dossierRepository->expects('find')->with($this->dossierUuid)->andReturn($this->dossier);
@@ -110,7 +112,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
         $this->entityManager->expects('commit');
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             function (DossierDeleteLogEvent $event) use ($userDetails): bool {
                 $this->assertEquals($userDetails, $event->getActor());
                 $this->assertEquals(GeneralLogEvent::AC_DELETE, $event->actionCode);
@@ -136,7 +138,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
     public function testDeleteWithOverrideSuccessful(): void
     {
-        $userDetails = \Mockery::mock(AuditUserDetails::class);
+        $userDetails = Mockery::mock(AuditUserDetails::class);
         $command = new DeleteDossierCommand($this->dossierUuid, $userDetails, overrideWorkflow: true);
 
         $this->dossierRepository->expects('find')->with($this->dossierUuid)->andReturn($this->dossier);
@@ -151,7 +153,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
         $this->entityManager->expects('commit');
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             function (DossierDeleteLogEvent $event) use ($userDetails): bool {
                 $this->assertEquals($userDetails, $event->getActor());
                 $this->assertEquals(GeneralLogEvent::AC_DELETE, $event->actionCode);
@@ -177,7 +179,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
     public function testDeleteRollsBackChangesOnException(): void
     {
-        $userDetails = \Mockery::mock(AuditUserDetails::class);
+        $userDetails = Mockery::mock(AuditUserDetails::class);
         $command = new DeleteDossierCommand($this->dossierUuid, $userDetails);
 
         $this->dossierRepository->expects('find')->with($this->dossierUuid)->andReturn($this->dossier);
@@ -185,13 +187,13 @@ class DeleteDossierHandlerTest extends UnitTestCase
         $this->entityManager->expects('beginTransaction');
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($this->dossier, DossierStatusTransition::DELETE);
-        $this->strategyA->expects('delete')->with($this->dossier)->andThrow($exception = new \RuntimeException('oops'));
+        $this->strategyA->expects('delete')->with($this->dossier)->andThrow($exception = new RuntimeException('oops'));
 
         $this->entityManager->expects('rollback');
 
         $this->logger->expects('error');
 
-        $this->internalAuditLogger->expects('log')->with(\Mockery::on(
+        $this->internalAuditLogger->expects('log')->with(Mockery::on(
             function (DossierDeleteLogEvent $event) use ($userDetails): bool {
                 $this->assertEquals($userDetails, $event->getActor());
                 $this->assertEquals(GeneralLogEvent::AC_DELETE, $event->actionCode);

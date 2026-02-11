@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Search\Index\Rollover;
 
 use Elastic\Elasticsearch\Response\Elasticsearch;
+use Mockery;
 use Mockery\MockInterface;
+use RuntimeException;
 use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Shared\Domain\Search\Index\Rollover\MappingService;
@@ -20,8 +22,8 @@ class ElasticIndexManagerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
-        $this->mappingService = \Mockery::mock(MappingService::class);
+        $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
+        $this->mappingService = Mockery::mock(MappingService::class);
 
         $this->indexManager = new ElasticIndexManager(
             $this->elasticClient,
@@ -116,7 +118,7 @@ class ElasticIndexManagerTest extends UnitTestCase
         $this->elasticClient
             ->expects('indices->deleteAlias')
             ->with(['index' => '*', 'name' => $alias])
-            ->andThrow(new \RuntimeException('oops'));
+            ->andThrow(new RuntimeException('oops'));
 
         $this->elasticClient->expects('indices->putAlias')->with(['index' => $name, 'name' => $alias]);
 
@@ -135,7 +137,7 @@ class ElasticIndexManagerTest extends UnitTestCase
 
     public function testListAlias(): void
     {
-        $response = \Mockery::mock(Elasticsearch::class);
+        $response = Mockery::mock(Elasticsearch::class);
         $response->expects('asArray')->andReturn($data = ['foo' => 'bar']);
         $this->elasticClient->expects('indices->getAlias')->with(['index' => '_all'])->andReturn($response);
 
@@ -145,7 +147,7 @@ class ElasticIndexManagerTest extends UnitTestCase
     public function testExists(): void
     {
         $name = 'foo';
-        $response = \Mockery::mock(Elasticsearch::class);
+        $response = Mockery::mock(Elasticsearch::class);
         $response->expects('asBool')->andReturnTrue();
         $this->elasticClient->expects('indices->exists')->with(['index' => $name])->andReturn($response);
 
@@ -154,7 +156,7 @@ class ElasticIndexManagerTest extends UnitTestCase
 
     public function testFind(): void
     {
-        $aliasResponse = \Mockery::mock(Elasticsearch::class);
+        $aliasResponse = Mockery::mock(Elasticsearch::class);
         $aliasResponse->expects('asArray')->andReturn([
             'indexA' => [
                 'aliases' => [
@@ -171,7 +173,7 @@ class ElasticIndexManagerTest extends UnitTestCase
         ]);
         $this->elasticClient->expects('indices->getAlias')->with(['index' => '_all'])->andReturn($aliasResponse);
 
-        $indicesResponse = \Mockery::mock(Elasticsearch::class);
+        $indicesResponse = Mockery::mock(Elasticsearch::class);
         $indicesResponse->expects('asArray')->andReturn([
             [
                 'health' => 'yellow',
@@ -188,7 +190,7 @@ class ElasticIndexManagerTest extends UnitTestCase
         ]);
         $this->elasticClient->expects('cat->indices')->with(['format' => 'json', 'index' => 'indexB'])->andReturn($indicesResponse);
 
-        $mappingResponse = \Mockery::mock(Elasticsearch::class);
+        $mappingResponse = Mockery::mock(Elasticsearch::class);
         $mappingResponse->expects('asArray')->andReturn([
             'indexA' => [
                 'mappings' => [
@@ -214,7 +216,7 @@ class ElasticIndexManagerTest extends UnitTestCase
 
     public function testList(): void
     {
-        $aliasResponse = \Mockery::mock(Elasticsearch::class);
+        $aliasResponse = Mockery::mock(Elasticsearch::class);
         $aliasResponse->expects('asArray')->andReturn([
             'index123' => [
                 'aliases' => [
@@ -231,7 +233,7 @@ class ElasticIndexManagerTest extends UnitTestCase
         ]);
         $this->elasticClient->expects('indices->getAlias')->with(['index' => '_all'])->andReturn($aliasResponse);
 
-        $indicesResponse = \Mockery::mock(Elasticsearch::class);
+        $indicesResponse = Mockery::mock(Elasticsearch::class);
         $indicesResponse->expects('asArray')->andReturn([
             [
                 'health' => 'yellow',
@@ -260,7 +262,7 @@ class ElasticIndexManagerTest extends UnitTestCase
         ]);
         $this->elasticClient->expects('cat->indices')->with(['format' => 'json'])->andReturn($indicesResponse);
 
-        $mappingResponse = \Mockery::mock(Elasticsearch::class);
+        $mappingResponse = Mockery::mock(Elasticsearch::class);
         $mappingResponse->expects('asArray')->andReturn([
             'index123' => [
                 'mappings' => [

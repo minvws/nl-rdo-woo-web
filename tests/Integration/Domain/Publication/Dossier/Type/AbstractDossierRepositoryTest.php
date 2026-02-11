@@ -43,7 +43,7 @@ final class AbstractDossierRepositoryTest extends SharedWebTestCase
         $organisation = OrganisationFactory::createOne();
 
         /** @var InvestigationReport $dossier */
-        $dossier = InvestigationReportFactory::new()->withoutPersisting()->create(['organisation' => $organisation])->_real();
+        $dossier = InvestigationReportFactory::new()->withoutPersisting()->create(['organisation' => $organisation]);
 
         $repository = $this->getRepository();
         $repository->save($dossier, true);

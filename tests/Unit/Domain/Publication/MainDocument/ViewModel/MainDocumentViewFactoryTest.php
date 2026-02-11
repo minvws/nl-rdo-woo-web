@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\MainDocument\ViewModel;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\Matcher\Closure;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -27,6 +29,8 @@ use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\UuidV6;
 
+use function sprintf;
+
 final class MainDocumentViewFactoryTest extends UnitTestCase
 {
     /**
@@ -43,20 +47,20 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
         string $expectedDetailsRouteName,
         array $expectedDetailsParameterKeys,
     ): void {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getName')->andReturn($expectedFileName = 'file name');
         $fileInfo->shouldReceive('getMimetype')->andReturn($expectedMimeType = 'file mime type');
         $fileInfo->shouldReceive('getSize')->andReturn($expectedSize = 101);
         $fileInfo->shouldReceive('getSourceType')->andReturn($expectedSourceType = SourceType::PDF);
         $fileInfo->shouldReceive('getPageCount')->andReturn($expectedPageCount = 12);
 
-        $uuid = \Mockery::mock(UuidV6::class);
+        $uuid = Mockery::mock(UuidV6::class);
         $uuid->shouldReceive('toRfc4122')->andReturn($expectedUuid = 'my-uuid');
 
         $expectedDocumentPrefix = 'prefix';
         $expectedDossierId = 'dossier nr';
 
-        $urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
+        $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
         $urlGenerator
             ->shouldReceive('generate')
             ->with(
@@ -73,16 +77,16 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
             ->andReturn($expectedDetailsUrl = 'http://details.test');
 
         /** @var AbstractMainDocument&MockInterface $mainDocument */
-        $mainDocument = \Mockery::mock($mainDocumentClass);
+        $mainDocument = Mockery::mock($mainDocumentClass);
         $mainDocument->shouldReceive('getId')->andReturn($uuid);
-        $mainDocument->shouldReceive('getFormalDate')->andReturn(new \DateTimeImmutable($expectedFormalDate = '2021-05-10'));
+        $mainDocument->shouldReceive('getFormalDate')->andReturn(new DateTimeImmutable($expectedFormalDate = '2021-05-10'));
         $mainDocument->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $mainDocument->shouldReceive('getType')->andReturn(AttachmentType::ADVICE);
         $mainDocument->shouldReceive('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
         $mainDocument->shouldReceive('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
         $mainDocument->shouldReceive('getGrounds')->andReturn($expectedGrounds = ['bar', 'foo']);
 
-        $dossier = \Mockery::mock(Disposition::class);
+        $dossier = Mockery::mock(Disposition::class);
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($expectedDocumentPrefix);
         $dossier->shouldReceive('getDossierNr')->andReturn($expectedDossierId);
         $dossier->shouldReceive('getAttachments')->andReturn(new ArrayCollection([$mainDocument]));
@@ -221,7 +225,7 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
      */
     private function assertParameters(array $expectedParameterKeys): Closure
     {
-        return \Mockery::on(function (array $parameters) use ($expectedParameterKeys) {
+        return Mockery::on(function (array $parameters) use ($expectedParameterKeys) {
             foreach ($expectedParameterKeys as $key) {
                 $this->assertArrayHasKey($key, $parameters, sprintf('Missing parameter "%s"', $key));
             }

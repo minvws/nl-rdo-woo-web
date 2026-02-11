@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\Handler;
 
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
 use Shared\Domain\Publication\Attachment\Command\CreateAttachmentCommand;
@@ -35,11 +37,11 @@ class CreateAttachmentHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->entityLoader = \Mockery::mock(AttachmentEntityLoader::class);
-        $this->dispatcher = \Mockery::mock(AttachmentDispatcher::class);
-        $this->validator = \Mockery::mock(ValidatorInterface::class);
-        $this->uploadStorer = \Mockery::mock(EntityUploadStorer::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->entityLoader = Mockery::mock(AttachmentEntityLoader::class);
+        $this->dispatcher = Mockery::mock(AttachmentDispatcher::class);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
+        $this->uploadStorer = Mockery::mock(EntityUploadStorer::class);
 
         $this->handler = new CreateAttachmentHandler(
             $this->entityManager,
@@ -55,13 +57,13 @@ class CreateAttachmentHandlerTest extends UnitTestCase
     public function testExceptionIsThrownWhenDossierValidationFails(): void
     {
         $dossierUuid = Uuid::v6();
-        $dossier = \Mockery::mock(AnnualReport::class);
+        $dossier = Mockery::mock(AnnualReport::class);
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
         $dossier->shouldReceive('getAttachmentEntityClass')->andReturn(CovenantAttachment::class);
 
         $command = new CreateAttachmentCommand(
             $dossierUuid,
-            formalDate: new \DateTimeImmutable(),
+            formalDate: new DateTimeImmutable(),
             internalReference: $internalReference = 'foo',
             type: AttachmentType::ADVICE,
             language: AttachmentLanguage::DUTCH,
@@ -74,12 +76,12 @@ class CreateAttachmentHandlerTest extends UnitTestCase
             ->with($dossierUuid, DossierStatusTransition::UPDATE_ATTACHMENT)
             ->andReturn($dossier);
 
-        $attachment = \Mockery::mock(CovenantAttachment::class);
+        $attachment = Mockery::mock(CovenantAttachment::class);
         $attachment->expects('setInternalReference')->with($internalReference);
         $attachment->expects('setGrounds')->with($grounds);
         $attachment->shouldReceive('getDossier')->andReturn($dossier);
 
-        $attachmentRepository = \Mockery::mock(CovenantAttachmentRepository::class);
+        $attachmentRepository = Mockery::mock(CovenantAttachmentRepository::class);
         $attachmentRepository->expects('create')->with($dossier, $command)->andReturn($attachment);
 
         $this->entityManager->expects('getRepository')

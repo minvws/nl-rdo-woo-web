@@ -29,7 +29,7 @@ Existing Department Landingpage Works
   Navigate To Individual Landingpage  E2E-DEP2  e2edep2
 
 Non-existing Department Landingpage Results In 404
-  Go To  ${URL_PUBLIC}/huppeldepup
+  Go To  %{URL_PUBLIC}/huppeldepup
   Verify Page Error  404
 
 Invisble Landingpage Is Not Accessible
@@ -43,7 +43,7 @@ Invisble Landingpage Is Not Accessible
   Reload
   Get Text  //*[@data-e2e-name="departments"]  not contains  E2E-DEP1
   # Check through URL
-  Go To  ${URL_PUBLIC}/e2edep1
+  Go To  %{URL_PUBLIC}/e2edep1
   Reload
   Verify Page Error  404
 
@@ -91,5 +91,5 @@ Suite Setup
 Navigate To Individual Landingpage
   [Arguments]  ${keyword}  ${slug}
   Click  "${keyword}"
-  Get Url  equal  ${URL_PUBLIC}/${slug}
+  Get Url  equal  %{URL_PUBLIC}/${slug}
   Go Back

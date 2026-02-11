@@ -17,7 +17,7 @@ networks:
 services:
 
   public:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.7.6}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.9.1}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -26,7 +26,7 @@ services:
     volumes:
       - ./:/var/www/html
       - ./docker/php/files/usr/local/etc/php/conf.d/zzz-custom.ini:/usr/local/etc/php/conf.d/zzz-custom.ini
-      - ./auth.json:/home/woopie/.composer/auth.json:ro
+      - ./docker/php/files/usr/local/etc/php/conf.d/090-xdebug.ini:/usr/local/etc/php/conf.d/090-xdebug.ini
       - woo_composer:/home/woopie/.composer
       - woo_npm:/home/woopie/.npm
       - ./docker/php/files/etc/apache2/sites-available/public-woo.conf:/etc/apache2/sites-available/public-woo.conf
@@ -34,11 +34,13 @@ services:
       woopie:
         aliases:
           - public-woo.local
+    extra_hosts:
+      - host.docker.internal:host-gateway
     environment:
       APP_ID: PUBLIC
 
   admin:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.7.6}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.9.1}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -47,7 +49,7 @@ services:
     volumes:
       - ./:/var/www/html
       - ./docker/php/files/usr/local/etc/php/conf.d/zzz-custom.ini:/usr/local/etc/php/conf.d/zzz-custom.ini
-      - ./auth.json:/home/woopie/.composer/auth.json:ro
+      - ./docker/php/files/usr/local/etc/php/conf.d/090-xdebug.ini:/usr/local/etc/php/conf.d/090-xdebug.ini
       - woo_composer:/home/woopie/.composer
       - woo_npm:/home/woopie/.npm
       - ./docker/php/files/etc/apache2/sites-available/admin-woo.conf:/etc/apache2/sites-available/admin-woo.conf
@@ -55,25 +57,32 @@ services:
       woopie:
         aliases:
           - admin-woo.local
+    extra_hosts:
+      - host.docker.internal:host-gateway
     environment:
       APP_ID: ADMIN
       MC_CONFIG_DIR: /tmp/mc
       MC_HOST_local: http://root:password@minio:9000
 
   publication_api:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.7.6}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.9.1}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: publication-api-woo.local
-      dev.orbstack.http-port: 80
+    ports:
+      - ${DOCKER_PUBLICATION_API_HTTPS_PORT:-8443}:443
     volumes:
       - ./:/var/www/html
       - ./docker/php/files/usr/local/etc/php/conf.d/zzz-custom.ini:/usr/local/etc/php/conf.d/zzz-custom.ini
-      - ./auth.json:/home/woopie/.composer/auth.json:ro
+      - ./docker/php/files/usr/local/etc/php/conf.d/090-xdebug.ini:/usr/local/etc/php/conf.d/090-xdebug.ini
       - woo_composer:/home/woopie/.composer
       - woo_npm:/home/woopie/.npm
       - ./docker/php/files/etc/apache2/sites-available/publication-api-woo.conf:/etc/apache2/sites-available/publication-api-woo.conf
+      - ./docker/php/files/etc/apache2/sites-available/publication-api-woo-ssl.conf:/etc/apache2/sites-available/publication-api-woo-ssl.conf
+      - ./docker/certs/generated/server-bundle.pem:/etc/apache2/certs/server-bundle.pem:ro
+      - ./docker/certs/generated/private/server.key.pem:/etc/apache2/certs/server.key.pem:ro
+      - ./docker/certs/generated/client-bundle.pem:/etc/apache2/certs/client-bundle.pem:ro
+      - ./docker/certs/generated/:/tmp/test-certs/:ro
     networks:
       woopie:
         aliases:
@@ -84,13 +93,14 @@ services:
   worker:
     depends_on:
       - rabbitmq
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.7.6}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.9.1}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
     volumes:
       - ./:/var/www/html
       - ./docker/php/files/usr/local/etc/php/conf.d/zzz-custom.ini:/usr/local/etc/php/conf.d/zzz-custom.ini
+      - ./docker/php/files/usr/local/etc/php/conf.d/090-xdebug.ini:/usr/local/etc/php/conf.d/090-xdebug.ini
     networks:
       - woopie
     environment:
@@ -187,6 +197,7 @@ services:
     command: ["server", "/data", "--console-address", ":9001"]
 
   sphinx:
+    user: ${FIXUID:-1000}:${FIXGID:-1000}
     profiles: [build-only]
     build:
       context: .
@@ -205,3 +216,41 @@ services:
       - woopie
     volumes:
       - ./API-Design-Rules.spectral.yml:/usr/src/spectral/.spectral.yml
+
+  certs:
+    profiles: [build-only]
+    build:
+      context: .
+      dockerfile: docker/certs/Dockerfile
+      args:
+        G4_TRIAL_VERSION: ${G4_TRAIL_VERSION:-v2.2}
+    labels:
+      com.symfony.server.service-ignore: true
+    volumes:
+      - ./docker/certs/config.yaml:/usr/src/g4-trial/config.yaml
+      - ./docker/certs/enrollments:/usr/src/enrollments
+      - ./docker/certs/scripts:/usr/src/scripts
+
+  robot:
+    profiles: [build-only]
+    user: ${FIXUID:-1000}:${FIXGID:-1000}
+    build:
+      context: .
+      dockerfile: docker/robot/Dockerfile
+    networks:
+      - woopie
+    environment:
+      ENVIRONMENT: docker
+      URL_PUBLIC: http://public-woo.local
+      URL_ADMIN: http://admin-woo.local/balie
+      HEADLESS: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./tests/robot_framework/tests:/home/pwuser/tests
+      - ./tests/robot_framework/resources:/home/pwuser/resources
+      - ./tests/robot_framework/libraries:/home/pwuser/libraries
+      - ./tests/robot_framework/files:/home/pwuser/files
+      - ./tests/robot_framework/results:/home/pwuser/results
+      - ./tests/robot_framework/.otp_secret:/home/pwuser/.otp_secret
+      - ./tests/robot_framework/order.txt:/home/pwuser/order.txt
+      - ./docker/certs/generated:/home/pwuser/certs/generated

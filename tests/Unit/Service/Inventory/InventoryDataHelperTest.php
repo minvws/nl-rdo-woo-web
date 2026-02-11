@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inventory;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Shared\Service\Inventory\InventoryDataHelper;
+
+use function array_values;
 
 class InventoryDataHelperTest extends TestCase
 {
     /**
      * @param non-empty-string|array<non-empty-string> $separators
-     * @param array<string>                            $expectedResult
+     * @param array<string> $expectedResult
      */
     #[DataProvider('separateValuesProvider')]
     public function testSeparateValues(mixed $input, string|array $separators, array $expectedResult): void
@@ -70,25 +74,25 @@ class InventoryDataHelperTest extends TestCase
     }
 
     #[DataProvider('toDateTimeImmutableProvider')]
-    public function testToDateTimeImmutable(string $input, ?\DateTimeImmutable $expectedResult): void
+    public function testToDateTimeImmutable(string $input, ?DateTimeImmutable $expectedResult): void
     {
         if ($expectedResult === null) {
-            $this->expectException(\RuntimeException::class);
+            $this->expectException(RuntimeException::class);
         }
 
         self::assertEquals($expectedResult, InventoryDataHelper::toDateTimeImmutable($input));
     }
 
     /**
-     * @return array<string, array{input:string, expectedResult:\DateTimeImmutable|null}>
+     * @return array<string, array{input:string, expectedResult:DateTimeImmutable|null}>
      */
     public static function toDateTimeImmutableProvider(): array
     {
-        $sixthOfMay2021 = \DateTimeImmutable::createFromFormat('!Y-m-d', '2021-05-06');
-        self::assertInstanceOf(\DateTimeImmutable::class, $sixthOfMay2021);
+        $sixthOfMay2021 = DateTimeImmutable::createFromFormat('!Y-m-d', '2021-05-06');
+        self::assertInstanceOf(DateTimeImmutable::class, $sixthOfMay2021);
 
-        $sixthOfMay2021ElevenPastEight = \DateTimeImmutable::createFromFormat('Y-m-d H:i', '2021-05-06 08:11');
-        self::assertInstanceOf(\DateTimeImmutable::class, $sixthOfMay2021ElevenPastEight);
+        $sixthOfMay2021ElevenPastEight = DateTimeImmutable::createFromFormat('Y-m-d H:i', '2021-05-06 08:11');
+        self::assertInstanceOf(DateTimeImmutable::class, $sixthOfMay2021ElevenPastEight);
 
         return [
             'empty-input-throws-exception' => [
@@ -97,7 +101,7 @@ class InventoryDataHelperTest extends TestCase
             ],
             'old-inventory-format' => [
                 'input' => '10/9/2020 1:34 PM UTC',
-                'expectedResult' => new \DateTimeImmutable('2020-10-09 13:34'),
+                'expectedResult' => new DateTimeImmutable('2020-10-09 13:34'),
             ],
             'YYYY-MM-DD' => [
                 'input' => '2021-05-06',

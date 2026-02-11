@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex\Producer;
 
+use LogicException;
 use Shared\Domain\WooIndex\Exception\WooIndexException;
 
-final class UnconsumedPreviousChunkGeneratorException extends \LogicException implements WooIndexException
+final class UnconsumedPreviousChunkGeneratorException extends LogicException implements WooIndexException
 {
     public static function create(): self
     {

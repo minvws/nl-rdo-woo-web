@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\Schema;
 
+use function sprintf;
+
 readonly class ElasticHighlights
 {
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\EventSubscriber;
 
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvent;
@@ -46,7 +47,7 @@ readonly class TwoFactorLogger
 
         $loginActivity = new LoginActivity();
         $loginActivity->setAccount($user);
-        $loginActivity->setLoginAt(new \DateTimeImmutable());
+        $loginActivity->setLoginAt(new DateTimeImmutable());
         $this->doctrine->persist($loginActivity);
         $this->doctrine->flush();
     }

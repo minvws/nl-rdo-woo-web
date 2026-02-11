@@ -13,6 +13,8 @@ use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Attribute\WithStory;
 
+use function iterator_to_array;
+
 final class UrlRepositoryTest extends SharedWebTestCase
 {
     private UrlRepository $repository;

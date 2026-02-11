@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex\Builder;
 
+use Closure;
 use Webmozart\Assert\Assert;
 
 final class SitemapIndexBuilder
 {
     /**
-     * @var ?\Closure(DiWooXMLWriter):void
+     * @var ?Closure(DiWooXMLWriter):void
      */
-    protected ?\Closure $writerFactoryConfigurator = null;
+    private ?Closure $writerFactoryConfigurator = null;
 
     /**
      * @param resource $stream
@@ -50,9 +51,9 @@ final class SitemapIndexBuilder
     }
 
     /**
-     * @param ?\Closure(DiWooXMLWriter):void $closure
+     * @param ?Closure(DiWooXMLWriter):void $closure
      */
-    public function setXMLWriterConfigurator(?\Closure $closure): self
+    public function setXMLWriterConfigurator(?Closure $closure): self
     {
         $this->writerFactoryConfigurator = $closure;
 
@@ -62,7 +63,7 @@ final class SitemapIndexBuilder
     /**
      * @param resource $stream
      */
-    protected function getWriter($stream): DiWooXMLWriter
+    private function getWriter($stream): DiWooXMLWriter
     {
         $writer = DiWooXMLWriter::toStream($stream);
 

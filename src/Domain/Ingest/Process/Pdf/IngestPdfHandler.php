@@ -14,6 +14,8 @@ use Shared\Service\Worker\PdfProcessor;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Webmozart\Assert\Assert;
 
+use function is_null;
+
 /**
  * Ingest a PDF file into the system. It will extract all pages from the pdf and emits a message for each page.
  */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Process\IngestProcessOptions;
@@ -19,6 +20,8 @@ use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\HistoryService;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
+
+use function sprintf;
 
 final class DocumentFileProcessorTest extends UnitTestCase
 {
@@ -38,15 +41,15 @@ final class DocumentFileProcessorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->documentRepository = \Mockery::mock(DocumentRepository::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->ingestService = \Mockery::mock(SubTypeIngester::class);
-        $this->historyService = \Mockery::mock(HistoryService::class);
-        $this->fileStorer = \Mockery::mock(FileStorer::class);
-        $this->file = \Mockery::mock(UploadedFile::class);
-        $this->dossier = \Mockery::mock(WooDecision::class);
-        $this->document = \Mockery::mock(Document::class);
-        $this->fileInfo = \Mockery::mock(FileInfo::class);
+        $this->documentRepository = Mockery::mock(DocumentRepository::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->ingestService = Mockery::mock(SubTypeIngester::class);
+        $this->historyService = Mockery::mock(HistoryService::class);
+        $this->fileStorer = Mockery::mock(FileStorer::class);
+        $this->file = Mockery::mock(UploadedFile::class);
+        $this->dossier = Mockery::mock(WooDecision::class);
+        $this->document = Mockery::mock(Document::class);
+        $this->fileInfo = Mockery::mock(FileInfo::class);
 
         $this->processor = new DocumentFileProcessor(
             $this->documentRepository,
@@ -94,7 +97,7 @@ final class DocumentFileProcessorTest extends UnitTestCase
             ->shouldReceive('ingest')
             ->with(
                 $this->document,
-                \Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
+                Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
             );
 
         $this->fileInfo
@@ -161,7 +164,7 @@ final class DocumentFileProcessorTest extends UnitTestCase
             ->shouldReceive('ingest')
             ->with(
                 $this->document,
-                \Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
+                Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
             );
 
         $this->fileInfo
@@ -221,7 +224,7 @@ final class DocumentFileProcessorTest extends UnitTestCase
             ->shouldReceive('ingest')
             ->with(
                 $this->document,
-                \Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
+                Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
             );
 
         $this->fileInfo

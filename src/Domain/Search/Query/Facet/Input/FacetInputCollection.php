@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Query\Facet\Input;
 
+use ArrayIterator;
+use IteratorAggregate;
 use Shared\Domain\Search\Query\Facet\FacetDefinitionInterface;
 use Shared\Service\Search\Model\FacetKey;
+use Traversable;
 use Webmozart\Assert\Assert;
 
 /**
- * @implements \IteratorAggregate<array-key,FacetInputInterface>
+ * @implements IteratorAggregate<array-key,FacetInputInterface>
  */
-readonly class FacetInputCollection implements \IteratorAggregate
+readonly class FacetInputCollection implements IteratorAggregate
 {
     /**
      * @var array<array-key, FacetInputInterface>
@@ -36,11 +39,11 @@ readonly class FacetInputCollection implements \IteratorAggregate
     }
 
     /**
-     * @return \Traversable<array-key, FacetInputInterface>
+     * @return Traversable<array-key, FacetInputInterface>
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->inputs);
+        return new ArrayIterator($this->inputs);
     }
 
     public function withFacetInput(FacetKey $key, FacetInputInterface $facetInput): self

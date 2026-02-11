@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Admin\Action;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\IngestDispatcher;
 use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
@@ -19,7 +20,7 @@ final class IngestDossierAdminActionTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
+        $this->ingestDispatcher = Mockery::mock(IngestDispatcher::class);
 
         $this->action = new IngestDossierAdminAction(
             $this->ingestDispatcher,
@@ -38,8 +39,8 @@ final class IngestDossierAdminActionTest extends UnitTestCase
 
     public function testSupports(): void
     {
-        self::assertTrue($this->action->supports(\Mockery::mock(WooDecision::class)));
-        self::assertTrue($this->action->supports(\Mockery::mock(Covenant::class)));
+        self::assertTrue($this->action->supports(Mockery::mock(WooDecision::class)));
+        self::assertTrue($this->action->supports(Mockery::mock(Covenant::class)));
     }
 
     public function testNeedsConfirmation(): void
@@ -49,7 +50,7 @@ final class IngestDossierAdminActionTest extends UnitTestCase
 
     public function testExecute(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
         $this->ingestDispatcher->expects('dispatchIngestDossierCommand')->with($dossier);
 

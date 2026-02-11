@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\SubType;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Ingest\Process\IngestProcessOptions;
 use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
@@ -26,10 +28,10 @@ class IndexAttachmentHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(AttachmentRepository::class);
-        $this->subTypeIndexer = \Mockery::mock(SubTypeIndexer::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->subTypeIngester = \Mockery::mock(SubTypeIngester::class);
+        $this->repository = Mockery::mock(AttachmentRepository::class);
+        $this->subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->subTypeIngester = Mockery::mock(SubTypeIngester::class);
 
         $this->handler = new IndexAttachmentHandler(
             $this->repository,
@@ -55,7 +57,7 @@ class IndexAttachmentHandlerTest extends UnitTestCase
         $id = Uuid::v6();
         $command = new IndexAttachmentCommand($id);
 
-        $this->repository->expects('find')->with($id)->andThrow(new \RuntimeException('oops'));
+        $this->repository->expects('find')->with($id)->andThrow(new RuntimeException('oops'));
         $this->logger->expects('error');
 
         $this->handler->__invoke($command);
@@ -64,12 +66,12 @@ class IndexAttachmentHandlerTest extends UnitTestCase
     public function testInvokeSuccessful(): void
     {
         $id = Uuid::v6();
-        $attachment = \Mockery::mock(AbstractAttachment::class);
+        $attachment = Mockery::mock(AbstractAttachment::class);
         $command = new IndexAttachmentCommand($id);
 
         $this->repository->expects('find')->with($id)->andReturn($attachment);
         $this->subTypeIndexer->expects('index')->with($attachment);
-        $this->subTypeIngester->expects('ingest')->with($attachment, \Mockery::type(IngestProcessOptions::class));
+        $this->subTypeIngester->expects('ingest')->with($attachment, Mockery::type(IngestProcessOptions::class));
 
         $this->handler->__invoke($command);
     }

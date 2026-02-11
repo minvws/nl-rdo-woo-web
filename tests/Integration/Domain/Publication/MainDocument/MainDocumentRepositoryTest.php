@@ -14,7 +14,8 @@ use Shared\Tests\Story\WooIndexAnnualReportStory;
 use Shared\Tests\Story\WooIndexCovenantStory;
 use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Persistence\Proxy;
+
+use function iterator_to_array;
 
 final class MainDocumentRepositoryTest extends SharedWebTestCase
 {
@@ -37,23 +38,23 @@ final class MainDocumentRepositoryTest extends SharedWebTestCase
         /** @var list<AbstractMainDocument> $allMainDocuments */
         $allMainDocuments = iterator_to_array($iterable, false);
 
-        /** @var Proxy<WooDecisionMainDocument> $wooIndexMainDocument1 */
+        /** @var WooDecisionMainDocument $wooIndexMainDocument1 */
         $wooIndexMainDocument1 = WooIndexWooDecisionStory::get('mainDocument-1');
 
-        /** @var Proxy<WooDecisionMainDocument> $wooIndexMainDocument2 */
+        /** @var WooDecisionMainDocument $wooIndexMainDocument2 */
         $wooIndexMainDocument2 = WooIndexWooDecisionStory::get('mainDocument-2');
 
-        /** @var Proxy<AnnualReportMainDocument> $annualReportMainDocument */
+        /** @var AnnualReportMainDocument $annualReportMainDocument */
         $annualReportMainDocument = WooIndexAnnualReportStory::get('mainDocument');
 
-        /** @var Proxy<CovenantMainDocument> $covenantMainDocument */
+        /** @var CovenantMainDocument $covenantMainDocument */
         $covenantMainDocument = WooIndexCovenantStory::get('mainDocument');
 
         $expectedMainDocumentUuids = [
-            $wooIndexMainDocument1->_real()->getId()->toRfc4122(),
-            $wooIndexMainDocument2->_real()->getId()->toRfc4122(),
-            $annualReportMainDocument->_real()->getId()->toRfc4122(),
-            $covenantMainDocument->_real()->getId()->toRfc4122(),
+            $wooIndexMainDocument1->getId()->toRfc4122(),
+            $wooIndexMainDocument2->getId()->toRfc4122(),
+            $annualReportMainDocument->getId()->toRfc4122(),
+            $covenantMainDocument->getId()->toRfc4122(),
         ];
 
         $this->assertCount(4, $allMainDocuments);

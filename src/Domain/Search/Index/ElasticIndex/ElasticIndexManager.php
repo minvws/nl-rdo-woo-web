@@ -5,9 +5,16 @@ declare(strict_types=1);
 namespace Shared\Domain\Search\Index\ElasticIndex;
 
 use Elastic\Elasticsearch\Response\Elasticsearch;
+use Exception;
 use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\Rollover\MappingService;
 use Shared\Service\Elastic\ElasticClientInterface;
+
+use function array_filter;
+use function array_keys;
+use function is_null;
+use function strval;
+use function usort;
 
 /**
  * Creates and manages Elasticsearch indices and mappings.
@@ -68,7 +75,7 @@ readonly class ElasticIndexManager
         if ($single) {
             try {
                 $this->elastic->indices()->deleteAlias(['index' => '*', 'name' => $aliasName]);
-            } catch (\Exception) {
+            } catch (Exception) {
                 // Ignore
             }
         }

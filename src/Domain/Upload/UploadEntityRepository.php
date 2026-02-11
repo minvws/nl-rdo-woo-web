@@ -39,7 +39,7 @@ class UploadEntityRepository extends ServiceEntityRepository
         }
     }
 
-    public function findOrCreate(string $uploadId, UploadGroupId $groupId, User $user, InputBag $context): UploadEntity
+    public function findOrCreate(string $uploadId, UploadGroupId $groupId, ?User $user, InputBag $context): UploadEntity
     {
         $entity = $this->findOneBy(['uploadId' => $uploadId]);
 

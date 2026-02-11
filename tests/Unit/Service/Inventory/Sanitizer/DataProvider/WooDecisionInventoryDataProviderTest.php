@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inventory\Sanitizer\DataProvider;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
@@ -20,9 +21,9 @@ class WooDecisionInventoryDataProviderTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->wooDecision = \Mockery::mock(WooDecision::class);
-        $this->docA = \Mockery::mock(Document::class);
-        $this->docB = \Mockery::mock(Document::class);
+        $this->wooDecision = Mockery::mock(WooDecision::class);
+        $this->docA = Mockery::mock(Document::class);
+        $this->docB = Mockery::mock(Document::class);
 
         $this->dataProvider = new WooDecisionInventoryDataProvider(
             $this->wooDecision,
@@ -42,7 +43,7 @@ class WooDecisionInventoryDataProviderTest extends UnitTestCase
 
     public function testGetInventoryUsesExistingInventory(): void
     {
-        $inventory = \Mockery::mock(Inventory::class);
+        $inventory = Mockery::mock(Inventory::class);
 
         $this->wooDecision->expects('getInventory')->andReturn($inventory);
 

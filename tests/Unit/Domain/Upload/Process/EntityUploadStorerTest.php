@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Upload\Process;
 
 use League\Flysystem\FilesystemOperator;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -32,12 +33,12 @@ class EntityUploadStorerTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->uploadService = \Mockery::mock(UploadService::class);
-        $this->documentStorage = \Mockery::mock(FilesystemOperator::class);
-        $this->assetsStorage = \Mockery::mock(FilesystemOperator::class);
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->uploadEntityRepository = \Mockery::mock(UploadEntityRepository::class);
-        $this->assetsNamer = \Mockery::mock(AssetsNamer::class);
+        $this->uploadService = Mockery::mock(UploadService::class);
+        $this->documentStorage = Mockery::mock(FilesystemOperator::class);
+        $this->assetsStorage = Mockery::mock(FilesystemOperator::class);
+        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
+        $this->uploadEntityRepository = Mockery::mock(UploadEntityRepository::class);
+        $this->assetsNamer = Mockery::mock(AssetsNamer::class);
 
         $this->uploadStorer = new EntityUploadStorer(
             $this->uploadService,
@@ -51,13 +52,13 @@ class EntityUploadStorerTest extends UnitTestCase
 
     public function testStoreUploadForEntity(): void
     {
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getUploadGroupId')->andReturn(UploadGroupId::WOO_DECISION_DOCUMENTS);
         $uploadEntity->shouldReceive('getFilename')->andReturn($filename = 'foo.bar');
         $uploadEntity->shouldReceive('getSize')->andReturn($size = 123);
         $uploadEntity->shouldReceive('getMimetype')->andReturn($mimetype = 'foo/bar');
 
-        $targetEntity = \Mockery::mock(Document::class);
+        $targetEntity = Mockery::mock(Document::class);
 
         $this->entityStorageService
             ->expects('generateEntityPath')
@@ -76,7 +77,7 @@ class EntityUploadStorerTest extends UnitTestCase
 
     public function testStoreUploadForEntityWithSourceTypeAndName(): void
     {
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getUploadGroupId')->andReturn(UploadGroupId::WOO_DECISION_DOCUMENTS);
         $uploadEntity->shouldReceive('getFilename')->andReturn($filename = 'foo.bar');
         $uploadEntity->shouldReceive('getSize')->andReturn($size = 123);
@@ -85,7 +86,7 @@ class EntityUploadStorerTest extends UnitTestCase
         $uploadId = 'foo-123';
         $this->uploadEntityRepository->expects('findOneBy')->with(['uploadId' => $uploadId])->andReturn($uploadEntity);
 
-        $targetEntity = \Mockery::mock(Document::class);
+        $targetEntity = Mockery::mock(Document::class);
 
         $this->entityStorageService
             ->expects('generateEntityPath')
@@ -106,13 +107,13 @@ class EntityUploadStorerTest extends UnitTestCase
 
     public function testStoreDepartmentAssetForEntity(): void
     {
-        $uploadEntity = \Mockery::mock(UploadEntity::class);
+        $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->shouldReceive('getUploadGroupId')->andReturn(UploadGroupId::WOO_DECISION_DOCUMENTS);
         $uploadEntity->shouldReceive('getFilename')->andReturn($filename = 'foo.svg');
         $uploadEntity->shouldReceive('getSize')->andReturn($size = 123);
         $uploadEntity->shouldReceive('getMimetype')->andReturn($mimetype = 'image/svg+xml');
 
-        $targetEntity = \Mockery::mock(Department::class);
+        $targetEntity = Mockery::mock(Department::class);
 
         $this->assetsNamer
             ->shouldReceive('getDepartmentLogo')

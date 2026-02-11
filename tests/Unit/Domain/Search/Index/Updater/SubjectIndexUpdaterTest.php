@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Updater;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Search\Index\Updater\SubjectIndexUpdater;
@@ -18,7 +19,7 @@ class SubjectIndexUpdaterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
+        $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
 
         $this->indexUpdater = new SubjectIndexUpdater(
             $this->elasticClient,
@@ -29,11 +30,11 @@ class SubjectIndexUpdaterTest extends UnitTestCase
 
     public function testUpdateDepartment(): void
     {
-        $subject = \Mockery::mock(Subject::class);
+        $subject = Mockery::mock(Subject::class);
         $subject->shouldReceive('getId')->andReturn($subjectId = Uuid::v6());
         $subject->shouldReceive('getName')->andReturn('Foo Bar');
 
-        $this->elasticClient->expects('updateByQuery')->with(\Mockery::on(
+        $this->elasticClient->expects('updateByQuery')->with(Mockery::on(
             static fn (array $input) => $input['body']['query']['bool']['should'][0]['match']['subject.id'] === $subjectId
                 && $input['body']['script']['params']['subject']['name'] === 'Foo Bar'
         ));

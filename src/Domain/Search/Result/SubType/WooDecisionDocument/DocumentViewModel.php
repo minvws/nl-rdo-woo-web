@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Result\SubType\WooDecisionDocument;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\FileInfo;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\SourceType;
@@ -23,7 +24,7 @@ readonly class DocumentViewModel implements SubTypeViewModelInterface
         int $fileSize,
         ?int $pageCount,
         public Judgement $judgement,
-        public ?\DateTimeImmutable $documentDate,
+        public ?DateTimeImmutable $documentDate,
     ) {
         $this->fileInfo = new FileInfo(
             $fileName,

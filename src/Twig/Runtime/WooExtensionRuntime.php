@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Twig\Runtime;
 
+use DateTimeImmutable;
 use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierReference;
@@ -18,9 +19,16 @@ use Shared\Service\Security\OrganisationSwitcher;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function array_filter;
+use function array_is_list;
+use function http_build_query;
+use function is_array;
+use function key;
+use function parse_str;
+use function preg_replace;
+use function str_replace;
+use function strval;
+
 readonly class WooExtensionRuntime implements RuntimeExtensionInterface
 {
     public function __construct(
@@ -43,7 +51,7 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     /**
      * Returns a textual representation of a date range (ie: 01-02-2011 - 01-03-2011 => februari - maart 2011).
      */
-    public function period(?\DateTimeImmutable $from, ?\DateTimeImmutable $to): string
+    public function period(?DateTimeImmutable $from, ?DateTimeImmutable $to): string
     {
         return DateRangeConverter::convertToString($from, $to);
     }

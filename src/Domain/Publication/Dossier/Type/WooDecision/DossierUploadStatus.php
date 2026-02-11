@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ReadableCollection;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Webmozart\Assert\Assert;
 
+use function array_key_exists;
+
 readonly class DossierUploadStatus
 {
     public function __construct(

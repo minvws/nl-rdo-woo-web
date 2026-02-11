@@ -8,6 +8,10 @@ use Shared\Domain\WooIndex\Builder\DiWooXMLWriter;
 use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 
+use function fopen;
+use function rewind;
+use function stream_get_contents;
+
 final class DiWooXMLWriterTest extends UnitTestCase
 {
     /**

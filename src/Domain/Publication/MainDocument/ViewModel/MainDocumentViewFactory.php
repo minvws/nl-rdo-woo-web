@@ -12,6 +12,8 @@ use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+use function sprintf;
+
 readonly class MainDocumentViewFactory
 {
     public function __construct(

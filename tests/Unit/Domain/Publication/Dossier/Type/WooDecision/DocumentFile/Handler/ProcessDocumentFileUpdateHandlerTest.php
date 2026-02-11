@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -35,11 +36,11 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->documentFileUpdateRepository = \Mockery::mock(DocumentFileUpdateRepository::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->documentFileService = \Mockery::mock(DocumentFileService::class);
-        $this->fileProcessor = \Mockery::mock(DocumentFileProcessor::class);
+        $this->documentFileUpdateRepository = Mockery::mock(DocumentFileUpdateRepository::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
+        $this->documentFileService = Mockery::mock(DocumentFileService::class);
+        $this->fileProcessor = Mockery::mock(DocumentFileProcessor::class);
 
         $this->handler = new ProcessDocumentFileUpdateHandler(
             $this->documentFileUpdateRepository,
@@ -54,22 +55,22 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
 
     public function testInvokeSuccessfully(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('getId')->andReturn(Uuid::v6());
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document
             ->shouldReceive('getDocumentId')
             ->andReturn($documentId = 'foo-123');
 
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('getDossier')
             ->andReturn($wooDecision);
 
         $id = Uuid::v6();
 
-        $update = \Mockery::mock(DocumentFileUpdate::class);
+        $update = Mockery::mock(DocumentFileUpdate::class);
         $update
             ->shouldReceive('getStatus')
             ->andReturn(DocumentFileUpdateStatus::PENDING);
@@ -98,7 +99,7 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
 
         $this->fileProcessor
             ->expects('process')
-            ->with(\Mockery::type(UploadedFile::class), $wooDecision, $documentId);
+            ->with(Mockery::type(UploadedFile::class), $wooDecision, $documentId);
 
         $update->expects('setStatus')->with(DocumentFileUpdateStatus::COMPLETED);
         $this->documentFileUpdateRepository->expects('save')->with($update, true);
@@ -130,7 +131,7 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
     {
         $id = Uuid::v6();
 
-        $update = \Mockery::mock(DocumentFileUpdate::class);
+        $update = Mockery::mock(DocumentFileUpdate::class);
         $update->shouldReceive('getStatus')->andReturn(DocumentFileUpdateStatus::PENDING);
 
         $this->documentFileUpdateRepository->expects('find')->with($id)->andReturn($update);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document;
 
+use Override;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Step\StepDefinition;
 use Shared\Domain\Publication\Dossier\Step\StepException;
@@ -12,10 +13,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 readonly class DocumentsStepDefinition extends StepDefinition
 {
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
-    #[\Override]
+    #[Override]
     public function isCompleted(AbstractDossier $dossier, ValidatorInterface $validator): bool
     {
         if (! $dossier instanceof WooDecision) {

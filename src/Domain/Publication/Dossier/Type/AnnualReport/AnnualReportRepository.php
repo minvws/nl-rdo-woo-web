@@ -10,6 +10,8 @@ use Shared\Domain\Search\Result\Dossier\AnnualReport\AnnualReportSearchResult;
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
+use function sprintf;
+
 /**
  * @extends AbstractDossierRepository<AnnualReport>
  */
@@ -46,8 +48,7 @@ class AnnualReportRepository extends AbstractDossierRepository implements Provid
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
-        ;
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
 
         /** @var ?AnnualReportSearchResult */
         return $qb->getQuery()->getOneOrNullResult();

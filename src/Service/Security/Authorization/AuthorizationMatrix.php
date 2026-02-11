@@ -10,6 +10,8 @@ use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
+use function count;
+
 class AuthorizationMatrix
 {
     public const AUTH_MATRIX_ATTRIB = 'auth_matrix';

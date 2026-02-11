@@ -10,6 +10,9 @@ use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+use function count;
+use function sprintf;
+
 readonly class StepDefinition implements StepDefinitionInterface
 {
     final public function __construct(

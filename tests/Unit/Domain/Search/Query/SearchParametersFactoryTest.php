@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Query;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Search\Query\Facet\Input\FacetInput;
@@ -21,14 +22,14 @@ class SearchParametersFactoryTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->facetInputFactory = \Mockery::mock(FacetInputFactory::class);
+        $this->facetInputFactory = Mockery::mock(FacetInputFactory::class);
 
         $this->factory = new SearchParametersFactory($this->facetInputFactory);
     }
 
     public function testCreateDefault(): void
     {
-        $facetInputCollection = \Mockery::mock(FacetInputCollection::class);
+        $facetInputCollection = Mockery::mock(FacetInputCollection::class);
         $this->facetInputFactory->expects('create')->andReturn($facetInputCollection);
 
         $parameters = $this->factory->createDefault();
@@ -38,19 +39,19 @@ class SearchParametersFactoryTest extends UnitTestCase
 
     public function testCreateForDepartment(): void
     {
-        $department = \Mockery::mock(Department::class);
+        $department = Mockery::mock(Department::class);
         $department->expects('getName')->andReturn('Foo');
         $department->expects('getShortTag')->andReturn('F');
 
-        $newFacetInput = \Mockery::mock(FacetInput::class);
-        $facetInputCollection = \Mockery::mock(FacetInputCollection::class);
+        $newFacetInput = Mockery::mock(FacetInput::class);
+        $facetInputCollection = Mockery::mock(FacetInputCollection::class);
 
         $this->facetInputFactory->expects('create')->andReturn($facetInputCollection);
-        $this->facetInputFactory->expects('createFacetInput')->with(FacetKey::DEPARTMENT, \Mockery::on(
+        $this->facetInputFactory->expects('createFacetInput')->with(FacetKey::DEPARTMENT, Mockery::on(
             static fn (ParameterBag $params) => $params->get(FacetKey::DEPARTMENT->getParamName()) === [0 => 'F|Foo']
         ))->andReturn($newFacetInput);
 
-        $newFacetInputCollection = \Mockery::mock(FacetInputCollection::class);
+        $newFacetInputCollection = Mockery::mock(FacetInputCollection::class);
 
         $facetInputCollection
             ->expects('withFacetInput')

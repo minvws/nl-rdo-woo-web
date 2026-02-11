@@ -6,12 +6,12 @@ namespace Shared\Tests\Factory\WooIndex;
 
 use Shared\Domain\WooIndex\WooIndexSitemap;
 use Shared\Domain\WooIndex\WooIndexSitemapStatus;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<WooIndexSitemap>
+ * @extends PersistentObjectFactory<WooIndexSitemap>
  */
-final class WooIndexSitemapFactory extends PersistentProxyObjectFactory
+final class WooIndexSitemapFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {

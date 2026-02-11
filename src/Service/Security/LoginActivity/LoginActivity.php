@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Security\LoginActivity;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Service\Security\User;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -23,7 +24,7 @@ class LoginActivity
     private User $account;
 
     #[ORM\Column]
-    private \DateTimeImmutable $loginAt;
+    private DateTimeImmutable $loginAt;
 
     public function getId(): Uuid
     {
@@ -42,12 +43,12 @@ class LoginActivity
         return $this;
     }
 
-    public function getLoginAt(): \DateTimeImmutable
+    public function getLoginAt(): DateTimeImmutable
     {
         return $this->loginAt;
     }
 
-    public function setLoginAt(\DateTimeImmutable $loginAt): static
+    public function setLoginAt(DateTimeImmutable $loginAt): static
     {
         $this->loginAt = $loginAt;
 

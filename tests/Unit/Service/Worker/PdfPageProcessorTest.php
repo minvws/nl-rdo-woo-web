@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker;
 
+use Mockery;
 use Mockery\MockInterface;
+use RuntimeException;
 use Shared\Domain\Ingest\Content\ContentExtractCache;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContextFactory;
@@ -29,11 +31,11 @@ class PdfPageProcessorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->thumbnailExtractor = \Mockery::mock(ThumbnailExtractor::class);
-        $this->pageContentExtractor = \Mockery::mock(PageContentExtractor::class);
-        $this->pageExtractor = \Mockery::mock(PageExtractor::class);
-        $this->contextFactory = \Mockery::mock(PdfPageProcessingContextFactory::class);
-        $this->contentExtractCache = \Mockery::mock(ContentExtractCache::class);
+        $this->thumbnailExtractor = Mockery::mock(ThumbnailExtractor::class);
+        $this->pageContentExtractor = Mockery::mock(PageContentExtractor::class);
+        $this->pageExtractor = Mockery::mock(PageExtractor::class);
+        $this->contextFactory = Mockery::mock(PdfPageProcessingContextFactory::class);
+        $this->contentExtractCache = Mockery::mock(ContentExtractCache::class);
         $this->processor = new PdfPageProcessor(
             $this->contextFactory,
             $this->thumbnailExtractor,
@@ -45,7 +47,7 @@ class PdfPageProcessorTest extends UnitTestCase
 
     public function testProcessPageThrowsExceptionWhenEntityIsNotPaginatable(): void
     {
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnFalse();
 
         $this->expectException(InvalidArgumentException::class);
@@ -54,7 +56,7 @@ class PdfPageProcessorTest extends UnitTestCase
 
     public function testProcessPageDoesNothingIfContextIsNull(): void
     {
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnTrue();
 
         $this->contextFactory->expects('createContext')->with($entity, 1)->andReturnNull();
@@ -66,10 +68,10 @@ class PdfPageProcessorTest extends UnitTestCase
     {
         $pageNr = 1;
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnTrue();
 
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
+        $context = Mockery::mock(PdfPageProcessingContext::class);
         $this->contextFactory->expects('createContext')->with($entity, $pageNr)->andReturn($context);
 
         $this->contentExtractCache->expects('hasCache')->with($entity, $pageNr)->andReturnFalse();
@@ -88,10 +90,10 @@ class PdfPageProcessorTest extends UnitTestCase
     {
         $pageNr = 1;
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnTrue();
 
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
+        $context = Mockery::mock(PdfPageProcessingContext::class);
         $this->contextFactory->expects('createContext')->with($entity, $pageNr)->andReturn($context);
 
         $this->thumbnailExtractor->expects('needsThumbGeneration')->with($context)->andReturnFalse();
@@ -108,12 +110,12 @@ class PdfPageProcessorTest extends UnitTestCase
     {
         $pageNr = 1;
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnTrue();
 
-        $exception = new \RuntimeException();
+        $exception = new RuntimeException();
 
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
+        $context = Mockery::mock(PdfPageProcessingContext::class);
         $this->contextFactory->expects('createContext')->with($entity, 1)->andReturn($context);
 
         $this->pageExtractor->expects('extractSinglePagePdf')->with($context);

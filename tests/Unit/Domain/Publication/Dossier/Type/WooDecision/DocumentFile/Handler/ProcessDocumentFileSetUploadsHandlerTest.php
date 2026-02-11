@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handler;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUploadsCommand;
@@ -27,9 +28,9 @@ class ProcessDocumentFileSetUploadsHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dispatcher = \Mockery::mock(DocumentFileDispatcher::class);
-        $this->repository = \Mockery::mock(DocumentFileSetRepository::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->dispatcher = Mockery::mock(DocumentFileDispatcher::class);
+        $this->repository = Mockery::mock(DocumentFileSetRepository::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
         $this->handler = new ProcessDocumentFileSetUploadsHandler(
             $this->repository,
@@ -43,15 +44,15 @@ class ProcessDocumentFileSetUploadsHandlerTest extends UnitTestCase
     public function testInvokeSuccessfully(): void
     {
         $id = Uuid::v6();
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->expects('getStatus')
             ->andReturn(DocumentFileSetStatus::PROCESSING_UPLOADS);
 
-        $uploadA = \Mockery::mock(DocumentFileUpload::class);
+        $uploadA = Mockery::mock(DocumentFileUpload::class);
         $uploadA->expects('getStatus')->andReturn(DocumentFileUploadStatus::FAILED);
 
-        $uploadB = \Mockery::mock(DocumentFileUpload::class);
+        $uploadB = Mockery::mock(DocumentFileUpload::class);
         $uploadB->expects('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
 
         $documentFileSet->expects('getUploads')->andReturn(new ArrayCollection([
@@ -84,7 +85,7 @@ class ProcessDocumentFileSetUploadsHandlerTest extends UnitTestCase
     public function testInvokeLogsWarningAndAbortsWhenSetStatusIsNotProcessingUploads(): void
     {
         $id = Uuid::v6();
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->expects('getStatus')->twice()
             ->andReturn(DocumentFileSetStatus::OPEN_FOR_UPLOADS);

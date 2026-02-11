@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\SubjectViewFactory;
@@ -20,7 +21,7 @@ final class SubjectViewFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->urlGenerator = \Mockery::mock(UrlGenerator::class);
+        $this->urlGenerator = Mockery::mock(UrlGenerator::class);
 
         $this->factory = new SubjectViewFactory(
             $this->urlGenerator,
@@ -30,7 +31,7 @@ final class SubjectViewFactoryTest extends UnitTestCase
     public function testMake(): void
     {
         /** @var Subject&MockInterface $subject */
-        $subject = \Mockery::mock(Subject::class);
+        $subject = Mockery::mock(Subject::class);
         $subject->shouldReceive('getName')->andReturn($expectedSubject = 'Foo');
 
         $this->urlGenerator
@@ -47,10 +48,10 @@ final class SubjectViewFactoryTest extends UnitTestCase
     public function testGetSubjectForDossier(): void
     {
         /** @var Subject&MockInterface $subject */
-        $subject = \Mockery::mock(Subject::class);
+        $subject = Mockery::mock(Subject::class);
         $subject->shouldReceive('getName')->andReturn($expectedSubject = 'Foo');
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getSubject')->andReturn($subject);
 
         $this->urlGenerator

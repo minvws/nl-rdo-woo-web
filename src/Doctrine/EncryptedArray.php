@@ -9,9 +9,17 @@ use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Exception\SerializationFailed;
 use Doctrine\DBAL\Types\Exception\ValueNotConvertible;
 use Doctrine\DBAL\Types\TextType;
+use Override;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Service\Encryption\EncryptionServiceInterface;
+use Throwable;
+
+use function json_decode;
+use function json_encode;
+use function strval;
+
+use const JSON_THROW_ON_ERROR;
 
 /**
  * This class is a Doctrine type that encrypts and decrypts data transparently. It will convert the given array as a
@@ -29,10 +37,7 @@ class EncryptedArray extends TextType
     {
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
-    #[\Override]
+    #[Override]
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
@@ -43,7 +48,7 @@ class EncryptedArray extends TextType
             $value = json_encode($value, JSON_THROW_ON_ERROR);
 
             return $this->getEncryptionService()->encrypt($value);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->getLogger()->error('cannot convert to database value', [
                 'exception' => $e->getMessage(),
             ]);
@@ -56,10 +61,8 @@ class EncryptedArray extends TextType
      * @return mixed|null
      *
      * @throws ConversionException
-     *
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
-    #[\Override]
+    #[Override]
     public function convertToPHPValue($value, AbstractPlatform $platform): mixed
     {
         $value = parent::convertToPHPValue($value, $platform);
@@ -72,7 +75,7 @@ class EncryptedArray extends TextType
             $value = $this->getEncryptionService()->decrypt(strval($value));
 
             return json_decode(strval($value), true);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->getLogger()->error('cannot convert to php value', [
                 'exception' => $e->getMessage(),
             ]);

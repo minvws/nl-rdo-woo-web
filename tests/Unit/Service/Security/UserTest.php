@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Security;
 
+use Mockery;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Service\Security\LoginActivity\LoginActivity;
 use Shared\Service\Security\Roles;
 use Shared\Service\Security\User;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function array_values;
 
 class UserTest extends UnitTestCase
 {
@@ -110,7 +113,7 @@ class UserTest extends UnitTestCase
 
     public function testSetAndGetOrganisation(): void
     {
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
 
         $user = new User();
         $user->setOrganisation($organisation);
@@ -122,7 +125,7 @@ class UserTest extends UnitTestCase
     {
         $user = new User();
 
-        $activity = \Mockery::mock(LoginActivity::class);
+        $activity = Mockery::mock(LoginActivity::class);
         $activity->expects('setAccount')->with($user);
 
         $user->addLoginActivity($activity);

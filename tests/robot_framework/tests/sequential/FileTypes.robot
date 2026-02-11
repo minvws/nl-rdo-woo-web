@@ -1,3 +1,7 @@
+*** Comments ***
+# robocop: off=no-suite-variable
+
+
 *** Settings ***
 Documentation       Tests that focus on testing the different supported file types for WooDecisions.
 Resource            ../../resources/Organisations.resource
@@ -6,6 +10,10 @@ Resource            ../../resources/WooDecision.resource
 Suite Setup         Suite Setup
 Test Setup          Go To Admin
 Test Tags           ci  filetypes
+
+
+*** Variables ***
+${NEW_PREFIX}   ${EMPTY}
 
 
 *** Test Cases ***
@@ -57,7 +65,7 @@ Verify Filetypes Of Uploaded Dossier
   Verify Document Filetype  16111  Spreadsheet  CSV
   Verify Document Filetype  16112  Spreadsheet  ODS
   Verify Document Filetype  16113  Onbekend  TXT
-  Verify Document Filetype  16114  Onbekend  RDF
+  Verify Document Filetype  16114  Onbekend  RTF
   Verify Document Filetype  16115  PDF  PDF
 
 Verify Filetypes Available In Search

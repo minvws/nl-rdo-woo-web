@@ -3,7 +3,7 @@ name = "nl-rdo-woo-web-private"
 description = "This python project contains Robot Framework end-to-end tests for the Woo publishing platform."
 readme = "README.md"
 version = "1.0"
-requires-python = ">=3.12"
+requires-python = "==3.14.*"
 dependencies = [
     "pyotp>=2.9.0",
     "pyzbar>=0.1.9",

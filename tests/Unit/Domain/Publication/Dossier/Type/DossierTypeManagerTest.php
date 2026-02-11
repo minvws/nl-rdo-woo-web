@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
@@ -22,13 +23,13 @@ class DossierTypeManagerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->configWoo = \Mockery::mock(DossierTypeConfigInterface::class);
+        $this->configWoo = Mockery::mock(DossierTypeConfigInterface::class);
         $this->configWoo->shouldReceive('getDossierType')->andReturn(DossierType::WOO_DECISION);
 
-        $this->configCovenant = \Mockery::mock(DossierTypeConfigInterface::class);
+        $this->configCovenant = Mockery::mock(DossierTypeConfigInterface::class);
         $this->configCovenant->shouldReceive('getDossierType')->andReturn(DossierType::COVENANT);
 
-        $this->authChecker = \Mockery::mock(AuthorizationCheckerInterface::class);
+        $this->authChecker = Mockery::mock(AuthorizationCheckerInterface::class);
     }
 
     public function testGetConfigReturnsCorrectConfigByType(): void

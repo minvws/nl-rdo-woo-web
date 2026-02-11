@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\DocumentFile;
 
 use Doctrine\Common\Collections\Collection;
+use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
@@ -35,12 +37,12 @@ class DocumentFileServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->wooDecision = \Mockery::mock(WooDecision::class);
-        $this->dispatcher = \Mockery::mock(DocumentFileDispatcher::class);
-        $this->documentFileSetRepository = \Mockery::mock(DocumentFileSetRepository::class);
-        $this->documentFileUploadRepository = \Mockery::mock(DocumentFileUploadRepository::class);
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->totalDocumentFileSizeValidator = \Mockery::mock(TotalDocumentFileSizeValidator::class);
+        $this->wooDecision = Mockery::mock(WooDecision::class);
+        $this->dispatcher = Mockery::mock(DocumentFileDispatcher::class);
+        $this->documentFileSetRepository = Mockery::mock(DocumentFileSetRepository::class);
+        $this->documentFileUploadRepository = Mockery::mock(DocumentFileUploadRepository::class);
+        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
+        $this->totalDocumentFileSizeValidator = Mockery::mock(TotalDocumentFileSizeValidator::class);
 
         $this->service = new DocumentFileService(
             $this->dispatcher,
@@ -53,7 +55,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testGetDocumentFileUsesExistingUncompletedSet(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
         $this->documentFileSetRepository
             ->expects('findUncompletedByDossier')
@@ -68,7 +70,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testAddUploadThrowsExceptionWhenSetIsNotOpenForUploads(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('getId')
             ->andReturn(Uuid::v6());
@@ -85,18 +87,18 @@ class DocumentFileServiceTest extends UnitTestCase
 
         $this->service->addUpload(
             $this->wooDecision,
-            \Mockery::mock(UploadedFile::class),
+            Mockery::mock(UploadedFile::class),
         );
     }
 
     public function testAddUploadSuccessfully(): void
     {
-        $documentFileUpload = \Mockery::type(DocumentFileUpload::class);
+        $documentFileUpload = Mockery::type(DocumentFileUpload::class);
 
-        $uploads = \Mockery::mock(Collection::class);
+        $uploads = Mockery::mock(Collection::class);
         $uploads->shouldReceive('add')->with($documentFileUpload);
 
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('getStatus')
             ->andReturn(DocumentFileSetStatus::OPEN_FOR_UPLOADS);
@@ -109,7 +111,7 @@ class DocumentFileServiceTest extends UnitTestCase
             ->with($this->wooDecision)
             ->andReturn($documentFileSet);
 
-        $upload = \Mockery::mock(UploadedFile::class);
+        $upload = Mockery::mock(UploadedFile::class);
         $upload->shouldReceive('getOriginalFilename')->andReturn('file.txt');
 
         $this->documentFileSetRepository->expects('save')->with($documentFileSet, true);
@@ -119,11 +121,11 @@ class DocumentFileServiceTest extends UnitTestCase
             ->with($documentFileUpload);
 
         $this->entityStorageService->expects('storeEntity')
-            ->with($upload, \Mockery::type(DocumentFileUpload::class));
+            ->with($upload, Mockery::type(DocumentFileUpload::class));
 
         $this->documentFileUploadRepository
             ->expects('save')
-            ->with(\Mockery::type(DocumentFileUpload::class), true);
+            ->with(Mockery::type(DocumentFileUpload::class), true);
 
         $this->service->addUpload(
             $this->wooDecision,
@@ -140,7 +142,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
         $this->documentFileSetRepository
             ->expects('save')
-            ->with(\Mockery::type(DocumentFileSet::class), true);
+            ->with(Mockery::type(DocumentFileSet::class), true);
 
         $set = $this->service->getDocumentFileSet($this->wooDecision);
 
@@ -149,7 +151,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testStartProcessingUploadsThrowsExceptionForInvalidStatus(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
         $this->documentFileSetRepository
             ->expects('findUncompletedByDossier')
@@ -169,7 +171,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testStartProcessingUploadsThrowsExceptionWhenNoUploadsAvailable(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('getStatus')
             ->andReturn(DocumentFileSetStatus::OPEN_FOR_UPLOADS);
@@ -193,7 +195,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testStartProcessingUploadsSuccessfully(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('getStatus')
             ->andReturn(DocumentFileSetStatus::OPEN_FOR_UPLOADS);
@@ -219,7 +221,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testStartProcessingUploadsThrowsExceptionWhenStatusCannotBeUpdated(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('getStatus')
             ->andReturn(DocumentFileSetStatus::OPEN_FOR_UPLOADS);
@@ -240,7 +242,7 @@ class DocumentFileServiceTest extends UnitTestCase
         $this->documentFileSetRepository
             ->expects('updateStatusTransactionally')
             ->with($documentFileSet, DocumentFileSetStatus::PROCESSING_UPLOADS)
-            ->andThrow(new \RuntimeException('oops'));
+            ->andThrow(new RuntimeException('oops'));
 
         $this->expectException(DocumentFileSetException::class);
         $this->service->startProcessingUploads($this->wooDecision);
@@ -271,7 +273,7 @@ class DocumentFileServiceTest extends UnitTestCase
     {
         $this->wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::SCHEDULED);
 
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $this->documentFileSetRepository
@@ -295,7 +297,7 @@ class DocumentFileServiceTest extends UnitTestCase
     {
         $this->wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
 
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->expects('canConfirm')
             ->andReturnTrue();
@@ -322,7 +324,7 @@ class DocumentFileServiceTest extends UnitTestCase
     {
         $this->wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
 
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->expects('canConfirm')
             ->andReturnTrue();
@@ -346,7 +348,7 @@ class DocumentFileServiceTest extends UnitTestCase
     {
         $this->wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $this->documentFileSetRepository
@@ -366,7 +368,7 @@ class DocumentFileServiceTest extends UnitTestCase
     {
         $this->wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('getStatus')
             ->andReturn(DocumentFileSetStatus::NEEDS_CONFIRMATION);
@@ -387,7 +389,7 @@ class DocumentFileServiceTest extends UnitTestCase
     {
         $this->wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
 
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('getStatus')
             ->andReturn(DocumentFileSetStatus::MAX_SIZE_EXCEEDED);
@@ -407,7 +409,7 @@ class DocumentFileServiceTest extends UnitTestCase
     #[DataProvider('getInvalidDossierStatusDataForRejectUpdates')]
     public function testRejectUpdatesThrowsExceptionForInvalidDossierStatus(DossierStatus $status): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('getStatus')
             ->andReturn(DocumentFileSetStatus::NEEDS_CONFIRMATION);
@@ -438,7 +440,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testCheckProcessingUploadsCompletionDoesNotUpdateStatusWhenThereAreStillUploadsToProcess(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
         $this->documentFileSetRepository
             ->expects('countUploadsToProcess')
@@ -454,7 +456,7 @@ class DocumentFileServiceTest extends UnitTestCase
             ->shouldReceive('getStatus')
             ->andReturn(DossierStatus::CONCEPT);
 
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('getDossier')
             ->andReturn($this->wooDecision);
@@ -496,7 +498,7 @@ class DocumentFileServiceTest extends UnitTestCase
             ->shouldReceive('getStatus')
             ->andReturn(DossierStatus::CONCEPT);
 
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('getDossier')
             ->andReturn($this->wooDecision);
@@ -528,7 +530,7 @@ class DocumentFileServiceTest extends UnitTestCase
             ->shouldReceive('getStatus')
             ->andReturn(DossierStatus::PUBLISHED);
 
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->shouldReceive('canConfirm')
             ->andReturnFalse();
@@ -552,7 +554,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testCheckProcessingUpdatesCompletionDoesNotUpdateStatusWhenThereAreStillUpdatesToProcess(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
         $this->documentFileSetRepository
             ->expects('countUpdatesToProcess')
@@ -564,7 +566,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testCheckProcessingUpdatesCompletionSetsStatusToCompleted(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
         $this->documentFileSetRepository
             ->expects('countUpdatesToProcess')
@@ -584,7 +586,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testHasUploads(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
         $this->documentFileSetRepository
             ->expects('countUploadsToProcess')
@@ -596,7 +598,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testHasUploadsReturnsFalse(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
         $this->documentFileSetRepository
             ->expects('countUploadsToProcess')
@@ -608,7 +610,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testCanProcess(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet->shouldReceive('getStatus')->andReturn(DocumentFileSetStatus::OPEN_FOR_UPLOADS);
 
         $this->documentFileSetRepository
@@ -621,7 +623,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testCanProcessWithInvalidStatus(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet->shouldReceive('getStatus')->andReturn(DocumentFileSetStatus::NEEDS_CONFIRMATION);
 
         self::assertFalse($this->service->canProcess($documentFileSet));
@@ -629,7 +631,7 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testCanProcessWithoutUploads(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet->shouldReceive('getStatus')->andReturn(DocumentFileSetStatus::OPEN_FOR_UPLOADS);
 
         $this->documentFileSetRepository

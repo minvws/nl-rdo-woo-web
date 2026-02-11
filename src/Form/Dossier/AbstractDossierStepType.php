@@ -11,8 +11,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @template-extends AbstractType<AbstractDossierStepType>
- *
- * @SuppressWarnings("PHPMD.NumberOfChildren")
  */
 abstract class AbstractDossierStepType extends AbstractType
 {

@@ -7,6 +7,8 @@ namespace Shared\Domain\Publication\Dossier\ViewModel;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Webmozart\Assert\Assert;
 
+use function sprintf;
+
 readonly class CommonDossierPropertiesViewFactory
 {
     public function __construct(

@@ -10,6 +10,8 @@ use Shared\Domain\Search\Result\Dossier\Disposition\DispositionSearchResult;
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
+use function sprintf;
+
 /**
  * @extends AbstractDossierRepository<Disposition>
  */
@@ -46,8 +48,7 @@ class DispositionRepository extends AbstractDossierRepository implements Provide
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
-        ;
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
 
         /** @var ?DispositionSearchResult */
         return $qb->getQuery()->getOneOrNullResult();

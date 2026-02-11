@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\Entity;
 
+use DateTimeImmutable;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -21,7 +23,7 @@ class AbstractAttachmentTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossier = \Mockery::mock(Covenant::class);
+        $this->dossier = Mockery::mock(Covenant::class);
     }
 
     public function testCanWithdrawReturnsFalseWhenDossierIsConcept(): void
@@ -30,7 +32,7 @@ class AbstractAttachmentTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $this->dossier,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             AttachmentType::ADVICE,
             AttachmentLanguage::DUTCH,
         );
@@ -44,7 +46,7 @@ class AbstractAttachmentTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $this->dossier,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             AttachmentType::ADVICE,
             AttachmentLanguage::DUTCH,
         );
@@ -58,7 +60,7 @@ class AbstractAttachmentTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $this->dossier,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             AttachmentType::ADVICE,
             AttachmentLanguage::DUTCH,
         );
@@ -77,7 +79,7 @@ class AbstractAttachmentTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $this->dossier,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             AttachmentType::ADVICE,
             AttachmentLanguage::DUTCH,
         );

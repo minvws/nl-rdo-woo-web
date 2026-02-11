@@ -57,27 +57,25 @@
                 <twig:Public:Icon class="woo-btn__icon-right" name="sort" />
             </summary>
 
-            <div aria-labelledby="sort-results" class="woo-overlay-card md:right-0 w-72 sm:w-96">
-                <ul>
-                    {% for sortItem in result.sortItems %}
-                        {% set isActiveSort = activeSort.field == sortItem.field and activeSort.order == sortItem.order %}
-                        <li class="leading-none">
-                            <a
-                                class="block p-4 hover-focus:bg-woo-gray-50"
-                                href="{{ path('app_search', sortItem.searchParameters.queryParameters.all) }}#search-results-list"
-                            >
-                                <span class="block py-0.5">
-                                    {% if isActiveSort %}
-                                        <twig:Public:Icon name="check" class="mr-1" />
-                                    {% endif %}
-                                    <span class="sr-only">{{ 'public.global.sort.sort_by' | trans }}:</span>
-                                    <span{{ isActiveSort ? ' class="font-bold"': '' }}>{{ sortItem.field | trans }}{% if sortItem.showSortOrder %} ({{ sortItem.order | trans }}){% endif %}</span>
-                                </span>
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <ul aria-labelledby="sort-results" data-e2e-name="sorting-selector-options" class="woo-overlay-card md:right-0 w-72 sm:w-96">
+                {% for sortItem in result.sortItems %}
+                    {% set isActiveSort = activeSort.field == sortItem.field and activeSort.order == sortItem.order %}
+                    <li class="leading-none">
+                        <a
+                            class="block p-4 hover-focus:bg-woo-gray-50"
+                            href="{{ path('app_search', sortItem.searchParameters.queryParameters.all) }}#search-results-list"
+                        >
+                            <span class="block py-0.5">
+                                {% if isActiveSort %}
+                                    <twig:Public:Icon name="check" class="mr-1" />
+                                {% endif %}
+                                <span class="sr-only">{{ 'public.global.sort.sort_by' | trans }}:</span>
+                                <span{{ isActiveSort ? ' class="font-bold"': '' }}>{{ sortItem.field | trans }}{% if sortItem.showSortOrder %} ({{ sortItem.order | trans }}){% endif %}</span>
+                            </span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
         </details>
     </div>
     {% endif %}

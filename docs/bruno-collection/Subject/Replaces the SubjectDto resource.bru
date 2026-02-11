@@ -1,0 +1,541 @@
+meta {
+  name: Replaces the SubjectDto resource.
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  organisationId: {{organisationId}}
+  subjectId:
+}
+
+body:json {
+  {
+    "name": ""
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+  }
+  if (res.status === 400) {
+  }
+  if (res.status === 404) {
+  }
+  if (res.status === 422) {
+  }
+}
+
+example {
+  name: 200 Response
+  description: SubjectDto resource updated
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      subjectId:
+    }
+
+    body:json: {
+      {
+        "name": ""
+      }
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+
+    status: {
+      code: 200
+      text: OK
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "id": "",
+          "organisation": {
+            "id": "",
+            "name": ""
+          },
+          "name": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 Response
+  description: Invalid input
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      subjectId:
+    }
+
+    body:json: {
+      {
+        "name": ""
+      }
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 400
+      text: Bad Request
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "title": "",
+          "detail": "",
+          "status": "",
+          "instance": "",
+          "type": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 Response
+  description: Invalid input
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      subjectId:
+    }
+
+    body:json: {
+      {
+        "name": ""
+      }
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+
+    status: {
+      code: 400
+      text: Bad Request
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "title": "",
+          "detail": "",
+          "status": "",
+          "instance": "",
+          "type": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 401 Response
+  description: Unauthorized
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      subjectId:
+    }
+
+    body:json: {
+      {
+        "name": ""
+      }
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 401
+      text: Unauthorized
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 403 Response
+  description: Forbidden
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      subjectId:
+    }
+
+    body:json: {
+      {
+        "name": ""
+      }
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 403
+      text: Forbidden
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Not found
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      subjectId:
+    }
+
+    body:json: {
+      {
+        "name": ""
+      }
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 404
+      text: Not Found
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "title": "",
+          "detail": "",
+          "status": "",
+          "instance": "",
+          "type": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Not found
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      subjectId:
+    }
+
+    body:json: {
+      {
+        "name": ""
+      }
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+
+    status: {
+      code: 404
+      text: Not Found
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "title": "",
+          "detail": "",
+          "status": "",
+          "instance": "",
+          "type": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 405 Response
+  description: Method not allowed
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      subjectId:
+    }
+
+    body:json: {
+      {
+        "name": ""
+      }
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 405
+      text: Method Not Allowed
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 422 Response
+  description: An error occurred
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      subjectId:
+    }
+
+    body:json: {
+      {
+        "name": ""
+      }
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 422
+      text: Unprocessable Entity
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "status": 0,
+          "violations": [
+            {
+              "propertyPath": "",
+              "message": ""
+            }
+          ],
+          "detail": "",
+          "type": "",
+          "title": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 422 Response
+  description: An error occurred
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      subjectId:
+    }
+
+    body:json: {
+      {
+        "name": ""
+      }
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+
+    status: {
+      code: 422
+      text: Unprocessable Entity
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "status": 0,
+          "violations": [
+            {
+              "propertyPath": "",
+              "message": ""
+            }
+          ],
+          "detail": "",
+          "type": "",
+          "title": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 500 Response
+  description: Server error
+
+  request: {
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/subject/:subjectId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      subjectId:
+    }
+
+    body:json: {
+      {
+        "name": ""
+      }
+    }
+  }
+
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+
+    status: {
+      code: 500
+      text: Internal Server Error
+    }
+
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}

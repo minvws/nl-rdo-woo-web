@@ -1,4 +1,5 @@
 import vuePlugin from '@vitejs/plugin-vue';
+import fs from 'fs';
 import path from 'path';
 import { defineConfig } from 'vite';
 import symfonyPlugin from 'vite-plugin-symfony';
@@ -10,6 +11,7 @@ export default defineConfig({
     symfonyPlugin({
       stimulus: './assets/js/shared/vue-controllers.json',
     }),
+    moveApiDocsPlugin(),
   ],
 
   define: {
@@ -23,9 +25,14 @@ export default defineConfig({
     rollupOptions: {
       input: {
         admin: './assets/js/admin/index.ts',
-        api: './assets/js/api/index.ts',
         public: './assets/js/public/index.ts',
         'worker-charts': './assets/js/misc/charts.js',
+        'api-docs': './assets/api-docs/index.html',
+      },
+      output: {
+        assetFileNames: () => {
+          return 'assets/[name]-[hash][extname]';
+        },
       },
     },
     assetsInlineLimit: 0,
@@ -68,3 +75,26 @@ export default defineConfig({
     },
   },
 });
+
+function moveApiDocsPlugin() {
+  return {
+    name: 'move-api-docs',
+    closeBundle() {
+      const source = path.resolve(
+        __dirname,
+        'public/build/assets/api-docs/index.html',
+      );
+      const dest = path.resolve(__dirname, 'public/api/index.html');
+
+      if (fs.existsSync(source)) {
+        fs.copyFileSync(source, dest);
+        fs.unlinkSync(source);
+
+        const dir = path.dirname(source);
+        if (fs.existsSync(dir) && fs.readdirSync(dir).length === 0) {
+          fs.rmdirSync(dir);
+        }
+      }
+    },
+  };
+}

@@ -10,6 +10,8 @@ use Doctrine\Persistence\ObjectManager;
 use Shared\Domain\Content\Page\ContentPage;
 use Shared\Domain\Content\Page\ContentPageType;
 
+use function sprintf;
+
 class ContentPageFixtures extends Fixture implements FixtureGroupInterface
 {
     /**

@@ -6,11 +6,14 @@ namespace Shared\Tests\Unit\Service\Storage;
 
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnreadableFileEncountered;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Service\Storage\RemoteFilesystem;
 use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
+
+use function fopen;
 
 final class RemoteFilesystemTest extends UnitTestCase
 {
@@ -19,8 +22,8 @@ final class RemoteFilesystemTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->documentStorage = \Mockery::mock(FilesystemOperator::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->documentStorage = Mockery::mock(FilesystemOperator::class);
     }
 
     public function testReadStream(): void
@@ -360,7 +363,7 @@ final class RemoteFilesystemTest extends UnitTestCase
     private function getInstance(): RemoteFilesystem&MockInterface
     {
         /** @var RemoteFilesystem&MockInterface $instance */
-        $instance = \Mockery::mock(RemoteFilesystem::class, [$this->logger, $this->documentStorage])
+        $instance = Mockery::mock(RemoteFilesystem::class, [$this->logger, $this->documentStorage])
             ->makePartial();
 
         return $instance;

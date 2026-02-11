@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Handler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\RejectProductionReportUpdateCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Handler\RejectProductionReportUpdateHandler;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
@@ -27,9 +29,9 @@ class RejectProductionReportUpdateHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
-        $this->processRunRepository = \Mockery::mock(ProductionReportProcessRunRepository::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->dossierWorkflowManager = Mockery::mock(DossierWorkflowManager::class);
+        $this->processRunRepository = Mockery::mock(ProductionReportProcessRunRepository::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
         $this->handler = new RejectProductionReportUpdateHandler(
             $this->dossierWorkflowManager,
@@ -42,9 +44,9 @@ class RejectProductionReportUpdateHandlerTest extends UnitTestCase
 
     public function testInvokeSuccessfully(): void
     {
-        $run = \Mockery::mock(ProductionReportProcessRun::class);
+        $run = Mockery::mock(ProductionReportProcessRun::class);
 
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('getProcessRun')->andReturn($run);
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($wooDecision, DossierStatusTransition::UPDATE_PRODUCTION_REPORT);
@@ -59,7 +61,7 @@ class RejectProductionReportUpdateHandlerTest extends UnitTestCase
 
     public function testInvokeThrowsExceptionWhenWooDecisionHasNoProcessRun(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('getProcessRun')->andReturnNull();
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($wooDecision, DossierStatusTransition::UPDATE_PRODUCTION_REPORT);
@@ -73,7 +75,7 @@ class RejectProductionReportUpdateHandlerTest extends UnitTestCase
 
     public function testInvokeThrowsExceptionWhenTransitionIsNotAllowed(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
 
         $this->dossierWorkflowManager
             ->expects('applyTransition')
@@ -89,14 +91,14 @@ class RejectProductionReportUpdateHandlerTest extends UnitTestCase
 
     public function testInvokeLogsWarningWhenRejectThrowsAnException(): void
     {
-        $run = \Mockery::mock(ProductionReportProcessRun::class);
+        $run = Mockery::mock(ProductionReportProcessRun::class);
 
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('getProcessRun')->andReturn($run);
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($wooDecision, DossierStatusTransition::UPDATE_PRODUCTION_REPORT);
 
-        $run->expects('reject')->andThrow(new \RuntimeException('oops'));
+        $run->expects('reject')->andThrow(new RuntimeException('oops'));
         $run->shouldReceive('getId')->andReturn(Uuid::v6());
         $run->shouldReceive('getStatus')->andReturn(ProductionReportProcessRun::STATUS_FINISHED);
 

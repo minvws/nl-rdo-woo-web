@@ -6,6 +6,9 @@ namespace Shared\Domain\Publication\Dossier\Type;
 
 use Shared\Domain\Publication\Dossier\Step\StepDefinitionInterface;
 
+use function sprintf;
+use function str_replace;
+
 /**
  * These validation groups can be used when the validation of a property that is shared between multiple dossiertypes
  * needs to vary for a specific dossiertype. The naming convention is DOSSIERTYPE_STEPNAME.

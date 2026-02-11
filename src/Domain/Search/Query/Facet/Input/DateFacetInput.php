@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Query\Facet\Input;
 
+use DateTimeImmutable;
 use Shared\Domain\Search\Query\Facet\FacetDefinitionInterface;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Utils\CastTypes;
 use Symfony\Component\HttpFoundation\ParameterBag;
+
+use function strlen;
+use function trim;
 
 final readonly class DateFacetInput extends FacetInput implements DateFacetInputInterface
 {
@@ -38,8 +42,8 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
     private function __construct(
         public FacetDefinitionInterface $facet,
         public bool $withoutDate,
-        public ?\DateTimeImmutable $from,
-        public ?\DateTimeImmutable $to,
+        public ?DateTimeImmutable $from,
+        public ?DateTimeImmutable $to,
     ) {
         $this->isActive = $withoutDate || $from !== null || $to !== null;
     }
@@ -77,11 +81,11 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
             $params[self::WITHOUT_DATE] = 1;
         }
 
-        if ($this->from instanceof \DateTimeImmutable) {
+        if ($this->from instanceof DateTimeImmutable) {
             $params[self::FROM] = $this->getPeriodFilterFrom();
         }
 
-        if ($this->to instanceof \DateTimeImmutable) {
+        if ($this->to instanceof DateTimeImmutable) {
             $params[self::TO] = $this->getPeriodFilterTo();
         }
 

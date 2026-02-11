@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Content;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Ingest\Content\ContentExtract;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
+
+use function abs;
 
 class ContentExtractTest extends TestCase
 {
@@ -20,7 +23,7 @@ class ContentExtractTest extends TestCase
         self::assertEquals($key, $extract->key);
         self::assertEquals($content, $extract->content);
 
-        $now = new \DateTimeImmutable();
+        $now = new DateTimeImmutable();
         self::assertLessThanOrEqual(1, abs($now->diff($extract->date)->s));
     }
 }

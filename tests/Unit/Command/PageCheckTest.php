@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Command;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use MinVWS\TypeArray\TypeArray;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Command\PageCheck;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -26,8 +27,8 @@ class PageCheckTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(WooDecisionRepository::class);
-        $this->elasticService = \Mockery::mock(ElasticService::class);
+        $this->repository = Mockery::mock(WooDecisionRepository::class);
+        $this->elasticService = Mockery::mock(ElasticService::class);
 
         $application = new Application();
         $application->add(
@@ -44,19 +45,25 @@ class PageCheckTest extends UnitTestCase
     {
         $commandTester = new CommandTester($this->command);
 
-        $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->andReturn(Uuid::v6());
-        $document->shouldReceive('getFileInfo->getPageCount')->andReturn(1);
+        $document = Mockery::mock(Document::class);
+        $document->expects('getId')
+            ->andReturn(Uuid::v6());
+        $document->expects('getFileInfo->getPageCount')
+            ->twice()
+            ->andReturn(1);
 
-        $dossier = \Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([
-            $document,
-        ]));
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getDocuments')
+            ->andReturn(new ArrayCollection([
+                $document,
+            ]));
 
         $this->repository->expects('findAll')->andReturn([$dossier]);
 
-        $esDocument = \Mockery::mock(TypeArray::class);
-        $esDocument->expects('getIterable')->with('[_source][pages]')->andReturn([new TypeArray(['page_nr' => 1])]);
+        $esDocument = Mockery::mock(TypeArray::class);
+        $esDocument->expects('getIterable')
+            ->with('[_source][pages]')
+            ->andReturn([new TypeArray(['page_nr' => 1])]);
 
         $this->elasticService->expects('getDocument')->andReturn($esDocument);
 

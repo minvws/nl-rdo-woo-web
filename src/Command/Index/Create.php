@@ -7,14 +7,19 @@ namespace Shared\Command\Index;
 use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Shared\Domain\Search\Index\Rollover\MappingService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Webmozart\Assert\Assert;
 
+#[AsCommand(name: self::COMMAND_NAME, description: 'Creates a new ES index')]
 class Create extends Command
 {
+    public const string COMMAND_NAME = 'woopie:index:create';
+
     public function __construct(
         protected ElasticIndexManager $indexService,
         protected MappingService $mappingService,
@@ -24,8 +29,7 @@ class Create extends Command
 
     protected function configure(): void
     {
-        $this->setName('woopie:index:create')
-            ->setDescription('Creates a new ES index')
+        $this
             ->setDefinition([
                 new InputArgument('name', InputArgument::REQUIRED, 'Name of the index'),
                 new InputArgument('version', InputArgument::REQUIRED, 'Mapping version to use or "latest" for the latest version'),
@@ -37,17 +41,24 @@ class Create extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $name = strval($input->getArgument('name'));
+        $name = $input->getArgument('name');
+        Assert::string($name);
+
         if ($this->indexService->exists($name)) {
             $output->writeln("Index {$name} already exist.");
 
-            return 1;
+            return self::FAILURE;
         }
 
-        $version = intval($input->getArgument('version'));
-        if ($input->getArgument('version') == 'latest') {
+        $version = $input->getArgument('version');
+        Assert::string($version);
+
+        if ($version === 'latest') {
             $version = $this->mappingService->getLatestMappingVersion();
+        } else {
+            $version = (int) $version;
         }
+        Assert::integer($version);
 
         $output->writeln("Creating index {$name} on version {$version}.");
         $this->indexService->create($name, $version);
@@ -59,6 +70,6 @@ class Create extends Command
             $this->indexService->switch(ElasticConfig::WRITE_INDEX, '*', $name);
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 }

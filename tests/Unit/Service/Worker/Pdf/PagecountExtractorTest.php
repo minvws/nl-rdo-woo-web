@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
+use Closure;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
@@ -27,11 +29,11 @@ final class PagecountExtractorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->pdftkService = \Mockery::mock(PdftkService::class);
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->statsService = \Mockery::mock(WorkerStatsService::class);
-        $this->entity = \Mockery::mock(EntityWithFileInfo::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->pdftkService = Mockery::mock(PdftkService::class);
+        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
+        $this->statsService = Mockery::mock(WorkerStatsService::class);
+        $this->entity = Mockery::mock(EntityWithFileInfo::class);
     }
 
     public function testExtract(): void
@@ -45,7 +47,7 @@ final class PagecountExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('download.entity', \Mockery::on(function (\Closure $closure) use ($localPdfPath) {
+            ->with('download.entity', Mockery::on(function (Closure $closure) use ($localPdfPath) {
                 $result = $closure();
 
                 $this->assertSame($localPdfPath, $result, 'The download path does not match expected value');
@@ -71,7 +73,7 @@ final class PagecountExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('pdftk.extractNumberOfPages', \Mockery::on(function (\Closure $closure) use ($pdftkPageCountResult) {
+            ->with('pdftk.extractNumberOfPages', Mockery::on(function (Closure $closure) use ($pdftkPageCountResult) {
                 $result = $closure();
 
                 $this->assertSame($pdftkPageCountResult, $result, 'The pdftkPageCountResult does not match expected value');
@@ -108,7 +110,7 @@ final class PagecountExtractorTest extends UnitTestCase
         $this->entity
             ->shouldReceive('getId')
             ->once()
-            ->andReturn($entityUuid = \Mockery::mock(Uuid::class));
+            ->andReturn($entityUuid = Mockery::mock(Uuid::class));
 
         $this->logger
             ->shouldReceive('error')
@@ -121,7 +123,7 @@ final class PagecountExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('download.entity', \Mockery::on(function (\Closure $closure) {
+            ->with('download.entity', Mockery::on(function (Closure $closure) {
                 $result = $closure();
 
                 $this->assertFalse($result);
@@ -153,7 +155,7 @@ final class PagecountExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('download.entity', \Mockery::on(function (\Closure $closure) use ($localPdfPath) {
+            ->with('download.entity', Mockery::on(function (Closure $closure) use ($localPdfPath) {
                 $result = $closure();
 
                 $this->assertSame($localPdfPath, $result, 'The download path does not match expected value');
@@ -179,7 +181,7 @@ final class PagecountExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('pdftk.extractNumberOfPages', \Mockery::on(function (\Closure $closure) use ($pdftkPageCountResult) {
+            ->with('pdftk.extractNumberOfPages', Mockery::on(function (Closure $closure) use ($pdftkPageCountResult) {
                 $result = $closure();
 
                 $this->assertSame($pdftkPageCountResult, $result, 'The pdftkPageCountResult does not match expected value');
@@ -196,7 +198,7 @@ final class PagecountExtractorTest extends UnitTestCase
         $this->entity
             ->shouldReceive('getId')
             ->once()
-            ->andReturn($entityUuid = \Mockery::mock(Uuid::class));
+            ->andReturn($entityUuid = Mockery::mock(Uuid::class));
 
         $this->logger
             ->shouldReceive('error')

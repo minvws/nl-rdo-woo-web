@@ -20,9 +20,6 @@ class ContentFormType extends AbstractDossierStepType
         return RequestForAdvice::class;
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $this->addSummaryField($builder);

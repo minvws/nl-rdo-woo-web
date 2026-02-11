@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Service\EnvironmentService;
 use Shared\Tests\Unit\UnitTestCase;
@@ -16,7 +17,7 @@ class EnvironmentServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->kernel = \Mockery::mock(KernelInterface::class);
+        $this->kernel = Mockery::mock(KernelInterface::class);
         $this->environmentService = new EnvironmentService($this->kernel);
     }
 

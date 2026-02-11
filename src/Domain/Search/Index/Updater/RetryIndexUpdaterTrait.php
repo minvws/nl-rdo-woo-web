@@ -6,6 +6,10 @@ namespace Shared\Domain\Search\Index\Updater;
 
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 
+use function ceil;
+use function min;
+use function usleep;
+
 trait RetryIndexUpdaterTrait
 {
     private const MAX_RETRIES = 10;

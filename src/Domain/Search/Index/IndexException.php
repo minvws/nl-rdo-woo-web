@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index;
 
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 
-class IndexException extends \RuntimeException
+use function sprintf;
+
+class IndexException extends RuntimeException
 {
     public static function forUnsupportedDossierType(DossierType $dossierType): self
     {

@@ -2,9 +2,34 @@
 
 # Release notes
 
-## v2.1.0
+## v2.3.0
 
-*20 november 2025*
+*februari 2026*
+
+### Nieuwe Functionaliteiten
+
+- **mTLS ondersteuning met behulp van PKIOverheid-certificaat**: De API, lokaal gehost in een eigen container met een toegewijde Apache-instantie om mTLS te ondersteunen, ondersteunt nu veilige communicatie middels PKIOverheid certificaten.
+- **Publicatie API v1: Ondersteuning voor Externe Dossier-ID's**: De API ondersteunt nu externe dossier-ID's (met prefix E:) voor communicatie met externe organisaties, terwijl interne operaties blijven werken met interne UUID's die niet gedeeld worden
+ met de buitenwereld.
+- **Publicatie API v1: Nieuwe Dossier Endpoints**: Voor alle informatiecategorieën die ondersteund worden door de balie zijn de benodigde endpoints toegevoegd.
+- **Publicatie API v1: Bestanden Uploaden**: Ondersteuning toegevoegd voor het uploaden van bestanden (bijv. hoofddocumenten, bijlagen) bij het posten van een dossier, inclusief bestanden voor Woo-besluiten.
+- **Publicatie API v1: TOOI Waardes**: Niet alleen zijn Tooi waardes nu ondersteund, in de OpenAPI spec zijn de TOOI waardes dusdanig gedocumenteerd dat ze leesbaar zijn voor developers.
+- **Introductie van een Gedeelde Kernel voor Meerdere Applicaties**: Een gedeelde kernel is geïntroduceerd om gemeenschappelijke configuraties te ondersteunen, terwijl maatwerkconfiguraties mogelijk blijven op basis van applicatiemodus (bijv. APP_MODE
+ of APP_ID). Deze change is tevens een essentiele voorbereiding voor het geschikt maken van de applicatie voor meerdere ministeries.
+- **Sessie lifetime configurabel**: De duur van een geldige sessie is configurabel, met een standaard waarde van één dag.
+
+### Opgeloste Bugs
+
+- Een probleem opgelost waarbij het slepen van bestanden in de frontend niet altijd werkte.
+- Een probleem opgelost waarbij het uploaden van een textbestand geweigerd werd omdat de inhoud ervan onterecht als gevaarlijk werd beschouwd.
+
+### Tijdelijke Wijzigingen
+
+- Tijdelijk de mogelijkheid uitgeschakeld om op stappen te klikken in het formulier "concept publicaties aanpassen".
+
+## v2.1.1
+
+*24 november 2025*
 
 ### API
 
@@ -268,7 +293,9 @@ Toegankelijkheidsverbeteringen:
 
 Het hoofdmenu en de contentbreedte van de pagina zijn visueel op elkaar afgestemd. Het hoofdmenu is verbreed naar 1280px en de content sluit hier netjes op aan, wat zorgt voor een rustiger en consistenter uiterlijk van de balie.
 
-Op de homepage en landingspagina’s worden nu maximaal 6 items per categorie weergegeven in drie kolommen. Indien er meer resultaten zijn, verschijnt er een link naar de volledige lijst. Ook is de padding links en rechts in lijn gebracht met de rest van de content.
+Op de homepage en landingspagina’s worden nu maximaal 6 items per categorie weergegeven in drie kolommen. Indien er meer
+resultaten zijn, verschijnt er een link naar de volledige lijst. Ook is de padding links en rechts in lijn gebracht met
+de rest van de content.
 
 ### Website
 

@@ -6,6 +6,9 @@ namespace Shared\Service\Storage;
 
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use SplFileInfo;
+
+use function is_resource;
 
 /**
  * This class is responsible for storing and retrieving file content based on an entity that implements
@@ -60,7 +63,7 @@ abstract class StorageService implements StorageAliveInterface
     /**
      * Store a file in the storage adapter.
      */
-    protected function doStore(\SplFileInfo $localFile, string $remotePath): bool
+    protected function doStore(SplFileInfo $localFile, string $remotePath): bool
     {
         $stream = $this->localFilesystem->createStream($localFile->getPathname(), 'r');
         if (! is_resource($stream)) {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\FileStorage\Checker\PathSetFactory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Shared\Domain\FileStorage\Checker\FileStorageType;
 use Shared\Domain\FileStorage\Checker\PathSet;
 use Shared\Domain\FileStorage\Checker\PathSetFactory\BatchDownloadPathSetsFactory;
@@ -13,18 +14,20 @@ use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
+use function iterator_to_array;
+
 class BatchDownloadPathSetsFactoryTest extends UnitTestCase
 {
     public function testGetPathSets(): void
     {
         $factory = new BatchDownloadPathSetsFactory(
-            $repository = \Mockery::mock(BatchDownloadRepository::class),
-            $entityManager = \Mockery::mock(EntityManagerInterface::class),
+            $repository = Mockery::mock(BatchDownloadRepository::class),
+            $entityManager = Mockery::mock(EntityManagerInterface::class),
         );
 
         $repository->expects('findAll')->andReturn([
-            $batchDownloadA = \Mockery::mock(BatchDownload::class),
-            $batchDownloadB = \Mockery::mock(BatchDownload::class),
+            $batchDownloadA = Mockery::mock(BatchDownload::class),
+            $batchDownloadB = Mockery::mock(BatchDownload::class),
         ]);
 
         $batchDownloadA->expects('getFilename')->andReturn($pathA = 'foo/bar');

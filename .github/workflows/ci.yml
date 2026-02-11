@@ -75,7 +75,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Linting Markdown
-        uses: DavidAnson/markdownlint-cli2-action@v21
+        uses: DavidAnson/markdownlint-cli2-action@v22
 
   reuse-compliance:
     name: Check REUSE compliance
@@ -100,7 +100,7 @@ jobs:
       - name: Linting JavaScript-files
         run: npm run eslint:json
       - name: Upload ESLint report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: eslint-report
           path: reports/eslint
@@ -119,7 +119,7 @@ jobs:
       - name: Front-end Unit tests using Vitest
         run: npm run test
       - name: Upload Vitest coverage report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: vitest-report
           path: reports/vitest
@@ -136,7 +136,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: PHP-CS-Fixer cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .php-cs-fixer.cache
           key: php-cs-fixer-${{ hashFiles('.php-cs-fixer.dist.php',  'composer.lock') }}
@@ -156,33 +156,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: CodeSniffer cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .phpcs-cache
           key: codesniffer-${{ hashFiles('phpcs.xml.dist',  'composer.lock') }}
           restore-keys: codesniffer-
       - name: Linting using PHP CodeSniffer
         run: vendor/bin/phpcs
-
-  be-linting-php-mess-detector:
-    name: Check back-end PHP Mess Detector
-    runs-on: ubuntu-24.04
-    needs: [setup-composer-cache]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Setup PHP
-        uses: ./.github/actions/setup-php
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: PHPMD cache
-        uses: actions/cache@v4
-        with:
-          path: .phpmd.result-cache.php
-          key: phpmd-${{ hashFiles('ruleset.phpmd.xml',  'composer.lock') }}
-          restore-keys: phpmd-
-      - name: Linting using PHP Mess Detector
-        run: vendor/bin/phpmd src/ text ruleset.phpmd.xml --cache
 
   be-linting-twig:
     name: Check back-end Twig template files
@@ -224,7 +204,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: PHPStan cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .phpstan.cache
           key: phpstan-${{ hashFiles('phpstan.dist.neon', 'phpstan-baseline.neon', 'composer.json', 'composer.lock') }}
@@ -239,10 +219,24 @@ jobs:
           vendor/bin/phpstan analyse --memory-limit=-1 --error-format=json > reports/phpstan/phpstan.json
       - name: Upload PHPStan analysis report
         if: steps.phpstan-report.outcome == 'success'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: phpstan-report
           path: reports/phpstan
+
+  be-check-architecture:
+    name: Check back-end Architecture
+    runs-on: ubuntu-24.04
+    needs: [setup-composer-cache]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Architecture Check using Arkitect
+        run: composer run checkarc
 
   be-migrations:
     name: Check back-end migrations
@@ -295,7 +289,7 @@ jobs:
       - name: Run tests
         run: task app:test:ci
       - name: Upload PHPUnit coverage report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: phpunit-report
           path: reports/phpunit
@@ -320,22 +314,22 @@ jobs:
           mkdir -p reports/phpunit
           mkdir -p reports/phpstan
       - name: Download Vitest coverage report
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: vitest-report
           path: reports/vitest
       - name: Download ESLint report
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: eslint-report
           path: reports/eslint
       - name: Download PHPUnit coverage report
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: phpunit-report
           path: reports/phpunit
       - name: Download PHPStan analysis report
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: phpstan-report
           path: reports/phpstan
@@ -362,7 +356,6 @@ jobs:
       - fe-unit-tests
       - be-linting-php-cs-fixer
       - be-linting-codesniffer
-      - be-linting-php-mess-detector
       - be-linting-twig
       - be-linting-yaml-translations
       - be-static-code-analysis

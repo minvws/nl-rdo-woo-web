@@ -27,8 +27,7 @@ readonly class SitemapDossierSubscriber
             ->select('d')
             ->where('d.status = :status')
             ->setParameter('status', 'published')
-            ->getQuery()
-        ;
+            ->getQuery();
         foreach ($dossierQuery->toIterable() as $dossier) {
             $event->getUrlContainer()->addUrl(
                 new UrlConcrete(

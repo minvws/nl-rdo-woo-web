@@ -10,6 +10,8 @@ use Shared\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
+use function sprintf;
+
 /**
  * @extends AbstractDossierRepository<Covenant>
  */
@@ -47,8 +49,7 @@ class CovenantRepository extends AbstractDossierRepository implements ProvidesDo
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
-        ;
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
 
         /** @var ?CovenantSearchResult */
         return $qb->getQuery()->getOneOrNullResult();

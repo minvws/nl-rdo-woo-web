@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\Dossier;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -34,7 +35,7 @@ class IndexDossierHandler
             }
 
             $this->dossierIndexer->index($dossier, $message->getRefresh());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to update dossier in elasticsearch', [
                 'id' => $message->getUuid(),
                 'exception' => $e->getMessage(),

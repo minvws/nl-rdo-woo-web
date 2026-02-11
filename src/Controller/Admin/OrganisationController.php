@@ -17,14 +17,13 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function array_map;
+
 class OrganisationController extends AbstractController
 {
     public function __construct(
@@ -63,7 +62,7 @@ class OrganisationController extends AbstractController
         }
 
         return $this->render('admin/organisation/create.html.twig', [
-            'organisationForm' => $organisationForm->createView(),
+            'organisationForm' => $organisationForm,
             'departmentOptions' => $this->getDepartmentsOptions(),
             'departmentValues' => $this->getDepartmentsValues($organisationForm),
             'departmentsErrors' => $this->getDepartmentsErrors($organisationForm),
@@ -90,7 +89,7 @@ class OrganisationController extends AbstractController
 
         return $this->render('admin/organisation/edit.html.twig', [
             'organisation' => $organisation,
-            'organisationForm' => $organisationForm->createView(),
+            'organisationForm' => $organisationForm,
             'departmentOptions' => $this->getDepartmentsOptions(),
             'departmentValues' => $this->getDepartmentsValues($organisationForm),
             'departmentsErrors' => $this->getDepartmentsErrors($organisationForm),

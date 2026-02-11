@@ -9,6 +9,10 @@ use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Content\ContentExtractLogContext;
 
+use function file_get_contents;
+use function is_array;
+use function json_decode;
+
 readonly class TikaService
 {
     public function __construct(

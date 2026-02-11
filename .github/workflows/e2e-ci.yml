@@ -49,17 +49,18 @@ jobs:
       - name: Run Robot Framework tests
         working-directory: tests/robot_framework
         env:
+          ENVIRONMENT: ci
           URL_PUBLIC: http://localhost:8000
           URL_ADMIN: http://localhost:8001/balie
           HEADLESS: true
         run: |
           if [ '${{ env.TEST_TAG }}' == 'ci' ]; then
-            uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include init --include ci --ordering order.txt --variable ENVIRONMENT:docker-ci .
+            uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include init --include ci --ordering order.txt --name 'E2E Tests' ./tests
           else
-            uv run pabot --processes 1 --artifactsinsubfolders --outputdir results --include init --include ${{ env.TEST_TAG }} --ordering order.txt --variable ENVIRONMENT:docker-ci .
+            uv run pabot --processes 1 --artifactsinsubfolders --outputdir results --include init --include ${{ env.TEST_TAG }} --ordering order.txt --name 'E2E Tests' ./tests
           fi
       - name: Upload test results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: ${{ always() }}
         with:
           name: robot-report-app
@@ -84,12 +85,13 @@ jobs:
       - name: Run Robot Framework tests
         working-directory: tests/robot_framework
         env:
+          ENVIRONMENT: ci
           URL_PUBLIC: http://localhost:8000
           URL_ADMIN: http://localhost:8001/balie
           HEADLESS: true
-        run: uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api  --variable ENVIRONMENT:docker-ci .
+        run: uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --name 'E2E Tests' ./tests
       - name: Upload test results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: ${{ always() }}
         with:
           name: robot-report-api

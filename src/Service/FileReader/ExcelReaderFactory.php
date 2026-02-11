@@ -9,6 +9,15 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Shared\Exception\FileReaderException;
 
+use function array_filter;
+use function array_keys;
+use function count;
+use function in_array;
+use function ltrim;
+use function strtolower;
+use function strval;
+use function trim;
+
 /**
  * Creates instances of the ExcelReader. Uses ColumnMapping instances as input to parse and validate the headers.
  * The result is a lookup table to be able to fetch column values for each row easily.

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -39,7 +40,7 @@ class DossierStatusTest extends UnitTestCase
     {
         $translation = 'foo';
 
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator->expects('trans')->with('admin.publications.status.concept', [], null, null)->andReturn($translation);
 
         self::assertEquals(

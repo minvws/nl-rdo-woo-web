@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Updater;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Search\Index\Updater\PageIndexUpdater;
@@ -18,8 +19,8 @@ class PageIndexUpdaterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
         $this->indexUpdater = new PageIndexUpdater(
             $this->elasticClient,
@@ -37,7 +38,7 @@ class PageIndexUpdaterTest extends UnitTestCase
 
         $this->logger->shouldReceive('debug');
 
-        $this->elasticClient->expects('update')->with(\Mockery::on(
+        $this->elasticClient->expects('update')->with(Mockery::on(
             static fn (array $input) => $input['id'] === $id
                 && $input['body']['script']['params']['page']['page_nr'] === $pageNr
                 && $input['body']['script']['params']['page']['content'] === $content

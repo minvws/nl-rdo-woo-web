@@ -15,6 +15,11 @@ use Shared\Service\Search\Query\Aggregation\AggregationStrategyInterface;
 use Shared\Service\Search\Query\Filter\FilterInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
+use function array_intersect;
+use function array_values;
+use function is_array;
+use function sprintf;
+
 abstract readonly class AbstractInquiryFacet implements FacetDefinitionInterface
 {
     public function __construct(

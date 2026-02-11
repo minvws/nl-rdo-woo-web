@@ -7,6 +7,8 @@ namespace Shared\Twig\Runtime;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;
 
+use function strval;
+
 class CspExtensionRuntime implements RuntimeExtensionInterface
 {
     public function __construct(protected RequestStack $requestStack)

@@ -7,6 +7,8 @@ namespace Shared\Twig\Runtime;
 use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Twig\Extension\RuntimeExtensionInterface;
 
+use function explode;
+
 class AuthExtensionRuntime implements RuntimeExtensionInterface
 {
     public function __construct(protected AuthorizationMatrix $authorizationMatrix)

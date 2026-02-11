@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Vws\AuditLog;
 
+use Exception;
 use MinVWS\AuditLogger\AuditLogger;
 use MinVWS\AuditLogger\Events\Logging\UserLoginLogEvent;
 use MinVWS\AuditLogger\Events\Logging\UserLogoutLogEvent;
@@ -13,6 +14,9 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
+
+use function hash;
+use function substr;
 
 #[AsEventListener(event: LogoutEvent::class, method: 'onLogout')]
 #[AsEventListener(event: LoginFailureEvent::class, method: 'onAuthenticationFailure')]
@@ -44,7 +48,7 @@ readonly class LoginAuditLogger
         try {
             $event->getPassport()?->getUser();
             $emailInvalid = false;
-        } catch (\Exception) {
+        } catch (Exception) {
             $emailInvalid = true;
         }
 

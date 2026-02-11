@@ -6,6 +6,8 @@ namespace Shared\Form\Transformer;
 
 use Symfony\Component\Form\DataTransformerInterface;
 
+use function is_null;
+
 /**
  * Converts a null value to an empty string.
  *

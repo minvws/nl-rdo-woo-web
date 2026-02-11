@@ -1,0 +1,12 @@
+-
+    name: DOSSIER
+    value: dossier
+-
+    name: DOCUMENT
+    value: document
+-
+    name: MAIN_DOCUMENT
+    value: main_document
+-
+    name: ATTACHMENT
+    value: attachment

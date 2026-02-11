@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 
+use function fclose;
+use function fpassthru;
+
 final class WooIndexController extends AbstractController
 {
     public function __construct(private readonly WooIndexSitemapService $wooIndexSitemapService)

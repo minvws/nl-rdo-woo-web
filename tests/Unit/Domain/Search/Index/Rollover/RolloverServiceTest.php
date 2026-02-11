@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Rollover;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticDocumentType;
@@ -16,6 +17,7 @@ use Shared\Domain\Search\Index\Rollover\RolloverParameters;
 use Shared\Domain\Search\Index\Rollover\RolloverService;
 use Shared\Domain\Search\Index\Rollover\SetElasticAliasCommand;
 use Shared\Tests\Unit\UnitTestCase;
+use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -28,9 +30,9 @@ class RolloverServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
-        $this->mappingService = \Mockery::mock(MappingService::class);
-        $this->counter = \Mockery::mock(RolloverCounter::class);
+        $this->messageBus = Mockery::mock(MessageBusInterface::class);
+        $this->mappingService = Mockery::mock(MappingService::class);
+        $this->counter = Mockery::mock(RolloverCounter::class);
 
         $this->rolloverService = new RolloverService(
             $this->messageBus,
@@ -122,23 +124,23 @@ class RolloverServiceTest extends UnitTestCase
     {
         $name = 'new-index';
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (SetElasticAliasCommand $message) use ($name) {
                 self::assertEquals($name, $message->indexName);
                 self::assertEquals(ElasticConfig::READ_INDEX, $message->aliasName);
 
                 return true;
             }
-        ))->andReturns(new Envelope(new \stdClass()));
+        ))->andReturns(new Envelope(new stdClass()));
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (SetElasticAliasCommand $message) use ($name) {
                 self::assertEquals($name, $message->indexName);
                 self::assertEquals(ElasticConfig::WRITE_INDEX, $message->aliasName);
 
                 return true;
             }
-        ))->andReturns(new Envelope(new \stdClass()));
+        ))->andReturns(new Envelope(new stdClass()));
 
         $this->rolloverService->makeLive($name);
     }
@@ -147,13 +149,13 @@ class RolloverServiceTest extends UnitTestCase
     {
         $params = new RolloverParameters(13);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (InitiateElasticRolloverCommand $message) use ($params) {
                 self::assertEquals($params->getMappingVersion(), $message->mappingVersion);
 
                 return true;
             }
-        ))->andReturns(new Envelope(new \stdClass()));
+        ))->andReturns(new Envelope(new stdClass()));
 
         $this->rolloverService->initiateRollover($params);
     }

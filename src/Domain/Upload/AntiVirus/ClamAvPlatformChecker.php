@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Upload\AntiVirus;
 
+use RuntimeException;
 use Shared\Service\PlatformCheck\PlatformCheckerInterface;
 use Shared\Service\PlatformCheck\PlatformCheckResult;
 
@@ -29,7 +30,7 @@ readonly class ClamAvPlatformChecker implements PlatformCheckerInterface
 
         try {
             $result = $this->clientFactory->getClient()->scanStream($maliciousData);
-        } catch (\RuntimeException) {
+        } catch (RuntimeException) {
             return PlatformCheckResult::error($description, 'Cannot connect to ClamAV');
         }
 

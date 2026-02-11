@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inventory\Sanitizer\DataProvider;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
@@ -23,9 +24,9 @@ class InventoryDataProviderFactoryTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->documentRepository = \Mockery::mock(DocumentRepository::class);
-        $this->docA = \Mockery::mock(Document::class);
-        $this->docB = \Mockery::mock(Document::class);
+        $this->documentRepository = Mockery::mock(DocumentRepository::class);
+        $this->docA = Mockery::mock(Document::class);
+        $this->docB = Mockery::mock(Document::class);
 
         $this->factory = new InventoryDataProviderFactory(
             $this->documentRepository,
@@ -36,8 +37,8 @@ class InventoryDataProviderFactoryTest extends UnitTestCase
 
     public function testForWooDecision(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
-        $wooDecision->expects('getInventory')->andReturn($inventory = \Mockery::mock(Inventory::class));
+        $wooDecision = Mockery::mock(WooDecision::class);
+        $wooDecision->expects('getInventory')->andReturn($inventory = Mockery::mock(Inventory::class));
 
         $this->documentRepository
             ->expects('getAllDossierDocumentsWithDossiers')
@@ -59,8 +60,8 @@ class InventoryDataProviderFactoryTest extends UnitTestCase
 
     public function testForInquiry(): void
     {
-        $inquiry = \Mockery::mock(Inquiry::class);
-        $inquiry->expects('getInventory')->andReturn($inventory = \Mockery::mock(InquiryInventory::class));
+        $inquiry = Mockery::mock(Inquiry::class);
+        $inquiry->expects('getInventory')->andReturn($inventory = Mockery::mock(InquiryInventory::class));
 
         $this->documentRepository
             ->expects('getPublicInquiryDocumentsWithDossiers')

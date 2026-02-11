@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inquiry;
 
+use Exception;
+use Generator;
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Exception\FileReaderException;
 use Shared\Service\FileReader\ColumnMapping;
@@ -11,6 +13,9 @@ use Shared\Service\FileReader\ExcelReaderFactory;
 use Shared\Service\FileReader\FileReaderInterface;
 use Shared\Service\Inventory\InventoryDataHelper;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+
+use function intval;
+use function sprintf;
 
 class InquiryLinkImportParser
 {
@@ -24,9 +29,9 @@ class InquiryLinkImportParser
     }
 
     /**
-     * @return \Generator<string,array<string>>
+     * @return Generator<string,array<string>>
      */
-    public function parse(UploadedFile $uploadedFile, DocumentPrefix $prefix): \Generator
+    public function parse(UploadedFile $uploadedFile, DocumentPrefix $prefix): Generator
     {
         $reader = $this->getReader($uploadedFile);
         foreach ($reader as $rowIdx => $row) {
@@ -67,7 +72,7 @@ class InquiryLinkImportParser
                     columnNames: ['zaaknr', 'casenr', 'zaak', 'case', 'zaaknummer', 'zaaknummers', 'zaaknummer(s)'],
                 ),
             );
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             throw FileReaderException::forOpenSpreadsheetException($exception);
         }
     }

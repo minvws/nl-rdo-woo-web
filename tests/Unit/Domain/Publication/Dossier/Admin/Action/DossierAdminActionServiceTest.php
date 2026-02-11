@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Admin\Action;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
@@ -21,8 +22,8 @@ class DossierAdminActionServiceTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->actionA = \Mockery::mock(DossierAdminActionInterface::class);
-        $this->actionB = \Mockery::mock(DossierAdminActionInterface::class);
+        $this->actionA = Mockery::mock(DossierAdminActionInterface::class);
+        $this->actionB = Mockery::mock(DossierAdminActionInterface::class);
 
         $this->actionService = new DossierAdminActionService([
             $this->actionA,
@@ -32,7 +33,7 @@ class DossierAdminActionServiceTest extends UnitTestCase
 
     public function testGetAvailableActions(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
 
         $this->actionA->expects('supports')->with($dossier)->andReturnTrue();
         $this->actionA->expects('getAdminAction')->andReturn(DossierAdminAction::INGEST);
@@ -46,7 +47,7 @@ class DossierAdminActionServiceTest extends UnitTestCase
 
     public function testExecuteUsesFirstMatchingImplementation(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
 
         $this->actionA->expects('getAdminAction')->andReturn(DossierAdminAction::INGEST);
         $this->actionA->expects('supports')->with($dossier)->andReturnFalse();
@@ -60,7 +61,7 @@ class DossierAdminActionServiceTest extends UnitTestCase
 
     public function testExecuteThrowsExceptionForNoMatchingImplementation(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $this->actionA->expects('getAdminAction')->andReturn(DossierAdminAction::GENERATE_ARCHIVES);

@@ -13,8 +13,11 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/config',
         __DIR__ . '/src',
+        __DIR__ . '/apps',
         __DIR__ . '/tests',
     ])
+    ->withComposerBased(twig: true, doctrine: true, phpunit: true, symfony: true)
+    ->withAttributesSets()
     ->withPhpSets()
     ->withSkip([
         RemoveReflectionSetAccessibleCallsRector::class,

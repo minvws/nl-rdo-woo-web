@@ -16,9 +16,6 @@ use Symfony\Component\Form\FormBuilderInterface;
  */
 class DepartmentType extends AbstractType
 {
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -63,7 +60,6 @@ class DepartmentType extends AbstractType
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'global.save',
-            ])
-        ;
+            ]);
     }
 }

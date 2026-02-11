@@ -15,9 +15,6 @@ use Symfony\Component\Form\FormBuilderInterface;
  */
 class ContentPageType extends AbstractType
 {
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -37,7 +34,6 @@ class ContentPageType extends AbstractType
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'global.save',
-            ])
-        ;
+            ]);
     }
 }

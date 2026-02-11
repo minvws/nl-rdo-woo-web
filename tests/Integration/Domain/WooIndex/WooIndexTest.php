@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Shared\Tests\Integration\Domain\WooIndex;
 
 use League\Flysystem\FilesystemOperator;
+use Mockery;
 use Mockery\MockInterface;
+use ReflectionClass;
 use Shared\Domain\WooIndex\Builder\DiWooXMLWriter;
 use Shared\Domain\WooIndex\Builder\SitemapBuilder;
 use Shared\Domain\WooIndex\Builder\SitemapIndexBuilder;
@@ -22,6 +24,9 @@ use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Attribute\WithStory;
 
+use function range;
+use function sprintf;
+
 final class WooIndexTest extends SharedWebTestCase
 {
     private StreamHelper&MockInterface $streamHelper;
@@ -35,7 +40,7 @@ final class WooIndexTest extends SharedWebTestCase
 
         self::bootKernel();
 
-        $this->streamHelper = \Mockery::mock(StreamHelper::class)->makePartial();
+        $this->streamHelper = Mockery::mock(StreamHelper::class)->makePartial();
         self::getContainer()->set(StreamHelper::class, $this->streamHelper);
 
         $this->wooIndexStorage = self::getContainer()->get('woo_index.storage');
@@ -115,7 +120,7 @@ final class WooIndexTest extends SharedWebTestCase
     {
         $wooIndexSitemap = new WooIndexSitemap();
 
-        $reflection = new \ReflectionClass($wooIndexSitemap);
+        $reflection = new ReflectionClass($wooIndexSitemap);
         $property = $reflection->getProperty('id');
         $property->setAccessible(true);
         $property->setValue($wooIndexSitemap, $uuid);

@@ -1,0 +1,28 @@
+admin_controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: Admin\Controller
+    type: attribute
+
+api_platform:
+    resource: .
+    type: api_platform
+    prefix: /balie/api
+
+app_admin_accessibility:
+    path:          /balie/toegankelijkheid
+    controller:    Admin\Controller\IndexController::contentPage
+    defaults:
+        slug: 'toegankelijkheid'
+
+app_admin_privacy:
+    path:          /balie/privacy
+    controller:    Admin\Controller\IndexController::contentPage
+    defaults:
+        slug: 'privacy'
+
+app_admin_contact:
+    path:          /balie/contact
+    controller:    Admin\Controller\IndexController::contentPage
+    defaults:
+        slug: 'balie-contact'

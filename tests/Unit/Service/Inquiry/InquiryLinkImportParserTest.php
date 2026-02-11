@@ -11,6 +11,8 @@ use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+use function iterator_to_array;
+
 class InquiryLinkImportParserTest extends UnitTestCase
 {
     use MatchesSnapshots;

@@ -6,6 +6,8 @@ namespace Shared\Service\Inventory\Progress;
 
 use Doctrine\ORM\EntityManagerInterface;
 
+use function strval;
+
 class ProgressUpdater
 {
     public function __construct(

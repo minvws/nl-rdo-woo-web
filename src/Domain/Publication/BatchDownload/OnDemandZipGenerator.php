@@ -13,6 +13,8 @@ use Shared\Service\DownloadFilenameGenerator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Webmozart\Assert\Assert;
 
+use const DIRECTORY_SEPARATOR;
+
 readonly class OnDemandZipGenerator
 {
     public function __construct(

@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex\Exception;
 
-final class WooIndexInvalidArgumentException extends \InvalidArgumentException implements WooIndexException
+use InvalidArgumentException;
+
+use function sprintf;
+
+final class WooIndexInvalidArgumentException extends InvalidArgumentException implements WooIndexException
 {
     public static function invalidPriority(float $prio): self
     {

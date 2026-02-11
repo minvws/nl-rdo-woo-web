@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex\Producer\Mapper;
 
-use ApiPlatform\Metadata\UrlGeneratorInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Shared\Domain\WooIndex\Producer\Repository\RawReferenceDto;
 use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
 use Shared\Domain\WooIndex\Producer\UrlReference;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class HasPartsMapper
 {

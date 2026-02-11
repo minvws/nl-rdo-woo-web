@@ -10,6 +10,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;
 
+use function file_get_contents;
+use function is_array;
+use function json_decode;
+use function str_starts_with;
+
 class AppExtensionRuntime implements RuntimeExtensionInterface
 {
     public function __construct(

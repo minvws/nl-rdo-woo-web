@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Process\SubType\EventHandler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\Process\SubType\EventHandler\AttachmentIngestEventHandler;
 use Shared\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
@@ -18,7 +19,7 @@ final class AttachmentIngestEventHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->searchDispatcher = \Mockery::mock(SearchDispatcher::class);
+        $this->searchDispatcher = Mockery::mock(SearchDispatcher::class);
         $this->event = new AttachmentCreatedEvent(
             dossierId: Uuid::v6(),
             attachmentId: Uuid::v6(),

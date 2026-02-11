@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -43,22 +45,22 @@ class DefaultDossierMapperTest extends UnitTestCase
     public function testMap(): void
     {
         $departmentAid = Uuid::v6();
-        $departmentA = \Mockery::mock(Department::class);
+        $departmentA = Mockery::mock(Department::class);
         $departmentA->expects('getShortTag')->andReturn('F');
         $departmentA->expects('getName')->andReturn('Foo');
         $departmentA->expects('getId')->andReturn($departmentAid);
 
         $departmentBid = Uuid::v6();
-        $departmentB = \Mockery::mock(Department::class);
+        $departmentB = Mockery::mock(Department::class);
         $departmentB->expects('getName')->andReturn('Bar');
         $departmentB->expects('getShortTag')->andReturn('B');
         $departmentB->expects('getId')->andReturn($departmentBid);
 
-        $subject = \Mockery::mock(Subject::class);
+        $subject = Mockery::mock(Subject::class);
         $subject->expects('getId')->andReturn($subjectId = Uuid::v6());
         $subject->expects('getName')->andReturn($subjectName = 'dummy subject');
 
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
         $dossier->shouldReceive('getDossierNr')->andReturn('dos-123');
@@ -66,9 +68,9 @@ class DefaultDossierMapperTest extends UnitTestCase
         $dossier->shouldReceive('getSummary')->andReturn('test-summary');
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('foo');
-        $dossier->shouldReceive('getDateFrom')->andReturn(new \DateTimeImmutable('2023-04-16 10:54:15'));
-        $dossier->shouldReceive('getDateTo')->andReturn(new \DateTimeImmutable('2025-04-16 10:54:15'));
-        $dossier->shouldReceive('getPublicationDate')->andReturn(new \DateTimeImmutable('2024-04-16 11:30:22'));
+        $dossier->shouldReceive('getDateFrom')->andReturn(new DateTimeImmutable('2023-04-16 10:54:15'));
+        $dossier->shouldReceive('getDateTo')->andReturn(new DateTimeImmutable('2025-04-16 10:54:15'));
+        $dossier->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable('2024-04-16 11:30:22'));
         $dossier->shouldReceive('getSubject')->andReturn($subject);
         $dossier->shouldReceive('getDepartments')->andReturn(new ArrayCollection([
             $departmentA,
@@ -121,18 +123,18 @@ class DefaultDossierMapperTest extends UnitTestCase
     public function testMapWithoutSubject(): void
     {
         $departmentAid = Uuid::v6();
-        $departmentA = \Mockery::mock(Department::class);
+        $departmentA = Mockery::mock(Department::class);
         $departmentA->expects('getShortTag')->andReturn('F');
         $departmentA->expects('getName')->andReturn('Foo');
         $departmentA->expects('getId')->andReturn($departmentAid);
 
         $departmentBid = Uuid::v6();
-        $departmentB = \Mockery::mock(Department::class);
+        $departmentB = Mockery::mock(Department::class);
         $departmentB->expects('getName')->andReturn('Bar');
         $departmentB->expects('getShortTag')->andReturn('B');
         $departmentB->expects('getId')->andReturn($departmentBid);
 
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
         $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
         $dossier->shouldReceive('getDossierNr')->andReturn('dos-123');
@@ -140,9 +142,9 @@ class DefaultDossierMapperTest extends UnitTestCase
         $dossier->shouldReceive('getSummary')->andReturn('test-summary');
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('foo');
-        $dossier->shouldReceive('getDateFrom')->andReturn(new \DateTimeImmutable('2023-04-16 10:54:15'));
-        $dossier->shouldReceive('getDateTo')->andReturn(new \DateTimeImmutable('2025-04-16 10:54:15'));
-        $dossier->shouldReceive('getPublicationDate')->andReturn(new \DateTimeImmutable('2024-04-16 11:30:22'));
+        $dossier->shouldReceive('getDateFrom')->andReturn(new DateTimeImmutable('2023-04-16 10:54:15'));
+        $dossier->shouldReceive('getDateTo')->andReturn(new DateTimeImmutable('2025-04-16 10:54:15'));
+        $dossier->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable('2024-04-16 11:30:22'));
         $dossier->shouldReceive('getSubject')->andReturnNull();
         $dossier->shouldReceive('getDepartments')->andReturn(new ArrayCollection([
             $departmentA,

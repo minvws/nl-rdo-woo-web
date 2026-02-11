@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\Updater;
 
+use Elastic\Elasticsearch\Exception\ServerResponseException;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\Schema\ElasticField;
@@ -20,7 +21,7 @@ class PageIndexUpdater
     }
 
     /**
-     * @throws \Elastic\Elasticsearch\Exception\ServerResponseException
+     * @throws ServerResponseException
      */
     public function update(string $id, int $pageNr, string $content): void
     {

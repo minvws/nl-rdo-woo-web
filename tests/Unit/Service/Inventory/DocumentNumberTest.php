@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inventory;
 
+use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -11,15 +12,17 @@ use Shared\Service\Inventory\DocumentMetadata;
 use Shared\Service\Inventory\DocumentNumber;
 use Shared\Tests\Unit\UnitTestCase;
 
+use function strval;
+
 class DocumentNumberTest extends UnitTestCase
 {
     #[DataProvider('fromDossierAndReferralProvider')]
     public function testFromReferral(string $documentNr, string $prefix, string $documentId, string $referral, string $expected): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($prefix);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDocumentNr')->andReturn($documentNr);
         $document->shouldReceive('getDocumentId')->andReturn($documentId);
 
@@ -84,10 +87,10 @@ class DocumentNumberTest extends UnitTestCase
 
     public function testFromDossierAndDocumentMetadata(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('pr3f1x');
 
-        $documentMetadata = \Mockery::mock(DocumentMetadata::class);
+        $documentMetadata = Mockery::mock(DocumentMetadata::class);
         $documentMetadata->shouldReceive('getMatter')->andReturn('bar');
         $documentMetadata->shouldReceive('getId')->andReturn('foo123');
 

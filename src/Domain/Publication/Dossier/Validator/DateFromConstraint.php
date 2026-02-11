@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Validator;
 
+use Attribute;
 use Symfony\Component\Validator\Constraint;
 
-#[\Attribute]
+#[Attribute]
 class DateFromConstraint extends Constraint
 {
     public string $message = 'date_to_before_date_from';

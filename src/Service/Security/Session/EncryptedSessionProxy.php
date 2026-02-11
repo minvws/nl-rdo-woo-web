@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Service\Security\Session;
 
+use Override;
 use ParagonIE\Halite\Symmetric\Crypto;
 use ParagonIE\Halite\Symmetric\EncryptionKey;
 use ParagonIE\HiddenString\HiddenString;
+use SessionHandlerInterface;
 use Symfony\Component\HttpFoundation\Session\Storage\Proxy\SessionHandlerProxy;
 
 /**
@@ -17,14 +19,14 @@ class EncryptedSessionProxy extends SessionHandlerProxy
 {
     protected EncryptionKey $key;
 
-    public function __construct(\SessionHandlerInterface $handler, string $key)
+    public function __construct(SessionHandlerInterface $handler, string $key)
     {
         parent::__construct($handler);
 
         $this->key = new EncryptionKey(new HiddenString($key));
     }
 
-    #[\Override]
+    #[Override]
     public function read($sessionId): string
     {
         $data = parent::read($sessionId);
@@ -35,7 +37,7 @@ class EncryptedSessionProxy extends SessionHandlerProxy
         return Crypto::decrypt($data, $this->key)->getString();
     }
 
-    #[\Override]
+    #[Override]
     public function write($sessionId, $data): bool
     {
         $data = Crypto::encrypt(new HiddenString($data), $this->key);

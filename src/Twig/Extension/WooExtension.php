@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Twig\Extension;
 
+use Override;
 use Shared\Twig\Runtime\WooExtensionRuntime;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -18,7 +19,7 @@ class WooExtension extends AbstractExtension
     {
     }
 
-    #[\Override]
+    #[Override]
     public function getFilters(): array
     {
         return [
@@ -31,7 +32,7 @@ class WooExtension extends AbstractExtension
         ];
     }
 
-    #[\Override]
+    #[Override]
     public function getFunctions(): array
     {
         return [

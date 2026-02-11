@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\Handler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownload;
@@ -23,9 +24,9 @@ class GenerateBatchDownloadHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(BatchDownloadRepository::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->zipGenerator = \Mockery::mock(BatchDownloadZipGenerator::class);
+        $this->repository = Mockery::mock(BatchDownloadRepository::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->zipGenerator = Mockery::mock(BatchDownloadZipGenerator::class);
 
         $this->handler = new GenerateBatchDownloadHandler(
             $this->repository,
@@ -37,7 +38,7 @@ class GenerateBatchDownloadHandlerTest extends UnitTestCase
     public function testInvoke(): void
     {
         $uuid = Uuid::v6();
-        $batchDownload = \Mockery::mock(BatchDownload::class);
+        $batchDownload = Mockery::mock(BatchDownload::class);
 
         $this->repository
             ->shouldReceive('find')

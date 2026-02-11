@@ -9,12 +9,6 @@
             {% set stepIndicationClass = '' %}
             {% set stepTextClass = '' %}
 
-            {% if not step.accessible or dossier.dossierNr is empty  or dossier.documentPrefix is empty %}
-                {% set stepUrl = '' %}
-            {% else %}
-                {% set stepUrl = dossier.dossierNr ? path(step.routeName, { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) : '' %}
-            {% endif %}
-
             {% if isCurrentStep %}
                 {% set stepClass = 'bhr-steps__step--current' %}
                 {% set stepIndicationClass = 'bhr-steps__step-indication--current' %}
@@ -23,7 +17,7 @@
                 {% set iconClass = 'bhr-steps__icon--future' %}
             {% endif %}
             <li class="bhr-steps__step {{ stepClass }}">
-                <a class="bhr-steps__anchor" {% if stepUrl %} href="{{ stepUrl }}"{% endif %}>
+                <span class="bhr-steps__anchor">
                     <twig:Admin:Icon class="bhr-steps__icon {{ iconClass }}" name="{{ iconName }}" color="fill-white" size="{{ isCurrentStep ? 40 : 32 }}" />
                     <span class="bhr-steps__step-text {{ stepTextClass }}">
                         <span class="font-bold">{{ ("admin.dossiers." ~ dossier.type.value ~  ".step." ~ step.stepName.value) | trans }}</span>
@@ -40,7 +34,7 @@
                             Stap {{ loop.index }} van {{ workflowStatus.steps | length }}
                         </span>
                     </span>
-                </a>
+                </span>
             </li>
         {% endfor %}
     </ol>

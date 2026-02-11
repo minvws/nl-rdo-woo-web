@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Search\Result\Dossier;
 
 use MinVWS\TypeArray\TypeArray;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
@@ -22,8 +23,8 @@ class DossierSearchResultBaseMapperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(ProvidesDossierTypeSearchResultInterface::class);
-        $this->hit = \Mockery::mock(TypeArray::class);
+        $this->repository = Mockery::mock(ProvidesDossierTypeSearchResultInterface::class);
+        $this->hit = Mockery::mock(TypeArray::class);
 
         $this->mapper = new DossierSearchResultBaseMapper();
     }
@@ -59,14 +60,14 @@ class DossierSearchResultBaseMapperTest extends UnitTestCase
 
     public function testMapSuccessful(): void
     {
-        $this->hit = \Mockery::mock(TypeArray::class);
+        $this->hit = Mockery::mock(TypeArray::class);
         $this->hit->shouldReceive('getStringOrNull')->with('[fields][document_prefix][0]')->andReturn('foo');
         $this->hit->shouldReceive('getStringOrNull')->with('[fields][dossier_nr][0]')->andReturn('bar');
         $this->hit->shouldReceive('exists')->with('[highlight][title]')->andReturnTrue();
         $this->hit->shouldReceive('getTypeArray->toArray')->andReturn(['x', 'y']);
         $this->hit->shouldReceive('exists')->with('[highlight][summary]')->andReturnFalse();
 
-        $viewModel = \Mockery::mock(CovenantSearchResult::class);
+        $viewModel = Mockery::mock(CovenantSearchResult::class);
 
         $this->repository
             ->shouldReceive('getSearchResultViewModel')

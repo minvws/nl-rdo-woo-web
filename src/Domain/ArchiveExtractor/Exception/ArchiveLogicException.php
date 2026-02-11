@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Shared\Domain\ArchiveExtractor\Exception;
 
-final class ArchiveLogicException extends \LogicException implements ArchiveExceptionInterface
+use LogicException;
+use SplFileInfo;
+
+use function sprintf;
+
+final class ArchiveLogicException extends LogicException implements ArchiveExceptionInterface
 {
-    public static function forArchiveIsAlreadyOpen(\SplFileInfo $file): self
+    public static function forArchiveIsAlreadyOpen(SplFileInfo $file): self
     {
         return new self(
             sprintf(

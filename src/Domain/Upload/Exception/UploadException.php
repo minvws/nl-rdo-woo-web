@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Upload\Exception;
 
+use RuntimeException;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadStatus;
 use Symfony\Component\Uid\Uuid;
 
-class UploadException extends \RuntimeException
+use function sprintf;
+
+class UploadException extends RuntimeException
 {
     public static function forInvalidStatusUpdate(UploadEntity $uploadEntity, UploadStatus $targetStatus): self
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document\Handler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\RemoveDocumentCommand;
@@ -26,10 +27,10 @@ class RemoveDocumentHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->wooDecisionRepository = \Mockery::mock(WooDecisionRepository::class);
-        $this->documentRepository = \Mockery::mock(DocumentRepository::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->documentService = \Mockery::mock(DocumentService::class);
+        $this->wooDecisionRepository = Mockery::mock(WooDecisionRepository::class);
+        $this->documentRepository = Mockery::mock(DocumentRepository::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->documentService = Mockery::mock(DocumentService::class);
 
         $this->handler = new RemoveDocumentHandler(
             $this->logger,
@@ -60,7 +61,7 @@ class RemoveDocumentHandlerTest extends UnitTestCase
             $documentUuid = Uuid::v6(),
         );
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
         $this->wooDecisionRepository->expects('find')->with($dossierUuid)->andReturn($dossier);
         $this->documentRepository->expects('find')->with($documentUuid)->andReturnNull();
@@ -77,8 +78,8 @@ class RemoveDocumentHandlerTest extends UnitTestCase
             $documentUuid = Uuid::v6(),
         );
 
-        $dossier = \Mockery::mock(WooDecision::class);
-        $document = \Mockery::mock(Document::class);
+        $dossier = Mockery::mock(WooDecision::class);
+        $document = Mockery::mock(Document::class);
 
         $this->wooDecisionRepository->expects('find')->with($dossierUuid)->andReturn($dossier);
         $this->documentRepository->expects('find')->with($documentUuid)->andReturn($document);

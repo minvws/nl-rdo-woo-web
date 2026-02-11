@@ -8,6 +8,8 @@ use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
 
+use function sprintf;
+
 readonly class ContentExtractCache
 {
     public function __construct(

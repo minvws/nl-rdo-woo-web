@@ -10,6 +10,8 @@ use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface
 use Shared\Domain\Search\Result\Dossier\RequestForAdvice\RequestForAdviceSearchResult;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
+use function sprintf;
+
 /**
  * @extends AbstractDossierRepository<RequestForAdvice>
  */
@@ -46,8 +48,7 @@ class RequestForAdviceRepository extends AbstractDossierRepository implements Pr
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
-        ;
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
 
         /** @var ?RequestForAdviceSearchResult */
         return $qb->getQuery()->getOneOrNullResult();

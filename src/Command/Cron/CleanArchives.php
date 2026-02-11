@@ -6,10 +6,14 @@ namespace Shared\Command\Cron;
 
 use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadStorage;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use function sprintf;
+
+#[AsCommand(name: 'woopie:cron:clean-archives', description: 'Cleans up expired archives')]
 class CleanArchives extends Command
 {
     public function __construct(
@@ -21,10 +25,8 @@ class CleanArchives extends Command
 
     protected function configure(): void
     {
-        $this->setName('woopie:cron:clean-archives')
-            ->setDescription('Cleans up expired archives')
-            ->setHelp('Cleans up expired archives')
-        ;
+        $this
+            ->setHelp('Cleans up expired archives');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -42,6 +44,6 @@ class CleanArchives extends Command
 
         $output->writeln(sprintf('Removed %d expired archives', $count));
 
-        return 0;
+        return self::SUCCESS;
     }
 }

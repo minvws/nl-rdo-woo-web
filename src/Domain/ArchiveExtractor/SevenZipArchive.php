@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Shared\Domain\ArchiveExtractor;
 
 use Archive7z\Archive7z;
+use Exception;
 use Shared\Domain\ArchiveExtractor\Exception\ArchiveLogicException;
 use Shared\Domain\ArchiveExtractor\Exception\ArchiveMissingDestinationException;
 use Shared\Domain\ArchiveExtractor\Exception\ArchiveRuntimeException;
 use Shared\Domain\ArchiveExtractor\Factory\SevenZipArchiveFactory;
+use SplFileInfo;
 
 final class SevenZipArchive implements ArchiveInterface
 {
@@ -18,7 +20,7 @@ final class SevenZipArchive implements ArchiveInterface
     {
     }
 
-    public function open(\SplFileInfo $file): void
+    public function open(SplFileInfo $file): void
     {
         if (isset($this->archive)) {
             throw ArchiveLogicException::forArchiveIsAlreadyOpen($file);
@@ -44,13 +46,13 @@ final class SevenZipArchive implements ArchiveInterface
 
         try {
             $this->archive->setOutputDirectory($destination);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw ArchiveMissingDestinationException::create($destination);
         }
 
         try {
             $this->archive->extract();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw ArchiveRuntimeException::forExtractionFailure($e);
         }
     }

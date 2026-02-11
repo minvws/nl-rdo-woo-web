@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\History;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -25,7 +26,7 @@ class History
     private Uuid $identifier;
 
     #[ORM\Column]
-    private \DateTimeImmutable $createdDt;
+    private DateTimeImmutable $createdDt;
 
     #[ORM\Column(length: 255)]
     private string $contextKey;
@@ -66,12 +67,12 @@ class History
         return $this;
     }
 
-    public function getCreatedDt(): \DateTimeImmutable
+    public function getCreatedDt(): DateTimeImmutable
     {
         return $this->createdDt;
     }
 
-    public function setCreatedDt(\DateTimeImmutable $createdDt): static
+    public function setCreatedDt(DateTimeImmutable $createdDt): static
     {
         $this->createdDt = $createdDt;
 

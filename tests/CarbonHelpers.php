@@ -6,12 +6,14 @@ namespace Shared\Tests;
 
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Closure;
+use DateTimeInterface;
 use PHPUnit\Framework\Attributes\Before;
 
 trait CarbonHelpers
 {
     /**
-     * @param \DateTimeInterface|\Closure|string|Carbon|CarbonImmutable|false|null $testNow real or mock Carbon instance
+     * @param DateTimeInterface|Closure|string|Carbon|CarbonImmutable|false|null $testNow real or mock Carbon instance
      */
     public static function setTestNow(mixed $testNow = null): void
     {

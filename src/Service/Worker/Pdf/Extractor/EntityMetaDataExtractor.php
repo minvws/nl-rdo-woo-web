@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Worker\Pdf\Extractor;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Content\ContentExtractLogContext;
 use Shared\Domain\Ingest\Content\Extractor\Tika\TikaService;
@@ -12,6 +13,8 @@ use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Shared\Service\Stats\WorkerStatsService;
 use Shared\Service\Storage\EntityStorageService;
 use Symfony\Contracts\Cache\CacheInterface;
+
+use function sprintf;
 
 /**
  * Extractor that will extract and store content from a multi-paged (PDF) entity.
@@ -84,7 +87,7 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
     {
         try {
             $this->subTypeIndexer->index($entity, $tikaData);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to create document', [
                 'id' => $entity->getId(),
                 'class' => $entity::class,

@@ -23,9 +23,6 @@ use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webmozart\Assert\Assert;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 #[AsMessageHandler]
 readonly class CreateMainDocumentHandler
 {

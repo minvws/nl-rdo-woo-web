@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Exception;
 
-class ProductionReportUpdaterException extends \RuntimeException
+use RuntimeException;
+
+class ProductionReportUpdaterException extends RuntimeException
 {
     public static function forStateMismatch(): self
     {

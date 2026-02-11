@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\SubType;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Process\IngestProcessOptions;
 use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
@@ -36,7 +37,7 @@ readonly class IndexMainDocumentHandler
 
             $this->subTypeIndexer->index($mainDocument);
             $this->subTypeIngester->ingest($mainDocument, new IngestProcessOptions());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to update main document in elasticsearch', [
                 'uuid' => $command->uuid,
                 'exception' => $e->getMessage(),

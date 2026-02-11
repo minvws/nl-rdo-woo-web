@@ -2,26 +2,37 @@
 version: "3"
 
 vars:
-  CERTS_IMAGE_NAME: ghcr.io/minvws/nl-rdo-woo-web-private/certs
+  CERTS_BASE_IMAGE_NAME: ghcr.io/minvws/nl-rdo-woo-web-private/certs/base
+  CERTS_BUILDER_IMAGE_NAME: ghcr.io/minvws/nl-rdo-woo-web-private/certs/builder
   CERTS_IMAGE_VERSION: local
-  G4_TRIAL_VERSION: master
+  G4_TRIAL_VERSION: v2.2
 
 tasks:
 
   build:
     desc: Build the certs container
     cmds:
-      - echo "G4_TRIAL_VERSION={{.G4_TRIAL_VERSION}}"
-      - docker build
-        --tag {{.CERTS_IMAGE_NAME}}:{{.CERTS_IMAGE_VERSION}}
-        -f docker/certs/Dockerfile
-        --build-arg G4_TRIAL_VERSION={{.G4_TRIAL_VERSION}}
-        .
+      - task: :dc
+        vars:
+          SUB_CMD: build certs {{.CLI_ARGS}}
 
   shell:
     desc: Open a shell within the certs container
     cmds:
       - task: build
+      - task: :dc
+        vars:
+          SUB_CMD: run --rm certs /bin/bash
+
+  shell:base:
+    desc: Open a shell within the certs container
+    cmds:
+      - docker build
+        --tag {{.CERTS_BASE_IMAGE_NAME}}:{{.CERTS_IMAGE_VERSION}}
+        --file docker/certs/Dockerfile
+        --target base
+        --build-arg G4_TRIAL_VERSION={{.G4_TRIAL_VERSION}}
+        .
       - docker run
         --rm
         --interactive
@@ -29,7 +40,7 @@ tasks:
         --volume {{.BASE_PATH}}/docker/certs/config.yaml:/usr/src/g4-trial/config.yaml
         --volume {{.BASE_PATH}}/docker/certs/enrollments:/usr/src/enrollments
         --volume {{.BASE_PATH}}/docker/certs/scripts:/usr/src/scripts
-        {{.CERTS_IMAGE_NAME}}:{{.CERTS_IMAGE_VERSION}}
+        {{.CERTS_BASE_IMAGE_NAME}}:{{.CERTS_IMAGE_VERSION}}
         /bin/bash
 
   gen:
@@ -43,13 +54,12 @@ tasks:
       - task: build
       - rm -rf {{.BASE_PATH}}/docker/certs/generated
       - mkdir -p {{.BASE_PATH}}/docker/certs/generated
-      - |
-        CONTAINER_ID=$(docker run \
-          --rm \
-          --detach \
-          --volume {{.BASE_PATH}}/docker/certs/config.yaml:/usr/src/g4-trial/config.yaml \
-          --volume {{.BASE_PATH}}/docker/certs/enrollments:/usr/src/enrollments \
-          --volume {{.BASE_PATH}}/docker/certs/scripts:/usr/src/scripts \
-          {{.CERTS_IMAGE_NAME}}:{{.CERTS_IMAGE_VERSION}})
-        trap "docker stop $CONTAINER_ID || true" EXIT
-        docker cp $CONTAINER_ID:/usr/src/result/. {{.BASE_PATH}}/docker/certs/generated
+      - task: :dc
+        vars:
+          SUB_CMD: up -d certs
+      - task: :dc
+        vars:
+          SUB_CMD: cp certs:/usr/src/result/. {{.BASE_PATH}}/docker/certs/generated
+      - task: :dc
+        vars:
+          SUB_CMD: rm --force --stop certs

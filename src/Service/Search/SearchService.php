@@ -6,6 +6,7 @@ namespace Shared\Service\Search;
 
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Erichard\ElasticQueryBuilder\QueryBuilder;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Search\Index\ElasticConfig;
@@ -47,7 +48,7 @@ readonly class SearchService
         try {
             /** @var Elasticsearch $response */
             $response = $this->elastic->search($query);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('ElasticSearch error', [
                 'exception' => $e->getMessage(),
                 'query' => $query,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Worker\Tests\Integration;
 
+use Shared\ApplicationId;
 use Shared\Tests\Integration\IntegrationTestTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -11,8 +12,8 @@ abstract class WorkerWebTestCase extends WebTestCase
 {
     use IntegrationTestTrait;
 
-    public static function getAppId(): string
+    protected static function getAppId(): ApplicationId
     {
-        return 'worker';
+        return ApplicationId::WORKER;
     }
 }

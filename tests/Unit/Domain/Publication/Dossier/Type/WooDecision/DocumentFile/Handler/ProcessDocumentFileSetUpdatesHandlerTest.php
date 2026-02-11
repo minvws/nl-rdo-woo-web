@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Handler;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUpdatesCommand;
@@ -27,9 +28,9 @@ class ProcessDocumentFileSetUpdatesHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dispatcher = \Mockery::mock(DocumentFileDispatcher::class);
-        $this->repository = \Mockery::mock(DocumentFileSetRepository::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->dispatcher = Mockery::mock(DocumentFileDispatcher::class);
+        $this->repository = Mockery::mock(DocumentFileSetRepository::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
 
         $this->handler = new ProcessDocumentFileSetUpdatesHandler(
             $this->repository,
@@ -43,17 +44,17 @@ class ProcessDocumentFileSetUpdatesHandlerTest extends UnitTestCase
     public function testInvokeSuccessfully(): void
     {
         $id = Uuid::v6();
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->expects('getStatus')
             ->andReturn(DocumentFileSetStatus::CONFIRMED);
 
-        $updateA = \Mockery::mock(DocumentFileUpdate::class);
+        $updateA = Mockery::mock(DocumentFileUpdate::class);
         $updateA
             ->expects('getStatus')
             ->andReturn(DocumentFileUpdateStatus::COMPLETED);
 
-        $updateB = \Mockery::mock(DocumentFileUpdate::class);
+        $updateB = Mockery::mock(DocumentFileUpdate::class);
         $updateB
             ->expects('getStatus')
             ->andReturn(DocumentFileUpdateStatus::PENDING);
@@ -96,7 +97,7 @@ class ProcessDocumentFileSetUpdatesHandlerTest extends UnitTestCase
     public function testInvokeLogsWarningAndAbortsWhenSetIsRejected(): void
     {
         $id = Uuid::v6();
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
             ->expects('getStatus')->twice()
             ->andReturn(DocumentFileSetStatus::REJECTED);

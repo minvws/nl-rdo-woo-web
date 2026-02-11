@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\Archiver;
 use Aws\CommandInterface;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
@@ -45,14 +46,14 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->s3Client = \Mockery::mock(S3Client::class);
-        $this->zipStreamFactory = \Mockery::mock(ZipStreamFactory::class);
-        $this->filenameGenerator = \Mockery::mock(DownloadFilenameGenerator::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->streamFactory = \Mockery::mock(StreamFactory::class);
+        $this->s3Client = Mockery::mock(S3Client::class);
+        $this->zipStreamFactory = Mockery::mock(ZipStreamFactory::class);
+        $this->filenameGenerator = Mockery::mock(DownloadFilenameGenerator::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->streamFactory = Mockery::mock(StreamFactory::class);
 
-        $this->zipFile = \Mockery::mock(StreamInterface::class);
-        $this->zipStream = \Mockery::mock(ZipStream::class);
+        $this->zipFile = Mockery::mock(StreamInterface::class);
+        $this->zipStream = Mockery::mock(ZipStream::class);
 
         $this->batchArchiver = new ZipStreamBatchArchiver(
             self::BATCH_BUCKET,
@@ -72,17 +73,17 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
 
     public function testStartWithExceptionThrown(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
+        $inquiry = Mockery::mock(Inquiry::class);
 
-        $batchDownload = \Mockery::mock(BatchDownload::class);
+        $batchDownload = Mockery::mock(BatchDownload::class);
         $batchDownload->shouldReceive('getDossier')->andReturn($wooDecision);
         $batchDownload->shouldReceive('getInquiry')->andReturn($inquiry);
 
-        $downloadType = \Mockery::mock(BatchDownloadTypeInterface::class);
+        $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
         $downloadType
             ->shouldReceive('getFileBaseName')
-            ->with(\Mockery::on(
+            ->with(Mockery::on(
                 static function (BatchDownloadScope $scope) use ($wooDecision, $inquiry): bool {
                     return $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry;
                 }
@@ -122,17 +123,17 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
 
     public function testStartWithExceptionThrownAndFailingToDeleteS3Object(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
+        $inquiry = Mockery::mock(Inquiry::class);
 
-        $batchDownload = \Mockery::mock(BatchDownload::class);
+        $batchDownload = Mockery::mock(BatchDownload::class);
         $batchDownload->shouldReceive('getDossier')->andReturn($wooDecision);
         $batchDownload->shouldReceive('getInquiry')->andReturn($inquiry);
 
-        $downloadType = \Mockery::mock(BatchDownloadTypeInterface::class);
+        $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
         $downloadType
             ->shouldReceive('getFileBaseName')
-            ->with(\Mockery::on(
+            ->with(Mockery::on(
                 static function (BatchDownloadScope $scope) use ($wooDecision, $inquiry): bool {
                     return $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry;
                 }
@@ -165,7 +166,7 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
             ->shouldReceive('deleteObject')
             ->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME])
             ->once()
-            ->andThrow($ex2 = new S3Exception('failed to delete', \Mockery::mock(CommandInterface::class)));
+            ->andThrow($ex2 = new S3Exception('failed to delete', Mockery::mock(CommandInterface::class)));
 
         $this->logger
             ->shouldReceive('error')
@@ -194,7 +195,7 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
 
         $document = $this->createDocument($path = 'path');
 
-        $documentResource = \Mockery::mock(StreamInterface::class);
+        $documentResource = Mockery::mock(StreamInterface::class);
 
         $this->streamFactory
             ->shouldReceive('createReadOnlyStream')
@@ -380,17 +381,17 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
 
     private function startArchiver(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
-        $inquiry = \Mockery::mock(Inquiry::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
+        $inquiry = Mockery::mock(Inquiry::class);
 
-        $batchDownload = \Mockery::mock(BatchDownload::class);
+        $batchDownload = Mockery::mock(BatchDownload::class);
         $batchDownload->shouldReceive('getDossier')->andReturn($wooDecision);
         $batchDownload->shouldReceive('getInquiry')->andReturn($inquiry);
 
-        $downloadType = \Mockery::mock(BatchDownloadTypeInterface::class);
+        $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
         $downloadType
             ->shouldReceive('getFileBaseName')
-            ->with(\Mockery::on(
+            ->with(Mockery::on(
                 function (BatchDownloadScope $scope) use ($wooDecision, $inquiry): bool {
                     return $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry;
                 }
@@ -413,7 +414,7 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
 
     private function addDocument(Document $document, string $path): void
     {
-        $documentResource = \Mockery::mock(StreamInterface::class);
+        $documentResource = Mockery::mock(StreamInterface::class);
 
         $this->streamFactory
             ->shouldReceive('createReadOnlyStream')
@@ -438,10 +439,10 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
 
     private function createDocument(string $path): Document&MockInterface
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getPath')->andReturn($path);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         return $document;

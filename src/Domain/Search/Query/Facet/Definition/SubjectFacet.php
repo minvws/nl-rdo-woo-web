@@ -18,6 +18,8 @@ use Shared\Service\Search\Query\Filter\FilterInterface;
 use Shared\Service\Search\Query\Filter\OrTermFilter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
+use function sprintf;
+
 readonly class SubjectFacet implements FacetDefinitionInterface
 {
     public function getKey(): FacetKey

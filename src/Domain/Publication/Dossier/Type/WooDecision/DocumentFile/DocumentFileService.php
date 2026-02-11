@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile;
 
+use Exception;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
@@ -14,9 +15,6 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\EntityStorageService;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 readonly class DocumentFileService
 {
     public function __construct(
@@ -179,7 +177,7 @@ readonly class DocumentFileService
     {
         try {
             $this->documentFileSetRepository->updateStatusTransactionally($documentFileSet, $status);
-        } catch (\Exception) {
+        } catch (Exception) {
             throw DocumentFileSetException::forCannotUpdateStatus($documentFileSet);
         }
     }

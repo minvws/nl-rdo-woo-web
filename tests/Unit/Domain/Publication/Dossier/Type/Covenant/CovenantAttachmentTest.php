@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Covenant;
 
+use DateTimeImmutable;
+use Mockery;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -20,8 +22,8 @@ final class CovenantAttachmentTest extends UnitTestCase
     public function testGetFileCacheKey(): void
     {
         $attachment = new CovenantAttachment(
-            \Mockery::mock(Covenant::class),
-            new \DateTimeImmutable(),
+            Mockery::mock(Covenant::class),
+            new DateTimeImmutable(),
             AttachmentType::ADVICE,
             AttachmentLanguage::DUTCH,
         );

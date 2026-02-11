@@ -19,18 +19,18 @@ describe('The functions regarding file upload limits', () => {
   ];
 
   describe('the "collectFileLimitLabels" function', () => {
-    test('should return a list of file labels', () => {
+    test('should return a list of file labels, sorted alphabetically', () => {
       expect(collectFileLimitLabels(limits)).toEqual([
+        'Image',
+        'JPG',
         'PDF',
         'PNG',
-        'JPG',
-        'Image',
       ]);
     });
   });
 
   describe('the "collectFileLimitSizes" function', () => {
-    test('should return a list of unique file sizes', () => {
+    test('should return a list of unique file sizes, sorted in ascending order', () => {
       expect(collectFileLimitSizes(limits)).toEqual([
         1024 * 1024,
         1024 * 1024 * 5,
@@ -39,11 +39,11 @@ describe('The functions regarding file upload limits', () => {
   });
 
   describe('the "collectFileLimitMimeTypes" function', () => {
-    test('should return a list of unique  mime types', () => {
+    test('should return a list of unique mime types, sorted alphabetically', () => {
       expect(collectFileLimitMimeTypes(limits)).toEqual([
         'application/pdf',
-        'image/png',
         'image/jpeg',
+        'image/png',
       ]);
     });
   });

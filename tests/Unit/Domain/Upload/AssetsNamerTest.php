@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Upload;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Upload\AssetsNamer;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
+
+use function sprintf;
 
 final class AssetsNamerTest extends UnitTestCase
 {
@@ -18,7 +21,7 @@ final class AssetsNamerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->department = \Mockery::mock(Department::class);
+        $this->department = Mockery::mock(Department::class);
 
         $this->assetsNamer = new AssetsNamer();
     }
@@ -37,7 +40,7 @@ final class AssetsNamerTest extends UnitTestCase
 
     public function testGetStorageSubpatForMisc(): void
     {
-        $entityWithFileInfo = \Mockery::mock(EntityWithFileInfo::class);
+        $entityWithFileInfo = Mockery::mock(EntityWithFileInfo::class);
 
         $entityWithFileInfo
             ->shouldReceive('getId')

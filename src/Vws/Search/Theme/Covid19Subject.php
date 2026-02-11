@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Vws\Search\Theme;
 
+use function array_map;
+
 enum Covid19Subject: string
 {
     case OPSTART_CORONA = 'Opstart Corona';

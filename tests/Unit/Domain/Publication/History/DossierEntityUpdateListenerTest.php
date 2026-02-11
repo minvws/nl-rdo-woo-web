@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\History;
 
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\History\DossierEntityUpdateListener;
@@ -21,7 +23,7 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
 
         $this->listener = new DossierEntityUpdateListener(
             $this->entityManager,
@@ -32,11 +34,11 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
 
     public function testHistoryLoggingForUpdate(): void
     {
-        $preUpdateArgs = \Mockery::mock(PreUpdateEventArgs::class);
-        $dossier = \Mockery::mock(WooDecision::class);
+        $preUpdateArgs = Mockery::mock(PreUpdateEventArgs::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
-        $dossier->shouldReceive('getPublicationDate')->andReturn(new \DateTimeImmutable());
-        $dossier->shouldReceive('getPreviewDate')->andReturn(new \DateTimeImmutable());
+        $dossier->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
+        $dossier->shouldReceive('getPreviewDate')->andReturn(new DateTimeImmutable());
 
         $preUpdateArgs->shouldReceive('hasChangedField')->with('decisionDate')->andReturnTrue();
         $preUpdateArgs->shouldReceive('getOldValue')->with('decisionDate')->andReturn('foo');
@@ -55,17 +57,17 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
 
         $this->listener->preUpdate($dossier, $preUpdateArgs);
 
-        $postUpdateArgs = \Mockery::mock(PostUpdateEventArgs::class);
+        $postUpdateArgs = Mockery::mock(PostUpdateEventArgs::class);
 
-        $this->entityManager->expects('persist')->with(\Mockery::on(
+        $this->entityManager->expects('persist')->with(Mockery::on(
             static fn (History $history): bool => $history->getContextKey() === 'dossier_updated'
         ));
 
-        $this->entityManager->expects('persist')->with(\Mockery::on(
+        $this->entityManager->expects('persist')->with(Mockery::on(
             static fn (History $history): bool => $history->getContextKey() === 'dossier_update_publication_date'
         ));
 
-        $this->entityManager->expects('persist')->with(\Mockery::on(
+        $this->entityManager->expects('persist')->with(Mockery::on(
             static fn (History $history): bool => $history->getContextKey() === 'dossier_update_preview_date'
         ));
 
@@ -76,11 +78,11 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
 
     public function testHistoryLoggingSkipsInitialValues(): void
     {
-        $preUpdateArgs = \Mockery::mock(PreUpdateEventArgs::class);
-        $dossier = \Mockery::mock(WooDecision::class);
+        $preUpdateArgs = Mockery::mock(PreUpdateEventArgs::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
-        $dossier->shouldReceive('getPublicationDate')->andReturn(new \DateTimeImmutable());
-        $dossier->shouldReceive('getPreviewDate')->andReturn(new \DateTimeImmutable());
+        $dossier->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
+        $dossier->shouldReceive('getPreviewDate')->andReturn(new DateTimeImmutable());
 
         $preUpdateArgs->shouldReceive('hasChangedField')->with('decisionDate')->andReturnTrue();
         $preUpdateArgs->shouldReceive('getOldValue')->with('decisionDate')->andReturnNull();
@@ -99,7 +101,7 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
 
         $this->listener->preUpdate($dossier, $preUpdateArgs);
 
-        $postUpdateArgs = \Mockery::mock(PostUpdateEventArgs::class);
+        $postUpdateArgs = Mockery::mock(PostUpdateEventArgs::class);
 
         $this->entityManager->shouldNotHaveReceived('persist');
         $this->entityManager->shouldNotHaveReceived('flush');

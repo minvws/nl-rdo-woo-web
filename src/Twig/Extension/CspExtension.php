@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Twig\Extension;
 
+use Override;
 use Shared\Twig\Runtime\CspExtensionRuntime;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -17,7 +18,7 @@ class CspExtension extends AbstractExtension
     {
     }
 
-    #[\Override]
+    #[Override]
     public function getFunctions(): array
     {
         return [

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tika;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\Content\ContentExtractLogContext;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
@@ -24,20 +25,20 @@ final class TikaExtractorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->tikaService = \Mockery::mock(TikaService::class);
+        $this->tikaService = Mockery::mock(TikaService::class);
         $this->extractor = new TikaExtractor($this->tikaService);
     }
 
     public function testGetContent(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getNormalizedMimeType')->andReturn($mimeType = 'text/plain');
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $entity->shouldReceive('getId')->andReturn($id = Uuid::v6());
 
-        $fileReference = \Mockery::mock(LazyFileReference::class);
+        $fileReference = Mockery::mock(LazyFileReference::class);
         $fileReference->shouldReceive('getPath')->andReturn($file = '/foo/bar.txt');
 
         $this->tikaService
@@ -45,7 +46,7 @@ final class TikaExtractorTest extends UnitTestCase
             ->with(
                 $file,
                 $mimeType,
-                \Mockery::on(
+                Mockery::on(
                     static function (ContentExtractLogContext $context) use ($id): bool {
                         self::assertEquals($id->toRfc4122(), $context->id);
 
@@ -63,9 +64,9 @@ final class TikaExtractorTest extends UnitTestCase
 
     public function testSupports(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
 
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $fileInfo->shouldReceive('getNormalizedMimeType')->once()->andReturn('text/plain');

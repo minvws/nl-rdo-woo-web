@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory\Progress;
 
+use OutOfBoundsException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+
+use function intval;
+use function round;
 
 class RunProgress
 {
@@ -26,7 +30,7 @@ class RunProgress
     public function update(int $currentCount): void
     {
         if ($currentCount < 0) {
-            throw new \OutOfBoundsException('Progress update must be at least 0 ');
+            throw new OutOfBoundsException('Progress update must be at least 0 ');
         }
 
         if ($currentCount > $this->totalCount) {

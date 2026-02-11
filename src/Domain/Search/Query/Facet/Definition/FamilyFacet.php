@@ -18,9 +18,8 @@ use Shared\Service\Search\Query\Filter\OrTermFilter;
 use Shared\Service\Search\Query\Filter\SubTypesOnlyFilter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function sprintf;
+
 readonly class FamilyFacet implements FacetDefinitionInterface
 {
     public function getKey(): FacetKey

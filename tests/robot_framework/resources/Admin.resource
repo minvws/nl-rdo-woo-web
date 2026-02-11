@@ -18,7 +18,7 @@ ${ADMIN_OTP_SECRET}     ${EMPTY}
 
 *** Keywords ***
 Go To Admin
-  Go To  ${URL_ADMIN}
+  Go To  %{URL_ADMIN}
 
 Login Admin
   [Documentation]  Logs in to the admin section. Will change password if it's the first login.

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\ViewModel;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\Matcher\Closure;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
@@ -27,6 +29,8 @@ use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\UuidV6;
 
+use function sprintf;
+
 final class AttachmentViewFactoryTest extends UnitTestCase
 {
     /**
@@ -43,20 +47,20 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         string $expectedDetailsRouteName,
         array $expectedDetailsParameterKeys,
     ): void {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('getName')->andReturn($expectedFileName = 'file name');
         $fileInfo->shouldReceive('getMimetype')->andReturn($expectedMimeType = 'file mime type');
         $fileInfo->shouldReceive('getSize')->andReturn($expectedSize = 101);
         $fileInfo->shouldReceive('getSourceType')->andReturn($expectedSourceType = SourceType::PDF);
         $fileInfo->shouldReceive('getPageCount')->andReturn($expectedPageCount = 2);
 
-        $uuid = \Mockery::mock(UuidV6::class);
+        $uuid = Mockery::mock(UuidV6::class);
         $uuid->shouldReceive('toRfc4122')->andReturn($expectedUuid = 'my-uuid');
 
         $expectedDocumentPrefix = 'prefix';
         $expectedDossierId = 'dossier nr';
 
-        $urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
+        $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
 
         $urlGenerator
             ->expects('generate')
@@ -74,9 +78,9 @@ final class AttachmentViewFactoryTest extends UnitTestCase
             )
             ->andReturn($expectedDownloadUrl = 'http://download.test');
 
-        $attachment = \Mockery::mock($attachmentClass);
+        $attachment = Mockery::mock($attachmentClass);
         $attachment->shouldReceive('getId')->andReturn($uuid);
-        $attachment->shouldReceive('getFormalDate')->andReturn(new \DateTimeImmutable($expectedFormalDate = '2021-05-10'));
+        $attachment->shouldReceive('getFormalDate')->andReturn(new DateTimeImmutable($expectedFormalDate = '2021-05-10'));
         $attachment->shouldReceive('getFileInfo')->andReturn($fileInfo);
         $attachment->shouldReceive('getType')->andReturn(AttachmentType::ADVICE);
         $attachment->shouldReceive('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
@@ -86,7 +90,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         $attachment->shouldReceive('getWithdrawReason')->andReturnNull();
         $attachment->shouldReceive('getWithdrawDate')->andReturnNull();
 
-        $dossier = \Mockery::mock(WooDecision::class); // TODO replace with AbstractDossier & EntityWithAttachments
+        $dossier = Mockery::mock(WooDecision::class); // TODO replace with AbstractDossier & EntityWithAttachments
         $dossier->shouldReceive('getDocumentPrefix')->andReturn($expectedDocumentPrefix);
         $dossier->shouldReceive('getDossierNr')->andReturn($expectedDossierId);
         $dossier->shouldReceive('getAttachments')->andReturn(new ArrayCollection([$attachment]));
@@ -223,9 +227,9 @@ final class AttachmentViewFactoryTest extends UnitTestCase
 
     public function testMakeCollectionReturnAnEmptyArrayWhenEntityHasNoAttachments(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
 
-        $urlGenerator = \Mockery::mock(UrlGeneratorInterface::class);
+        $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
         $factory = new AttachmentViewFactory($urlGenerator);
 
         self::assertCount(0, $factory->makeCollection($dossier));
@@ -236,7 +240,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
      */
     private function assertParameters(array $expectedParameterKeys): Closure
     {
-        return \Mockery::on(function (array $parameters) use ($expectedParameterKeys) {
+        return Mockery::on(function (array $parameters) use ($expectedParameterKeys) {
             foreach ($expectedParameterKeys as $key) {
                 $this->assertArrayHasKey($key, $parameters, sprintf('Missing parameter "%s"', $key));
             }

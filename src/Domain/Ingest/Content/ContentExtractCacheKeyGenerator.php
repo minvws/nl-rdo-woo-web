@@ -8,6 +8,8 @@ use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Webmozart\Assert\Assert;
 
+use function implode;
+
 class ContentExtractCacheKeyGenerator
 {
     public function generate(

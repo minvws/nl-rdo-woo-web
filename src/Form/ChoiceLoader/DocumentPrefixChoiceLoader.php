@@ -26,9 +26,6 @@ class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
     ) {
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function loadChoiceList(?callable $value = null): ChoiceListInterface
     {
         /** @var User|null $user */
@@ -47,9 +44,6 @@ class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
         return new ArrayChoiceList($choices);
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function loadChoicesForValues(array $values, ?callable $value = null): array
     {
         $choices = [];
@@ -63,9 +57,6 @@ class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
         return $choices;
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function loadValuesForChoices(array $choices, ?callable $value = null): array
     {
         $values = [];

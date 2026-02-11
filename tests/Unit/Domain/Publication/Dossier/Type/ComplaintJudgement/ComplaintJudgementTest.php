@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\ComplaintJudgement;
 
 use Carbon\CarbonImmutable;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
@@ -23,7 +24,7 @@ final class ComplaintJudgementTest extends TestCase
         $dossier = new ComplaintJudgement();
         self::assertNull($dossier->getMainDocument());
 
-        $document = \Mockery::mock(ComplaintJudgementMainDocument::class);
+        $document = Mockery::mock(ComplaintJudgementMainDocument::class);
         $dossier->setMainDocument($document);
 
         self::assertEquals($document, $dossier->getMainDocument());

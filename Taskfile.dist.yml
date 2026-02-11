@@ -17,6 +17,9 @@ includes:
     taskfile: taskfiles/Taskfile.certs.yml
   build:
     taskfile: taskfiles/Taskfile.build.yml
+  curl:
+    taskfile: taskfiles/Taskfile.curl.yml
+    flatten: true
 
 vars:
   BASE_PATH:
@@ -25,6 +28,7 @@ vars:
     sh: echo ${ORBSTACK_ENABLED:-$(test "$(docker context show)" = "orbstack" && echo 1 || echo 0)}
   ORBSTACK_ADMIN_URL: http://admin-woo.local/balie
   ORBSTACK_PUBLIC_URL: http://public-woo.local
+  PUBLICATION_API_URL: https://localhost:8443
   GH_VERSION: v2.83.1
 
 env:
@@ -74,7 +78,7 @@ tasks:
     desc: Pull all docker images
     cmds:
       - task: dc
-        vars: { SUB_CMD: "pull --include-deps --policy missing" }
+        vars: { SUB_CMD: "--profile '*' pull --include-deps --policy missing" }
 
   dc:build:
     desc: Build all docker images
@@ -86,13 +90,13 @@ tasks:
     desc: Rebuild all docker images
     cmds:
       - task: dc
-        vars: { SUB_CMD: "build --build-arg USER_UID=$(id -u) --no-cache" }
+        vars: { SUB_CMD: "--profile '*' build --build-arg USER_UID=$(id -u) --no-cache" }
 
   composer:install:
     desc: Install composer dependencies
     cmds:
       - task: dc:run
-        vars: { SUB_CMD: "admin composer install" }
+        vars: { SUB_CMD: "admin php -d xdebug.mode=off /usr/local/bin/composer install" }
 
   npm:install:
     desc: Install node dependencies
@@ -106,14 +110,20 @@ tasks:
       - task: dc:run
         vars: { SUB_CMD: "admin npm run build" }
 
+  npm:watch:
+    desc: Watch assets
+    cmds:
+      - task: dc:run
+        vars: { SUB_CMD: "admin npm run watch" }
+
   setup:
     desc: Setup development environment
     interactive: true
     cmds:
       - task: d:create-cache-volumes
       - task: env
-      - '"{{.BASE_PATH}}/bin/auth-package-managers"'
       - task: dc:pull
+      - task: certs:gen
       - task: dc:build
       - task: composer:install
       - task: dc
@@ -142,10 +152,34 @@ tasks:
       - task: app:migrate:test
 
   shell:
-    desc: Open shell in app container
+    desc: Open a shell in admin service
     cmds:
       - task: dc
         vars: { SUB_CMD: "exec admin bash" }
+
+  shell:*:
+    desc: Open a shell in a running service
+    vars:
+      SERVICE: "{{index .MATCH 0}}"
+    cmds:
+      - task: dc
+        vars: { SUB_CMD: "exec {{.SERVICE}} bash" }
+    requires:
+      vars:
+        - name: SERVICE
+          enum:
+            - public
+            - admin
+            - publication_api
+            - worker
+            - tika
+            - elasticsearch
+            - redis
+            - rabbitmq
+            - postgres
+            - minio
+            - sphinx
+            - certs
 
   up:
     desc: Start development environment
@@ -170,7 +204,7 @@ tasks:
     desc: Down the development environment
     cmds:
       - task: dc
-        vars: { SUB_CMD: "down --volumes --remove-orphans" }
+        vars: { SUB_CMD: "--profile '*' down --volumes --remove-orphans" }
 
   reset:
     desc: Reset the development environment
@@ -318,12 +352,6 @@ tasks:
       - task: dc:shell
         vars: { SUB_CMD: "admin composer update-type-baseline" }
 
-  app:md:
-    desc: Run PHPMD
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer md" }
-
   app:test:
     desc: Run PHPUnit
     cmds:
@@ -337,9 +365,12 @@ tasks:
       - task: dc:shell
         vars:
           SUB_CMD: >
-            admin php -dpcov.enabled=1
-            -dpcov.directory=. vendor/bin/phpunit
+            admin php
+            -d pcov.enabled=1
+            -d pcov.directory=.
+            -d xdebug.mode=off
             -d --without-creating-snapshots
+            vendor/bin/phpunit
             --log-junit=reports/phpunit/report-phpunit.xml
             --coverage-clover=reports/phpunit/coverage-phpunit.xml
             -- {{.CLI_ARGS}}
@@ -368,6 +399,12 @@ tasks:
       - task: dc:shell
         vars: { SUB_CMD: "admin composer rector-preview" }
 
+  app:checkarc:
+    desc: Check architecture rules using Arkitect
+    cmds:
+      - task: dc:shell
+        vars: { SUB_CMD: "admin composer checkarc" }
+
   app:checktranslations:
     desc: Run YAML linting on translation files
     cmds:
@@ -391,6 +428,12 @@ tasks:
     cmds:
       - task: dc:shell
         vars: { SUB_CMD: "admin bin/console woopie:post-deploy" }
+
+  app:openapi:export:
+    desc: Export all OpenAPI specifications
+    cmds:
+      - task: dc:shell
+        vars: { SUB_CMD: admin composer openapi:export }
 
   app:update:
     desc: (re) Pull dependencies, run migrations, build front-end and sync .env

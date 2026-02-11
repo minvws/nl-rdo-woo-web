@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\Dossier\Mapper;
 
+use DateTimeInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Subject\Subject;
@@ -39,14 +40,14 @@ readonly class DefaultDossierMapper implements ElasticDossierMapperInterface
                 ElasticField::SUMMARY->value => $dossier->getSummary(),
                 ElasticField::DOCUMENT_PREFIX->value => $dossier->getDocumentPrefix(),
                 ElasticObjectField::DEPARTMENTS->value => $this->mapDepartments($dossier),
-                ElasticField::DATE_FROM->value => $dossier->getDateFrom()?->format(\DateTimeInterface::ATOM),
-                ElasticField::DATE_TO->value => $dossier->getDateTo()?->format(\DateTimeInterface::ATOM),
+                ElasticField::DATE_FROM->value => $dossier->getDateFrom()?->format(DateTimeInterface::ATOM),
+                ElasticField::DATE_TO->value => $dossier->getDateTo()?->format(DateTimeInterface::ATOM),
                 ElasticField::DATE_RANGE->value => [
-                    'gte' => $dossier->getDateFrom()?->format(\DateTimeInterface::ATOM),
-                    'lte' => $dossier->getDateTo()?->format(\DateTimeInterface::ATOM),
+                    'gte' => $dossier->getDateFrom()?->format(DateTimeInterface::ATOM),
+                    'lte' => $dossier->getDateTo()?->format(DateTimeInterface::ATOM),
                 ],
                 ElasticField::DATE_PERIOD->value => DateRangeConverter::convertToString($dossier->getDateFrom(), $dossier->getDateTo()),
-                ElasticField::PUBLICATION_DATE->value => $dossier->getPublicationDate()?->format(\DateTimeInterface::ATOM),
+                ElasticField::PUBLICATION_DATE->value => $dossier->getPublicationDate()?->format(DateTimeInterface::ATOM),
                 ElasticObjectField::SUBJECT->value => $this->mapSubject($dossier->getSubject()),
                 ElasticField::ORGANISATION_IDS->value => [$dossier->getOrganisation()->getId()],
             ],

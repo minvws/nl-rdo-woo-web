@@ -6,6 +6,10 @@ namespace Shared\Service\Storage;
 
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use SplFileInfo;
+
+use function dirname;
+use function sprintf;
 
 /**
  * This class is responsible for storing and retrieving thumbnails attach to entities using FileInfo. See StorageService
@@ -38,7 +42,7 @@ class ThumbnailStorageService extends StorageService
     /**
      * Store a file in the storage adapter.
      */
-    public function store(EntityWithFileInfo $entity, \SplFileInfo $localFile, int $pageNr): bool
+    public function store(EntityWithFileInfo $entity, SplFileInfo $localFile, int $pageNr): bool
     {
         $remotePath = $this->generateThumbPath($entity, $pageNr);
 

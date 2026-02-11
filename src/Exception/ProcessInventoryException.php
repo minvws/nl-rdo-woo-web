@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Exception;
 
+use Exception;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 
-/**
- * @SuppressWarnings("PHPMD.TooManyPublicMethods")
- */
+use function sprintf;
+use function strval;
+
 class ProcessInventoryException extends TranslatableException
 {
     public static function forInventoryCannotBeStored(): self
@@ -32,7 +33,7 @@ class ProcessInventoryException extends TranslatableException
         );
     }
 
-    public static function forOtherException(\Exception $exception): self
+    public static function forOtherException(Exception $exception): self
     {
         return new self(
             sprintf('Uncaught exception during inventory processing: %s', $exception->getMessage()),
@@ -92,7 +93,7 @@ class ProcessInventoryException extends TranslatableException
         );
     }
 
-    public static function forGenericRowException(\Exception $exception): self
+    public static function forGenericRowException(Exception $exception): self
     {
         return new self(
             $exception->getMessage(),

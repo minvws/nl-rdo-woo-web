@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\Rollover;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\IngestDispatcher;
 use Shared\Domain\Search\Index\ElasticConfig;
@@ -38,7 +39,7 @@ class InitiateElasticRolloverHandler
             );
 
             $this->ingestDispatcher->dispatchIngestAllDossiersCommand();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to initialize the elasticsearch rollover', [
                 'index_name' => $message->indexName,
                 'mapping_version' => $message->mappingVersion,

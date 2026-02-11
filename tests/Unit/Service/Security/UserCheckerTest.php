@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Security;
 
+use Mockery;
 use Shared\Service\Security\User;
 use Shared\Service\Security\UserChecker;
 use Shared\Tests\Unit\UnitTestCase;
@@ -15,7 +16,7 @@ class UserCheckerTest extends UnitTestCase
 {
     public function testCheckPreAuth(): void
     {
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->expects('isDisabled')
             ->andReturn(false);
 
@@ -49,7 +50,7 @@ class UserCheckerTest extends UnitTestCase
 
     public function testCheckPreAuthIfDisabled(): void
     {
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->expects('isDisabled')
             ->andReturn(true);
 
@@ -61,7 +62,7 @@ class UserCheckerTest extends UnitTestCase
 
     public function testCheckPostAuth(): void
     {
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->expects('isDisabled')
             ->andReturn(false);
 
@@ -95,7 +96,7 @@ class UserCheckerTest extends UnitTestCase
 
     public function testCheckPostAuthIfDisabled(): void
     {
-        $user = \Mockery::mock(User::class);
+        $user = Mockery::mock(User::class);
         $user->expects('isDisabled')
             ->andReturn(true);
 

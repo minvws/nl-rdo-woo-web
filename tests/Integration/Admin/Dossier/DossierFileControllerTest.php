@@ -32,6 +32,10 @@ use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Webmozart\Assert\Assert;
 
+use function dirname;
+use function sprintf;
+use function trim;
+
 final class DossierFileControllerTest extends SharedWebTestCase
 {
     private vfsStreamDirectory $root;
@@ -53,12 +57,12 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     public function testAdminDownloadingWooDecisionDocument(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create();
 
         /** @var WooDecision $dossier */
         $dossier = WooDecisionFactory::createOne([
             'organisation' => $user->getOrganisation(),
-        ])->_real();
+        ]);
 
         /** @var Document $document */
         $document = DocumentFactory::createOne([
@@ -67,7 +71,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
                 'uploaded' => true,
                 'type' => 'pdf',
             ]),
-        ])->_real();
+        ]);
 
         $dossier->addDocument($document);
 
@@ -82,12 +86,12 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     public function testAdminDownloadingWooDecisionDocumentUsesOriginalFileType(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create();
 
         /** @var WooDecision $dossier */
         $dossier = WooDecisionFactory::createOne([
             'organisation' => $user->getOrganisation(),
-        ])->_real();
+        ]);
 
         /** @var Document $document */
         $document = DocumentFactory::createOne([
@@ -98,7 +102,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
                 'mimetype' => 'application/pdf',
                 'type' => 'pdf',
             ]),
-        ])->_real();
+        ]);
 
         $dossier->addDocument($document);
 
@@ -113,15 +117,15 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     public function testAdminDownloadingCovenantAttachment(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create();
 
         /** @var Covenant $dossier */
         $dossier = CovenantFactory::createOne([
             'organisation' => $user->getOrganisation(),
-        ])->_real();
+        ]);
 
         /** @var CovenantAttachment $attachment */
-        $attachment = CovenantAttachmentFactory::createOne(['dossier' => $dossier])->_real();
+        $attachment = CovenantAttachmentFactory::createOne(['dossier' => $dossier]);
 
         $dossier->addAttachment($attachment);
 
@@ -130,15 +134,15 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     public function testAdminDownloadingWooDecisionMainDocument(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create();
 
         /** @var WooDecision $dossier */
         $dossier = WooDecisionFactory::createOne([
             'organisation' => $user->getOrganisation(),
-        ])->_real();
+        ]);
 
         /** @var WooDecisionMainDocument $mainDocument */
-        $mainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $dossier])->_real();
+        $mainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $dossier]);
 
         $dossier->setMainDocument($mainDocument);
 
@@ -147,15 +151,15 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     public function testAdminDownloadingWooDecisionInventory(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create();
 
         /** @var WooDecision $dossier */
         $dossier = WooDecisionFactory::createOne([
             'organisation' => $user->getOrganisation(),
-        ])->_real();
+        ]);
 
         /** @var Inventory $inventory */
-        $inventory = InventoryFactory::createOne(['dossier' => $dossier])->_real();
+        $inventory = InventoryFactory::createOne(['dossier' => $dossier]);
 
         $dossier->setInventory($inventory);
 
@@ -170,15 +174,15 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     public function testAdminDownloadingProductionReport(): void
     {
-        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create()->_real();
+        $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create();
 
         /** @var WooDecision $dossier */
         $dossier = WooDecisionFactory::createOne([
             'organisation' => $user->getOrganisation(),
-        ])->_real();
+        ]);
 
         /** @var ProductionReport $productionReport */
-        $productionReport = ProductionReportFactory::createOne(['dossier' => $dossier])->_real();
+        $productionReport = ProductionReportFactory::createOne(['dossier' => $dossier]);
 
         $dossier->setProductionReport($productionReport);
 

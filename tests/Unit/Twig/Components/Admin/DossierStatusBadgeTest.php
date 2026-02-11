@@ -8,6 +8,9 @@ use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\Twig\Components\Admin\DossierStatusBadge;
 
+use function array_reduce;
+use function ksort;
+
 final class DossierStatusBadgeTest extends UnitTestCase
 {
     public function testGetBadgeColorCssClass(): void

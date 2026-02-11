@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory;
 
+use function array_key_exists;
+
 class PropertyChangeset
 {
     /**

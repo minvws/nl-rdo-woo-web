@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Content;
 
+use Mockery;
 use Shared\Domain\Ingest\Content\ContentExtractOptions;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorInterface;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function count;
 
 class ContentExtractOptionsTest extends UnitTestCase
 {
@@ -41,7 +44,7 @@ class ContentExtractOptionsTest extends UnitTestCase
     {
         $options = ContentExtractOptions::create()->withExtractor(ContentExtractorKey::TIKA);
 
-        $extractor = \Mockery::mock(ContentExtractorInterface::class);
+        $extractor = Mockery::mock(ContentExtractorInterface::class);
         $extractor->expects('getKey')->andReturn(ContentExtractorKey::TIKA);
 
         self::assertTrue(

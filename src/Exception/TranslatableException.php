@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Exception;
 
+use RuntimeException;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-abstract class TranslatableException extends \RuntimeException implements TranslatableInterface
+abstract class TranslatableException extends RuntimeException implements TranslatableInterface
 {
     private readonly string $translationKey;
 

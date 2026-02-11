@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -51,7 +51,7 @@ class ContentPageController extends AbstractController
 
         return $this->render('admin/content-page/edit.html.twig', [
             'page' => $contentPage,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 }

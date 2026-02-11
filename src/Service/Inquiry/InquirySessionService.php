@@ -7,6 +7,9 @@ namespace Shared\Service\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+use function in_array;
+use function is_array;
+
 /**
  * Storage and retrieval of inquiry ids in the session. Used to validate access to inquiries and dossiers in preview state (including documents).
  */

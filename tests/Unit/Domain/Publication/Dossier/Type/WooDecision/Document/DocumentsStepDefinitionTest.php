@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
 
+use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -25,8 +26,8 @@ class DocumentsStepDefinitionTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossier = \Mockery::mock(WooDecision::class);
-        $this->validator = \Mockery::mock(ValidatorInterface::class);
+        $this->dossier = Mockery::mock(WooDecision::class);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
 
         $this->step = new DocumentsStepDefinition(
             StepName::DOCUMENTS,
@@ -44,7 +45,7 @@ class DocumentsStepDefinitionTest extends UnitTestCase
     public function testIsCompletedThrowsExceptionForUnsupportedDossierType(): void
     {
         $this->expectException(StepException::class);
-        $this->isStepCompleted(\Mockery::mock(Covenant::class));
+        $this->isStepCompleted(Mockery::mock(Covenant::class));
     }
 
     public function testIsCompletedReturnsTrueWhenNoInventoryAndDocumentsCanBeProvided(): void

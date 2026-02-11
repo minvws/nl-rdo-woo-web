@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Process\SubType\Strategy;
 
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\IngestDispatcher;
@@ -22,8 +23,8 @@ final class MetadataOnlySubTypeIngestStrategyTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->ingestDispatcher = Mockery::mock(IngestDispatcher::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
         $this->strategy = new MetadataOnlySubTypeIngestStrategy(
             $this->ingestDispatcher,
             $this->logger,
@@ -32,9 +33,9 @@ final class MetadataOnlySubTypeIngestStrategyTest extends UnitTestCase
 
     public function testHandle(): void
     {
-        $document = \Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->andReturn($id = \Mockery::mock(Uuid::class));
-        $options = \Mockery::mock(IngestProcessOptions::class);
+        $document = Mockery::mock(Document::class);
+        $document->shouldReceive('getId')->andReturn($id = Mockery::mock(Uuid::class));
+        $options = Mockery::mock(IngestProcessOptions::class);
 
         $this->logger->shouldReceive('info')->once()->with('Dispatching ingest for metadata-only entity', [
             'id' => $id,
@@ -51,10 +52,10 @@ final class MetadataOnlySubTypeIngestStrategyTest extends UnitTestCase
 
     public function testCanHandleReturnsTrueWhenThereIsNoUploadedFile(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('isUploaded')->once()->andReturnFalse();
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $this->assertTrue($this->strategy->canHandle($document));
@@ -62,10 +63,10 @@ final class MetadataOnlySubTypeIngestStrategyTest extends UnitTestCase
 
     public function testCanHandleReturnsFalseWhenThereIsAnUploadedFile(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('isUploaded')->once()->andReturnTrue();
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $this->assertFalse($this->strategy->canHandle($document));

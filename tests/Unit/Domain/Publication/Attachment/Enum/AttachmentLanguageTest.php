@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\Enum;
 
+use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Tests\Unit\UnitTestCase as UnitUnitTestCase;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+
+use function array_column;
+use function array_unique;
+use function count;
 
 final class AttachmentLanguageTest extends UnitUnitTestCase
 {
@@ -26,7 +31,7 @@ final class AttachmentLanguageTest extends UnitUnitTestCase
 
     public function testToArray(): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator->shouldReceive('trans')->andReturnArg(0);
 
         $result = [];
@@ -40,11 +45,11 @@ final class AttachmentLanguageTest extends UnitUnitTestCase
     #[DataProvider('transDataProvider')]
     public function testTransKey(AttachmentLanguage $attachmentLanguage, string $expectedKey, ?string $locale): void
     {
-        $translator = \Mockery::mock(TranslatorInterface::class);
+        $translator = Mockery::mock(TranslatorInterface::class);
         $translator
             ->shouldReceive('trans')
             ->with(
-                \Mockery::on(function (string $key) use ($expectedKey): bool {
+                Mockery::on(function (string $key) use ($expectedKey): bool {
                     $this->assertSame($expectedKey, $key, 'The translation key does not match expected value');
 
                     return true;

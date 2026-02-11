@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Shared\Service\Search\Query\Dsl;
 
 use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
+use Override;
+use stdClass;
 
 /**
  * A global aggregation ignores the query/filters.
@@ -20,11 +22,11 @@ class GlobalAggregation extends AbstractAggregation
     /**
      * @return array<string, mixed>
      */
-    #[\Override]
+    #[Override]
     public function build(): array
     {
         $data = [
-            'global' => new \stdClass(),
+            'global' => new stdClass(),
         ];
 
         $this->buildAggregationsTo($data);

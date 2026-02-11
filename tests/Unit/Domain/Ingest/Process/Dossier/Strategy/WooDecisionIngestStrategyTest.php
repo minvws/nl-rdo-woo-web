@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Ingest\Process\Dossier\Strategy;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\Process\Dossier\Strategy\DefaultDossierIngestStrategy;
 use Shared\Domain\Ingest\Process\Dossier\Strategy\WooDecisionIngestStrategy;
@@ -23,8 +24,8 @@ class WooDecisionIngestStrategyTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->ingestService = \Mockery::mock(SubTypeIngester::class);
-        $this->defaultIngestStrategy = \Mockery::mock(DefaultDossierIngestStrategy::class);
+        $this->ingestService = Mockery::mock(SubTypeIngester::class);
+        $this->defaultIngestStrategy = Mockery::mock(DefaultDossierIngestStrategy::class);
 
         $this->ingester = new WooDecisionIngestStrategy(
             $this->ingestService,
@@ -34,11 +35,11 @@ class WooDecisionIngestStrategyTest extends UnitTestCase
 
     public function testIngest(): void
     {
-        $docA = \Mockery::mock(Document::class);
-        $docB = \Mockery::mock(Document::class);
+        $docA = Mockery::mock(Document::class);
+        $docB = Mockery::mock(Document::class);
 
         $dossierId = Uuid::v6();
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn($dossierId);
         $dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([
             $docA,
@@ -47,11 +48,11 @@ class WooDecisionIngestStrategyTest extends UnitTestCase
 
         $this->defaultIngestStrategy->expects('ingest')->with($dossier, false);
 
-        $this->ingestService->expects('ingest')->with($docA, \Mockery::on(
+        $this->ingestService->expects('ingest')->with($docA, Mockery::on(
             static fn (IngestProcessOptions $options) => $options->forceRefresh() === false
         ));
 
-        $this->ingestService->expects('ingest')->with($docB, \Mockery::on(
+        $this->ingestService->expects('ingest')->with($docB, Mockery::on(
             static fn (IngestProcessOptions $options) => $options->forceRefresh() === false
         ));
 

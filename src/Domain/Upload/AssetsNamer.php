@@ -8,6 +8,8 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\FilenameSanitizer;
 
+use function sprintf;
+
 readonly class AssetsNamer
 {
     public function getStorageSubpath(EntityWithFileInfo $entityWithFile): string

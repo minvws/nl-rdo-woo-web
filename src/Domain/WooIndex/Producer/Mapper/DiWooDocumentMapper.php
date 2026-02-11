@@ -13,9 +13,6 @@ use Shared\Domain\WooIndex\Tooi\InformatieCategorie;
 use Shared\Domain\WooIndex\Tooi\Ministerie;
 use Shared\Domain\WooIndex\Tooi\SoortHandeling;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 final readonly class DiWooDocumentMapper
 {
     public function __construct(

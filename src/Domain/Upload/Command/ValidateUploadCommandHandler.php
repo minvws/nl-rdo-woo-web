@@ -18,9 +18,10 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function pathinfo;
+
+use const PATHINFO_EXTENSION;
+
 #[AsMessageHandler]
 readonly class ValidateUploadCommandHandler
 {

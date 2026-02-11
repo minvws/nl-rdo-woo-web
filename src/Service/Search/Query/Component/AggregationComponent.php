@@ -16,6 +16,9 @@ use Shared\Service\Search\Query\Condition\SearchTermConditionBuilder;
 use Shared\Service\Search\Query\Dsl\Aggregation;
 use Shared\Service\Search\Query\Dsl\Query;
 
+use function count;
+use function is_null;
+
 readonly class AggregationComponent
 {
     public function __construct(
@@ -25,9 +28,6 @@ readonly class AggregationComponent
     ) {
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.CyclomaticComplexity")
-     */
     public function addAggregations(FacetList $facetList, QueryBuilder $queryBuilder, SearchParameters $searchParameters, int $maxCount): void
     {
         if (! $searchParameters->aggregations) {

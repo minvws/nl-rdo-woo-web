@@ -11,6 +11,8 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TokenType;
 use Webmozart\Assert\Assert;
 
+use function sprintf;
+
 /**
  * Provides a way to access an entity's discriminator field in DQL queries.
  *

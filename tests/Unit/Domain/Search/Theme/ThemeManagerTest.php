@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Theme;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Search\Theme\ThemeInterface;
 use Shared\Domain\Search\Theme\ThemeManager;
 use Shared\Domain\Search\Theme\ViewModel\Theme;
 use Shared\Domain\Search\Theme\ViewModel\ThemeViewFactory;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function iterator_to_array;
 
 class ThemeManagerTest extends UnitTestCase
 {
@@ -20,12 +23,12 @@ class ThemeManagerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->themeViewFactory = \Mockery::mock(ThemeViewFactory::class);
+        $this->themeViewFactory = Mockery::mock(ThemeViewFactory::class);
 
-        $this->themeA = \Mockery::mock(ThemeInterface::class);
+        $this->themeA = Mockery::mock(ThemeInterface::class);
         $this->themeA->shouldReceive('getUrlName')->andReturn('a');
 
-        $this->themeB = \Mockery::mock(ThemeInterface::class);
+        $this->themeB = Mockery::mock(ThemeInterface::class);
         $this->themeB->shouldReceive('getUrlName')->andReturn('b');
 
         $this->themeManager = new ThemeManager(
@@ -45,15 +48,15 @@ class ThemeManagerTest extends UnitTestCase
 
     public function testGetView(): void
     {
-        $this->themeViewFactory->expects('make')->with($this->themeB)->andReturn($view = \Mockery::mock(Theme::class));
+        $this->themeViewFactory->expects('make')->with($this->themeB)->andReturn($view = Mockery::mock(Theme::class));
 
         self::assertSame($view, $this->themeManager->getView($this->themeB));
     }
 
     public function testGetViewsForAllThemes(): void
     {
-        $this->themeViewFactory->expects('make')->with($this->themeA)->andReturn($viewA = \Mockery::mock(Theme::class));
-        $this->themeViewFactory->expects('make')->with($this->themeB)->andReturn($viewB = \Mockery::mock(Theme::class));
+        $this->themeViewFactory->expects('make')->with($this->themeA)->andReturn($viewA = Mockery::mock(Theme::class));
+        $this->themeViewFactory->expects('make')->with($this->themeB)->andReturn($viewB = Mockery::mock(Theme::class));
 
         self::assertEquals(
             [$viewA, $viewB],

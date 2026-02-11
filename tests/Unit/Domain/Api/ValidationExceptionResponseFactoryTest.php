@@ -4,19 +4,23 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Api;
 
+use Exception;
 use League\OpenAPIValidation\Schema\BreadCrumb;
 use League\OpenAPIValidation\Schema\Exception\FormatMismatch;
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
-use Shared\Api\Publication\V1\PublicationV1Api;
-use Shared\Domain\OpenApi\Exceptions\FormatMismatchException;
-use Shared\Domain\OpenApi\Exceptions\KeywordMismatchException;
-use Shared\Domain\OpenApi\Exceptions\SchemaMismatchException;
-use Shared\Domain\OpenApi\Exceptions\ValidatonException;
-use Shared\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
+use PublicationApi\Api\Publication\PublicationV1Api;
+use PublicationApi\Domain\OpenApi\Exception\FormatMismatchException;
+use PublicationApi\Domain\OpenApi\Exception\KeywordMismatchException;
+use PublicationApi\Domain\OpenApi\Exception\SchemaMismatchException;
+use PublicationApi\Domain\OpenApi\Exception\ValidatonException;
+use PublicationApi\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Webmozart\Assert\Assert;
+
+use function json_encode;
+use function sprintf;
 
 class ValidationExceptionResponseFactoryTest extends UnitTestCase
 {
@@ -25,10 +29,10 @@ class ValidationExceptionResponseFactoryTest extends UnitTestCase
         $message = 'message';
 
         $openApiValidationExceptionResponseFactory = new OpenApiValidationExceptionResponseFactory();
-        $response = $openApiValidationExceptionResponseFactory->buildJsonResponse(new ValidatonException($message, 1, new \Exception()));
+        $response = $openApiValidationExceptionResponseFactory->buildJsonResponse(new ValidatonException($message, 1, new Exception()));
 
         $expectedResponseData = [
-            'title' => \sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
+            'title' => sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
             'status' => JsonResponse::HTTP_BAD_REQUEST,
             'detail' => $message,
             'instance' => 'response',
@@ -49,7 +53,7 @@ class ValidationExceptionResponseFactoryTest extends UnitTestCase
         );
 
         $expectedResponseData = [
-            'title' => \sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
+            'title' => sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
             'status' => JsonResponse::HTTP_BAD_REQUEST,
             'detail' => $message,
             'instance' => 'response',
@@ -72,7 +76,7 @@ class ValidationExceptionResponseFactoryTest extends UnitTestCase
         );
 
         $expectedResponseData = [
-            'title' => \sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
+            'title' => sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
             'status' => JsonResponse::HTTP_BAD_REQUEST,
             'detail' => $message,
             'instance' => 'response',
@@ -93,9 +97,9 @@ class ValidationExceptionResponseFactoryTest extends UnitTestCase
         );
 
         $expectedResponseData = [
-            'title' => \sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
+            'title' => sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
             'status' => JsonResponse::HTTP_BAD_REQUEST,
-            'detail' => \sprintf('Keyword validation failed: %s', $message),
+            'detail' => sprintf('Keyword validation failed: %s', $message),
             'instance' => 'response',
             'keyword' => $keyword,
         ];
@@ -115,9 +119,9 @@ class ValidationExceptionResponseFactoryTest extends UnitTestCase
         );
 
         $expectedResponseData = [
-            'title' => \sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
+            'title' => sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
             'status' => JsonResponse::HTTP_BAD_REQUEST,
-            'detail' => \sprintf("Value '%s' does not match format %s of type %s", $value, $format, $type),
+            'detail' => sprintf("Value '%s' does not match format %s of type %s", $value, $format, $type),
             'instance' => 'response',
             'format' => $format,
         ];
@@ -130,7 +134,7 @@ class ValidationExceptionResponseFactoryTest extends UnitTestCase
      */
     private function assertJsonResponse(array $expectedResponseData, JsonResponse $response): void
     {
-        $expectedJsonResponse = \json_encode($expectedResponseData);
+        $expectedJsonResponse = json_encode($expectedResponseData);
         Assert::string($expectedJsonResponse);
 
         $responseContent = $response->getContent();

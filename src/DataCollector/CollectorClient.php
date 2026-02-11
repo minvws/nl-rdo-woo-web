@@ -15,9 +15,6 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Service\Elastic\ElasticClientInterface;
 
-/**
- * @SuppressWarnings("PHPMD.TooManyPublicMethods")
- */
 class CollectorClient implements ClientInterface, ElasticClientInterface
 {
     public function __construct(protected Client $elastic, protected ElasticCollector $collector)

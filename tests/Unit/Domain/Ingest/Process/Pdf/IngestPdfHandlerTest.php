@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Domain\Ingest\Process\Pdf;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\IngestDispatcher;
@@ -34,12 +35,12 @@ final class IngestPdfHandlerTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->doctrine = \Mockery::mock(EntityManagerInterface::class);
-        $this->extractor = \Mockery::mock(PagecountExtractor::class);
-        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
-        $this->processor = \Mockery::mock(PdfProcessor::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->repository = \Mockery::mock(EntityRepository::class);
+        $this->doctrine = Mockery::mock(EntityManagerInterface::class);
+        $this->extractor = Mockery::mock(PagecountExtractor::class);
+        $this->ingestDispatcher = Mockery::mock(IngestDispatcher::class);
+        $this->processor = Mockery::mock(PdfProcessor::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->repository = Mockery::mock(EntityRepository::class);
 
         $this->handler = new IngestPdfHandler(
             $this->doctrine,
@@ -52,11 +53,11 @@ final class IngestPdfHandlerTest extends UnitTestCase
 
     public function testInvoke(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('isPaginatable')->once()->andReturnTrue();
         $fileInfo->shouldReceive('getPageCount')->once()->andReturnNull();
 
-        $entity = \Mockery::mock(Document::class);
+        $entity = Mockery::mock(Document::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $message = new IngestPdfCommand(
@@ -73,7 +74,7 @@ final class IngestPdfHandlerTest extends UnitTestCase
 
         $this->extractor->shouldReceive('extract')->once()->with($entity);
 
-        $pdftkPageCountResult = \Mockery::mock(PdftkPageCountResult::class);
+        $pdftkPageCountResult = Mockery::mock(PdftkPageCountResult::class);
         $pdftkPageCountResult->shouldReceive('isSuccessful')->once()->andReturnTrue();
         $pdftkPageCountResult->numberOfPages = $pageCount = 2;
 
@@ -92,11 +93,11 @@ final class IngestPdfHandlerTest extends UnitTestCase
 
     public function testInvokeSkipsPageCountExtractWhenPageCountIsAlreadyAvailable(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->shouldReceive('isPaginatable')->once()->andReturnTrue();
         $fileInfo->shouldReceive('getPageCount')->andReturn(2);
 
-        $entity = \Mockery::mock(Document::class);
+        $entity = Mockery::mock(Document::class);
         $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $message = new IngestPdfCommand(
@@ -122,12 +123,12 @@ final class IngestPdfHandlerTest extends UnitTestCase
     {
         $message = new IngestPdfCommand(
             $id = Uuid::v6(),
-            $entityClass = \Mockery::mock(EntityWithFileInfo::class)::class,
+            $entityClass = Mockery::mock(EntityWithFileInfo::class)::class,
             false,
         );
 
         // @TODO should be replaced by an instance of EntityWithFileInfo
-        $entity = \Mockery::mock(Document::class);
+        $entity = Mockery::mock(Document::class);
 
         $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
         $this->repository->shouldReceive('find')->once()->andReturnNull();

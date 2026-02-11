@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin\Dossier\WooDecision;
 
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
 use Shared\Domain\Publication\Dossier\Step\StepName;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
@@ -18,12 +19,9 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
 class DocumentsConceptStepController extends AbstractController
 {
     public function __construct(
@@ -99,10 +97,10 @@ class DocumentsConceptStepController extends AbstractController
 
             return null;
         } elseif ($dossier->isInventoryRequired()) {
-            throw new \RuntimeException('Missing inventory uploadfile');
-        } else {
-            return $this->stepHelper->redirectToNextStep($wizardStatus);
+            throw new RuntimeException('Missing inventory uploadfile');
         }
+
+        return $this->stepHelper->redirectToNextStep($wizardStatus);
     }
 
     private function rejectProductionReport(WooDecision $dossier): Response

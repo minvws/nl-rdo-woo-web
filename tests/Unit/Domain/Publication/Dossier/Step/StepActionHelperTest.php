@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Domain\Publication\Dossier\Step;
 
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierStatus;
@@ -35,20 +36,20 @@ class StepActionHelperTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->wizardStatusFactory = \Mockery::mock(WizardStatusFactory::class);
+        $this->wizardStatusFactory = Mockery::mock(WizardStatusFactory::class);
 
-        $this->dossier = \Mockery::mock(AbstractDossier::class);
+        $this->dossier = Mockery::mock(AbstractDossier::class);
         $this->dossier->shouldReceive('getDocumentPrefix')->andReturn('foo');
         $this->dossier->shouldReceive('getDossierNr')->andReturn('bar');
 
-        $this->wizardStatus = \Mockery::mock(DossierWizardStatus::class);
+        $this->wizardStatus = Mockery::mock(DossierWizardStatus::class);
         $this->wizardStatus->shouldReceive('getDossier')->andReturn($this->dossier);
 
-        $this->paramsBuilder = \Mockery::mock(DossierViewParamsBuilder::class);
+        $this->paramsBuilder = Mockery::mock(DossierViewParamsBuilder::class);
 
-        $this->paginator = \Mockery::mock(PaginatorInterface::class);
+        $this->paginator = Mockery::mock(PaginatorInterface::class);
 
-        $this->router = \Mockery::mock(RouterInterface::class);
+        $this->router = Mockery::mock(RouterInterface::class);
         $this->helper = new StepActionHelper(
             $this->router,
             $this->wizardStatusFactory,
@@ -59,7 +60,7 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testRedirectToNextStep(): void
     {
-        $nextStep = \Mockery::mock(StepStatus::class);
+        $nextStep = Mockery::mock(StepStatus::class);
         $nextStep->shouldReceive('getRouteName')->andReturn('dummy_route');
 
         $this->wizardStatus->shouldReceive('getNextStep')->andReturn($nextStep);
@@ -79,7 +80,7 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testRedirectToCurrentStep(): void
     {
-        $currentStep = \Mockery::mock(StepStatus::class);
+        $currentStep = Mockery::mock(StepStatus::class);
         $currentStep->shouldReceive('getRouteName')->andReturn('dummy_route');
 
         $this->wizardStatus->shouldReceive('getCurrentStep')->andReturn($currentStep);
@@ -99,7 +100,7 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testRedirectToFirstOpenStep(): void
     {
-        $openStep = \Mockery::mock(StepStatus::class);
+        $openStep = Mockery::mock(StepStatus::class);
         $openStep->shouldReceive('getRouteName')->andReturn('dummy_route');
 
         $this->wizardStatus->shouldReceive('getFirstOpenStep')->andReturn($openStep);
@@ -119,7 +120,7 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testRedirectToFirstOpenStepRedirectsToDossierIfItIsAlreadyPublished(): void
     {
-        $wizardStatus = \Mockery::mock(DossierWizardStatus::class);
+        $wizardStatus = Mockery::mock(DossierWizardStatus::class);
         $wizardStatus->shouldReceive('getFirstOpenStep')->andReturnNull();
         $wizardStatus->shouldReceive('getDossier')->andReturn($this->dossier);
 
@@ -138,13 +139,13 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testRedirectAfterFormSubmitUsesNextStepIfNextIsClickedForAConceptDossier(): void
     {
-        $currentStep = \Mockery::mock(StepStatus::class);
+        $currentStep = Mockery::mock(StepStatus::class);
         $currentStep->shouldReceive('getStepName')->andReturn(StepName::DETAILS);
 
-        $nextStep = \Mockery::mock(StepStatus::class);
+        $nextStep = Mockery::mock(StepStatus::class);
         $nextStep->shouldReceive('getRouteName')->andReturn('dummy_route');
 
-        $form = \Mockery::mock(FormInterface::class);
+        $form = Mockery::mock(FormInterface::class);
         $form->shouldReceive('has')->with('next')->andReturnTrue();
         $form->shouldReceive('get->isClicked')->andReturnTrue();
 
@@ -170,11 +171,11 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testRedirectAfterFormSubmitUsesCurrentStepIfSubmitIsClickedForAConceptDossier(): void
     {
-        $currentStep = \Mockery::mock(StepStatus::class);
+        $currentStep = Mockery::mock(StepStatus::class);
         $currentStep->shouldReceive('getRouteName')->andReturn('dummy_route');
         $currentStep->shouldReceive('getStepName')->andReturn(StepName::DETAILS);
 
-        $form = \Mockery::mock(FormInterface::class);
+        $form = Mockery::mock(FormInterface::class);
         $form->shouldReceive('has')->with('next')->andReturnTrue();
         $form->shouldReceive('get->isClicked')->andReturnFalse();
 
@@ -199,11 +200,11 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testRedirectAfterFormSubmitRedirectsToDossierForAPublishedDossier(): void
     {
-        $form = \Mockery::mock(FormInterface::class);
+        $form = Mockery::mock(FormInterface::class);
 
         $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
-        $currentStep = \Mockery::mock(StepStatus::class);
+        $currentStep = Mockery::mock(StepStatus::class);
         $currentStep->shouldReceive('getStepName')->andReturn(StepName::DETAILS);
 
         $this->wizardStatus->shouldReceive('getCurrentStep')->andReturn($currentStep);
@@ -225,7 +226,7 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testAddDossierToBreadCrumbs(): void
     {
-        $breadCrumbs = \Mockery::mock(Breadcrumbs::class);
+        $breadCrumbs = Mockery::mock(Breadcrumbs::class);
         $item = 'foo bar';
         $dossierTitle = 'llama';
 
@@ -247,7 +248,7 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testRedirectToPublicationConfirmation(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('foo');
         $dossier->shouldReceive('getDossierNr')->andReturn('bar');
 
@@ -266,8 +267,8 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testGetParamsBuilder(): void
     {
-        $dossier = \Mockery::mock(AbstractDossier::class);
-        $expectedResult = \Mockery::mock(DossierViewParamsBuilder::class);
+        $dossier = Mockery::mock(AbstractDossier::class);
+        $expectedResult = Mockery::mock(DossierViewParamsBuilder::class);
 
         $this->paramsBuilder->expects('forDossier')->with($dossier)->andReturn($expectedResult);
 
@@ -279,7 +280,7 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testIsFormCancelledReturnsFalseWhenFormIsNotSubmitted(): void
     {
-        $form = \Mockery::mock(FormInterface::class);
+        $form = Mockery::mock(FormInterface::class);
         $form->shouldReceive('isSubmitted')->andReturnFalse();
 
         self::assertFalse($this->helper->isFormCancelled($form));
@@ -287,10 +288,10 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testIsFormCancelledReturnsFalseWhenFormIsSubmittedButCancelButtonNotClicked(): void
     {
-        $button = \Mockery::mock(Button::class);
+        $button = Mockery::mock(Button::class);
         $button->expects('isClicked')->andReturnFalse();
 
-        $form = \Mockery::mock(FormInterface::class);
+        $form = Mockery::mock(FormInterface::class);
         $form->shouldReceive('isSubmitted')->andReturnTrue();
         $form->shouldReceive('has')->with('cancel')->andReturnTrue();
         $form->shouldReceive('get')->with('cancel')->andReturn($button);
@@ -300,7 +301,7 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testIsFormCancelledReturnsFalseWhenFormIsSubmittedButHasNoCancelButton(): void
     {
-        $form = \Mockery::mock(FormInterface::class);
+        $form = Mockery::mock(FormInterface::class);
         $form->shouldReceive('isSubmitted')->andReturnTrue();
         $form->shouldReceive('has')->with('cancel')->andReturnFalse();
 
@@ -309,10 +310,10 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testIsFormCancelledReturnsTrueWhenFormIsSubmittedAndCancelButtonClicked(): void
     {
-        $button = \Mockery::mock(Button::class);
+        $button = Mockery::mock(Button::class);
         $button->expects('isClicked')->andReturnTrue();
 
-        $form = \Mockery::mock(FormInterface::class);
+        $form = Mockery::mock(FormInterface::class);
         $form->shouldReceive('isSubmitted')->andReturnTrue();
         $form->shouldReceive('has')->with('cancel')->andReturnTrue();
         $form->shouldReceive('get')->with('cancel')->andReturn($button);
@@ -322,7 +323,7 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testGetPaginator(): void
     {
-        $pagination = \Mockery::mock(PaginationInterface::class);
+        $pagination = Mockery::mock(PaginationInterface::class);
 
         $this->paginator->expects('paginate')->with(
             $target = 'foo',

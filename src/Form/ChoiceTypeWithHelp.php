@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Form;
 
+use Override;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -11,7 +12,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ChoiceTypeWithHelp extends ChoiceType
 {
-    #[\Override]
+    #[Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
@@ -23,7 +24,7 @@ class ChoiceTypeWithHelp extends ChoiceType
     /**
      * @param mixed[] $options
      */
-    #[\Override]
+    #[Override]
     public function finishView(FormView $view, FormInterface $form, array $options): void
     {
         parent::finishView($view, $form, $options);

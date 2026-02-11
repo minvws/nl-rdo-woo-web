@@ -7,11 +7,11 @@ namespace Shared\Domain\Publication\Attachment\Enum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function in_array;
+
 /**
  * @phpstan-import-type AttachmentTypeBranchArray from AttachmentTypeBranch
  * @phpstan-import-type AttachmentTypeArray from AttachmentType
- *
- * @SuppressWarnings("PHPMD.ExcessiveMethodLength")
  */
 readonly class AttachmentTypeFactory
 {

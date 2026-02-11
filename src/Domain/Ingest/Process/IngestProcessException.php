@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Ingest\Process;
 
+use RuntimeException;
 use Symfony\Component\Uid\Uuid;
 
-class IngestProcessException extends \RuntimeException
+use function sprintf;
+
+class IngestProcessException extends RuntimeException
 {
     public static function forCannotFindDossier(Uuid $id): self
     {

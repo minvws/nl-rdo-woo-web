@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Query\Facet\Definition;
 
+use DateTimeImmutable;
+use IntlDateFormatter;
 use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Query\Facet\DisplayValue\FacetDisplayValueInterface;
 use Shared\Domain\Search\Query\Facet\DisplayValue\TranslatedFacetDisplayValue;
@@ -18,9 +20,8 @@ use Shared\Service\Search\Query\Filter\FilterInterface;
 use Shared\Service\Search\Query\Filter\PeriodFilter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function sprintf;
+
 readonly class DateFacet implements FacetDefinitionInterface
 {
     public function getKey(): FacetKey
@@ -85,7 +86,7 @@ readonly class DateFacet implements FacetDefinitionInterface
         }
 
         return UntranslatedStringFacetDisplayValue::fromString(
-            \IntlDateFormatter::formatObject(new \DateTimeImmutable($value), 'd MMMM YYYY', 'nl_NL'),
+            IntlDateFormatter::formatObject(new DateTimeImmutable($value), 'd MMMM YYYY', 'nl_NL'),
         );
     }
 

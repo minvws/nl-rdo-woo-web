@@ -8,6 +8,7 @@
     "require": {
         "php": ">=8.3",
         "ext-ctype": "*",
+        "ext-fileinfo": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-xmlwriter": "*",
@@ -35,21 +36,21 @@
         "league/mime-type-detection": "^1.16",
         "league/openapi-psr7-validator": "^0.22.0",
         "maennchen/zipstream-php": "^3.1",
-        "martin-georgiev/postgresql-for-doctrine": "^3.0",
+        "martin-georgiev/postgresql-for-doctrine": "^4.0.0",
         "mhujer/breadcrumbs-bundle": "^1.5",
         "minvws/audit-logger": "^0.4.0",
         "minvws/audit-logger-bundle": "^0.5.3",
         "minvws/horsebattery": "^1.1",
-        "minvws/icore-php-typearray": "^0.0.6",
+        "minvws/icore-php-typearray": "^1.0.0",
         "nesbot/carbon": "^3.7",
         "nikic/php-parser": "^5.0",
         "nyholm/psr7": "^1.8",
         "paragonie/halite": "^5.1",
         "pentatrion/vite-bundle": "^8.0",
         "php-amqplib/rabbitmq-bundle": "^2.11",
-        "phpdocumentor/reflection-docblock": "^5.3",
+        "phpdocumentor/reflection-docblock": "5.2.0",
         "phpoffice/phpspreadsheet": "^5.0.0",
-        "predis/predis": "^2.2",
+        "predis/predis": "^3.0",
         "presta/sitemap-bundle": "^4.0.0",
         "psr/http-message": "^2.0",
         "scheb/2fa-backup-code": "^7.2.0",
@@ -86,7 +87,7 @@
         "symfony/process": "6.4.*",
         "symfony/property-access": "6.4.*",
         "symfony/property-info": "6.4.*",
-        "symfony/psr-http-message-bridge": "7.3.*",
+        "symfony/psr-http-message-bridge": "^7.4.0",
         "symfony/rate-limiter": "6.4.*",
         "symfony/routing": "6.4.*",
         "symfony/runtime": "6.4.*",
@@ -141,10 +142,10 @@
     "autoload-dev": {
         "psr-4": {
             "Shared\\Tests\\": "tests/",
-            "Admin\\Tests\\": "app/admin/tests/",
-            "Public\\Tests\\": "app/public/tests/",
-            "PublicationApi\\Tests\\": "app/publication_api/tests/",
-            "Worker\\Tests\\": "app/worker/tests/"
+            "Admin\\Tests\\": "apps/admin/tests/",
+            "Public\\Tests\\": "apps/public/tests/",
+            "PublicationApi\\Tests\\": "apps/publication_api/tests/",
+            "Worker\\Tests\\": "apps/worker/tests/"
         }
     },
     "replace": {
@@ -158,6 +159,7 @@
         "symfony/polyfill-php82": "*"
     },
     "scripts": {
+        "pre-autoload-dump": "Aws\\Script\\Composer\\Composer::removeUnusedServices",
         "auto-scripts": {
             "cache:clear -ishared": "symfony-cmd",
             "cache:clear -iadmin": "symfony-cmd",
@@ -168,10 +170,12 @@
             "assets:install %PUBLIC_DIR% -ipublic": "symfony-cmd"
         },
         "post-install-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "@openapi:export"
         ],
         "post-update-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "@openapi:export"
         ],
         "syncdotenv": "phpdotenvsync --opt=sync --src=.env.development --dest=.env.local --no-interaction",
         "checkstyle": [
@@ -190,8 +194,6 @@
             "XDEBUG_MODE=off bin/console cache:warmup --no-optional-warmers",
             "XDEBUG_MODE=off phpstan --generate-baseline"
         ],
-        "md": "XDEBUG_MODE=off phpmd src/ ansi ruleset.phpmd.xml",
-        "md:xml": "XDEBUG_MODE=off phpmd src/ xml ruleset.phpmd.xml --cache",
         "checktranslations": "XDEBUG_MODE=off bin/console lint:yaml translations",
         "checktemplates": [
             "XDEBUG_MODE=off APP_DEBUG=false php bin/console cache:clear",
@@ -200,15 +202,22 @@
         "checkall": [
             "@checkstyle",
             "@checktype",
-            "@md",
+            "@checkarc",
             "@checktranslations",
-            "@test",
             "@checktemplates",
-            "composer audit"
+            "@test",
+            "composer audit",
+            "@rector-preview"
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off phpunit -d --without-creating-snapshots --display-phpunit-deprecations --display-deprecations"
+            "XDEBUG_MODE=off phpunit -d --without-creating-snapshots"
+        ],
+        "openapi:export": [
+            "XDEBUG_MODE=off bin/console -ipublication_api api:openapi:export --output public/api/publication/v1/openapi.json",
+            "XDEBUG_MODE=off bin/console -ipublication_api api:openapi:export --output public/api/publication/v1/openapi.yaml --yaml",
+            "XDEBUG_MODE=off bin/console -iadmin api:openapi:export --output public/api/admin/openapi.json",
+            "XDEBUG_MODE=off bin/console -iadmin api:openapi:export --output public/api/admin/openapi.yaml --yaml"
         ],
         "test-report": [
             "Composer\\Config::disableProcessTimeout",
@@ -216,7 +225,8 @@
         ],
         "update-test-snapshots": "XDEBUG_MODE=off phpunit -d --update-snapshots",
         "rector": "rector",
-        "rector-preview": "rector --dry-run"
+        "rector-preview": "rector --dry-run",
+        "checkarc": "phparkitect check"
     },
     "scripts-descriptions": {
         "syncdotenv": "Synchronize .env.development with .env.local",
@@ -224,7 +234,6 @@
         "fixstyle": "Fix code style using php_codesniffer and php-cs-fixer",
         "checktype": "Check code type using PHPStan",
         "update-type-baseline": "Update PHPStan baseline",
-        "md": "Run PHPMD",
         "checktranslations": "Run YAML linting on translation files",
         "checktemplates": "Run Twig linting on templates",
         "checkall": "Run all checks including test",
@@ -232,7 +241,8 @@
         "test-report": "Run PHPUnit tests with coverage report",
         "update-test-snapshots": "Update PHPUnit snapshots",
         "rector": "Run Rector on the code base",
-        "rector-preview": "Preview Rector changes on the code base"
+        "rector-preview": "Preview Rector changes on the code base",
+        "checkarc": "Check architecture rules using PHPArkitect"
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -241,19 +251,20 @@
         "symfony": {
             "allow-contrib": false,
             "require": "6.4.*"
-        }
+        },
+        "aws/aws-sdk-php": [
+            "S3"
+        ]
     },
     "require-dev": {
         "dama/doctrine-test-bundle": "^8.2",
         "dg/bypass-finals": "^1.5",
-        "friendsofphp/php-cs-fixer": "^3.48",
-        "justinrainbow/json-schema": "^5.2",
+        "friendsofphp/php-cs-fixer": "^3.91.2",
         "league/flysystem-memory": "^3.0",
         "mikey179/vfsstream": "^1.6",
         "mockery/mockery": "^1.6.12",
-        "nunomaduro/phpinsights": "^2.8",
-        "phpcompatibility/php-compatibility": "^9.3",
-        "phpmd/phpmd": "^2.13",
+        "phparkitect/phparkitect": "^0.7.0",
+        "phpcompatibility/php-compatibility": "^10.0.0-alpha1",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.0",
         "phpstan/phpstan-doctrine": "^2.0",
@@ -262,9 +273,9 @@
         "phpstan/phpstan-webmozart-assert": "^2.0",
         "phpunit/phpunit": "^12.4",
         "rector/rector": "^2.0",
-        "slevomat/coding-standard": "^8.11",
+        "slevomat/coding-standard": "^8.25",
         "spatie/phpunit-snapshot-assertions": "^5.1",
-        "squizlabs/php_codesniffer": "^3.8",
+        "squizlabs/php_codesniffer": "^4.0",
         "stefanocbt/phpdotenv-sync": "^1.2",
         "swisnl/phpstan-faker": "^1.0",
         "symfony/browser-kit": "6.4.*",

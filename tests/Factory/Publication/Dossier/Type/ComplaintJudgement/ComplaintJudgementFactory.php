@@ -8,12 +8,12 @@ use Carbon\CarbonImmutable;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Tests\Factory\OrganisationFactory;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<ComplaintJudgement>
+ * @extends PersistentObjectFactory<ComplaintJudgement>
  */
-final class ComplaintJudgementFactory extends PersistentProxyObjectFactory
+final class ComplaintJudgementFactory extends PersistentObjectFactory
 {
     /**
      * @return array<string, mixed>

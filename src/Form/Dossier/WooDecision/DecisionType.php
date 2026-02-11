@@ -21,9 +21,6 @@ class DecisionType extends AbstractDossierStepType
         return WooDecision::class;
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         /** @var WooDecision $dossier */

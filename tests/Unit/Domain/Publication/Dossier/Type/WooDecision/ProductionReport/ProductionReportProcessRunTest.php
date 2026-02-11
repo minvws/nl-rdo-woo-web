@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ProductionReport;
 
+use Mockery;
 use Mockery\MockInterface;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -20,7 +22,7 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->wooDecision = \Mockery::mock(WooDecision::class);
+        $this->wooDecision = Mockery::mock(WooDecision::class);
         $this->wooDecision->expects('setProcessRun');
 
         $this->productionReportProcessRun = new ProductionReportProcessRun($this->wooDecision);
@@ -52,15 +54,15 @@ final class ProductionReportProcessRunTest extends UnitTestCase
     {
         $this->productionReportProcessRun->startComparing();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->productionReportProcessRun->startComparing();
     }
 
     public function testSetChangesetSetsStatusToNeedsConfirmationWhenDossierAlreadyHasAProductionReport(): void
     {
-        $this->wooDecision->expects('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
+        $this->wooDecision->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
-        $changeset = \Mockery::mock(InventoryChangeset::class);
+        $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('getAll')->andReturn($changes = [
             'doc-1' => 'added',
             'doc-2' => 'added',
@@ -87,7 +89,7 @@ final class ProductionReportProcessRunTest extends UnitTestCase
     {
         $this->wooDecision->expects('getProductionReport')->andReturnNull();
 
-        $changeset = \Mockery::mock(InventoryChangeset::class);
+        $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('getAll')->andReturn($changes = [
             'doc-1' => 'added',
             'doc-2' => 'added',
@@ -101,9 +103,9 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
     public function testConfirm(): void
     {
-        $this->wooDecision->expects('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
+        $this->wooDecision->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
-        $changeset = \Mockery::mock(InventoryChangeset::class);
+        $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('getAll')->andReturn([]);
 
         $this->productionReportProcessRun->setChangeset($changeset);
@@ -126,15 +128,15 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
     public function testConfirmThrowsExceptionForInvalidStatus(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->productionReportProcessRun->confirm();
     }
 
     public function testReject(): void
     {
-        $this->wooDecision->expects('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
+        $this->wooDecision->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
-        $changeset = \Mockery::mock(InventoryChangeset::class);
+        $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('getAll')->andReturn([]);
 
         $this->productionReportProcessRun->setChangeset($changeset);
@@ -157,15 +159,15 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
     public function testRejectThrowsExceptionForInvalidStatus(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->productionReportProcessRun->reject();
     }
 
     public function testStartUpdating(): void
     {
-        $this->wooDecision->expects('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
+        $this->wooDecision->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
-        $changeset = \Mockery::mock(InventoryChangeset::class);
+        $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('getAll')->andReturn([]);
 
         $this->productionReportProcessRun->setChangeset($changeset);
@@ -189,16 +191,16 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
     public function testStartUpdatingIsOnlyPossibleWithValidStatus(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->productionReportProcessRun->startUpdating();
     }
 
     public function testFinish(): void
     {
-        $this->wooDecision->expects('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
+        $this->wooDecision->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
-        $changeset = \Mockery::mock(InventoryChangeset::class);
+        $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('getAll')->andReturn([]);
 
         $this->productionReportProcessRun->setChangeset($changeset);
@@ -224,9 +226,9 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
     public function testFail(): void
     {
-        $this->wooDecision->expects('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
+        $this->wooDecision->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
-        $changeset = \Mockery::mock(InventoryChangeset::class);
+        $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('getAll')->andReturn([]);
 
         $this->productionReportProcessRun->setChangeset($changeset);
@@ -270,15 +272,15 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
     public function testAddGenericExceptionThrowsExceptionForFinalStatus(): void
     {
-        $this->wooDecision->expects('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
+        $this->wooDecision->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
-        $changeset = \Mockery::mock(InventoryChangeset::class);
+        $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('getAll')->andReturn([]);
 
         $this->productionReportProcessRun->setChangeset($changeset);
         $this->productionReportProcessRun->reject();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->productionReportProcessRun->addGenericException(
             ProcessInventoryException::forMaxRuntimeExceeded()
@@ -301,15 +303,15 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
     public function testAddRowExceptionThrowsExceptionForFinalStatus(): void
     {
-        $this->wooDecision->expects('getProductionReport')->andReturn(\Mockery::mock(ProductionReport::class));
+        $this->wooDecision->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
-        $changeset = \Mockery::mock(InventoryChangeset::class);
+        $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('getAll')->andReturn([]);
 
         $this->productionReportProcessRun->setChangeset($changeset);
         $this->productionReportProcessRun->reject();
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->productionReportProcessRun->addRowException(
             23,

@@ -10,6 +10,8 @@ use Shared\Domain\Search\Result\Dossier\OtherPublication\OtherPublicationSearchR
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
+use function sprintf;
+
 /**
  * @extends AbstractDossierRepository<OtherPublication>
  */
@@ -46,8 +48,7 @@ class OtherPublicationRepository extends AbstractDossierRepository implements Pr
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
             ->setParameter('dossierNr', $dossierNr)
-            ->setParameter('statuses', $mode->getAccessibleDossierStatuses())
-        ;
+            ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
 
         /** @var ?OtherPublicationSearchResult */
         return $qb->getQuery()->getOneOrNullResult();

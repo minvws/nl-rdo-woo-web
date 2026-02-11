@@ -10,6 +10,8 @@ use Shared\Domain\Search\Query\Facet\Facet;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Dsl\Aggregation;
 
+use function sprintf;
+
 class NestedTermsAggregationStrategy implements AggregationStrategyInterface
 {
     public function __construct(

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Security;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -14,6 +15,7 @@ use Shared\Service\Inquiry\InquirySessionService;
 use Shared\Service\Security\DocumentVoter;
 use Shared\Service\Security\DossierVoter;
 use Shared\Tests\Unit\UnitTestCase;
+use stdClass;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 use Symfony\Component\Uid\Uuid;
@@ -26,7 +28,7 @@ class DocumentVoterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->inquirySessionService = \Mockery::mock(InquirySessionService::class);
+        $this->inquirySessionService = Mockery::mock(InquirySessionService::class);
 
         $this->voter = new DocumentVoter(
             $this->inquirySessionService,
@@ -37,10 +39,10 @@ class DocumentVoterTest extends UnitTestCase
 
     public function testAbstainForUnknownAttribute(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
-        $dossier = \Mockery::mock(WooDecision::class);
+        $token = Mockery::mock(TokenInterface::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
             $dossier,
         ]));
@@ -53,12 +55,12 @@ class DocumentVoterTest extends UnitTestCase
 
     public function testAbstainWhenDocumentHasMultipleDossiers(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
 
-        $dossierA = \Mockery::mock(WooDecision::class);
-        $dossierB = \Mockery::mock(WooDecision::class);
+        $dossierA = Mockery::mock(WooDecision::class);
+        $dossierB = Mockery::mock(WooDecision::class);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
             $dossierA,
             $dossierB,
@@ -72,21 +74,21 @@ class DocumentVoterTest extends UnitTestCase
 
     public function testAbstainForUnknownSubject(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
 
         self::assertEquals(
             VoterInterface::ACCESS_ABSTAIN,
-            $this->voter->vote($token, new \stdClass(), [DossierVoter::VIEW]),
+            $this->voter->vote($token, new stdClass(), [DossierVoter::VIEW]),
         );
     }
 
     public function testAccessGrantedForPublishedDossier(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
-        $dossier = \Mockery::mock(WooDecision::class);
+        $token = Mockery::mock(TokenInterface::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
             $dossier,
         ]));
@@ -99,11 +101,11 @@ class DocumentVoterTest extends UnitTestCase
 
     public function testAccessDeniedWhenDossierIsNotPublishedAndNotPreviewAndDocumentNotInSession(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
-        $dossier = \Mockery::mock(WooDecision::class);
+        $token = Mockery::mock(TokenInterface::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
             $dossier,
         ]));
@@ -119,18 +121,18 @@ class DocumentVoterTest extends UnitTestCase
 
     public function testAccessDeniedWhenDossierIsPreviewAndNotInSessionAndDocumentNotInSession(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
 
-        $inquiryA = \Mockery::mock(Inquiry::class);
+        $inquiryA = Mockery::mock(Inquiry::class);
         $inquiryA->shouldReceive('getId')->andReturn(Uuid::v6());
 
-        $inquiryB = \Mockery::mock(Inquiry::class);
+        $inquiryB = Mockery::mock(Inquiry::class);
         $inquiryB->shouldReceive('getId')->andReturn(Uuid::v6());
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
             $dossier,
         ]));
@@ -149,22 +151,22 @@ class DocumentVoterTest extends UnitTestCase
 
     public function testAccessGrantedWhenDossierIsPreviewAndInSession(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
 
-        $inquiryA = \Mockery::mock(Inquiry::class);
+        $inquiryA = Mockery::mock(Inquiry::class);
         $inquiryA->shouldReceive('getId')->andReturn(Uuid::v6());
 
-        $inquiryB = \Mockery::mock(Inquiry::class);
+        $inquiryB = Mockery::mock(Inquiry::class);
         $inquiryB->shouldReceive('getId')->andReturn($inquiryBId = Uuid::v6());
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
         $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([
             $inquiryA,
             $inquiryB,
         ]));
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
             $dossier,
         ]));
@@ -179,19 +181,19 @@ class DocumentVoterTest extends UnitTestCase
 
     public function testAccessGrantedWhenDocumentInSession(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
 
-        $inquiryA = \Mockery::mock(Inquiry::class);
+        $inquiryA = Mockery::mock(Inquiry::class);
         $inquiryA->shouldReceive('getId')->andReturn(Uuid::v6());
 
-        $inquiryB = \Mockery::mock(Inquiry::class);
+        $inquiryB = Mockery::mock(Inquiry::class);
         $inquiryB->shouldReceive('getId')->andReturn($inquiryBId = Uuid::v6());
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
         $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection());
 
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
             $dossier,
         ]));

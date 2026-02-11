@@ -11,6 +11,8 @@ use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInputInterface;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Dsl\Query;
 
+use function is_null;
+
 /**
  * Meaning that all values must match.
  */

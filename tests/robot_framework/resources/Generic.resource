@@ -56,15 +56,11 @@ Generic Download URL
 
 Verify Page Error
   [Arguments]  ${error_code}
-  ${url} =  Get Url
-  IF  'localhost' in '${url}' # Locally we get a detailed Symfony error page
+  ${symfony_error_box} =  Get Element Count  //h2[@class="exception-http"]
+  IF  ${symfony_error_box} > 0
     Get Text  //h2[@class="exception-http"]  contains  ${error_code}
-  ELSE IF  '${error_code}' == '404'
-    Get Text  //h1  contains  Pagina niet gevonden
-  ELSE IF  '${error_code}' == '403'
-    Get Text  //h1  contains  Log in alstublieft
   ELSE
-    Fatal Error  Not supported yet
+    Get Text  //h1  contains  Pagina niet gevonden
   END
 
 Convert Dutch To English Date

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inventory;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\IngestDispatcher;
 use Shared\Domain\Organisation\Organisation;
@@ -37,17 +39,17 @@ class DocumentUpdaterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(DocumentRepository::class);
-        $this->entityStorageService = \Mockery::mock(EntityStorageService::class);
-        $this->thumbnailStorageService = \Mockery::mock(ThumbnailStorageService::class);
-        $this->documentDispatcher = \Mockery::mock(DocumentDispatcher::class);
-        $this->ingestDispatcher = \Mockery::mock(IngestDispatcher::class);
+        $this->repository = Mockery::mock(DocumentRepository::class);
+        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
+        $this->thumbnailStorageService = Mockery::mock(ThumbnailStorageService::class);
+        $this->documentDispatcher = Mockery::mock(DocumentDispatcher::class);
+        $this->ingestDispatcher = Mockery::mock(IngestDispatcher::class);
 
-        $this->dossier = \Mockery::mock(WooDecision::class);
+        $this->dossier = Mockery::mock(WooDecision::class);
         $this->dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
         $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
 
-        $organisation = \Mockery::mock(Organisation::class);
+        $organisation = Mockery::mock(Organisation::class);
         $this->dossier->shouldReceive('getOrganisation')->andReturn($organisation);
 
         $this->documentUpdater = new DocumentUpdater(
@@ -63,11 +65,11 @@ class DocumentUpdaterTest extends UnitTestCase
 
     public function testProcessRemovesObsoleteUpload(): void
     {
-        $fileInfo = \Mockery::mock(FileInfo::class);
+        $fileInfo = Mockery::mock(FileInfo::class);
 
         $documentMetadata = $this->getDocumentMetadata(Judgement::PUBLIC);
 
-        $existingDocument = \Mockery::mock(Document::class);
+        $existingDocument = Mockery::mock(Document::class);
         $existingDocument->expects('getDocumentNr')->andReturn('tst-123');
         $existingDocument->expects('setJudgement')->with($documentMetadata->getJudgement());
         $existingDocument->shouldReceive('getDocumentId')->andReturn('456');
@@ -101,7 +103,7 @@ class DocumentUpdaterTest extends UnitTestCase
     {
         $documentMetadata = $this->getDocumentMetadata(Judgement::PUBLIC);
 
-        $existingDocument = \Mockery::mock(Document::class);
+        $existingDocument = Mockery::mock(Document::class);
         $existingDocument->expects('getDocumentNr')->andReturn('tst-123');
         $existingDocument->expects('setJudgement')->with($documentMetadata->getJudgement());
         $existingDocument->shouldReceive('getDocumentId')->andReturn('456');
@@ -125,44 +127,44 @@ class DocumentUpdaterTest extends UnitTestCase
 
     public function testUpdateDocumentReferrals(): void
     {
-        $newReferredDoc = \Mockery::mock(Document::class);
+        $newReferredDoc = Mockery::mock(Document::class);
 
-        $oldReferredDoc = \Mockery::mock(Document::class);
+        $oldReferredDoc = Mockery::mock(Document::class);
         $oldReferredDoc->shouldReceive('getDocumentNr')->andReturn('PREFIX-matter-456');
         $oldReferredDoc->shouldReceive('getDocumentId')->andReturn('456');
 
-        $existingDocument = \Mockery::mock(Document::class);
+        $existingDocument = Mockery::mock(Document::class);
         $existingDocument->expects('getRefersTo')->andReturn(new ArrayCollection([$oldReferredDoc]));
         $existingDocument->shouldReceive('getDocumentNr')->andReturn('PREFIX-matter-1');
         $existingDocument->shouldReceive('getDocumentId')->andReturn('1');
 
         // Old referred document is no longer in metadata so should be removed
-        $existingDocument->expects('removeReferralTo')->with($oldReferredDoc);
+        $existingDocument->expects('removeRefersTo')->with($oldReferredDoc);
 
         // And a new referral should be added
-        $existingDocument->expects('addReferralTo')->with($newReferredDoc);
+        $existingDocument->expects('addRefersTo')->with($newReferredDoc);
 
         $this->repository
             ->expects('findByDocumentNumber')
-            ->with(\Mockery::on(
+            ->with(Mockery::on(
                 static fn (DocumentNumber $documentNumber): bool => $documentNumber->getValue() === 'PREFIX-matter-123'
             ))
             ->andReturn($newReferredDoc);
 
         $this->repository
             ->expects('findByDocumentNumber')
-            ->with(\Mockery::on(
+            ->with(Mockery::on(
                 static fn (DocumentNumber $documentNumber): bool => $documentNumber->getValue() === 'PREFIX-matter-456'
             ))
             ->andReturn($oldReferredDoc);
 
-        $this->documentUpdater->updateDocumentReferrals($this->dossier, $existingDocument, ['PREFIX-matter-123']);
+        $this->documentUpdater->updateDocumentReferralsByDocumentNumber($this->dossier, $existingDocument, ['PREFIX-matter-123']);
     }
 
     public function testAsyncUpdate(): void
     {
         $docId = Uuid::v6();
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getId')->andReturn($docId);
         $document->expects('shouldBeUploaded')->andReturnTrue();
 
@@ -174,7 +176,7 @@ class DocumentUpdaterTest extends UnitTestCase
     public function testAsyncDelete(): void
     {
         $docId = Uuid::v6();
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
         $document->shouldReceive('getId')->andReturn($docId);
 
         $dossierId = Uuid::v6();
@@ -188,7 +190,7 @@ class DocumentUpdaterTest extends UnitTestCase
     private function getDocumentMetadata(Judgement $judgement): DocumentMetadata
     {
         return new DocumentMetadata(
-            date: new \DateTimeImmutable('2023-09-28 10:11:12'),
+            date: new DateTimeImmutable('2023-09-28 10:11:12'),
             filename: 'file.doc',
             familyId: 1,
             sourceType: SourceType::EMAIL,
@@ -208,9 +210,9 @@ class DocumentUpdaterTest extends UnitTestCase
 
     public function testDatabaseRemove(): void
     {
-        $document = \Mockery::mock(Document::class);
+        $document = Mockery::mock(Document::class);
 
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->expects('removeDocument')->with($document);
 
         $this->documentUpdater->databaseRemove($document, $wooDecision);

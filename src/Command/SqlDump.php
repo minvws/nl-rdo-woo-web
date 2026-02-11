@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Command;
 
+use Exception;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use PhpParser\PhpVersion;
 use Shared\Service\SqlDump\NodeVisitor;
+use SplFileInfo;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,6 +17,14 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Finder\Finder;
+
+use function date;
+use function fclose;
+use function file_exists;
+use function fopen;
+use function ltrim;
+use function sprintf;
+use function strtolower;
 
 /**
  * @codeCoverageIgnore This command should get refactored and get full coverage then.
@@ -28,8 +38,7 @@ class SqlDump extends Command
     {
         $this
             ->setHelp('Dumps SQL from migrations')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite existing sql files')
-        ;
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite existing sql files');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -48,7 +57,7 @@ class SqlDump extends Command
 
             $f = fopen($sqlFullpath, 'w');
             if (! $f) {
-                throw new \Exception("Could not open file $sqlFilename for writing");
+                throw new Exception("Could not open file $sqlFilename for writing");
             }
             $output = new StreamOutput($f);
 
@@ -59,7 +68,7 @@ class SqlDump extends Command
 
             $ast = $parser->parse($file->getContents());
             if (! $ast) {
-                throw new \Exception('Could not parse file ' . $file->getFilename());
+                throw new Exception('Could not parse file ' . $file->getFilename());
             }
 
             $traverser = new NodeTraverser();
@@ -70,10 +79,10 @@ class SqlDump extends Command
             fclose($f);
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 
-    private function getSqlFilename(\SplFileInfo $file): string
+    private function getSqlFilename(SplFileInfo $file): string
     {
         $basename = ltrim(strtolower($file->getBasename('.php')), 'version');
 

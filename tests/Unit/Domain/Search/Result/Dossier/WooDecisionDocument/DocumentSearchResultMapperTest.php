@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Result\Dossier\WooDecisionDocument;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
@@ -19,8 +20,8 @@ class DocumentSearchResultMapperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossierRepository = \Mockery::mock(WooDecisionRepository::class);
-        $this->documentRepository = \Mockery::mock(DocumentRepository::class);
+        $this->dossierRepository = Mockery::mock(WooDecisionRepository::class);
+        $this->documentRepository = Mockery::mock(DocumentRepository::class);
 
         $this->mapper = new DocumentSearchResultMapper(
             $this->documentRepository,

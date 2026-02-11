@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory\Reader;
 
+use RuntimeException;
 use Shared\Service\FileReader\ColumnMapping;
 use Shared\Service\FileReader\ReaderFactoryInterface;
 use Shared\Service\Inventory\MetadataField;
+use Traversable;
+
+use function iterator_to_array;
 
 /**
  * Creates an InventoryReaderInterface configured with mapping.
@@ -24,17 +28,14 @@ class InventoryReaderFactory
      */
     public function __construct(iterable $factories)
     {
-        $this->factories = $factories instanceof \Traversable ? iterator_to_array($factories, false) : $factories;
+        $this->factories = $factories instanceof Traversable ? iterator_to_array($factories, false) : $factories;
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.ExcessiveMethodLength")
-     */
     public function create(string $mimetype): InventoryReaderInterface
     {
         $readerFactory = $this->findFactoryForFile($mimetype);
         if ($readerFactory === null) {
-            throw new \RuntimeException('No reader factory found for type ' . $mimetype);
+            throw new RuntimeException('No reader factory found for type ' . $mimetype);
         }
 
         return new InventoryReader(

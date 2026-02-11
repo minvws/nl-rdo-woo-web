@@ -6,7 +6,7 @@ queryParameters:
     sort: _score
     sortorder: desc
 facetInputs:
-    date: { isActive: true, withoutDate: true, anyPeriodFilterDates: true, periodFilterFrom: '2021-01-15', periodFilterTo: null, requestParameters: { without_date: 1, from: '2021-01-15' }, fromDate: true, toDate: false, facetKey: { paramName: dt, name: DATE, value: date }, notActive: false, facet: { key: { paramName: dt, name: DATE, value: date }, field: { name: DATE_FILTER, value: date_filter }, requestParameter: dt, filter: {  }, aggregationStrategy: {  } }, from: '2021-01-15T00:00:00+00:00', to: null }
+    date: { active: true, withoutDate: true, anyPeriodFilterDates: true, periodFilterFrom: '2021-01-15', periodFilterTo: null, requestParameters: { without_date: 1, from: '2021-01-15' }, fromDate: true, toDate: false, facetKey: { paramName: dt, name: DATE, value: date }, notActive: false, facet: { key: { paramName: dt, name: DATE, value: date }, field: { name: DATE_FILTER, value: date_filter }, requestParameter: dt, filter: {  }, aggregationStrategy: {  } }, from: '2021-01-15T00:00:00+00:00', to: null }
 operator:
     name: AND
     value: and

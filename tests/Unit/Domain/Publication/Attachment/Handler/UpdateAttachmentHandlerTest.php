@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\Handler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
 use Shared\Domain\Publication\Attachment\Command\UpdateAttachmentCommand;
@@ -34,11 +35,11 @@ class UpdateAttachmentHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->attachmentRepository = \Mockery::mock(AttachmentRepository::class);
-        $this->entityLoader = \Mockery::mock(AttachmentEntityLoader::class);
-        $this->dispatcher = \Mockery::mock(AttachmentDispatcher::class);
-        $this->validator = \Mockery::mock(ValidatorInterface::class);
-        $this->uploadStorer = \Mockery::mock(EntityUploadStorer::class);
+        $this->attachmentRepository = Mockery::mock(AttachmentRepository::class);
+        $this->entityLoader = Mockery::mock(AttachmentEntityLoader::class);
+        $this->dispatcher = Mockery::mock(AttachmentDispatcher::class);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
+        $this->uploadStorer = Mockery::mock(EntityUploadStorer::class);
 
         $this->handler = new UpdateAttachmentHandler(
             $this->attachmentRepository,
@@ -55,7 +56,7 @@ class UpdateAttachmentHandlerTest extends UnitTestCase
     {
         $docUuid = Uuid::v6();
         $dossierUuid = Uuid::v6();
-        $dossier = \Mockery::mock(AnnualReport::class);
+        $dossier = Mockery::mock(AnnualReport::class);
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
         $dossier->shouldReceive('getAttachmentEntityClass')->andReturn(CovenantAttachment::class);
 
@@ -81,11 +82,11 @@ class UpdateAttachmentHandlerTest extends UnitTestCase
             uploadFileReference: $uploadRef,
         );
 
-        $dossier = \Mockery::mock(AnnualReport::class);
+        $dossier = Mockery::mock(AnnualReport::class);
         $dossier->shouldReceive('getId')->andReturn($dossierUuid);
         $dossier->shouldReceive('getAttachmentEntityClass')->andReturn(CovenantAttachment::class);
 
-        $attachment = \Mockery::mock(AnnualReportAttachment::class);
+        $attachment = Mockery::mock(AnnualReportAttachment::class);
         $attachment->shouldReceive('getId')->andReturn($attachmentUuid);
         $attachment->shouldReceive('getUploadGroupId')->andReturn(UploadGroupId::ATTACHMENTS);
         $attachment->shouldReceive('getDossier')->andReturn($dossier);
@@ -96,7 +97,7 @@ class UpdateAttachmentHandlerTest extends UnitTestCase
             ->with($dossierUuid, $attachmentUuid, DossierStatusTransition::UPDATE_ATTACHMENT)
             ->andReturn($attachment);
 
-        $violations = \Mockery::mock(ConstraintViolationListInterface::class);
+        $violations = Mockery::mock(ConstraintViolationListInterface::class);
         $violations->expects('count')->andReturn(0);
 
         $this->validator->expects('validate')->with($attachment)->andReturn($violations);

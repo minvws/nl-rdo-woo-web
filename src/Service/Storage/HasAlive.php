@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Service\Storage;
 
+use function hash;
+use function random_bytes;
+use function sprintf;
+
 trait HasAlive
 {
     public function isAlive(): bool

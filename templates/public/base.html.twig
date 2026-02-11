@@ -15,7 +15,7 @@
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
         {% if is_dev() %}
-            <meta property="csp-nonce" nonce="{{ csp_nonce() }}" />
+            <meta content property="csp-nonce" nonce="{{ csp_nonce() }}">
         {% endif %}
 
         {{ vite_entry_link_tags('public') }}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
@@ -25,8 +26,8 @@ final class PageExtractorTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->pdftkService = \Mockery::mock(PdftkService::class);
-        $this->statsService = \Mockery::mock(WorkerStatsService::class);
+        $this->pdftkService = Mockery::mock(PdftkService::class);
+        $this->statsService = Mockery::mock(WorkerStatsService::class);
         $this->extractor = new PageExtractor(
             $this->pdftkService,
             $this->statsService,
@@ -35,10 +36,10 @@ final class PageExtractorTest extends UnitTestCase
 
     public function testThrowsExceptionWhenExtractFails(): void
     {
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getId')->andReturn(Uuid::v6());
 
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
+        $context = Mockery::mock(PdfPageProcessingContext::class);
         $context->shouldReceive('getWorkDirPath')->andReturn('/foo/bar');
         $context->shouldReceive('getLocalDocument')->andReturn('/baz/doc.pdf');
         $context->shouldReceive('getPageNumber')->andReturn(2);
@@ -56,7 +57,7 @@ final class PageExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('pdftk.extractPage', \Mockery::on(function () {
+            ->with('pdftk.extractPage', Mockery::on(function () {
                 return true;
             }))
             ->andReturn($result);
@@ -68,10 +69,10 @@ final class PageExtractorTest extends UnitTestCase
 
     public function testSetLocalPageDocumentOnSuccess(): void
     {
-        $entity = \Mockery::mock(EntityWithFileInfo::class);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->shouldReceive('getId')->andReturn(Uuid::v6());
 
-        $context = \Mockery::mock(PdfPageProcessingContext::class);
+        $context = Mockery::mock(PdfPageProcessingContext::class);
         $context->shouldReceive('getWorkDirPath')->andReturn('/foo/bar');
         $context->shouldReceive('getLocalDocument')->andReturn('/baz/doc.pdf');
         $context->shouldReceive('getPageNumber')->andReturn(2);
@@ -89,7 +90,7 @@ final class PageExtractorTest extends UnitTestCase
         $this->statsService
             ->shouldReceive('measure')
             ->once()
-            ->with('pdftk.extractPage', \Mockery::on(function () {
+            ->with('pdftk.extractPage', Mockery::on(function () {
                 return true;
             }))
             ->andReturn($result);

@@ -14,6 +14,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
+use function count;
+
 /**
  * @template-extends AbstractType<DocumentPrefixType>
  */
@@ -25,9 +27,6 @@ class DocumentPrefixType extends AbstractType
     ) {
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addModelTransformer(new DocumentPrefixTransformer($this->doctrine));

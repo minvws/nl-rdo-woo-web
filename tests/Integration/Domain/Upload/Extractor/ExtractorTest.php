@@ -6,6 +6,9 @@ namespace Shared\Tests\Integration\Domain\Upload\Extractor;
 
 use Shared\Domain\Upload\Extractor\Extractor;
 use Shared\Tests\Integration\SharedWebTestCase;
+use SplFileInfo;
+
+use function is_file;
 
 final class ExtractorTest extends SharedWebTestCase
 {
@@ -14,7 +17,7 @@ final class ExtractorTest extends SharedWebTestCase
         /** @var Extractor $extractor */
         $extractor = self::getContainer()->get('extractor.7z');
 
-        $file = new \SplFileInfo(__DIR__ . '/fixtures/Archive.zip');
+        $file = new SplFileInfo(__DIR__ . '/fixtures/Archive.zip');
         $result = $extractor->getFiles($file);
 
         $i = 0;
@@ -38,7 +41,7 @@ final class ExtractorTest extends SharedWebTestCase
         /** @var Extractor $extractor */
         $extractor = self::getContainer()->get('extractor.7z');
 
-        $file = new \SplFileInfo(__DIR__ . '/fixtures/Archive.7z');
+        $file = new SplFileInfo(__DIR__ . '/fixtures/Archive.7z');
         $result = $extractor->getFiles($file);
 
         $i = 0;

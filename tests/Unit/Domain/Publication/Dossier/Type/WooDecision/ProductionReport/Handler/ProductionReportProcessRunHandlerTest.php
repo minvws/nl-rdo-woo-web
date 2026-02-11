@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Command\ProductionReportProcessRunCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Handler\ProductionReportProcessRunHandler;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
@@ -25,10 +27,10 @@ class ProductionReportProcessRunHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->productionReportProcessRunRepository = \Mockery::mock(ProductionReportProcessRunRepository::class);
-        $this->logger = \Mockery::mock(LoggerInterface::class);
-        $this->inventoryRunProcessor = \Mockery::mock(InventoryRunProcessor::class);
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
+        $this->productionReportProcessRunRepository = Mockery::mock(ProductionReportProcessRunRepository::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->inventoryRunProcessor = Mockery::mock(InventoryRunProcessor::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
 
         $this->handler = new ProductionReportProcessRunHandler(
             $this->productionReportProcessRunRepository,
@@ -57,7 +59,7 @@ class ProductionReportProcessRunHandlerTest extends UnitTestCase
             $processRunId = Uuid::v6(),
         );
 
-        $run = \Mockery::mock(ProductionReportProcessRun::class);
+        $run = Mockery::mock(ProductionReportProcessRun::class);
         $run->expects('isPending')->andReturnFalse();
         $run->expects('isConfirmed')->andReturnFalse();
 
@@ -74,7 +76,7 @@ class ProductionReportProcessRunHandlerTest extends UnitTestCase
             $processRunId = Uuid::v6(),
         );
 
-        $run = \Mockery::mock(ProductionReportProcessRun::class);
+        $run = Mockery::mock(ProductionReportProcessRun::class);
         $run->expects('isPending')->andReturnTrue();
 
         $this->productionReportProcessRunRepository->expects('find')->with($processRunId)->andReturn($run);
@@ -91,12 +93,12 @@ class ProductionReportProcessRunHandlerTest extends UnitTestCase
             $processRunId = Uuid::v6(),
         );
 
-        $run = \Mockery::mock(ProductionReportProcessRun::class);
+        $run = Mockery::mock(ProductionReportProcessRun::class);
         $run->expects('isPending')->andReturnTrue();
 
         $this->productionReportProcessRunRepository->expects('find')->with($processRunId)->andReturn($run);
 
-        $this->inventoryRunProcessor->expects('process')->with($run)->andThrows(new \RuntimeException('oops'));
+        $this->inventoryRunProcessor->expects('process')->with($run)->andThrows(new RuntimeException('oops'));
 
         $this->logger->expects('error');
 

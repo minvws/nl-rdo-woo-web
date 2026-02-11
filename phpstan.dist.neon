@@ -13,6 +13,7 @@ parameters:
         - public/
         - src/
         - tests/
+        - apps
     excludePaths:
         - src/Domain/Publication/Dossier/Type/**/*Workflow.php
         - config/packages/workflow.php

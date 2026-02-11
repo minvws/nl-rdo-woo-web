@@ -20,6 +20,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAtt
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,10 +28,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Webmozart\Assert\Assert;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+#[AsCommand(name: 'woopie:dev:extract-content', description: 'Extracts content for an entity using Tika and Tesseract')]
 class ContentExtractCommand extends Command
 {
     public function __construct(
@@ -42,56 +42,35 @@ class ContentExtractCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('woopie:dev:extract-content')
-            ->setDescription('Extracts content for an entity using Tika and Tesseract')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
+        Assert::isInstanceOf($helper, QuestionHelper::class);
 
-        $question = new ChoiceQuestion(
-            'Please select an entity class',
-            [
-                Document::class,
-                WooDecisionMainDocument::class,
-                WooDecisionAttachment::class,
-                CovenantMainDocument::class,
-                CovenantAttachment::class,
-                AnnualReportAttachment::class,
-                AnnualReportMainDocument::class,
-                InvestigationReportMainDocument::class,
-                InvestigationReportAttachment::class,
-                DispositionMainDocument::class,
-                DispositionAttachment::class,
-                ComplaintJudgementMainDocument::class,
-            ],
-            0
-        );
+        $choices = $this->getChoices();
+        $question = new ChoiceQuestion('Please select an entity class', $choices, 0);
         $question->setErrorMessage('Choice %s is invalid.');
-        /** @var class-string<EntityWithFileInfo> $entityClass */
         $entityClass = $helper->ask($input, $output, $question);
+
+        Assert::classExists($entityClass);
+        Assert::implementsInterface($entityClass, EntityWithFileInfo::class);
 
         $question = new Question('Please enter the uuid of the entity: ');
         $entityId = $helper->ask($input, $output, $question);
 
-        /** @var EntityWithFileInfo $entity */
         $entity = $this->entityManager->getRepository($entityClass)->find($entityId);
-        if (! $entity) {
+        if (! $entity instanceof EntityWithFileInfo) {
             $output->writeln('<error>Could not load entity from database</error>');
 
-            return 1;
+            return self::FAILURE;
         }
-
-        $extracts = $this->contentExtractService->getExtracts(
-            $entity,
-            ContentExtractOptions::create()->withAllExtractors(),
-        );
+        Assert::isAnyOf($entity::class, $choices);
 
         $io = new SymfonyStyle($input, $output);
         $io->newLine(2);
+        $extracts = $this->contentExtractService->getExtracts($entity, ContentExtractOptions::create()->withAllExtractors());
         foreach ($extracts as $extract) {
             $io->section($extract->key->value);
             $io->text('Date: ' . $extract->date->format('d-m-Y H:i:s'));
@@ -100,6 +79,27 @@ class ContentExtractCommand extends Command
             $io->newLine(5);
         }
 
-        return 0;
+        return self::SUCCESS;
+    }
+
+    /**
+     * @return list<class-string<EntityWithFileInfo>>
+     */
+    private function getChoices(): array
+    {
+        return [
+            Document::class,
+            WooDecisionMainDocument::class,
+            WooDecisionAttachment::class,
+            CovenantMainDocument::class,
+            CovenantAttachment::class,
+            AnnualReportAttachment::class,
+            AnnualReportMainDocument::class,
+            InvestigationReportMainDocument::class,
+            InvestigationReportAttachment::class,
+            DispositionMainDocument::class,
+            DispositionAttachment::class,
+            ComplaintJudgementMainDocument::class,
+        ];
     }
 }

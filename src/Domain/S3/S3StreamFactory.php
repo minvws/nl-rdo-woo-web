@@ -8,6 +8,9 @@ use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\StreamInterface;
 use Webmozart\Assert\Assert;
 
+use function fopen;
+use function sprintf;
+
 readonly class S3StreamFactory implements StreamFactory
 {
     public function createReadOnlyStream(string $bucketName, string $key): StreamInterface

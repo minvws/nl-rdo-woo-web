@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Decision;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Event\DossierUpdatedEvent;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\UpdateDecisionCommand;
@@ -15,6 +16,7 @@ use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Service\DossierService;
 use Shared\Tests\Unit\UnitTestCase;
+use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -29,10 +31,10 @@ class UpdateDecisionHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->dossierService = \Mockery::mock(DossierService::class);
-        $this->messageBus = \Mockery::mock(MessageBusInterface::class);
-        $this->dossierWorkflowManager = \Mockery::mock(DossierWorkflowManager::class);
-        $this->wooDecisionDispatcher = \Mockery::mock(WooDecisionDispatcher::class);
+        $this->dossierService = Mockery::mock(DossierService::class);
+        $this->messageBus = Mockery::mock(MessageBusInterface::class);
+        $this->dossierWorkflowManager = Mockery::mock(DossierWorkflowManager::class);
+        $this->wooDecisionDispatcher = Mockery::mock(WooDecisionDispatcher::class);
 
         $this->handler = new UpdateDecisionHandler(
             $this->dossierWorkflowManager,
@@ -47,7 +49,7 @@ class UpdateDecisionHandlerTest extends UnitTestCase
     public function testInvokeSuccessfully(): void
     {
         $wooDecisionUuid = Uuid::v6();
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->shouldReceive('getId')->andReturn($wooDecisionUuid);
         $wooDecision->shouldReceive('canProvideInventory')->andReturnFalse();
 
@@ -57,13 +59,13 @@ class UpdateDecisionHandlerTest extends UnitTestCase
 
         $this->wooDecisionDispatcher->expects('dispatchRemoveInventoryAndDocumentsCommand')->with($wooDecisionUuid);
 
-        $this->messageBus->expects('dispatch')->with(\Mockery::on(
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (DossierUpdatedEvent $message) use ($wooDecisionUuid) {
                 self::assertEquals($wooDecisionUuid, $message->dossierId);
 
                 return true;
             }
-        ))->andReturns(new Envelope(new \stdClass()));
+        ))->andReturns(new Envelope(new stdClass()));
 
         $this->handler->__invoke(
             new UpdateDecisionCommand($wooDecision)
@@ -72,7 +74,7 @@ class UpdateDecisionHandlerTest extends UnitTestCase
 
     public function testInvokeThrowsExceptionWhenTransitionIsNotAllowed(): void
     {
-        $wooDecision = \Mockery::mock(WooDecision::class);
+        $wooDecision = Mockery::mock(WooDecision::class);
 
         $this->dossierWorkflowManager
             ->expects('applyTransition')

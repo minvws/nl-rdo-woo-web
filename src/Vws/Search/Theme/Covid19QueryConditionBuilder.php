@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Vws\Search\Theme;
 
 use Erichard\ElasticQueryBuilder\Query\BoolQuery;
+use RuntimeException;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Search\Index\ElasticDocumentType;
@@ -16,9 +17,8 @@ use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Condition\QueryConditionBuilderInterface;
 use Shared\Service\Search\Query\Dsl\Query;
 
-/**
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
- */
+use function in_array;
+
 readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInterface
 {
     public const string ORGANISATION = 'Directie Open Overheid';
@@ -101,7 +101,7 @@ readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInte
     {
         $organisation = $this->organisationRepository->findOneBy(['name' => self::ORGANISATION]);
         if ($organisation === null) {
-            throw new \RuntimeException('Covid-19 theme cannot find the organisation');
+            throw new RuntimeException('Covid-19 theme cannot find the organisation');
         }
 
         /** @var array<int, string> */

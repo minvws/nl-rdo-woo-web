@@ -12,6 +12,12 @@ use Shared\Domain\WooIndex\Producer\ProducerSignal;
 use Shared\Domain\WooIndex\Producer\UrlProducer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+use function fclose;
+use function ftell;
+use function is_resource;
+use function rewind;
+use function sprintf;
+
 readonly class WooIndex
 {
     public const MAX_SITEMAP_SIZE = 49 * 1024 * 1024;

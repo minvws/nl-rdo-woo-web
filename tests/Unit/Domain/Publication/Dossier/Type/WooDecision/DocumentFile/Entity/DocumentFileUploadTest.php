@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUploadError;
@@ -15,7 +16,7 @@ class DocumentFileUploadTest extends UnitTestCase
 {
     public function testGetters(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileUpload = new DocumentFileUpload($documentFileSet);
 
         self::assertEquals(DocumentFileUploadStatus::PENDING, $documentFileUpload->getStatus());
@@ -24,7 +25,7 @@ class DocumentFileUploadTest extends UnitTestCase
 
     public function testSetAndGetStatus(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileUpload = new DocumentFileUpload($documentFileSet);
         $documentFileUpload->setStatus(DocumentFileUploadStatus::UPLOADED);
 
@@ -33,7 +34,7 @@ class DocumentFileUploadTest extends UnitTestCase
 
     public function testSetAndGetError(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileUpload = new DocumentFileUpload($documentFileSet);
         $documentFileUpload->setError(DocumentFileUploadError::MAX_SIZE_EXCEEDED);
 
@@ -42,7 +43,7 @@ class DocumentFileUploadTest extends UnitTestCase
 
     public function testSetAndGetFileInfo(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileUpload = new DocumentFileUpload($documentFileSet);
 
         $fileInfo = new FileInfo();
@@ -54,7 +55,7 @@ class DocumentFileUploadTest extends UnitTestCase
 
     public function testMarkAsProcessed(): void
     {
-        $documentFileSet = \Mockery::mock(DocumentFileSet::class);
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileUpload = new DocumentFileUpload($documentFileSet);
 
         self::assertFalse($documentFileUpload->getStatus()->isProcessed());

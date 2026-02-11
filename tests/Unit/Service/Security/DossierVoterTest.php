@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Security;
 
+use Mockery;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Security\DossierVoter;
 use Shared\Tests\Unit\UnitTestCase;
+use stdClass;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
@@ -25,7 +27,7 @@ class DossierVoterTest extends UnitTestCase
 
     public function testAbstainForUnknownAttribute(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
 
         self::assertEquals(
             VoterInterface::ACCESS_ABSTAIN,
@@ -35,7 +37,7 @@ class DossierVoterTest extends UnitTestCase
 
     public function testAbstainForWooDecision(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
 
         self::assertEquals(
             VoterInterface::ACCESS_ABSTAIN,
@@ -45,19 +47,19 @@ class DossierVoterTest extends UnitTestCase
 
     public function testAbstainForUnknownSubject(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
 
         self::assertEquals(
             VoterInterface::ACCESS_ABSTAIN,
-            $this->voter->vote($token, new \stdClass(), [DossierVoter::VIEW]),
+            $this->voter->vote($token, new stdClass(), [DossierVoter::VIEW]),
         );
     }
 
     public function testAccessGrantedForPublishedDossier(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
 
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         self::assertEquals(
@@ -68,9 +70,9 @@ class DossierVoterTest extends UnitTestCase
 
     public function testAccessDeniedForUnPublishedDossier(): void
     {
-        $token = \Mockery::mock(TokenInterface::class);
+        $token = Mockery::mock(TokenInterface::class);
 
-        $dossier = \Mockery::mock(Covenant::class);
+        $dossier = Mockery::mock(Covenant::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
 
         self::assertEquals(

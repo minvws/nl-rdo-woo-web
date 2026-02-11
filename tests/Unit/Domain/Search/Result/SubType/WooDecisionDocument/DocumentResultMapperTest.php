@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Search\Result\SubType\WooDecisionDocument;
 
 use MinVWS\TypeArray\TypeArray;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\DossierReference;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
@@ -23,8 +24,8 @@ class DocumentResultMapperTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->documentRepository = \Mockery::mock(DocumentRepository::class);
-        $this->dossierRepository = \Mockery::mock(WooDecisionRepository::class);
+        $this->documentRepository = Mockery::mock(DocumentRepository::class);
+        $this->dossierRepository = Mockery::mock(WooDecisionRepository::class);
 
         $this->mapper = new DocumentSearchResultMapper(
             $this->documentRepository,
@@ -34,7 +35,7 @@ class DocumentResultMapperTest extends UnitTestCase
 
     public function testMapReturnsNullWhenPrefixIsMissing(): void
     {
-        $hit = \Mockery::mock(TypeArray::class);
+        $hit = Mockery::mock(TypeArray::class);
         $hit->shouldReceive('getStringOrNull')->with('[fields][document_nr][0]')->andReturnNull();
 
         $this->assertNull($this->mapper->map($hit));
@@ -42,7 +43,7 @@ class DocumentResultMapperTest extends UnitTestCase
 
     public function testMapReturnsNullWhenViewModelCannotBeLoaded(): void
     {
-        $hit = \Mockery::mock(TypeArray::class);
+        $hit = Mockery::mock(TypeArray::class);
         $hit->shouldReceive('getStringOrNull')->with('[fields][document_nr][0]')->andReturn('foo');
 
         $this->documentRepository->shouldReceive('getDocumentSearchEntry')->with('foo')->andReturnNull();
@@ -52,15 +53,15 @@ class DocumentResultMapperTest extends UnitTestCase
 
     public function testMapSuccessful(): void
     {
-        $hit = \Mockery::mock(TypeArray::class);
+        $hit = Mockery::mock(TypeArray::class);
         $hit->shouldReceive('getStringOrNull')->with('[fields][document_nr][0]')->andReturn('foo');
         $hit->shouldReceive('exists')->with('[highlight][pages.content]')->andReturnTrue();
         $hit->shouldReceive('getTypeArray->toArray')->andReturn(['x', 'y']);
         $hit->shouldReceive('exists')->with('[highlight][dossiers.title]')->andReturnFalse();
         $hit->shouldReceive('exists')->with('[highlight][dossiers.summary]')->andReturnFalse();
 
-        $viewModel = \Mockery::mock(DocumentViewModel::class);
-        $dossierReference = \Mockery::mock(DossierReference::class);
+        $viewModel = Mockery::mock(DocumentViewModel::class);
+        $dossierReference = Mockery::mock(DossierReference::class);
 
         $this->documentRepository->shouldReceive('getDocumentSearchEntry')->with('foo')->andReturn($viewModel);
         $this->dossierRepository->shouldReceive('getDossierReferencesForDocument')->with('foo')->andReturn([$dossierReference]);

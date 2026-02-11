@@ -10,6 +10,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Webmozart\Assert\Assert;
 
+use function sprintf;
+
 readonly class WooDecisionBatchDownload implements BatchDownloadTypeInterface
 {
     public function __construct(

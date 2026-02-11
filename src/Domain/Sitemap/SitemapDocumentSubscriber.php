@@ -30,8 +30,7 @@ readonly class SitemapDocumentSubscriber
             ->andWhere('d INSTANCE OF :type')
             ->setParameter('status', 'published')
             ->setParameter('type', DossierType::WOO_DECISION)
-            ->getQuery()
-        ;
+            ->getQuery();
 
         /** @var WooDecision $dossier */
         foreach ($dossierQuery->toIterable() as $dossier) {

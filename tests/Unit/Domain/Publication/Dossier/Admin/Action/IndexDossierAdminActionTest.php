@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Admin\Action;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
 use Shared\Domain\Publication\Dossier\Admin\Action\IndexDossierAdminAction;
@@ -20,7 +21,7 @@ final class IndexDossierAdminActionTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->searchDispatcher = \Mockery::mock(SearchDispatcher::class);
+        $this->searchDispatcher = Mockery::mock(SearchDispatcher::class);
 
         $this->action = new IndexDossierAdminAction(
             $this->searchDispatcher,
@@ -39,8 +40,8 @@ final class IndexDossierAdminActionTest extends UnitTestCase
 
     public function testSupports(): void
     {
-        self::assertTrue($this->action->supports(\Mockery::mock(WooDecision::class)));
-        self::assertTrue($this->action->supports(\Mockery::mock(Covenant::class)));
+        self::assertTrue($this->action->supports(Mockery::mock(WooDecision::class)));
+        self::assertTrue($this->action->supports(Mockery::mock(Covenant::class)));
     }
 
     public function testNeedsConfirmation(): void
@@ -50,7 +51,7 @@ final class IndexDossierAdminActionTest extends UnitTestCase
 
     public function testExecute(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
 
         $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($dossierId);

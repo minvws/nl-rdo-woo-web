@@ -48,8 +48,7 @@ abstract class AbstractMainDocumentRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossier', 'dos')
             ->where('dos.id = :dossierId')
-            ->setParameter('dossierId', $dossierId)
-        ;
+            ->setParameter('dossierId', $dossierId);
 
         /** @var ?T */
         return $qb->getQuery()->getOneOrNullResult();

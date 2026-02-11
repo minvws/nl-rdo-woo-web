@@ -28,8 +28,15 @@ class E2EDepartmentFixtures extends Fixture implements FixtureGroupInterface
 
     public function load(ObjectManager $manager): void
     {
+        $departmentOneName = 'E2E Test Department 1';
+
+        $existingDept = $manager->getRepository(Department::class)->findOneBy(['name' => $departmentOneName]);
+        if ($existingDept) {
+            return;
+        }
+
         $entity = new Department();
-        $entity->setName('E2E Test Department 1');
+        $entity->setName($departmentOneName);
         $entity->setSlug('e2edep1');
         $entity->setShortTag('E2E-DEP1');
         $manager->persist($entity);

@@ -12,6 +12,10 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+use function count;
+use function explode;
+use function str_starts_with;
+
 class AuthMatrixVoter extends Voter
 {
     private const string MARKER = 'AuthMatrix';
@@ -31,9 +35,6 @@ class AuthMatrixVoter extends Voter
         return $subject === null || $subject instanceof AbstractDossier;
     }
 
-    /**
-     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         if (! $this->isUserAllowed($token->getUser())) {

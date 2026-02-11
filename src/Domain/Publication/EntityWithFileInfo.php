@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication;
 
+use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 
 interface EntityWithFileInfo
@@ -16,5 +17,5 @@ interface EntityWithFileInfo
 
     public function getFileCacheKey(): string;
 
-    public function getUpdatedAt(): \DateTimeImmutable;
+    public function getUpdatedAt(): DateTimeImmutable;
 }

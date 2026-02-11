@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Command;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Command\ExportRevokedUrls;
 use Shared\Service\RevokedUrlService;
@@ -22,7 +23,7 @@ class ExportRevokedUrlsTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->revokedUrlService = \Mockery::mock(RevokedUrlService::class);
+        $this->revokedUrlService = Mockery::mock(RevokedUrlService::class);
 
         $application = new Application();
         $application->add(
@@ -36,7 +37,8 @@ class ExportRevokedUrlsTest extends UnitTestCase
 
     public function testExecute(): void
     {
-        $this->revokedUrlService->expects('getUrls')->andReturn($this->iterableToGenerator(['foo', 'bar']));
+        $this->revokedUrlService->expects('getUrls')
+            ->andReturn($this->iterableToGenerator(['foo', 'bar']));
 
         $commandTester = new CommandTester($this->command);
         $commandTester->execute([]);

@@ -7,11 +7,14 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Reposi
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUploadStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+
+use function intval;
 
 /**
  * @extends ServiceEntityRepository<DocumentFileSet>
@@ -47,8 +50,7 @@ class DocumentFileSetRepository extends ServiceEntityRepository
             ->where('d.dossier = :dossier')
             ->andWhere('d.status NOT IN (:statuses)')
             ->setParameter('dossier', $dossier)
-            ->setParameter('statuses', DocumentFileSetStatus::getFinalStatusValues())
-        ;
+            ->setParameter('statuses', DocumentFileSetStatus::getFinalStatusValues());
 
         /** @var ?DocumentFileSet */
         return $qb->getQuery()->getOneOrNullResult();
@@ -66,7 +68,7 @@ class DocumentFileSetRepository extends ServiceEntityRepository
             $this->save($documentFileSet, true);
 
             $entityManager->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $entityManager->getConnection()->rollBack();
             throw $e;
         }
@@ -105,8 +107,7 @@ class DocumentFileSetRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('d')
             ->where('d.status IN (:statuses)')
-            ->setParameter('statuses', DocumentFileSetStatus::getFinalStatusValues())
-        ;
+            ->setParameter('statuses', DocumentFileSetStatus::getFinalStatusValues());
 
         return $qb->getQuery()->getResult();
     }

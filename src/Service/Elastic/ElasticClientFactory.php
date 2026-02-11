@@ -8,6 +8,8 @@ use Elastic\Elasticsearch\ClientBuilder;
 use Elastic\Elasticsearch\ClientInterface;
 use GuzzleHttp\Client;
 
+use function explode;
+
 /**
  * Creates a configured Elasticsearch client.
  */

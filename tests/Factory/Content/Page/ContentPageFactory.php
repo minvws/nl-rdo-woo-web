@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory\Content\Page;
 
+use DateTimeImmutable;
 use Shared\Domain\Content\Page\ContentPage;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+
+use function substr;
 
 /**
- * @extends PersistentProxyObjectFactory<ContentPage>
+ * @extends PersistentObjectFactory<ContentPage>
  */
-final class ContentPageFactory extends PersistentProxyObjectFactory
+final class ContentPageFactory extends PersistentObjectFactory
 {
     public static function class(): string
     {
@@ -28,8 +31,8 @@ final class ContentPageFactory extends PersistentProxyObjectFactory
             'slug' => substr(self::faker()->unique()->slug(nbWords: 3), 0, 20),
             'title' => self::faker()->text(100),
             'content' => self::faker()->text(),
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
     }
 }

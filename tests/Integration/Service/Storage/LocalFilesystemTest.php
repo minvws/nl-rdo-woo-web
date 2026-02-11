@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Service\Storage;
 
+use Mockery;
 use Mockery\MockInterface;
 use org\bovigo\vfs\content\LargeFileContent;
 use org\bovigo\vfs\vfsStream;
@@ -17,6 +18,13 @@ use Shared\Tests\Integration\Service\Storage\Streams\FailingWriteStreamWrapper;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Webmozart\Assert\Assert;
 
+use function fopen;
+use function get_resource_type;
+use function sprintf;
+use function stream_get_contents;
+use function symlink;
+use function unlink;
+
 final class LocalFilesystemTest extends SharedWebTestCase
 {
     private vfsStreamDirectory $root;
@@ -27,7 +35,7 @@ final class LocalFilesystemTest extends SharedWebTestCase
         parent::setUp();
 
         $this->root = vfsStream::setup();
-        $this->logger = \Mockery::mock(LoggerInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
     }
 
     public function testCopy(): void
@@ -36,10 +44,10 @@ final class LocalFilesystemTest extends SharedWebTestCase
 
         vfsStream::create(['input.txt' => $contents], $this->root);
 
-        $source = \fopen('vfs://root/input.txt', 'r');
+        $source = fopen('vfs://root/input.txt', 'r');
         Assert::resource($source, 'stream', 'The source should be a stream');
 
-        $target = \fopen('vfs://root/hello.txt', 'w');
+        $target = fopen('vfs://root/hello.txt', 'w');
         Assert::resource($target, 'stream', 'The target should be a stream');
 
         $fs = new LocalFilesystem($this->logger);
@@ -58,10 +66,10 @@ final class LocalFilesystemTest extends SharedWebTestCase
     {
         FailingReadStreamWrapper::register();
 
-        $source = \fopen(FailingReadStreamWrapper::getPath('input.txt'), 'r');
+        $source = fopen(FailingReadStreamWrapper::getPath('input.txt'), 'r');
         Assert::resource($source, 'stream', 'The source should be a stream');
 
-        $target = \fopen('vfs://root/hello.txt', 'w');
+        $target = fopen('vfs://root/hello.txt', 'w');
         Assert::resource($target, 'stream', 'The target should be a stream');
 
         $fs = new LocalFilesystem($this->logger);
@@ -81,11 +89,11 @@ final class LocalFilesystemTest extends SharedWebTestCase
 
         vfsStream::create(['input.txt' => $contents], $this->root);
 
-        $source = \fopen('vfs://root/input.txt', 'r');
+        $source = fopen('vfs://root/input.txt', 'r');
         Assert::resource($source, 'stream', 'The source should be a stream');
 
         FailingWriteStreamWrapper::register();
-        $target = \fopen(FailingWriteStreamWrapper::getPath('hello.txt'), 'w');
+        $target = fopen(FailingWriteStreamWrapper::getPath('hello.txt'), 'w');
         Assert::resource($target, 'stream', 'The target should be a stream');
 
         $fs = new LocalFilesystem($this->logger);
@@ -93,7 +101,7 @@ final class LocalFilesystemTest extends SharedWebTestCase
 
         $this->assertFalse($result, 'The copy operation should return false');
 
-        \Mockery::close();
+        Mockery::close();
     }
 
     public function testCreateTempFile(): void
@@ -132,7 +140,7 @@ final class LocalFilesystemTest extends SharedWebTestCase
     {
         $tmpDir = vfsStream::newDirectory('tmp')->at($this->root);
         $uniqueId = 'woopie_random';
-        $expectedPath = \sprintf('%s/%s', $tmpDir->url(), $uniqueId);
+        $expectedPath = sprintf('%s/%s', $tmpDir->url(), $uniqueId);
 
         $fs = $this->getPartialLocalFilesystem();
         $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
@@ -148,7 +156,7 @@ final class LocalFilesystemTest extends SharedWebTestCase
         $tmpDir = vfsStream::newDirectory('tmp')->at($this->root);
         $mySubdir = '/my-subdir/another-one/';
         $uniqueId = 'woopie_random';
-        $expectedPath = \sprintf('%s/%s/my-subdir/another-one', $tmpDir->url(), $uniqueId);
+        $expectedPath = sprintf('%s/%s/my-subdir/another-one', $tmpDir->url(), $uniqueId);
 
         $fs = $this->getPartialLocalFilesystem();
         $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
@@ -165,7 +173,7 @@ final class LocalFilesystemTest extends SharedWebTestCase
         $tmpDir = vfsStream::newDirectory('foobar')->chmod(0000)->at($this->root);
 
         $uniqueId = 'woopie_random';
-        $expectedPath = \sprintf('%s/%s', $tmpDir->url(), $uniqueId);
+        $expectedPath = sprintf('%s/%s', $tmpDir->url(), $uniqueId);
 
         $this->logger
             ->shouldReceive('error')
@@ -343,27 +351,27 @@ final class LocalFilesystemTest extends SharedWebTestCase
         vfsStream::create([$filename => $this->getFaker()->sentence()], $this->root);
 
         $localFilesystem = new LocalFilesystem($this->logger);
-        $this->assertFalse($localFilesystem->isSymlink(\sprintf('vfs://root/%s', $filename)));
+        $this->assertFalse($localFilesystem->isSymlink(sprintf('vfs://root/%s', $filename)));
     }
 
     public function testGetIsSymlinkWhenSymlink(): void
     {
         $filename = 'file.txt';
         vfsStream::create([$filename => $this->getFaker()->sentence()], $this->root);
-        $path = \sprintf('vfs://root/%s', $filename);
+        $path = sprintf('vfs://root/%s', $filename);
 
         $linkname = $this->getFaker()->slug(1);
-        \symlink($path, $linkname);
+        symlink($path, $linkname);
 
         $localFilesystem = new LocalFilesystem($this->logger);
         $this->assertTrue($localFilesystem->isSymlink($linkname));
 
-        \unlink($linkname);
+        unlink($linkname);
     }
 
     private function getPartialLocalFilesystem(): LocalFilesystem&MockInterface
     {
-        return \Mockery::mock(LocalFilesystem::class, [$this->logger])
+        return Mockery::mock(LocalFilesystem::class, [$this->logger])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
     }

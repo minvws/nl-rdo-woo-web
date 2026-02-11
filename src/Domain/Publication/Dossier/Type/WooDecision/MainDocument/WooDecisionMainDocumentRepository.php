@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument;
 
 use Doctrine\Persistence\ManagerRegistry;
+use Override;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocumentRepository;
@@ -22,7 +23,7 @@ class WooDecisionMainDocumentRepository extends AbstractMainDocumentRepository i
         parent::__construct($registry, WooDecisionMainDocument::class);
     }
 
-    #[\Override]
+    #[Override]
     public function create(AbstractDossier $dossier, CreateMainDocumentCommand $command): WooDecisionMainDocument
     {
         Assert::isInstanceOf($dossier, WooDecision::class);

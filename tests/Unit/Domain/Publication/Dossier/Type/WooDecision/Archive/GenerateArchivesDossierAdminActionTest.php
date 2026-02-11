@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Archive;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
@@ -20,7 +21,7 @@ final class GenerateArchivesDossierAdminActionTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
+        $this->batchDownloadService = Mockery::mock(BatchDownloadService::class);
 
         $this->action = new GenerateArchivesDossierAdminAction(
             $this->batchDownloadService,
@@ -39,8 +40,8 @@ final class GenerateArchivesDossierAdminActionTest extends UnitTestCase
 
     public function testSupports(): void
     {
-        self::assertTrue($this->action->supports(\Mockery::mock(WooDecision::class)));
-        self::assertFalse($this->action->supports(\Mockery::mock(Covenant::class)));
+        self::assertTrue($this->action->supports(Mockery::mock(WooDecision::class)));
+        self::assertFalse($this->action->supports(Mockery::mock(Covenant::class)));
     }
 
     public function testNeedsConfirmation(): void
@@ -50,9 +51,9 @@ final class GenerateArchivesDossierAdminActionTest extends UnitTestCase
 
     public function testExecute(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
 
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+        $this->batchDownloadService->expects('refresh')->with(Mockery::on(
             static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier
         ));
 

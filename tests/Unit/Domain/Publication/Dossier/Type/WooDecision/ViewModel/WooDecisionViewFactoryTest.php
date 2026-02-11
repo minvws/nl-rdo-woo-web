@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\Department as DepartmentEntity;
 use Shared\Domain\Publication\Dossier\DossierStatus;
@@ -42,13 +44,13 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->dossierRepository = \Mockery::mock(WooDecisionRepository::class);
-        $this->dossierRepository->shouldReceive('getDossierCounts')->andReturn(\Mockery::mock(DossierCounts::class));
+        $this->dossierRepository = Mockery::mock(WooDecisionRepository::class);
+        $this->dossierRepository->shouldReceive('getDossierCounts')->andReturn(Mockery::mock(DossierCounts::class));
 
-        $this->departmentViewFactory = \Mockery::mock(DepartmentViewFactory::class);
-        $this->mainDocumentViewFactory = \Mockery::mock(MainDocumentViewFactory::class);
-        $this->commonDossierPropertiesViewFactory = \Mockery::mock(CommonDossierPropertiesViewFactory::class);
-        $this->router = \Mockery::mock(RouterInterface::class);
+        $this->departmentViewFactory = Mockery::mock(DepartmentViewFactory::class);
+        $this->mainDocumentViewFactory = Mockery::mock(MainDocumentViewFactory::class);
+        $this->commonDossierPropertiesViewFactory = Mockery::mock(CommonDossierPropertiesViewFactory::class);
+        $this->router = Mockery::mock(RouterInterface::class);
 
         $this->factory = new WooDecisionViewFactory(
             $this->dossierRepository,
@@ -61,11 +63,11 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        $department = \Mockery::mock(DepartmentEntity::class);
+        $department = Mockery::mock(DepartmentEntity::class);
         /** @var ArrayCollection<array-key,DepartmentEntity> $departments */
         $departments = new ArrayCollection([$department]);
 
-        $mainDocument = \Mockery::mock(WooDecisionMainDocument::class);
+        $mainDocument = Mockery::mock(WooDecisionMainDocument::class);
 
         $this->departmentViewFactory
             ->shouldReceive('make')
@@ -96,7 +98,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->mainDocumentViewFactory
             ->shouldReceive('make')
             ->with($dossier, $mainDocument)
-            ->andReturn($expectedMainDocumentView = \Mockery::mock(MainDocument::class));
+            ->andReturn($expectedMainDocumentView = Mockery::mock(MainDocument::class));
 
         $this->commonDossierPropertiesViewFactory
             ->shouldReceive('make')
@@ -107,7 +109,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new \DateTimeImmutable(),
+                publicationDate: $publicationDate = new DateTimeImmutable(),
                 mainDepartment: $expectedMainDepartment = new Department(
                     name: DepartmentEnum::VWS->value,
                     feedbackContent: null,
@@ -115,7 +117,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 ),
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::COVENANT,
-                subject: $expectedSubject = \Mockery::mock(SubjectViewModel::class),
+                subject: $expectedSubject = Mockery::mock(SubjectViewModel::class),
             ));
 
         $this->router
@@ -150,11 +152,11 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
 
     public function testMakeWithWooDecisionInPreview(): void
     {
-        $department = \Mockery::mock(DepartmentEntity::class);
+        $department = Mockery::mock(DepartmentEntity::class);
         /** @var ArrayCollection<array-key,DepartmentEntity> $departments */
         $departments = new ArrayCollection([$department]);
 
-        $mainDocument = \Mockery::mock(WooDecisionMainDocument::class);
+        $mainDocument = Mockery::mock(WooDecisionMainDocument::class);
 
         $this->departmentViewFactory
             ->shouldReceive('make')
@@ -178,7 +180,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new \DateTimeImmutable(),
+                publicationDate: $publicationDate = new DateTimeImmutable(),
                 mainDepartment: $expectedMainDepartment = new Department(
                     name: DepartmentEnum::JV->value,
                     feedbackContent: null,
@@ -186,7 +188,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 ),
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::COVENANT,
-                subject: $expectedSubject = \Mockery::mock(SubjectViewModel::class),
+                subject: $expectedSubject = Mockery::mock(SubjectViewModel::class),
             ));
 
         $dossier = $this->createWooDecision(
@@ -204,7 +206,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->mainDocumentViewFactory
             ->shouldReceive('make')
             ->with($dossier, $mainDocument)
-            ->andReturn($expectedMainDocumentView = \Mockery::mock(MainDocument::class));
+            ->andReturn($expectedMainDocumentView = Mockery::mock(MainDocument::class));
 
         $this->router
             ->expects('generate')
@@ -248,19 +250,19 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         bool $isInventoryRequired,
         bool $isInventoryOptional,
         bool $canProvideInventory,
-        \DateTimeImmutable $decisionDate,
+        DateTimeImmutable $decisionDate,
         WooDecisionMainDocument $decisionDocument,
-        ?\DateTimeImmutable $dateFrom,
-        ?\DateTimeImmutable $dateTo,
+        ?DateTimeImmutable $dateFrom,
+        ?DateTimeImmutable $dateTo,
     ): WooDecision {
-        $uuid = \Mockery::mock(Uuid::class);
+        $uuid = Mockery::mock(Uuid::class);
         $uuid->shouldReceive('toRfc4122')->andReturn('my uuid');
 
         /** @var Subject&MockInterface $subject */
-        $subject = \Mockery::mock(Subject::class);
+        $subject = Mockery::mock(Subject::class);
         $subject->shouldReceive('getName')->andReturn('my subject');
 
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getId')->andReturn($uuid);
         $dossier->shouldReceive('getDossierNr')->andReturn('my dossier nr');
         $dossier->shouldReceive('getDocumentPrefix')->andReturn('my document prefix');
@@ -282,8 +284,8 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         return $dossier;
     }
 
-    private function getRandomDate(string $startDate = '-2 years'): \DateTimeImmutable
+    private function getRandomDate(string $startDate = '-2 years'): DateTimeImmutable
     {
-        return \DateTimeImmutable::createFromInterface($this->getFaker()->dateTimeBetween($startDate));
+        return DateTimeImmutable::createFromInterface($this->getFaker()->dateTimeBetween($startDate));
     }
 }

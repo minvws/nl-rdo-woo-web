@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Elastic\Elasticsearch\Response\Elasticsearch;
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\AbstractDossierRepository;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
@@ -27,6 +28,11 @@ use Shared\Service\Elastic\ElasticClientInterface;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Workflow\WorkflowInterface;
 
+use function file_get_contents;
+use function json_decode;
+
+use const DIRECTORY_SEPARATOR;
+
 class RolloverCounterTest extends UnitTestCase
 {
     private RolloverCounter $rolloverCounter;
@@ -36,9 +42,9 @@ class RolloverCounterTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $this->elasticClient = \Mockery::mock(ElasticClientInterface::class);
-        $this->dossierTypeManager = \Mockery::mock(DossierTypeManager::class);
+        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
+        $this->dossierTypeManager = Mockery::mock(DossierTypeManager::class);
 
         $this->rolloverCounter = new RolloverCounter(
             $this->entityManager,
@@ -73,9 +79,9 @@ class RolloverCounterTest extends UnitTestCase
         $this->mockSubTypeRepository(ComplaintJudgementMainDocument::class, 1, 1);
 
         $this->dossierTypeManager->shouldReceive('getAllConfigs')->andReturn([
-            new WooDecisionConfig(\Mockery::mock(WorkflowInterface::class)),
-            new ComplaintJudgementConfig(\Mockery::mock(WorkflowInterface::class)),
-            new CovenantConfig(\Mockery::mock(WorkflowInterface::class)),
+            new WooDecisionConfig(Mockery::mock(WorkflowInterface::class)),
+            new ComplaintJudgementConfig(Mockery::mock(WorkflowInterface::class)),
+            new CovenantConfig(Mockery::mock(WorkflowInterface::class)),
         ]);
 
         $this->assertMatchesJsonSnapshot(
@@ -88,7 +94,7 @@ class RolloverCounterTest extends UnitTestCase
         $json = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'es-count-response.json');
         $esData = json_decode($json ?: '', true);
 
-        $response = \Mockery::mock(Elasticsearch::class);
+        $response = Mockery::mock(Elasticsearch::class);
         $response->shouldReceive('asArray')->andReturn($esData);
 
         return $response;
@@ -99,7 +105,7 @@ class RolloverCounterTest extends UnitTestCase
      */
     private function mockMainTypeRepository(string $entityClass, int $count): void
     {
-        $repository = \Mockery::mock(AbstractDossierRepository::class);
+        $repository = Mockery::mock(AbstractDossierRepository::class);
         $repository->expects('count')->with([])->andReturn($count);
 
         $this->entityManager->expects('getRepository')->with($entityClass)->andReturn($repository);
@@ -114,8 +120,8 @@ class RolloverCounterTest extends UnitTestCase
         int $pageCount,
         bool $expectWhere = false,
     ): void {
-        $repository = \Mockery::mock(ServiceEntityRepository::class);
-        $queryBuilder = \Mockery::mock(QueryBuilder::class);
+        $repository = Mockery::mock(ServiceEntityRepository::class);
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $repository->expects('createQueryBuilder')->andReturn($queryBuilder);
 

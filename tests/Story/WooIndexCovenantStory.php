@@ -14,6 +14,8 @@ use Symfony\Component\Uid\UuidV6;
 use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Story;
 
+use function range;
+
 final class WooIndexCovenantStory extends Story
 {
     private readonly UuidV1 $v1Seed;

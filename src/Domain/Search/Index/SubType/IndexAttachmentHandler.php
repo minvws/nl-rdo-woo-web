@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\SubType;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Process\IngestProcessOptions;
 use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
@@ -36,7 +37,7 @@ readonly class IndexAttachmentHandler
 
             $this->subTypeIndexer->index($attachment);
             $this->subTypeIngester->ingest($attachment, new IngestProcessOptions());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to update attachment in elasticsearch', [
                 'uuid' => $command->uuid,
                 'exception' => $e->getMessage(),

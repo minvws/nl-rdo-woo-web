@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\BatchDownload\EventHandler;
 
+use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
@@ -23,8 +24,8 @@ class DocumentFileSetEventHandlerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->repository = \Mockery::mock(WooDecisionRepository::class);
-        $this->batchDownloadService = \Mockery::mock(BatchDownloadService::class);
+        $this->repository = Mockery::mock(WooDecisionRepository::class);
+        $this->batchDownloadService = Mockery::mock(BatchDownloadService::class);
 
         $this->handler = new DocumentFileSetEventHandler(
             $this->repository,
@@ -36,7 +37,7 @@ class DocumentFileSetEventHandlerTest extends UnitTestCase
 
     public function testHandleDocumentFileSetProcessedUpdatesBatchDownloadForPublicDossier(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
         $dossierId = Uuid::v6();
 
@@ -44,7 +45,7 @@ class DocumentFileSetEventHandlerTest extends UnitTestCase
 
         $this->repository->expects('findOne')->with($dossierId)->andReturn($dossier);
 
-        $this->batchDownloadService->expects('refresh')->with(\Mockery::on(
+        $this->batchDownloadService->expects('refresh')->with(Mockery::on(
             static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier
         ));
 
@@ -53,7 +54,7 @@ class DocumentFileSetEventHandlerTest extends UnitTestCase
 
     public function testHandleDocumentFileSetProcessedSkipsNonPublicDossier(): void
     {
-        $dossier = \Mockery::mock(WooDecision::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
         $dossierId = Uuid::v6();
 
