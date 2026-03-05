@@ -6,7 +6,6 @@ namespace Shared\Domain\Ingest\Process\Pdf;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Shared\Doctrine\LegacyNamespaceHelper;
 use Shared\Domain\Ingest\IngestDispatcher;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\Worker\Pdf\Extractor\PagecountExtractor;
@@ -33,8 +32,7 @@ final readonly class IngestPdfHandler
 
     public function __invoke(IngestPdfCommand $message): void
     {
-        $entityClass = LegacyNamespaceHelper::normalizeClassName($message->getEntityClass());
-        $entity = $this->doctrine->getRepository($entityClass)->find($message->getEntityId());
+        $entity = $this->doctrine->getRepository($message->getEntityClass())->find($message->getEntityId());
         if (is_null($entity)) {
             $this->logger->warning('No entity found in IngestPdfHandler', [
                 'id' => $message->getEntityId()->toRfc4122(),

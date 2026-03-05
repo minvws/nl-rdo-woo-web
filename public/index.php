@@ -6,8 +6,6 @@ use Webmozart\Assert\Assert;
 
 require_once dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
-require_once dirname(__DIR__) . '/src/class_aliases.php';
-
 return function (array $context) {
     Assert::string($context['APP_ENV']);
     Assert::string($context['APP_ID']);

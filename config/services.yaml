@@ -29,11 +29,6 @@ services:
         bind:
             Psr\Log\LoggerInterface $logger: '@Shared\Service\Logging\EnrichedPsrLogger'
 
-    # Legacy namespace normalizer for Messenger - converts old App\ to Shared\ namespace
-    Shared\Domain\Messenger\LegacyNamespaceNormalizer:
-        tags:
-            - { name: 'serializer.normalizer', priority: 1000 }
-
     Shared\Service\Security\ApplicationMode\ApplicationMode:
         factory: ['Shared\Service\Security\ApplicationMode\ApplicationMode', 'fromEnvVar']
         arguments: [ '%app_mode%' ]

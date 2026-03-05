@@ -52,7 +52,6 @@
         <exclude>
             <directory>src/Controller</directory>
             <directory>src/Form</directory>
-            <file>src/class_aliases.php</file>
             <directory suffix="Dto.php">apps/publication/src/Api</directory>
             <directory suffix="Dto.php">apps/admin/src/Api</directory>
             <directory>apps/admin/src/Controller</directory>

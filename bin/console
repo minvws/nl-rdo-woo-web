@@ -17,17 +17,14 @@ if (!is_file(dirname(__DIR__).'/vendor/autoload_runtime.php')) {
 
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
 
-require_once dirname(__DIR__) . '/src/class_aliases.php';
-
 return function (InputInterface $input, array $context) {
     $applicationId = ApplicationId::fromString($input->getParameterOption(['--id', '-i'], $context['APP_ID'] ?? null));
 
     $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG'], $applicationId);
 
     $application = new Application($kernel);
-    $application
-        ->getDefinition()
-        ->addOption(new InputOption('--id', '-i', InputOption::VALUE_REQUIRED, 'The application ID'));
+    $application->getDefinition()->addOption(new InputOption('--id', '-i', InputOption::VALUE_REQUIRED, 'The application ID'));
+    $application->getDefinition()->addOption(new InputOption('--tenant', '-T', InputOption::VALUE_OPTIONAL, 'The tenant ID'));
 
     return $application;
 };

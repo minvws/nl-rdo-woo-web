@@ -15,4 +15,3 @@ services:
             - '../../src/DependencyInjection/'
             - '../../src/Entity/'
             - '../../src/Kernel.php'
-            - '../../src/class_aliases.php'

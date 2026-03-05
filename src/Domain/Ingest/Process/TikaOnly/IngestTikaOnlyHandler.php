@@ -7,7 +7,6 @@ namespace Shared\Domain\Ingest\Process\TikaOnly;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Shared\Doctrine\LegacyNamespaceHelper;
 use Shared\Domain\Ingest\Content\ContentExtractCache;
 use Shared\Domain\Ingest\Content\ContentExtractOptions;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
@@ -31,8 +30,7 @@ final readonly class IngestTikaOnlyHandler
 
     public function __invoke(IngestTikaOnlyCommand $message): void
     {
-        $entityClass = LegacyNamespaceHelper::normalizeClassName($message->getEntityClass());
-        $entity = $this->doctrine->getRepository($entityClass)->find($message->getEntityId());
+        $entity = $this->doctrine->getRepository($message->getEntityClass())->find($message->getEntityId());
         if (is_null($entity)) {
             $this->logger->warning('No entity found in IngestTikaOnlyHandler', [
                 'id' => $message->getEntityId()->toRfc4122(),
