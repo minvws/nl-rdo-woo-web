@@ -36,7 +36,7 @@ class IngestDossierTest extends UnitTestCase
             ->with($dossier, $forceRefresh);
 
         $application = new Application();
-        $application->add(new IngestDossier($dossierRepository, $ingestDispatcher));
+        $application->addCommand(new IngestDossier($dossierRepository, $ingestDispatcher));
 
         $command = $application->find(IngestDossier::COMMAND_NAME);
         $commandTester = new CommandTester($command);

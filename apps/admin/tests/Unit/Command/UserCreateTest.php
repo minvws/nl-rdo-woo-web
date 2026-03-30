@@ -42,7 +42,7 @@ class UserCreateTest extends UnitTestCase
 
         $output = Mockery::mock(OutputInterface::class);
         $output->expects('writeln')
-            ->twice();
+            ->times(2);
 
         $organisation = Mockery::mock(Organisation::class);
 

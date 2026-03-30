@@ -46,7 +46,7 @@ class UpdateDossierDetailsHandlerTest extends UnitTestCase
     {
         $covenantUuid = Uuid::v6();
         $covenant = Mockery::mock(Covenant::class);
-        $covenant->shouldReceive('getId')->andReturn($covenantUuid);
+        $covenant->expects('getId')->andReturn($covenantUuid);
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($covenant, DossierStatusTransition::UPDATE_DETAILS);
 

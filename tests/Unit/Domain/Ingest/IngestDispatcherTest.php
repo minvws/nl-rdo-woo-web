@@ -125,7 +125,7 @@ class IngestDispatcherTest extends UnitTestCase
     {
         $entityId = Uuid::v6();
         $entity = Mockery::mock(Document::class);
-        $entity->shouldReceive('getId')->andReturn($entityId);
+        $entity->expects('getId')->andReturn($entityId);
         $refresh = true;
 
         $this->messageBus
@@ -147,7 +147,7 @@ class IngestDispatcherTest extends UnitTestCase
     {
         $entityId = Uuid::v6();
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId')->andReturn($entityId);
+        $entity->expects('getId')->andReturn($entityId);
         $refresh = true;
 
         $this->messageBus
@@ -191,7 +191,7 @@ class IngestDispatcherTest extends UnitTestCase
     {
         $entityId = Uuid::v6();
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId')->andReturn($entityId);
+        $entity->expects('getId')->andReturn($entityId);
         $refresh = true;
 
         $this->messageBus

@@ -28,9 +28,8 @@ final class S3StreamFactoryTest extends UnitTestCase
     public function testCreateReadOnlyStream(): void
     {
         $this->s3StreamFactory
-            ->shouldReceive('doFopen')
+            ->expects('doFopen')
             ->with('s3://bucket/key', StreamMode::READ_ONLY)
-            ->once()
             ->andReturn(fopen('php://memory', 'rb'));
 
         $this->s3StreamFactory->createReadOnlyStream('bucket', 'key');
@@ -39,9 +38,8 @@ final class S3StreamFactoryTest extends UnitTestCase
     public function testCreateWriteOnlyStream(): void
     {
         $this->s3StreamFactory
-            ->shouldReceive('doFopen')
+            ->expects('doFopen')
             ->with('s3://bucket/key', StreamMode::WRITE_ONLY)
-            ->once()
             ->andReturn(fopen('php://memory', 'wb'));
 
         $this->s3StreamFactory->createWriteOnlyStream('bucket', 'key');

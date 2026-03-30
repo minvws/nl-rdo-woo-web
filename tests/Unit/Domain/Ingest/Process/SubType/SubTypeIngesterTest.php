@@ -13,7 +13,6 @@ use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
 use Shared\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Tests\Unit\UnitTestCase;
-use Symfony\Component\Uid\Uuid;
 
 class SubTypeIngesterTest extends UnitTestCase
 {
@@ -44,11 +43,11 @@ class SubTypeIngesterTest extends UnitTestCase
 
         $options = new IngestProcessOptions();
 
-        $this->strategyA->shouldReceive('canHandle')->with($document)->andReturnFalse();
-        $this->strategyB->shouldReceive('canHandle')->with($document)->andReturnTrue();
+        $this->strategyA->expects('canHandle')->with($document)->andReturnFalse();
+        $this->strategyB->expects('canHandle')->with($document)->andReturnTrue();
         $this->strategyC->shouldNotReceive('canHandle');
 
-        $this->strategyB->shouldReceive('handle')->with($document, $options);
+        $this->strategyB->expects('handle')->with($document, $options);
 
         $this->ingester->ingest($document, $options);
     }
@@ -56,7 +55,6 @@ class SubTypeIngesterTest extends UnitTestCase
     public function testIngestChecksAllStrategiesAndThrowsExceptionIfNoneCanHandleTheIngest(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $options = new IngestProcessOptions();
 

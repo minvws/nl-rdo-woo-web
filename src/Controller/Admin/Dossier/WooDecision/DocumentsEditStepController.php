@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin\Dossier\WooDecision;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use RuntimeException;
 use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
 use Shared\Domain\Publication\Dossier\Step\StepName;
@@ -20,9 +21,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 use function intval;
+use function is_scalar;
 
 class DocumentsEditStepController extends AbstractController
 {
@@ -126,11 +127,13 @@ class DocumentsEditStepController extends AbstractController
             $this->dispatcher->dispatchInitiateProductionReportUpdateCommand($dossier, $uploadedFile);
         }
 
-        if (intval($request->get('confirm')) === 1) {
+        $confirm = $request->query->get('confirm');
+        if (is_scalar($confirm) && intval($confirm) === 1) {
             $this->dispatcher->dispatchConfirmProductionReportUpdateCommand($dossier);
         }
 
-        if (intval($request->get('reject')) === 1) {
+        $reject = $request->query->get('reject');
+        if (is_scalar($reject) && intval($reject) === 1) {
             $this->dispatcher->dispatchRejectProductionReportUpdateCommand($dossier);
 
             return $this->redirectToRoute(

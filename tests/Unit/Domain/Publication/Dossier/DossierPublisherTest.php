@@ -27,7 +27,6 @@ class DossierPublisherTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->dossier = Mockery::mock(WooDecision::class);
-        $this->dossier->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $this->dossierWorkflowManager = Mockery::mock(DossierWorkflowManager::class);
         $this->messageBus = Mockery::mock(MessageBusInterface::class);
@@ -50,6 +49,8 @@ class DossierPublisherTest extends UnitTestCase
 
     public function testPublish(): void
     {
+        $this->dossier->expects('getId')->andReturn(Uuid::v6());
+
         $this->dossierWorkflowManager
             ->expects('applyTransition')
             ->with($this->dossier, DossierStatusTransition::PUBLISH);

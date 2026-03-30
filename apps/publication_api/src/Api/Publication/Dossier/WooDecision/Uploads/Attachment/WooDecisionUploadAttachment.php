@@ -7,6 +7,7 @@ namespace PublicationApi\Api\Publication\Dossier\WooDecision\Uploads\Attachment;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\HttpFoundation\Response;
 
 #[ApiResource(
@@ -16,9 +17,9 @@ use Symfony\Component\HttpFoundation\Response;
             inputFormats: ['binary' => ['application/octet-stream']],
             outputFormats: [],
             requirements: [
-                'organisationId' => '[0-9a-fA-F-]+',
-                'dossierId' => '[0-9a-fA-F-]+',
-                'externalId' => '[0-9a-fA-F-]+',
+                'organisationId' => '[0-9a-zA-Z-]+',
+                'dossierId' => '[0-9a-zA-Z-]+',
+                'externalId' => '[0-9a-zA-Z-]+',
             ],
             status: Response::HTTP_NO_CONTENT,
             controller: WooDecisionUploadAttachmentController::class,
@@ -39,8 +40,8 @@ final readonly class WooDecisionUploadAttachment
     public function __construct(
         public string $content,
         public string $organisationId,
-        public string $dossierExternalId,
-        public string $attachmentExternalId,
+        public ExternalId $dossierExternalId,
+        public ExternalId $attachmentExternalId,
     ) {
     }
 }

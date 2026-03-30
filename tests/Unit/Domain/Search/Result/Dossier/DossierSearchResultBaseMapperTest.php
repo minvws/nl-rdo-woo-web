@@ -31,19 +31,19 @@ class DossierSearchResultBaseMapperTest extends UnitTestCase
 
     public function testMapReturnsNullWhenPrefixIsMissing(): void
     {
-        $this->hit->shouldReceive('getStringOrNull')->with('[fields][document_prefix][0]')->andReturnNull();
-        $this->hit->shouldReceive('getStringOrNull')->with('[fields][dossier_nr][0]')->andReturnNull();
+        $this->hit->expects('getStringOrNull')->with('[fields][document_prefix][0]')->andReturnNull();
+        $this->hit->expects('getStringOrNull')->with('[fields][dossier_nr][0]')->andReturnNull();
 
         $this->assertNull($this->mapper->map($this->hit, $this->repository, ElasticDocumentType::ANNUAL_REPORT));
     }
 
     public function testMapReturnsNullWhenViewModelCannotBeLoaded(): void
     {
-        $this->hit->shouldReceive('getStringOrNull')->with('[fields][document_prefix][0]')->andReturn('foo');
-        $this->hit->shouldReceive('getStringOrNull')->with('[fields][dossier_nr][0]')->andReturn('bar');
+        $this->hit->expects('getStringOrNull')->with('[fields][document_prefix][0]')->andReturn('foo');
+        $this->hit->expects('getStringOrNull')->with('[fields][dossier_nr][0]')->andReturn('bar');
 
         $this->repository
-            ->shouldReceive('getSearchResultViewModel')
+            ->expects('getSearchResultViewModel')
             ->with('foo', 'bar', ApplicationMode::ADMIN)
             ->andReturnNull();
 
@@ -61,16 +61,16 @@ class DossierSearchResultBaseMapperTest extends UnitTestCase
     public function testMapSuccessful(): void
     {
         $this->hit = Mockery::mock(TypeArray::class);
-        $this->hit->shouldReceive('getStringOrNull')->with('[fields][document_prefix][0]')->andReturn('foo');
-        $this->hit->shouldReceive('getStringOrNull')->with('[fields][dossier_nr][0]')->andReturn('bar');
-        $this->hit->shouldReceive('exists')->with('[highlight][title]')->andReturnTrue();
-        $this->hit->shouldReceive('getTypeArray->toArray')->andReturn(['x', 'y']);
-        $this->hit->shouldReceive('exists')->with('[highlight][summary]')->andReturnFalse();
+        $this->hit->expects('getStringOrNull')->with('[fields][document_prefix][0]')->andReturn('foo');
+        $this->hit->expects('getStringOrNull')->with('[fields][dossier_nr][0]')->andReturn('bar');
+        $this->hit->expects('exists')->with('[highlight][title]')->andReturnTrue();
+        $this->hit->expects('getTypeArray->toArray')->andReturn(['x', 'y']);
+        $this->hit->expects('exists')->with('[highlight][summary]')->andReturnFalse();
 
         $viewModel = Mockery::mock(CovenantSearchResult::class);
 
         $this->repository
-            ->shouldReceive('getSearchResultViewModel')
+            ->expects('getSearchResultViewModel')
             ->with('foo', 'bar', ApplicationMode::PUBLIC)
             ->andReturn($viewModel);
 

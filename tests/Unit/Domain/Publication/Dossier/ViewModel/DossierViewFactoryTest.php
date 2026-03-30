@@ -33,18 +33,18 @@ final class DossierViewFactoryTest extends UnitTestCase
     public function testGetRecentDossiers(): void
     {
         $dossierA = Mockery::mock(AbstractDossier::class);
-        $dossierA->shouldReceive('getDossierNr')->andReturn('foo-123');
-        $dossierA->shouldReceive('getDocumentPrefix')->andReturn('BAR');
-        $dossierA->shouldReceive('getTitle')->andReturn('foo bar baz');
-        $dossierA->shouldReceive('getType')->andReturn($typeA = DossierType::COVENANT);
-        $dossierA->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
+        $dossierA->expects('getDossierNr')->andReturn('foo-123');
+        $dossierA->expects('getDocumentPrefix')->andReturn('BAR');
+        $dossierA->expects('getTitle')->andReturn('foo bar baz');
+        $dossierA->expects('getType')->andReturn($typeA = DossierType::COVENANT);
+        $dossierA->expects('getPublicationDate')->times(2)->andReturn(new DateTimeImmutable());
 
         $dossierB = Mockery::mock(AbstractDossier::class);
-        $dossierB->shouldReceive('getDossierNr')->andReturn('foo-123');
-        $dossierB->shouldReceive('getDocumentPrefix')->andReturn('BAR');
-        $dossierB->shouldReceive('getTitle')->andReturn('foo bar baz');
-        $dossierB->shouldReceive('getType')->andReturn($typeB = DossierType::WOO_DECISION);
-        $dossierB->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
+        $dossierB->expects('getDossierNr')->andReturn('foo-123');
+        $dossierB->expects('getDocumentPrefix')->andReturn('BAR');
+        $dossierB->expects('getTitle')->andReturn('foo bar baz');
+        $dossierB->expects('getType')->andReturn($typeB = DossierType::WOO_DECISION);
+        $dossierB->expects('getPublicationDate')->times(2)->andReturn(new DateTimeImmutable());
 
         $this->repository->expects('getRecentDossiers')->with(5, null)->andReturn([
             $dossierA,
@@ -61,18 +61,18 @@ final class DossierViewFactoryTest extends UnitTestCase
     public function testGetRecentDossiersForDepartment(): void
     {
         $dossierA = Mockery::mock(AbstractDossier::class);
-        $dossierA->shouldReceive('getDossierNr')->andReturn('foo-123');
-        $dossierA->shouldReceive('getDocumentPrefix')->andReturn('BAR');
-        $dossierA->shouldReceive('getTitle')->andReturn('foo bar baz');
-        $dossierA->shouldReceive('getType')->andReturn($typeA = DossierType::COVENANT);
-        $dossierA->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
+        $dossierA->expects('getDossierNr')->andReturn('foo-123');
+        $dossierA->expects('getDocumentPrefix')->andReturn('BAR');
+        $dossierA->expects('getTitle')->andReturn('foo bar baz');
+        $dossierA->expects('getType')->andReturn($typeA = DossierType::COVENANT);
+        $dossierA->expects('getPublicationDate')->times(2)->andReturn(new DateTimeImmutable());
 
         $dossierB = Mockery::mock(AbstractDossier::class);
-        $dossierB->shouldReceive('getDossierNr')->andReturn('foo-123');
-        $dossierB->shouldReceive('getDocumentPrefix')->andReturn('BAR');
-        $dossierB->shouldReceive('getTitle')->andReturn('foo bar baz');
-        $dossierB->shouldReceive('getType')->andReturn($typeB = DossierType::WOO_DECISION);
-        $dossierB->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
+        $dossierB->expects('getDossierNr')->andReturn('foo-123');
+        $dossierB->expects('getDocumentPrefix')->andReturn('BAR');
+        $dossierB->expects('getTitle')->andReturn('foo bar baz');
+        $dossierB->expects('getType')->andReturn($typeB = DossierType::WOO_DECISION);
+        $dossierB->expects('getPublicationDate')->times(2)->andReturn(new DateTimeImmutable());
 
         $department = Mockery::mock(Department::class);
 

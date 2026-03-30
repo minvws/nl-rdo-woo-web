@@ -10,7 +10,6 @@ use Mockery\MockInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
@@ -62,19 +61,16 @@ class WooDecisionDeleteStrategyTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
 
         $document = Mockery::mock(Document::class);
-        $dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([$document]));
-
-        $attachments = new ArrayCollection([Mockery::mock(CovenantAttachment::class)]);
-        $dossier->shouldReceive('getAttachments')->andReturn($attachments);
+        $dossier->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
 
         $inventory = Mockery::mock(Inventory::class);
-        $dossier->shouldReceive('getInventory')->andReturn($inventory);
+        $dossier->expects('getInventory')->andReturn($inventory);
 
         $productionReport = Mockery::mock(ProductionReport::class);
-        $dossier->shouldReceive('getProductionReport')->andReturn($productionReport);
+        $dossier->expects('getProductionReport')->andReturn($productionReport);
 
         $processRun = Mockery::mock(ProductionReportProcessRun::class);
-        $dossier->shouldReceive('getProcessRun')->andReturn($processRun);
+        $dossier->expects('getProcessRun')->andReturn($processRun);
 
         $this->documentService->expects('removeDocumentFromDossier')->with($dossier, $document, false);
 
@@ -92,7 +88,6 @@ class WooDecisionDeleteStrategyTest extends UnitTestCase
 
     public function testDeleteWithOverride(): void
     {
-        /** @var WooDecisionDeleteStrategy&MockInterface $strategy */
         $strategy = Mockery::mock(WooDecisionDeleteStrategy::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
@@ -109,16 +104,13 @@ class WooDecisionDeleteStrategyTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
 
         $document = Mockery::mock(Document::class);
-        $dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([$document]));
+        $dossier->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
 
-        $attachments = new ArrayCollection([Mockery::mock(CovenantAttachment::class)]);
-        $dossier->shouldReceive('getAttachments')->andReturn($attachments);
-
-        $dossier->shouldReceive('getInventory')->andReturnNull();
-        $dossier->shouldReceive('getProcessRun')->andReturnNull();
+        $dossier->expects('getInventory')->andReturnNull();
+        $dossier->expects('getProcessRun')->andReturnNull();
 
         $productionReport = Mockery::mock(ProductionReport::class);
-        $dossier->shouldReceive('getProductionReport')->andReturn($productionReport);
+        $dossier->expects('getProductionReport')->andReturn($productionReport);
 
         $this->documentService->expects('removeDocumentFromDossier')->with($dossier, $document, false);
 

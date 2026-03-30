@@ -40,11 +40,11 @@ class FileStorageListerTest extends UnitTestCase
                 ]),
             );
 
-        $fileA->shouldReceive('path')->andReturn('file/a');
-        $fileA->shouldReceive('offsetGet')->with(StorageAttributes::ATTRIBUTE_FILE_SIZE)->andReturn(100);
+        $fileA->expects('path')->andReturn('file/a');
+        $fileA->expects('offsetGet')->with(StorageAttributes::ATTRIBUTE_FILE_SIZE)->andReturn(100);
 
-        $fileB->shouldReceive('path')->andReturn('file/b');
-        $fileB->shouldReceive('offsetGet')->with(StorageAttributes::ATTRIBUTE_FILE_SIZE)->andReturn(200);
+        $fileB->expects('path')->andReturn('file/b');
+        $fileB->expects('offsetGet')->with(StorageAttributes::ATTRIBUTE_FILE_SIZE)->andReturn(200);
 
         self::assertEquals(
             [
@@ -68,11 +68,11 @@ class FileStorageListerTest extends UnitTestCase
                 ]),
             );
 
-        $fileA->shouldReceive('path')->andReturn('file/a');
-        $fileA->shouldReceive('offsetGet')->with(StorageAttributes::ATTRIBUTE_FILE_SIZE)->andReturn(100);
+        $fileA->expects('path')->andReturn('file/a');
+        $fileA->expects('offsetGet')->with(StorageAttributes::ATTRIBUTE_FILE_SIZE)->andReturn(100);
 
-        $fileB->shouldReceive('path')->andReturn('file/b');
-        $fileB->shouldReceive('offsetGet')->with(StorageAttributes::ATTRIBUTE_FILE_SIZE)->andReturn(200);
+        $fileB->expects('path')->andReturn('file/b');
+        $fileB->expects('offsetGet')->with(StorageAttributes::ATTRIBUTE_FILE_SIZE)->andReturn(200);
 
         self::assertEquals(
             [

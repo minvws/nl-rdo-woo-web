@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Admin\Controller;
 
 use Admin\Domain\Authentication\UserRouteHelper;
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Content\Page\ContentPage;
 use Shared\Service\Security\Roles;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -12,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class IndexController extends AbstractController
 {

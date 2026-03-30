@@ -44,7 +44,7 @@ class ChangePasswordSubscriber
         }
 
         // Skip if we are on the change password page
-        if (in_array($event->getRequest()->get('_route'), $this->skipRoutes)) {
+        if (in_array($event->getRequest()->attributes->get('_route'), $this->skipRoutes)) {
             return;
         }
 

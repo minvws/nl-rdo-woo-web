@@ -9,7 +9,11 @@ $finder = (new PhpCsFixer\Finder())
         __DIR__ . '/tests',
     ])
     ->exclude(['var', 'node_modules'])
-    ->append([__DIR__ . '/phparkitect.php']);
+    ->append([
+        __DIR__ . '/phparkitect.php',
+        __DIR__ . '/bin/console',
+        __DIR__ . '/public/index.php',
+    ]);
 
 return (new PhpCsFixer\Config())
     ->setParallelConfig(ParallelConfigFactory::detect())

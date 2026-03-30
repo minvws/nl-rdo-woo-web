@@ -7,11 +7,14 @@ namespace PublicationApi\Api\Publication\Dossier\WooDecision;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Validator\Exception\ValidationException;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Override;
 use PublicationApi\Api\Publication\Attachment\AttachmentRequestDto;
 use PublicationApi\Api\Publication\Dossier\AbstractDossierProcessor;
 use PublicationApi\Api\Publication\Dossier\WooDecision\Document\WooDecisionDocumentMapper;
 use PublicationApi\Api\Publication\Dossier\WooDecision\Document\WooDecisionDocumentRequestDto;
+use PublicationApi\Domain\Inquiry\InquiryService;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Organisation\Organisation;
@@ -29,13 +32,21 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\AttachmentService;
 use Shared\Service\DocumentService;
 use Shared\Service\DossierService;
+use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inquiry\InquiryChangeset;
 use Shared\Service\Inventory\DocumentUpdater;
 use Shared\Service\MainDocumentService;
 use Shared\ValueObject\ExternalId;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Webmozart\Assert\Assert;
 
+use function array_flip;
+use function array_keys;
 use function array_map;
+use function array_merge;
 use function array_values;
 
 final class WooDecisionProcessor extends AbstractDossierProcessor
@@ -53,6 +64,9 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
         private readonly DossierDispatcher $dossierDispatcher,
         private readonly WooDecisionDispatcher $wooDecisionDispatcher,
         private readonly WooDecisionRepository $wooDecisionRepository,
+        private readonly InquiryService $inquiryService,
+        private readonly Security $security,
+        private readonly WooDecisionMapper $wooDecisionMapper,
     ) {
         parent::__construct(
             $attachmentService,
@@ -62,6 +76,7 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
             $mainDocumentService,
             $organisationRepository,
             $subjectRepository,
+            $this->security,
         );
     }
 
@@ -80,6 +95,7 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
 
         $wooDecisionExternalId = $uriVariables['wooDecisionExternalId'];
         Assert::string($wooDecisionExternalId);
+        $wooDecisionExternalId = ExternalId::create($wooDecisionExternalId);
 
         $organisation = $this->getOrganisation($uriVariables);
         $subject = $this->getSubject($data, $organisation);
@@ -89,12 +105,12 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
         if ($wooDecision === null) {
             $wooDecision = $this->create($organisation, $department, $subject, $data, $wooDecisionExternalId);
 
-            return WooDecisionMapper::fromEntity($wooDecision);
+            return $this->wooDecisionMapper->fromEntity($wooDecision);
         }
 
         $this->update($wooDecision, $organisation, $department, $subject, $data);
 
-        return WooDecisionMapper::fromEntity($wooDecision);
+        return $this->wooDecisionMapper->fromEntity($wooDecision);
     }
 
     private function create(
@@ -102,22 +118,26 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         WooDecisionRequestDto $wooDecisionRequestDto,
-        string $wooDecisionExternalId,
+        ExternalId $wooDecisionExternalId,
     ): WooDecision {
         $wooDecision = WooDecisionMapper::create($wooDecisionRequestDto, $organisation, $department, $subject, $wooDecisionExternalId);
-        $mainDocument = WooDecisionMainDocumentMapper::create($wooDecision, $wooDecisionRequestDto->mainDocument);
+        $mainDocument = WooDecisionMainDocumentRequestMapper::create($wooDecision, $wooDecisionRequestDto->mainDocument);
         $attachments = $this->getAttachments($wooDecision, $wooDecisionRequestDto->attachments);
         $documents = $this->getDocuments($wooDecision, $wooDecisionRequestDto->documents);
 
         $this->validateMainDocument($mainDocument);
         $this->validateAttachments($attachments);
-        $this->documentService->validateDocuments($documents);
+        $this->validateDocuments($documents);
 
         $wooDecision->setMainDocument($mainDocument);
         $this->addAttachments($wooDecision, $attachments);
         $this->addDossierDocuments($wooDecision, $documents);
 
         $this->validateDossier($wooDecision);
+        $this->wooDecisionRepository->save($wooDecision, true);
+
+        $this->handleInquiries($wooDecision, $wooDecisionRequestDto->documents);
+
         $this->dispatchCreateDossierCommand($wooDecision);
         $this->updateDocumentRefersTo($wooDecisionRequestDto->documents);
 
@@ -132,7 +152,7 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
         WooDecisionRequestDto $wooDecisionRequestDto,
     ): void {
         $wooDecision = WooDecisionMapper::update($wooDecision, $wooDecisionRequestDto, $organisation, $department, $subject);
-        $mainDocument = WooDecisionMainDocumentMapper::update($wooDecision, $wooDecisionRequestDto->mainDocument);
+        $mainDocument = WooDecisionMainDocumentRequestMapper::update($wooDecision, $wooDecisionRequestDto->mainDocument);
         $attachments = $this->getAttachments($wooDecision, $wooDecisionRequestDto->attachments);
         $documents = $this->getDocuments($wooDecision, $wooDecisionRequestDto->documents);
 
@@ -144,10 +164,19 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
         $this->removeDossierAttachments($wooDecision);
         $this->addAttachments($wooDecision, $attachments);
 
+        $previousDocumentCaseNumbers = $this->getDocumentCaseNumbers($wooDecision);
+
         $this->removeDossierDocuments($wooDecision);
         $this->addDossierDocuments($wooDecision, $documents);
 
         $this->validateDossier($wooDecision);
+        $this->wooDecisionRepository->save($wooDecision, true);
+
+        $this->handleInquiries(
+            $wooDecision,
+            $wooDecisionRequestDto->documents,
+            $previousDocumentCaseNumbers,
+        );
 
         $this->wooDecisionDispatcher->dispatchUpdateDecisionCommand($wooDecision);
         $this->dispatchUpdateDossierCommand($wooDecision);
@@ -191,7 +220,7 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
     private function getDocuments(WooDecision $wooDecision, array $wooDecisionDocumentRequestDtos): array
     {
         return array_values(array_map(function (WooDecisionDocumentRequestDto $wooDecisionDocumentRequestDto) use ($wooDecision): Document {
-            $document = $this->documentRepository->findByExternalId(ExternalId::create($wooDecisionDocumentRequestDto->externalId));
+            $document = $this->documentRepository->findByExternalId($wooDecisionDocumentRequestDto->externalId);
 
             if ($document instanceof Document) {
                 return WooDecisionDocumentMapper::update($document, $wooDecisionDocumentRequestDto);
@@ -235,7 +264,7 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
                 continue;
             }
 
-            $document = $this->documentRepository->findByExternalId(ExternalId::create($wooDecisionDocumentRequestDto->externalId));
+            $document = $this->documentRepository->findByExternalId($wooDecisionDocumentRequestDto->externalId);
             if ($document === null) {
                 continue;
             }
@@ -244,5 +273,65 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
 
             $this->documentUpdater->updateDocumentReferralsByDocumentExternalId($document, $refersTo);
         }
+    }
+
+    /**
+     * @param array<array-key,WooDecisionDocumentRequestDto> $requestDocuments
+     * @param Collection<string,DocumentCaseNumbers> $previousDocumentCaseNumbers
+     */
+    private function handleInquiries(
+        WooDecision $wooDecision,
+        array $requestDocuments,
+        Collection $previousDocumentCaseNumbers = new ArrayCollection(),
+    ): void {
+        $currentDocumentCaseNumbers = $this->getDocumentCaseNumbers($wooDecision);
+
+        $allExternalIds = array_keys(array_flip(array_merge($previousDocumentCaseNumbers->getKeys(), $currentDocumentCaseNumbers->getKeys())));
+
+        /** @var ArrayCollection<string,CaseNumbers> $targetDocumentCaseNumbers */
+        $targetDocumentCaseNumbers = new ArrayCollection($requestDocuments)
+            ->reduce(function (ArrayCollection $carry, WooDecisionDocumentRequestDto $documentRequestDto): ArrayCollection {
+                $carry->set($documentRequestDto->externalId->__toString(), new CaseNumbers($documentRequestDto->caseNumbers));
+
+                return $carry;
+            }, new ArrayCollection());
+
+        $inquiryChangeset = new InquiryChangeset($wooDecision->getOrganisation());
+        foreach ($allExternalIds as $externalId) {
+            $documentCaseNumbers = $previousDocumentCaseNumbers->get($externalId) ?? $currentDocumentCaseNumbers->get($externalId);
+            Assert::isInstanceOf($documentCaseNumbers, DocumentCaseNumbers::class);
+
+            $inquiryChangeset
+                ->updateCaseNrsForDocument(
+                    $documentCaseNumbers,
+                    $targetDocumentCaseNumbers->get($externalId) ?? CaseNumbers::empty(),
+                );
+        }
+
+        $this->inquiryService->applyChangesetSync($inquiryChangeset);
+    }
+
+    /**
+     * @return Collection<string,DocumentCaseNumbers>
+     */
+    private function getDocumentCaseNumbers(WooDecision $wooDecision): Collection
+    {
+        /** @var Collection<string,DocumentCaseNumbers> */
+        return $wooDecision->getDocuments()
+            ->reduce(function (Collection $carry, Document $document): Collection {
+                $externalId = $document->getExternalId()?->__toString();
+
+                if ($externalId === null) {
+                    // A better solution for this issue should be implemented. See #6214:
+                    throw new ValidationException(
+                        // @phpcs:ignore Generic.Files.LineLength.TooLong
+                        ConstraintViolationList::createFromMessage('Dossier has Document(s) without external ID(s). This is likely because this Dossier was updated through the UI.'),
+                    );
+                }
+
+                $carry->set($externalId, DocumentCaseNumbers::fromDocumentEntity($document));
+
+                return $carry;
+            }, new ArrayCollection());
     }
 }

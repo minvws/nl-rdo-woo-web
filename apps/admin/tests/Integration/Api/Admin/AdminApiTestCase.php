@@ -27,7 +27,7 @@ abstract class AdminApiTestCase extends ApiTestCase
             ->loginUser($user, 'balie');
     }
 
-    protected static function getAppId(): ApplicationId
+    protected static function getApplicationId(): ApplicationId
     {
         return ApplicationId::ADMIN;
     }

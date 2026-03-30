@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Service\Search\Query\Definition;
 
 use Erichard\ElasticQueryBuilder\QueryBuilder;
+use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Query\Facet\FacetListFactory;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Component\QueryComponentHelper;
@@ -17,12 +18,13 @@ readonly class SearchAllQueryDefinition implements QueryDefinitionInterface
         private FacetListFactory $facetListFactory,
         private QueryComponentHelper $componentHelper,
         private QueryConditionHelper $conditionHelper,
+        private ElasticConfig $elasticConfig,
     ) {
     }
 
     public function configure(QueryBuilder $queryBuilder, SearchParameters $searchParameters): void
     {
-        ElasticQueryParameters::applyTo($queryBuilder, $searchParameters)
+        ElasticQueryParameters::applyTo($queryBuilder, $searchParameters, $this->elasticConfig)
             ->withDocvalueFields()
             ->withSuggestParams()
             ->withUserDefinedSort();

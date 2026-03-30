@@ -78,7 +78,7 @@ class RolloverCounterTest extends UnitTestCase
         $this->mockSubTypeRepository(WooDecisionAttachment::class, 1, 1, true);
         $this->mockSubTypeRepository(ComplaintJudgementMainDocument::class, 1, 1);
 
-        $this->dossierTypeManager->shouldReceive('getAllConfigs')->andReturn([
+        $this->dossierTypeManager->expects('getAllConfigs')->times(2)->andReturn([
             new WooDecisionConfig(Mockery::mock(WorkflowInterface::class)),
             new ComplaintJudgementConfig(Mockery::mock(WorkflowInterface::class)),
             new CovenantConfig(Mockery::mock(WorkflowInterface::class)),
@@ -95,7 +95,7 @@ class RolloverCounterTest extends UnitTestCase
         $esData = json_decode($json ?: '', true);
 
         $response = Mockery::mock(Elasticsearch::class);
-        $response->shouldReceive('asArray')->andReturn($esData);
+        $response->expects('asArray')->andReturn($esData);
 
         return $response;
     }

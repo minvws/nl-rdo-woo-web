@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Search\Index\Updater\NestedDossierIndexUpdater;
 use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
 use Shared\Tests\Unit\UnitTestCase;
 
 class NestedDossierIndexUpdaterTest extends UnitTestCase
@@ -26,6 +27,7 @@ class NestedDossierIndexUpdaterTest extends UnitTestCase
         $this->indexUpdater = new NestedDossierIndexUpdater(
             $this->elasticClient,
             $this->logger,
+            ElasticConfigOverride::default(),
         );
 
         parent::setUp();
@@ -34,11 +36,9 @@ class NestedDossierIndexUpdaterTest extends UnitTestCase
     public function testUpdate(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
-        $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-bar-123');
+        $dossier->expects('getId->toRfc4122')->andReturn($dossierId = 'foo-bar-123');
 
         $dossierDoc = ['foo' => 'bar'];
-
-        $this->logger->shouldReceive('debug');
 
         $this->elasticClient->expects('updateByQuery')->with(Mockery::on(
             static fn (array $input) => $input['body']['query']['bool']['must'][1]['nested']['query']['term']['dossiers.id'] === $dossierId

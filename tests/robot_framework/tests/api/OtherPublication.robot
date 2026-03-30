@@ -7,6 +7,7 @@ Documentation       Tests for the Other Publication endpoint
 Library             RequestsLibrary
 Resource            ../../resources/API.resource
 Resource            ../../resources/Dossier.resource
+Resource            ../../resources/OtherPublication.resource
 Suite Setup         Suite Setup
 Test Tags           api  other-publication
 
@@ -30,7 +31,8 @@ Suite Setup
 
 Create Test Data For Other Publication
   ${main_document} =  Generate Main Document  type=overig
-  ${attachments} =  Generate Attachments
+  ${allowed_attachment_types} =  Get Other Publication Attachment Types
+  ${attachments} =  Generate Attachments  ${allowed_attachment_types}
   # Build body
   ${department_id} =  Get Department ID
   ${subject_id} =  Get Subject ID
@@ -66,16 +68,3 @@ We Can Find It
   GET On Session
   ...  alias=publication_api
   ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/other-publication/${EXTERNAL_ID}
-
-A Other Publication Is Updated
-  Set To Dictionary  ${BODY}  title  Robot - Gewijzigde titel
-  PUT On Session
-  ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/other-publication/${EXTERNAL_ID}
-  ...  json=${BODY}
-
-The Other Publication Has The New Values
-  ${get_response} =  GET On Session
-  ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/other-publication/${EXTERNAL_ID}
-  Should Be Equal  ${get_response.json()}[title]  Robot - Gewijzigde titel

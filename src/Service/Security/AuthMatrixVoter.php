@@ -9,6 +9,7 @@ use Shared\Service\Security\Authorization\AuthorizationEntryRequestStore;
 use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Shared\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -35,9 +36,10 @@ class AuthMatrixVoter extends Voter
         return $subject === null || $subject instanceof AbstractDossier;
     }
 
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
-        if (! $this->isUserAllowed($token->getUser())) {
+        $user = $token->getUser();
+        if (! $this->isUserAllowed($user)) {
             return false;
         }
 
@@ -58,15 +60,15 @@ class AuthMatrixVoter extends Voter
         $this->entryStore->storeEntries(...$this->authorizationMatrix->getAuthorizedMatches($prefix, $permission));
 
         if ($subject instanceof AbstractDossier) {
-            return $this->isDossierAllowedForUser($subject);
+            return $this->isDossierAllowedForUser($user, $subject);
         }
 
         return true;
     }
 
-    private function isDossierAllowedForUser(AbstractDossier $dossier): bool
+    private function isDossierAllowedForUser(?UserInterface $user, AbstractDossier $dossier): bool
     {
-        if ($dossier->getOrganisation() !== $this->authorizationMatrix->getActiveOrganisation()) {
+        if ($user instanceof User && $dossier->getOrganisation() !== $this->authorizationMatrix->getActiveOrganisation()) {
             return false;
         }
 
@@ -95,10 +97,14 @@ class AuthMatrixVoter extends Voter
             return false;
         }
 
-        if (! $user instanceof User) {
-            return false;
+        if ($user instanceof User) {
+            return $user->isEnabled();
         }
 
-        return $user->isEnabled();
+        if ($user instanceof ApiUser) {
+            return true;
+        }
+
+        return false;
     }
 }

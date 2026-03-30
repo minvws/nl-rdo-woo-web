@@ -41,7 +41,7 @@ class IndexDossierHandlerTest extends UnitTestCase
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(WooDecision::class);
 
-        $this->dossierRepository->shouldReceive('find')->with($dossierId)->andReturn($dossier);
+        $this->dossierRepository->expects('find')->with($dossierId)->andReturn($dossier);
 
         $this->dossierIndexer->expects('index')->with($dossier, true);
 
@@ -52,7 +52,7 @@ class IndexDossierHandlerTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
 
-        $this->dossierRepository->shouldReceive('find')->with($dossierId)->andReturnNull();
+        $this->dossierRepository->expects('find')->with($dossierId)->andReturnNull();
 
         $this->logger->expects('warning');
 
@@ -63,7 +63,7 @@ class IndexDossierHandlerTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
 
-        $this->dossierRepository->shouldReceive('find')->with($dossierId)->andThrow(new RuntimeException('oops'));
+        $this->dossierRepository->expects('find')->with($dossierId)->andThrow(new RuntimeException('oops'));
 
         $this->logger->expects('error');
 

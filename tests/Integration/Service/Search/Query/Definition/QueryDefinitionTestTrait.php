@@ -15,6 +15,7 @@ use Shared\Service\Search\Query\Definition\QueryDefinitionInterface;
 use Shared\Service\Search\Result\Result;
 use Shared\Service\Search\Result\ResultTransformer;
 use Shared\Service\Search\SearchService;
+use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
 use Spatie\Snapshots\MatchesSnapshots;
 
 trait QueryDefinitionTestTrait
@@ -40,6 +41,7 @@ trait QueryDefinitionTestTrait
             self::getContainer()->get(ObjectHandler::class),
             $resultTransformer,
             self::getContainer()->get(SearchParametersFactory::class),
+            ElasticConfigOverride::default(),
         );
 
         $queryDefinition = self::getContainer()->get($definitionClass);

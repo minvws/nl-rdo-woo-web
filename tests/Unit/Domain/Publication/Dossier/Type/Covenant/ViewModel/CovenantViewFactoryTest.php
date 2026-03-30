@@ -29,11 +29,10 @@ final class CovenantViewFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        /** @var Department&MockInterface $expectedMainDepartment */
         $expectedMainDepartment = Mockery::mock(Department::class);
 
         $this->commonDossierViewFactory
-            ->shouldReceive('make')
+            ->expects('make')
             ->andReturn(new CommonDossierProperties(
                 dossierId: $expectedUuid = 'my uuid',
                 dossierNr: $expectedDossierNr = 'my dossier nr',
@@ -48,14 +47,13 @@ final class CovenantViewFactoryTest extends UnitTestCase
                 subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
-        /** @var Covenant&MockInterface $dossier */
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDateFrom = null);
-        $dossier->shouldReceive('getDateTo')->andReturn($expecedDateTo = $this->getRandomDate());
-        $dossier->shouldReceive('getPreviousVersionLink')->andReturn($expectedPreviousVersionLink = 'my previous version link');
-        $dossier->shouldReceive('getParties')->andReturn($expectedParties = ['part one', 'party rwo']);
+        $dossier->expects('getDateFrom')->andReturn($expectedDateFrom = null);
+        $dossier->expects('getDateTo')->andReturn($expecedDateTo = $this->getRandomDate());
+        $dossier->expects('getPreviousVersionLink')->andReturn($expectedPreviousVersionLink = 'my previous version link');
+        $dossier->expects('getParties')->andReturn($expectedParties = ['part one', 'party rwo']);
 
-        $result = (new CovenantViewFactory($this->commonDossierViewFactory))->make($dossier);
+        $result = new CovenantViewFactory($this->commonDossierViewFactory)->make($dossier);
 
         $this->assertSame($expectedUuid, $result->getDossierId());
         $this->assertSame($expectedDossierNr, $result->getDossierNr());

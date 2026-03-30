@@ -12,6 +12,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceRepository;
 use Shared\Service\ApiPlatformService;
+use Shared\ValueObject\ExternalId;
 
 use function count;
 
@@ -20,6 +21,7 @@ final readonly class RequestForAdviceProvider implements ProviderInterface
     public function __construct(
         private OrganisationRepository $organisationRepository,
         private RequestForAdviceRepository $requestForAdviceRepository,
+        private RequestForAdviceMapper $requestForAdviceMapper,
         private int $itemsPerPage,
     ) {
     }
@@ -38,7 +40,7 @@ final readonly class RequestForAdviceProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, $uriVariables['requestForAdviceExternalId']);
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['requestForAdviceExternalId']));
     }
 
     /**
@@ -52,16 +54,16 @@ final readonly class RequestForAdviceProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(RequestForAdviceMapper::fromEntities($requestForAdvices), 0, count($requestForAdvices));
+        return new ArrayPaginator($this->requestForAdviceMapper->fromEntities($requestForAdvices), 0, count($requestForAdvices));
     }
 
-    private function provideSingle(Organisation $organisation, string $requestForAdviceExternalId): ?RequestForAdviceDto
+    private function provideSingle(Organisation $organisation, ExternalId $requestForAdviceExternalId): ?RequestForAdviceDto
     {
         $requestForAdvice = $this->requestForAdviceRepository->findByOrganisationAndExternalId($organisation, $requestForAdviceExternalId);
         if ($requestForAdvice === null) {
             return null;
         }
 
-        return RequestForAdviceMapper::fromEntity($requestForAdvice);
+        return $this->requestForAdviceMapper->fromEntity($requestForAdvice);
     }
 }

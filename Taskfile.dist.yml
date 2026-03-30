@@ -26,10 +26,25 @@ vars:
     sh: pwd
   ORBSTACK_ENABLED:
     sh: echo ${ORBSTACK_ENABLED:-$(test "$(docker context show)" = "orbstack" && echo 1 || echo 0)}
-  ORBSTACK_ADMIN_URL: http://admin-woo.local/balie
-  ORBSTACK_PUBLIC_URL: http://public-woo.local
-  PUBLICATION_API_URL: https://localhost:8443
+  ORBSTACK_MINVWS_PUBLIC_URL: http://public-minvws.local
+  ORBSTACK_MINFIN_PUBLIC_URL: http://public-minfin.local
+  ORBSTACK_MINVWS_ADMIN_URL: http://admin-minvws.local/balie
+  ORBSTACK_MINFIN_ADMIN_URL: http://admin-minfin.local/balie
+  ORBSTACK_HTTP_HOST_TO_TENANT_MAPPING: >-
+    public-minvws.local=minvws,
+    admin-minvws.local=minvws,
+    publication-api-minvws.local=minvws,
+    localhost:8443=minvws,
+    public-minfin.local=minfin,
+    admin-minfin.local=minfin,
+    publication-api-minfin.local=minfin,
+    localhost:8444=minfin
+  MINVWS_PUBLICATION_API_URL: https://localhost:8443
+  MINFIN_PUBLICATION_API_URL: https://localhost:8444
   GH_VERSION: v2.83.1
+  TENANTS:
+    - minvws
+    - minfin
 
 env:
   ORBSTACK_ENABLED: '{{.ORBSTACK_ENABLED}}'
@@ -132,11 +147,16 @@ tasks:
         vars: { SUB_CMD: "admin bash -c 'wait-for-it postgres:5432 --timeout=0 --strict -- wait-for-it rabbitmq:5672 --timeout=0 --strict -- wait-for-it elasticsearch:9200 --timeout=0 --strict -- echo \"Done waiting\"'" }
       - task: minio:create-buckets
       - task: app:migrate
+        vars: { TENANT: '{{.ITEM}}' }
+        for: { var: TENANTS }
       - task: app:loadfixtures
+        vars: { TENANT: '{{.ITEM}}' }
+        for: { var: TENANTS }
       - task: dc:run
         vars: { SUB_CMD: "admin bash -c 'curl -X GET \"elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=30s\"'" }
       - task: dc:run
-        vars: { SUB_CMD: "admin bin/console woopie:index:create woopie latest --read --write" }
+        vars: { SUB_CMD: "admin bin/console --tenant=minvws woopie:index:create woopie_{{.ITEM}} latest --read --write" }
+        for: { var: TENANTS }
       - task: npm:install
       - task: npm:build
       - task: docs:build:ci
@@ -150,6 +170,8 @@ tasks:
     cmds:
       - task: setup
       - task: app:migrate:test
+        vars: { TENANT: '{{.ITEM}}' }
+        for: { var: TENANTS }
 
   shell:
     desc: Open a shell in admin service
@@ -229,7 +251,9 @@ tasks:
       - cp .env.development .env.local
       - cmd: |
           if [ "{{.ORBSTACK_ENABLED }}" = "1" ]; then
-            sed -i '' 's#^\(PUBLIC_BASE_URL=\).*#\1{{.ORBSTACK_PUBLIC_URL}}#' .env.local
+            sed -i '' 's#^\(MINVWS_PUBLIC_BASE_URL=\).*#\1{{.ORBSTACK_MINVWS_PUBLIC_URL}}#' .env.local
+            sed -i '' 's#^\(MINFIN_PUBLIC_BASE_URL=\).*#\1{{.ORBSTACK_MINFIN_PUBLIC_URL}}#' .env.local
+            sed -i '' 's#^\(HTTP_HOST_TO_TENANT_MAPPING=\).*#\1"{{.ORBSTACK_HTTP_HOST_TO_TENANT_MAPPING}}"#' .env.local
           fi
         platforms: [darwin]
     sources:
@@ -257,63 +281,80 @@ tasks:
 
   app:user:create:
     desc: Create an user
+    vars:
+      TENANT: '{{.TENANT | default "minvws"}}'
     cmds:
       - task: dc:shell
         vars:
-          SUB_CMD: 'admin bin/console woopie:user:create {{.CLI_ARGS | default "\"email@example.org\" \"full name\" --super-admin"}}'
+          SUB_CMD: 'admin bin/console --tenant={{.TENANT}} woopie:user:create {{.CLI_ARGS | default "\"email@example.org\" \"full name\" --super-admin"}}'
 
   app:migrate:
     desc: Run (doctrine) database migrations
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console doctrine:migrations:migrate --no-interaction" }
+        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:database:create --if-not-exists --no-interaction" }
+      - task: dc:shell
+        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:migrations:migrate --no-interaction" }
+    requires:
+      vars: [TENANT]
 
   app:loadfixtures:
     desc: Load doctrine example fixtures
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console doctrine:fixtures:load --no-interaction --group=example --append" }
+        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:fixtures:load --no-interaction --group=example --append" }
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console doctrine:fixtures:load --no-interaction --group=vws --append" }
+        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:fixtures:load --no-interaction --group=vws --append" }
+    requires:
+      vars: [TENANT]
 
   app:migrate:diff:
     desc: Run (doctrine) database migrations diff
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console doctrine:migrations:diff --no-interaction" }
+        vars: { SUB_CMD: "admin bin/console --tenant=minvws doctrine:migrations:diff --no-interaction" }
 
   app:migrate:dump:
     desc: Dump doctrine migrations to plain SQL files
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console woopie:sql:dump" }
+        vars: { SUB_CMD: "admin bin/console --tenant=minvws woopie:sql:dump" }
 
   app:migrate:test:
     desc: Run (doctrine) database migrations in test environment
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console doctrine:database:create --if-not-exists --no-interaction --env=test" }
+        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:database:create --if-not-exists --no-interaction --env=test" }
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console doctrine:schema:drop --full-database --force --no-interaction --env=test" }
+        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:schema:drop --full-database --force --no-interaction --env=test" }
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console doctrine:schema:create --no-interaction --env=test" }
+        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:schema:create --no-interaction --env=test" }
+    requires:
+      vars: [TENANT]
 
   app:cleansheet:
     desc: Clears dossiers and inquiries (with related data) from the database. Also clears ES index and RabbitMq message queues.
+    vars:
+      TENANT: '{{.TENANT | default "minvws"}}'
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console woopie:dev:clean-sheet --force --keep-prefixes {{.CLI_ARGS}}" }
+        vars: { SUB_CMD: 'admin bin/console --tenant={{.TENANT}} woopie:dev:clean-sheet --force --keep-prefixes {{.CLI_ARGS}}' }
       - task: minio:clear-buckets
 
   app:db:reset:
     desc: Reset the application database including RabbitMQ queues and ElasticSearch indexes
     prompt: Are you REALLY sure you want to clear data from the system?
+    vars:
+      TENANT: '{{.TENANT | default "minvws"}}'
     cmds:
       - task: app:cleansheet
+        vars: { TENANT: '{{.TENANT}}'}
       - task: dc:shell
-        vars: { SUB_CMD: admin bin/console doctrine:schema:drop --full-database --force }
+        vars: { SUB_CMD: 'admin bin/console --tenant={{.TENANT}} doctrine:schema:drop --full-database --force' }
       - task: app:migrate
+        vars: { TENANT: '{{.TENANT}}'}
       - task: app:loadfixtures
+        vars: { TENANT: '{{.TENANT}}'}
 
   db:logs:
     desc: Display last 30 lines of db query logs and follow the rest
@@ -365,11 +406,11 @@ tasks:
       - task: dc:shell
         vars:
           SUB_CMD: >
+            --env CREATE_SNAPSHOTS=false
             admin php
             -d pcov.enabled=1
             -d pcov.directory=.
             -d xdebug.mode=off
-            -d --without-creating-snapshots
             vendor/bin/phpunit
             --log-junit=reports/phpunit/report-phpunit.xml
             --coverage-clover=reports/phpunit/coverage-phpunit.xml
@@ -427,7 +468,7 @@ tasks:
     desc: Run postdeploy script
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console woopie:post-deploy" }
+        vars: { SUB_CMD: "admin bin/console --tenant=minvws woopie:post-deploy" }
 
   app:openapi:export:
     desc: Export all OpenAPI specifications
@@ -439,11 +480,16 @@ tasks:
     desc: (re) Pull dependencies, run migrations, build front-end and sync .env
     aliases: [app:refresh]
     cmds:
+      - task: up
       - rm -rf var
       - task: d:create-cache-volumes
       - task: composer:install
       - task: app:migrate
+        vars: { TENANT: '{{.ITEM}}' }
+        for: { var: TENANTS }
       - task: app:migrate:test
+        vars: { TENANT: '{{.ITEM}}' }
+        for: { var: TENANTS }
       - task: npm:install
       - task: npm:build
       - task: app:syncdotenv
@@ -484,7 +530,7 @@ tasks:
     desc: Generate the sitemap in one command
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console Woo-index:generate {{.CLI_ARGS}}" }
+        vars: { SUB_CMD: "admin bin/console --tenant=minvws Woo-index:generate {{.CLI_ARGS}}" }
 
   gh:check-token:
     desc: Check your $CR_PAT environment variable for valid GitHub token

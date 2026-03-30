@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin\Dossier\WooDecision;
 
-use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
 use Shared\Domain\Publication\Dossier\Step\StepName;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Form\Dossier\WooDecision\PublishType;
+use Shared\Service\DossierService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class PublicationStepController extends AbstractController
 {
     public function __construct(
-        private readonly DossierDispatcher $dossierDispatcher,
+        private readonly DossierService $dossierService,
         private readonly StepActionHelper $stepHelper,
     ) {
     }
@@ -43,7 +43,7 @@ class PublicationStepController extends AbstractController
         $form = $this->createForm(PublishType::class, $dossier);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->dossierDispatcher->dispatchUpdateDossierPublicationCommand($dossier);
+            $this->dossierService->validateCompletion($dossier);
 
             return $this->stepHelper->redirectToPublicationConfirmation($dossier);
         }
@@ -74,7 +74,7 @@ class PublicationStepController extends AbstractController
         $form = $this->createForm(PublishType::class, $dossier);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->dossierDispatcher->dispatchUpdateDossierPublicationCommand($dossier);
+            $this->dossierService->validateCompletion($dossier);
 
             return $this->stepHelper->redirectToPublicationConfirmation($dossier);
         }

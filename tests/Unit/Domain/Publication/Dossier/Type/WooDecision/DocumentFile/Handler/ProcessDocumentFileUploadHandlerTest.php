@@ -71,19 +71,18 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
     public function testInvokeSuccessfully(): void
     {
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getId')->andReturn(Uuid::v6());
-        $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $wooDecision->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
-            ->shouldReceive('getDossier')
+            ->expects('getDossier')
             ->andReturn($wooDecision);
 
         $id = Uuid::v6();
         $upload = Mockery::mock(DocumentFileUpload::class);
-        $upload->shouldReceive('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
-        $upload->shouldReceive('getDocumentFileSet')->andReturn($documentFileSet);
-        $upload->shouldReceive('getFileInfo->getName')->andReturn('upload.zip');
+        $upload->expects('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
+        $upload->expects('getDocumentFileSet')->andReturn($documentFileSet);
+        $upload->expects('getFileInfo->getName')->andReturn('upload.zip');
         $upload->expects('getFileInfo->removeFileProperties');
 
         $this->documentFileUploadRepository->expects('find')->with($id)->andReturn($upload);
@@ -97,9 +96,9 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $this->filePreProcessor->expects('process')->andReturn($fileIterator);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
-        $document->shouldReceive('isUploaded')->andReturnFalse();
-        $document->shouldReceive('shouldBeUploaded')->with(true)->andReturnTrue();
+        $document->expects('isWithdrawn')->andReturnFalse();
+        $document->expects('isUploaded')->andReturnFalse();
+        $document->expects('shouldBeUploaded')->with(true)->andReturnTrue();
 
         $this->mimeTypeHelper
             ->expects('detectMimeTypeFromPath')
@@ -153,18 +152,18 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
     public function testInvokeSkipsDuplicateUpload(): void
     {
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getId')->andReturn(Uuid::v6());
+        $wooDecision->expects('getId')->andReturn(Uuid::v6());
 
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
-            ->shouldReceive('getDossier')
+            ->expects('getDossier')
             ->andReturn($wooDecision);
 
         $id = Uuid::v6();
         $upload = Mockery::mock(DocumentFileUpload::class);
-        $upload->shouldReceive('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
-        $upload->shouldReceive('getDocumentFileSet')->andReturn($documentFileSet);
-        $upload->shouldReceive('getFileInfo->getName')->andReturn('upload.zip');
+        $upload->expects('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
+        $upload->expects('getDocumentFileSet')->andReturn($documentFileSet);
+        $upload->expects('getFileInfo->getName')->andReturn('upload.zip');
         $upload->expects('getFileInfo->removeFileProperties');
 
         $this->documentFileUploadRepository->expects('find')->with($id)->andReturn($upload);
@@ -178,8 +177,6 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $this->filePreProcessor->expects('process')->andReturn($fileIterator);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
-        $document->shouldReceive('isUploaded')->andReturnFalse();
 
         $this->mimeTypeHelper
             ->expects('detectMimeTypeFromPath')
@@ -227,19 +224,19 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
     public function testInvokeSkipsFileThatShouldNotBeUploaded(): void
     {
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getId')->andReturn(Uuid::v6());
-        $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $wooDecision->expects('getId')->andReturn(Uuid::v6());
+        $wooDecision->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
-            ->shouldReceive('getDossier')
+            ->expects('getDossier')
             ->andReturn($wooDecision);
 
         $id = Uuid::v6();
         $upload = Mockery::mock(DocumentFileUpload::class);
-        $upload->shouldReceive('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
-        $upload->shouldReceive('getDocumentFileSet')->andReturn($documentFileSet);
-        $upload->shouldReceive('getFileInfo->getName')->andReturn('upload.zip');
+        $upload->expects('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
+        $upload->expects('getDocumentFileSet')->andReturn($documentFileSet);
+        $upload->expects('getFileInfo->getName')->andReturn('upload.zip');
         $upload->expects('getFileInfo->removeFileProperties');
 
         $this->documentFileUploadRepository->expects('find')->with($id)->andReturn($upload);
@@ -253,9 +250,7 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $this->filePreProcessor->expects('process')->andReturn($fileIterator);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
-        $document->shouldReceive('isUploaded')->andReturnFalse();
-        $document->shouldReceive('shouldBeUploaded')->with(true)->andReturnFalse();
+        $document->expects('shouldBeUploaded')->with(true)->andReturnFalse();
 
         $this->mimeTypeHelper
             ->expects('detectMimeTypeFromPath')
@@ -304,7 +299,7 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
     {
         $id = Uuid::v6();
         $upload = Mockery::mock(DocumentFileUpload::class);
-        $upload->shouldReceive('getStatus')->andReturn(DocumentFileUploadStatus::FAILED);
+        $upload->expects('getStatus')->andReturn(DocumentFileUploadStatus::FAILED);
 
         $this->documentFileUploadRepository->expects('find')->with($id)->andReturn($upload);
 
@@ -331,7 +326,7 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
         $id = Uuid::v6();
 
         $upload = Mockery::mock(DocumentFileUpload::class);
-        $upload->shouldReceive('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
+        $upload->expects('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
 
         $this->documentFileUploadRepository->expects('find')->with($id)->andReturn($upload);
 
@@ -347,19 +342,18 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
     public function testInvokeSkipsFileWithUnsupportedMimeType(): void
     {
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getId')->andReturn(Uuid::v6());
-        $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $wooDecision->expects('getId')->andReturn(Uuid::v6());
 
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
-            ->shouldReceive('getDossier')
+            ->expects('getDossier')
             ->andReturn($wooDecision);
 
         $id = Uuid::v6();
         $upload = Mockery::mock(DocumentFileUpload::class);
-        $upload->shouldReceive('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
-        $upload->shouldReceive('getDocumentFileSet')->andReturn($documentFileSet);
-        $upload->shouldReceive('getFileInfo->getName')->andReturn('upload.zip');
+        $upload->expects('getStatus')->andReturn(DocumentFileUploadStatus::UPLOADED);
+        $upload->expects('getDocumentFileSet')->andReturn($documentFileSet);
+        $upload->expects('getFileInfo->getName')->andReturn('upload.zip');
         $upload->expects('getFileInfo->removeFileProperties');
 
         $this->documentFileUploadRepository->expects('find')->with($id)->andReturn($upload);
@@ -371,11 +365,6 @@ class ProcessDocumentFileUploadHandlerTest extends UnitTestCase
             $fileB = new UploadedFile('tmp/bar', '456.pdf'),
         ]);
         $this->filePreProcessor->expects('process')->andReturn($fileIterator);
-
-        $document = Mockery::mock(Document::class);
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
-        $document->shouldReceive('isUploaded')->andReturnFalse();
-        $document->shouldReceive('shouldBeUploaded')->with(true)->andReturnFalse();
 
         $this->mimeTypeHelper
             ->expects('detectMimeTypeFromPath')

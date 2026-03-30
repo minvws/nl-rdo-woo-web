@@ -1,0 +1,34 @@
+{
+  "vhosts": [
+    { "name": "/minvws" },
+    { "name": "/minfin" }
+  ],
+  "users": [
+    {
+      "name": "minvws",
+      "password": "secret",
+      "tags": "management"
+    },
+    {
+      "name": "minfin",
+      "password": "secret",
+      "tags": "management"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "minvws",
+      "vhost": "/minvws",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "minfin",
+      "vhost": "/minfin",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ]
+}

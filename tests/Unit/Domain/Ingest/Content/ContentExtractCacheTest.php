@@ -32,10 +32,10 @@ class ContentExtractCacheTest extends UnitTestCase
         $this->cacheItemPool = Mockery::mock(CacheItemPoolInterface::class);
 
         $this->fileInfo = Mockery::mock(FileInfo::class);
-        $this->fileInfo->shouldReceive('getHash')->andReturn('testhash');
+        $this->fileInfo->expects('getHash')->andReturn('testhash');
 
         $this->entity = Mockery::mock(EntityWithFileInfo::class);
-        $this->entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
+        $this->entity->expects('getFileInfo')->andReturn($this->fileInfo);
 
         $this->contentExtractCache = new ContentExtractCache(
             $this->contentExtractService,
@@ -49,14 +49,14 @@ class ContentExtractCacheTest extends UnitTestCase
         $content = "lorem ipsum tika\nlorem ipsum tesseract";
 
         $cacheItem = Mockery::mock(CacheItemInterface::class);
-        $cacheItem->shouldReceive('isHit')->andReturn(false);
-        $cacheItem->shouldReceive('set')->with($content)->andReturnSelf();
-        $cacheItem->shouldReceive('get')->andReturn($content);
+        $cacheItem->expects('isHit')->andReturn(false);
+        $cacheItem->expects('set')->with($content)->andReturnSelf();
+        $cacheItem->expects('get')->andReturn($content);
         $this->cacheItemPool->expects('getItem')->with('testhash-' . $pageNr)->andReturn($cacheItem);
         $this->cacheItemPool->expects('save')->with($cacheItem);
 
         $collection = Mockery::mock(ContentExtractCollection::class);
-        $collection->shouldReceive('getCombinedContent')->andReturn($content);
+        $collection->expects('getCombinedContent')->andReturn($content);
 
         $this->contentExtractService
             ->expects('getExtracts')
@@ -81,8 +81,8 @@ class ContentExtractCacheTest extends UnitTestCase
         $content = "lorem ipsum tika\nlorem ipsum tesseract";
 
         $cacheItem = Mockery::mock(CacheItemInterface::class);
-        $cacheItem->shouldReceive('isHit')->andReturnTrue();
-        $cacheItem->shouldReceive('get')->andReturn($content);
+        $cacheItem->expects('isHit')->andReturnTrue();
+        $cacheItem->expects('get')->andReturn($content);
         $this->cacheItemPool->expects('getItem')->with('testhash-' . $pageNr)->andReturn($cacheItem);
 
         $options = new ContentExtractOptions();
@@ -96,7 +96,7 @@ class ContentExtractCacheTest extends UnitTestCase
         $pageNr = 123;
 
         $cacheItem = Mockery::mock(CacheItemInterface::class);
-        $cacheItem->shouldReceive('isHit')->andReturnTrue();
+        $cacheItem->expects('isHit')->andReturnTrue();
 
         $this->cacheItemPool->expects('getItem')->with('testhash-' . $pageNr)->andReturn($cacheItem);
 
@@ -108,7 +108,7 @@ class ContentExtractCacheTest extends UnitTestCase
         $pageNr = 123;
 
         $cacheItem = Mockery::mock(CacheItemInterface::class);
-        $cacheItem->shouldReceive('isHit')->andReturnFalse();
+        $cacheItem->expects('isHit')->andReturnFalse();
 
         $this->cacheItemPool->expects('getItem')->with('testhash-' . $pageNr)->andReturn($cacheItem);
 

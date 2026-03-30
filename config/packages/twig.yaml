@@ -3,12 +3,13 @@ twig:
     form_themes:
         - 'admin/layout/form_theme.html.twig'
     globals:
-        PUBLIC_BASE_URL: '%env(PUBLIC_BASE_URL)%'
+        PUBLIC_BASE_URL: '%public_base_url%'
         PIWIK_ANALYTICS_ID: '%env(PIWIK_ANALYTICS_ID)%'
-        SITE_NAME: '%env(SITE_NAME)%'
+        SITE_NAME: '%site_name%'
         DEPARTMENTS: '@Shared\Domain\Department\Twig\Departments'
         THUMBNAIL_LIMIT: '%thumbnail_limit%'
         LIMIT_TOTAL_DOCUMENTS_FILE_SIZE_IN_GIB: '%limit_total_document_file_size_in_gib%'
+        ELASTIC_CONFIG: '@Shared\Domain\Search\Index\ElasticConfig'
     file_name_pattern: '*.twig'
     date:
         timezone: Europe/Amsterdam

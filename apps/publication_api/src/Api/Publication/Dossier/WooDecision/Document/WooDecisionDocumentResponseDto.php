@@ -5,19 +5,16 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Publication\Dossier\WooDecision\Document;
 
 use DateTimeImmutable;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
+use PublicationApi\Api\Publication\UploadStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-
-use function array_map;
-use function array_values;
+use Shared\ValueObject\ExternalId;
 
 final readonly class WooDecisionDocumentResponseDto
 {
     /**
-     * @param string[] $caseNumbers
-     * @param string[] $grounds
-     * @param string[] $links
+     * @param list<string> $caseNumbers
+     * @param list<string> $grounds
+     * @param list<string> $links
      * @param list<WooDecisionRelatedDocumentResponseDto> $refersTo
      */
     public function __construct(
@@ -25,7 +22,7 @@ final readonly class WooDecisionDocumentResponseDto
         public ?DateTimeImmutable $date,
         public ?string $documentId,
         public string $documentNr,
-        public ?string $externalId,
+        public ?ExternalId $externalId,
         public ?int $familyId,
         public array $grounds,
         public bool $isSuspended,
@@ -37,38 +34,7 @@ final readonly class WooDecisionDocumentResponseDto
         public array $refersTo,
         public ?string $remark,
         public ?int $threadId,
+        public UploadStatus $uploadStatus,
     ) {
-    }
-
-    /**
-     * @param array<array-key,Document> $entities
-     *
-     * @return list<self>
-     */
-    public static function fromEntities(array $entities): array
-    {
-        return array_values(array_map(self::fromEntity(...), $entities));
-    }
-
-    public static function fromEntity(Document $document): self
-    {
-        return new self(
-            array_map(fn (Inquiry $inquiry) => $inquiry->getCasenr(), $document->getInquiries()->toArray()),
-            $document->getDocumentDate(),
-            $document->getDocumentId(),
-            $document->getDocumentNr(),
-            $document->getExternalId()?->__toString(),
-            $document->getFamilyId(),
-            $document->getGrounds(),
-            $document->isSuspended(),
-            $document->isUploaded(),
-            $document->isWithdrawn(),
-            $document->getJudgement(),
-            $document->getLinks(),
-            $document->getPeriod(),
-            WooDecisionRelatedDocumentResponseDto::fromEntities($document->getRefersTo()->toArray()),
-            $document->getRemark(),
-            $document->getThreadId(),
-        );
     }
 }

@@ -31,12 +31,12 @@ final class TikaOnlySubTypeIngestStrategyTest extends UnitTestCase
     public function testHandle(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->andReturn($id = Mockery::mock(Uuid::class));
+        $document->expects('getId')->andReturn($id = Mockery::mock(Uuid::class));
 
         $options = Mockery::mock(IngestProcessOptions::class);
-        $options->shouldReceive('forceRefresh')->andReturn($forceRefresh = true);
+        $options->expects('forceRefresh')->andReturn($forceRefresh = true);
 
-        $this->logger->shouldReceive('info')->once()->with('Dispatching tika-only ingest for entity', [
+        $this->logger->expects('info')->with('Dispatching tika-only ingest for entity', [
             'id' => $id,
             'class' => $document::class,
         ]);
@@ -49,7 +49,7 @@ final class TikaOnlySubTypeIngestStrategyTest extends UnitTestCase
     public function testCanHandleReturnsTrueWhenFileIsUploaded(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getFileInfo->isUploaded')->andReturnTrue();
+        $document->expects('getFileInfo->isUploaded')->andReturnTrue();
 
         $this->assertTrue($this->strategy->canHandle($document));
     }
@@ -57,7 +57,7 @@ final class TikaOnlySubTypeIngestStrategyTest extends UnitTestCase
     public function testCanHandleReturnsFalseWhenFileIsNotUploaded(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getFileInfo->isUploaded')->andReturnFalse();
+        $document->expects('getFileInfo->isUploaded')->andReturnFalse();
 
         $this->assertFalse($this->strategy->canHandle($document));
     }

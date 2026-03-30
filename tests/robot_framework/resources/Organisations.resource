@@ -13,24 +13,13 @@ Click Organisation Selector
 Organisation Selector Should Not Be Available
   Get Element Count  //*[@data-e2e-name="organisation-switcher"]  should not be  1
 
-Organisation Selector Visible
-  ${count} =  Get Element Count  //*[@data-e2e-name="organisation-switcher"]
-  RETURN  ${count} > 0
-
 Click Manage Organisations
   Click  //*[@data-e2e-name="manage-organisations"]
-
-Add A New Organisation Prefix First Run
-  [Arguments]  ${prefix}
-  Fill Text  (//input[@data-e2e-name="add-prefix-input"])[last()]  ${prefix}
 
 Add A New Organisation Prefix
   [Arguments]  ${prefix}
   Click  //button[@data-e2e-name="add-prefix-button"]
   Fill Text  (//input[@data-e2e-name="add-prefix-input"])[last()]  ${prefix}
-
-Click Create Organisation
-  Click  //*[@data-e2e-name="create-organisation"]
 
 Click Save Organisation
   Click  //*[@id="organisation_form_submit"]

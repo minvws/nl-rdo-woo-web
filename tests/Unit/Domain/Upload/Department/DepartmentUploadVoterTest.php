@@ -109,7 +109,7 @@ final class DepartmentUploadVoterTest extends UnitTestCase
             new InputBag(['departmentId' => $departmentId = '123']),
         );
 
-        $this->repository->shouldReceive('find')->with($departmentId)->once()->andReturnNull();
+        $this->repository->expects('find')->with($departmentId)->andReturnNull();
 
         $voterResult = $this->voter->vote($this->token, $subject, [UploadService::SECURITY_ATTRIBUTE]);
 
@@ -128,15 +128,13 @@ final class DepartmentUploadVoterTest extends UnitTestCase
         );
 
         $this->repository
-            ->shouldReceive('find')
+            ->expects('find')
             ->with($departmentId)
-            ->once()
             ->andReturn($department = Mockery::mock(Department::class));
 
         $this->departmentService
-            ->shouldReceive('userCanEditLandingpage')
+            ->expects('userCanEditLandingpage')
             ->with($department)
-            ->once()
             ->andReturnFalse();
 
         $voterResult = $this->voter->vote($this->token, $subject, [UploadService::SECURITY_ATTRIBUTE]);
@@ -156,15 +154,13 @@ final class DepartmentUploadVoterTest extends UnitTestCase
         );
 
         $this->repository
-            ->shouldReceive('find')
+            ->expects('find')
             ->with($departmentId)
-            ->once()
             ->andReturn($department = Mockery::mock(Department::class));
 
         $this->departmentService
-            ->shouldReceive('userCanEditLandingpage')
+            ->expects('userCanEditLandingpage')
             ->with($department)
-            ->once()
             ->andReturnTrue();
 
         $voterResult = $this->voter->vote($this->token, $subject, [UploadService::SECURITY_ATTRIBUTE]);

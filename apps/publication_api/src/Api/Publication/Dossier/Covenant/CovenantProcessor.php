@@ -21,6 +21,8 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
+use Shared\ValueObject\ExternalId;
+use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -37,6 +39,8 @@ final class CovenantProcessor extends AbstractDossierProcessor
         OrganisationRepository $organisationRepository,
         SubjectRepository $subjectRepository,
         private readonly CovenantRepository $covenantRepository,
+        private readonly Security $security,
+        private readonly CovenantMapper $covenantMapper,
     ) {
         parent::__construct(
             $attachmentService,
@@ -46,6 +50,7 @@ final class CovenantProcessor extends AbstractDossierProcessor
             $mainDocumentService,
             $organisationRepository,
             $subjectRepository,
+            $this->security,
         );
     }
 
@@ -64,6 +69,7 @@ final class CovenantProcessor extends AbstractDossierProcessor
 
         $covenantExternalId = $uriVariables['covenantExternalId'];
         Assert::string($covenantExternalId);
+        $covenantExternalId = ExternalId::create($covenantExternalId);
 
         $organisation = $this->getOrganisation($uriVariables);
         $subject = $this->getSubject($data, $organisation);
@@ -73,12 +79,12 @@ final class CovenantProcessor extends AbstractDossierProcessor
         if ($covenant === null) {
             $covenant = $this->create($organisation, $department, $subject, $data, $covenantExternalId);
 
-            return CovenantMapper::fromEntity($covenant);
+            return $this->covenantMapper->fromEntity($covenant);
         }
 
         $this->update($covenant, $organisation, $department, $subject, $data);
 
-        return CovenantMapper::fromEntity($covenant);
+        return $this->covenantMapper->fromEntity($covenant);
     }
 
     private function create(
@@ -86,7 +92,7 @@ final class CovenantProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         CovenantRequestDto $covenantRequestDto,
-        string $covenantExternalId,
+        ExternalId $covenantExternalId,
     ): Covenant {
         $covenant = CovenantMapper::create(
             $covenantRequestDto,

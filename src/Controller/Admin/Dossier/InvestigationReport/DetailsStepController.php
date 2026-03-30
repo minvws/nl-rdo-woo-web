@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin\Dossier\InvestigationReport;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Publication\Dossier\DossierDispatcher;
 use Shared\Domain\Publication\Dossier\DossierFactory;
 use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
@@ -20,7 +21,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class DetailsStepController extends AbstractController
 {
@@ -150,7 +150,7 @@ class DetailsStepController extends AbstractController
             [
                 'validation_groups' => [
                     self::STEP_NAME->value,
-                    DossierValidationGroup::INVESTIGATION_REPORT_DETAILS->value,
+                    DossierValidationGroup::DETAILS->value,
                 ],
             ],
         );

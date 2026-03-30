@@ -8,7 +8,6 @@ use PublicationApi\Api\Publication\Attachment\AttachmentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
-use Shared\ValueObject\ExternalId;
 
 class WooDecisionAttachmentMapper
 {
@@ -29,7 +28,7 @@ class WooDecisionAttachmentMapper
         $attachment->setFileInfo($fileInfo);
         $attachment->setInternalReference($attachmentRequestDto->internalReference);
         $attachment->setGrounds($attachmentRequestDto->grounds);
-        $attachment->setExternalId(ExternalId::create($attachmentRequestDto->externalId));
+        $attachment->setExternalId($attachmentRequestDto->externalId);
 
         return $attachment;
     }

@@ -7,6 +7,7 @@ namespace PublicationApi\Api\Publication\Dossier\WooDecision\Document;
 use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\SourceType;
+use Shared\ValueObject\ExternalId;
 
 class WooDecisionDocumentRequestDto
 {
@@ -20,7 +21,7 @@ class WooDecisionDocumentRequestDto
         public array $caseNumbers,
         public DateTimeImmutable $date,
         public string $documentId,
-        public string $externalId,
+        public ExternalId $externalId,
         public ?int $familyId,
         public string $fileName,
         public array $grounds,

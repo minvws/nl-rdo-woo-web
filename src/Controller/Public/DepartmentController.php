@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Public;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Department\DepartmentService;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierViewFactory;
@@ -17,7 +18,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 use function hash;
 

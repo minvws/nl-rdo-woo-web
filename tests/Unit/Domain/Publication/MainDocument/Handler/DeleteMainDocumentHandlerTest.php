@@ -60,30 +60,27 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
     public function testEntityIsDeleted(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getName')->andReturn('x');
-        $fileInfo->shouldReceive('getType')->andReturn('y');
-        $fileInfo->shouldReceive('getSize')->andReturn('z');
+        $fileInfo->expects('getName')->andReturn('x');
 
         $docUuid = Uuid::v6();
         $annualReportDocument = Mockery::mock(AnnualReportMainDocument::class);
-        $annualReportDocument->shouldReceive('getId')->andReturn($docUuid);
-        $annualReportDocument->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $annualReportDocument->expects('getId')->times(2)->andReturn($docUuid);
+        $annualReportDocument->expects('getFileInfo')->andReturn($fileInfo);
 
         $dossierUuid = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class)->makePartial();
-        $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getMainDocument')->andReturn($annualReportDocument);
+        $dossier->expects('getId')->times(2)->andReturn($dossierUuid);
         $dossier->expects('setMainDocument')->with(null);
-        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
+        $dossier->expects('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
 
         $this->entityManager
-            ->shouldReceive('getRepository')
+            ->expects('getRepository')
             ->with(AnnualReportMainDocument::class)
             ->andReturn($this->annualReportDocumentRepository);
 
-        $annualReportDocument->shouldReceive('getDossier')->andReturn($dossier);
+        $annualReportDocument->expects('getDossier')->andReturn($dossier);
 
-        $this->dossierRepository->shouldReceive('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
+        $this->dossierRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($dossier, DossierStatusTransition::DELETE_MAIN_DOCUMENT);
 
@@ -103,22 +100,19 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
 
     public function testEntityIsNotDeletedWhenTheWorkflowTransitionFails(): void
     {
-        $docUuid = Uuid::v6();
         $annualReportDocument = Mockery::mock(AnnualReportMainDocument::class);
-        $annualReportDocument->shouldReceive('getId')->andReturn($docUuid);
 
         $dossierUuid = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class)->makePartial();
-        $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getMainDocument')->andReturn($annualReportDocument);
-        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
+        $dossier->expects('getId')->times(2)->andReturn($dossierUuid);
+        $dossier->expects('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
 
         $this->entityManager
-            ->shouldReceive('getRepository')
+            ->expects('getRepository')
             ->with(AnnualReportMainDocument::class)
             ->andReturn($this->annualReportDocumentRepository);
 
-        $this->dossierRepository->shouldReceive('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
+        $this->dossierRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
 
         $transition = DossierStatusTransition::DELETE_MAIN_DOCUMENT;
         $this->dossierWorkflowManager
@@ -145,15 +139,15 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
     {
         $dossierUuid = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class)->makePartial();
-        $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
+        $dossier->expects('getId')->andReturn($dossierUuid);
+        $dossier->expects('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
 
         $this->entityManager
-            ->shouldReceive('getRepository')
+            ->expects('getRepository')
             ->with(AnnualReportMainDocument::class)
             ->andReturn($this->annualReportDocumentRepository);
 
-        $this->dossierRepository->shouldReceive('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
+        $this->dossierRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
 
         $this->annualReportDocumentRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturnNull();
 

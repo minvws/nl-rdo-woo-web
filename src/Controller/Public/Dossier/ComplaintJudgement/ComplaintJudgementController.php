@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Public\Dossier\ComplaintJudgement;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
@@ -16,7 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 use function ucfirst;
 

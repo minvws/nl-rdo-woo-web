@@ -64,6 +64,12 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+        self::assertJsonEquals([
+            'title' => 'Authentication Failed',
+            'message' => 'Client Certificate Common Name is not whitelisted. Please read the documentation or contact your system administrator.',
+            'type' => 'errors/authentication-failed',
+            'status' => Response::HTTP_UNAUTHORIZED,
+        ]);
     }
 
     public function testGetWithInvalidDepartmentParameter(): void

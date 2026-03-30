@@ -8,7 +8,6 @@ use Doctrine\ORM\Query;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Mockery;
-use Mockery\MockInterface;
 use Shared\Service\PaginatorFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\InputBag;
@@ -17,37 +16,25 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class PaginatorFactoryTest extends UnitTestCase
 {
-    private PaginatorInterface&MockInterface $paginator;
-    private RequestStack&MockInterface $requestStack;
-    private PaginatorFactory $factory;
-
-    protected function setUp(): void
-    {
-        $this->paginator = Mockery::mock(PaginatorInterface::class);
-        $this->requestStack = Mockery::mock(RequestStack::class);
-
-        $this->factory = new PaginatorFactory(
-            $this->paginator,
-            $this->requestStack,
-        );
-
-        parent::setUp();
-    }
-
     public function testCreateForQuery(): void
     {
         $key = 'foo';
-        $query = Mockery::mock(Query::class);
-        $sortField = 'foo.bar';
-        $limit = 123;
+        $sortField = $this->getFaker()->word();
+        $limit = $this->getFaker()->randomNumber();
+        $pageNr = $this->getFaker()->randomNumber();
+
+        $inputBag = Mockery::mock(InputBag::class);
+        $inputBag->expects('getInt')
+            ->with('foo_p', 1)
+            ->andReturn($pageNr);
 
         $request = Mockery::mock(Request::class);
-        $request->query = Mockery::mock(InputBag::class);
-        $request->query->expects('getInt')->with('foo_p', 1)->andReturn($pageNr = 4);
+        $request->query = $inputBag;
 
-        $this->requestStack->expects('getCurrentRequest')->andReturn($request);
+        $query = Mockery::mock(Query::class);
 
-        $this->paginator->expects('paginate')
+        $paginator = Mockery::mock(PaginatorInterface::class);
+        $paginator->expects('paginate')
             ->with(
                 $query,
                 $pageNr,
@@ -61,6 +48,11 @@ class PaginatorFactoryTest extends UnitTestCase
             )
             ->andReturn(Mockery::mock(PaginationInterface::class));
 
-        $this->factory->createForQuery($key, $query, $sortField, $limit);
+        $requestStack = Mockery::mock(RequestStack::class);
+        $requestStack->expects('getCurrentRequest')
+            ->andReturn($request);
+
+        $paginatorFactory = new PaginatorFactory($paginator, $requestStack);
+        $paginatorFactory->createForQuery($key, $query, $sortField, $limit);
     }
 }

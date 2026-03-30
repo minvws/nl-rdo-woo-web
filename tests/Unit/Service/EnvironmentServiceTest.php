@@ -23,7 +23,9 @@ class EnvironmentServiceTest extends UnitTestCase
 
     public function testIsDevReturnsTrueWhenEnvironmentIsDev(): void
     {
-        $this->kernel->shouldReceive('getEnvironment')->andReturn('dev', 'prod', 'something else');
+        $this->kernel->expects('getEnvironment')
+            ->times(3)
+            ->andReturn('dev', 'prod', 'something else');
 
         self::assertTrue($this->environmentService->isDev()); // dev
         self::assertFalse($this->environmentService->isDev()); // prod

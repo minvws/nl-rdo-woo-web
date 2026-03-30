@@ -150,7 +150,7 @@ class DossierUploadRequestValidatorTest extends UnitTestCase
         );
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $this->dossierRepository->expects('find')->with(123)->andReturn($dossier);
 
@@ -173,7 +173,7 @@ class DossierUploadRequestValidatorTest extends UnitTestCase
         );
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $this->dossierRepository->expects('find')->with(123)->andReturn($dossier);
 

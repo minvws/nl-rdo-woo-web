@@ -14,7 +14,7 @@ class ThemeManager
     /**
      * @var array<array-key, ThemeInterface>
      */
-    private array $themes;
+    private array $themes = [];
 
     /**
      * @param iterable<array-key,ThemeInterface> $themes
@@ -22,7 +22,7 @@ class ThemeManager
     public function __construct(
         private readonly ThemeViewFactory $viewFactory,
         #[AutowireIterator('woo_platform.search.theme')]
-        iterable $themes,
+        iterable $themes = [],
     ) {
         foreach ($themes as $theme) {
             $this->themes[$theme->getUrlName()] = $theme;

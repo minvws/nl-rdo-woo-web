@@ -5,105 +5,138 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\Type\InvestigationReport;
 
 use Shared\Domain\Publication\Dossier\DossierStatus;
-use Shared\Domain\Publication\Dossier\Type\WorkflowConfigHelper;
 use Shared\Domain\Publication\Dossier\Workflow\DossierMarkingStore;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use Symfony\Config\FrameworkConfig;
 
 /**
  * @codeCoverageIgnore
  */
 class InvestigationReportWorkflow
 {
-    public static function configure(FrameworkConfig $framework): void
+    public const string INVESTIGATION_REPORT_WORKFLOW_NAME = 'investigation_report_workflow';
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function getConfiguration(): array
     {
-        $workflow = $framework->workflows()->workflows('investigation_report_workflow');
-
-        $workflow->type('state_machine')
-            ->supports([InvestigationReport::class])
-            ->initialMarking([DossierStatus::NEW->value]);
-
-        $workflow->markingStore()
-            ->service(DossierMarkingStore::class);
-
-        $workflow->place()->name(DossierStatus::NEW->value);
-        $workflow->place()->name(DossierStatus::CONCEPT->value);
-        $workflow->place()->name(DossierStatus::SCHEDULED->value);
-        $workflow->place()->name(DossierStatus::PUBLISHED->value);
-        $workflow->place()->name(DossierStatus::DELETED->value);
-
-        $workflow->transition()
-            ->name(DossierStatusTransition::UPDATE_DETAILS->value)
-            ->from(DossierStatus::NEW->value)
-            ->to(DossierStatus::CONCEPT->value);
-
-        WorkflowConfigHelper::defineNonMovingTransitions(
-            $workflow,
-            DossierStatusTransition::UPDATE_DETAILS,
-            [
-                DossierStatus::CONCEPT,
-                DossierStatus::SCHEDULED,
-                DossierStatus::PUBLISHED,
+        return [
+            'type' => 'state_machine',
+            'supports' => [InvestigationReport::class],
+            'initial_marking' => [DossierStatus::NEW->value],
+            'marking_store' => [
+                'service' => DossierMarkingStore::class,
             ],
-        );
+            'places' => self::getPlaces(),
+            'transitions' => self::getTransitions(),
+        ];
+    }
 
-        WorkflowConfigHelper::defineNonMovingTransitions(
-            $workflow,
-            DossierStatusTransition::UPDATE_CONTENT,
-            [
-                DossierStatus::CONCEPT,
-                DossierStatus::SCHEDULED,
-                DossierStatus::PUBLISHED,
-            ],
-        );
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private static function getPlaces(): array
+    {
+        return [
+            DossierStatus::NEW->value => [],
+            DossierStatus::CONCEPT->value => [],
+            DossierStatus::SCHEDULED->value => [],
+            DossierStatus::PUBLISHED->value => [],
+            DossierStatus::DELETED->value => [],
+        ];
+    }
 
-        WorkflowConfigHelper::defineNonMovingTransitions(
-            $workflow,
-            DossierStatusTransition::UPDATE_MAIN_DOCUMENT,
-            [
-                DossierStatus::CONCEPT,
-                DossierStatus::SCHEDULED,
-                DossierStatus::PUBLISHED,
-            ],
-        );
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private static function getTransitions(): array
+    {
+        $transitions = [];
 
-        $workflow->transition()
-            ->name(DossierStatusTransition::DELETE_MAIN_DOCUMENT->value)
-            ->from(DossierStatus::CONCEPT->value)
-            ->to(DossierStatus::CONCEPT->value);
+        // Initial transition from NEW to CONCEPT
+        $transitions[] = [
+            'name' => DossierStatusTransition::UPDATE_DETAILS->value,
+            'from' => DossierStatus::NEW->value,
+            'to' => DossierStatus::CONCEPT->value,
+        ];
 
-        WorkflowConfigHelper::defineNonMovingTransitions(
-            $workflow,
-            DossierStatusTransition::UPDATE_ATTACHMENT,
-            [
-                DossierStatus::CONCEPT,
-                DossierStatus::SCHEDULED,
-                DossierStatus::PUBLISHED,
-            ],
-        );
+        // Non-moving UPDATE_DETAILS transitions
+        foreach ([DossierStatus::CONCEPT, DossierStatus::SCHEDULED, DossierStatus::PUBLISHED] as $status) {
+            $transitions[] = [
+                'name' => DossierStatusTransition::UPDATE_DETAILS->value,
+                'from' => $status->value,
+                'to' => $status->value,
+            ];
+        }
 
-        WorkflowConfigHelper::defineNonMovingTransitions(
-            $workflow,
-            DossierStatusTransition::DELETE_ATTACHMENT,
-            [
-                DossierStatus::CONCEPT,
-                DossierStatus::DELETED,
-            ],
-        );
+        // Non-moving UPDATE_CONTENT transitions
+        foreach ([DossierStatus::CONCEPT, DossierStatus::SCHEDULED, DossierStatus::PUBLISHED] as $status) {
+            $transitions[] = [
+                'name' => DossierStatusTransition::UPDATE_CONTENT->value,
+                'from' => $status->value,
+                'to' => $status->value,
+            ];
+        }
 
-        $workflow->transition()
-            ->name(DossierStatusTransition::DELETE->value)
-            ->from(DossierStatus::CONCEPT->value)
-            ->to(DossierStatus::DELETED->value);
+        // Non-moving UPDATE_MAIN_DOCUMENT transitions
+        foreach ([DossierStatus::CONCEPT, DossierStatus::SCHEDULED, DossierStatus::PUBLISHED] as $status) {
+            $transitions[] = [
+                'name' => DossierStatusTransition::UPDATE_MAIN_DOCUMENT->value,
+                'from' => $status->value,
+                'to' => $status->value,
+            ];
+        }
 
-        $workflow->transition()
-            ->name(DossierStatusTransition::SCHEDULE_PUBLISH->value)
-            ->from([DossierStatus::CONCEPT->value, DossierStatus::SCHEDULED->value])
-            ->to(DossierStatus::SCHEDULED->value);
+        // DELETE_MAIN_DOCUMENT (non-moving)
+        $transitions[] = [
+            'name' => DossierStatusTransition::DELETE_MAIN_DOCUMENT->value,
+            'from' => DossierStatus::CONCEPT->value,
+            'to' => DossierStatus::CONCEPT->value,
+        ];
 
-        $workflow->transition()
-            ->name(DossierStatusTransition::PUBLISH->value)
-            ->from([DossierStatus::CONCEPT->value, DossierStatus::SCHEDULED->value])
-            ->to(DossierStatus::PUBLISHED->value);
+        // Non-moving UPDATE_ATTACHMENT transitions
+        foreach ([DossierStatus::CONCEPT, DossierStatus::SCHEDULED, DossierStatus::PUBLISHED] as $status) {
+            $transitions[] = [
+                'name' => DossierStatusTransition::UPDATE_ATTACHMENT->value,
+                'from' => $status->value,
+                'to' => $status->value,
+            ];
+        }
+
+        // Non-moving DELETE_ATTACHMENT transitions
+        foreach ([DossierStatus::CONCEPT, DossierStatus::DELETED] as $status) {
+            $transitions[] = [
+                'name' => DossierStatusTransition::DELETE_ATTACHMENT->value,
+                'from' => $status->value,
+                'to' => $status->value,
+            ];
+        }
+
+        // DELETE transition
+        $transitions[] = [
+            'name' => DossierStatusTransition::DELETE->value,
+            'from' => DossierStatus::CONCEPT->value,
+            'to' => DossierStatus::DELETED->value,
+        ];
+
+        // SCHEDULE_PUBLISH from multiple places
+        foreach ([DossierStatus::CONCEPT->value, DossierStatus::SCHEDULED->value] as $from) {
+            $transitions[] = [
+                'name' => DossierStatusTransition::SCHEDULE_PUBLISH->value,
+                'from' => $from,
+                'to' => DossierStatus::SCHEDULED->value,
+            ];
+        }
+
+        // PUBLISH from multiple places
+        foreach ([DossierStatus::CONCEPT->value, DossierStatus::SCHEDULED->value] as $from) {
+            $transitions[] = [
+                'name' => DossierStatusTransition::PUBLISH->value,
+                'from' => $from,
+                'to' => DossierStatus::PUBLISHED->value,
+            ];
+        }
+
+        return $transitions;
     }
 }

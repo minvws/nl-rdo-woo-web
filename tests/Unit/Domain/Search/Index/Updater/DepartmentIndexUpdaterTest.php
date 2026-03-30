@@ -9,6 +9,7 @@ use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Search\Index\Updater\DepartmentIndexUpdater;
 use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -23,6 +24,7 @@ class DepartmentIndexUpdaterTest extends UnitTestCase
 
         $this->indexUpdater = new DepartmentIndexUpdater(
             $this->elasticClient,
+            ElasticConfigOverride::default(),
         );
 
         parent::setUp();
@@ -32,9 +34,9 @@ class DepartmentIndexUpdaterTest extends UnitTestCase
     {
         $departmentId = Uuid::v6();
         $department = Mockery::mock(Department::class);
-        $department->shouldReceive('getId')->andReturn($departmentId);
-        $department->shouldReceive('getName')->andReturn('Foo Bar');
-        $department->shouldReceive('getShortTag')->andReturn('FB');
+        $department->expects('getId')->times(3)->andReturn($departmentId);
+        $department->expects('getName')->andReturn('Foo Bar');
+        $department->expects('getShortTag')->andReturn('FB');
 
         $this->elasticClient->expects('updateByQuery')->with(Mockery::on(
             static fn (array $input) => $input['body']['query']['bool']['should'][0]['match']['departments.id'] === $departmentId

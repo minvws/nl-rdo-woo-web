@@ -33,7 +33,7 @@ class DocumentPrefixType extends AbstractType
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),
-                    new Length(['min' => 5, 'max' => 30]),
+                    new Length(min: 5, max: 30),
                     new Regex('/^[0-9a-zA-Z-]+$/', 'alpha_numeric_dash_only'),
                 ],
             ]);

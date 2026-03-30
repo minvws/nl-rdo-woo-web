@@ -9,6 +9,7 @@ use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Search\Index\Updater\PageIndexUpdater;
 use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
 use Shared\Tests\Unit\UnitTestCase;
 
 class PageIndexUpdaterTest extends UnitTestCase
@@ -25,6 +26,7 @@ class PageIndexUpdaterTest extends UnitTestCase
         $this->indexUpdater = new PageIndexUpdater(
             $this->elasticClient,
             $this->logger,
+            ElasticConfigOverride::default(),
         );
 
         parent::setUp();
@@ -36,7 +38,7 @@ class PageIndexUpdaterTest extends UnitTestCase
         $pageNr = 12;
         $content = 'foo bar';
 
-        $this->logger->shouldReceive('debug');
+        $this->logger->expects('debug');
 
         $this->elasticClient->expects('update')->with(Mockery::on(
             static fn (array $input) => $input['id'] === $id

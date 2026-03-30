@@ -238,17 +238,17 @@ final class WooDecisionTest extends UnitTestCase
         self::assertFalse($this->wooDecision->hasWithdrawnOrSuspendedDocuments());
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('addDossier')->with($this->wooDecision);
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
-        $document->shouldReceive('isSuspended')->andReturnFalse();
+        $document->expects('addDossier')->with($this->wooDecision);
+        $document->expects('isWithdrawn')->times(2)->andReturnFalse();
+        $document->expects('isSuspended')->times(2)->andReturnFalse();
         $this->wooDecision->addDocument($document);
 
         self::assertFalse($this->wooDecision->hasWithdrawnOrSuspendedDocuments());
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('addDossier')->with($this->wooDecision);
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
-        $document->shouldReceive('isSuspended')->andReturnTrue();
+        $document->expects('addDossier')->with($this->wooDecision);
+        $document->expects('isWithdrawn')->andReturnFalse();
+        $document->expects('isSuspended')->andReturnTrue();
         $this->wooDecision->addDocument($document);
 
         self::assertTrue($this->wooDecision->hasWithdrawnOrSuspendedDocuments());

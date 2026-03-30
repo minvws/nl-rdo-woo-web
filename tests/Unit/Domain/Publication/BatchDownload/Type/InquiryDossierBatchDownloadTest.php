@@ -49,11 +49,11 @@ class InquiryDossierBatchDownloadTest extends UnitTestCase
     public function testGetFileBasename(): void
     {
         $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->shouldReceive('getCaseNr')->andReturn('CASE-X');
+        $inquiry->expects('getCaseNr')->andReturn('CASE-X');
 
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getDocumentPrefix')->andReturn('FOO');
-        $wooDecision->shouldReceive('getDossierNr')->andReturn('BAR-123');
+        $wooDecision->expects('getDocumentPrefix')->andReturn('FOO');
+        $wooDecision->expects('getDossierNr')->andReturn('BAR-123');
         $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $wooDecision);
 
         self::assertEquals(
@@ -69,7 +69,7 @@ class InquiryDossierBatchDownloadTest extends UnitTestCase
         $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->repository
-            ->shouldReceive('getDocumentsForBatchDownload')
+            ->expects('getDocumentsForBatchDownload')
             ->with($inquiry, $wooDecision)
             ->andReturn($queryBuilder);
 
@@ -85,7 +85,7 @@ class InquiryDossierBatchDownloadTest extends UnitTestCase
     {
         $inquiry = Mockery::mock(Inquiry::class);
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
+        $wooDecision->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
 
         $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $wooDecision);
 
@@ -96,8 +96,8 @@ class InquiryDossierBatchDownloadTest extends UnitTestCase
     {
         $inquiry = Mockery::mock(Inquiry::class);
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $wooDecision->shouldReceive('getUploadStatus->getActualUploadCount')->andReturn(0);
+        $wooDecision->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $wooDecision->expects('getUploadStatus->getActualUploadCount')->andReturn(0);
 
         $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $wooDecision);
 
@@ -107,15 +107,15 @@ class InquiryDossierBatchDownloadTest extends UnitTestCase
     public function testIsAvailableForBatchDownloadReturnsTrueForPublicWooDecisionWithUploads(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('shouldBeUploaded')->andReturnTrue();
-        $document->shouldReceive('isUploaded')->andReturnTrue();
+        $document->expects('shouldBeUploaded')->andReturnTrue();
+        $document->expects('isUploaded')->andReturnTrue();
 
         $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->shouldReceive('getDocuments')->andReturn(new ArrayCollection([$document]));
+        $inquiry->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
 
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $wooDecision->shouldReceive('getUploadStatus->getActualUploadCount')->andReturn(12);
+        $wooDecision->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $wooDecision->expects('getUploadStatus->getActualUploadCount')->andReturn(12);
 
         $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $wooDecision);
 

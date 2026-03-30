@@ -8,6 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraint;
 
 /**
  * @template-extends AbstractType<AbstractDossierStepType>
@@ -32,7 +33,7 @@ abstract class AbstractDossierStepType extends AbstractType
                     }
                 }
 
-                return ['Default'];
+                return [Constraint::DEFAULT_GROUP];
             },
         ]);
     }

@@ -61,9 +61,8 @@ final class StorageRootPathGeneratorTest extends UnitTestCase
 
     private function getEntity(string $uuid): EntityWithFileInfo&MockInterface
     {
-        /** @var EntityWithFileInfo&MockInterface $entity */
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId')->andReturn(Uuid::fromString($uuid));
+        $entity->expects('getId')->andReturn(Uuid::fromString($uuid));
 
         return $entity;
     }

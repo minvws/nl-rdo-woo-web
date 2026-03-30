@@ -28,7 +28,7 @@ final class TesseractServiceTest extends UnitTestCase
     public function testExtract(): void
     {
         $this->localFilesystem
-            ->shouldReceive('createTempDir')
+            ->expects('createTempDir')
             ->andReturn($tempDir = 'tempDir');
 
         $targetPngPath = $tempDir . '/page';
@@ -36,29 +36,29 @@ final class TesseractServiceTest extends UnitTestCase
         $tesseract = $this->getTesseract();
 
         $tesseract
-            ->shouldReceive('getNewProcess')
+            ->expects('getNewProcess')
             ->with([TesseractService::PDFTOPPM_PATH, '-png', '-r', '300', '-singlefile', $sourcePdfPath = 'sourcePdfPath', $targetPngPath])
             ->andReturn($pdftoppmProcess = $this->getProcess());
 
         $pdftoppmProcess
-            ->shouldReceive('isSuccessful')
+            ->expects('isSuccessful')
             ->andReturnTrue();
 
         $tesseract
-            ->shouldReceive('getNewProcess')
+            ->expects('getNewProcess')
             ->with([TesseractService::TESSERACT_PATH, $targetPngPath . '.png', 'stdout'])
             ->andReturn($tesseractProcess = $this->getProcess());
 
         $tesseractProcess
-            ->shouldReceive('isSuccessful')
+            ->expects('isSuccessful')
             ->andReturnTrue();
 
         $this->localFilesystem
-            ->shouldReceive('deleteDirectory')
+            ->expects('deleteDirectory')
             ->with($tempDir);
 
         $tesseractProcess
-            ->shouldReceive('getOutput')
+            ->expects('getOutput')
             ->andReturn($tesseractOutput = 'output');
 
         $result = $tesseract->extract($sourcePdfPath);
@@ -69,7 +69,7 @@ final class TesseractServiceTest extends UnitTestCase
     public function testExtractWhenFailedToCreateTempDir(): void
     {
         $this->localFilesystem
-            ->shouldReceive('createTempDir')
+            ->expects('createTempDir')
             ->andReturnFalse();
 
         $tesseract = $this->getTesseract();
@@ -84,7 +84,7 @@ final class TesseractServiceTest extends UnitTestCase
     public function testExtractWhenPdftoppmFails(): void
     {
         $this->localFilesystem
-            ->shouldReceive('createTempDir')
+            ->expects('createTempDir')
             ->andReturn($tempDir = 'tempDir');
 
         $targetPngPath = $tempDir . '/page';
@@ -92,20 +92,20 @@ final class TesseractServiceTest extends UnitTestCase
         $tesseract = $this->getTesseract();
 
         $tesseract
-            ->shouldReceive('getNewProcess')
+            ->expects('getNewProcess')
             ->with([TesseractService::PDFTOPPM_PATH, '-png', '-r', '300', '-singlefile', $sourcePdfPath = 'sourcePdfPath', $targetPngPath])
             ->andReturn($pdftoppmProcess = $this->getProcess());
 
         $pdftoppmProcess
-            ->shouldReceive('isSuccessful')
+            ->expects('isSuccessful')
             ->andReturnFalse();
 
         $pdftoppmProcess
-            ->shouldReceive('getErrorOutput')
+            ->expects('getErrorOutput')
             ->andReturn($pdftoppmProcessErrorOutput = 'error_output');
 
         $this->logger
-            ->shouldReceive('error')
+            ->expects('error')
             ->with('pdftoppm failed', [
                 'sourcePath' => $sourcePdfPath,
                 'targetPngPath' => $targetPngPath . '.png',
@@ -113,7 +113,7 @@ final class TesseractServiceTest extends UnitTestCase
             ]);
 
         $this->localFilesystem
-            ->shouldReceive('deleteDirectory')
+            ->expects('deleteDirectory')
             ->with($tempDir);
 
         $result = $tesseract->extract($sourcePdfPath);
@@ -124,7 +124,7 @@ final class TesseractServiceTest extends UnitTestCase
     public function testExtractWhenTesseractFails(): void
     {
         $this->localFilesystem
-            ->shouldReceive('createTempDir')
+            ->expects('createTempDir')
             ->andReturn($tempDir = 'tempDir');
 
         $targetPngPath = $tempDir . '/page';
@@ -132,29 +132,29 @@ final class TesseractServiceTest extends UnitTestCase
         $tesseract = $this->getTesseract();
 
         $tesseract
-            ->shouldReceive('getNewProcess')
+            ->expects('getNewProcess')
             ->with([TesseractService::PDFTOPPM_PATH, '-png', '-r', '300', '-singlefile', $sourcePdfPath = 'sourcePdfPath', $targetPngPath])
             ->andReturn($pdftoppmProcess = $this->getProcess());
 
         $pdftoppmProcess
-            ->shouldReceive('isSuccessful')
+            ->expects('isSuccessful')
             ->andReturnTrue();
 
         $tesseract
-            ->shouldReceive('getNewProcess')
+            ->expects('getNewProcess')
             ->with([TesseractService::TESSERACT_PATH, $targetPngPath . '.png', 'stdout'])
             ->andReturn($tesseractProcess = $this->getProcess());
 
         $tesseractProcess
-            ->shouldReceive('isSuccessful')
+            ->expects('isSuccessful')
             ->andReturnFalse();
 
         $tesseractProcess
-            ->shouldReceive('getErrorOutput')
+            ->expects('getErrorOutput')
             ->andReturn($tesseractProcessErrorOutput = 'error_output');
 
         $this->logger
-            ->shouldReceive('error')
+            ->expects('error')
             ->with('Tesseract failed', [
                 'sourcePath' => $sourcePdfPath,
                 'targetPngPath' => $targetPngPath . '.png',
@@ -162,7 +162,7 @@ final class TesseractServiceTest extends UnitTestCase
             ]);
 
         $this->localFilesystem
-            ->shouldReceive('deleteDirectory')
+            ->expects('deleteDirectory')
             ->with($tempDir);
 
         $result = $tesseract->extract($sourcePdfPath);
@@ -172,7 +172,6 @@ final class TesseractServiceTest extends UnitTestCase
 
     private function getTesseract(): TesseractService&MockInterface
     {
-        /** @var TesseractService&MockInterface $tesseract */
         $tesseract = Mockery::mock(TesseractService::class, [$this->logger, $this->localFilesystem])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
@@ -182,10 +181,9 @@ final class TesseractServiceTest extends UnitTestCase
 
     private function getProcess(): Process&MockInterface
     {
-        /** @var Process&MockInterface $process */
         $process = Mockery::mock(Process::class);
-        $process->shouldReceive('setTimeout')->with(120);
-        $process->shouldReceive('run');
+        $process->expects('setTimeout')->with(120);
+        $process->expects('run');
 
         return $process;
     }

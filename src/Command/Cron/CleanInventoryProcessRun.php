@@ -13,19 +13,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function sprintf;
 
-#[AsCommand(name: 'woopie:cron:clean-inventory-process-run', description: 'Marks expired inventory process runs as failed')]
+#[AsCommand(
+    name: 'woopie:cron:clean-inventory-process-run',
+    description: 'Marks expired inventory process runs as failed',
+    help: 'Marks expired inventory process runs as failed',
+)]
 class CleanInventoryProcessRun extends Command
 {
     public function __construct(
         private readonly ProductionReportProcessRunRepository $repository,
     ) {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->setHelp('Marks expired inventory process runs as failed');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

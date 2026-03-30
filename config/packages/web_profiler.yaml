@@ -1,6 +1,7 @@
 when@dev:
     web_profiler:
-        toolbar: '%enable_symfony_toolbar%'
+        toolbar:
+            enabled: '%enable_symfony_toolbar%'
 
     framework:
         profiler:
@@ -9,4 +10,6 @@ when@dev:
 
 when@test:
     framework:
-        profiler: { collect: false }
+        profiler:
+            collect: false
+            collect_serializer_data: true

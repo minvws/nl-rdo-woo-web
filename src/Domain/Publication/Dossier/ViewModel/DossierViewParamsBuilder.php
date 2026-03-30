@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\ViewModel;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
@@ -14,7 +15,6 @@ use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Service\DossierWizard\DossierWizardStatus;
 use Symfony\Component\Form\FormInterface;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class DossierViewParamsBuilder
 {

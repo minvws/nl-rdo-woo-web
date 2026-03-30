@@ -44,10 +44,10 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->statsService = Mockery::mock(WorkerStatsService::class);
 
         $this->fileInfo = Mockery::mock(FileInfo::class);
-        $this->fileInfo->shouldReceive('getHash')->andReturn('foobar');
+        $this->fileInfo->expects('getHash')->andReturn('foobar');
 
         $this->entity = Mockery::mock(EntityWithFileInfo::class);
-        $this->entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
+        $this->entity->expects('getFileInfo')->andReturn($this->fileInfo);
 
         $this->cache = Mockery::mock(CacheInterface::class);
     }
@@ -55,19 +55,17 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
     public function testExtractWithCacheMiss(): void
     {
         $this->cache
-            ->shouldReceive('get')
+            ->expects('get')
             ->with('foobar-tika-metadata', Mockery::type('callable'))
             ->andReturnUsing(fn (string $key, Closure $closure) => $closure());
 
         $this->entityStorageService
-            ->shouldReceive('downloadEntity')
-            ->once()
+            ->expects('downloadEntity')
             ->with($this->entity)
             ->andReturn($localPdfPath = '/path/to/file.pdf');
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('download.entity', Mockery::on(function (Closure $closure) use ($localPdfPath) {
                 $result = $closure();
 
@@ -77,11 +75,10 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             }))
             ->andReturn($localPdfPath);
 
-        $this->entity->shouldReceive('getId')->andReturn($id = Uuid::v6());
+        $this->entity->expects('getId')->andReturn($id = Uuid::v6());
 
         $this->tika
-            ->shouldReceive('extract')
-            ->once()
+            ->expects('extract')
             ->with(
                 $localPdfPath,
                 'application/pdf',
@@ -96,8 +93,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             ->andReturn($tikaData = ['X-TIKA:content' => 'lorem ipsum', 'key' => 'value']);
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('tika', Mockery::on(function (Closure $closure) use ($tikaData) {
                 $result = $closure();
 
@@ -108,13 +104,11 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             ->andReturn($tikaData);
 
         $this->entityStorageService
-            ->shouldReceive('removeDownload')
-            ->once()
+            ->expects('removeDownload')
             ->with($localPdfPath);
 
         $this->subTypeIndexer
-            ->shouldReceive('index')
-            ->once()
+            ->expects('index')
             ->with($this->entity, Mockery::on(function (array $data) use ($tikaData) {
                 $expectedData = $tikaData;
 
@@ -126,8 +120,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             }));
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('index.entity', Mockery::on(function (Closure $closure) {
                 $closure();
 
@@ -140,13 +133,12 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
     public function testExtractWithCacheHit(): void
     {
         $this->cache
-            ->shouldReceive('get')
+            ->expects('get')
             ->with('foobar-tika-metadata', Mockery::type('callable'))
             ->andReturn($metadata = ['key' => 'value']);
 
         $this->subTypeIndexer
-            ->shouldReceive('index')
-            ->once()
+            ->expects('index')
             ->with($this->entity, Mockery::on(function (array $data) use ($metadata) {
                 $this->assertSame($metadata, $data);
 
@@ -154,8 +146,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             }));
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('index.entity', Mockery::on(function (Closure $closure) {
                 $closure();
 
@@ -168,19 +159,17 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
     public function testExtractWhenFetchingEntityFromStorageFails(): void
     {
         $this->cache
-            ->shouldReceive('get')
+            ->expects('get')
             ->with('foobar-tika-metadata', Mockery::type('callable'))
             ->andReturnUsing(fn (string $key, Closure $closure) => $closure());
 
         $this->entityStorageService
-            ->shouldReceive('downloadEntity')
-            ->once()
+            ->expects('downloadEntity')
             ->with($this->entity)
             ->andReturnFalse();
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('download.entity', Mockery::on(function (Closure $closure) {
                 $result = $closure();
 
@@ -191,26 +180,22 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             ->andReturnFalse();
 
         $this->entity
-            ->shouldReceive('getId')
-            ->once()
+            ->expects('getId')
             ->andReturn($entityUuid = Uuid::v6());
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Failed to save file to local storage', [
                 'id' => $entityUuid,
                 'class' => $this->entity::class,
             ]);
 
         $this->subTypeIndexer
-            ->shouldReceive('index')
-            ->once()
+            ->expects('index')
             ->with($this->entity, []);
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('index.entity', Mockery::on(function (Closure $closure) {
                 $closure();
 
@@ -223,19 +208,17 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
     public function testExtractWhenIndexingOfEntityFails(): void
     {
         $this->cache
-            ->shouldReceive('get')
+            ->expects('get')
             ->with('foobar-tika-metadata', Mockery::type('callable'))
             ->andReturnUsing(fn (string $key, Closure $closure) => $closure());
 
         $this->entityStorageService
-            ->shouldReceive('downloadEntity')
-            ->once()
+            ->expects('downloadEntity')
             ->with($this->entity)
             ->andReturn($localPdfPath = '/path/to/file.pdf');
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('download.entity', Mockery::on(function (Closure $closure) use ($localPdfPath) {
                 $result = $closure();
 
@@ -245,11 +228,10 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             }))
             ->andReturn($localPdfPath);
 
-        $this->entity->shouldReceive('getId')->andReturn($entityUuid = Uuid::v6());
+        $this->entity->expects('getId')->times(2)->andReturn($entityUuid = Uuid::v6());
 
         $this->tika
-            ->shouldReceive('extract')
-            ->once()
+            ->expects('extract')
             ->with(
                 $localPdfPath,
                 'application/pdf',
@@ -264,8 +246,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             ->andReturn($tikaData = ['X-TIKA:content' => 'lorem ipsum', 'key' => 'value']);
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('tika', Mockery::on(function (Closure $closure) use ($tikaData) {
                 $result = $closure();
 
@@ -276,13 +257,11 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             ->andReturn($tikaData);
 
         $this->entityStorageService
-            ->shouldReceive('removeDownload')
-            ->once()
+            ->expects('removeDownload')
             ->with($localPdfPath);
 
         $this->subTypeIndexer
-            ->shouldReceive('index')
-            ->once()
+            ->expects('index')
             ->with($this->entity, Mockery::on(function (array $data) use ($tikaData) {
                 $expectedData = $tikaData;
 
@@ -295,8 +274,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             ->andThrow($exception = new RuntimeException('Failed to create document'));
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('index.entity', Mockery::on(static function (Closure $closure) use ($exception) {
                 try {
                     $closure();
@@ -308,8 +286,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             }));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Failed to create document', [
                 'id' => $entityUuid,
                 'class' => $this->entity::class,

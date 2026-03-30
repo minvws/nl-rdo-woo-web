@@ -14,6 +14,7 @@ use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationRepo
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class DossierVoter extends Voter
@@ -42,7 +43,7 @@ class DossierVoter extends Voter
     /**
      * @param AbstractDossier $subject
      */
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         return $subject->getStatus()->isPublished();
     }

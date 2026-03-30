@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Step;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -14,7 +15,6 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 readonly class StepActionHelper
 {

@@ -31,7 +31,7 @@ class DossierNotificationsFactoryTest extends UnitTestCase
     public function testMakeForWooDecision(): void
     {
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('isCompleted')->andReturnFalse();
+        $wooDecision->expects('isCompleted')->andReturnFalse();
 
         $this->wooDecisionRepository
             ->expects('getNotificationCounts')
@@ -50,7 +50,7 @@ class DossierNotificationsFactoryTest extends UnitTestCase
     public function testMakeForIncompleteCovenant(): void
     {
         $covenant = Mockery::mock(Covenant::class);
-        $covenant->shouldReceive('isCompleted')->andReturnFalse();
+        $covenant->expects('isCompleted')->andReturnFalse();
 
         $result = $this->factory->make($covenant);
 
@@ -60,7 +60,7 @@ class DossierNotificationsFactoryTest extends UnitTestCase
     public function testMakeForCompletedCovenant(): void
     {
         $covenant = Mockery::mock(Covenant::class);
-        $covenant->shouldReceive('isCompleted')->andReturnTrue();
+        $covenant->expects('isCompleted')->andReturnTrue();
 
         $result = $this->factory->make($covenant);
 

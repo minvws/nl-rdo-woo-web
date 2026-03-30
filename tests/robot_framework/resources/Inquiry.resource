@@ -96,6 +96,3 @@ Download Inquiry Archive
 
 Click First Dossier In Inquiry
   Click  (//div[@data-e2e-name="inquiry-dossiers"]//tbody//a)[1]
-
-Click First Document In Inquiry
-  Click  (//div[@data-e2e-name="inquiry-documents"]//tbody//a)[1]

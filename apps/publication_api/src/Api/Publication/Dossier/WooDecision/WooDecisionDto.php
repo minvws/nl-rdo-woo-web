@@ -21,6 +21,7 @@ use PublicationApi\Api\Publication\Organisation\OrganisationReferenceDto;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(
@@ -73,7 +74,7 @@ final class WooDecisionDto implements DossierDtoInterface
      */
     final public function __construct(
         public Uuid $id,
-        public ?string $externalId,
+        public ?ExternalId $externalId,
         public OrganisationReferenceDto $organisation,
         public string $prefix,
         public string $dossierNumber,

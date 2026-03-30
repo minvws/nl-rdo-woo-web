@@ -3,11 +3,14 @@ parameters:
     env(SESSION_COOKIE_LIFETIME): 86400
 
 framework:
-    secret: '%env(APP_SECRET)%'
+    secret: '%app_secret%'
     annotations: false
     http_method_override: false
     handle_all_throwables: true
-    trusted_hosts: '%env(TRUSTED_HOSTS)%'
+    trusted_hosts: '%trusted_hosts%'
+
+    property_info:
+        with_constructor_extractor: true
 
     # Enables session support. Note that the session will ONLY be started if you read or write from it.
     # Remove or comment this section to explicitly disable session support.
@@ -17,7 +20,7 @@ framework:
         cookie_secure: true
         cookie_samesite: strict
         storage_factory_id: session.storage.factory.native
-        name: '%env(COOKIE_NAME)%'
+        name: '%cookie_name%'
         cookie_httponly: true
         cookie_lifetime: '%env(int:SESSION_COOKIE_LIFETIME)%'
         gc_maxlifetime: '%env(int:SESSION_COOKIE_LIFETIME)%'
@@ -53,8 +56,12 @@ when@dev:
         session:
             cookie_secure: auto
         trusted_hosts:
-            - '%env(TRUSTED_HOSTS)%'
-            - public-woo.local
-            - admin-woo.local
+            - '%trusted_hosts%'
+            - public-minvws.local
+            - public-minfin.local
+            - admin-minvws.local
+            - admin-minfin.local
+            - publication-api-minvws.local
+            - publication-api-minfin.local
         trusted_proxies: '%env(default::TRUSTED_PROXIES)%'
         trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']

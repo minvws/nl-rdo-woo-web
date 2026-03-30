@@ -36,7 +36,7 @@ class DocumentResultMapperTest extends UnitTestCase
     public function testMapReturnsNullWhenPrefixIsMissing(): void
     {
         $hit = Mockery::mock(TypeArray::class);
-        $hit->shouldReceive('getStringOrNull')->with('[fields][document_nr][0]')->andReturnNull();
+        $hit->expects('getStringOrNull')->with('[fields][document_nr][0]')->andReturnNull();
 
         $this->assertNull($this->mapper->map($hit));
     }
@@ -44,9 +44,9 @@ class DocumentResultMapperTest extends UnitTestCase
     public function testMapReturnsNullWhenViewModelCannotBeLoaded(): void
     {
         $hit = Mockery::mock(TypeArray::class);
-        $hit->shouldReceive('getStringOrNull')->with('[fields][document_nr][0]')->andReturn('foo');
+        $hit->expects('getStringOrNull')->with('[fields][document_nr][0]')->andReturn('foo');
 
-        $this->documentRepository->shouldReceive('getDocumentSearchEntry')->with('foo')->andReturnNull();
+        $this->documentRepository->expects('getDocumentSearchEntry')->with('foo')->andReturnNull();
 
         $this->assertNull($this->mapper->map($hit));
     }
@@ -54,17 +54,17 @@ class DocumentResultMapperTest extends UnitTestCase
     public function testMapSuccessful(): void
     {
         $hit = Mockery::mock(TypeArray::class);
-        $hit->shouldReceive('getStringOrNull')->with('[fields][document_nr][0]')->andReturn('foo');
-        $hit->shouldReceive('exists')->with('[highlight][pages.content]')->andReturnTrue();
-        $hit->shouldReceive('getTypeArray->toArray')->andReturn(['x', 'y']);
-        $hit->shouldReceive('exists')->with('[highlight][dossiers.title]')->andReturnFalse();
-        $hit->shouldReceive('exists')->with('[highlight][dossiers.summary]')->andReturnFalse();
+        $hit->expects('getStringOrNull')->with('[fields][document_nr][0]')->andReturn('foo');
+        $hit->expects('exists')->with('[highlight][pages.content]')->andReturnTrue();
+        $hit->expects('getTypeArray->toArray')->andReturn(['x', 'y']);
+        $hit->expects('exists')->with('[highlight][dossiers.title]')->andReturnFalse();
+        $hit->expects('exists')->with('[highlight][dossiers.summary]')->andReturnFalse();
 
         $viewModel = Mockery::mock(DocumentViewModel::class);
         $dossierReference = Mockery::mock(DossierReference::class);
 
-        $this->documentRepository->shouldReceive('getDocumentSearchEntry')->with('foo')->andReturn($viewModel);
-        $this->dossierRepository->shouldReceive('getDossierReferencesForDocument')->with('foo')->andReturn([$dossierReference]);
+        $this->documentRepository->expects('getDocumentSearchEntry')->with('foo')->andReturn($viewModel);
+        $this->dossierRepository->expects('getDossierReferencesForDocument')->with('foo')->andReturn([$dossierReference]);
 
         $entry = $this->mapper->map($hit);
 

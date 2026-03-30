@@ -103,10 +103,10 @@ class DossierDispatcherTest extends UnitTestCase
         $id = Uuid::v6();
 
         $user = Mockery::mock(User::class);
-        $user->shouldReceive('getUserIdentifier')->andReturn($userId = 'foo-bar');
-        $user->shouldReceive('getEmail')->andReturn($email = 'foo@bar.baz');
-        $user->shouldReceive('getName')->andReturn($name = 'Foo Bar');
-        $user->shouldReceive('getRoles')->andReturn($roles = ['foo']);
+        $user->expects('getUserIdentifier')->andReturn($userId = 'foo-bar');
+        $user->expects('getEmail')->andReturn($email = 'foo@bar.baz');
+        $user->expects('getName')->andReturn($name = 'Foo Bar');
+        $user->expects('getRoles')->andReturn($roles = ['foo']);
 
         $this->security->expects('getUser')->andReturns($user);
 

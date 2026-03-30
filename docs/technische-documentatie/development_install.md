@@ -129,7 +129,7 @@ Run this command to shell into a container: `task shell`
 And run the command to add an user:
 
 ```shell
-bin/console woopie:user:create "email@example.org" "full name" --super-admin
+bin/console --tenant=minvws woopie:user:create "email@example.org" "full name" --super-admin
 ```
 
 Both methods will generate a password and a 2FA token with which you can log into the website.

@@ -42,7 +42,7 @@ readonly class WooDecisionUploadDocumentProcessor implements ProcessorInterface
         $organisation = $this->organisationRepository->find($data->organisationId);
         Assert::isInstanceOf($organisation, Organisation::class);
 
-        $wooDecision = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $data->dossierExternalId->__toString());
+        $wooDecision = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $data->dossierExternalId);
         if (! $wooDecision instanceof WooDecision) {
             throw new ValidationException(ConstraintViolationList::createFromMessage('No dossier found for this organisation'));
         }
@@ -67,7 +67,7 @@ readonly class WooDecisionUploadDocumentProcessor implements ProcessorInterface
         $fileName = $document->getFileInfo()->getName();
         Assert::notNull($fileName);
 
-        $this->uploadProcessor->process($wooDecision->getId(), UploadGroupId::WOO_DECISION_DOCUMENTS, $data->content, $fileName);
+        $this->uploadProcessor->process($wooDecision->getId(), $document->getId(), UploadGroupId::WOO_DECISION_DOCUMENTS, $data->content, $fileName);
 
         return null;
     }

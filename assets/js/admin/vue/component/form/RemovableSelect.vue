@@ -1,55 +1,34 @@
-<script setup>
+<script setup lang="ts">
 import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
 import { validators } from '@admin-fe/form';
 import { uniqueId } from '@js/utils';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 import RemovableInput from './RemovableInput.vue';
+import type { Optgroup, SelectOptions } from '@admin-fe/form/interface';
 
 const emit = defineEmits(['delete', 'mounted', 'update']);
 
-const props = defineProps({
-  autoFocus: {
-    type: Boolean,
-    default: false,
-  },
-  canDelete: {
-    type: Boolean,
-    default: false,
-  },
-  emptyLabel: {
-    type: String,
-    required: false,
-    default: 'Kies een optie',
-  },
-  errors: {
-    type: Array,
-    default: () => [],
-  },
-  forbiddenValues: {
-    type: Array,
-    default: () => [],
-  },
-  label: {
-    type: String,
-    required: true,
-  },
-  name: {
-    type: String,
-    default: '',
-  },
-  options: {
-    type: Array,
-    default: () => [],
-  },
-  optGroups: {
-    type: Array,
-    default: () => [],
-  },
-  value: {
-    type: String,
-    required: false,
-    default: '',
-  },
+interface Props {
+  autoFocus?: boolean;
+  canDelete?: boolean;
+  emptyLabel?: string;
+  forbiddenValues?: string[];
+  label: string;
+  name: string;
+  options: SelectOptions;
+  optGroups?: Optgroup[];
+  value?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  autoFocus: false,
+  canDelete: false,
+  emptyLabel: 'Kies een optie',
+  forbiddenValues: () => [],
+  name: '',
+  options: () => [],
+  optGroups: () => [],
+  value: '',
 });
 
 const options = computed(() => {
@@ -84,7 +63,7 @@ const getDefaultvalue = () => {
   return props.value;
 };
 
-const inputElement = ref(null);
+const inputElement = useTemplateRef<HTMLSelectElement>('inputElement');
 const inputId = `${uniqueId('input')}`;
 const valueRef = ref(getDefaultvalue());
 
@@ -120,12 +99,12 @@ const inputStore = useInputStore(props.name, props.label, valueRef, [
   validators.required(),
 ]);
 const ariaDescribedBy = computed(() =>
-  useInputAriaDescribedBy(inputId, undefined, inputStore.hasVisibleErrors),
+  useInputAriaDescribedBy(inputId, '', inputStore.hasVisibleErrors),
 );
 
 onMounted(() => {
   if (props.autoFocus) {
-    inputElement.value.focus();
+    inputElement.value?.focus();
   }
   emit('mounted', inputStore);
 
@@ -138,9 +117,9 @@ onMounted(() => {
 <template>
   <RemovableInput
     @delete="onDelete"
-    :are-errors-visible="inputStore.hasVisibleErrors || errors.length > 0"
+    :are-errors-visible="inputStore.hasVisibleErrors"
     :can-delete="props.canDelete"
-    :errors="[...inputStore.errors, ...errors]"
+    :errors="inputStore.errors"
     :id="inputId"
     :label="label"
   >

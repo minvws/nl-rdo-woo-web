@@ -32,14 +32,14 @@ final class TikaExtractorTest extends UnitTestCase
     public function testGetContent(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getNormalizedMimeType')->andReturn($mimeType = 'text/plain');
+        $fileInfo->expects('getNormalizedMimeType')->andReturn($mimeType = 'text/plain');
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $entity->shouldReceive('getId')->andReturn($id = Uuid::v6());
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
+        $entity->expects('getId')->andReturn($id = Uuid::v6());
 
         $fileReference = Mockery::mock(LazyFileReference::class);
-        $fileReference->shouldReceive('getPath')->andReturn($file = '/foo/bar.txt');
+        $fileReference->expects('getPath')->andReturn($file = '/foo/bar.txt');
 
         $this->tikaService
             ->expects('extract')
@@ -67,15 +67,15 @@ final class TikaExtractorTest extends UnitTestCase
         $fileInfo = Mockery::mock(FileInfo::class);
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $entity->expects('getFileInfo')->times(3)->andReturn($fileInfo);
 
-        $fileInfo->shouldReceive('getNormalizedMimeType')->once()->andReturn('text/plain');
+        $fileInfo->expects('getNormalizedMimeType')->andReturn('text/plain');
         self::assertTrue($this->extractor->supports($entity));
 
-        $fileInfo->shouldReceive('getNormalizedMimeType')->once()->andReturn('application/pdf');
+        $fileInfo->expects('getNormalizedMimeType')->andReturn('application/pdf');
         self::assertTrue($this->extractor->supports($entity));
 
-        $fileInfo->shouldReceive('getNormalizedMimeType')->once()->andReturn('');
+        $fileInfo->expects('getNormalizedMimeType')->andReturn('');
         self::assertFalse($this->extractor->supports($entity));
     }
 

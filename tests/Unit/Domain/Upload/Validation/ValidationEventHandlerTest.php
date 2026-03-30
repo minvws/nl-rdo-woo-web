@@ -10,8 +10,6 @@ use Shared\Domain\Upload\Event\UploadCompletedEvent;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\Validation\ValidationEventHandler;
 use Shared\Tests\Unit\UnitTestCase;
-use stdClass;
-use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -32,7 +30,7 @@ class ValidationEventHandlerTest extends UnitTestCase
 
                 return true;
             }
-        ))->andReturns(new Envelope(new stdClass()));
+        ));
 
         $handler = new ValidationEventHandler($messageBus);
         $handler->onUploadCompleted($event);

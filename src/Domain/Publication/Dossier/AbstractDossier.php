@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\ExternalIdType;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
@@ -24,8 +25,8 @@ use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationRepo
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Domain\Publication\Dossier\Validator as DossierValidator;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\ExternalId;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -57,7 +58,6 @@ use function strtolower;
 #[UniqueEntity(
     fields: ['dossierNr', 'documentPrefix'],
     entityClass: AbstractDossier::class,
-    groups: [DossierValidationGroup::DETAILS->value],
 )]
 #[ORM\UniqueConstraint(name: 'dossier_unique_external_id', columns: ['external_id', 'organisation_id'])]
 #[UniqueEntity(
@@ -73,24 +73,35 @@ abstract class AbstractDossier
     #[ORM\Column(type: 'uuid', unique: true)]
     protected Uuid $id;
 
-    #[ORM\Column(length: 128, nullable: true, index: true)]
-    #[Assert\Regex(
-        pattern: '/^[A-Za-z0-9\-._~]*$/',
-        message: 'external_id_invalid_characters',
-    )]
-    protected ?string $externalId = null;
+    #[ORM\Column(type: ExternalIdType::NAME, length: 128, nullable: true, index: true)]
+    protected ?ExternalId $externalId = null;
 
     #[ORM\Column(length: 50)]
-    #[Assert\Length(min: 3, max: 50, groups: [DossierValidationGroup::DETAILS->value])]
+    #[Assert\Length(min: 3, max: 50, groups: [
+        DossierValidationGroup::DETAILS->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     #[Assert\Regex(
         pattern: '/^[a-z0-9-]+$/i',
         message: 'use_only_letters_numbers_and_dashes',
-        groups: [DossierValidationGroup::DETAILS->value]
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ]
     )]
     protected string $dossierNr = '';
 
     #[ORM\Column(length: 500)]
-    #[Assert\Length(min: 2, max: 500, groups: [DossierValidationGroup::DETAILS->value])]
+    #[Assert\Length(min: 2, max: 500, groups: [
+        DossierValidationGroup::DETAILS->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     protected string $title = '';
 
     #[ORM\Column(length: 255, enumType: DossierStatus::class)]
@@ -103,70 +114,70 @@ abstract class AbstractDossier
     #[Assert\Count(
         min: 1,
         minMessage: 'at_least_one_department_required',
-        groups: [DossierValidationGroup::DETAILS->value]
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ]
     )]
     protected Collection $departments;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    #[DossierValidator\DateFromConstraint(
-        groups: [
-            DossierValidationGroup::COVENANT_DETAILS->value,
-        ],
-    )]
-    #[Assert\NotNull(
-        message: 'annual_report_year_mandatory',
-        groups: [DossierValidationGroup::ANNUAL_REPORT_DETAILS->value],
-    )]
-    #[Assert\NotNull(
-        message: 'date_mandatory',
-        groups: [
-            DossierValidationGroup::COVENANT_DETAILS->value,
-            DossierValidationGroup::INVESTIGATION_REPORT_DETAILS->value,
-            DossierValidationGroup::COMPLAINT_JUDGEMENT_DETAILS->value,
-            DossierValidationGroup::DISPOSITION_DETAILS->value,
-            DossierValidationGroup::OTHER_PUBLICATION_DETAILS->value,
-            DossierValidationGroup::ADVICE_DETAILS->value,
-            DossierValidationGroup::REQUEST_FOR_ADVICE_DETAILS->value,
-        ],
-    )]
-    #[Assert\LessThanOrEqual(
-        value: 'today',
-        message: 'date_must_not_be_in_future',
-        groups: [
-            DossierValidationGroup::INVESTIGATION_REPORT_DETAILS->value,
-            DossierValidationGroup::COMPLAINT_JUDGEMENT_DETAILS->value,
-            DossierValidationGroup::DISPOSITION_DETAILS->value,
-            DossierValidationGroup::OTHER_PUBLICATION_DETAILS->value,
-            DossierValidationGroup::ADVICE_DETAILS->value,
-            DossierValidationGroup::REQUEST_FOR_ADVICE_DETAILS->value,
-        ],
-    )]
     protected ?DateTimeImmutable $dateFrom = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     #[Assert\GreaterThanOrEqual(
         propertyPath: 'dateFrom',
         message: 'date_to_before_date_from',
-        groups: [DossierValidationGroup::DETAILS->value]
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ]
     )]
     #[Assert\LessThanOrEqual(
         value: 'today +5 years',
         message: 'date_max_5_year_in_future',
-        groups: [DossierValidationGroup::DETAILS->value]
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ]
     )]
     protected ?DateTimeImmutable $dateTo = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value, DossierValidationGroup::CONTENT->value])]
-    #[Assert\Length(min: 1, max: 1000, groups: [DossierValidationGroup::DECISION->value, DossierValidationGroup::CONTENT->value])]
+    #[Assert\Length(min: 1, max: 1000, groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::CONTENT->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     protected string $summary = '';
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(groups: [DossierValidationGroup::DETAILS->value])]
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::DETAILS->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     protected string $documentPrefix = '';
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    #[Assert\NotBlank(groups: [DossierValidationGroup::PUBLICATION->value])]
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::PUBLICATION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    #[Assert\LessThanOrEqual('today', groups: [
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     protected ?DateTimeImmutable $publicationDate = null;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
@@ -177,7 +188,12 @@ abstract class AbstractDossier
     protected Organisation $organisation;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Length(max: 255, groups: [DossierValidationGroup::DETAILS->value])]
+    #[Assert\Length(max: 255, groups: [
+        DossierValidationGroup::DETAILS->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     protected string $internalReference = '';
 
     #[ORM\ManyToOne(inversedBy: 'dossiers')]
@@ -197,12 +213,12 @@ abstract class AbstractDossier
         return $this->id;
     }
 
-    public function getExternalId(): ?string
+    public function getExternalId(): ?ExternalId
     {
         return $this->externalId;
     }
 
-    public function setExternalId(?string $externalId): self
+    public function setExternalId(?ExternalId $externalId): self
     {
         $this->externalId = $externalId;
 

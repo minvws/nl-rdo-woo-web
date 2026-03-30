@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use OutOfBoundsException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
@@ -15,7 +16,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class InquiryAdmininistrationController extends AbstractController
 {

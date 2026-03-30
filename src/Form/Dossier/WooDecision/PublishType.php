@@ -50,10 +50,10 @@ class PublishType extends AbstractType
                 'data' => $dossier->getPublicationDate() ?? new DateTimeImmutable(),
                 'constraints' => [
                     new NotBlank(),
-                    new GreaterThanOrEqual([
-                        'propertyPath' => 'parent.all[preview_date].data',
-                        'message' => 'publication_date_must_be_today_or_past_preview_date',
-                    ]),
+                    new GreaterThanOrEqual(
+                        propertyPath: 'parent.all[preview_date].data',
+                        message: 'publication_date_must_be_today_or_past_preview_date',
+                    ),
                 ],
             ]);
         } else {

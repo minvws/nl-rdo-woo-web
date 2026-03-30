@@ -63,53 +63,52 @@ final class DocumentFileProcessorTest extends UnitTestCase
     public function testProcess(): void
     {
         $this->documentRepository
-            ->shouldReceive('findOneByDossierAndDocumentId')
+            ->expects('findOneByDossierAndDocumentId')
             ->with($this->dossier, $this->documentId)
             ->andReturn($this->document);
 
         $this->document
-            ->shouldReceive('shouldBeUploaded')
-            ->once()
+            ->expects('shouldBeUploaded')
             ->andReturnTrue();
 
         $this->document
-            ->shouldReceive('isWithdrawn')
+            ->expects('isWithdrawn')
             ->andReturnFalse();
 
         $this->document
-            ->shouldReceive('getFileInfo')
+            ->expects('getFileInfo')
+            ->times(3)
             ->andReturn($this->fileInfo);
 
         $this->dossier
-            ->shouldReceive('getStatus')
+            ->expects('getStatus')
             ->andReturn(DossierStatus::PUBLISHED);
 
         $this->fileInfo
-            ->shouldReceive('isUploaded')
-            ->once()
+            ->expects('isUploaded')
             ->andReturnFalse();
 
         $this->fileStorer
-            ->shouldReceive('storeForDocument')
+            ->expects('storeForDocument')
             ->with($this->file, $this->document, $this->documentId);
 
         $this->ingestService
-            ->shouldReceive('ingest')
+            ->expects('ingest')
             ->with(
                 $this->document,
                 Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
             );
 
         $this->fileInfo
-            ->shouldReceive('getType')
+            ->expects('getType')
             ->andReturn($fileInfoType = 'pdf');
 
         $this->fileInfo
-            ->shouldReceive('getSize')
+            ->expects('getSize')
             ->andReturn(1024);
 
         $this->historyService
-            ->shouldReceive('addDocumentEntry')
+            ->expects('addDocumentEntry')
             ->with(
                 $this->document,
                 'document_uploaded',
@@ -125,21 +124,21 @@ final class DocumentFileProcessorTest extends UnitTestCase
     public function testProcessForWithdrawnDocument(): void
     {
         $this->documentRepository
-            ->shouldReceive('findOneByDossierAndDocumentId')
+            ->expects('findOneByDossierAndDocumentId')
             ->with($this->dossier, $this->documentId)
             ->andReturn($this->document);
 
         $this->document
-            ->shouldReceive('shouldBeUploaded')
-            ->once()
+            ->expects('shouldBeUploaded')
             ->andReturnTrue();
 
         $this->document
-            ->shouldReceive('isWithdrawn')
+            ->expects('isWithdrawn')
             ->andReturnTrue();
 
         $this->document
-            ->shouldReceive('getFileInfo')
+            ->expects('getFileInfo')
+            ->times(3)
             ->andReturn($this->fileInfo);
 
         $this->document
@@ -148,35 +147,35 @@ final class DocumentFileProcessorTest extends UnitTestCase
         $this->documentRepository->expects('save')->with($this->document, true);
 
         $this->dossier
-            ->shouldReceive('getStatus')
+            ->expects('getStatus')
+            ->times(2)
             ->andReturn(DossierStatus::PUBLISHED);
 
         $this->fileInfo
-            ->shouldReceive('isUploaded')
-            ->once()
+            ->expects('isUploaded')
             ->andReturnFalse();
 
         $this->fileStorer
-            ->shouldReceive('storeForDocument')
+            ->expects('storeForDocument')
             ->with($this->file, $this->document, $this->documentId);
 
         $this->ingestService
-            ->shouldReceive('ingest')
+            ->expects('ingest')
             ->with(
                 $this->document,
                 Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
             );
 
         $this->fileInfo
-            ->shouldReceive('getType')
+            ->expects('getType')
             ->andReturn($fileInfoType = 'pdf');
 
         $this->fileInfo
-            ->shouldReceive('getSize')
+            ->expects('getSize')
             ->andReturn(1024);
 
         $this->historyService
-            ->shouldReceive('addDocumentEntry')
+            ->expects('addDocumentEntry')
             ->with(
                 $this->document,
                 'document_uploaded',
@@ -194,34 +193,33 @@ final class DocumentFileProcessorTest extends UnitTestCase
         $fileType = 'txt';
 
         $this->documentRepository
-            ->shouldReceive('findOneByDossierAndDocumentId')
+            ->expects('findOneByDossierAndDocumentId')
             ->with($this->dossier, $this->documentId)
             ->andReturn($this->document);
 
         $this->document
-            ->shouldReceive('shouldBeUploaded')
-            ->once()
+            ->expects('shouldBeUploaded')
             ->andReturnTrue();
 
         $this->document
-            ->shouldReceive('isWithdrawn')
+            ->expects('isWithdrawn')
             ->andReturnFalse();
 
         $this->document
-            ->shouldReceive('getFileInfo')
+            ->expects('getFileInfo')
+            ->times(3)
             ->andReturn($this->fileInfo);
 
         $this->fileInfo
-            ->shouldReceive('isUploaded')
-            ->once()
+            ->expects('isUploaded')
             ->andReturnFalse();
 
         $this->fileStorer
-            ->shouldReceive('storeForDocument')
+            ->expects('storeForDocument')
             ->with($this->file, $this->document, $this->documentId);
 
         $this->ingestService
-            ->shouldReceive('ingest')
+            ->expects('ingest')
             ->with(
                 $this->document,
                 Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
@@ -231,15 +229,15 @@ final class DocumentFileProcessorTest extends UnitTestCase
             ->shouldNotHaveReceived('getType');
 
         $this->fileInfo
-            ->shouldReceive('getSize')
+            ->expects('getSize')
             ->andReturn(1024);
 
         $this->fileInfo
-            ->shouldReceive('getType')
+            ->expects('getType')
             ->andReturn($fileType);
 
         $this->historyService
-            ->shouldReceive('addDocumentEntry')
+            ->expects('addDocumentEntry')
             ->with(
                 $this->document,
                 'document_uploaded',
@@ -250,7 +248,7 @@ final class DocumentFileProcessorTest extends UnitTestCase
             );
 
         $this->dossier
-            ->shouldReceive('getStatus')
+            ->expects('getStatus')
             ->andReturn(DossierStatus::PUBLISHED);
 
         $this->processor->process($this->file, $this->dossier, $this->documentId);
@@ -259,21 +257,20 @@ final class DocumentFileProcessorTest extends UnitTestCase
     public function testProcessWhenFailingToFetchDocument(): void
     {
         $this->file
-            ->shouldReceive('getOriginalFilename')
+            ->expects('getOriginalFilename')
             ->andReturn($originalFile = 'originalFile.pdf');
 
         $this->documentRepository
-            ->shouldReceive('findOneByDossierAndDocumentId')
-            ->once()
+            ->expects('findOneByDossierAndDocumentId')
             ->with($this->dossier, $this->documentId)
             ->andReturnNull();
 
         $this->dossier
-            ->shouldReceive('getId')
+            ->expects('getId')
             ->andReturn($dossierId = Uuid::v6());
 
         $this->logger
-            ->shouldReceive('info')
+            ->expects('info')
             ->with('Could not find document, skipping processing file', [
                 'filename' => $originalFile,
                 'documentId' => $this->documentId,
@@ -286,29 +283,28 @@ final class DocumentFileProcessorTest extends UnitTestCase
     public function testProcessWhenDocumentShouldNotBeUploaded(): void
     {
         $this->file
-            ->shouldReceive('getOriginalFilename')
+            ->expects('getOriginalFilename')
             ->andReturn($originalFile = 'originalFile.pdf');
 
         $this->documentRepository
-            ->shouldReceive('findOneByDossierAndDocumentId')
+            ->expects('findOneByDossierAndDocumentId')
             ->with($this->dossier, $this->documentId)
             ->andReturn($this->document);
 
         $this->dossier
-            ->shouldReceive('getId')
+            ->expects('getId')
             ->andReturn($dossierId = Uuid::v6());
 
         $this->dossier
-            ->shouldReceive('getStatus')
+            ->expects('getStatus')
             ->andReturn(DossierStatus::PUBLISHED);
 
         $this->document
-            ->shouldReceive('shouldBeUploaded')
-            ->once()
+            ->expects('shouldBeUploaded')
             ->andReturnFalse();
 
         $this->logger
-            ->shouldReceive('warning')
+            ->expects('warning')
             ->with(
                 sprintf('Document with id "%s" should not be uploaded, skipping it', $this->documentId),
                 [

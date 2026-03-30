@@ -43,7 +43,7 @@ class CsvReaderFactory implements ReaderFactoryInterface
         if (! $handle) {
             throw new RuntimeException('Failed to open file: ' . $filepath);
         }
-        $headers = fgetcsv($handle);
+        $headers = fgetcsv($handle, escape: '\\');
         fclose($handle);
 
         if ($headers === false) {

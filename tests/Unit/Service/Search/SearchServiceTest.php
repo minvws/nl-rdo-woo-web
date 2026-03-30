@@ -19,6 +19,7 @@ use Shared\Service\Search\Query\Definition\QueryDefinitionInterface;
 use Shared\Service\Search\Result\Result;
 use Shared\Service\Search\Result\ResultTransformer;
 use Shared\Service\Search\SearchService;
+use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
 use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -47,6 +48,7 @@ class SearchServiceTest extends UnitTestCase
             $this->objectHandler,
             $this->resultTransformer,
             $this->searchParametersFactory,
+            ElasticConfigOverride::default()
         );
     }
 

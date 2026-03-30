@@ -82,7 +82,7 @@ final class SitemapUrlBuilderTest extends UnitTestCase
 
         $this->expectExceptionObject(WooIndexInvalidArgumentException::invalidPriority($priority));
 
-        (new SitemapUrlBuilder())->addUrl($writer, $url);
+        new SitemapUrlBuilder()->addUrl($writer, $url);
     }
 
     /**

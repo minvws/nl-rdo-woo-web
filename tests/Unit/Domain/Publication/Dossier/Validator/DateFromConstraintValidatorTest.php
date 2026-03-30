@@ -7,7 +7,6 @@ namespace Shared\Tests\Unit\Domain\Publication\Dossier\Validator;
 use Carbon\CarbonImmutable;
 use DateTimeImmutable;
 use Mockery;
-use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Validator\DateFromConstraint;
 use Shared\Domain\Publication\Dossier\Validator\DateFromConstraintValidator;
@@ -30,7 +29,6 @@ class DateFromConstraintValidatorTest extends UnitTestCase
 
     public function testValidateAddsNoErrorForEmptyValue(): void
     {
-        /** @var ExecutionContextInterface&MockInterface $context */
         $context = Mockery::mock(ExecutionContextInterface::class);
         $context->shouldNotHaveBeenCalled();
 
@@ -42,7 +40,6 @@ class DateFromConstraintValidatorTest extends UnitTestCase
 
     public function testValidateThrowsExceptionForMissingDossier(): void
     {
-        /** @var ExecutionContextInterface&MockInterface $context */
         $context = Mockery::mock(ExecutionContextInterface::class);
         $context->expects('getObject')->andReturn(new stdClass());
 
@@ -60,7 +57,6 @@ class DateFromConstraintValidatorTest extends UnitTestCase
         $dossier->expects('getCreatedAt')->andReturn(new DateTimeImmutable('2020-08-21'));
         $dossier->expects('getDateFrom')->andReturn(new DateTimeImmutable('2002-10-04'));
 
-        /** @var ExecutionContextInterface&MockInterface $context */
         $context = Mockery::mock(ExecutionContextInterface::class);
         $context->expects('getObject')->andReturn($dossier);
         $context->expects('buildViolation->addViolation');
@@ -78,7 +74,6 @@ class DateFromConstraintValidatorTest extends UnitTestCase
         $dossier->expects('getCreatedAt')->andReturn(new DateTimeImmutable('2020-08-21'));
         $dossier->expects('getDateFrom')->andReturn(new DateTimeImmutable('2012-12-05'));
 
-        /** @var ExecutionContextInterface&MockInterface $context */
         $context = Mockery::mock(ExecutionContextInterface::class);
         $context->expects('getObject')->andReturn($dossier);
 
@@ -96,7 +91,6 @@ class DateFromConstraintValidatorTest extends UnitTestCase
         $dossier->expects('hasCreatedAt')->andReturnFalse();
         $dossier->expects('getDateFrom')->andReturn(new DateTimeImmutable('2012-12-05'));
 
-        /** @var ExecutionContextInterface&MockInterface $context */
         $context = Mockery::mock(ExecutionContextInterface::class);
         $context->expects('getObject')->andReturn($dossier);
 

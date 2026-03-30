@@ -29,7 +29,6 @@ class SecurityHeaderSubscriberTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->environmentService = Mockery::mock(EnvironmentService::class);
-        $this->environmentService->shouldReceive('isDev')->andReturn(false);
     }
 
     public function testOnKernelRequestSetsNonce(): void
@@ -48,6 +47,10 @@ class SecurityHeaderSubscriberTest extends UnitTestCase
 
     public function testOnKernelResponseSetsCspHeadersForFrontend(): void
     {
+        $this->environmentService->expects('isDev')
+            ->times(8)
+            ->andReturn(false);
+
         $subscriber = new SecurityHeaderSubscriber($this->environmentService);
 
         $request = new Request(attributes: ['csp_nonce' => 'foo']);
@@ -72,7 +75,9 @@ class SecurityHeaderSubscriberTest extends UnitTestCase
     public function testOnKernelRequestContainsDevCsp(): void
     {
         $environmentService = Mockery::mock(EnvironmentService::class);
-        $environmentService->shouldReceive('isDev')->andReturn(true);
+        $environmentService->expects('isDev')
+            ->times(8)
+            ->andReturn(true);
         $subscriber = new SecurityHeaderSubscriber($environmentService);
 
         $request = Request::create('foobar');

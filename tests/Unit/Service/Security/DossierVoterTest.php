@@ -60,7 +60,7 @@ class DossierVoterTest extends UnitTestCase
         $token = Mockery::mock(TokenInterface::class);
 
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         self::assertEquals(
             VoterInterface::ACCESS_GRANTED,
@@ -73,7 +73,7 @@ class DossierVoterTest extends UnitTestCase
         $token = Mockery::mock(TokenInterface::class);
 
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
+        $dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
 
         self::assertEquals(
             VoterInterface::ACCESS_DENIED,

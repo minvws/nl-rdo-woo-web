@@ -29,8 +29,7 @@ final class AssetsNamerTest extends UnitTestCase
     public function testGetStorageSubpatForDepartment(): void
     {
         $this->department
-            ->shouldReceive('getId')
-            ->once()
+            ->expects('getId')
             ->andReturn($uuid = Uuid::v6());
 
         $result = $this->assetsNamer->getStorageSubpath($this->department);
@@ -43,8 +42,7 @@ final class AssetsNamerTest extends UnitTestCase
         $entityWithFileInfo = Mockery::mock(EntityWithFileInfo::class);
 
         $entityWithFileInfo
-            ->shouldReceive('getId')
-            ->once()
+            ->expects('getId')
             ->andReturn($uuid = Uuid::v6());
 
         $result = $this->assetsNamer->getStorageSubpath($entityWithFileInfo);
@@ -55,8 +53,7 @@ final class AssetsNamerTest extends UnitTestCase
     public function testGetDepartmntLogo(): void
     {
         $this->department
-            ->shouldReceive('getId')
-            ->once()
+            ->expects('getId')
             ->andReturn($departmentId = Uuid::v6());
 
         $extension = 'png';

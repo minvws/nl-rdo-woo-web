@@ -8,12 +8,15 @@ use Carbon\CarbonImmutable;
 use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Publication\Dossier\OtherPublication\OtherPublicationDto;
+use PublicationApi\Api\Publication\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Publication\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
+use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
@@ -42,7 +45,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $otherPublication = OtherPublicationFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
         ]);
@@ -52,7 +55,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
         self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $otherPublication->getExternalId()]]);
+        self::assertJsonContains([['externalId' => $otherPublication->getExternalId()?->__toString()]]);
     }
 
     public function testGetOtherPublication(): void
@@ -61,7 +64,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $otherPublication = OtherPublicationFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
         ]);
@@ -74,7 +77,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
 
         $expectedResponse = [
             'id' => (string) $otherPublication->getId(),
-            'externalId' => $otherPublication->getExternalId(),
+            'externalId' => $otherPublication->getExternalId()?->__toString(),
             'organisation' => [
                 'id' => (string) $otherPublication->getOrganisation()->getId(),
                 'name' => $otherPublication->getOrganisation()->getName(),
@@ -99,6 +102,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                 'internalReference' => $otherPublicationMainDocument->getInternalReference(),
                 'grounds' => $otherPublicationMainDocument->getGrounds(),
                 'fileName' => $otherPublicationMainDocument->getFileInfo()->getName(),
+                'uploadStatus' => UploadStatus::PROCESSED->value,
             ],
             'attachments' => [
                 [
@@ -110,6 +114,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                     'grounds' => $otherPublicationAttachment->getGrounds(),
                     'fileName' => $otherPublicationAttachment->getFileInfo()->getName(),
                     'externalId' => $otherPublicationAttachment->getExternalId()?->__toString(),
+                    'uploadStatus' => UploadStatus::PROCESSED->value,
                 ],
             ],
             'dossierDate' => $otherPublication->getDateFrom()?->format(DateTime::RFC3339),
@@ -125,7 +130,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $otherPublication = OtherPublicationFactory::createOne([
             'departments' => [$department],
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation, $otherPublication));
@@ -316,7 +321,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $otherPublication = OtherPublicationFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
             'departments' => [$department],
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'status' => DossierStatus::CONCEPT,
         ]);
@@ -353,7 +358,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $otherPublication = OtherPublicationFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
             'status' => DossierStatus::CONCEPT,
@@ -402,7 +407,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $otherPublication = OtherPublicationFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
             'departments' => [$department],
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'status' => $this->getFaker()->randomElement(DossierStatus::nonConceptCases()),
         ]);
@@ -442,10 +447,10 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
             'mainDocument' => [
                 'filename' => $this->getFaker()->word(),
                 'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
-                'type' => $this->getFaker()->randomElement(AttachmentType::cases()),
+                'type' => $this->getFaker()->randomElement(OtherPublicationMainDocument::getAllowedTypes()),
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],
-            'attachments' => $this->createAttachments($attachmentCount),
+            'attachments' => $this->createValidAttachmentsPayload($attachmentCount, OtherPublicationAttachment::getAllowedTypes()),
         ];
     }
 }

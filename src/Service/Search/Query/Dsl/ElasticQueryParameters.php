@@ -23,13 +23,14 @@ class ElasticQueryParameters
     public function __construct(
         private readonly QueryBuilder $queryBuilder,
         private readonly SearchParameters $searchParameters,
+        private readonly ElasticConfig $elasticConfig,
     ) {
         $this->propertyAccessor = new PropertyAccessor();
     }
 
-    public static function applyTo(QueryBuilder $queryBuilder, SearchParameters $searchParameters): self
+    public static function applyTo(QueryBuilder $queryBuilder, SearchParameters $searchParameters, ElasticConfig $elasticConfig): self
     {
-        return new self($queryBuilder, $searchParameters);
+        return new self($queryBuilder, $searchParameters, $elasticConfig);
     }
 
     public function withSuggestParams(): self
@@ -41,7 +42,7 @@ class ElasticQueryParameters
         $this->set(
             '[body][suggest]',
             [
-                ElasticConfig::SUGGESTIONS_SEARCH_INPUT => [
+                $this->elasticConfig->suggestionsSearchInput => [
                     'text' => $this->searchParameters->query,
                     'term' => [
                         'field' => 'content_for_suggestions',

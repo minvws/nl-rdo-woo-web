@@ -11,7 +11,7 @@ final class GroundViewFactoryTest extends UnitTestCase
 {
     public function testMakeAsArray(): void
     {
-        $result = (new GroundViewFactory())->makeAsArray();
+        $result = new GroundViewFactory()->makeAsArray();
 
         $this->assertMatchesJsonSnapshot($result);
     }

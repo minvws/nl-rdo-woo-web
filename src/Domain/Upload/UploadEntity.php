@@ -6,11 +6,13 @@ namespace Shared\Domain\Upload;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\ExternalIdType;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Upload\Exception\UploadException;
 use Shared\Domain\Upload\Exception\UploadValidationException;
 use Shared\Service\Security\User;
 use Shared\Service\Uploader\UploadGroupId;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\Uid\Uuid;
 
@@ -28,14 +30,14 @@ class UploadEntity
     #[ORM\Column(length: 50)]
     private string $uploadId;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $externalId = null;
+    #[ORM\Column(type: ExternalIdType::NAME, length: 128, nullable: true, index: true)]
+    private ?ExternalId $externalId = null;
 
     #[ORM\Column(length: 50, enumType: UploadGroupId::class)]
     protected UploadGroupId $uploadGroupId;
 
-    #[ORM\Column(length: 50, enumType: UploadStatus::class)]
-    protected UploadStatus $status;
+    #[ORM\Column(length: 50, enumType: UploadEntityStatus::class)]
+    protected UploadEntityStatus $status;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
@@ -67,18 +69,18 @@ class UploadEntity
         $this->id = Uuid::v6();
         $this->uploadId = $uploadId;
         $this->uploadGroupId = $uploadGroupId;
-        $this->status = UploadStatus::INCOMPLETE;
+        $this->status = UploadEntityStatus::INCOMPLETE;
         $this->user = $user;
         $this->context = $context->all();
     }
 
     public function finishUploading(string $filename, int $size): void
     {
-        if ($this->status !== UploadStatus::INCOMPLETE) {
-            throw UploadException::forInvalidStatusUpdate($this, UploadStatus::UPLOADED);
+        if ($this->status !== UploadEntityStatus::INCOMPLETE) {
+            throw UploadException::forInvalidStatusUpdate($this, UploadEntityStatus::UPLOADED);
         }
 
-        $this->status = UploadStatus::UPLOADED;
+        $this->status = UploadEntityStatus::UPLOADED;
         $this->filename = $filename;
         $this->size = $size;
     }
@@ -86,40 +88,40 @@ class UploadEntity
     public function abort(): void
     {
         if ($this->status->isImmutable()) {
-            throw UploadException::forInvalidStatusUpdate($this, UploadStatus::ABORTED);
+            throw UploadException::forInvalidStatusUpdate($this, UploadEntityStatus::ABORTED);
         }
 
-        $this->status = UploadStatus::ABORTED;
+        $this->status = UploadEntityStatus::ABORTED;
     }
 
     public function passValidation(string $mimeType): void
     {
-        if ($this->status !== UploadStatus::UPLOADED) {
-            throw UploadException::forInvalidStatusUpdate($this, UploadStatus::VALIDATION_PASSED);
+        if ($this->status !== UploadEntityStatus::UPLOADED) {
+            throw UploadException::forInvalidStatusUpdate($this, UploadEntityStatus::VALIDATION_PASSED);
         }
 
-        $this->status = UploadStatus::VALIDATION_PASSED;
+        $this->status = UploadEntityStatus::VALIDATION_PASSED;
         $this->mimetype = $mimeType;
     }
 
     public function failValidation(UploadValidationException $exception): void
     {
-        if ($this->status !== UploadStatus::UPLOADED) {
-            throw UploadException::forInvalidStatusUpdate($this, UploadStatus::VALIDATION_FAILED);
+        if ($this->status !== UploadEntityStatus::UPLOADED) {
+            throw UploadException::forInvalidStatusUpdate($this, UploadEntityStatus::VALIDATION_FAILED);
         }
 
         $this->error = [$exception->getMessage()];
 
-        $this->status = UploadStatus::VALIDATION_FAILED;
+        $this->status = UploadEntityStatus::VALIDATION_FAILED;
     }
 
     public function markAsStored(): void
     {
-        if ($this->status !== UploadStatus::VALIDATION_PASSED) {
-            throw UploadException::forInvalidStatusUpdate($this, UploadStatus::STORED);
+        if ($this->status !== UploadEntityStatus::VALIDATION_PASSED) {
+            throw UploadException::forInvalidStatusUpdate($this, UploadEntityStatus::STORED);
         }
 
-        $this->status = UploadStatus::STORED;
+        $this->status = UploadEntityStatus::STORED;
     }
 
     public function getId(): Uuid
@@ -132,12 +134,12 @@ class UploadEntity
         return $this->uploadId;
     }
 
-    public function getExternalId(): ?string
+    public function getExternalId(): ?ExternalId
     {
         return $this->externalId;
     }
 
-    public function setExternalId(?string $externalId): void
+    public function setExternalId(?ExternalId $externalId): void
     {
         $this->externalId = $externalId;
     }
@@ -147,7 +149,7 @@ class UploadEntity
         return $this->uploadGroupId;
     }
 
-    public function getStatus(): UploadStatus
+    public function getStatus(): UploadEntityStatus
     {
         return $this->status;
     }

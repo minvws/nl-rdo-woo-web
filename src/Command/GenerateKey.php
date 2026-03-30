@@ -12,18 +12,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
-#[AsCommand(name: 'generate:database-key', description: 'Creates a new key to encrypt database entries')]
+#[AsCommand(
+    name: 'generate:database-key',
+    description: 'Creates a new key to encrypt database entries',
+    help: 'Creates a new key to encrypt database entries',
+)]
 class GenerateKey extends Command
 {
     public function __construct(protected EncryptionService $service)
     {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->setHelp('Creates a new key to encrypt database entries');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

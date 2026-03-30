@@ -63,7 +63,7 @@ class OrphanedFileMoverTest extends UnitTestCase
         $this->fileStorageLister
             ->expects('getFilesystem')
             ->with(FileStorageType::DOCUMENT)
-            ->twice()
+            ->times(2)
             ->andReturn($documentStorage);
 
         $batchStorage = Mockery::mock(FilesystemOperator::class);

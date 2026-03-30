@@ -26,7 +26,7 @@ final class AttachmentTypeFactoryTest extends UnitTestCase
     public function testMake(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->shouldReceive('trans')->andReturnArg(0);
+        $translator->expects('trans')->times(14)->andReturnArg(0);
 
         $factory = new AttachmentTypeFactory($translator);
         $result = $factory->make();
@@ -37,7 +37,7 @@ final class AttachmentTypeFactoryTest extends UnitTestCase
     public function testMakeAsArray(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->shouldReceive('trans')->andReturnArg(0);
+        $translator->expects('trans')->times(73)->andReturnArg(0);
 
         $factory = new AttachmentTypeFactory($translator);
         $result = $factory->makeAsArray();
@@ -48,7 +48,7 @@ final class AttachmentTypeFactoryTest extends UnitTestCase
     public function testMakeAsArrayWithAllowedTypes(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->shouldReceive('trans')->andReturnArg(0);
+        $translator->expects('trans')->times(18)->andReturnArg(0);
 
         $factory = new AttachmentTypeFactory($translator);
         $result = $factory->makeAsArray([

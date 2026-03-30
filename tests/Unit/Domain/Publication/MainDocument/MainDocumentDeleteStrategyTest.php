@@ -47,10 +47,10 @@ final class MainDocumentDeleteStrategyTest extends UnitTestCase
     public function testDeleteMainDocument(): void
     {
         $document = Mockery::mock(CovenantMainDocument::class);
-        $document->shouldReceive('getId->toRfc4122')->andReturn($documentId = 'foo-123');
+        $document->expects('getId->toRfc4122')->andReturn($documentId = 'foo-123');
 
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getMainDocument')->andReturn($document);
+        $dossier->expects('getMainDocument')->times(4)->andReturn($document);
 
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($document);
         $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($document);
@@ -62,7 +62,6 @@ final class MainDocumentDeleteStrategyTest extends UnitTestCase
 
     public function testDeleteWithOverride(): void
     {
-        /** @var MainDocumentDeleteStrategy&MockInterface $strategy */
         $strategy = Mockery::mock(MainDocumentDeleteStrategy::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();

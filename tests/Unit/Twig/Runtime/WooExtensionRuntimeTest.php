@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Twig\Runtime;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierNotifications;
@@ -26,6 +27,7 @@ class WooExtensionRuntimeTest extends MockeryTestCase
     private WooExtensionRuntime $runtime;
     private DossierNotificationsFactory&MockInterface $dossierNotificationsFactory;
 
+    #[Override]
     protected function setUp(): void
     {
         $this->requestStack = Mockery::mock(RequestStack::class);
@@ -48,9 +50,9 @@ class WooExtensionRuntimeTest extends MockeryTestCase
         string $expectedQuery,
     ): void {
         $request = Mockery::mock(Request::class);
-        $request->shouldReceive('getQueryString')->andReturn($queryString);
+        $request->expects('getQueryString')->andReturn($queryString);
 
-        $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($request);
+        $this->requestStack->expects('getCurrentRequest')->andReturn($request);
 
         self::assertEquals(
             $expectedQuery,

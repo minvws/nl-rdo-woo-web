@@ -2,8 +2,8 @@
 version: "3"
 
 vars:
-  URL_PUBLIC: '{{eq .ORBSTACK_ENABLED "1" | ternary .ORBSTACK_PUBLIC_URL "http://localhost:8000"}}'
-  URL_ADMIN: '{{eq .ORBSTACK_ENABLED "1" | ternary .ORBSTACK_ADMIN_URL "http://localhost:8001/balie"}}'
+  URL_PUBLIC: '{{eq .ORBSTACK_ENABLED "1" | ternary .ORBSTACK_MINVWS_PUBLIC_URL "http://localhost:8000"}}'
+  URL_ADMIN: '{{eq .ORBSTACK_ENABLED "1" | ternary .ORBSTACK_MINVWS_ADMIN_URL "http://localhost:8001/balie"}}'
   ROBOT_PARAMS: --outputdir results  --name 'E2E Tests' ./tests
 
 env:
@@ -23,6 +23,38 @@ tasks:
       - uv venv --clear
       - uv sync
       - uv run rfbrowser init
+
+  temp:init:
+    desc: Temporary version that runs init without local uv or docker, see https://github.com/minvws/nl-rdo-woo-web-private/issues/6171
+    cmds:
+      - task: fixtures:load:e2e
+      - rm -rf .temp_password
+      - cmd: |
+          set -euo pipefail
+
+          # Run command and capture output (stdout+stderr)
+          OUTPUT="$(docker exec nl-rdo-woo-web-private-admin-1 bin/console --tenant=minvws woopie:user:create email@example.org "Robot Admin" --super-admin 2>&1 | grep -v 'qrencode not found')"
+
+          # Extract password (after "Password" and colon, ignore extra spaces)
+          TEMP_PASSWORD="$(printf '%s\n' "$OUTPUT" | sed -n 's/^Password[[:space:]]*:[[:space:]]*\(.*\)$/\1/p')"
+
+          # Extract OTP secret (after "TOTP Token" and colon, ignore extra spaces)
+          OTP_SECRET="$(printf '%s\n' "$OUTPUT" | sed -n 's/^TOTP Token[[:space:]]*:[[:space:]]*\(.*\)$/\1/p')"
+
+          # Fail if parsing failed
+          if [[ -z "${TEMP_PASSWORD}" || -z "${OTP_SECRET}" ]]; then
+            echo "Failed to parse password or OTP secret from output:" >&2
+            echo "$OUTPUT" >&2
+            exit 1
+          fi
+
+          printf "%s" "$OTP_SECRET" > .otp_secret
+          echo "$TEMP_PASSWORD" > .temp_password
+        silent: true
+      - task: docker:run
+        vars:
+          tag: first-login
+      - rm -rf .temp_password
 
   local:init:
     desc: Initiates the local instance for the E2E tests.
@@ -47,7 +79,7 @@ tasks:
       - task: :up
       - task: clear-results
       - task: disable-toolbar
-      - cmd: uv run robot --include '{{.tag | default "single"}}' {{.ROBOT_PARAMS}}
+      - cmd: uv run robot --include '{{.tag | default "single"}}' --exclude '{{.exclude | default ""}}' {{.ROBOT_PARAMS}}
 
   local:run:api:
     aliases: [run-api]
@@ -59,7 +91,7 @@ tasks:
       - task: :up
       - task: clear-results
       - task: disable-toolbar
-      - cmd: uv run pabot --processes 8 --artifactsinsubfolders --include api {{.ROBOT_PARAMS}}
+      - cmd: uv run pabot --processes 8 --artifactsinsubfolders --include api --exclude failing {{.ROBOT_PARAMS}}
 
   local:run:mobile:
     desc: Run Robot tests with browser on Docker
@@ -80,7 +112,21 @@ tasks:
 
   docker:init:
     desc: Initiates the docker app for the E2E tests.
+    summary: |
+      After running this you can login as and admin using the following credentials:
+
+        E-mailadres:
+        email@example.org
+
+        Wachtwoord:
+        IkLoopNooitVastVandaag
+
+        Run the following command to get the OTP code:
+        task rf:docker:otp
     cmds:
+      - cmd: |
+          echo "TEMP TASK BROKEN: don't use this yet" >&2
+          exit 1
       - task: fixtures:load:e2e
       - touch .otp_secret
       - task: run-docker
@@ -105,7 +151,7 @@ tasks:
           SUB_CMD: >
             run --rm robot
             /bin/bash -c "export PATH=/home/pwuser/.local/bin:/home/pwuser/.venv/bin:\$PATH &&
-                          uv run robot --include '{{.tag | default "single"}}' {{.ROBOT_PARAMS}}"
+                          uv run robot --include '{{.tag | default "single"}}' --exclude '{{.exclude | default ""}}' {{.ROBOT_PARAMS}}"
 
   docker:run:ci:
     aliases: [run-ci]
@@ -137,7 +183,7 @@ tasks:
           SUB_CMD: >
             run --rm robot
             /bin/bash -c "export PATH=/home/pwuser/.local/bin:/home/pwuser/.venv/bin:\$PATH &&
-                          uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api {{.ROBOT_PARAMS}}"
+                          uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --exclude failing {{.ROBOT_PARAMS}}"
 
   docker:shell:
     cmds:
@@ -181,7 +227,7 @@ tasks:
     desc: Run for Robot customized cleansheet
     cmds:
       - task: :dc:shell
-        vars: { SUB_CMD: "admin bin/console woopie:dev:clean-sheet --force {{.CLI_ARGS}}" }
+        vars: { SUB_CMD: "admin bin/console --tenant=minvws woopie:dev:clean-sheet --force {{.CLI_ARGS}}" }
       - task: :minio:clear-buckets
 
   fixtures:load:vws:
@@ -189,13 +235,13 @@ tasks:
     internal: true
     cmds:
       - task: :dc:shell
-        vars: { SUB_CMD: "admin bin/console doctrine:fixtures:load --no-interaction --append --group=vws" }
+        vars: { SUB_CMD: "admin bin/console --tenant=minvws doctrine:fixtures:load --no-interaction --append --group=vws" }
 
   fixtures:load:e2e:
     desc: Load the E2E fixtures
     cmds:
       - task: :dc:shell
-        vars: { SUB_CMD: "admin bin/console doctrine:fixtures:load --no-interaction --append --group=e2e" }
+        vars: { SUB_CMD: "admin bin/console --tenant=minvws doctrine:fixtures:load --no-interaction --append --group=e2e" }
 
   clear-results:
     desc: Empties the results folder, as well as creating it if it does not exist

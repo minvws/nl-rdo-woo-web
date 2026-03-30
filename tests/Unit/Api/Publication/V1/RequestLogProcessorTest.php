@@ -9,7 +9,7 @@ use Mockery;
 use Monolog\Level;
 use Monolog\LogRecord;
 use PublicationApi\Api\Publication\RequestLogProcessor;
-use PublicationApi\Domain\Security\ApiUser;
+use Shared\Service\Security\ApiUser;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -23,7 +23,6 @@ class RequestLogProcessorTest extends UnitTestCase
 
         $security = Mockery::mock(Security::class);
         $security->expects('getUser')
-            ->once()
             ->andReturn($user);
 
         $record = new LogRecord(
@@ -61,7 +60,6 @@ class RequestLogProcessorTest extends UnitTestCase
     {
         $security = Mockery::mock(Security::class);
         $security->expects('getUser')
-            ->once()
             ->andReturnNull();
 
         $record = new LogRecord(

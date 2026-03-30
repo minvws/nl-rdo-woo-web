@@ -16,6 +16,7 @@ use Shared\Domain\Search\Index\Rollover\RolloverCounter;
 use Shared\Domain\Search\Index\Rollover\RolloverParameters;
 use Shared\Domain\Search\Index\Rollover\RolloverService;
 use Shared\Domain\Search\Index\Rollover\SetElasticAliasCommand;
+use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
 use Shared\Tests\Unit\UnitTestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
@@ -27,17 +28,20 @@ class RolloverServiceTest extends UnitTestCase
     private MessageBusInterface&MockInterface $messageBus;
     private RolloverCounter&MockInterface $counter;
     private MappingService&MockInterface $mappingService;
+    private ElasticConfig $elasticConfig;
 
     protected function setUp(): void
     {
         $this->messageBus = Mockery::mock(MessageBusInterface::class);
         $this->mappingService = Mockery::mock(MappingService::class);
         $this->counter = Mockery::mock(RolloverCounter::class);
+        $this->elasticConfig = ElasticConfigOverride::default();
 
         $this->rolloverService = new RolloverService(
             $this->messageBus,
             $this->mappingService,
             $this->counter,
+            $this->elasticConfig,
         );
 
         parent::setUp();
@@ -125,18 +129,18 @@ class RolloverServiceTest extends UnitTestCase
         $name = 'new-index';
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static function (SetElasticAliasCommand $message) use ($name) {
+            function (SetElasticAliasCommand $message) use ($name) {
                 self::assertEquals($name, $message->indexName);
-                self::assertEquals(ElasticConfig::READ_INDEX, $message->aliasName);
+                self::assertEquals($this->elasticConfig->readIndex, $message->aliasName);
 
                 return true;
             }
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static function (SetElasticAliasCommand $message) use ($name) {
+            function (SetElasticAliasCommand $message) use ($name) {
                 self::assertEquals($name, $message->indexName);
-                self::assertEquals(ElasticConfig::WRITE_INDEX, $message->aliasName);
+                self::assertEquals($this->elasticConfig->writeIndex, $message->aliasName);
 
                 return true;
             }

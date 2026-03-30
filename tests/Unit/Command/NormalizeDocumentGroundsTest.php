@@ -43,7 +43,7 @@ class NormalizeDocumentGroundsTest extends UnitTestCase
         $command = new NormalizeDocumentGrounds($entityManager);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $command = $application->find(NormalizeDocumentGrounds::COMMAND_NAME);
         $commandTester = new CommandTester($command);
@@ -81,7 +81,7 @@ class NormalizeDocumentGroundsTest extends UnitTestCase
         $command = new NormalizeDocumentGrounds($entityManager);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $command = $application->find(NormalizeDocumentGrounds::COMMAND_NAME);
         $commandTester = new CommandTester($command);

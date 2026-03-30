@@ -29,21 +29,21 @@ class EncryptionServiceTest extends UnitTestCase
 
     public function testEncryptThrowsExceptionForMissingEncryptionKey(): void
     {
-        $this->logger->shouldReceive('warning')->once();
+        $this->logger->expects('warning');
         $encryptionService = new EncryptionService('', $this->logger);
 
         $this->expectException(RuntimeException::class);
-        $this->logger->shouldReceive('error')->once();
+        $this->logger->expects('error');
         $encryptionService->encrypt('some data');
     }
 
     public function testDecryptThrowsExceptionForMissingEncryptionKey(): void
     {
-        $this->logger->shouldReceive('warning')->once();
+        $this->logger->expects('warning');
         $encryptionService = new EncryptionService('', $this->logger);
 
         $this->expectException(RuntimeException::class);
-        $this->logger->shouldReceive('error')->once();
+        $this->logger->expects('error');
         $encryptionService->decrypt('some data');
     }
 

@@ -82,12 +82,6 @@ class InquiryLinkImportResultTest extends UnitTestCase
 
     public function testIsSuccessfulReturnsFalseWhenDocumentIsAddedWithARowError(): void
     {
-        $this->changeset->shouldReceive('getChanges')->andReturn([
-            'foo-123' => [
-                InquiryChangeset::ADD_DOCUMENTS => ['x'],
-            ],
-        ]);
-
         $exception = InquiryLinkImportException::forMissingDocument('foo-123');
         $this->result->addRowException(123, $exception);
 
@@ -96,12 +90,6 @@ class InquiryLinkImportResultTest extends UnitTestCase
 
     public function testIsSuccessfulReturnsFalseWhenDocumentIsAddedWithAGenericError(): void
     {
-        $this->changeset->shouldReceive('getChanges')->andReturn([
-            'foo-123' => [
-                InquiryChangeset::ADD_DOCUMENTS => ['x'],
-            ],
-        ]);
-
         $exception = InquiryLinkImportException::forMissingDocument('foo-123');
         $this->result->addGenericException($exception);
 

@@ -49,16 +49,12 @@ class ChangePasswordType extends AbstractType
                 ],
                 'constraints' => [
                     new NotBlank(),
-                    new Length([
-                        'min' => 14,
-                        'minMessage' => 'admin.user.password.validation.minimal_chars',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 4096,
-                    ]),
-                    new Regex([
-                        'pattern' => '/(?!^\d+$)^.+$/',
-                        'message' => 'admin.user.password.validation.digits_only',
-                    ]),
+                    new Length(
+                        min: 14,
+                        minMessage: 'admin.user.password.validation.minimal_chars',
+                        max: 4096, // max length allowed by Symfony for security reasons
+                    ),
+                    new Regex(pattern: '/(?!^\d+$)^.+$/', message: 'admin.user.password.validation.digits_only'),
                     new NotTheSamePassword(),   // Not the same as the current password
                     new CommonList(),           // Not a common password
                     new SimilarityEmail(),      // Not similar to user's email address

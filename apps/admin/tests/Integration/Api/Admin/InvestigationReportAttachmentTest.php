@@ -106,7 +106,7 @@ final class InvestigationReportAttachmentTest extends AdminApiTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
-    public function testCreateInvestigationReportAttachmentFoo(): void
+    public function testCreateInvestigationReportAttachment(): void
     {
         $user = UserFactory::new()->asDossierAdmin()->isEnabled()->create();
 
@@ -129,8 +129,7 @@ final class InvestigationReportAttachmentTest extends AdminApiTestCase
         save($upload);
 
         $this->uploadHandler
-            ->shouldReceive('moveUploadedFileToStorage')
-            ->once()
+            ->expects('moveUploadedFileToStorage')
             ->with(
                 Mockery::on(fn (UploadEntity $uploadEntity) => $uploadEntity->getId() == $upload->getId()),
                 Mockery::type(FilesystemOperator::class),

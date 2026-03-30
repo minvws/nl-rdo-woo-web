@@ -62,15 +62,15 @@ class OnDemandZipGeneratorTest extends UnitTestCase
         $this->batchDownloadService->expects('getType')->with($scope)->andReturn($type);
 
         $documentOne = Mockery::mock(Document::class);
-        $documentOne->shouldReceive('getFileInfo->getPath')->andReturn($path1 = '/path/to/file/1');
+        $documentOne->expects('getFileInfo->getPath')->andReturn($path1 = '/path/to/file/1');
         $documentOneStream = Mockery::mock(StreamInterface::class);
 
         $documentTwo = Mockery::mock(Document::class);
-        $documentTwo->shouldReceive('getFileInfo->getPath')->andReturn($path2 = '/path/to/file/2');
+        $documentTwo->expects('getFileInfo->getPath')->andReturn($path2 = '/path/to/file/2');
         $documentTwoStream = Mockery::mock(StreamInterface::class);
 
-        $type->shouldReceive('getDocumentsQuery->getQuery->getResult')->andReturn([$documentOne, $documentTwo]);
-        $type->shouldReceive('getFileBaseName')->with($scope)->andReturn($baseName = 'foo-bar');
+        $type->expects('getDocumentsQuery->getQuery->getResult')->andReturn([$documentOne, $documentTwo]);
+        $type->expects('getFileBaseName')->with($scope)->andReturn($baseName = 'foo-bar');
 
         $zip = Mockery::mock(ZipStream::class);
         $this->s3Client->expects('registerStreamWrapperV2');
@@ -108,8 +108,8 @@ class OnDemandZipGeneratorTest extends UnitTestCase
             ->andReturn(['doc_count' => $docCount = 123, 'total_size' => $totalSize = 456]);
 
         $type = Mockery::mock(BatchDownloadTypeInterface::class);
-        $type->shouldReceive('getFileBaseName')->with($scope)->andReturn($baseName = 'foo-bar');
-        $type->shouldReceive('getDocumentsQuery')->andReturn($queryBuilder);
+        $type->expects('getFileBaseName')->with($scope)->andReturn($baseName = 'foo-bar');
+        $type->expects('getDocumentsQuery')->andReturn($queryBuilder);
 
         $this->batchDownloadService->expects('getType')->with($scope)->andReturn($type);
 

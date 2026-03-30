@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\Dossier\WooDecision\Uploads\Attachment;
 
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
@@ -16,6 +17,11 @@ final class WooDecisionUploadAttachmentController
         string $dossierExternalId,
         string $attachmentExternalId,
     ): WooDecisionUploadAttachment {
-        return new WooDecisionUploadAttachment($request->getContent(), $organisationId, $dossierExternalId, $attachmentExternalId);
+        return new WooDecisionUploadAttachment(
+            $request->getContent(),
+            $organisationId,
+            ExternalId::create($dossierExternalId),
+            ExternalId::create($attachmentExternalId),
+        );
     }
 }

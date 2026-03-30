@@ -50,28 +50,23 @@ class OpenApiValidatorTest extends UnitTestCase
                     return $operationAddress->path() === sprintf('/%s', $path) && $operationAddress->method() === $method;
                 }),
                 $psrRequest,
-            )
-            ->once();
+            );
 
         $validatorBuilder = Mockery::mock(ValidatorBuilder::class);
         $validatorBuilder->expects('fromSchema')
             ->with($openApi)
-            ->once()
             ->andReturn($validatorBuilder);
         $validatorBuilder->expects('getRoutedRequestValidator')
-            ->once()
             ->andReturn($routedRequestValidator);
 
         $psrHttpFactory = Mockery::mock(PsrHttpFactory::class);
         $psrHttpFactory->expects('createRequest')
             ->with($request)
-            ->once()
             ->andReturn($psrRequest);
 
         $openApiSpecGenerator = Mockery::mock(OpenApiSpecGenerator::class);
         $openApiSpecGenerator
             ->expects('getSpec')
-            ->once()
             ->andReturn($openApi);
 
         $openApiValidator = new OpenApiValidator($validatorBuilder, $psrHttpFactory, $openApiSpecGenerator);
@@ -93,28 +88,23 @@ class OpenApiValidatorTest extends UnitTestCase
 
         $routedRequestValidator = Mockery::mock(RoutedServerRequestValidator::class);
         $routedRequestValidator->expects('validate')
-            ->once()
             ->andThrow($validationException);
 
         $validatorBuilder = Mockery::mock(ValidatorBuilder::class);
         $validatorBuilder->expects('fromSchema')
             ->with($openApi)
-            ->once()
             ->andReturn($validatorBuilder);
         $validatorBuilder->expects('getRoutedRequestValidator')
-            ->once()
             ->andReturn($routedRequestValidator);
 
         $psrHttpFactory = Mockery::mock(PsrHttpFactory::class);
         $psrHttpFactory->expects('createRequest')
             ->with($request)
-            ->once()
             ->andReturn($psrRequest);
 
         $openApiSpecGenerator = Mockery::mock(OpenApiSpecGenerator::class);
         $openApiSpecGenerator
             ->expects('getSpec')
-            ->once()
             ->andReturn($openApi);
 
         $openApiValidator = new OpenApiValidator($validatorBuilder, $psrHttpFactory, $openApiSpecGenerator);
@@ -133,13 +123,11 @@ class OpenApiValidatorTest extends UnitTestCase
         $psrHttpFactory = Mockery::mock(PsrHttpFactory::class);
         $psrHttpFactory->expects('createRequest')
             ->with($request)
-            ->once()
             ->andReturn(Mockery::mock(ServerRequestInterface::class));
 
         $openApiSpecGenerator = Mockery::mock(OpenApiSpecGenerator::class);
         $openApiSpecGenerator
         ->expects('getSpec')
-            ->once()
             ->andThrow($specException);
 
         $openApiValidator = new OpenApiValidator($validatorBuilder, $psrHttpFactory, $openApiSpecGenerator);
@@ -164,28 +152,23 @@ class OpenApiValidatorTest extends UnitTestCase
                     return $operationAddress->path() === sprintf('/%s', $path) && $operationAddress->method() === $method;
                 }),
                 $psrResponse,
-            )
-            ->once();
+            );
 
         $validatorBuilder = Mockery::mock(ValidatorBuilder::class);
         $validatorBuilder->expects('fromSchema')
             ->with($openApi)
-            ->once()
             ->andReturn($validatorBuilder);
         $validatorBuilder->expects('getResponseValidator')
-            ->once()
             ->andReturn($responseValidator);
 
         $psrHttpFactory = Mockery::mock(PsrHttpFactory::class);
         $psrHttpFactory->expects('createResponse')
             ->with($response)
-            ->once()
             ->andReturn($psrResponse);
 
         $openApiSpecGenerator = Mockery::mock(OpenApiSpecGenerator::class);
         $openApiSpecGenerator
             ->expects('getSpec')
-            ->once()
             ->andReturn($openApi);
 
         $openApiValidator = new OpenApiValidator($validatorBuilder, $psrHttpFactory, $openApiSpecGenerator);
@@ -207,28 +190,23 @@ class OpenApiValidatorTest extends UnitTestCase
 
         $responseValidator = Mockery::mock(ResponseValidator::class);
         $responseValidator->expects('validate')
-            ->once()
             ->andThrow($validationException);
 
         $validatorBuilder = Mockery::mock(ValidatorBuilder::class);
         $validatorBuilder->expects('fromSchema')
             ->with($openApi)
-            ->once()
             ->andReturn($validatorBuilder);
         $validatorBuilder->expects('getResponseValidator')
-            ->once()
             ->andReturn($responseValidator);
 
         $psrHttpFactory = Mockery::mock(PsrHttpFactory::class);
         $psrHttpFactory->expects('createResponse')
             ->with($response)
-            ->once()
             ->andReturn($psrResponse);
 
         $openApiSpecGenerator = Mockery::mock(OpenApiSpecGenerator::class);
         $openApiSpecGenerator
             ->expects('getSpec')
-            ->once()
             ->andReturn($openApi);
 
         $openApiValidator = new OpenApiValidator($validatorBuilder, $psrHttpFactory, $openApiSpecGenerator);
@@ -247,13 +225,11 @@ class OpenApiValidatorTest extends UnitTestCase
         $psrHttpFactory = Mockery::mock(PsrHttpFactory::class);
         $psrHttpFactory->expects('createResponse')
             ->with($response)
-            ->once()
             ->andReturn(Mockery::mock(ResponseInterface::class));
 
         $openApiSpecGenerator = Mockery::mock(OpenApiSpecGenerator::class);
         $openApiSpecGenerator
             ->expects('getSpec')
-            ->once()
             ->andThrow($specException);
 
         $openApiValidator = new OpenApiValidator($validatorBuilder, $psrHttpFactory, $openApiSpecGenerator);

@@ -9,10 +9,11 @@ use Mockery\MockInterface;
 use Shared\Domain\Upload\Exception\UploadException;
 use Shared\Domain\Upload\Exception\UploadValidationException;
 use Shared\Domain\Upload\UploadEntity;
-use Shared\Domain\Upload\UploadStatus;
+use Shared\Domain\Upload\UploadEntityStatus;
 use Shared\Service\Security\User;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\HttpFoundation\InputBag;
 
 class UploadEntityTest extends UnitTestCase
@@ -35,11 +36,11 @@ class UploadEntityTest extends UnitTestCase
             $this->context,
         );
 
-        self::assertEquals(UploadStatus::INCOMPLETE, $uploadEntity->getStatus());
+        self::assertEquals(UploadEntityStatus::INCOMPLETE, $uploadEntity->getStatus());
 
         $uploadEntity->finishUploading($filename = 'foo.bar', $filesize = 123);
 
-        self::assertEquals(UploadStatus::UPLOADED, $uploadEntity->getStatus());
+        self::assertEquals(UploadEntityStatus::UPLOADED, $uploadEntity->getStatus());
         self::assertEquals($filename, $uploadEntity->getFilename());
         self::assertEquals($filesize, $uploadEntity->getSize());
 
@@ -55,10 +56,10 @@ class UploadEntityTest extends UnitTestCase
             $this->user,
             $this->context,
         );
-        self::assertEquals(UploadStatus::INCOMPLETE, $uploadEntity->getStatus());
+        self::assertEquals(UploadEntityStatus::INCOMPLETE, $uploadEntity->getStatus());
 
         $uploadEntity->abort();
-        self::assertEquals(UploadStatus::ABORTED, $uploadEntity->getStatus());
+        self::assertEquals(UploadEntityStatus::ABORTED, $uploadEntity->getStatus());
 
         $this->expectException(UploadException::class);
         $uploadEntity->abort();
@@ -74,10 +75,10 @@ class UploadEntityTest extends UnitTestCase
         );
 
         $uploadEntity->finishUploading('foo.bar', 123);
-        self::assertEquals(UploadStatus::UPLOADED, $uploadEntity->getStatus());
+        self::assertEquals(UploadEntityStatus::UPLOADED, $uploadEntity->getStatus());
 
         $uploadEntity->passValidation($mimetype = 'foo/bar');
-        self::assertEquals(UploadStatus::VALIDATION_PASSED, $uploadEntity->getStatus());
+        self::assertEquals(UploadEntityStatus::VALIDATION_PASSED, $uploadEntity->getStatus());
         self::assertEquals($mimetype, $uploadEntity->getMimetype());
 
         $this->expectException(UploadException::class);
@@ -94,11 +95,11 @@ class UploadEntityTest extends UnitTestCase
         );
 
         $uploadEntity->finishUploading('foo.bar', 123);
-        self::assertEquals(UploadStatus::UPLOADED, $uploadEntity->getStatus());
+        self::assertEquals(UploadEntityStatus::UPLOADED, $uploadEntity->getStatus());
 
         $exception = new UploadValidationException($message = 'oops');
         $uploadEntity->failValidation($exception);
-        self::assertEquals(UploadStatus::VALIDATION_FAILED, $uploadEntity->getStatus());
+        self::assertEquals(UploadEntityStatus::VALIDATION_FAILED, $uploadEntity->getStatus());
         self::assertEquals([$message], $uploadEntity->getError());
 
         $this->expectException(UploadException::class);
@@ -118,7 +119,7 @@ class UploadEntityTest extends UnitTestCase
         $uploadEntity->passValidation('foo/bar');
         $uploadEntity->markAsStored();
 
-        self::assertEquals(UploadStatus::STORED, $uploadEntity->getStatus());
+        self::assertEquals(UploadEntityStatus::STORED, $uploadEntity->getStatus());
 
         $this->expectException(UploadException::class);
         $uploadEntity->markAsStored();
@@ -133,7 +134,7 @@ class UploadEntityTest extends UnitTestCase
             $this->context,
         );
 
-        $uploadEntity->setExternalId($externalId = 'bar789');
+        $uploadEntity->setExternalId($externalId = ExternalId::create('bar789'));
         $uploadEntity->finishUploading($filename = 'foo.bar', $size = 123);
         $uploadEntity->passValidation($mimetype = 'foo/bar');
         $uploadEntity->markAsStored();

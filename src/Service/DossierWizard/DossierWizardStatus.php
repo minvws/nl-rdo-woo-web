@@ -8,6 +8,7 @@ use OutOfBoundsException;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Step\StepName;
 
+use function array_all;
 use function array_key_exists;
 
 readonly class DossierWizardStatus
@@ -46,13 +47,7 @@ readonly class DossierWizardStatus
 
     public function isCompleted(): bool
     {
-        foreach ($this->steps as $step) {
-            if (! $step->isCompleted()) {
-                return false;
-            }
-        }
-
-        return true;
+        return array_all($this->steps, fn ($step) => $step->isCompleted());
     }
 
     /**

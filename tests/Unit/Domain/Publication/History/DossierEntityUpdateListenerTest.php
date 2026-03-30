@@ -36,24 +36,24 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
     {
         $preUpdateArgs = Mockery::mock(PreUpdateEventArgs::class);
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
-        $dossier->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
-        $dossier->shouldReceive('getPreviewDate')->andReturn(new DateTimeImmutable());
+        $dossier->expects('getId')->times(3)->andReturn(Uuid::v6());
+        $dossier->expects('getPublicationDate')->andReturn(new DateTimeImmutable());
+        $dossier->expects('getPreviewDate')->andReturn(new DateTimeImmutable());
 
-        $preUpdateArgs->shouldReceive('hasChangedField')->with('decisionDate')->andReturnTrue();
-        $preUpdateArgs->shouldReceive('getOldValue')->with('decisionDate')->andReturn('foo');
+        $preUpdateArgs->expects('hasChangedField')->with('decisionDate')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->times(2)->with('decisionDate')->andReturn('foo');
 
-        $preUpdateArgs->shouldReceive('hasChangedField')->with('title')->andReturnTrue();
-        $preUpdateArgs->shouldReceive('getOldValue')->with('title')->andReturn('foo');
+        $preUpdateArgs->expects('hasChangedField')->with('title')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->times(2)->with('title')->andReturn('foo');
 
-        $preUpdateArgs->shouldReceive('hasChangedField')->with('summary')->andReturnTrue();
-        $preUpdateArgs->shouldReceive('getOldValue')->with('summary')->andReturn('foo');
+        $preUpdateArgs->expects('hasChangedField')->with('summary')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->times(2)->with('summary')->andReturn('foo');
 
-        $preUpdateArgs->shouldReceive('hasChangedField')->with('publicationDate')->andReturnTrue();
-        $preUpdateArgs->shouldReceive('getOldValue')->with('publicationDate')->andReturn('foo');
+        $preUpdateArgs->expects('hasChangedField')->with('publicationDate')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->times(2)->with('publicationDate')->andReturn('foo');
 
-        $preUpdateArgs->shouldReceive('hasChangedField')->with('previewDate')->andReturnTrue();
-        $preUpdateArgs->shouldReceive('getOldValue')->with('previewDate')->andReturn('foo');
+        $preUpdateArgs->expects('hasChangedField')->with('previewDate')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->times(2)->with('previewDate')->andReturn('foo');
 
         $this->listener->preUpdate($dossier, $preUpdateArgs);
 
@@ -80,24 +80,21 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
     {
         $preUpdateArgs = Mockery::mock(PreUpdateEventArgs::class);
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
-        $dossier->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable());
-        $dossier->shouldReceive('getPreviewDate')->andReturn(new DateTimeImmutable());
 
-        $preUpdateArgs->shouldReceive('hasChangedField')->with('decisionDate')->andReturnTrue();
-        $preUpdateArgs->shouldReceive('getOldValue')->with('decisionDate')->andReturnNull();
+        $preUpdateArgs->expects('hasChangedField')->with('decisionDate')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->with('decisionDate')->andReturnNull();
 
-        $preUpdateArgs->shouldReceive('hasChangedField')->with('title')->andReturnTrue();
-        $preUpdateArgs->shouldReceive('getOldValue')->with('title')->andReturn('');
+        $preUpdateArgs->expects('hasChangedField')->with('title')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->times(2)->with('title')->andReturn('');
 
-        $preUpdateArgs->shouldReceive('hasChangedField')->with('summary')->andReturnTrue();
-        $preUpdateArgs->shouldReceive('getOldValue')->with('summary')->andReturn('');
+        $preUpdateArgs->expects('hasChangedField')->with('summary')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->times(2)->with('summary')->andReturn('');
 
-        $preUpdateArgs->shouldReceive('hasChangedField')->with('publicationDate')->andReturnTrue();
-        $preUpdateArgs->shouldReceive('getOldValue')->with('publicationDate')->andReturnNull();
+        $preUpdateArgs->expects('hasChangedField')->with('publicationDate')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->with('publicationDate')->andReturnNull();
 
-        $preUpdateArgs->shouldReceive('hasChangedField')->with('previewDate')->andReturnTrue();
-        $preUpdateArgs->shouldReceive('getOldValue')->with('previewDate')->andReturnNull();
+        $preUpdateArgs->expects('hasChangedField')->with('previewDate')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->with('previewDate')->andReturnNull();
 
         $this->listener->preUpdate($dossier, $preUpdateArgs);
 

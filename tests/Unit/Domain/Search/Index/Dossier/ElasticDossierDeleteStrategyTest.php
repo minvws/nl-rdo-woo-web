@@ -35,7 +35,6 @@ final class ElasticDossierDeleteStrategyTest extends UnitTestCase
 
     public function testDeleteWithOverride(): void
     {
-        /** @var ElasticDossierDeleteStrategy&MockInterface $strategy */
         $strategy = Mockery::mock(ElasticDossierDeleteStrategy::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();

@@ -27,8 +27,8 @@ final class HasAttachmentsTest extends UnitTestCase
     {
         $attachment = Mockery::mock(AbstractAttachment::class);
         $collection = Mockery::mock(Collection::class);
-        $collection->shouldReceive('contains')->once()->with($attachment)->andReturn(false);
-        $collection->shouldReceive('add')->once()->with($attachment);
+        $collection->expects('contains')->with($attachment)->andReturn(false);
+        $collection->expects('add')->with($attachment);
 
         $entity = $this->getEntityWithAttachments($collection);
 
@@ -41,7 +41,7 @@ final class HasAttachmentsTest extends UnitTestCase
     {
         $attachment = Mockery::mock(AbstractAttachment::class);
         $collection = Mockery::mock(Collection::class);
-        $collection->shouldReceive('contains')->once()->with($attachment)->andReturn(true);
+        $collection->expects('contains')->with($attachment)->andReturn(true);
         $collection->shouldNotReceive('add');
 
         $entity = $this->getEntityWithAttachments($collection);
@@ -55,7 +55,7 @@ final class HasAttachmentsTest extends UnitTestCase
     {
         $attachment = Mockery::mock(AbstractAttachment::class);
         $collection = Mockery::mock(Collection::class);
-        $collection->shouldReceive('removeElement')->once()->with($attachment);
+        $collection->expects('removeElement')->with($attachment);
 
         $entity = $this->getEntityWithAttachments($collection);
 

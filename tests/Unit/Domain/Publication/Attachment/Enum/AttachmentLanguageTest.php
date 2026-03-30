@@ -32,7 +32,7 @@ final class AttachmentLanguageTest extends UnitUnitTestCase
     public function testToArray(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->shouldReceive('trans')->andReturnArg(0);
+        $translator->expects('trans')->times(2)->andReturnArg(0);
 
         $result = [];
         foreach (AttachmentLanguage::cases() as $case) {
@@ -47,7 +47,7 @@ final class AttachmentLanguageTest extends UnitUnitTestCase
     {
         $translator = Mockery::mock(TranslatorInterface::class);
         $translator
-            ->shouldReceive('trans')
+            ->expects('trans')
             ->with(
                 Mockery::on(function (string $key) use ($expectedKey): bool {
                     $this->assertSame($expectedKey, $key, 'The translation key does not match expected value');

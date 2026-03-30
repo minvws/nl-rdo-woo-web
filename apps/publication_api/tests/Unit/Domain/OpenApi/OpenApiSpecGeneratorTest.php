@@ -21,13 +21,11 @@ class OpenApiSpecGeneratorTest extends UnitTestCase
 
         $openApiFactory = Mockery::mock(OpenApiFactoryInterface::class);
         $openApiFactory->expects('__invoke')
-            ->once()
             ->andReturn($openApi);
 
         $serializer = Mockery::mock(SerializerInterface::class);
         $serializer->expects('serialize')
             ->with($openApi, 'json')
-            ->once()
             ->andReturn(json_encode([]));
 
         $openApiSpecGenerator = new OpenApiSpecGenerator($openApiFactory, $serializer);

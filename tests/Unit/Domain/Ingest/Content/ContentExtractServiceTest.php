@@ -66,24 +66,20 @@ class ContentExtractServiceTest extends UnitTestCase
     public function testGetExtractsAddHashWhenItIsNull(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
-        $fileInfo->shouldReceive('getHash')->once()->andReturnNull();
-        $fileInfo->shouldReceive('getHash')->andReturn('1295d266e56f7e3c42a2b5163bf0c4c7b4c3fb7640e7d3f14c65c85343b81ca4');
+        $fileInfo->expects('isUploaded')->andReturnTrue();
+        $fileInfo->expects('getHash')->andReturn('1295d266e56f7e3c42a2b5163bf0c4c7b4c3fb7640e7d3f14c65c85343b81ca4');
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
+        $entity->expects('getFileInfo')->times(2)->andReturn($fileInfo);
 
         $this->entityStorage
             ->expects('downloadEntity')
             ->with($entity)
             ->andReturn($localFile = __DIR__ . DIRECTORY_SEPARATOR . 'dummy.txt');
 
-        $this->entityStorage->expects('setHash')->with($entity, $localFile);
-
         $contentA = "A line1\nA line 2";
-        $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
-        $this->extractorA->shouldReceive('supports')->with($entity)->andReturnTrue();
+        $this->extractorA->expects('getKey')->times(2)->andReturn(ContentExtractorKey::TESSERACT);
+        $this->extractorA->expects('supports')->with($entity)->andReturnTrue();
         $this->extractorA->expects('getContent')->with($entity, Mockery::any())->andReturnUsing(
             function (EntityWithFileInfo $entity, FileReferenceInterface $fileReference) use ($contentA) {
                 $fileReference->getPath();
@@ -93,8 +89,8 @@ class ContentExtractServiceTest extends UnitTestCase
         );
 
         $contentB = "B line1\nB line 2";
-        $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
-        $this->extractorB->shouldReceive('supports')->with($entity)->andReturnTrue();
+        $this->extractorB->expects('getKey')->times(2)->andReturn(ContentExtractorKey::TIKA);
+        $this->extractorB->expects('supports')->with($entity)->andReturnTrue();
         $this->extractorB->expects('getContent')->with($entity, Mockery::any())->andReturnUsing(
             function (EntityWithFileInfo $entity, FileReferenceInterface $fileReference) use ($contentB) {
                 $fileReference->getPath();
@@ -119,23 +115,20 @@ class ContentExtractServiceTest extends UnitTestCase
     public function testExtractShouldCallOnlyExtractorMatchingByKey(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
-        $fileInfo->shouldReceive('getHash')->once()->andReturnNull();
-        $fileInfo->shouldReceive('getHash')->andReturn('1295d266e56f7e3c42a2b5163bf0c4c7b4c3fb7640e7d3f14c65c85343b81ca4');
+        $fileInfo->expects('isUploaded')->andReturnTrue();
+        $fileInfo->expects('getHash')->andReturn('1295d266e56f7e3c42a2b5163bf0c4c7b4c3fb7640e7d3f14c65c85343b81ca4');
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
+        $entity->expects('getFileInfo')->times(2)->andReturn($fileInfo);
 
         $localFile = __DIR__ . DIRECTORY_SEPARATOR . 'dummy.txt';
-        $this->entityStorage->expects('setHash')->with($entity, $localFile);
 
-        $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
-        $this->extractorA->shouldReceive('supports')->with($entity)->andReturnFalse();
+        $this->extractorA->expects('getKey')->andReturn(ContentExtractorKey::TESSERACT);
+        $this->extractorA->expects('supports')->with($entity)->andReturnFalse();
 
         $contentB = "B line1\nB line 2";
-        $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
-        $this->extractorB->shouldReceive('supports')->with($entity)->andReturnTrue();
+        $this->extractorB->expects('getKey')->times(2)->andReturn(ContentExtractorKey::TIKA);
+        $this->extractorB->expects('supports')->with($entity)->andReturnTrue();
         $this->extractorB->expects('getContent')->with($entity, Mockery::any())->andReturnUsing(
             function (EntityWithFileInfo $entity, FileReferenceInterface $fileReference) use ($contentB) {
                 $fileReference->getPath();
@@ -158,24 +151,17 @@ class ContentExtractServiceTest extends UnitTestCase
     public function testGetExtractsForPageNumber(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
-        $fileInfo->shouldReceive('getHash')->once()->andReturnNull();
-        $fileInfo->shouldReceive('getHash')->andReturn('1295d266e56f7e3c42a2b5163bf0c4c7b4c3fb7640e7d3f14c65c85343b81ca4');
+        $fileInfo->expects('isUploaded')->andReturnTrue();
+        $fileInfo->expects('getHash')->andReturn('1295d266e56f7e3c42a2b5163bf0c4c7b4c3fb7640e7d3f14c65c85343b81ca4');
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
+        $entity->expects('getFileInfo')->times(2)->andReturn($fileInfo);
 
         $dummyFile = __DIR__ . DIRECTORY_SEPARATOR . 'dummy.txt';
-        $dummyDocumentFile = 'foo/bar.txt';
-
-        $this->entityStorage->expects('downloadEntity')->with($entity)->andReturn($dummyDocumentFile);
-        $this->entityStorage->expects('setHash')->with($entity, $dummyDocumentFile);
-        $this->entityStorage->expects('removeDownload')->with($dummyDocumentFile);
 
         $contentA = "A line1\nA line 2";
-        $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
-        $this->extractorA->shouldReceive('supports')->with($entity)->andReturnTrue();
+        $this->extractorA->expects('getKey')->times(2)->andReturn(ContentExtractorKey::TESSERACT);
+        $this->extractorA->expects('supports')->with($entity)->andReturnTrue();
         $this->extractorA->expects('getContent')->with($entity, Mockery::any())->andReturnUsing(
             function (EntityWithFileInfo $entity, FileReferenceInterface $fileReference) use ($contentA) {
                 $fileReference->getPath();
@@ -185,8 +171,8 @@ class ContentExtractServiceTest extends UnitTestCase
         );
 
         $contentB = "B line1\nB line 2";
-        $this->extractorB->shouldReceive('getKey')->andReturn(ContentExtractorKey::TIKA);
-        $this->extractorB->shouldReceive('supports')->with($entity)->andReturnTrue();
+        $this->extractorB->expects('getKey')->times(2)->andReturn(ContentExtractorKey::TIKA);
+        $this->extractorB->expects('supports')->with($entity)->andReturnTrue();
         $this->extractorB->expects('getContent')->with($entity, Mockery::any())->andReturnUsing(
             function (EntityWithFileInfo $entity, FileReferenceInterface $fileReference) use ($contentB) {
                 $fileReference->getPath();
@@ -209,15 +195,14 @@ class ContentExtractServiceTest extends UnitTestCase
     public function testSkipsExtractorIfNotEnabled(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
-        $fileInfo->shouldReceive('getHash')->once()->andReturn('uuid');
+        $fileInfo->expects('isUploaded')->andReturnTrue();
+        $fileInfo->expects('getHash')->andReturn('uuid');
 
-        /** @var EntityWithFileInfo&MockInterface $entity */
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $entity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
+        $entity->expects('getFileInfo')->times(2)->andReturn($fileInfo);
+        $entity->expects('getId')->andReturn($entityId = Uuid::v6());
 
-        $this->logger->shouldReceive('log')->with(
+        $this->logger->expects('log')->with(
             LogLevel::WARNING,
             'No content could be extracted',
             ['id' => $entityId, 'class' => $entity::class]
@@ -225,7 +210,7 @@ class ContentExtractServiceTest extends UnitTestCase
 
         $contentExtractOptions = ContentExtractOptions::create()->withExtractor(ContentExtractorKey::TIKA);
 
-        $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
+        $this->extractorA->expects('getKey')->andReturn(ContentExtractorKey::TESSERACT);
         $this->extractorA->shouldNotReceive('supports');
         $this->extractorA->shouldNotReceive('getContent');
 
@@ -248,29 +233,22 @@ class ContentExtractServiceTest extends UnitTestCase
     public function testItMarksExtractorsAsFailureWhenItFails(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
-        $fileInfo->shouldReceive('getHash')->andReturn('uuid');
+        $fileInfo->expects('isUploaded')->andReturnTrue();
+        $fileInfo->expects('getHash')->andReturn('uuid');
 
-        /** @var EntityWithFileInfo&MockInterface $entity */
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $entity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
+        $entity->expects('getFileInfo')->times(2)->andReturn($fileInfo);
+        $entity->expects('getId')->andReturn($entityId = Uuid::v6());
 
-        $this->logger->shouldReceive('log')->with(
-            LogLevel::WARNING,
-            'No content could be extracted',
-            ['id' => $entityId, 'class' => $entity::class]
-        );
-
-        $this->extractorA->shouldReceive('getKey')->andReturn(ContentExtractorKey::TESSERACT);
-        $this->extractorA->shouldReceive('supports')->andReturn(true);
-        $this->extractorA->shouldReceive('getContent')->andThrow(new Exception($exMessage = 'Extractor A failed'));
+        $this->extractorA->expects('getKey')->times(2)->andReturn(ContentExtractorKey::TESSERACT);
+        $this->extractorA->expects('supports')->andReturn(true);
+        $this->extractorA->expects('getContent')->andThrow(new Exception($exMessage = 'Extractor A failed'));
 
         $this->extractorB->shouldNotReceive('getKey');
         $this->extractorB->shouldNotReceive('supports');
         $this->extractorB->shouldNotReceive('getContent');
 
-        $this->logger->shouldReceive('log')->with(
+        $this->logger->expects('log')->with(
             LogLevel::ERROR,
             sprintf('Content extract error: %s', $exMessage),
             ['id' => $entityId, 'class' => $entity::class]

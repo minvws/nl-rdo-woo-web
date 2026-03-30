@@ -6,6 +6,7 @@ import {
   describe,
   expect,
   test,
+  vi,
 } from 'vitest';
 import { dateFilters } from './date-filters';
 
@@ -19,10 +20,13 @@ describe('The "dateFilters" function', () => {
         <input id="date-to" type="date" name="to" value="">
         <div class="hidden" id="filter-dates-error">Mocked date period error message</div>
       `;
+
+      vi.spyOn(window.history, 'pushState').mockImplementation(() => {});
     });
 
     afterEach(() => {
       cleanup();
+      vi.restoreAllMocks();
     });
 
     const getDateElement = (fromOrTo: 'from' | 'to') =>

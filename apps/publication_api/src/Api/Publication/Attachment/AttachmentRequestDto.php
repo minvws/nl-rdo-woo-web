@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use DateTimeImmutable;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class AttachmentRequestDto
@@ -28,7 +29,7 @@ class AttachmentRequestDto
             ],
         )]
         public AttachmentType $type,
-        public string $externalId,
+        public ExternalId $externalId,
         public array $grounds = [],
         public string $internalReference = '',
     ) {

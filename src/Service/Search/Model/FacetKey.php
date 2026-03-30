@@ -22,7 +22,7 @@ enum FacetKey: string
     case REFERRED_DOCUMENT_NR = 'ref';
 
     /**
-     * @deprecated use FacetDefinition::$requestParameter instead
+     * @deprecated use FacetDefinition::$requestParameter instead, see WOO-6328
      */
     public function getParamName(): string
     {

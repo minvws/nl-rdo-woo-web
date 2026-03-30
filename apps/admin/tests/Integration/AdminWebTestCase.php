@@ -12,7 +12,7 @@ abstract class AdminWebTestCase extends WebTestCase
 {
     use IntegrationTestTrait;
 
-    protected static function getAppId(): ApplicationId
+    protected static function getApplicationId(): ApplicationId
     {
         return ApplicationId::ADMIN;
     }

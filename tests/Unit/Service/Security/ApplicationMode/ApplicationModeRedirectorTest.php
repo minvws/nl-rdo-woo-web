@@ -19,27 +19,17 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
     public function testRedirectForNonDevFirewall(
         string $path,
         ApplicationMode $applicationMode,
-        ?string $expectedRedirectPath,
+        int $expectedGetRequestCalls,
     ): void {
         $redirector = new ApplicationModeRedirector($applicationMode);
 
         $event = Mockery::mock(RequestEvent::class);
-        $event->shouldReceive('getRequest')->andReturn(
-            new Request(
+        $event->expects('getRequest')
+            ->times($expectedGetRequestCalls)
+            ->andReturn(new Request(
                 attributes: ['_firewall_context' => 'some.other.firewall.context'],
                 server: ['REQUEST_URI' => $path],
-            )
-        );
-
-        if ($expectedRedirectPath === null) {
-            $event->shouldNotHaveReceived('setResponse');
-        } else {
-            $event->expects('setResponse')->with(Mockery::on(
-                static function (RedirectResponse $response) use ($expectedRedirectPath): bool {
-                    return $response->getTargetUrl() === $expectedRedirectPath;
-                }
             ));
-        }
 
         $redirector->onKernelRequest($event);
     }
@@ -48,7 +38,7 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
      * @return array<string,array{
      *     path: string,
      *     applicationMode: ApplicationMode,
-     *     expectedRedirectPath: ?string,
+     *     expectedGetRequestCalls: int,
      * }>
      */
     public static function applicationModeProvider(): array
@@ -57,18 +47,72 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
             'all-should-not-redirect-for-admin-path' => [
                 'path' => ApplicationModeRedirector::ADMIN_PATH . '/foo',
                 'applicationMode' => ApplicationMode::ALL,
-                'expectedRedirectPath' => null,
+                'expectedGetRequestCalls' => 2,
             ],
             'all-should-not-redirect-for-public-path' => [
                 'path' => ApplicationModeRedirector::PUBLIC_PATH . '/foo',
                 'applicationMode' => ApplicationMode::ALL,
-                'expectedRedirectPath' => null,
+                'expectedGetRequestCalls' => 2,
             ],
             'all-should-not-redirect-for-api-path' => [
                 'path' => ApplicationModeRedirector::API_PATH . '/foo',
                 'applicationMode' => ApplicationMode::ALL,
-                'expectedRedirectPath' => null,
+                'expectedGetRequestCalls' => 2,
             ],
+            'api-should-not-redirect-for-api-path' => [
+                'path' => ApplicationModeRedirector::API_PATH . '/foo',
+                'applicationMode' => ApplicationMode::API,
+                'expectedGetRequestCalls' => 3,
+            ],
+            'admin-should-not-redirect-for-admin-path' => [
+                'path' => ApplicationModeRedirector::ADMIN_PATH . '/foo',
+                'applicationMode' => ApplicationMode::ADMIN,
+                'expectedGetRequestCalls' => 3,
+            ],
+            'public-should-not-redirect-for-public-path' => [
+                'path' => ApplicationModeRedirector::PUBLIC_PATH . '/foo',
+                'applicationMode' => ApplicationMode::PUBLIC,
+                'expectedGetRequestCalls' => 3,
+            ],
+        ];
+    }
+
+    #[DataProvider('applicationModeProviderWithRedirect')]
+    public function testRedirectForNonDevFirewallWithRedirect(
+        string $path,
+        ApplicationMode $applicationMode,
+        string $expectedRedirectPath,
+    ): void {
+        $redirector = new ApplicationModeRedirector($applicationMode);
+
+        $event = Mockery::mock(RequestEvent::class);
+        $event->expects('getRequest')
+            ->times(3)
+            ->andReturn(new Request(
+                attributes: ['_firewall_context' => 'some.other.firewall.context'],
+                server: ['REQUEST_URI' => $path],
+            ));
+
+        $event->expects('setResponse')
+            ->with(Mockery::on(
+                static function (RedirectResponse $response) use ($expectedRedirectPath): bool {
+                    return $response->getTargetUrl() === $expectedRedirectPath;
+                },
+            ));
+
+        $redirector->onKernelRequest($event);
+    }
+
+    /**
+     * @return array<string,array{
+     *     path: string,
+     *     applicationMode: ApplicationMode,
+     *     expectedRedirectPath: string,
+     * }>
+     */
+    public static function applicationModeProviderWithRedirect(): array
+    {
+        return [
             'api-should-redirect-for-admin-path' => [
                 'path' => ApplicationModeRedirector::ADMIN_PATH . '/foo',
                 'applicationMode' => ApplicationMode::API,
@@ -78,11 +122,6 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
                 'path' => ApplicationModeRedirector::PUBLIC_PATH . '/foo',
                 'applicationMode' => ApplicationMode::API,
                 'expectedRedirectPath' => ApplicationModeRedirector::API_PATH,
-            ],
-            'api-should-not-redirect-for-api-path' => [
-                'path' => ApplicationModeRedirector::API_PATH . '/foo',
-                'applicationMode' => ApplicationMode::API,
-                'expectedRedirectPath' => null,
             ],
             'admin-should-redirect-for-api-path' => [
                 'path' => ApplicationModeRedirector::API_PATH . '/foo',
@@ -94,11 +133,6 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedRedirectPath' => ApplicationModeRedirector::ADMIN_PATH,
             ],
-            'admin-should-not-redirect-for-admin-path' => [
-                'path' => ApplicationModeRedirector::ADMIN_PATH . '/foo',
-                'applicationMode' => ApplicationMode::ADMIN,
-                'expectedRedirectPath' => null,
-            ],
             'public-should-redirect-for-api-path' => [
                 'path' => ApplicationModeRedirector::API_PATH . '/foo',
                 'applicationMode' => ApplicationMode::PUBLIC,
@@ -109,11 +143,6 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedRedirectPath' => ApplicationModeRedirector::PUBLIC_PATH,
             ],
-            'public-should-not-redirect-for-public-path' => [
-                'path' => ApplicationModeRedirector::PUBLIC_PATH . '/foo',
-                'applicationMode' => ApplicationMode::PUBLIC,
-                'expectedRedirectPath' => null,
-            ],
         ];
     }
 
@@ -122,8 +151,8 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
         $redirector = new ApplicationModeRedirector(ApplicationMode::ADMIN);
 
         $event = Mockery::mock(RequestEvent::class);
-        $event->shouldReceive('getRequest')->andReturn(
-            new Request(attributes: ['_firewall_context' => 'security.firewall.map.context.dev'])
+        $event->expects('getRequest')->andReturn(
+            new Request(attributes: ['_firewall_context' => 'security.firewall.map.context.dev']),
         );
 
         $event->shouldNotHaveReceived('setResponse');
@@ -136,12 +165,14 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
         $redirector = new ApplicationModeRedirector(ApplicationMode::ADMIN);
 
         $event = Mockery::mock(RequestEvent::class);
-        $event->shouldReceive('getRequest')->andReturn(
-            new Request(
-                attributes: ['_firewall_context' => 'some.other.firewall.context'],
-                server: ['REQUEST_URI' => '/health']
-            ),
-        );
+        $event->expects('getRequest')
+            ->times(2)
+            ->andReturn(
+                new Request(
+                    attributes: ['_firewall_context' => 'some.other.firewall.context'],
+                    server: ['REQUEST_URI' => '/health'],
+                ),
+            );
 
         $event->shouldNotHaveReceived('setResponse');
 
@@ -154,12 +185,14 @@ class ApplicationModeRedirectorTest extends MockeryTestCase
         $redirector = new ApplicationModeRedirector(ApplicationMode::ADMIN);
 
         $event = Mockery::mock(RequestEvent::class);
-        $event->shouldReceive('getRequest')->andReturn(
-            new Request(
-                attributes: ['_firewall_context' => 'some.other.firewall.context'],
-                server: ['REQUEST_URI' => $path]
-            ),
-        );
+        $event->expects('getRequest')
+            ->times(2)
+            ->andReturn(
+                new Request(
+                    attributes: ['_firewall_context' => 'some.other.firewall.context'],
+                    server: ['REQUEST_URI' => $path],
+                ),
+            );
 
         $event->shouldNotHaveReceived('setResponse');
 

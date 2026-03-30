@@ -44,31 +44,31 @@ final class DepartmentFileServiceTest extends UnitTestCase
 
     public function testRemoveDepartmentLogo(): void
     {
-        $this->fileInfo->shouldReceive('isUploaded')->once()->andReturnTrue();
+        $this->fileInfo->expects('isUploaded')->andReturnTrue();
 
-        $this->department->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
+        $this->department->expects('getFileInfo')->times(2)->andReturn($this->fileInfo);
 
-        $this->fileInfo->shouldReceive('getPath')->andReturn($path = 'path/to/logo.svg');
-        $this->department->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
+        $this->fileInfo->expects('getPath')->andReturn($path = 'path/to/logo.svg');
+        $this->department->expects('getFileInfo')->andReturn($this->fileInfo);
 
-        $this->assetsStorage->shouldReceive('delete')->with($path);
+        $this->assetsStorage->expects('delete')->with($path);
 
-        $this->fileInfo->shouldReceive('setName')->with(null)->once();
-        $this->fileInfo->shouldReceive('setSize')->with(0)->once();
-        $this->fileInfo->shouldReceive('setType')->with(null)->once();
-        $this->fileInfo->shouldReceive('removeFileProperties')->once();
+        $this->fileInfo->expects('setName')->with(null);
+        $this->fileInfo->expects('setSize')->with(0);
+        $this->fileInfo->expects('setType')->with(null);
+        $this->fileInfo->expects('removeFileProperties');
 
-        $this->doctrine->shouldReceive('persist')->with($this->department)->once();
-        $this->doctrine->shouldReceive('flush')->withNoArgs()->once();
+        $this->doctrine->expects('persist')->with($this->department);
+        $this->doctrine->expects('flush')->withNoArgs();
 
         $this->departmentFileService->removeDepartmentLogo($this->department);
     }
 
     public function testRemoveDepartmentLogoDoesNothingIfNotUploaded(): void
     {
-        $this->fileInfo->shouldReceive('isUploaded')->once()->andReturnFalse();
+        $this->fileInfo->expects('isUploaded')->andReturnFalse();
 
-        $this->department->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
+        $this->department->expects('getFileInfo')->andReturn($this->fileInfo);
 
         $this->assetsStorage->shouldNotReceive('delete');
 
@@ -77,17 +77,17 @@ final class DepartmentFileServiceTest extends UnitTestCase
 
     public function testGetLogoAsStream(): void
     {
-        $this->fileInfo->shouldReceive('isUploaded')->once()->andReturnTrue();
-        $this->fileInfo->shouldReceive('getPath')->once()->andReturn($path = 'path/to/logo.svg');
+        $this->fileInfo->expects('isUploaded')->andReturnTrue();
+        $this->fileInfo->expects('getPath')->andReturn($path = 'path/to/logo.svg');
 
-        $this->department->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
+        $this->department->expects('getFileInfo')->times(2)->andReturn($this->fileInfo);
 
         $stream = fopen('php://temp', 'r+');
 
         $this->assetsStorage
-            ->shouldReceive('readStream')
+            ->expects('readStream')
             ->with($path)
-            ->once()
+
             ->andReturn($stream);
 
         $result = $this->departmentFileService->getLogoAsStream($this->department);
@@ -97,11 +97,12 @@ final class DepartmentFileServiceTest extends UnitTestCase
 
     public function testGetLogoAsStreamThrowsNoLogFoundExceptionIfNotUploaded(): void
     {
-        $this->fileInfo->shouldReceive('isUploaded')->once()->andReturnFalse();
+        $this->fileInfo->expects('isUploaded')->andReturnFalse();
 
-        $this->department->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
+        $this->department->expects('getFileInfo')->andReturn($this->fileInfo);
         $this->department
-            ->shouldReceive('getId')
+            ->expects('getId')
+            ->times(2)
             ->andReturn(Uuid::fromString('1f0535b7-189d-60fc-9b87-cf947e5e653e'));
 
         self::expectExceptionObject(
@@ -113,20 +114,21 @@ final class DepartmentFileServiceTest extends UnitTestCase
 
     public function testGetLogoAsStreamThrowsNoLogFoundExceptionIfFileCannotBeFound(): void
     {
-        $this->fileInfo->shouldReceive('isUploaded')->once()->andReturnTrue();
-        $this->fileInfo->shouldReceive('getPath')->once()->andReturn($path = 'path/to/logo.svg');
+        $this->fileInfo->expects('isUploaded')->andReturnTrue();
+        $this->fileInfo->expects('getPath')->andReturn($path = 'path/to/logo.svg');
 
-        $this->department->shouldReceive('getFileInfo')->once()->andReturn($this->fileInfo);
+        $this->department->expects('getFileInfo')->andReturn($this->fileInfo);
 
         $this->assetsStorage
-            ->shouldReceive('readStream')
+            ->expects('readStream')
             ->with($path)
-            ->once()
+
             ->andThrow(new UnableToReadFile('File not found'));
 
-        $this->department->shouldReceive('getFileInfo')->once()->andReturn($this->fileInfo);
+        $this->department->expects('getFileInfo')->andReturn($this->fileInfo);
         $this->department
-            ->shouldReceive('getId')
+            ->expects('getId')
+            ->times(2)
             ->andReturn(Uuid::fromString('1f0535b7-189d-60fc-9b87-cf947e5e653e'));
 
         self::expectExceptionObject(

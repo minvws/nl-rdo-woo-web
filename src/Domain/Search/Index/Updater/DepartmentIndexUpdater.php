@@ -15,13 +15,14 @@ readonly class DepartmentIndexUpdater
 {
     public function __construct(
         private ElasticClientInterface $elastic,
+        private ElasticConfig $elasticConfig,
     ) {
     }
 
     public function update(Department $department): void
     {
         $this->elastic->updateByQuery([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'body' => [
                 'query' => [
                     'bool' => [

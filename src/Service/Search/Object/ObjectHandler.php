@@ -22,6 +22,7 @@ readonly class ObjectHandler
 {
     public function __construct(
         private ElasticClientInterface $elastic,
+        private ElasticConfig $elasticConfig,
     ) {
     }
 
@@ -31,7 +32,7 @@ readonly class ObjectHandler
     public function isIngested(Document $document): bool
     {
         $response = $this->elastic->exists([
-            'index' => ElasticConfig::READ_INDEX,
+            'index' => $this->elasticConfig->readIndex,
             'id' => ElasticDocumentId::forObject($document),
         ]);
 
@@ -45,7 +46,7 @@ readonly class ObjectHandler
     public function getPageContent(Document $document, int $pageNr): string
     {
         $params = [
-            'index' => ElasticConfig::READ_INDEX,
+            'index' => $this->elasticConfig->readIndex,
             'body' => [
                 '_source' => false,
                 'query' => [

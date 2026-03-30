@@ -26,10 +26,10 @@ class ThemeManagerTest extends UnitTestCase
         $this->themeViewFactory = Mockery::mock(ThemeViewFactory::class);
 
         $this->themeA = Mockery::mock(ThemeInterface::class);
-        $this->themeA->shouldReceive('getUrlName')->andReturn('a');
+        $this->themeA->expects('getUrlName')->andReturn('a');
 
         $this->themeB = Mockery::mock(ThemeInterface::class);
-        $this->themeB->shouldReceive('getUrlName')->andReturn('b');
+        $this->themeB->expects('getUrlName')->andReturn('b');
 
         $this->themeManager = new ThemeManager(
             $this->themeViewFactory,

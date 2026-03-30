@@ -20,5 +20,5 @@
     id: maindoc456
     type: { name: MAIN_DOCUMENT, value: main_document }
     title: 'maindocument title'
-    link: /link/to/woo-decision-attachment
+    link: /link/to/woo-decision-main-document
     number: null

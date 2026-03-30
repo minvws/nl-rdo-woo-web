@@ -23,6 +23,8 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
+use Shared\ValueObject\ExternalId;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Webmozart\Assert\Assert;
 
@@ -43,6 +45,8 @@ final class AdviceProcessor extends AbstractDossierProcessor
         OrganisationRepository $organisationRepository,
         SubjectRepository $subjectRepository,
         private readonly AdviceRepository $adviceRepository,
+        private readonly Security $security,
+        private readonly AdviceMapper $adviceMapper,
     ) {
         parent::__construct(
             $attachmentService,
@@ -52,6 +56,7 @@ final class AdviceProcessor extends AbstractDossierProcessor
             $mainDocumentService,
             $organisationRepository,
             $subjectRepository,
+            $this->security,
         );
     }
 
@@ -70,6 +75,7 @@ final class AdviceProcessor extends AbstractDossierProcessor
 
         $adviceExternalId = $uriVariables['adviceExternalId'];
         Assert::string($adviceExternalId);
+        $adviceExternalId = ExternalId::create($adviceExternalId);
 
         $organisation = $this->getOrganisation($uriVariables);
         $subject = $this->getSubject($data, $organisation);
@@ -79,12 +85,12 @@ final class AdviceProcessor extends AbstractDossierProcessor
         if ($advice === null) {
             $advice = $this->create($organisation, $department, $subject, $data, $adviceExternalId);
 
-            return AdviceMapper::fromEntity($advice);
+            return $this->adviceMapper->fromEntity($advice);
         }
 
         $this->update($advice, $organisation, $department, $subject, $data);
 
-        return AdviceMapper::fromEntity($advice);
+        return $this->adviceMapper->fromEntity($advice);
     }
 
     private function create(
@@ -92,7 +98,7 @@ final class AdviceProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         AdviceRequestDto $adviceRequestDto,
-        string $adviceExternalId,
+        ExternalId $adviceExternalId,
     ): Advice {
         $advice = AdviceMapper::create(
             $adviceRequestDto,

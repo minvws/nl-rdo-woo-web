@@ -34,30 +34,29 @@ final class AttachmentDtoFactoryTest extends UnitTestCase
     public function testMake(): void
     {
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getDocumentPrefix')->andReturn($prefix = 'FOO');
-        $wooDecision->shouldReceive('getDossierNr')->andReturn($dossierNr = 'BAR-123');
-        $wooDecision->shouldReceive('getId')->andReturn(Uuid::fromString('00000000-0000-0000-0000-000000000001'));
+        $wooDecision->expects('getDocumentPrefix')->andReturn($prefix = 'FOO');
+        $wooDecision->expects('getDossierNr')->andReturn($dossierNr = 'BAR-123');
+        $wooDecision->expects('getId')->andReturn(Uuid::fromString('00000000-0000-0000-0000-000000000001'));
 
         $attachment = Mockery::mock(WooDecisionAttachment::class);
-        $attachment->shouldReceive('getDossier')->andReturn($wooDecision);
-        $attachment->shouldReceive('getId')->andReturn($attachmentId = Uuid::fromString('00000000-0000-0000-0000-000000000002'));
-        $attachment->shouldReceive('getFileInfo->getName')->andReturn('foo.pdf');
-        $attachment->shouldReceive('getFileInfo->getMimeType')->andReturn('application/pdf');
-        $attachment->shouldReceive('getFormalDate')->andReturn(new DateTimeImmutable('2024-01-14 09:10:13'));
-        $attachment->shouldReceive('getType')->andReturn(AttachmentType::ANNUAL_REPORT);
-        $attachment->shouldReceive('getFileInfo->getSize')->andReturn(123);
-        $attachment->shouldReceive('getInternalReference')->andReturn('internal ref X');
-        $attachment->shouldReceive('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
-        $attachment->shouldReceive('getGrounds')->andReturn(['ground A', 'ground B']);
+        $attachment->expects('getDossier')->times(3)->andReturn($wooDecision);
+        $attachment->expects('getId')->times(2)->andReturn($attachmentId = Uuid::fromString('00000000-0000-0000-0000-000000000002'));
+        $attachment->expects('getFileInfo->getName')->andReturn('foo.pdf');
+        $attachment->expects('getFileInfo->getMimeType')->andReturn('application/pdf');
+        $attachment->expects('getFormalDate')->andReturn(new DateTimeImmutable('2024-01-14 09:10:13'));
+        $attachment->expects('getType')->andReturn(AttachmentType::ANNUAL_REPORT);
+        $attachment->expects('getFileInfo->getSize')->andReturn(123);
+        $attachment->expects('getInternalReference')->andReturn('internal ref X');
+        $attachment->expects('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
+        $attachment->expects('getGrounds')->andReturn(['ground A', 'ground B']);
 
-        $this->urlGenerator->shouldReceive('generate')->with(
-            'app_admin_dossier_attachment_withdraw',
-            [
+        $this->urlGenerator->expects('generate')
+            ->with('app_admin_dossier_attachment_withdraw', [
                 'prefix' => $prefix,
                 'dossierId' => $dossierNr,
                 'attachmentId' => $attachmentId,
-            ]
-        )->andReturn('/foo/bar');
+            ])
+            ->andReturn('/foo/bar');
 
         $this->assertMatchesSnapshot(
             $this->factory->make(WooDecisionAttachmentDto::class, $attachment),

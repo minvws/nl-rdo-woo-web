@@ -40,20 +40,20 @@ class SitemapAttachmentSubscriberTest extends UnitTestCase
     public function testPopulate(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn($prefix = 'foo');
-        $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = 'bar');
-        $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
+        $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'foo');
+        $dossier->expects('getDossierNr')->andReturn($dossierNr = 'bar');
+        $dossier->expects('getType')->andReturn(DossierType::COVENANT);
 
         $attachment = Mockery::mock(AbstractAttachment::class);
-        $attachment->shouldReceive('getDossier')->andReturn($dossier);
-        $attachment->shouldReceive('getId')->andReturn($attachmentId = Uuid::v6());
-        $attachment->shouldReceive('getUpdatedAt')->andReturn($updatedAt = new DateTimeImmutable());
+        $attachment->expects('getDossier')->andReturn($dossier);
+        $attachment->expects('getId')->andReturn($attachmentId = Uuid::v6());
+        $attachment->expects('getUpdatedAt')->andReturn($updatedAt = new DateTimeImmutable());
 
         $urlContainer = Mockery::mock(UrlContainerInterface::class);
 
         $this->attachmentRepository
             ->expects('getAllPublishedQuery->toIterable')
-            ->once()
+
             ->andReturn([$attachment]);
 
         $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);

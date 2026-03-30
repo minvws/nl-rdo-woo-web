@@ -32,7 +32,7 @@ class UserAdminAuditLoggerTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->internalAuditLogger = Mockery::mock(AuditLoggerInterface::class);
-        $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
+        $this->internalAuditLogger->expects('canHandleEvent')->andReturnTrue();
         $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
 
         $this->userAdminAuditLogger = new UserAdminAuditLogger(
@@ -43,7 +43,7 @@ class UserAdminAuditLoggerTest extends UnitTestCase
     public function testOnCreated(): void
     {
         $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAuditId')->andReturn('foo123');
+        $user->expects('getAuditId')->andReturn('foo123');
         $actor = Mockery::mock(User::class);
         $roles = ['FOO', 'BAR'];
 
@@ -62,7 +62,7 @@ class UserAdminAuditLoggerTest extends UnitTestCase
     public function testOnReset(): void
     {
         $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAuditId')->andReturn('foo123');
+        $user->expects('getAuditId')->andReturn('foo123');
         $actor = Mockery::mock(User::class);
 
         $this->internalAuditLogger->expects('log')->with(Mockery::on(
@@ -80,7 +80,7 @@ class UserAdminAuditLoggerTest extends UnitTestCase
     public function testOnDisable(): void
     {
         $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAuditId')->andReturn('foo123');
+        $user->expects('getAuditId')->andReturn('foo123');
         $actor = Mockery::mock(User::class);
 
         $this->internalAuditLogger->expects('log')->with(Mockery::on(
@@ -99,7 +99,7 @@ class UserAdminAuditLoggerTest extends UnitTestCase
     public function testOnEnable(): void
     {
         $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAuditId')->andReturn('foo123');
+        $user->expects('getAuditId')->andReturn('foo123');
         $actor = Mockery::mock(User::class);
 
         $this->internalAuditLogger->expects('log')->with(Mockery::on(
@@ -118,15 +118,15 @@ class UserAdminAuditLoggerTest extends UnitTestCase
     public function testOnUpdate(): void
     {
         $oldUser = Mockery::mock(User::class);
-        $oldUser->shouldReceive('getRoles')->andReturn(['BAR']);
-        $oldUser->shouldReceive('getName')->andReturn('Bar');
-        $oldUser->shouldReceive('getEmail')->andReturn('bar@foo.com');
+        $oldUser->expects('getRoles')->andReturn(['BAR']);
+        $oldUser->expects('getName')->andReturn('Bar');
+        $oldUser->expects('getEmail')->andReturn('bar@foo.com');
 
         $updatedUser = Mockery::mock(User::class);
-        $updatedUser->shouldReceive('getAuditId')->andReturn('foo123');
-        $updatedUser->shouldReceive('getRoles')->andReturn(['FOO']);
-        $updatedUser->shouldReceive('getName')->andReturn('Foo');
-        $updatedUser->shouldReceive('getEmail')->andReturn('foo@bar.com');
+        $updatedUser->expects('getAuditId')->andReturn('foo123');
+        $updatedUser->expects('getRoles')->andReturn(['FOO']);
+        $updatedUser->expects('getName')->andReturn('Foo');
+        $updatedUser->expects('getEmail')->andReturn('foo@bar.com');
 
         $actor = Mockery::mock(User::class);
 

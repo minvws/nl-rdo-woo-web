@@ -1,0 +1,5 @@
+framework:
+    messenger:
+        # override routing to move ValidateUploadCommand to routed sync
+        routing:
+            Shared\Domain\Upload\Command\ValidateUploadCommand: sync

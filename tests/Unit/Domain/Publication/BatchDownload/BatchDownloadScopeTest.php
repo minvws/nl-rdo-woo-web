@@ -47,8 +47,8 @@ class BatchDownloadScopeTest extends UnitTestCase
         $inquiry = Mockery::mock(Inquiry::class);
 
         $batch = Mockery::mock(BatchDownload::class);
-        $batch->shouldReceive('getDossier')->andReturn($wooDecision);
-        $batch->shouldReceive('getInquiry')->andReturn($inquiry);
+        $batch->expects('getDossier')->andReturn($wooDecision);
+        $batch->expects('getInquiry')->andReturn($inquiry);
 
         $scope = BatchDownloadScope::fromBatch($batch);
 

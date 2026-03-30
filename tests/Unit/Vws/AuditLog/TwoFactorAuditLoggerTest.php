@@ -26,7 +26,7 @@ class TwoFactorAuditLoggerTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->internalAuditLogger = Mockery::mock(AuditLoggerInterface::class);
-        $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
+        $this->internalAuditLogger->expects('canHandleEvent')->andReturnTrue();
         $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
 
         $this->twoFactorLogger = new TwoFactorAuditLogger(
@@ -37,9 +37,9 @@ class TwoFactorAuditLoggerTest extends UnitTestCase
     public function testOnSuccessLogsMessage(): void
     {
         $user = Mockery::mock(User::class);
-        $user->shouldReceive('getName')->andReturn('Foo Bar');
-        $user->shouldReceive('getUserIdentifier')->andReturn('foo-123');
-        $user->shouldReceive('getRoles')->andReturn(['FOO', 'BAR']);
+        $user->expects('getName')->andReturn('Foo Bar');
+        $user->expects('getUserIdentifier')->andReturn('foo-123');
+        $user->expects('getRoles')->andReturn(['FOO', 'BAR']);
 
         $request = Mockery::mock(Request::class);
         $token = Mockery::mock(TokenInterface::class);

@@ -1,0 +1,28 @@
+parameters:
+    app_secret: '%env(MINVWS_APP_SECRET)%'
+    public_base_url: '%env(MINVWS_PUBLIC_BASE_URL)%'
+    site_name: '%env(MINVWS_SITE_NAME)%'
+    cookie_name: '%env(MINVWS_COOKIE_NAME)%'
+    totp_issuer: '%env(MINVWS_TOTP_ISSUER)%'
+    trusted_hosts: '%env(MINVWS_TRUSTED_HOSTS)%'
+    database_encryption_key: '%env(MINVWS_DATABASE_ENCRYPTION_KEY)%'
+
+    # RabbitMQ
+    rabbitmq_url: '%env(MINVWS_RABBITMQ_URL)%'
+    rabbitmq_stats_url: '%env(MINVWS_RABBITMQ_STATS_URL)%'
+
+    high_transport_dsn: '%env(MINVWS_HIGH_TRANSPORT_DSN)%'
+    ingestor_transport_dsn: '%env(MINVWS_INGESTOR_TRANSPORT_DSN)%'
+    esupdater_transport_dsn: '%env(MINVWS_ESUPDATER_TRANSPORT_DSN)%'
+    global_transport_dsn: '%env(MINVWS_GLOBAL_TRANSPORT_DSN)%'
+
+    # Application publication_api specific configs:
+    publication_api_ssl_username_whitelist: '%env(string:MINVWS_PUBLICATION_API_SSL_USERNAME_WHITELIST)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    Shared\Vws\Search\Theme\Covid19Theme:
+        tags: [ 'woo_platform.search.theme' ]

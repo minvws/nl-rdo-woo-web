@@ -41,19 +41,19 @@ class InventoryDocumentMapperTest extends UnitTestCase
         $urls = ['http://dummy.url', 'https://x.y.z'];
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getDossierNr')->andReturn('tst-123');
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn('PREFIX');
-        $dossier->shouldReceive('getTitle')->andReturn('Foo Bar');
+        $dossier->expects('getDossierNr')->times(3)->andReturn('tst-123');
+        $dossier->expects('getDocumentPrefix')->times(9)->andReturn('PREFIX');
+        $dossier->expects('getTitle')->andReturn('Foo Bar');
 
         $referredDocA = Mockery::mock(Document::class);
-        $referredDocA->shouldReceive('getDocumentNr')->andReturn($refDocIdA = 'PREFIX-matterA-A');
-        $referredDocA->shouldReceive('getDocumentId')->andReturn('A');
-        $referredDocA->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossier]));
+        $referredDocA->expects('getDocumentNr')->times(2)->andReturn($refDocIdA = 'PREFIX-matterA-A');
+        $referredDocA->expects('getDocumentId')->times(3)->andReturn('A');
+        $referredDocA->expects('getDossiers')->times(2)->andReturn(new ArrayCollection([$dossier]));
 
         $referredDocB = Mockery::mock(Document::class);
-        $referredDocB->shouldReceive('getDocumentNr')->andReturn($refDocIdB = 'PREFIX-matterB-B');
-        $referredDocB->shouldReceive('getDocumentId')->andReturn('B');
-        $referredDocB->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossier]));
+        $referredDocB->expects('getDocumentNr')->times(2)->andReturn($refDocIdB = 'PREFIX-matterB-B');
+        $referredDocB->expects('getDocumentId')->times(3)->andReturn('B');
+        $referredDocB->expects('getDossiers')->times(2)->andReturn(new ArrayCollection([$dossier]));
 
         $this->urlGenerator
             ->expects('generate')
@@ -66,16 +66,16 @@ class InventoryDocumentMapperTest extends UnitTestCase
             ->andReturn('test-url-B');
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDocumentId')->andReturn(123);
-        $document->shouldReceive('getDocumentNr')->andReturn($docNr = 'PREFIX-matterA-123');
-        $document->shouldReceive('getFileInfo->getName')->andReturn('test-doc-name');
-        $document->shouldReceive('getJudgement')->andReturn(Judgement::PARTIAL_PUBLIC);
-        $document->shouldReceive('getGrounds')->andReturn(['a', 'b']);
-        $document->shouldReceive('getRemark')->andReturnNull();
-        $document->shouldReceive('isSuspended')->andReturnTrue();
-        $document->shouldReceive('getDossiers->first')->andReturn($dossier);
-        $document->shouldReceive('getLinks')->andReturn($urls);
-        $document->shouldReceive('getRefersTo')->andReturn(new ArrayCollection([$referredDocA, $referredDocB]));
+        $document->expects('getDocumentId')->times(4)->andReturn(123);
+        $document->expects('getDocumentNr')->times(3)->andReturn($docNr = 'PREFIX-matterA-123');
+        $document->expects('getFileInfo->getName')->andReturn('test-doc-name');
+        $document->expects('getJudgement')->times(2)->andReturn(Judgement::PARTIAL_PUBLIC);
+        $document->expects('getGrounds')->andReturn(['a', 'b']);
+        $document->expects('getRemark')->andReturnNull();
+        $document->expects('isSuspended')->andReturnTrue();
+        $document->expects('getDossiers->first')->times(2)->andReturn($dossier);
+        $document->expects('getLinks')->andReturn($urls);
+        $document->expects('getRefersTo')->times(2)->andReturn(new ArrayCollection([$referredDocA, $referredDocB]));
 
         $this->translator
             ->expects('trans')

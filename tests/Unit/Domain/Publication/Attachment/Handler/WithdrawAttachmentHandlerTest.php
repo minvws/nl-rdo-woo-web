@@ -53,7 +53,7 @@ class WithdrawAttachmentHandlerTest extends UnitTestCase
 
         $attachmentId = Uuid::v6();
         $attachment = Mockery::mock(CovenantAttachment::class);
-        $attachment->shouldReceive('canWithdraw')->andReturnTrue();
+        $attachment->expects('canWithdraw')->andReturnTrue();
         $attachment->expects('withdraw')->with($reason, $explanation);
 
         $this->entityLoader
@@ -81,7 +81,7 @@ class WithdrawAttachmentHandlerTest extends UnitTestCase
 
         $attachmentId = Uuid::v6();
         $attachment = Mockery::mock(CovenantAttachment::class);
-        $attachment->shouldReceive('canWithdraw')->andReturnFalse();
+        $attachment->expects('canWithdraw')->andReturnFalse();
 
         $this->entityLoader
             ->expects('loadAndValidateAttachment')

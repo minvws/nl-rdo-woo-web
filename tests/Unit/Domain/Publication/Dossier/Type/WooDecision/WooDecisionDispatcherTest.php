@@ -53,7 +53,7 @@ class WooDecisionDispatcherTest extends UnitTestCase
     {
         $wooDecisionId = Uuid::v6();
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getId')->andReturn($wooDecisionId);
+        $wooDecision->expects('getId')->andReturn($wooDecisionId);
 
         $reason = DocumentWithdrawReason::INCORRECT_ATTACHMENT;
         $explanation = 'oops';

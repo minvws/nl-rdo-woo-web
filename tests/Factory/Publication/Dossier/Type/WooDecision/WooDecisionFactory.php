@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Shared\Tests\Factory\Publication\Dossier\Type\WooDecision;
 
 use Carbon\CarbonImmutable;
-use Override;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
@@ -19,8 +19,6 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 final class WooDecisionFactory extends PersistentObjectFactory
 {
     /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
      * @return array<string, mixed>
      */
     protected function defaults(): array
@@ -46,12 +44,6 @@ final class WooDecisionFactory extends PersistentObjectFactory
                 DecisionType::NOT_PUBLIC,
                 DecisionType::NOTHING_FOUND,
                 DecisionType::PARTIAL_PUBLIC,
-                DecisionType::PARTIAL_PUBLIC,
-                DecisionType::PARTIAL_PUBLIC,
-                DecisionType::PARTIAL_PUBLIC,
-                DecisionType::PUBLIC,
-                DecisionType::PUBLIC,
-                DecisionType::PUBLIC,
                 DecisionType::PUBLIC,
             ]),
             'status' => DossierStatus::PUBLISHED,
@@ -63,13 +55,23 @@ final class WooDecisionFactory extends PersistentObjectFactory
         ];
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
-    #[Override]
-    protected function initialize(): static
+    public function concept(): self
     {
-        return $this;
+        return $this->with([
+            'status' => DossierStatus::CONCEPT,
+            'mainDocument' => null,
+        ]);
+    }
+
+    public function scheduled(): self
+    {
+        return $this->with([
+            'departments' => [DepartmentFactory::new()],
+            'mainDocument' => WooDecisionMainDocumentFactory::new(),
+            'status' => DossierStatus::SCHEDULED,
+            'previewDate' => self::faker()->optional()->dateTimeBetween('+1 week', '+2 weeks'),
+            'publicationDate' => self::faker()->dateTimeBetween('+1 week', '+2 weeks'),
+        ]);
     }
 
     public static function class(): string

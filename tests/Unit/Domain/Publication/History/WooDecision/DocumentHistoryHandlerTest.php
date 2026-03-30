@@ -44,7 +44,7 @@ class DocumentHistoryHandlerTest extends UnitTestCase
     public function testHandleAllDocumentsWithdrawn(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
+        $dossier->expects('getId')->times(2)->andReturn(Uuid::v6());
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
 
@@ -86,10 +86,10 @@ class DocumentHistoryHandlerTest extends UnitTestCase
     {
         $dossier = Mockery::mock(WooDecision::class);
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getJudgement')->andReturn(Judgement::NOT_PUBLIC);
+        $document->expects('getJudgement')->andReturn(Judgement::NOT_PUBLIC);
         $metadata = Mockery::mock(DocumentMetadata::class);
-        $metadata->shouldReceive('getJudgement')->andReturn(Judgement::ALREADY_PUBLIC);
-        $metadata->shouldReceive('isSuspended')->andReturnTrue();
+        $metadata->expects('getJudgement')->times(2)->andReturn(Judgement::ALREADY_PUBLIC);
+        $metadata->expects('isSuspended')->andReturnTrue();
 
         $changeset = Mockery::mock(PropertyChangeset::class);
 

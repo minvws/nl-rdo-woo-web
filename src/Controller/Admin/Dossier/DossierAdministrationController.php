@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin\Dossier;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -20,7 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 use function sprintf;
 

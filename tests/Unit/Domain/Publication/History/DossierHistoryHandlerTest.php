@@ -43,10 +43,10 @@ final class DossierHistoryHandlerTest extends UnitTestCase
         $dossierStatus = DossierStatus::CONCEPT;
 
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
-        $dossier->shouldReceive('getStatus')->andReturn($dossierStatus);
+        $dossier->expects('getId')->times(3)->andReturn(Uuid::v6());
+        $dossier->expects('getStatus')->andReturn($dossierStatus);
 
-        $this->repository->shouldReceive('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
+        $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
 
         $event = DossierCreatedEvent::forDossier($dossier);
 
@@ -59,8 +59,7 @@ final class DossierHistoryHandlerTest extends UnitTestCase
                     'applicationMode' => $this->applicationMode->value,
                     'status' => $dossierStatus->value,
                 ],
-            )
-            ->once();
+            );
 
         $this->handler->handleCreated($event);
     }

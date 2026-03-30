@@ -57,7 +57,6 @@ final class AnnualReportAttachmentFactory extends PersistentObjectFactory
 
                     $reflection = new ReflectionClass($attachment);
                     $property = $reflection->getProperty('id');
-                    $property->setAccessible(true);
                     $property->setValue($attachment, $attributes['overwrite_id']);
 
                     $this->entityManager->persist($attachment);

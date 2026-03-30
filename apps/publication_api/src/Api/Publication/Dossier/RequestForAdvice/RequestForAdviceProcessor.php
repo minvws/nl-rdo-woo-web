@@ -21,6 +21,8 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
+use Shared\ValueObject\ExternalId;
+use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -37,6 +39,8 @@ final class RequestForAdviceProcessor extends AbstractDossierProcessor
         OrganisationRepository $organisationRepository,
         SubjectRepository $subjectRepository,
         private readonly RequestForAdviceRepository $requestForAdviceRepository,
+        private readonly Security $security,
+        private readonly RequestForAdviceMapper $requestForAdviceMapper,
     ) {
         parent::__construct(
             $attachmentService,
@@ -46,6 +50,7 @@ final class RequestForAdviceProcessor extends AbstractDossierProcessor
             $mainDocumentService,
             $organisationRepository,
             $subjectRepository,
+            $this->security,
         );
     }
 
@@ -64,6 +69,7 @@ final class RequestForAdviceProcessor extends AbstractDossierProcessor
 
         $requestForAdviceExternalId = $uriVariables['requestForAdviceExternalId'];
         Assert::string($requestForAdviceExternalId);
+        $requestForAdviceExternalId = ExternalId::create($requestForAdviceExternalId);
 
         $organisation = $this->getOrganisation($uriVariables);
         $subject = $this->getSubject($data, $organisation);
@@ -73,12 +79,12 @@ final class RequestForAdviceProcessor extends AbstractDossierProcessor
         if ($requestForAdvice === null) {
             $requestForAdvice = $this->create($organisation, $department, $subject, $data, $requestForAdviceExternalId);
 
-            return RequestForAdviceMapper::fromEntity($requestForAdvice);
+            return $this->requestForAdviceMapper->fromEntity($requestForAdvice);
         }
 
         $this->update($requestForAdvice, $organisation, $department, $subject, $data);
 
-        return RequestForAdviceMapper::fromEntity($requestForAdvice);
+        return $this->requestForAdviceMapper->fromEntity($requestForAdvice);
     }
 
     private function create(
@@ -86,7 +92,7 @@ final class RequestForAdviceProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         RequestForAdviceRequestDto $requestForAdviceRequestDto,
-        string $requestForAdviceExternalId,
+        ExternalId $requestForAdviceExternalId,
     ): RequestForAdvice {
         $requestForAdvice = RequestForAdviceMapper::create(
             $requestForAdviceRequestDto,

@@ -38,12 +38,8 @@ class DossierListingServiceTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->organisation = Mockery::mock(Organisation::class);
-
         $this->dossierRepository = Mockery::mock(DossierRepository::class);
-
         $this->authorizationMatrix = Mockery::mock(AuthorizationMatrix::class);
-        $this->authorizationMatrix->shouldReceive('getActiveOrganisation')->andReturn($this->organisation);
-
         $this->dossierTypeManager = Mockery::mock(DossierTypeManager::class);
         $this->queryConditions = Mockery::mock(DossierQueryConditions::class);
         $this->translator = Mockery::mock(TranslatorInterface::class);
@@ -59,6 +55,8 @@ class DossierListingServiceTest extends UnitTestCase
 
     public function testGetFilteredListingQueryReturnsBaseQueryWhenNoFilterParametersAreProvided(): void
     {
+        $this->authorizationMatrix->expects('getActiveOrganisation')->andReturn($this->organisation);
+
         $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->authorizationMatrix
@@ -72,7 +70,7 @@ class DossierListingServiceTest extends UnitTestCase
             ->andReturnTrue();
 
         $config = Mockery::mock(DossierTypeConfigInterface::class);
-        $config->shouldReceive('getDossierType')->andReturn(DossierType::COVENANT);
+        $config->expects('getDossierType')->andReturn(DossierType::COVENANT);
 
         $this->dossierTypeManager->expects('getAvailableConfigs')->andReturn([$config]);
 
@@ -99,6 +97,8 @@ class DossierListingServiceTest extends UnitTestCase
 
     public function testGetFilteredListingQueryReturnsBaseQueryFilterParamsAreEmpty(): void
     {
+        $this->authorizationMatrix->expects('getActiveOrganisation')->andReturn($this->organisation);
+
         $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->authorizationMatrix
@@ -112,7 +112,7 @@ class DossierListingServiceTest extends UnitTestCase
             ->andReturnTrue();
 
         $config = Mockery::mock(DossierTypeConfigInterface::class);
-        $config->shouldReceive('getDossierType')->andReturn(DossierType::COVENANT);
+        $config->expects('getDossierType')->andReturn(DossierType::COVENANT);
 
         $this->dossierTypeManager->expects('getAvailableConfigs')->andReturn([$config]);
 
@@ -139,6 +139,8 @@ class DossierListingServiceTest extends UnitTestCase
 
     public function testGetFilteredListingQueryAppliesAllFilterParameters(): void
     {
+        $this->authorizationMatrix->expects('getActiveOrganisation')->andReturn($this->organisation);
+
         $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->authorizationMatrix
@@ -152,7 +154,7 @@ class DossierListingServiceTest extends UnitTestCase
             ->andReturnTrue();
 
         $config = Mockery::mock(DossierTypeConfigInterface::class);
-        $config->shouldReceive('getDossierType')->andReturn(DossierType::COVENANT);
+        $config->expects('getDossierType')->andReturn(DossierType::COVENANT);
 
         $this->dossierTypeManager->expects('getAvailableConfigs')->andReturn([$config]);
 
@@ -269,10 +271,10 @@ class DossierListingServiceTest extends UnitTestCase
     public function testGetAvailableTypes(): void
     {
         $configA = Mockery::mock(DossierTypeConfigInterface::class);
-        $configA->shouldReceive('getDossierType')->andReturn(DossierType::COVENANT);
+        $configA->expects('getDossierType')->andReturn(DossierType::COVENANT);
 
         $configB = Mockery::mock(DossierTypeConfigInterface::class);
-        $configB->shouldReceive('getDossierType')->andReturn(DossierType::WOO_DECISION);
+        $configB->expects('getDossierType')->andReturn(DossierType::WOO_DECISION);
 
         $this->dossierTypeManager->expects('getAvailableConfigs')->andReturn([$configA, $configB]);
 
@@ -285,13 +287,13 @@ class DossierListingServiceTest extends UnitTestCase
     public function testGetAvailableTypesOrderedByName(): void
     {
         $configA = Mockery::mock(DossierTypeConfigInterface::class);
-        $configA->shouldReceive('getDossierType')->andReturn(DossierType::WOO_DECISION);
+        $configA->expects('getDossierType')->andReturn(DossierType::WOO_DECISION);
 
         $configB = Mockery::mock(DossierTypeConfigInterface::class);
-        $configB->shouldReceive('getDossierType')->andReturn(DossierType::COVENANT);
+        $configB->expects('getDossierType')->andReturn(DossierType::COVENANT);
 
-        $this->translator->shouldReceive('trans')->with('dossier.type.woo-decision', [], [], null)->andReturn('W');
-        $this->translator->shouldReceive('trans')->with('dossier.type.covenant', [], [], null)->andReturn('C');
+        $this->translator->expects('trans')->with('dossier.type.woo-decision', [], [], null)->andReturn('W');
+        $this->translator->expects('trans')->with('dossier.type.covenant', [], [], null)->andReturn('C');
 
         $this->dossierTypeManager->expects('getAvailableConfigs')->andReturn([$configA, $configB]);
 

@@ -50,11 +50,12 @@ final class DocumentNumberExtractorTest extends UnitTestCase
     #[DataProvider('getInvalidFilenameData')]
     public function testExtractWithInvalidFilename(string $filename): void
     {
-        $this->dossier->shouldReceive('getId')->andReturn($expectedDossierId = Uuid::v6());
+        $this->dossier->expects('getId')
+            ->times(3)
+            ->andReturn($expectedDossierId = Uuid::v6());
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with(
                 'Cannot extract document ID from the filename',
                 [
@@ -122,7 +123,7 @@ final class DocumentNumberExtractorTest extends UnitTestCase
         $document = Mockery::mock(Document::class);
 
         $file = Mockery::mock(UploadedFile::class);
-        $file->shouldReceive('getOriginalFilename')->andReturn('1234.pdf');
+        $file->expects('getOriginalFilename')->andReturn('1234.pdf');
 
         $this->documentRepository
             ->expects('findOneByDossierAndDocumentId')
@@ -137,10 +138,12 @@ final class DocumentNumberExtractorTest extends UnitTestCase
 
     public function testMatchDocumentForFileReturnsNullForFileProcessException(): void
     {
-        $this->dossier->shouldReceive('getId')->andReturn(Uuid::v6());
+        $this->dossier->expects('getId')
+            ->times(2)
+            ->andReturn(Uuid::v6());
 
         $file = Mockery::mock(UploadedFile::class);
-        $file->shouldReceive('getOriginalFilename')->andReturn('.pdf');
+        $file->expects('getOriginalFilename')->andReturn('.pdf');
 
         $this->logger->expects('error');
 

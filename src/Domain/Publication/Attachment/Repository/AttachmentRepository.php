@@ -10,6 +10,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -83,7 +84,7 @@ class AttachmentRepository extends ServiceEntityRepository
     /**
      * @return ?T
      */
-    public function findByDossierAndExternalId(AbstractDossier $dossier, string $externalId): ?AbstractAttachment
+    public function findByDossierAndExternalId(AbstractDossier $dossier, ExternalId $externalId): ?AbstractAttachment
     {
         /** @var ?T */
         return $this->createQueryBuilder('attachment')
@@ -93,5 +94,24 @@ class AttachmentRepository extends ServiceEntityRepository
             ->setParameter('externalId', $externalId)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function hasIncompleteAttachmentsForDossier(Uuid $dossierId): bool
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        $qb->select('1')
+            ->where('a.dossier = :dossierId')
+            ->andWhere(
+                $qb->expr()->orX(
+                    'a.fileInfo.uploaded = false',
+                    'a.language = :emptyString'
+                )
+            )
+            ->setParameter('dossierId', $dossierId)
+            ->setParameter('emptyString', '')
+            ->setMaxResults(1);
+
+        return $qb->getQuery()->getOneOrNullResult() !== null;
     }
 }

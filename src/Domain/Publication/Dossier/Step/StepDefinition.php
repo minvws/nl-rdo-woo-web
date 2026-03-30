@@ -8,6 +8,7 @@ use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Service\EnumHelper;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use function count;
@@ -40,7 +41,7 @@ readonly class StepDefinition implements StepDefinitionInterface
         $errors = $validator->validate(
             $dossier,
             null,
-            DossierValidationGroup::getValidationGroupsForStep($this),
+            EnumHelper::getStringValues(DossierValidationGroup::getValidationGroupsForStepName($this->name)),
         );
 
         return count($errors) === 0;

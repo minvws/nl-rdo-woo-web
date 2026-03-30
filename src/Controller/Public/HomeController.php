@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Public;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Content\Page\ContentPageService;
 use Shared\Domain\Content\Page\ContentPageType;
 use Shared\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
@@ -14,7 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 use function strval;
 

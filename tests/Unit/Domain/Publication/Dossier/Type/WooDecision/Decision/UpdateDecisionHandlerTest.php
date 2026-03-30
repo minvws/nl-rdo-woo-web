@@ -50,8 +50,8 @@ class UpdateDecisionHandlerTest extends UnitTestCase
     {
         $wooDecisionUuid = Uuid::v6();
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getId')->andReturn($wooDecisionUuid);
-        $wooDecision->shouldReceive('canProvideInventory')->andReturnFalse();
+        $wooDecision->expects('getId')->times(2)->andReturn($wooDecisionUuid);
+        $wooDecision->expects('canProvideInventory')->andReturnFalse();
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($wooDecision, DossierStatusTransition::UPDATE_DECISION);
 

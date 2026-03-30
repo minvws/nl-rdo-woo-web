@@ -54,7 +54,6 @@ class OrganisationServiceTest extends UnitTestCase
         $this->logger->expects('log');
 
         $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAuditId')->andReturn('audit-id-foo');
         $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')->andReturn($user);
 
@@ -85,7 +84,6 @@ class OrganisationServiceTest extends UnitTestCase
         $this->logger->expects('log');
 
         $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAuditId')->andReturn('audit-id-foo');
         $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')->andReturn($user);
 

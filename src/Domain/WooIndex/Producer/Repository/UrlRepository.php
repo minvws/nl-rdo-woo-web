@@ -184,7 +184,7 @@ final readonly class UrlRepository
                 )',
                 RawReferenceDto::class,
             ))
-            ->from((new $dossierClass())->getAttachmentEntityClass(), 'a')
+            ->from(new $dossierClass()->getAttachmentEntityClass(), 'a')
             ->where('a.dossier = :dossierId')
             ->andWhere('a.fileInfo.uploaded = true')
             ->orderBy('a.updatedAt', 'ASC')

@@ -6,6 +6,7 @@ namespace PublicationApi\Api\Publication\Dossier\WooDecision\Uploads\Attachment;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 final class WooDecisionUploadAttachmentProvider implements ProviderInterface
@@ -24,8 +25,8 @@ final class WooDecisionUploadAttachmentProvider implements ProviderInterface
         return new WooDecisionUploadAttachment(
             '',
             $uriVariables['organisationId'],
-            $uriVariables['dossierExternalId'],
-            $uriVariables['attachmentExternalId'],
+            ExternalId::create($uriVariables['dossierExternalId']),
+            ExternalId::create($uriVariables['attachmentExternalId']),
         );
     }
 }

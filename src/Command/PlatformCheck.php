@@ -11,7 +11,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
-#[AsCommand(name: 'woopie:check:platform', description: 'Checks if the current platform is ready for running', aliases: ['woopie:check:production'])]
+#[AsCommand(
+    name: 'woopie:check:platform',
+    description: 'Checks if the current platform is ready for running',
+    aliases: ['woopie:check:production'],
+    help: 'Sanity checks for the current platform',
+)]
 class PlatformCheck extends Command
 {
     /**
@@ -22,12 +27,6 @@ class PlatformCheck extends Command
         private readonly iterable $checkers,
     ) {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->setHelp('Sanity checks for the current platform');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

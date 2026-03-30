@@ -62,28 +62,25 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
         $wooIndexSitemap = null;
 
         $this->wooIndexSitemapRepository
-            ->shouldReceive('save')
-            ->with(Mockery::capture($wooIndexSitemap), true)
-            ->once();
+            ->expects('save')
+            ->with(Mockery::capture($wooIndexSitemap), true);
 
         $this->wooIndex
-            ->shouldReceive('create')
+            ->expects('create')
             ->with(Mockery::on(function (WooIndexSitemap $i) use (&$wooIndexSitemap): bool {
                 return $i === $wooIndexSitemap;
             }), Mockery::type(WooIndexRunOptions::class))
-            ->once()
             ->andReturnTrue();
 
         $this->wooIndexSitemapRepository
-            ->shouldReceive('save')
+            ->expects('save')
             ->with(Mockery::on(function (WooIndexSitemap $i) use (&$wooIndexSitemap): bool {
                 if ($i->getStatus() !== WooIndexSitemapStatus::DONE) {
                     return false;
                 }
 
                 return $i === $wooIndexSitemap;
-            }), true)
-            ->once();
+            }), true);
 
         $result = $this->wooIndexSitemapService->generateSitemap();
 
@@ -92,12 +89,16 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
 
     public function testGetFileAsStream(): void
     {
-        $this->wooIndexNamer->shouldReceive('getStorageSubpath')->with($this->wooIndexSitemap)->andReturn('uuid/');
+        $this->wooIndexNamer->expects('getStorageSubpath')
+            ->with($this->wooIndexSitemap)
+            ->andReturn('uuid/');
 
         $fullpath = 'uuid/my-file.xml';
 
         $tempStream = fopen('php://temp', 'r');
-        $this->wooIndexStorage->shouldReceive('readStream')->with($fullpath)->once()->andReturn($tempStream);
+        $this->wooIndexStorage->expects('readStream')
+            ->with($fullpath)
+            ->andReturn($tempStream);
 
         // Provided a fullpath, but it should only take the basename to provent path traversal:
         $path = '../../foobar/my-file.xml';
@@ -109,13 +110,19 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
 
     public function testGetFileAsStreamThrowsExceptionWhenNotAbleToReadStream(): void
     {
-        $this->wooIndexSitemap->shouldReceive('getId')->andReturn(Uuid::v6());
+        $this->wooIndexSitemap->expects('getId')
+            ->times(2)
+            ->andReturn(Uuid::v6());
 
-        $this->wooIndexNamer->shouldReceive('getStorageSubpath')->with($this->wooIndexSitemap)->andReturn('uuid/');
+        $this->wooIndexNamer->expects('getStorageSubpath')
+            ->with($this->wooIndexSitemap)
+            ->andReturn('uuid/');
 
         $fullpath = 'uuid/my-file.xml';
 
-        $this->wooIndexStorage->shouldReceive('readStream')->with($fullpath)->once()->andThrow($previous = new UnableToReadFile());
+        $this->wooIndexStorage->expects('readStream')
+            ->with($fullpath)
+            ->andThrow($previous = new UnableToReadFile());
 
         $file = 'my-file.xml';
 
@@ -126,12 +133,15 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
 
     public function testCurrentSitemapIndexUrl(): void
     {
-        $this->wooIndexSitemap->shouldReceive('getId')->andReturn($uuid = Uuid::v6());
-        $this->wooIndexSitemapRepository->shouldReceive('lastFinished')->andReturn($this->wooIndexSitemap);
-        $this->wooIndexNamer->shouldReceive('getSitemapIndexName')->andReturn($indexFilename = 'my-indexfilename.xml');
+        $this->wooIndexSitemap->expects('getId')
+            ->andReturn($uuid = Uuid::v6());
+        $this->wooIndexSitemapRepository->expects('lastFinished')
+            ->andReturn($this->wooIndexSitemap);
+        $this->wooIndexNamer->expects('getSitemapIndexName')
+            ->andReturn($indexFilename = 'my-indexfilename.xml');
 
         $this->urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with(
                 'app_woo_index_sitemap_download',
                 [
@@ -139,7 +149,6 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
                     'file' => $indexFilename,
                 ],
             )
-            ->once()
             ->andReturn($subpath = '/my-path/to/the-file.xml');
 
         $result = $this->wooIndexSitemapService->getCurrentSitemapIndexUrl();
@@ -149,7 +158,8 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
 
     public function testCurrentSitemapIndexUrlWithoutAnyWooIndexSitemap(): void
     {
-        $this->wooIndexSitemapRepository->shouldReceive('lastFinished')->andReturnNull();
+        $this->wooIndexSitemapRepository->expects('lastFinished')
+            ->andReturnNull();
 
         $result = $this->wooIndexSitemapService->getCurrentSitemapIndexUrl();
 
@@ -158,22 +168,31 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
 
     public function testCleanupSitemap(): void
     {
-        $this->wooIndexNamer->shouldReceive('getStorageSubpath')->with($this->wooIndexSitemap)->andReturn($path = 'my-path');
+        $this->wooIndexNamer->expects('getStorageSubpath')
+            ->with($this->wooIndexSitemap)
+            ->andReturn($path = 'my-path');
 
-        $this->wooIndexStorage->shouldReceive('deleteDirectory')->with($path)->once();
+        $this->wooIndexStorage->expects('deleteDirectory')
+            ->with($path);
 
-        $this->wooIndexSitemapRepository->shouldReceive('remove')->with($this->wooIndexSitemap, true)->once();
+        $this->wooIndexSitemapRepository->expects('remove')
+            ->with($this->wooIndexSitemap, true);
 
         $this->wooIndexSitemapService->cleanupSitemap($this->wooIndexSitemap);
     }
 
     public function testCleanupSitemapShouldContinueWhenFailingToDeleteDirectory(): void
     {
-        $this->wooIndexNamer->shouldReceive('getStorageSubpath')->with($this->wooIndexSitemap)->andReturn($path = 'my-path');
+        $this->wooIndexNamer->expects('getStorageSubpath')
+            ->with($this->wooIndexSitemap)
+            ->andReturn($path = 'my-path');
 
-        $this->wooIndexStorage->shouldReceive('deleteDirectory')->with($path)->once()->andThrow(new UnableToReadFile());
+        $this->wooIndexStorage->expects('deleteDirectory')
+            ->with($path)
+            ->andThrow(new UnableToReadFile());
 
-        $this->wooIndexSitemapRepository->shouldReceive('remove')->with($this->wooIndexSitemap, true)->once();
+        $this->wooIndexSitemapRepository->expects('remove')
+            ->with($this->wooIndexSitemap, true);
 
         $this->wooIndexSitemapService->cleanupSitemap($this->wooIndexSitemap);
     }
@@ -194,15 +213,13 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
         $cleanupUnfinishedAfterDay = 2;
 
         $this->wooIndexSitemapRepository
-            ->shouldReceive('getSitemapsForCleanup')
+            ->expects('getSitemapsForCleanup')
             ->with(
                 $treshold,
                 Mockery::on(fn (CarbonImmutable $givenDate): bool => $givenDate->eq($now->subDays($cleanupUnfinishedAfterDay))),
             )
-            ->once()
             ->andReturn(new ArrayIterator($wooIndexSitemaps));
 
-        /** @var WooIndexSitemapService&MockInterface $wooIndexSitemapService */
         $wooIndexSitemapService = Mockery::mock(WooIndexSitemapService::class, [
             $this->wooIndexStorage,
             $this->wooIndexNamer,
@@ -212,18 +229,17 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
             $this->publicBaseUrl,
         ])->makePartial();
 
-        $wooIndexSitemapService->shouldReceive('cleanupSitemap')->with($wooIndexSitemaps[0])->once();
-        $wooIndexSitemapService->shouldReceive('cleanupSitemap')->with($wooIndexSitemaps[1])->once();
-        $wooIndexSitemapService->shouldReceive('cleanupSitemap')->with($wooIndexSitemaps[2])->once();
-        $wooIndexSitemapService->shouldReceive('cleanupSitemap')->with($wooIndexSitemaps[3])->once();
-        $wooIndexSitemapService->shouldReceive('cleanupSitemap')->with($wooIndexSitemaps[4])->once();
+        $wooIndexSitemapService->expects('cleanupSitemap')->with($wooIndexSitemaps[0]);
+        $wooIndexSitemapService->expects('cleanupSitemap')->with($wooIndexSitemaps[1]);
+        $wooIndexSitemapService->expects('cleanupSitemap')->with($wooIndexSitemaps[2]);
+        $wooIndexSitemapService->expects('cleanupSitemap')->with($wooIndexSitemaps[3]);
+        $wooIndexSitemapService->expects('cleanupSitemap')->with($wooIndexSitemaps[4]);
 
         $wooIndexSitemapService->cleanupSitemaps($treshold, $cleanupUnfinishedAfterDay);
     }
 
     public function testCleanupAllSitemaps(): void
     {
-        /** @var WooIndexSitemapService&MockInterface $wooIndexSitemapService */
         $wooIndexSitemapService = Mockery::mock(WooIndexSitemapService::class, [
             $this->wooIndexStorage,
             $this->wooIndexNamer,
@@ -233,7 +249,8 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
             $this->publicBaseUrl,
         ])->makePartial();
 
-        $wooIndexSitemapService->shouldReceive('cleanupSitemaps')->with(0, 0)->once();
+        $wooIndexSitemapService->expects('cleanupSitemaps')
+            ->with(0, 0);
 
         $wooIndexSitemapService->cleanupAllSitemaps();
     }

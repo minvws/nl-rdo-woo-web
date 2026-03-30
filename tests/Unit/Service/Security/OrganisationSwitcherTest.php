@@ -29,13 +29,9 @@ class OrganisationSwitcherTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->user = Mockery::mock(User::class);
-
         $this->organisationRepository = Mockery::mock(OrganisationRepository::class);
-
         $this->session = Mockery::mock(Session::class);
-
         $this->requestStack = Mockery::mock(RequestStack::class);
-        $this->requestStack->shouldReceive('getSession')->andReturns($this->session);
 
         $this->organisationSwitcher = new OrganisationSwitcher(
             $this->organisationRepository,
@@ -58,13 +54,15 @@ class OrganisationSwitcherTest extends UnitTestCase
 
     public function testGetActiveOrganisationReturnsAndStoresDefaultOrganisationForSuperAdminWithoutSession(): void
     {
+        $this->requestStack->expects('getSession')->andReturns($this->session);
+
         $uuid = Uuid::v6();
 
         $organisationA = Mockery::mock(Organisation::class);
         $organisationA->expects('getId')->andReturn($uuid);
         $organisationB = Mockery::mock(Organisation::class);
 
-        $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->twice()->andReturnTrue();
+        $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->times(2)->andReturnTrue();
         $this->organisationRepository->expects('getAllSortedByName')->andReturn([$organisationA, $organisationB]);
 
         $this->session->expects('has')->with('organisation')->andReturnFalse();
@@ -78,6 +76,8 @@ class OrganisationSwitcherTest extends UnitTestCase
 
     public function testGetActiveOrganisationReturnsStoredOrganisationForSuperAdminFromSession(): void
     {
+        $this->requestStack->expects('getSession')->andReturns($this->session);
+
         $uuid = Uuid::v6();
 
         $organisation = Mockery::mock(Organisation::class);
@@ -99,9 +99,11 @@ class OrganisationSwitcherTest extends UnitTestCase
 
     public function testGetActiveOrganisationReturnsDefaultOrganisationWhenOrganisationFromSessionCannotBeFound(): void
     {
+        $this->requestStack->expects('getSession')->andReturns($this->session);
+
         $uuid = Uuid::v6();
 
-        $this->user->shouldReceive('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnTrue();
+        $this->user->expects('hasRole')->times(2)->with(Roles::ROLE_SUPER_ADMIN)->andReturnTrue();
 
         $organisationA = Mockery::mock(Organisation::class);
         $organisationB = Mockery::mock(Organisation::class);
@@ -122,9 +124,11 @@ class OrganisationSwitcherTest extends UnitTestCase
 
     public function testGetActiveOrganisationThrowsExceptionWhenFallbackToDefaultOrganisationFails(): void
     {
+        $this->requestStack->expects('getSession')->andReturns($this->session);
+
         $uuid = Uuid::v6();
 
-        $this->user->shouldReceive('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnTrue();
+        $this->user->expects('hasRole')->times(2)->with(Roles::ROLE_SUPER_ADMIN)->andReturnTrue();
 
         $this->session->expects('has')->with('organisation')->andReturnTrue();
         $this->session->expects('get')->with('organisation')->andReturn($uuid->toRfc4122());
@@ -180,6 +184,8 @@ class OrganisationSwitcherTest extends UnitTestCase
 
     public function testSwitchToOrganisationIsAppliedForSuperAdmins(): void
     {
+        $this->requestStack->expects('getSession')->andReturns($this->session);
+
         $uuid = Uuid::v6();
         $organisation = Mockery::mock(Organisation::class);
         $organisation->expects('getId')->andReturn($uuid);

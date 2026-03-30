@@ -39,7 +39,6 @@ final class FileStorerTest extends UnitTestCase
         $this->fileInfo = Mockery::mock(FileInfo::class);
         $this->file = Mockery::mock(UploadedFile::class);
         $this->document = Mockery::mock(Document::class);
-        $this->document->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
 
         $this->fileStorer = new FileStorer(
             $this->logger,
@@ -51,18 +50,21 @@ final class FileStorerTest extends UnitTestCase
 
     public function testStoreForDocumentForFirstUpload(): void
     {
+        $this->document->expects('getFileInfo')
+            ->times(2)
+            ->andReturn($this->fileInfo);
+
         $this->fileInfo
             ->expects('isUploaded')
             ->andReturnFalse();
 
         $this->entityStorageService
-            ->shouldReceive('storeEntity')
-            ->once()
+            ->expects('storeEntity')
             ->with($this->file, $this->document)
             ->andReturnTrue();
 
         $this->file
-            ->shouldReceive('getOriginalFileExtension')
+            ->expects('getOriginalFileExtension')
             ->andReturn('pdf');
 
         $this->fileInfo
@@ -73,14 +75,18 @@ final class FileStorerTest extends UnitTestCase
             ->expects('setPageCount')
             ->with(null);
 
-        $this->doctrine->shouldReceive('persist')->once()->with($this->document);
-        $this->doctrine->shouldReceive('flush')->once();
+        $this->doctrine->expects('persist')->with($this->document);
+        $this->doctrine->expects('flush');
 
         $this->fileStorer->storeForDocument($this->file, $this->document, 'documentId');
     }
 
     public function testStoreForAlreadyUploadedDocumentRemovedOldFilesFirst(): void
     {
+        $this->document->expects('getFileInfo')
+            ->times(2)
+            ->andReturn($this->fileInfo);
+
         $this->fileInfo
             ->expects('isUploaded')
             ->andReturnTrue();
@@ -88,13 +94,12 @@ final class FileStorerTest extends UnitTestCase
         $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($this->document);
 
         $this->entityStorageService
-            ->shouldReceive('storeEntity')
-            ->once()
+            ->expects('storeEntity')
             ->with($this->file, $this->document)
             ->andReturnTrue();
 
         $this->file
-            ->shouldReceive('getOriginalFileExtension')
+            ->expects('getOriginalFileExtension')
             ->andReturn('pdf');
 
         $this->fileInfo
@@ -105,29 +110,32 @@ final class FileStorerTest extends UnitTestCase
             ->expects('setPageCount')
             ->with(null);
 
-        $this->doctrine->shouldReceive('persist')->once()->with($this->document);
-        $this->doctrine->shouldReceive('flush')->once();
+        $this->doctrine->expects('persist')->with($this->document);
+        $this->doctrine->expects('flush');
 
         $this->fileStorer->storeForDocument($this->file, $this->document, 'documentId');
     }
 
     public function testStoreForDocumentWithFailure(): void
     {
+        $this->document->expects('getFileInfo')
+            ->andReturn($this->fileInfo);
+
         $this->fileInfo
             ->expects('isUploaded')
             ->andReturnFalse();
 
         $this->entityStorageService
-            ->shouldReceive('storeEntity')
-            ->once()
+            ->expects('storeEntity')
             ->with($this->file, $this->document)
             ->andReturnFalse();
 
-        $this->file->shouldReceive('getPathname')->andReturn($expectedPath = 'path');
+        $this->file->expects('getPathname')
+            ->times(3)
+            ->andReturn($expectedPath = 'path');
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Failed to store document', [
                 'documentId' => $expectedDocumentId = 'documentId',
                 'path' => $expectedPath,

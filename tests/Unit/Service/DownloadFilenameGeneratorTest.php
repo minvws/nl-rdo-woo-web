@@ -15,8 +15,8 @@ class DownloadFilenameGeneratorTest extends UnitTestCase
     public function testGetFileNameForDocument(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDocumentNr')->andReturn('123');
-        $document->shouldReceive('getFileInfo->getType')->andReturn('csv');
+        $document->expects('getDocumentNr')->andReturn('123');
+        $document->expects('getFileInfo->getType')->andReturn('csv');
 
         $generator = new DownloadFilenameGenerator();
 
@@ -29,7 +29,7 @@ class DownloadFilenameGeneratorTest extends UnitTestCase
     public function testGetFileNameForAttachment(): void
     {
         $attachment = Mockery::mock(WooDecisionAttachment::class);
-        $attachment->shouldReceive('getFileInfo->getName')->andReturn('foo-b@r.bla.docx');
+        $attachment->expects('getFileInfo->getName')->andReturn('foo-b@r.bla.docx');
 
         $generator = new DownloadFilenameGenerator();
 

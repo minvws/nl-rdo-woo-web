@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Shared\Service;
 
-use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-use function array_column;
-
 readonly class MainDocumentService
 {
     public function __construct(
+        private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
     ) {
     }
@@ -23,10 +22,19 @@ readonly class MainDocumentService
      */
     public function validate(AbstractMainDocument $mainDocument): void
     {
-        $errors = $this->validator->validate($mainDocument, groups: array_column(DossierValidationGroup::cases(), 'value'));
+        $errors = $this->validator->validate($mainDocument);
 
         if ($errors->count() > 0) {
             throw new ValidationFailedException($mainDocument, $errors);
+        }
+    }
+
+    public function refreshMainDocument(AbstractMainDocument $mainDocument): void
+    {
+        $unitOfWork = $this->entityManager->getUnitOfWork();
+
+        if ($this->entityManager->contains($mainDocument) && ! $unitOfWork->isScheduledForInsert($mainDocument)) {
+            $this->entityManager->refresh($mainDocument);
         }
     }
 }

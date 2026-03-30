@@ -12,6 +12,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Service\ApiPlatformService;
+use Shared\ValueObject\ExternalId;
 
 use function count;
 
@@ -19,6 +20,7 @@ final readonly class WooDecisionProvider implements ProviderInterface
 {
     public function __construct(
         private OrganisationRepository $organisationRepository,
+        private WooDecisionMapper $wooDecisionMapper,
         private WooDecisionRepository $wooDecisionRepository,
         private int $itemsPerPage,
     ) {
@@ -38,7 +40,7 @@ final readonly class WooDecisionProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, $uriVariables['wooDecisionExternalId']);
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['wooDecisionExternalId']));
     }
 
     /**
@@ -52,16 +54,16 @@ final readonly class WooDecisionProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(WooDecisionMapper::fromEntities($wooDecisions), 0, count($wooDecisions));
+        return new ArrayPaginator($this->wooDecisionMapper->fromEntities($wooDecisions), 0, count($wooDecisions));
     }
 
-    private function provideSingle(Organisation $organisation, string $wooDecisionExternalId): ?WooDecisionDto
+    private function provideSingle(Organisation $organisation, ExternalId $wooDecisionExternalId): ?WooDecisionDto
     {
         $wooDecision = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $wooDecisionExternalId);
         if ($wooDecision === null) {
             return null;
         }
 
-        return WooDecisionMapper::fromEntity($wooDecision);
+        return $this->wooDecisionMapper->fromEntity($wooDecision);
     }
 }

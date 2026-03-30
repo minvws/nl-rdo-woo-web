@@ -63,3 +63,26 @@ tasks:
       - task: :dc
         vars:
           SUB_CMD: rm --force --stop certs
+      - task: cp-certs-to-root-certs-dir
+        for: [minvws, minfin]
+        vars:
+          CLIENT_NAME: '{{.ITEM}}'
+      - task: cp-client-bundle-to-root-certs-dir
+
+  cp-certs-to-root-certs-dir:
+    internal: true
+    cmds:
+      - rm -f {{.BASE_PATH}}/certs/dev/client-{{.CLIENT_NAME}}.key
+      - rm -f {{.BASE_PATH}}/certs/dev/client-{{.CLIENT_NAME}}.pem
+      - cp {{.BASE_PATH}}/docker/certs/generated/private/client-{{.CLIENT_NAME}}.key {{.BASE_PATH}}/certs/dev/client-{{.CLIENT_NAME}}.key
+      - cp {{.BASE_PATH}}/docker/certs/generated/client-{{.CLIENT_NAME}}.pem {{.BASE_PATH}}/certs/dev/client-{{.CLIENT_NAME}}.pem
+    requires:
+      vars:
+        - name: CLIENT_NAME
+          enum: [minvws, minfin]
+
+  cp-client-bundle-to-root-certs-dir:
+    internal: true
+    cmds:
+      - rm -rf {{.BASE_PATH}}/certs/dev/client-bundle.pem
+      - cp {{.BASE_PATH}}/docker/certs/generated/client-bundle.pem {{.BASE_PATH}}/certs/dev/client-bundle.pem

@@ -54,17 +54,16 @@ final class TikaServiceTest extends UnitTestCase
 
         $stream = Mockery::mock(StreamInterface::class);
         $stream
-            ->shouldReceive('getContents')
+            ->expects('getContents')
             ->andReturn($body);
 
         $response = Mockery::mock(ResponseInterface::class);
         $response
-            ->shouldReceive('getBody')
+            ->expects('getBody')
             ->andReturn($stream);
 
         $this->client
-            ->shouldReceive('put')
-            ->once()
+            ->expects('put')
             ->with(
                 '/tika/text',
                 [
@@ -99,8 +98,7 @@ final class TikaServiceTest extends UnitTestCase
         $request = Mockery::mock(RequestInterface::class);
 
         $this->client
-            ->shouldReceive('put')
-            ->once()
+            ->expects('put')
             ->with(
                 '/tika/text',
                 [
@@ -117,8 +115,7 @@ final class TikaServiceTest extends UnitTestCase
         $logContext = Mockery::mock(ContentExtractLogContext::class);
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Tika failed', [
                 'sourcePath' => $sourcePath,
                 'exception' => $exception->getMessage(),

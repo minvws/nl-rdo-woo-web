@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
@@ -379,5 +380,53 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('externalId', $externalId)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function hasIncompleteDocumentsForDossier(Uuid $dossierId): bool
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = "
+        WITH RECURSIVE document_chain AS (
+        SELECT d.id
+        FROM document d
+        INNER JOIN document_dossier dd ON d.id = dd.document_id
+        WHERE dd.woo_decision_id = :dossierId
+          AND (
+              TRIM(COALESCE(d.document_nr, '')) = ''
+              OR TRIM(COALESCE(d.judgement, '')) = ''
+              OR (
+                  d.suspended = FALSE
+                  AND d.withdrawn = FALSE
+                  AND d.judgement IN ('public', 'partial_public')
+                  AND d.file_uploaded = FALSE
+              )
+          )
+
+        UNION
+
+        SELECT d_ref.id
+        FROM document d_ref
+        INNER JOIN document_referrals dr ON d_ref.id = dr.referred_document_id
+        INNER JOIN document_chain dc ON dr.document_id = dc.id
+        WHERE
+            TRIM(COALESCE(d_ref.document_nr, '')) = ''
+            OR TRIM(COALESCE(d_ref.judgement, '')) = ''
+            OR (
+                d_ref.suspended = FALSE
+                AND d_ref.withdrawn = FALSE
+                AND d_ref.judgement IN ('public', 'partial_public')
+                AND d_ref.file_uploaded = FALSE
+            )
+    )
+    SELECT EXISTS (SELECT 1 FROM document_chain LIMIT 1);
+    ";
+
+        $result = $conn->executeQuery($sql, ['dossierId' => $dossierId]);
+
+        return (bool) $result->fetchOne();
     }
 }

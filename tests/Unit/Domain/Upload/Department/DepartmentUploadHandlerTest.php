@@ -45,33 +45,28 @@ final class DepartmentUploadHandlerTest extends UnitTestCase
     public function testOnUploadValidated(): void
     {
         $this->uploadEntity
-            ->shouldReceive('getUploadGroupId')
-            ->once()
+            ->expects('getUploadGroupId')
             ->andReturn(UploadGroupId::DEPARTMENT);
 
         $departmentIdString = '1f0535e0-d44d-60c6-a366-c7b8beb4240f';
         $this->uploadEntity
             ->expects('getContext->getString')
-            ->once()
             ->with('departmentId')
             ->andReturn($departmentIdString);
 
         $department = Mockery::mock(Department::class);
 
         $this->departmentRepository
-            ->shouldReceive('findOne')
-            ->once()
+            ->expects('findOne')
             ->with(Mockery::on(fn (Uuid $uuid): bool => $uuid->toRfc4122() === $departmentIdString))
             ->andReturn($department);
 
         $this->entityUploadStorer
-            ->shouldReceive('storeDepartmentAssetForEntity')
-            ->once()
+            ->expects('storeDepartmentAssetForEntity')
             ->with($this->uploadEntity, $department);
 
         $this->departmentRepository
-            ->shouldReceive('save')
-            ->once()
+            ->expects('save')
             ->with($department, true);
 
         $this->departmentUploadHandler->onUploadValidated($this->event);
@@ -80,8 +75,7 @@ final class DepartmentUploadHandlerTest extends UnitTestCase
     public function testOnUploadValidatedWithInvalidUploadGroupd(): void
     {
         $this->uploadEntity
-            ->shouldReceive('getUploadGroupId')
-            ->once()
+            ->expects('getUploadGroupId')
             ->andReturn(UploadGroupId::MAIN_DOCUMENTS);
 
         $this->entityUploadStorer->shouldNotReceive('storeDepartmentAssetForEntity');

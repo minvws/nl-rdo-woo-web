@@ -16,11 +16,11 @@ final class RecentDossierTest extends UnitTestCase
     public function testCreate(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
-        $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = 'foo-123');
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn($prefix = 'BAR');
-        $dossier->shouldReceive('getTitle')->andReturn($title = 'foo bar baz');
-        $dossier->shouldReceive('getType')->andReturn($type = DossierType::COVENANT);
-        $dossier->shouldReceive('getPublicationDate')->andReturn($publicationDate = new DateTimeImmutable());
+        $dossier->expects('getDossierNr')->andReturn($dossierNr = 'foo-123');
+        $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'BAR');
+        $dossier->expects('getTitle')->andReturn($title = 'foo bar baz');
+        $dossier->expects('getType')->andReturn($type = DossierType::COVENANT);
+        $dossier->expects('getPublicationDate')->times(2)->andReturn($publicationDate = new DateTimeImmutable());
 
         $viewmodel = RecentDossier::create($dossier);
 

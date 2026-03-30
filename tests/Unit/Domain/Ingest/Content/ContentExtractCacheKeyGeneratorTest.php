@@ -27,9 +27,9 @@ class ContentExtractCacheKeyGeneratorTest extends UnitTestCase
         $options = ContentExtractOptions::create();
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('55ae5de9-55f4-3420-b50b-5cde6e07fc5a'));
-        $entity->shouldReceive('getFileCacheKey')->andReturn('entitykey');
-        $entity->shouldReceive('getFileInfo->getHash')->andReturn('FooBar');
+        $entity->expects('getId')->andReturn(Uuid::fromRfc4122('55ae5de9-55f4-3420-b50b-5cde6e07fc5a'));
+        $entity->expects('getFileCacheKey')->andReturn('entitykey');
+        $entity->expects('getFileInfo->getHash')->andReturn('FooBar');
 
         $cacheKey = $this->keyGenerator->generate(
             ContentExtractorKey::TIKA,
@@ -48,9 +48,9 @@ class ContentExtractCacheKeyGeneratorTest extends UnitTestCase
         $options = ContentExtractOptions::create()->withPageNumber(123);
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('55ae5de9-55f4-3420-b50b-5cde6e07fc5a'));
-        $entity->shouldReceive('getFileCacheKey')->andReturn('entitykey');
-        $entity->shouldReceive('getFileInfo->getHash')->andReturn('FooBar');
+        $entity->expects('getId')->andReturn(Uuid::fromRfc4122('55ae5de9-55f4-3420-b50b-5cde6e07fc5a'));
+        $entity->expects('getFileCacheKey')->andReturn('entitykey');
+        $entity->expects('getFileInfo->getHash')->andReturn('FooBar');
 
         $cacheKey = $this->keyGenerator->generate(
             ContentExtractorKey::TIKA,
@@ -69,9 +69,7 @@ class ContentExtractCacheKeyGeneratorTest extends UnitTestCase
         $options = ContentExtractOptions::create()->withPageNumber(123);
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('55ae5de9-55f4-3420-b50b-5cde6e07fc5a'));
-        $entity->shouldReceive('getFileCacheKey')->andReturn('entitykey');
-        $entity->shouldReceive('getFileInfo->getHash')->andReturnNull();
+        $entity->expects('getFileInfo->getHash')->andReturnNull();
 
         $this->expectException(InvalidArgumentException::class);
 

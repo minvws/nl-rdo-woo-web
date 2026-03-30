@@ -1,0 +1,10 @@
+huluti_breadcrumbs:
+    separator:          '/'
+    separatorClass:     'separator'
+    listId:             'wo-breadcrumbs'
+    listClass:          'breadcrumb'
+    itemClass:          ''
+    linkRel:            ''
+    locale:             ~ # defaults to null, so the default locale is used
+    translation_domain: ~ # defaults to null, so the default domain is used
+    viewTemplate:       'public/layout/breadcrumbs.html.twig'

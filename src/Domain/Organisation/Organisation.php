@@ -41,7 +41,6 @@ class Organisation
     /** @var Collection<array-key,Department> */
     #[ORM\ManyToMany(targetEntity: Department::class, inversedBy: 'organisations')]
     #[ORM\JoinTable(name: 'organisation_department')]
-    #[ORM\JoinColumn(nullable: false)]
     #[ORM\OrderBy(['name' => 'ASC'])]
     #[Assert\Count(min: 1, minMessage: 'at_least_one_department_required')]
     private Collection $departments;

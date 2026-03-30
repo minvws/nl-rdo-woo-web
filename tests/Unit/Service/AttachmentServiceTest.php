@@ -4,32 +4,41 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\UnitOfWork;
 use Mockery;
-use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
-use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Service\AttachmentService;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-use function array_column;
-
 class AttachmentServiceTest extends UnitTestCase
 {
-    private AttachmentService $attachmentService;
-    private ValidatorInterface&MockInterface $validatorInterface;
-
-    protected function setUp(): void
+    public function testValidate(): void
     {
-        $this->validatorInterface = Mockery::mock(ValidatorInterface::class);
-        $this->attachmentService = new AttachmentService($this->validatorInterface);
+        $attachments = [
+            Mockery::mock(DispositionAttachment::class),
+            Mockery::mock(DispositionAttachment::class),
+        ];
 
-        parent::setUp();
+        $constraintViolationList = Mockery::mock(ConstraintViolationListInterface::class);
+        $constraintViolationList->expects('count')
+            ->andReturn(0);
+
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+
+        $validator = Mockery::mock(ValidatorInterface::class);
+        $validator->expects('validate')
+            ->with($attachments)
+            ->andReturn($constraintViolationList);
+
+        $attachmentService = new AttachmentService($entityManager, $validator);
+        $attachmentService->validate($attachments);
     }
 
-    public function testValidate(): void
+    public function testValidateWithErrors(): void
     {
         $attachments = [
             Mockery::mock(DispositionAttachment::class),
@@ -40,11 +49,57 @@ class AttachmentServiceTest extends UnitTestCase
         $constraintViolationList->expects('count')
             ->andReturn(1);
 
-        $this->validatorInterface->expects('validate')
-            ->with($attachments, null, array_column(DossierValidationGroup::cases(), 'value'))
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+
+        $validator = Mockery::mock(ValidatorInterface::class);
+        $validator->expects('validate')
+            ->with($attachments)
             ->andReturn($constraintViolationList);
 
+        $attachmentService = new AttachmentService($entityManager, $validator);
+
         $this->expectException(ValidationFailedException::class);
-        $this->attachmentService->validate($attachments);
+        $attachmentService->validate($attachments);
+    }
+
+    public function testRefreshAttachments(): void
+    {
+        $attachment1 = Mockery::mock(DispositionAttachment::class);
+        $attachment2 = Mockery::mock(DispositionAttachment::class);
+        $attachment3 = Mockery::mock(DispositionAttachment::class);
+
+        $attachments = [
+            $attachment1,
+            $attachment2,
+            $attachment3,
+        ];
+
+        $unitOfWork = Mockery::mock(UnitOfWork::class);
+        $unitOfWork->expects('isScheduledForInsert')
+            ->with($attachment2)
+            ->andReturnTrue();
+        $unitOfWork->expects('isScheduledForInsert')
+            ->with($attachment3)
+            ->andReturnFalse();
+
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager->expects('getUnitOfWork')
+            ->andReturn($unitOfWork);
+        $entityManager->expects('contains')
+            ->with($attachment1)
+            ->andReturnFalse();
+        $entityManager->expects('contains')
+            ->with($attachment2)
+            ->andReturnTrue();
+        $entityManager->expects('contains')
+            ->with($attachment3)
+            ->andReturnTrue();
+        $entityManager->expects('refresh')
+            ->with($attachment3);
+
+        $validator = Mockery::mock(ValidatorInterface::class);
+
+        $attachmentService = new AttachmentService($entityManager, $validator);
+        $attachmentService->refreshAttachments($attachments);
     }
 }

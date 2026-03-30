@@ -94,7 +94,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId);
+        $dossier->expects('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
         $attachment = Mockery::mock(CovenantAttachment::class);
@@ -124,7 +124,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId);
+        $dossier->expects('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
 
@@ -148,7 +148,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId);
+        $dossier->expects('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
         $attachment = Mockery::mock(CovenantAttachment::class);
@@ -178,7 +178,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId);
+        $dossier->expects('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
         $attachment = Mockery::mock(CovenantAttachment::class);
@@ -202,7 +202,7 @@ class AttachmentEntityLoaderTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId);
+        $dossier->expects('getId')->andReturn($dossierId);
 
         $attachmentId = Uuid::v6();
 

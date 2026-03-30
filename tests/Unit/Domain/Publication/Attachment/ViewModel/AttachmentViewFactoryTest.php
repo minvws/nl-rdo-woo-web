@@ -48,14 +48,14 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         array $expectedDetailsParameterKeys,
     ): void {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getName')->andReturn($expectedFileName = 'file name');
-        $fileInfo->shouldReceive('getMimetype')->andReturn($expectedMimeType = 'file mime type');
-        $fileInfo->shouldReceive('getSize')->andReturn($expectedSize = 101);
-        $fileInfo->shouldReceive('getSourceType')->andReturn($expectedSourceType = SourceType::PDF);
-        $fileInfo->shouldReceive('getPageCount')->andReturn($expectedPageCount = 2);
+        $fileInfo->expects('getName')->andReturn($expectedFileName = 'file name');
+        $fileInfo->expects('getMimetype')->andReturn($expectedMimeType = 'file mime type');
+        $fileInfo->expects('getSize')->andReturn($expectedSize = 101);
+        $fileInfo->expects('getSourceType')->andReturn($expectedSourceType = SourceType::PDF);
+        $fileInfo->expects('getPageCount')->andReturn($expectedPageCount = 2);
 
         $uuid = Mockery::mock(UuidV6::class);
-        $uuid->shouldReceive('toRfc4122')->andReturn($expectedUuid = 'my-uuid');
+        $uuid->expects('toRfc4122')->andReturn($expectedUuid = 'my-uuid');
 
         $expectedDocumentPrefix = 'prefix';
         $expectedDossierId = 'dossier nr';
@@ -79,24 +79,24 @@ final class AttachmentViewFactoryTest extends UnitTestCase
             ->andReturn($expectedDownloadUrl = 'http://download.test');
 
         $attachment = Mockery::mock($attachmentClass);
-        $attachment->shouldReceive('getId')->andReturn($uuid);
-        $attachment->shouldReceive('getFormalDate')->andReturn(new DateTimeImmutable($expectedFormalDate = '2021-05-10'));
-        $attachment->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $attachment->shouldReceive('getType')->andReturn(AttachmentType::ADVICE);
-        $attachment->shouldReceive('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
-        $attachment->shouldReceive('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
-        $attachment->shouldReceive('getGrounds')->andReturn($expectedGrounds = ['bar', 'foo']);
-        $attachment->shouldReceive('isWithdrawn')->andReturnFalse();
-        $attachment->shouldReceive('getWithdrawReason')->andReturnNull();
-        $attachment->shouldReceive('getWithdrawDate')->andReturnNull();
+        $attachment->expects('getId')->times(3)->andReturn($uuid);
+        $attachment->expects('getFormalDate')->andReturn(new DateTimeImmutable($expectedFormalDate = '2021-05-10'));
+        $attachment->expects('getFileInfo')->times(5)->andReturn($fileInfo);
+        $attachment->expects('getType')->andReturn(AttachmentType::ADVICE);
+        $attachment->expects('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
+        $attachment->expects('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
+        $attachment->expects('getGrounds')->andReturn($expectedGrounds = ['bar', 'foo']);
+        $attachment->expects('isWithdrawn')->times(2)->andReturnFalse();
+        $attachment->expects('getWithdrawReason')->andReturnNull();
+        $attachment->expects('getWithdrawDate')->andReturnNull();
 
         $dossier = Mockery::mock(WooDecision::class); // TODO replace with AbstractDossier & EntityWithAttachments
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn($expectedDocumentPrefix);
-        $dossier->shouldReceive('getDossierNr')->andReturn($expectedDossierId);
-        $dossier->shouldReceive('getAttachments')->andReturn(new ArrayCollection([$attachment]));
-        $dossier->shouldReceive('getType')->andReturn($dossierType);
+        $dossier->expects('getDocumentPrefix')->times(2)->andReturn($expectedDocumentPrefix);
+        $dossier->expects('getDossierNr')->times(2)->andReturn($expectedDossierId);
+        $dossier->expects('getAttachments')->andReturn(new ArrayCollection([$attachment]));
+        $dossier->expects('getType')->andReturn($dossierType);
 
-        $result = (new AttachmentViewFactory($urlGenerator))->makeCollection($dossier, $applicationMode);
+        $result = new AttachmentViewFactory($urlGenerator)->makeCollection($dossier, $applicationMode);
 
         $this->assertCount(1, $result);
         $this->assertInstanceOf(Attachment::class, $result[0]);

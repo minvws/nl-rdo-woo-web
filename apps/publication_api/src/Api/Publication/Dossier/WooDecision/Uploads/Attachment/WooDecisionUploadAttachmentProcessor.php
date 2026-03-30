@@ -7,7 +7,7 @@ namespace PublicationApi\Api\Publication\Dossier\WooDecision\Uploads\Attachment;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
-use PublicationApi\Api\Publication\UploadProcessor;
+use PublicationApi\Api\Publication\AttachmentUploadProcessor;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
@@ -23,7 +23,7 @@ readonly class WooDecisionUploadAttachmentProcessor implements ProcessorInterfac
     public function __construct(
         private AttachmentRepository $attachmentRepository,
         private OrganisationRepository $organisationRepository,
-        private UploadProcessor $uploadProcessor,
+        private AttachmentUploadProcessor $attachmentUploadProcessor,
         private WooDecisionRepository $wooDecisionRepository,
     ) {
     }
@@ -56,7 +56,7 @@ readonly class WooDecisionUploadAttachmentProcessor implements ProcessorInterfac
         $fileName = $attachment->getFileInfo()->getName();
         Assert::notNull($fileName);
 
-        $this->uploadProcessor->process($wooDecision->getId(), UploadGroupId::ATTACHMENTS, $data->content, $fileName);
+        $this->attachmentUploadProcessor->process($wooDecision->getId(), UploadGroupId::ATTACHMENTS, $data->content, $fileName, $attachment);
 
         return null;
     }

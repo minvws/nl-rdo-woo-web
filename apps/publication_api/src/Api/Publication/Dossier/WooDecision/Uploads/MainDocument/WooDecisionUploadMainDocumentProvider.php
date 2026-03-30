@@ -6,6 +6,7 @@ namespace PublicationApi\Api\Publication\Dossier\WooDecision\Uploads\MainDocumen
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 final class WooDecisionUploadMainDocumentProvider implements ProviderInterface
@@ -15,17 +16,13 @@ final class WooDecisionUploadMainDocumentProvider implements ProviderInterface
         Assert::keyExists($uriVariables, 'organisationId');
         Assert::string($uriVariables['organisationId']);
 
-        Assert::keyExists($uriVariables, 'dossierId');
-        Assert::string($uriVariables['dossierId']);
-
-        Assert::keyExists($uriVariables, 'uploadId');
-        Assert::string($uriVariables['uploadId']);
+        Assert::keyExists($uriVariables, 'dossierExternalId');
+        Assert::string($uriVariables['dossierExternalId']);
 
         return new WooDecisionUploadMainDocument(
             content: '',
             organisationId: $uriVariables['organisationId'],
-            dossierId: $uriVariables['dossierId'],
-            uploadId: $uriVariables['uploadId'],
+            dossierExternalId: ExternalId::create($uriVariables['dossierExternalId']),
         );
     }
 }

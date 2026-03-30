@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraint;
 #[Attribute]
 class DateFromConstraint extends Constraint
 {
-    public string $message = 'date_to_before_date_from';
+    public string $message = 'date_max_10_year_old';
     public string $mode = 'strict';
 
     public function __construct(?string $mode = null, ?string $message = null, ?array $groups = null, $payload = null)

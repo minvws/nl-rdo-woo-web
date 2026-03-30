@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Public\Dossier\Covenant;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -18,7 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class CovenantController extends AbstractController
 {

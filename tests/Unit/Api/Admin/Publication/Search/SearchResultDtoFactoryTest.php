@@ -99,13 +99,13 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             [],
         );
 
-        $this->urlGenerator->shouldReceive('generate')->with(
-            'app_admin_dossier',
-            [
+        $this->urlGenerator
+            ->expects('generate')
+            ->with('app_admin_dossier', [
                 'prefix' => $wooDecisionPrefix,
                 'dossierId' => $wooDecisionNr,
-            ]
-        )->andReturn('/link/to/woo-decision');
+            ])
+            ->andReturn('/link/to/woo-decision');
 
         return $wooDecisionEntry;
     }
@@ -138,14 +138,14 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ElasticDocumentType::WOO_DECISION_DOCUMENT,
         );
 
-        $this->urlGenerator->shouldReceive('generate')->with(
-            'app_admin_dossier_woodecision_document',
-            [
+        $this->urlGenerator
+            ->expects('generate')
+            ->with('app_admin_dossier_woodecision_document', [
                 'prefix' => $wooDecisionPrefix,
                 'dossierId' => $wooDecisionNr,
                 'documentId' => $documentNr,
-            ]
-        )->andReturn('/link/to/woo-decision-document');
+            ])
+            ->andReturn('/link/to/woo-decision-document');
 
         return $entry;
     }
@@ -201,13 +201,13 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ->with($wooDecisionEntity)
             ->andReturn($wizardStatus);
 
-        $this->urlGenerator->shouldReceive('generate')->with(
-            $attachmentRouteName,
-            [
+        $this->urlGenerator
+            ->expects('generate')
+            ->with($attachmentRouteName, [
                 'prefix' => $wooDecisionPrefix,
                 'dossierId' => $wooDecisionNr,
-            ]
-        )->andReturn('/link/to/woo-decision-attachment');
+            ])
+            ->andReturn('/link/to/woo-decision-attachment');
 
         return $entry;
     }
@@ -261,13 +261,13 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ->with($wooDecisionEntity)
             ->andReturn($wizardStatus);
 
-        $this->urlGenerator->shouldReceive('generate')->with(
-            $mainDocumentRouteName,
-            [
+        $this->urlGenerator
+            ->expects('generate')
+            ->with($mainDocumentRouteName, [
                 'prefix' => $wooDecisionPrefix,
                 'dossierId' => $wooDecisionNr,
-            ]
-        )->andReturn('/link/to/woo-decision-main-document');
+            ])
+            ->andReturn('/link/to/woo-decision-main-document');
 
         return $entry;
     }

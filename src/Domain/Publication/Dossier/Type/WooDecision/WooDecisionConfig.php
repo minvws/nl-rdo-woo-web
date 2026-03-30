@@ -13,12 +13,14 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAtt
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentsStepDefinition;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 readonly class WooDecisionConfig implements DossierTypeConfigInterface
 {
     public function __construct(
+        #[Target(WooDecisionWorkflow::WOO_DECISION_WORKFLOW_NAME)]
         private WorkflowInterface $wooDecisionWorkflow,
     ) {
     }

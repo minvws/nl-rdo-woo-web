@@ -29,14 +29,10 @@ final class TesseractExtractorTest extends UnitTestCase
 
     public function testGetContent(): void
     {
-        $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getNormalizedMimeType')->andReturn($mimeType = 'text/plain');
-
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
 
         $fileReference = Mockery::mock(LazyFileReference::class);
-        $fileReference->shouldReceive('getPath')->andReturn($file = '/foo/bar.txt');
+        $fileReference->expects('getPath')->andReturn($file = '/foo/bar.txt');
 
         $this->tesseractService->expects('extract')->with($file)->andReturn('   foo bar  ');
 
@@ -51,12 +47,12 @@ final class TesseractExtractorTest extends UnitTestCase
         $fileInfo = Mockery::mock(FileInfo::class);
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $entity->expects('getFileInfo')->times(2)->andReturn($fileInfo);
 
-        $fileInfo->shouldReceive('getNormalizedMimeType')->once()->andReturn('text/plain');
+        $fileInfo->expects('getNormalizedMimeType')->andReturn('text/plain');
         self::assertFalse($this->extractor->supports($entity));
 
-        $fileInfo->shouldReceive('getNormalizedMimeType')->once()->andReturn('application/pdf');
+        $fileInfo->expects('getNormalizedMimeType')->andReturn('application/pdf');
         self::assertTrue($this->extractor->supports($entity));
     }
 

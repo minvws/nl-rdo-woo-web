@@ -1,5 +1,14 @@
-<script setup>
-import { useInputAriaDescribedBy, useInputStore } from '@admin-fe/composables';
+<script setup lang="ts">
+import {
+  type FormStore,
+  useInputAriaDescribedBy,
+  useInputStore,
+} from '@admin-fe/composables';
+import type {
+  Optgroup,
+  SelectOptions,
+  Validator,
+} from '@admin-fe/form/interface';
 import { uniqueId } from '@js/utils';
 import { computed, inject, ref, watch } from 'vue';
 import ErrorMessages from './ErrorMessages.vue';
@@ -7,49 +16,25 @@ import FormHelp from './FormHelp.vue';
 import FormLabel from './FormLabel.vue';
 import InputErrors from './InputErrors.vue';
 
-const props = defineProps({
-  emptyLabel: {
-    type: String,
-    required: false,
-    default: 'Kies een optie',
-  },
-  hasFormRow: {
-    type: Boolean,
-    required: false,
-    default: true,
-  },
-  helpText: {
-    type: String,
-    required: false,
-  },
-  label: {
-    type: String,
-    required: false,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  options: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  optgroups: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
-  validators: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
-  value: {
-    type: String,
-    required: false,
-    default: '',
-  },
+interface Props {
+  emptyLabel?: string;
+  hasFormRow?: boolean;
+  helpText?: string;
+  label?: string;
+  name: string;
+  options: SelectOptions;
+  optgroups?: Optgroup[];
+  validators?: Validator[];
+  value?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  emptyLabel: 'Kies een optie',
+  hasFormRow: true,
+  options: () => [],
+  optgroups: () => [],
+  validators: () => [],
+  value: '',
 });
 
 const inputId = `${uniqueId('input')}`;
@@ -62,7 +47,7 @@ watch(
 );
 const inputStore = useInputStore(
   props.name,
-  props.label,
+  props.label ?? '',
   value,
   props.validators,
 );
@@ -80,10 +65,14 @@ const formRowClass = computed(() => {
   };
 });
 const ariaDescribedBy = computed(() =>
-  useInputAriaDescribedBy(inputId, props.helpText, inputStore.hasVisibleErrors),
+  useInputAriaDescribedBy(
+    inputId,
+    props.helpText ?? '',
+    inputStore.hasVisibleErrors,
+  ),
 );
 
-inject('form').addInput(inputStore);
+(inject('form') as FormStore).addInput(inputStore);
 </script>
 
 <template>
@@ -105,7 +94,7 @@ inject('form').addInput(inputStore);
       />
 
       <ErrorMessages
-        :errors="inputStore.submitValidationErrors"
+        :messages="inputStore.submitValidationErrors"
         v-if="inputStore.hasVisibleErrors"
       />
     </div>

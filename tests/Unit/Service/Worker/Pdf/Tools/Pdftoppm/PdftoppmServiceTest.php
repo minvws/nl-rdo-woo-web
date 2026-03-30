@@ -24,13 +24,11 @@ final class PdftoppmServiceTest extends UnitTestCase
     public function testCreateThumbnail(): void
     {
         $this->process
-            ->shouldReceive('run')
-            ->once()
+            ->expects('run')
             ->andReturn($exitCode = 0);
 
         $this->process
-            ->shouldReceive('isSuccessful')
-            ->once()
+            ->expects('isSuccessful')
             ->andReturnTrue();
 
         $result = $this->getService()->createThumbnail($sourcePdf = 'sourcePdf', $targetPath = 'targetPath');
@@ -58,18 +56,15 @@ final class PdftoppmServiceTest extends UnitTestCase
     public function testCreateThumbnailWhenItFails(): void
     {
         $this->process
-            ->shouldReceive('run')
-            ->once()
+            ->expects('run')
             ->andReturn($exitCode = 1);
 
         $this->process
-            ->shouldReceive('isSuccessful')
-            ->once()
+            ->expects('isSuccessful')
             ->andReturnFalse();
 
         $this->process
-            ->shouldReceive('getErrorOutput')
-            ->once()
+            ->expects('getErrorOutput')
             ->andReturn($errorMessage = 'errorMessage');
 
         $result = $this->getService()->createThumbnail($sourcePdf = 'sourcePdf', $targetPath = 'targetPath');
@@ -96,13 +91,12 @@ final class PdftoppmServiceTest extends UnitTestCase
 
     private function getService(): PdftoppmService&MockInterface
     {
-        /** @var PdftoppmService&MockInterface $instance */
         $instance = Mockery::mock(PdftoppmService::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
         $instance
-            ->shouldReceive('getNewProcess')
+            ->expects('getNewProcess')
             ->andReturn($this->process);
 
         return $instance;

@@ -14,6 +14,15 @@ enum ApplicationId: string
     case WORKER = 'worker';
     case SHARED = 'shared';
 
+    public static function fromString(?string $value): self
+    {
+        if ($value === null || $value === '') {
+            return ApplicationId::SHARED;
+        }
+
+        return self::from(strtolower($value));
+    }
+
     public function isAdmin(): bool
     {
         return $this === ApplicationId::ADMIN;
@@ -37,14 +46,5 @@ enum ApplicationId: string
     public function isShared(): bool
     {
         return $this === ApplicationId::SHARED;
-    }
-
-    public static function fromString(?string $value): self
-    {
-        if ($value === null || $value === '') {
-            return ApplicationId::SHARED;
-        }
-
-        return self::from(strtolower($value));
     }
 }

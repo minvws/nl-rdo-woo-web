@@ -15,8 +15,9 @@ framework:
                 context: { }
 
         transports:
+            sync: 'sync://'
             high:
-                dsn: '%env(HIGH_TRANSPORT_DSN)%'
+                dsn: '%high_transport_dsn%'
                 options:
                     auto_setup: true
                 retry_strategy:
@@ -24,7 +25,7 @@ framework:
                     multiplier: 2
 
             esupdater:
-                dsn: '%env(ESUPDATER_TRANSPORT_DSN)%'
+                dsn: '%esupdater_transport_dsn%'
                 options:
                     auto_setup: true
                 retry_strategy:
@@ -32,7 +33,7 @@ framework:
                     multiplier: 2
 
             ingestor:
-                dsn: '%env(INGESTOR_TRANSPORT_DSN)%'
+                dsn: '%ingestor_transport_dsn%'
                 options:
                     auto_setup: true
                 retry_strategy:
@@ -40,7 +41,7 @@ framework:
                     multiplier: 2
 
             global:
-                dsn: '%env(GLOBAL_TRANSPORT_DSN)%'
+                dsn: '%global_transport_dsn%'
                 options:
                     auto_setup: true
                 retry_strategy:

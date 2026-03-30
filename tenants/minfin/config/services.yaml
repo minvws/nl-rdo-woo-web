@@ -1,0 +1,20 @@
+parameters:
+    app_secret: '%env(MINFIN_APP_SECRET)%'
+    public_base_url: '%env(MINFIN_PUBLIC_BASE_URL)%'
+    site_name: '%env(MINFIN_SITE_NAME)%'
+    cookie_name: '%env(MINFIN_COOKIE_NAME)%'
+    totp_issuer: '%env(MINFIN_TOTP_ISSUER)%'
+    trusted_hosts: '%env(MINFIN_TRUSTED_HOSTS)%'
+    database_encryption_key: '%env(MINFIN_DATABASE_ENCRYPTION_KEY)%'
+
+    # RabbitMQ
+    rabbitmq_url: '%env(MINFIN_RABBITMQ_URL)%'
+    rabbitmq_stats_url: '%env(MINFIN_RABBITMQ_STATS_URL)%'
+
+    high_transport_dsn: '%env(MINFIN_HIGH_TRANSPORT_DSN)%'
+    ingestor_transport_dsn: '%env(MINFIN_INGESTOR_TRANSPORT_DSN)%'
+    esupdater_transport_dsn: '%env(MINFIN_ESUPDATER_TRANSPORT_DSN)%'
+    global_transport_dsn: '%env(MINFIN_GLOBAL_TRANSPORT_DSN)%'
+
+    # Application publication_api specific configs:
+    publication_api_ssl_username_whitelist: '%env(string:MINFIN_PUBLICATION_API_SSL_USERNAME_WHITELIST)%'

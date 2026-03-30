@@ -15,10 +15,10 @@ final class DossierReferenceTest extends UnitTestCase
     public function testFromEntity(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
-        $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = 'foo-123');
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn($documentPrefix = 'bar');
-        $dossier->shouldReceive('getTitle')->andReturn($title = 'foo bar');
-        $dossier->shouldReceive('getType')->andReturn($type = DossierType::ANNUAL_REPORT);
+        $dossier->expects('getDossierNr')->andReturn($dossierNr = 'foo-123');
+        $dossier->expects('getDocumentPrefix')->andReturn($documentPrefix = 'bar');
+        $dossier->expects('getTitle')->andReturn($title = 'foo bar');
+        $dossier->expects('getType')->andReturn($type = DossierType::ANNUAL_REPORT);
 
         $reference = DossierReference::fromEntity($dossier);
 

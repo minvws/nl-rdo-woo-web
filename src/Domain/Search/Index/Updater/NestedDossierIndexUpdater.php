@@ -22,6 +22,7 @@ readonly class NestedDossierIndexUpdater
     public function __construct(
         private ElasticClientInterface $elastic,
         private LoggerInterface $logger,
+        private ElasticConfig $elasticConfig,
     ) {
     }
 
@@ -34,7 +35,7 @@ readonly class NestedDossierIndexUpdater
     {
         $this->retry(fn: function () use ($dossier, $dossierDoc) {
             $this->elastic->updateByQuery([
-                'index' => ElasticConfig::WRITE_INDEX,
+                'index' => $this->elasticConfig->writeIndex,
                 'body' => [
                     'query' => [
                         'bool' => [

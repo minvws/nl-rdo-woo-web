@@ -26,7 +26,7 @@ class ExportRevokedUrlsTest extends UnitTestCase
         $this->revokedUrlService = Mockery::mock(RevokedUrlService::class);
 
         $application = new Application();
-        $application->add(
+        $application->addCommand(
             new ExportRevokedUrls(
                 $this->revokedUrlService,
             )

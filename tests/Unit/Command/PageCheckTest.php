@@ -31,7 +31,7 @@ class PageCheckTest extends UnitTestCase
         $this->elasticService = Mockery::mock(ElasticService::class);
 
         $application = new Application();
-        $application->add(
+        $application->addCommand(
             new PageCheck(
                 $this->repository,
                 $this->elasticService,
@@ -49,7 +49,7 @@ class PageCheckTest extends UnitTestCase
         $document->expects('getId')
             ->andReturn(Uuid::v6());
         $document->expects('getFileInfo->getPageCount')
-            ->twice()
+            ->times(2)
             ->andReturn(1);
 
         $dossier = Mockery::mock(WooDecision::class);

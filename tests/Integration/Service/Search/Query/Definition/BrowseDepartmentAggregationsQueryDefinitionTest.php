@@ -19,8 +19,8 @@ final class BrowseDepartmentAggregationsQueryDefinitionTest extends SharedWebTes
     public function testElasticQueryBuiltFromDefinition(): void
     {
         $department = Mockery::mock(Department::class);
-        $department->shouldReceive('getShortTag')->andReturn('foo');
-        $department->shouldReceive('getName')->andReturn('bar');
+        $department->expects('getShortTag')->andReturn('foo');
+        $department->expects('getName')->andReturn('bar');
 
         /** @var SearchParametersFactory $searchParametersFactory */
         $searchParametersFactory = self::getContainer()->get(SearchParametersFactory::class);

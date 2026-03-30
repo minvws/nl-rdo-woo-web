@@ -6,72 +6,50 @@ namespace Shared\Tests\Unit\Command\Cron;
 
 use Mockery;
 use Shared\Command\Cron\DossierPublisherCommand;
-use Shared\Domain\Publication\Dossier\DossierPublisher;
+use Shared\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class DossierPublisherCommandTest extends UnitTestCase
 {
     public function testExecute(): void
     {
-        $unpublishableDossier = Mockery::mock(WooDecision::class);
-        $unpublishableDossier->expects('getDossierNr')
-            ->never();
-
-        $publishableDossier = Mockery::mock(WooDecision::class);
-        $publishableDossier->expects('getDossierNr')
-            ->andReturn('D2');
-
-        $publishablePreviewDossier = Mockery::mock(WooDecision::class);
-        $publishablePreviewDossier->expects('getDossierNr')
-            ->andReturn('D3');
+        $dossier1 = Mockery::mock(WooDecision::class);
+        $dossier2 = Mockery::mock(WooDecision::class);
+        $dossier3 = Mockery::mock(WooDecision::class);
 
         $repository = Mockery::mock(DossierRepository::class);
         $repository->expects('findDossiersPendingPublication')
             ->andReturn([
-                $unpublishableDossier,
-                $publishableDossier,
-                $publishablePreviewDossier,
+                $dossier1,
+                $dossier2,
+                $dossier3,
             ]);
 
-        $publisher = Mockery::mock(DossierPublisher::class);
+        $publisher = Mockery::mock(MessageBusInterface::class);
+        $publisher->expects('dispatch')
+            ->with(Mockery::on(static function (UpdateDossierPublicationCommand $updateDossierPublicationCommand) use ($dossier1): bool {
+                return $updateDossierPublicationCommand->dossier === $dossier1;
+            }));
+        $publisher->expects('dispatch')
+            ->with(Mockery::on(static function (UpdateDossierPublicationCommand $updateDossierPublicationCommand) use ($dossier2): bool {
+                return $updateDossierPublicationCommand->dossier === $dossier2;
+            }));
+        $publisher->expects('dispatch')
+            ->with(Mockery::on(static function (UpdateDossierPublicationCommand $updateDossierPublicationCommand) use ($dossier3): bool {
+                return $updateDossierPublicationCommand->dossier === $dossier3;
+            }));
 
-        $publisher->expects('canPublish')
-            ->with($unpublishableDossier)
-            ->andReturnFalse();
-        $publisher->expects('canPublishAsPreview')
-            ->with($unpublishableDossier)
-            ->andReturnFalse();
-
-        $publisher->expects('canPublish')
-            ->with($publishableDossier)
-            ->andReturnTrue();
-        $publisher->expects('publish')
-            ->with($publishableDossier);
-
-        $publisher->expects('canPublish')
-            ->with($publishablePreviewDossier)
-            ->andReturnFalse();
-        $publisher->expects('canPublishAsPreview')
-            ->with($publishablePreviewDossier)
-            ->andReturnTrue();
-        $publisher->expects('publishAsPreview')
-            ->with($publishablePreviewDossier);
-
-        $command = new DossierPublisherCommand(
-            $repository,
-            $publisher,
-        );
+        $command = new DossierPublisherCommand($repository, $publisher);
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $output = $commandTester->getDisplay();
 
         self::assertEquals($command::SUCCESS, $commandTester->getStatusCode());
-        $this->assertStringContainsString('Publishing dossier: D2', $output);
-        $this->assertStringContainsString('Publishing dossier as preview: D3', $output);
         $this->assertStringContainsString('Done', $output);
     }
 }

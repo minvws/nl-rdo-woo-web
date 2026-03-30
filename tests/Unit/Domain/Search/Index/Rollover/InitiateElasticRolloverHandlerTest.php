@@ -13,6 +13,7 @@ use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Shared\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand;
 use Shared\Domain\Search\Index\Rollover\InitiateElasticRolloverHandler;
+use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
 use Shared\Tests\Unit\UnitTestCase;
 
 class InitiateElasticRolloverHandlerTest extends UnitTestCase
@@ -21,17 +22,20 @@ class InitiateElasticRolloverHandlerTest extends UnitTestCase
     private LoggerInterface&MockInterface $logger;
     private ingestDispatcher&MockInterface $ingestDispatcher;
     private InitiateElasticRolloverHandler $handler;
+    private ElasticConfig $elasticConfig;
 
     protected function setUp(): void
     {
         $this->elasticIndexManager = Mockery::mock(ElasticIndexManager::class);
         $this->logger = Mockery::mock(LoggerInterface::class);
         $this->ingestDispatcher = Mockery::mock(IngestDispatcher::class);
+        $this->elasticConfig = ElasticConfigOverride::default();
 
         $this->handler = new InitiateElasticRolloverHandler(
             $this->elasticIndexManager,
             $this->logger,
             $this->ingestDispatcher,
+            $this->elasticConfig,
         );
     }
 
@@ -58,7 +62,7 @@ class InitiateElasticRolloverHandlerTest extends UnitTestCase
 
         $this->elasticIndexManager->expects('create')->with($name, $version);
         $this->elasticIndexManager->expects('switch')->with(
-            ElasticConfig::WRITE_INDEX,
+            $this->elasticConfig->writeIndex,
             '*',
             $name,
         );

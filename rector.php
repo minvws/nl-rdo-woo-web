@@ -8,6 +8,7 @@ use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
 use Rector\Php74\Rector\Property\RestoreDefaultNullToNullableTypePropertyRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Php81\Rector\MethodCall\RemoveReflectionSetAccessibleCallsRector;
+use Rector\Php84\Rector\Class_\DeprecatedAnnotationToDeprecatedAttributeRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -28,4 +29,5 @@ return RectorConfig::configure()
             __DIR__ . '/tests',
             __DIR__ . '/src/class_aliases.php',
         ],
+        DeprecatedAnnotationToDeprecatedAttributeRector::class,
     ]);

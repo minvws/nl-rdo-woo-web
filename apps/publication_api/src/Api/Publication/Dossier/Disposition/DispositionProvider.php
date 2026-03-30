@@ -12,6 +12,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionRepository;
 use Shared\Service\ApiPlatformService;
+use Shared\ValueObject\ExternalId;
 
 use function count;
 
@@ -20,6 +21,7 @@ final readonly class DispositionProvider implements ProviderInterface
     public function __construct(
         private OrganisationRepository $organisationRepository,
         private DispositionRepository $dispositionRepository,
+        private DispositionMapper $dispositionMapper,
         private int $itemsPerPage,
     ) {
     }
@@ -38,7 +40,7 @@ final readonly class DispositionProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, $uriVariables['dispositionExternalId']);
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dispositionExternalId']));
     }
 
     /**
@@ -52,16 +54,16 @@ final readonly class DispositionProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(DispositionMapper::fromEntities($dispositions), 0, count($dispositions));
+        return new ArrayPaginator($this->dispositionMapper->fromEntities($dispositions), 0, count($dispositions));
     }
 
-    private function provideSingle(Organisation $organisation, string $dispositionExternalId): ?DispositionDto
+    private function provideSingle(Organisation $organisation, ExternalId $dispositionExternalId): ?DispositionDto
     {
         $disposition = $this->dispositionRepository->findByOrganisationAndExternalId($organisation, $dispositionExternalId);
         if ($disposition === null) {
             return null;
         }
 
-        return DispositionMapper::fromEntity($disposition);
+        return $this->dispositionMapper->fromEntity($disposition);
     }
 }

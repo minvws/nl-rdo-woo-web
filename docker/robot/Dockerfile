@@ -36,7 +36,8 @@ USER pwuser
 ENV HOME=/home/pwuser
 ENV RFDEBUG_HISTORY=/home/pwuser/.rfdebug_history
 ENV UV_CACHE_DIR=/home/pwuser/.cache/uv
-RUN mkdir -p /home/pwuser/.cache/uv
+RUN mkdir -p /home/pwuser/.cache/uv \
+    &&  mkdir -p /home/pwuser/results
 
 COPY ./tests/robot_framework/pyproject.toml .
 

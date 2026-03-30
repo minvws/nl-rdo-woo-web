@@ -10,6 +10,7 @@ use Shared\Domain\Upload\UploadRequest;
 use Shared\Domain\Upload\UploadService;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 final class DepartmentUploadVoter extends Voter
@@ -33,7 +34,7 @@ final class DepartmentUploadVoter extends Voter
     /**
      * @param UploadRequest $subject
      */
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         $department = $this->repository->find(
             $subject->additionalParameters->getString('departmentId')

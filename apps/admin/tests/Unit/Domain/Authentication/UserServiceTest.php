@@ -72,12 +72,12 @@ class UserServiceTest extends UnitTestCase
         $oldUser = Mockery::mock(User::class);
 
         $updatedUser = Mockery::mock(User::class);
-        $updatedUser->shouldReceive('getId')->andReturn(Uuid::v6());
+        $updatedUser->expects('getId')->andReturn(Uuid::v6());
         $updatedUser->expects('getRoles')->andReturn([]);
         $updatedUser->expects('setRoles')->with($roles);
 
         $actor = Mockery::mock(User::class);
-        $actor->shouldReceive('getRoles')->andReturn($roles);
+        $actor->expects('getRoles')->andReturn($roles);
 
         $this->userRepository->expects('save')->with($updatedUser, true);
 
@@ -99,8 +99,6 @@ class UserServiceTest extends UnitTestCase
     public function testDisable(): void
     {
         $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAuditId')->andReturn('foo123');
-
         $actor = Mockery::mock(User::class);
 
         $user->expects('setEnabled')->with(false);
@@ -121,8 +119,6 @@ class UserServiceTest extends UnitTestCase
     public function testEnable(): void
     {
         $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAuditId')->andReturn('foo123');
-
         $actor = Mockery::mock(User::class);
 
         $user->expects('setEnabled')->with(true);
@@ -148,31 +144,24 @@ class UserServiceTest extends UnitTestCase
 
         $user = Mockery::mock(User::class);
         $user->expects('setPassword')
-            ->once()
             ->with($passwordHash);
         $user->expects('setChangepwd')
-            ->once()
             ->with(true);
         $user->expects('getId')
-            ->once()
             ->andReturn($userId);
 
         $this->passwordGenerator->expects('generate')
-            ->once()
             ->with(4)
             ->andReturn($password);
 
         $this->passwordHasher->expects('hashPassword')
             ->with($user, $password)
-            ->once()
             ->andReturn($passwordHash);
 
         $this->userRepository->expects('save')
-            ->once()
             ->with($user, true);
 
         $this->logger->expects('info')
-            ->once()
             ->with('User password reset', [
                 'user' => $userId,
             ]);
@@ -180,15 +169,12 @@ class UserServiceTest extends UnitTestCase
         $actor = Mockery::mock(User::class);
         $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')
-            ->once()
             ->andReturn($actor);
 
         $this->tokenStorage->expects('getToken')
-            ->once()
             ->andReturn($token);
 
         $this->eventDispatcher->expects('dispatch')
-            ->once()
             ->with(Mockery::on(
                 static function (UserResetEvent $event) use ($user, $actor): bool {
                     self::assertEquals($user, $event->user);
@@ -211,10 +197,8 @@ class UserServiceTest extends UnitTestCase
 
         $user = Mockery::mock(User::class);
         $user->expects('setMfaToken')
-            ->once()
             ->with($totpSecret);
         $user->expects('setMfaRecovery')
-            ->once()
             ->with([
                 $totpRecoveryCode,
                 $totpRecoveryCode,
@@ -223,11 +207,9 @@ class UserServiceTest extends UnitTestCase
                 $totpRecoveryCode,
             ]);
         $user->expects('getId')
-            ->once()
             ->andReturn($userId);
 
         $this->totp->expects('generateSecret')
-            ->once()
             ->andReturn($totpSecret);
 
         $this->passwordGenerator->expects('generate')
@@ -236,11 +218,9 @@ class UserServiceTest extends UnitTestCase
             ->andReturn($totpRecoveryCode);
 
         $this->userRepository->expects('save')
-            ->once()
             ->with($user, true);
 
         $this->logger->expects('info')
-            ->once()
             ->with('User two factor auth reset', [
                 'user' => $userId,
             ]);
@@ -248,15 +228,12 @@ class UserServiceTest extends UnitTestCase
         $actor = Mockery::mock(User::class);
         $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')
-            ->once()
             ->andReturn($actor);
 
         $this->tokenStorage->expects('getToken')
-            ->once()
             ->andReturn($token);
 
         $this->eventDispatcher->expects('dispatch')
-            ->once()
             ->with(Mockery::on(
                 static function (UserResetEvent $event) use ($user, $actor): bool {
                     self::assertEquals($user, $event->user);

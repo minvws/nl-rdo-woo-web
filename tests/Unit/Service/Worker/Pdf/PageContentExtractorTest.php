@@ -10,12 +10,10 @@ use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shared\Domain\Ingest\Content\ContentExtractCache;
-use Shared\Domain\Ingest\Content\ContentExtractCollection;
 use Shared\Domain\Ingest\Content\ContentExtractOptions;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
 use Shared\Domain\Publication\EntityWithFileInfo;
-use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Shared\Service\Stats\WorkerStatsService;
 use Shared\Service\Worker\Pdf\Extractor\PageContentExtractor;
@@ -31,7 +29,6 @@ final class PageContentExtractorTest extends UnitTestCase
     private SubTypeIndexer&MockInterface $subTypeIndexer;
     private WorkerStatsService&MockInterface $statsService;
     private EntityWithFileInfo&MockInterface $entity;
-    private FileInfo&MockInterface $fileInfo;
     private PageContentExtractor $extractor;
 
     protected function setUp(): void
@@ -42,12 +39,7 @@ final class PageContentExtractorTest extends UnitTestCase
         $this->contentExtractCache = Mockery::mock(ContentExtractCache::class);
         $this->subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
         $this->statsService = Mockery::mock(WorkerStatsService::class);
-
-        $this->fileInfo = Mockery::mock(FileInfo::class);
-        $this->fileInfo->shouldReceive('getHash')->andReturn('foobar');
-
         $this->entity = Mockery::mock(EntityWithFileInfo::class);
-        $this->entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
 
         $this->extractor = new PageContentExtractor(
             $this->logger,
@@ -75,13 +67,11 @@ final class PageContentExtractorTest extends UnitTestCase
             ->andReturn($content);
 
         $this->subTypeIndexer
-            ->shouldReceive('updatePage')
-            ->once()
+            ->expects('updatePage')
             ->with($this->entity, $pageNr, $content);
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with(
                 'index.full.entity',
                 Mockery::on(static function (Closure $closure) {
@@ -117,13 +107,11 @@ final class PageContentExtractorTest extends UnitTestCase
             ->andReturn($content);
 
         $this->subTypeIndexer
-            ->shouldReceive('updatePage')
-            ->once()
+            ->expects('updatePage')
             ->with($this->entity, $pageNr, $content);
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with(
                 'index.full.entity',
                 Mockery::on(static function (Closure $closure) {
@@ -159,21 +147,16 @@ final class PageContentExtractorTest extends UnitTestCase
             ->andReturn($content);
 
         $this->entity
-            ->shouldReceive('getFileInfo')
-            ->andReturn($this->fileInfo);
-        $this->entity
-            ->shouldReceive('getId')
+            ->expects('getId')
             ->andReturn($entityId = Mockery::mock(Uuid::class));
 
         $this->subTypeIndexer
-            ->shouldReceive('updatePage')
-            ->once()
+            ->expects('updatePage')
             ->with($this->entity, $pageNr, $content)
             ->andThrow($thrownException = new RuntimeException('indexPage failed'));
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with(
                 'index.full.entity',
                 Mockery::on(static function (Closure $closure) {
@@ -183,12 +166,8 @@ final class PageContentExtractorTest extends UnitTestCase
                 }),
             );
 
-        $collection = Mockery::mock(ContentExtractCollection::class);
-        $collection->shouldReceive('getCombinedContent')->andReturn($content);
-
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Failed to index page', [
                 'id' => $entityId,
                 'class' => $this->entity::class,

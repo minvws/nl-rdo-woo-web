@@ -35,7 +35,7 @@ readonly class LoginAuditLogger
             return;
         }
 
-        $this->auditLogger->log((new UserLogoutLogEvent())
+        $this->auditLogger->log(new UserLogoutLogEvent()
             ->asExecute()
             ->withActor($user)
             ->withSource('woo'));
@@ -54,7 +54,7 @@ readonly class LoginAuditLogger
 
         $partialPasswordHash = substr(hash('sha256', $event->getPassport()?->getBadge(PasswordCredentials::class)?->getPassword() ?? ''), 0, 16);
 
-        $this->auditLogger->log((new UserLoginLogEvent())
+        $this->auditLogger->log(new UserLoginLogEvent()
             ->asExecute()
             ->withSource('woo')
             ->withFailed(true, $emailInvalid ? 'invalid_email' : 'invalid_password')

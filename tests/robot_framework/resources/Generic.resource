@@ -103,13 +103,6 @@ Click With CSRF Retry
     Click  ${selector}
   END
 
-Go To With Response
-  [Arguments]  ${url}
-  Go To  ${url}
-  ${response} =  Wait For Response  ${url}
-  ${status} =  Get From Dictionary  ${response}  status
-  RETURN  ${status}
-
 Success Alert Is Visible
   [Arguments]
   ...  ${contains_message}=${EMPTY}

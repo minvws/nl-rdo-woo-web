@@ -16,6 +16,7 @@ use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -24,6 +25,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @implements EntityWithAttachments<AnnualReportAttachment>
  * @implements EntityWithMainDocument<AnnualReportMainDocument>
  */
+#[NoIncompleteAttachments(groups: [
+    DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+    DossierValidationGroup::WORKFLOW_PUBLISH->value,
+])]
 #[ORM\Entity(repositoryClass: AnnualReportRepository::class)]
 class AnnualReport extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument
 {
@@ -34,14 +39,40 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
     use HasMainDocument;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AnnualReportMainDocument::class, cascade: ['persist', 'remove'])]
-    #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
-    #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    #[Assert\Valid(groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     private ?AnnualReportMainDocument $document;
 
     /** @var Collection<array-key,AnnualReportAttachment> */
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: AnnualReportAttachment::class, cascade: ['persist'])]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
+
+    #[Assert\NotNull(
+        message: 'annual_report_year_mandatory',
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
+    )]
+    protected ?DateTimeImmutable $dateFrom = null;
+
+    #[Assert\Length(min: 1, max: 1000, groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::CONTENT->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    protected string $summary = '';
 
     public function __construct()
     {

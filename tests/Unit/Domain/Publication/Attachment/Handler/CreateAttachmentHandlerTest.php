@@ -58,8 +58,7 @@ class CreateAttachmentHandlerTest extends UnitTestCase
     {
         $dossierUuid = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getAttachmentEntityClass')->andReturn(CovenantAttachment::class);
+        $dossier->expects('getAttachmentEntityClass')->andReturn(CovenantAttachment::class);
 
         $command = new CreateAttachmentCommand(
             $dossierUuid,
@@ -79,7 +78,7 @@ class CreateAttachmentHandlerTest extends UnitTestCase
         $attachment = Mockery::mock(CovenantAttachment::class);
         $attachment->expects('setInternalReference')->with($internalReference);
         $attachment->expects('setGrounds')->with($grounds);
-        $attachment->shouldReceive('getDossier')->andReturn($dossier);
+        $attachment->expects('getDossier')->times(3)->andReturn($dossier);
 
         $attachmentRepository = Mockery::mock(CovenantAttachmentRepository::class);
         $attachmentRepository->expects('create')->with($dossier, $command)->andReturn($attachment);

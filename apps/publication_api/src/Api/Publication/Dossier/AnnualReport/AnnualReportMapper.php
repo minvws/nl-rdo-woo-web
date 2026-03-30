@@ -5,38 +5,45 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Publication\Dossier\AnnualReport;
 
 use Carbon\CarbonImmutable;
-use PublicationApi\Api\Publication\Attachment\AttachmentResponseDto;
+use PublicationApi\Api\Publication\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Publication\Department\DepartmentReferenceDto;
-use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDto;
+use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Publication\Organisation\OrganisationReferenceDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-class AnnualReportMapper
+readonly class AnnualReportMapper
 {
+    public function __construct(
+        private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
+        private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+    ) {
+    }
+
     /**
      * @param array<array-key,AnnualReport> $annualReports
      *
      * @return list<AnnualReportDto>
      */
-    public static function fromEntities(array $annualReports): array
+    public function fromEntities(array $annualReports): array
     {
-        return array_values(array_map(self::fromEntity(...), $annualReports));
+        return array_values(array_map($this->fromEntity(...), $annualReports));
     }
 
-    public static function fromEntity(AnnualReport $annualReport): AnnualReportDto
+    public function fromEntity(AnnualReport $annualReport): AnnualReportDto
     {
         $mainDocument = $annualReport->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = MainDocumentResponseDto::fromEntity($mainDocument);
+        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
 
         $dateFrom = $annualReport->getDateFrom();
         Assert::notNull($dateFrom);
@@ -58,7 +65,7 @@ class AnnualReportMapper
             $annualReport->getPublicationDate(),
             $annualReport->getStatus(),
             $mainDocumentDto,
-            AttachmentResponseDto::fromEntities($annualReport->getAttachments()->toArray()),
+            $this->attachmentResponseDtoFactory->fromEntities($annualReport->getAttachments()->toArray()),
             (int) $dateFrom->format('Y'),
         );
     }
@@ -68,7 +75,7 @@ class AnnualReportMapper
         Organisation $organisation,
         Department $department,
         ?Subject $subject,
-        string $externalId,
+        ExternalId $externalId,
     ): AnnualReport {
         $annualReport = new AnnualReport();
         $annualReport->setExternalId($externalId);

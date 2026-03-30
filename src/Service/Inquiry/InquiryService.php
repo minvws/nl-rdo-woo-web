@@ -25,10 +25,10 @@ use function strval;
 readonly class InquiryService
 {
     public function __construct(
-        private EntityManagerInterface $doctrine,
+        protected EntityManagerInterface $doctrine,
         private BatchDownloadService $batchDownloadService,
         private EntityStorageService $entityStorageService,
-        private HistoryService $historyService,
+        protected HistoryService $historyService,
         private SearchDispatcher $searchDispatcher,
         private WooDecisionDispatcher $wooDecisionDispatcher,
         private IngestDispatcher $ingestDispatcher,
@@ -145,17 +145,20 @@ readonly class InquiryService
         }
     }
 
-    private function addDossierToInquiry(Inquiry $inquiry, ?WooDecision $dossier, string $caseNr): bool
-    {
-        if (! $dossier || $inquiry->getDossiers()->contains($dossier)) {
-            return false;
+    protected function handleDocumentDelete(
+        Uuid $documentId,
+        InquiryLinkUpdateResult $result,
+    ): void {
+        $document = $this->doctrine->getRepository(Document::class)->find($documentId);
+        if ($document === null) {
+            return;
         }
 
-        $inquiry->addDossier($dossier);
-
-        $this->historyService->addDossierEntry($dossier->getId(), 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
-
-        return $dossier->getStatus()->isPubliclyAvailable();
+        // Document removal for inquiries is disabled as part of #2868. It was initially disabled in the
+        // Inquiry::removeDocument method, but it's now disabled here so we can still use remove Documents from
+        // Inquiries the for the PublicationApi (see #5953):
+        // $result->getInquiry()->removeDocument($document);
+        $result->documentRemoved($document);
     }
 
     private function dispatchDocumentUpdates(InquiryLinkUpdateResult $result): void
@@ -192,19 +195,6 @@ readonly class InquiryService
         $result->documentAdded($document);
     }
 
-    private function handleDocumentDelete(
-        Uuid $documentId,
-        InquiryLinkUpdateResult $result,
-    ): void {
-        $document = $this->doctrine->getRepository(Document::class)->find($documentId);
-        if ($document === null) {
-            return;
-        }
-
-        $result->getInquiry()->removeDocument($document);
-        $result->documentRemoved($document);
-    }
-
     private function handleDossierAdd(
         Uuid $dossierId,
         InquiryLinkUpdateResult $result,
@@ -217,5 +207,18 @@ readonly class InquiryService
         if ($this->addDossierToInquiry($result->getInquiry(), $dossier, $result->getCaseNr())) {
             $result->dossierAdded($dossier);
         }
+    }
+
+    private function addDossierToInquiry(Inquiry $inquiry, ?WooDecision $dossier, string $caseNr): bool
+    {
+        if (! $dossier || $inquiry->getDossiers()->contains($dossier)) {
+            return false;
+        }
+
+        $inquiry->addDossier($dossier);
+
+        $this->historyService->addDossierEntry($dossier->getId(), 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
+
+        return $dossier->getStatus()->isPubliclyAvailable();
     }
 }

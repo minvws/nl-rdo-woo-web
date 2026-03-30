@@ -29,11 +29,10 @@ final class OtherPublicationViewFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        /** @var Department&MockInterface $expectedMainDepartment */
         $expectedMainDepartment = Mockery::mock(Department::class);
 
         $this->commonDossierViewFactory
-            ->shouldReceive('make')
+            ->expects('make')
             ->andReturn(new CommonDossierProperties(
                 dossierId: $expectedUuid = 'my uuid',
                 dossierNr: $expectedDossierNr = 'my dossier nr',
@@ -48,11 +47,10 @@ final class OtherPublicationViewFactoryTest extends UnitTestCase
                 subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
-        /** @var OtherPublication&MockInterface $dossier */
         $dossier = Mockery::mock(OtherPublication::class);
-        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable());
+        $dossier->expects('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable());
 
-        $result = (new OtherPublicationViewFactory($this->commonDossierViewFactory))->make($dossier);
+        $result = new OtherPublicationViewFactory($this->commonDossierViewFactory)->make($dossier);
 
         $this->assertSame($expectedUuid, $result->getDossierId());
         $this->assertSame($expectedDossierNr, $result->getDossierNr());

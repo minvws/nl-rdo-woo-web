@@ -19,6 +19,8 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
+use Shared\ValueObject\ExternalId;
+use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 final class ComplaintJudgementProcessor extends AbstractDossierProcessor
@@ -32,6 +34,8 @@ final class ComplaintJudgementProcessor extends AbstractDossierProcessor
         OrganisationRepository $organisationRepository,
         SubjectRepository $subjectRepository,
         private readonly ComplaintJudgementRepository $complaintJudgementRepository,
+        private readonly Security $security,
+        private readonly ComplaintJudgementMapper $complaintJudgementMapper,
     ) {
         parent::__construct(
             $attachmentService,
@@ -41,6 +45,7 @@ final class ComplaintJudgementProcessor extends AbstractDossierProcessor
             $mainDocumentService,
             $organisationRepository,
             $subjectRepository,
+            $this->security,
         );
     }
 
@@ -57,6 +62,7 @@ final class ComplaintJudgementProcessor extends AbstractDossierProcessor
 
         $complaintJudgementExternalId = $uriVariables['complaintJudgementExternalId'];
         Assert::string($complaintJudgementExternalId);
+        $complaintJudgementExternalId = ExternalId::create($complaintJudgementExternalId);
 
         Assert::isInstanceOf($data, ComplaintJudgementRequestDto::class);
 
@@ -68,12 +74,12 @@ final class ComplaintJudgementProcessor extends AbstractDossierProcessor
         if (! $complaintJudgement instanceof ComplaintJudgement) {
             $complaintJudgement = $this->create($organisation, $department, $subject, $data, $complaintJudgementExternalId);
 
-            return ComplaintJudgementMapper::fromEntity($complaintJudgement);
+            return $this->complaintJudgementMapper->fromEntity($complaintJudgement);
         }
 
         $this->update($complaintJudgement, $organisation, $department, $subject, $data);
 
-        return ComplaintJudgementMapper::fromEntity($complaintJudgement);
+        return $this->complaintJudgementMapper->fromEntity($complaintJudgement);
     }
 
     private function create(
@@ -81,7 +87,7 @@ final class ComplaintJudgementProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         ComplaintJudgementRequestDto $complaintJudgementRequestDto,
-        string $complaintJudgementExternalId,
+        ExternalId $complaintJudgementExternalId,
     ): ComplaintJudgement {
         $complaintJudgement = ComplaintJudgementMapper::create(
             $complaintJudgementRequestDto,

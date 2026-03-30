@@ -24,6 +24,7 @@ readonly class ElasticIndexManager
     public function __construct(
         private ElasticClientInterface $elastic,
         private MappingService $mappingService,
+        private ElasticConfig $elasticConfig,
     ) {
     }
 
@@ -55,8 +56,8 @@ readonly class ElasticIndexManager
     public function createLatestWithAliases(string $indexName): void
     {
         $this->create($indexName, $this->mappingService->getLatestMappingVersion());
-        $this->switch(ElasticConfig::READ_INDEX, '*', $indexName);
-        $this->switch(ElasticConfig::WRITE_INDEX, '*', $indexName);
+        $this->switch($this->elasticConfig->readIndex, '*', $indexName);
+        $this->switch($this->elasticConfig->writeIndex, '*', $indexName);
     }
 
     /**

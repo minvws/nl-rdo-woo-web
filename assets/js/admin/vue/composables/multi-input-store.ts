@@ -2,11 +2,10 @@ import { Ref, ref } from 'vue';
 import type { InputValidationErrors, InputValueType } from '../form/interface';
 import { InputStore } from './input-store';
 
-export interface MultiInputStore
-  extends Omit<
-    InputStore,
-    'addSubmitValidationError' | 'submitValidationErrors'
-  > {
+export interface MultiInputStore extends Omit<
+  InputStore,
+  'addSubmitValidationError' | 'submitValidationErrors'
+> {
   addInputStore: (inputStore: InputStore) => void;
   addSubmitValidationError: (error: string, path?: string) => void;
   findInputStore: (path: string) => InputStore | undefined;

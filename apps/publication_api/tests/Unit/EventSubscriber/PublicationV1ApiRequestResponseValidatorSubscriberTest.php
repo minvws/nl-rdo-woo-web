@@ -59,7 +59,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $requestEvent = Mockery::mock(RequestEvent::class);
         $requestEvent->expects('isMainRequest')
-            ->once()
             ->andReturnFalse();
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
@@ -120,21 +119,20 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
         $expectedMethod = 'get';
 
         $httpOperation = Mockery::mock(HttpOperation::class);
-        $httpOperation->shouldReceive('getRoutePrefix')->once()->andReturn($expectedRoutePrefix);
-        $httpOperation->shouldReceive('getUriTemplate')->once()->andReturn($expectedUriTemplate);
+        $httpOperation->expects('getRoutePrefix')->andReturn($expectedRoutePrefix);
+        $httpOperation->expects('getUriTemplate')->andReturn($expectedUriTemplate);
 
         $request = Mockery::mock(Request::class);
         $request->attributes = new ParameterBag(['_api_operation' => $httpOperation]);
-        $request->shouldReceive('getMethod')
-            ->once()
+        $request->expects('getMethod')
             ->andReturn($expectedMethod);
 
         $requestEvent = new RequestEvent(Mockery::mock(KernelInterface::class), $request, 1);
 
         $expectedPath = sprintf('%s%s%s', PublicationV1Api::API_PREFIX, $expectedRoutePrefix, $expectedUriTemplate);
         $this->openApiValidator
-            ->shouldReceive('validateRequest')
-            ->once()
+            ->expects('validateRequest')
+
             ->with($request, $expectedPath, $expectedMethod);
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
@@ -155,17 +153,14 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
         $expectedMethod = 'post';
 
         $httpOperation = Mockery::mock(HttpOperation::class);
-        $httpOperation->shouldReceive('getRoutePrefix')
-            ->once()
+        $httpOperation->expects('getRoutePrefix')
             ->andReturn($expectedRoutePrefix);
-        $httpOperation->shouldReceive('getUriTemplate')
-            ->once()
+        $httpOperation->expects('getUriTemplate')
             ->andReturn($expectedUriTemplate);
 
         $request = Mockery::mock(Request::class);
         $request->attributes = new ParameterBag(['_api_operation' => $httpOperation]);
-        $request->shouldReceive('getMethod')
-            ->once()
+        $request->expects('getMethod')
             ->andReturn($expectedMethod);
 
         $requestEvent = new RequestEvent(Mockery::mock(KernelInterface::class), $request, 1);
@@ -173,15 +168,13 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
         $expectedPath = sprintf('%s%s%s', PublicationV1Api::API_PREFIX, $expectedRoutePrefix, $expectedUriTemplate);
         $validatonException = new ValidatonException('foo', 0, new Exception());
         $this->openApiValidator
-            ->shouldReceive('validateRequest')
-            ->once()
+            ->expects('validateRequest')
             ->with($request, $expectedPath, $expectedMethod)
             ->andThrows($validatonException);
 
         $openApiValidationExceptionResponseFactory = Mockery::mock(OpenApiValidationExceptionResponseFactory::class);
         $openApiValidationExceptionResponseFactory
             ->expects('buildJsonResponse')
-            ->once()
             ->with($validatonException);
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
@@ -288,18 +281,15 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
         $expectedMethod = 'GET';
 
         $httpOperation = Mockery::mock(HttpOperation::class);
-        $httpOperation->shouldReceive('getRoutePrefix')
-            ->once()
+        $httpOperation->expects('getRoutePrefix')
             ->andReturn($expectedRoutePrefix);
-        $httpOperation->shouldReceive('getUriTemplate')
-            ->once()
+        $httpOperation->expects('getUriTemplate')
             ->andReturn($expectedUriTemplate);
 
         $request = Mockery::mock(Request::class);
         $request->attributes = new ParameterBag(['_api_operation' => $httpOperation]);
         $request
-            ->shouldReceive('getMethod')
-            ->once()
+            ->expects('getMethod')
             ->andReturn($expectedMethod);
 
         $response = Mockery::mock(Response::class);
@@ -308,15 +298,14 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $expectedPath = sprintf('%s%s%s', PublicationV1Api::API_PREFIX, $expectedRoutePrefix, $expectedUriTemplate);
         $this->openApiValidator
-            ->shouldReceive('validateResponse')
-            ->once()
+            ->expects('validateResponse')
             ->with($response, $expectedPath, $expectedMethod)
             ->andThrow($validatonException);
 
         $openApiPublicationV1ValidationExceptionResponseFactory = Mockery::mock(OpenApiValidationExceptionResponseFactory::class);
         $openApiPublicationV1ValidationExceptionResponseFactory
             ->expects('buildJsonResponse')
-            ->once()
+
             ->with($validatonException);
 
         $responseEvent = new ResponseEvent(Mockery::mock(KernelInterface::class), $request, 1, $response);
@@ -401,16 +390,16 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
         $expectedMethod = 'GET';
 
         $httpOperation = Mockery::mock(HttpOperation::class);
-        $httpOperation->shouldReceive('getRoutePrefix')
-            ->twice()
+        $httpOperation->expects('getRoutePrefix')
+            ->times(2)
             ->andReturn($expectedRoutePrefix);
-        $httpOperation->shouldReceive('getUriTemplate')
-            ->twice()
+        $httpOperation->expects('getUriTemplate')
+            ->times(2)
             ->andReturn($expectedUriTemplate);
 
         $request = Mockery::mock(Request::class);
         $request->attributes = new ParameterBag(['_api_operation' => $httpOperation]);
-        $request->shouldReceive('getMethod')
+        $request->expects('getMethod')
             ->times(2)
             ->andReturn($expectedMethod);
 
@@ -421,15 +410,13 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $expectedPath = sprintf('%s%s%s', PublicationV1Api::API_PREFIX, $expectedRoutePrefix, $expectedUriTemplate);
         $this->openApiValidator
-            ->shouldReceive('validateResponse')
-            ->once()
+            ->expects('validateResponse')
             ->with($response, $expectedPath, $expectedMethod)
             ->andThrow($validatonException);
 
         $logger = Mockery::mock(LoggerInterface::class);
         $logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Response validation failed', [
                 'exception_class' => $validatonException::class,
                 'exception_message' => $exceptionMessage,

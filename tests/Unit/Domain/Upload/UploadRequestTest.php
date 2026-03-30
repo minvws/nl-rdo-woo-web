@@ -34,10 +34,10 @@ class UploadRequestTest extends UnitTestCase
         self::assertTrue($request->isChunked());
         self::assertTrue($request->hasMoreChunksToFollow());
 
-        $uploadedFile->shouldReceive('getClientOriginalName')->andReturn($name = 'foo.bar');
+        $uploadedFile->expects('getClientOriginalName')->andReturn($name = 'foo.bar');
         self::assertEquals($name, $request->getFilename());
 
-        $uploadedFile->shouldReceive('getClientMimeType')->andReturn($mimetype = 'foo/bar');
+        $uploadedFile->expects('getClientMimeType')->andReturn($mimetype = 'foo/bar');
         self::assertEquals($mimetype, $request->getMimeType());
 
         self::assertEquals($params->all(), $request->additionalParameters->all());
@@ -70,10 +70,10 @@ class UploadRequestTest extends UnitTestCase
         self::assertTrue($request->isChunked());
         self::assertFalse($request->hasMoreChunksToFollow());
 
-        $uploadedFile->shouldReceive('getClientOriginalName')->andReturn($name = 'foo.bar');
+        $uploadedFile->expects('getClientOriginalName')->andReturn($name = 'foo.bar');
         self::assertEquals($name, $request->getFilename());
 
-        $uploadedFile->shouldReceive('getClientMimeType')->andReturn($mimetype = 'foo/bar');
+        $uploadedFile->expects('getClientMimeType')->andReturn($mimetype = 'foo/bar');
         self::assertEquals($mimetype, $request->getMimeType());
 
         self::assertEquals(['foo' => 'bar'], $request->additionalParameters->all());

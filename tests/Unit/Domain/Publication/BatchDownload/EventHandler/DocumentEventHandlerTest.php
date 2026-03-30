@@ -39,7 +39,7 @@ class DocumentEventHandlerTest extends UnitTestCase
         $dossierB = Mockery::mock(WooDecision::class);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossierA, $dossierB]));
+        $document->expects('getDossiers')->andReturn(new ArrayCollection([$dossierA, $dossierB]));
 
         $this->batchDownloadService->expects('refresh')->with(Mockery::on(
             static fn (BatchDownloadScope $scope) => $scope->wooDecision === $dossierA,

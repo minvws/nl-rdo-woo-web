@@ -51,7 +51,7 @@ In the examples below the name 'foo' is used for the new dossier type.
 
     ```shell
     task shell
-    bin/console  workflow:dump foo_workflow --dump-format=mermaid --env=dev
+    bin/console --tenant=minvws workflow:dump foo_workflow --dump-format=mermaid --env=dev
     ```
 
     The generated mermaid code can be visualized using for instance [mermaid.live](https://mermaid.live/).

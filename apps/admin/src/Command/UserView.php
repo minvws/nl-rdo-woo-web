@@ -20,7 +20,7 @@ use Webmozart\Assert\Assert;
 use function is_null;
 use function join;
 
-#[AsCommand(name: self::COMMAND_NAME, description: 'Retrieves the user 2fa token')]
+#[AsCommand(name: self::COMMAND_NAME, description: 'Retrieves the user 2fa token', help: 'Retrieves the user 2fa token')]
 class UserView extends Command
 {
     public const string COMMAND_NAME = 'woopie:user:view';
@@ -35,7 +35,6 @@ class UserView extends Command
     protected function configure(): void
     {
         $this
-            ->setHelp('Retrieves the user 2fa token')
             ->setDefinition([
                 new InputArgument('email', InputArgument::REQUIRED, 'Email of the user'),
             ]);

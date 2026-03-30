@@ -31,11 +31,13 @@ final class DossierTypeViewFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        $dossierTypeConfig = $this->createDossierTypeConfig(
-            DossierTypeEnum::COVENANT,
-            'dossier_create',
-            $createUrl = '/dossier/create',
-        );
+        $createUrl = '/dossier/create';
+
+        $dossierTypeConfig = Mockery::mock(DossierTypeConfigInterface::class);
+        $dossierTypeConfig->expects('getDossierType')->andReturn(DossierTypeEnum::COVENANT);
+        $dossierTypeConfig->expects('getCreateRouteName')->andReturn('dossier_create');
+
+        $this->urlGenerator->expects('generate')->with('dossier_create')->andReturn($createUrl);
 
         $got = $this->factory->make($dossierTypeConfig);
 
@@ -45,18 +47,49 @@ final class DossierTypeViewFactoryTest extends UnitTestCase
 
     public function testMakeCollection(): void
     {
+        $one = 'one';
+        $two = 'two';
+        $three = 'three';
+        $four = 'four';
+
+        $urlOne = '/one';
+        $urlTwo = '/two';
+        $urlThree = '/three';
+        $urlFour = '/four';
+
+        $dossierTypeConfig1 = Mockery::mock(DossierTypeConfigInterface::class);
+        $dossierTypeConfig1->expects('getDossierType')->times(2)->andReturn(DossierTypeEnum::COVENANT);
+        $dossierTypeConfig1->expects('getCreateRouteName')->andReturn($one);
+
+        $dossierTypeConfig2 = Mockery::mock(DossierTypeConfigInterface::class);
+        $dossierTypeConfig2->expects('getDossierType')->times(2)->andReturn(DossierTypeEnum::ANNUAL_REPORT);
+        $dossierTypeConfig2->expects('getCreateRouteName')->andReturn($two);
+
+        $dossierTypeConfig3 = Mockery::mock(DossierTypeConfigInterface::class);
+        $dossierTypeConfig3->expects('getDossierType')->times(2)->andReturn(DossierTypeEnum::DISPOSITION);
+        $dossierTypeConfig3->expects('getCreateRouteName')->andReturn($three);
+
+        $dossierTypeConfig4 = Mockery::mock(DossierTypeConfigInterface::class);
+        $dossierTypeConfig4->expects('getDossierType')->times(2)->andReturn(DossierTypeEnum::COMPLAINT_JUDGEMENT);
+        $dossierTypeConfig4->expects('getCreateRouteName')->andReturn($four);
+
+        $this->urlGenerator->expects('generate')->with($one)->andReturn($urlOne);
+        $this->urlGenerator->expects('generate')->with($two)->andReturn($urlTwo);
+        $this->urlGenerator->expects('generate')->with($three)->andReturn($urlThree);
+        $this->urlGenerator->expects('generate')->with($four)->andReturn($urlFour);
+
         $input = [
-            $this->createDossierTypeConfig(DossierTypeEnum::COVENANT, 'one', $createUrlOne = '/one'),
-            $this->createDossierTypeConfig(DossierTypeEnum::ANNUAL_REPORT, 'two', $createUrlTwo = '/two'),
-            $this->createDossierTypeConfig(DossierTypeEnum::DISPOSITION, 'three', $createUrlThree = '/three'),
-            $this->createDossierTypeConfig(DossierTypeEnum::COMPLAINT_JUDGEMENT, 'four', $createUrlFour = '/four'),
+            $dossierTypeConfig1,
+            $dossierTypeConfig2,
+            $dossierTypeConfig3,
+            $dossierTypeConfig4,
         ];
 
-        $this->translator->shouldReceive('trans')->andReturnArg(0);
+        $this->translator->expects('trans')->times(4)->andReturnArg(0);
 
-        $got = $this->factory->makeCollection($input);
+        $result = $this->factory->makeCollection($input);
 
-        $this->assertCount(4, $got);
+        $this->assertCount(4, $result);
         $this->assertSame(
             [
                 DossierTypeEnum::ANNUAL_REPORT->value,
@@ -64,30 +97,12 @@ final class DossierTypeViewFactoryTest extends UnitTestCase
                 DossierTypeEnum::COVENANT->value,
                 DossierTypeEnum::DISPOSITION->value,
             ],
-            array_map(fn ($dossierType): string => $dossierType->type, $got),
+            array_map(fn ($dossierType): string => $dossierType->type, $result),
         );
 
-        $this->assertSame([$got[0]->type, $got[0]->createUrl], [DossierTypeEnum::ANNUAL_REPORT->value, $createUrlTwo]);
-        $this->assertSame([$got[1]->type, $got[1]->createUrl], [DossierTypeEnum::COMPLAINT_JUDGEMENT->value, $createUrlFour]);
-        $this->assertSame([$got[2]->type, $got[2]->createUrl], [DossierTypeEnum::COVENANT->value, $createUrlOne]);
-        $this->assertSame([$got[3]->type, $got[3]->createUrl], [DossierTypeEnum::DISPOSITION->value, $createUrlThree]);
-    }
-
-    private function createDossierTypeConfig(
-        DossierTypeEnum $dossierType,
-        string $routeName,
-        string $createUrl,
-    ): DossierTypeConfigInterface&MockInterface {
-        /** @var DossierTypeConfigInterface&MockInterface $dossierTypeConfig */
-        $dossierTypeConfig = Mockery::mock(DossierTypeConfigInterface::class);
-        $dossierTypeConfig->shouldReceive('getDossierType')->andReturn($dossierType);
-        $dossierTypeConfig->shouldReceive('getCreateRouteName')->andReturn($routeName);
-
-        $this->urlGenerator
-            ->shouldReceive('generate')
-            ->with($routeName)
-            ->andReturn($createUrl);
-
-        return $dossierTypeConfig;
+        $this->assertSame([$result[0]->type, $result[0]->createUrl], [DossierTypeEnum::ANNUAL_REPORT->value, $urlTwo]);
+        $this->assertSame([$result[1]->type, $result[1]->createUrl], [DossierTypeEnum::COMPLAINT_JUDGEMENT->value, $urlFour]);
+        $this->assertSame([$result[2]->type, $result[2]->createUrl], [DossierTypeEnum::COVENANT->value, $urlOne]);
+        $this->assertSame([$result[3]->type, $result[3]->createUrl], [DossierTypeEnum::DISPOSITION->value, $urlThree]);
     }
 }

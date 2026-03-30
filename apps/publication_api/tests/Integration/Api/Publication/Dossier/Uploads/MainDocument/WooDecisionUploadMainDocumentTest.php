@@ -6,7 +6,8 @@ namespace PublicationApi\Tests\Integration\Api\Publication\Dossier\Uploads\MainD
 
 use Mockery;
 use PublicationApi\Tests\Integration\Api\Publication\ApiPublicationV1TestCase;
-use Shared\Domain\Upload\Handler\UploadHandlerInterface;
+use Shared\Domain\Upload\UploadEntity;
+use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Domain\Upload\UploadRequest;
 use Shared\Domain\Upload\UploadService;
 use Shared\Service\Uploader\UploadGroupId;
@@ -28,21 +29,33 @@ final class WooDecisionUploadMainDocumentTest extends ApiPublicationV1TestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $wooDecision = WooDecisionFactory::createOne([
             'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
             'previewDate' => $this->getFaker()->dateTime(),
             'departments' => [$department],
         ]);
-        $wooDecisionMainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
+        $wooDecisionMainDocument = WooDecisionMainDocumentFactory::createOne([
+            'dossier' => $wooDecision,
+        ]);
         $client = self::createPublicationApiClient();
 
         $testFileName = '1008.pdf';
         $testFilePath = sprintf('%s/tests/robot_framework/files/woodecision/%s', static::$kernel->getProjectDir(), $testFileName);
         $fileContent = file_get_contents($testFilePath);
 
+        $mockUploadEntity = Mockery::mock(UploadEntity::class);
+        $mockUploadEntity->expects('getFilename')->twice()->andReturn('1008.pdf');
+        $mockUploadEntity->expects('getMimeType')->twice()->andReturn('application/pdf');
+        $mockUploadEntity->expects('getSize')->andReturn(1000);
+
+        $uploadEntityRepository = Mockery::mock(UploadEntityRepository::class);
+        $uploadEntityRepository->expects('save');
+        $uploadEntityRepository->expects('findOneBy')->andReturn($mockUploadEntity);
+        self::getContainer()->set(UploadEntityRepository::class, $uploadEntityRepository);
+
         $uploadService = Mockery::mock(UploadService::class);
         self::getContainer()->set(UploadService::class, $uploadService);
         $uploadService
-            ->shouldReceive('handleUploadRequest')
-            ->once()
+            ->expects('handleUploadRequest')
             ->with(
                 Mockery::on(function (UploadRequest $uploadRequest) use ($wooDecisionMainDocument) {
                     if ($uploadRequest->chunkIndex !== 1) {
@@ -65,11 +78,12 @@ final class WooDecisionUploadMainDocumentTest extends ApiPublicationV1TestCase
                 }),
                 null
             );
+        $uploadService->expects('moveUploadToStorage');
+
         $url = sprintf(
-            '/api/publication/v1/organisation/%s/dossiers/woo-decision/%s/uploads/main-document/%s',
+            '/api/publication/v1/organisation/%s/dossiers/woo-decision/E:%s/uploads/main-document',
             $organisation->getId(),
-            $wooDecision->getId(),
-            $wooDecisionMainDocument->getId(),
+            $wooDecision->getExternalId(),
         );
 
         $client->request(Request::METHOD_PUT, $url, [
@@ -88,23 +102,17 @@ final class WooDecisionUploadMainDocumentTest extends ApiPublicationV1TestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $wooDecision = WooDecisionFactory::createOne([
             'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
             'previewDate' => $this->getFaker()->dateTime(),
             'departments' => [$department],
         ]);
-        $wooDecisionMainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
+
         $client = self::createPublicationApiClient();
 
-        $uploadHandler = Mockery::mock(UploadHandlerInterface::class);
-        self::getContainer()->set(UploadHandlerInterface::class, $uploadHandler);
-        $uploadHandler
-            ->shouldReceive('handleUpload')
-            ->never();
-
         $url = sprintf(
-            '/api/publication/v1/organisation/%s/dossiers/woo-decision/%s/uploads/main-document/%s',
+            '/api/publication/v1/organisation/%s/dossiers/woo-decision/E:%s/uploads/main-document',
             $organisation->getId(),
-            $wooDecision->getId(),
-            $wooDecisionMainDocument->getId(),
+            $wooDecision->getExternalId(),
         );
         $client->request(Request::METHOD_PUT, $url, [
             'headers' => [

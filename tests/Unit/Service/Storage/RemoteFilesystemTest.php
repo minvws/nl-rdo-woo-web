@@ -29,8 +29,7 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testReadStream(): void
     {
         $this->documentStorage
-            ->shouldReceive('readStream')
-            ->once()
+            ->expects('readStream')
             ->with($location = 'remotePath')
             ->andReturn($resoure = $this->getTempResource());
 
@@ -43,14 +42,12 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testFailedReadStream(): void
     {
         $this->documentStorage
-            ->shouldReceive('readStream')
-            ->once()
+            ->expects('readStream')
             ->with($location = 'remotePath')
             ->andThrow(new UnreadableFileEncountered($exceptionMessage = 'My Exception message'));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Could not read file stream from storage adapter', [
                 'location' => $location,
                 'exception' => $exceptionMessage,
@@ -65,8 +62,7 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testDirectoryExists(): void
     {
         $this->documentStorage
-            ->shouldReceive('directoryExists')
-            ->once()
+            ->expects('directoryExists')
             ->with($location = 'foo/bar')
             ->andReturnTrue();
 
@@ -79,8 +75,7 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testCreateDirectory(): void
     {
         $this->documentStorage
-            ->shouldReceive('createDirectory')
-            ->once()
+            ->expects('createDirectory')
             ->with($location = 'foo/bar')
             ->andReturnTrue();
 
@@ -93,14 +88,12 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testFailedCreateDirectory(): void
     {
         $this->documentStorage
-            ->shouldReceive('createDirectory')
-            ->once()
+            ->expects('createDirectory')
             ->with($location = 'foo/bar')
             ->andThrow(new UnreadableFileEncountered($exceptionMessage = 'My Exception message'));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Could not create directory in storage', [
                 'location' => $location,
                 'exception' => $exceptionMessage,
@@ -116,13 +109,11 @@ final class RemoteFilesystemTest extends UnitTestCase
     {
         $remoteFilesystem = $this->getInstance();
         $remoteFilesystem
-            ->shouldReceive('directoryExists')
-            ->once()
+            ->expects('directoryExists')
             ->with($location = 'foo/bar')
             ->andReturnFalse();
         $remoteFilesystem
-            ->shouldReceive('createDirectory')
-            ->once()
+            ->expects('createDirectory')
             ->with($location)
             ->andReturnTrue();
 
@@ -135,8 +126,7 @@ final class RemoteFilesystemTest extends UnitTestCase
     {
         $remoteFilesystem = $this->getInstance();
         $remoteFilesystem
-            ->shouldReceive('directoryExists')
-            ->once()
+            ->expects('directoryExists')
             ->with($location = 'foo/bar')
             ->andReturnTrue();
         $remoteFilesystem->shouldNotReceive('createDirectory');
@@ -149,8 +139,7 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testFileExists(): void
     {
         $this->documentStorage
-            ->shouldReceive('fileExists')
-            ->once()
+            ->expects('fileExists')
             ->with($location = 'foo/bar')
             ->andReturnTrue();
 
@@ -163,14 +152,12 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testFailedFileExists(): void
     {
         $this->documentStorage
-            ->shouldReceive('fileExists')
-            ->once()
+            ->expects('fileExists')
             ->with($location = 'foo/bar')
             ->andThrow(new UnreadableFileEncountered($exceptionMessage = 'My Exception message'));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Could not check if file exists', [
                 'location' => $location,
                 'exception' => $exceptionMessage,
@@ -185,8 +172,7 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testFileSize(): void
     {
         $this->documentStorage
-            ->shouldReceive('fileSize')
-            ->once()
+            ->expects('fileSize')
             ->with($remotePath = 'foo/bar')
             ->andReturn($size = 337);
 
@@ -199,14 +185,12 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testFailedFileSize(): void
     {
         $this->documentStorage
-            ->shouldReceive('fileSize')
-            ->once()
+            ->expects('fileSize')
             ->with($path = 'foo/bar')
             ->andThrow(new UnreadableFileEncountered($exceptionMessage = 'My Exception message'));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Could not check file size', [
                 'path' => $path,
                 'exception' => $exceptionMessage,
@@ -221,8 +205,7 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testDelete(): void
     {
         $this->documentStorage
-            ->shouldReceive('delete')
-            ->once()
+            ->expects('delete')
             ->with($location = 'foo/bar')
             ->andReturnTrue();
 
@@ -235,14 +218,12 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testFailedDelete(): void
     {
         $this->documentStorage
-            ->shouldReceive('delete')
-            ->once()
+            ->expects('delete')
             ->with($location = 'foo/bar')
             ->andThrow(new UnreadableFileEncountered($exceptionMessage = 'My Exception message'));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Could not delete file from storage for entity', [
                 'location' => $location,
                 'exception' => $exceptionMessage,
@@ -257,8 +238,7 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testWriteStream(): void
     {
         $this->documentStorage
-            ->shouldReceive('writeStream')
-            ->once()
+            ->expects('writeStream')
             ->with($location = 'foo/bar/input.txt', $resource = $this->getTempResource());
 
         $remoteFilesystem = $this->getInstance();
@@ -270,14 +250,12 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testFailedWriteStream(): void
     {
         $this->documentStorage
-            ->shouldReceive('writeStream')
-            ->once()
+            ->expects('writeStream')
             ->with($location = 'foo/bar/input.txt', $resource = $this->getTempResource())
             ->andThrow(new UnreadableFileEncountered($exceptionMessage = 'My Exception message'));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Could not write file to storage adapter', [
                 'location' => $location,
                 'exception' => $exceptionMessage,
@@ -292,8 +270,7 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testWrite(): void
     {
         $this->documentStorage
-            ->shouldReceive('write')
-            ->once()
+            ->expects('write')
             ->with($location = 'foo/bar/input.txt', $content = 'my content');
 
         $remoteFilesystem = $this->getInstance();
@@ -305,14 +282,12 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testFailedWrite(): void
     {
         $this->documentStorage
-            ->shouldReceive('write')
-            ->once()
+            ->expects('write')
             ->with($location = 'foo/bar/input.txt', $content = 'my content')
             ->andThrow(new UnreadableFileEncountered($exceptionMessage = 'My Exception message'));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Could not write contents to storage adapter', [
                 'location' => $location,
                 'exception' => $exceptionMessage,
@@ -327,8 +302,7 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testRead(): void
     {
         $this->documentStorage
-            ->shouldReceive('read')
-            ->once()
+            ->expects('read')
             ->with($location = 'foo/bar/foobar.txt')
             ->andReturn($content = 'some content');
 
@@ -341,14 +315,12 @@ final class RemoteFilesystemTest extends UnitTestCase
     public function testFailedRead(): void
     {
         $this->documentStorage
-            ->shouldReceive('read')
-            ->once()
+            ->expects('read')
             ->with($location = 'foo/bar/foobar.txt')
             ->andThrow(new UnreadableFileEncountered($exceptionMessage = 'My Exception message'));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Could not read contents from storage adapter', [
                 'location' => $location,
                 'exception' => $exceptionMessage,
@@ -362,11 +334,8 @@ final class RemoteFilesystemTest extends UnitTestCase
 
     private function getInstance(): RemoteFilesystem&MockInterface
     {
-        /** @var RemoteFilesystem&MockInterface $instance */
-        $instance = Mockery::mock(RemoteFilesystem::class, [$this->logger, $this->documentStorage])
+        return Mockery::mock(RemoteFilesystem::class, [$this->logger, $this->documentStorage])
             ->makePartial();
-
-        return $instance;
     }
 
     /**

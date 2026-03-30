@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\InquiryFactory;
@@ -589,5 +590,366 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $result = $this->repository->findByDossierAndExternalId($dossier, $externalId);
 
         self::assertNull($result);
+    }
+
+    public function testHasIncompleteDocumentsReturnsFalseForCompleteDocuments(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-001',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-002',
+            'judgement' => Judgement::NOT_PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
+        ]);
+
+        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsTrueForMissingDocumentNr(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => '',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsTrueForWhitespaceDocumentNr(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => '   ',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsTrueForMissingJudgement(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        // Create document manually since setJudgement requires non-null but property is nullable
+        $document = new Document();
+        $document->setDocumentNr('DOC-001');
+        $document->setFileInfo(FileInfoFactory::createOne(['uploaded' => true]));
+        $document->addDossier($dossier);
+
+        $this->repository->save($document, true);
+
+        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsTrueForPublicDocumentWithoutFile(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-001',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
+        ]);
+
+        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsTrueForPartialPublicDocumentWithoutFile(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-001',
+            'judgement' => Judgement::PARTIAL_PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
+        ]);
+
+        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsFalseForWithdrawnDocumentWithoutFile(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        DocumentFactory::new()
+            ->withdrawn()
+            ->create([
+                'dossiers' => [$dossier],
+                'documentNr' => 'DOC-001',
+                'judgement' => Judgement::PUBLIC,
+            ]);
+
+        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsFalseForSuspendedDocumentWithoutFile(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-001',
+            'judgement' => Judgement::PUBLIC,
+            'suspended' => true,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
+        ]);
+
+        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsFalseForAlreadyPublicDocumentWithoutFile(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-001',
+            'judgement' => Judgement::ALREADY_PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
+        ]);
+
+        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsFalseForNotPublicDocumentWithoutFile(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-001',
+            'judgement' => Judgement::NOT_PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
+        ]);
+
+        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsTrueForIncompleteReferredDocument(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        $referredDocument = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-REFERRED',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
+        ]);
+
+        $mainDocument = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-MAIN',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        $mainDocument->addRefersTo($referredDocument);
+        $this->repository->save($mainDocument, true);
+
+        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsTrueForMultipleLevelsOfReferrals(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        $deepReferredDocument = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => '',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        $middleDocument = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-MIDDLE',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        $mainDocument = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-MAIN',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        $middleDocument->addRefersTo($deepReferredDocument);
+        $this->repository->save($middleDocument, true);
+
+        $mainDocument->addRefersTo($middleDocument);
+        $this->repository->save($mainDocument, true);
+
+        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsFalseWhenReferredDocumentIsComplete(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        $referredDocument = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-REFERRED',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        $mainDocument = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-MAIN',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        $mainDocument->addRefersTo($referredDocument);
+        $this->repository->save($mainDocument, true);
+
+        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsTrueForMultipleIncompleteDocuments(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => '',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-002',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
+        ]);
+
+        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsFalseForDifferentDossier(): void
+    {
+        $dossierA = WooDecisionFactory::createOne();
+        $dossierB = WooDecisionFactory::createOne();
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossierB],
+            'documentNr' => '',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossierA->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsTrueWhenReferredDocumentHasMissingJudgement(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        // Create referred document manually with null judgement
+        $referredDocument = new Document();
+        $referredDocument->setDocumentNr('DOC-REFERRED');
+        $referredDocument->setFileInfo(FileInfoFactory::createOne(['uploaded' => true]));
+        $referredDocument->addDossier($dossier);
+        $this->repository->save($referredDocument, true);
+
+        $mainDocument = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-MAIN',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        $mainDocument->addRefersTo($referredDocument);
+        $this->repository->save($mainDocument, true);
+
+        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsReturnsFalseForComplexScenarioWithAllComplete(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        // Create multiple referred documents, all complete
+        $referred1 = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-REF-1',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        $referred2 = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-REF-2',
+            'judgement' => Judgement::NOT_PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
+        ]);
+
+        $referred3 = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-REF-3',
+            'judgement' => Judgement::PUBLIC,
+            'suspended' => true,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
+        ]);
+
+        $mainDocument = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-MAIN',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        $mainDocument->addRefersTo($referred1);
+        $mainDocument->addRefersTo($referred2);
+        $mainDocument->addRefersTo($referred3);
+        $this->repository->save($mainDocument, true);
+
+        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testHasIncompleteDocumentsHandlesCircularReferrals(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+
+        $doc1 = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-1',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        $doc2 = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNr' => 'DOC-2',
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
+        ]);
+
+        // Create circular reference
+        $doc1->addRefersTo($doc2);
+        $doc2->addRefersTo($doc1);
+        $this->repository->save($doc1, true);
+        $this->repository->save($doc2, true);
+
+        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 }

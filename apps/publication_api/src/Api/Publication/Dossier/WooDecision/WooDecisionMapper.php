@@ -4,39 +4,47 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\Dossier\WooDecision;
 
-use PublicationApi\Api\Publication\Attachment\AttachmentResponseDto;
+use PublicationApi\Api\Publication\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Publication\Department\DepartmentReferenceDto;
-use PublicationApi\Api\Publication\Dossier\WooDecision\Document\WooDecisionDocumentResponseDto;
-use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDto;
+use PublicationApi\Api\Publication\Dossier\WooDecision\Document\WooDecisionDocumentResponseDtoFactory;
+use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Publication\Organisation\OrganisationReferenceDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-class WooDecisionMapper
+readonly class WooDecisionMapper
 {
+    public function __construct(
+        private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
+        private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+        private WooDecisionDocumentResponseDtoFactory $wooDecisionDocumentResponseDtoFactory,
+    ) {
+    }
+
     /**
      * @param array<array-key,WooDecision> $wooDecisions
      *
      * @return list<WooDecisionDto>
      */
-    public static function fromEntities(array $wooDecisions): array
+    public function fromEntities(array $wooDecisions): array
     {
         return array_values(array_map(self::fromEntity(...), $wooDecisions));
     }
 
-    public static function fromEntity(WooDecision $wooDecision): WooDecisionDto
+    public function fromEntity(WooDecision $wooDecision): WooDecisionDto
     {
         $mainDocument = $wooDecision->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = MainDocumentResponseDto::fromEntity($mainDocument);
+        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
 
         $publicationReason = $wooDecision->getPublicationReason();
         Assert::notNull($publicationReason);
@@ -58,13 +66,13 @@ class WooDecisionMapper
             $wooDecision->getPublicationDate(),
             $wooDecision->getStatus(),
             $mainDocumentDto,
-            AttachmentResponseDto::fromEntities($wooDecision->getAttachments()->toArray()),
+            $this->attachmentResponseDtoFactory->fromEntities($wooDecision->getAttachments()->toArray()),
             $wooDecision->getDateFrom(),
             $wooDecision->getDateTo(),
             $wooDecision->getDecision(),
             $publicationReason,
             $wooDecision->getPreviewDate(),
-            WooDecisionDocumentResponseDto::fromEntities($wooDecision->getDocuments()->toArray()),
+            $this->wooDecisionDocumentResponseDtoFactory->fromEntities($wooDecision->getDocuments()->toArray()),
         );
     }
 
@@ -73,7 +81,7 @@ class WooDecisionMapper
         Organisation $organisation,
         Department $department,
         ?Subject $subject,
-        string $externalId,
+        ExternalId $externalId,
     ): WooDecision {
         $wooDecision = new WooDecision();
         $wooDecision->setExternalId($externalId);

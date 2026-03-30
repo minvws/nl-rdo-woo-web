@@ -61,7 +61,7 @@ jobs:
             ```
             ${{ steps.migration_check.outputs.output }}
             ```
-            👨‍💻 Please run `php bin/console woopie:sql:dump` to create the SQL migrations files, and add them to the
+            👨‍💻 Please run `php bin/console --tenant=minvws woopie:sql:dump` to create the SQL migrations files, and add them to the
             database directory in this repository at `./migrations/sql` to get rid of this message.
 
       - name: Remove comment if no missing migrations

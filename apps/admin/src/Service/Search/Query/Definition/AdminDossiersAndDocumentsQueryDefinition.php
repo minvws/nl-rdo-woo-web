@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Admin\Service\Search\Query\Definition;
 
 use Erichard\ElasticQueryBuilder\QueryBuilder;
+use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Query\Facet\FacetListFactory;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Condition\QueryConditionHelper;
@@ -16,12 +17,13 @@ readonly class AdminDossiersAndDocumentsQueryDefinition implements QueryDefiniti
     public function __construct(
         private QueryConditionHelper $conditionHelper,
         private FacetListFactory $facetListFactory,
+        private ElasticConfig $elasticConfig,
     ) {
     }
 
     public function configure(QueryBuilder $queryBuilder, SearchParameters $searchParameters): void
     {
-        ElasticQueryParameters::applyTo($queryBuilder, $searchParameters)
+        ElasticQueryParameters::applyTo($queryBuilder, $searchParameters, $this->elasticConfig)
             ->withDocvalueFields()
             ->withSortByScore();
 

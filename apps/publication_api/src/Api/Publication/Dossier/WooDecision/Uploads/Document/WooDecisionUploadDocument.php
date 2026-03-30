@@ -17,9 +17,9 @@ use Symfony\Component\HttpFoundation\Response;
             inputFormats: ['binary' => ['application/octet-stream']],
             outputFormats: [],
             requirements: [
-                'organisationId' => '[0-9a-fA-F-]+',
-                'dossierExternalId' => '[0-9a-fA-F-]+',
-                'documentExternalId' => '[0-9a-fA-F-]+',
+                'organisationId' => '[0-9a-zA-Z-]+',
+                'dossierExternalId' => '[0-9a-zA-Z-]+',
+                'documentExternalId' => '[0-9a-zA-Z-]+',
             ],
             status: Response::HTTP_NO_CONTENT,
             controller: WooDecisionUploadDocumentController::class,

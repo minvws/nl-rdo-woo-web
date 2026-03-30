@@ -15,6 +15,7 @@ use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -23,6 +24,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @implements EntityWithAttachments<InvestigationReportAttachment>
  * @implements EntityWithMainDocument<InvestigationReportMainDocument>
  */
+#[NoIncompleteAttachments(groups: [
+    DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+    DossierValidationGroup::WORKFLOW_PUBLISH->value,
+])]
 #[ORM\Entity(repositoryClass: InvestigationReportRepository::class)]
 class InvestigationReport extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument
 {
@@ -33,14 +38,61 @@ class InvestigationReport extends AbstractDossier implements EntityWithAttachmen
     use HasMainDocument;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: InvestigationReportMainDocument::class, cascade: ['persist', 'remove'])]
-    #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
-    #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    #[Assert\Valid(groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     private ?InvestigationReportMainDocument $document;
 
     /** @var Collection<array-key,InvestigationReportAttachment> */
     #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: InvestigationReportAttachment::class, cascade: ['persist'])]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
+
+    #[Assert\NotNull(
+        message: 'date_mandatory',
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
+    )]
+    #[Assert\LessThanOrEqual(
+        value: 'today',
+        message: 'date_must_not_be_in_future',
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
+    )]
+    protected ?DateTimeImmutable $dateFrom = null;
+
+    #[Assert\GreaterThanOrEqual(
+        propertyPath: 'dateFrom',
+        message: 'date_to_before_date_from',
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ]
+    )]
+    #[Assert\LessThanOrEqual(
+        value: 'today +5 years',
+        message: 'date_max_5_year_in_future',
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ]
+    )]
+    protected ?DateTimeImmutable $dateTo = null;
 
     public function __construct()
     {

@@ -25,7 +25,7 @@ final class ExtractorFinderFactoryTest extends UnitTestCase
     {
         $dir = vfsStream::newDirectory($dir = 'directory')->at($this->root);
 
-        $finder = (new ExtractorFinderFactory())->create($dir->url());
+        $finder = new ExtractorFinderFactory()->create($dir->url());
 
         $this->assertInstanceOf(Finder::class, $finder);
     }

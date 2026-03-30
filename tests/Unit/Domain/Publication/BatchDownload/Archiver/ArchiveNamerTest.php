@@ -17,7 +17,7 @@ final class ArchiveNamerTest extends UnitTestCase
         $basename = 'my-base-name';
 
         $batchDownload = Mockery::mock(BatchDownload::class);
-        $batchDownload->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('1f009841-b03a-6a12-b294-b1a98c0dda11'));
+        $batchDownload->expects('getId')->andReturn(Uuid::fromRfc4122('1f009841-b03a-6a12-b294-b1a98c0dda11'));
 
         $archiveNamer = new ArchiveNamer();
 

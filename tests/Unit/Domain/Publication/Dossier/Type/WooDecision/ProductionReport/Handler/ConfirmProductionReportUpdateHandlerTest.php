@@ -49,12 +49,12 @@ class ConfirmProductionReportUpdateHandlerTest extends UnitTestCase
     public function testInvokeSuccessfully(): void
     {
         $run = Mockery::mock(ProductionReportProcessRun::class);
-        $run->shouldReceive('getId')->andReturn($processRunId = Uuid::v6());
-        $run->shouldReceive('getFileInfo')->andReturn(new FileInfo());
+        $run->expects('getId')->andReturn($processRunId = Uuid::v6());
+        $run->expects('getFileInfo')->times(2)->andReturn(new FileInfo());
 
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getId')->andReturn(Uuid::v6());
-        $wooDecision->shouldReceive('getProcessRun')->andReturn($run);
+        $wooDecision->expects('getId')->andReturn(Uuid::v6());
+        $wooDecision->expects('getProcessRun')->andReturn($run);
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($wooDecision, DossierStatusTransition::UPDATE_PRODUCTION_REPORT);
 
@@ -73,7 +73,7 @@ class ConfirmProductionReportUpdateHandlerTest extends UnitTestCase
     public function testInvokeThrowsExceptionWhenWooDecisionHasNoProcessRun(): void
     {
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getProcessRun')->andReturnNull();
+        $wooDecision->expects('getProcessRun')->andReturnNull();
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($wooDecision, DossierStatusTransition::UPDATE_PRODUCTION_REPORT);
 

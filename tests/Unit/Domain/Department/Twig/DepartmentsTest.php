@@ -29,19 +29,19 @@ final class DepartmentsTest extends UnitTestCase
 
     public function testHasAny(): void
     {
-        $this->repository->shouldReceive('countPublicDepartments')->andReturn(1);
+        $this->repository->expects('countPublicDepartments')->andReturn(1);
 
-        $this->item->shouldReceive('expiresAfter')->with(Mockery::type('integer'))->andReturn($this->item);
+        $this->item->expects('expiresAfter')->with(Mockery::type('integer'))->andReturn($this->item);
 
         $this->cache
-            ->shouldReceive('get')
+            ->expects('get')
             ->with(
                 'DEPARTMENTS_HAS_ANY',
                 Mockery::on(fn (callable $callback): bool => $callback($this->item))
             )
             ->andReturn(true);
 
-        $result = (new Departments($this->repository, $this->cache))->hasAny();
+        $result = new Departments($this->repository, $this->cache)->hasAny();
 
         $this->assertTrue($result);
     }

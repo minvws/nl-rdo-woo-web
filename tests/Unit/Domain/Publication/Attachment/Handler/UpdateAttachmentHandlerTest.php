@@ -12,13 +12,9 @@ use Shared\Domain\Publication\Attachment\Exception\AttachmentNotFoundException;
 use Shared\Domain\Publication\Attachment\Handler\AttachmentEntityLoader;
 use Shared\Domain\Publication\Attachment\Handler\UpdateAttachmentHandler;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
-use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
-use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Upload\Process\EntityUploadStorer;
-use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -56,9 +52,6 @@ class UpdateAttachmentHandlerTest extends UnitTestCase
     {
         $docUuid = Uuid::v6();
         $dossierUuid = Uuid::v6();
-        $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getAttachmentEntityClass')->andReturn(CovenantAttachment::class);
 
         $this->entityLoader
             ->expects('loadAndValidateAttachment')
@@ -82,15 +75,7 @@ class UpdateAttachmentHandlerTest extends UnitTestCase
             uploadFileReference: $uploadRef,
         );
 
-        $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getAttachmentEntityClass')->andReturn(CovenantAttachment::class);
-
         $attachment = Mockery::mock(AnnualReportAttachment::class);
-        $attachment->shouldReceive('getId')->andReturn($attachmentUuid);
-        $attachment->shouldReceive('getUploadGroupId')->andReturn(UploadGroupId::ATTACHMENTS);
-        $attachment->shouldReceive('getDossier')->andReturn($dossier);
-        $attachment->shouldReceive('getFileInfo')->andReturn(new FileInfo());
 
         $this->entityLoader
             ->expects('loadAndValidateAttachment')

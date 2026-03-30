@@ -21,6 +21,8 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
+use Shared\ValueObject\ExternalId;
+use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -37,6 +39,8 @@ final class AnnualReportProcessor extends AbstractDossierProcessor
         OrganisationRepository $organisationRepository,
         SubjectRepository $subjectRepository,
         private readonly AnnualReportRepository $annualReportRepository,
+        private readonly Security $security,
+        private readonly AnnualReportMapper $annualReportMapper,
     ) {
         parent::__construct(
             $attachmentService,
@@ -46,6 +50,7 @@ final class AnnualReportProcessor extends AbstractDossierProcessor
             $mainDocumentService,
             $organisationRepository,
             $subjectRepository,
+            $this->security,
         );
     }
 
@@ -64,6 +69,7 @@ final class AnnualReportProcessor extends AbstractDossierProcessor
 
         $annualReportExternalId = $uriVariables['annualReportExternalId'];
         Assert::string($annualReportExternalId);
+        $annualReportExternalId = ExternalId::create($annualReportExternalId);
 
         $organisation = $this->getOrganisation($uriVariables);
         $subject = $this->getSubject($data, $organisation);
@@ -73,12 +79,12 @@ final class AnnualReportProcessor extends AbstractDossierProcessor
         if ($annualReport === null) {
             $annualReport = $this->create($organisation, $department, $subject, $data, $annualReportExternalId);
 
-            return AnnualReportMapper::fromEntity($annualReport);
+            return $this->annualReportMapper->fromEntity($annualReport);
         }
 
         $this->update($annualReport, $organisation, $department, $subject, $data);
 
-        return AnnualReportMapper::fromEntity($annualReport);
+        return $this->annualReportMapper->fromEntity($annualReport);
     }
 
     private function create(
@@ -86,7 +92,7 @@ final class AnnualReportProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         AnnualReportRequestDto $annualReportRequestDto,
-        string $annualReportExternalId,
+        ExternalId $annualReportExternalId,
     ): AnnualReport {
         $annualReport = AnnualReportMapper::create($annualReportRequestDto, $organisation, $department, $subject, $annualReportExternalId);
         $mainDocument = AnnualReportMainDocumentMapper::create($annualReport, $annualReportRequestDto->mainDocument);

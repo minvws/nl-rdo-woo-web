@@ -1,7 +1,6 @@
 # Test
 
 - [Test](#test)
-  - [Use cases](#use-cases)
   - [Robot Framework](#robot-framework)
   - [Running the tests in docker](#running-the-tests-in-docker)
   - [Running the tests in a local virtual environment](#running-the-tests-in-a-local-virtual-environment)
@@ -11,10 +10,6 @@
     - [Step 4: Run tests locally](#step-4-run-tests-locally)
       - [Test and Acceptance tests](#test-and-acceptance-tests)
   - [Dependency management](#dependency-management)
-
-## Use cases
-
-We have written some use cases in [test-cases.md](test-cases.md).
 
 ## Robot Framework
 

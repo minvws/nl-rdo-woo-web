@@ -22,6 +22,7 @@ class CovenantAttachmentMapper
         );
         $attachment->setInternalReference($attachmentRequestDto->internalReference);
         $attachment->setGrounds($attachmentRequestDto->grounds);
+        $attachment->setExternalId($attachmentRequestDto->externalId);
 
         return $attachment;
     }

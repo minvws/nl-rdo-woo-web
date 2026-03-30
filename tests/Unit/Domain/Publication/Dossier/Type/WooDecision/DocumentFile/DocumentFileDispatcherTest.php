@@ -38,7 +38,7 @@ class DocumentFileDispatcherTest extends UnitTestCase
     public function testDispatchProcessDocumentFileSetUploadsCommand(): void
     {
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
-        $documentFileSet->shouldReceive('getId')->andReturn($id = Uuid::v6());
+        $documentFileSet->expects('getId')->andReturn($id = Uuid::v6());
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (ProcessDocumentFileSetUploadsCommand $command) use ($id) {
@@ -54,7 +54,7 @@ class DocumentFileDispatcherTest extends UnitTestCase
     public function testDispatchProcessDocumentFileUploadCommand(): void
     {
         $documentFileUpload = Mockery::mock(DocumentFileUpload::class);
-        $documentFileUpload->shouldReceive('getId')->andReturn($id = Uuid::v6());
+        $documentFileUpload->expects('getId')->andReturn($id = Uuid::v6());
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (ProcessDocumentFileUploadCommand $command) use ($id) {
@@ -70,7 +70,7 @@ class DocumentFileDispatcherTest extends UnitTestCase
     public function testDispatchProcessDocumentFileSetUpdatesCommand(): void
     {
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
-        $documentFileSet->shouldReceive('getId')->andReturn($id = Uuid::v6());
+        $documentFileSet->expects('getId')->andReturn($id = Uuid::v6());
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (ProcessDocumentFileSetUpdatesCommand $command) use ($id) {
@@ -86,7 +86,7 @@ class DocumentFileDispatcherTest extends UnitTestCase
     public function testDispatchProcessDocumentFileUpdateCommand(): void
     {
         $documentFileUpdate = Mockery::mock(DocumentFileUpdate::class);
-        $documentFileUpdate->shouldReceive('getId')->andReturn($id = Uuid::v6());
+        $documentFileUpdate->expects('getId')->andReturn($id = Uuid::v6());
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (ProcessDocumentFileUpdateCommand $command) use ($id) {
@@ -102,7 +102,7 @@ class DocumentFileDispatcherTest extends UnitTestCase
     public function testDispatchDocumentFileSetProcessedEvent(): void
     {
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
-        $documentFileSet->shouldReceive('getDossier->getId')->andReturn($id = Uuid::v6());
+        $documentFileSet->expects('getDossier->getId')->andReturn($id = Uuid::v6());
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (DocumentFileSetProcessedEvent $command) use ($id) {

@@ -7,7 +7,6 @@ namespace Shared\Tests\Unit\Controller\Admin\Dossier\WooDecision;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Controller\Admin\Dossier\WooDecision\DocumentsStepHelper;
-use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\ProductionReportStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -46,39 +45,43 @@ class DocumentsStepHelperTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
 
         $formView = Mockery::mock(FormView::class);
-        $form = Mockery::mock(FormInterface::class);
-        $form->shouldReceive('createView')->andReturn($formView);
 
-        $this->formFactory->expects('create')->with(InventoryType::class, $dossier)->andReturn($form);
+        $form = Mockery::mock(FormInterface::class);
+        $form->expects('createView')
+            ->andReturn($formView);
+
+        $this->formFactory->expects('create')
+            ->with(InventoryType::class, $dossier)
+            ->andReturn($form);
 
         $processRun = Mockery::mock(ProductionReportProcessRun::class);
-        $processRun->shouldReceive('isFailed')->andReturnTrue();
-        $processRun->shouldReceive('hasErrors')->andReturnTrue();
-        $processRun->shouldReceive('isPending')->andReturnFalse();
-        $processRun->shouldReceive('isConfirmed')->andReturnFalse();
-        $processRun->shouldReceive('isComparing')->andReturnFalse();
-        $processRun->shouldReceive('isUpdating')->andReturnFalse();
-        $processRun->shouldReceive('isNotFinal')->andReturnFalse();
-        $processRun->shouldReceive('isRejected')->andReturnFalse();
-        $processRun->shouldReceive('needsConfirmation')->andReturnFalse();
+        $processRun->expects('isFailed')->andReturnTrue();
+        $processRun->expects('hasErrors')->andReturnTrue();
+        $processRun->expects('isPending')->andReturnFalse();
+        $processRun->expects('isConfirmed')->andReturnFalse();
+        $processRun->expects('isComparing')->andReturnFalse();
+        $processRun->expects('isUpdating')->andReturnFalse();
+        $processRun->expects('isNotFinal')->andReturnFalse();
+        $processRun->expects('isRejected')->andReturnFalse();
+        $processRun->expects('needsConfirmation')->andReturnFalse();
 
-        $dossier->shouldReceive('getProcessRun')->andReturn($processRun);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
-        $dossier->shouldReceive('getProductionReport')->andReturnNull();
+        $dossier->expects('getProcessRun')
+            ->times(7)
+            ->andReturn($processRun);
 
-        $this->formErrorMapper->expects('mapRunErrorsToForm')->with($processRun, $form);
+        $this->formErrorMapper
+            ->expects('mapRunErrorsToForm')
+            ->with($processRun, $form);
 
-        $this->twig->expects('render')
-            ->with(
-                'admin/dossier/woo-decision/documents/processrun.html.twig',
-                [
-                    'dossier' => $dossier,
-                    'processRun' => $processRun,
-                    'inventoryForm' => $formView,
-                    'inventoryStatus' => new ProductionReportStatus($dossier),
-                    'ajax' => true,
-                ]
-            )
+        $this->twig
+            ->expects('render')
+            ->with('admin/dossier/woo-decision/documents/processrun.html.twig', [
+                'dossier' => $dossier,
+                'processRun' => $processRun,
+                'inventoryForm' => $formView,
+                'inventoryStatus' => new ProductionReportStatus($dossier),
+                'ajax' => true,
+            ])
             ->andReturn('foo');
 
         $this->assertMatchesJsonSnapshot(

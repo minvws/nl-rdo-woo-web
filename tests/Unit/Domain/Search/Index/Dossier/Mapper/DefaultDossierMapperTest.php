@@ -10,7 +10,6 @@ use Mockery;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Search\Index\Dossier\Mapper\DefaultDossierMapper;
@@ -61,22 +60,21 @@ class DefaultDossierMapperTest extends UnitTestCase
         $subject->expects('getName')->andReturn($subjectName = 'dummy subject');
 
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
-        $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
-        $dossier->shouldReceive('getDossierNr')->andReturn('dos-123');
-        $dossier->shouldReceive('getTitle')->andReturn('test-title');
-        $dossier->shouldReceive('getSummary')->andReturn('test-summary');
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn('foo');
-        $dossier->shouldReceive('getDateFrom')->andReturn(new DateTimeImmutable('2023-04-16 10:54:15'));
-        $dossier->shouldReceive('getDateTo')->andReturn(new DateTimeImmutable('2025-04-16 10:54:15'));
-        $dossier->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable('2024-04-16 11:30:22'));
-        $dossier->shouldReceive('getSubject')->andReturn($subject);
-        $dossier->shouldReceive('getDepartments')->andReturn(new ArrayCollection([
+        $dossier->expects('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
+        $dossier->expects('getDossierNr')->times(2)->andReturn('dos-123');
+        $dossier->expects('getTitle')->andReturn('test-title');
+        $dossier->expects('getSummary')->andReturn('test-summary');
+        $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $dossier->expects('getDocumentPrefix')->times(2)->andReturn('foo');
+        $dossier->expects('getDateFrom')->times(3)->andReturn(new DateTimeImmutable('2023-04-16 10:54:15'));
+        $dossier->expects('getDateTo')->times(3)->andReturn(new DateTimeImmutable('2025-04-16 10:54:15'));
+        $dossier->expects('getPublicationDate')->andReturn(new DateTimeImmutable('2024-04-16 11:30:22'));
+        $dossier->expects('getSubject')->andReturn($subject);
+        $dossier->expects('getDepartments')->andReturn(new ArrayCollection([
             $departmentA,
             $departmentB,
         ]));
-        $dossier->shouldReceive('getOrganisation->getId')->andReturn($organisationId = Uuid::v6());
+        $dossier->expects('getOrganisation->getId')->andReturn($organisationId = Uuid::v6());
 
         $doc = $this->mapper->map($dossier);
 
@@ -135,22 +133,21 @@ class DefaultDossierMapperTest extends UnitTestCase
         $departmentB->expects('getId')->andReturn($departmentBid);
 
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
-        $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
-        $dossier->shouldReceive('getDossierNr')->andReturn('dos-123');
-        $dossier->shouldReceive('getTitle')->andReturn('test-title');
-        $dossier->shouldReceive('getSummary')->andReturn('test-summary');
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn('foo');
-        $dossier->shouldReceive('getDateFrom')->andReturn(new DateTimeImmutable('2023-04-16 10:54:15'));
-        $dossier->shouldReceive('getDateTo')->andReturn(new DateTimeImmutable('2025-04-16 10:54:15'));
-        $dossier->shouldReceive('getPublicationDate')->andReturn(new DateTimeImmutable('2024-04-16 11:30:22'));
-        $dossier->shouldReceive('getSubject')->andReturnNull();
-        $dossier->shouldReceive('getDepartments')->andReturn(new ArrayCollection([
+        $dossier->expects('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
+        $dossier->expects('getDossierNr')->times(2)->andReturn('dos-123');
+        $dossier->expects('getTitle')->andReturn('test-title');
+        $dossier->expects('getSummary')->andReturn('test-summary');
+        $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $dossier->expects('getDocumentPrefix')->times(2)->andReturn('foo');
+        $dossier->expects('getDateFrom')->times(3)->andReturn(new DateTimeImmutable('2023-04-16 10:54:15'));
+        $dossier->expects('getDateTo')->times(3)->andReturn(new DateTimeImmutable('2025-04-16 10:54:15'));
+        $dossier->expects('getPublicationDate')->andReturn(new DateTimeImmutable('2024-04-16 11:30:22'));
+        $dossier->expects('getSubject')->andReturnNull();
+        $dossier->expects('getDepartments')->andReturn(new ArrayCollection([
             $departmentA,
             $departmentB,
         ]));
-        $dossier->shouldReceive('getOrganisation->getId')->andReturn($organisationId = Uuid::v6());
+        $dossier->expects('getOrganisation->getId')->andReturn($organisationId = Uuid::v6());
 
         $doc = $this->mapper->map($dossier);
 

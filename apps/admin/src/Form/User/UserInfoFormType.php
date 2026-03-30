@@ -45,7 +45,7 @@ class UserInfoFormType extends AbstractType
                 'empty_data' => '',
                 'help' => 'admin.user.name_help',
                 'constraints' => [
-                    new Length(['min' => 1, 'max' => 255]),
+                    new Length(min: 1, max: 255),
                 ],
             ])
             ->add('email', EmailType::class, [
@@ -79,9 +79,7 @@ class UserInfoFormType extends AbstractType
                 'expanded' => true,
                 'label' => false,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'admin.user.roles.validation',
-                    ]),
+                    new NotBlank(message: 'admin.user.roles.validation'),
                 ],
             ]);
         });

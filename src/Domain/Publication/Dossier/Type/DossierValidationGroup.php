@@ -4,15 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type;
 
-use Shared\Domain\Publication\Dossier\Step\StepDefinitionInterface;
+use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 
-use function sprintf;
-use function str_replace;
-
-/**
- * These validation groups can be used when the validation of a property that is shared between multiple dossiertypes
- * needs to vary for a specific dossiertype. The naming convention is DOSSIERTYPE_STEPNAME.
- */
 enum DossierValidationGroup: string
 {
     // Based on StepName values for multiple dossier types
@@ -22,37 +16,35 @@ enum DossierValidationGroup: string
     case PUBLICATION = 'publication';
     case CONTENT = 'content';
 
-    // Specific combinations for DossierType + StepName
-    case COVENANT_DETAILS = 'covenant_details';
-    case ANNUAL_REPORT_DETAILS = 'annual_report_details';
-    case INVESTIGATION_REPORT_DETAILS = 'investigation_report_details';
-    case COMPLAINT_JUDGEMENT_DETAILS = 'complaint_judgement_details';
-    case DISPOSITION_DETAILS = 'disposition_details';
-    case OTHER_PUBLICATION_DETAILS = 'other_publication_details';
-    case ADVICE_DETAILS = 'advice_details';
-    case REQUEST_FOR_ADVICE_DETAILS = 'request_for_advice_details';
+    // Transition-level groups for workflow guards
+    case WORKFLOW_PUBLISH = 'workflow_publish';
+    case WORKFLOW_PUBLISH_AS_PREVIEW = 'workflow_publish_as_preview';
+    case WORKFLOW_SCHEDULE_PUBLISH = 'workflow_schedule_publish';
 
     /**
-     * @return string[] Returns the values of applicable enum cases, as the validator cannot use enums as input
+     * @return array<self>
      */
-    public static function getValidationGroupsForStep(StepDefinitionInterface $step): array
+    public static function getValidationGroupsForStepName(StepName $stepName): array
     {
-        $groups = [
-            self::from($step->getName()->value)->value,
-        ];
+        return match ($stepName) {
+            StepName::DETAILS => [self::DETAILS],
+            StepName::DECISION => [self::DECISION],
+            StepName::DOCUMENTS => [self::DOCUMENTS],
+            StepName::PUBLICATION => [self::PUBLICATION],
+            StepName::CONTENT => [self::CONTENT],
+        };
+    }
 
-        $typeSpecificGroup = self::tryFrom(
-            sprintf(
-                '%s_%s',
-                str_replace('-', '_', $step->getDossierType()->value),
-                $step->getName()->value,
-            )
-        );
-
-        if ($typeSpecificGroup !== null) {
-            $groups[] = $typeSpecificGroup->value;
-        }
-
-        return $groups;
+    /**
+     * @return array<self>
+     */
+    public static function getForWorkflowTransitions(DossierStatusTransition $dossierStatusTransition): array
+    {
+        return match ($dossierStatusTransition) {
+            DossierStatusTransition::PUBLISH => [self::WORKFLOW_PUBLISH],
+            DossierStatusTransition::PUBLISH_AS_PREVIEW => [self::WORKFLOW_PUBLISH_AS_PREVIEW],
+            DossierStatusTransition::SCHEDULE_PUBLISH => [self::WORKFLOW_SCHEDULE_PUBLISH],
+            default => [],
+        };
     }
 }

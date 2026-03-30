@@ -64,7 +64,7 @@ class ExcelCsvReaderFactory implements ReaderFactoryInterface
             throw new RuntimeException('Failed to open file: ' . $csvFilePath);
         }
 
-        $headers = fgetcsv($handle);
+        $headers = fgetcsv($handle, escape: '\\');
         fclose($handle);
 
         if ($headers === false) {

@@ -59,7 +59,7 @@ class InventorySanitizerTest extends UnitTestCase
         $this->writer->expects('addHeaders');
         $this->writer->expects('addRow')->with(...$documentData);
         $this->writer->expects('close');
-        $this->writer->expects('getFileExtension')->twice()->andReturn('csv');
+        $this->writer->expects('getFileExtension')->times(2)->andReturn('csv');
 
         $inventory = Mockery::mock(Inventory::class);
         $inventory->expects('setFileInfo')->with(Mockery::on(
@@ -70,9 +70,9 @@ class InventorySanitizerTest extends UnitTestCase
             }
         ));
 
-        $this->dataProvider->shouldReceive('getDocuments')->andReturn(new ArrayCollection([$document]));
-        $this->dataProvider->shouldReceive('getInventoryEntity')->andReturn($inventory);
-        $this->dataProvider->shouldReceive('getFilename')->andReturn('foo-bar');
+        $this->dataProvider->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
+        $this->dataProvider->expects('getInventoryEntity')->andReturn($inventory);
+        $this->dataProvider->expects('getFilename')->andReturn('foo-bar');
         $this->entityManager->expects('persist')->with($inventory);
 
         $this->entityStorageService->expects('storeEntity')->andReturnTrue();

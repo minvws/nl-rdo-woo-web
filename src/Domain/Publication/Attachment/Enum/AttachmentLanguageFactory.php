@@ -23,7 +23,7 @@ readonly class AttachmentLanguageFactory
      */
     public function makeAsArray(): array
     {
-        return (new ArrayCollection(AttachmentLanguage::cases()))
+        return new ArrayCollection(AttachmentLanguage::cases())
             ->map(fn (AttachmentLanguage $case): array => $case->toArray($this->translator))
             ->toArray();
     }

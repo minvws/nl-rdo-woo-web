@@ -35,19 +35,19 @@ final class DossierFileViewFactoryTest extends UnitTestCase
     public function testMakeReturnsEarlyWhenEntityHasNoPages(): void
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn($prefix = 'foo');
-        $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = 'bar-123');
+        $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'foo');
+        $dossier->expects('getDossierNr')->andReturn($dossierNr = 'bar-123');
 
         $fileEntity = Mockery::mock(CovenantAttachment::class);
-        $fileEntity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
-        $fileEntity->shouldReceive('getFileInfo->getType')->andReturn('pdf');
-        $fileEntity->shouldReceive('getFileInfo->getSize')->andReturn(456);
-        $fileEntity->shouldReceive('getFileInfo->hasPages')->andReturnFalse();
+        $fileEntity->expects('getId')->andReturn($entityId = Uuid::v6());
+        $fileEntity->expects('getFileInfo->getType')->andReturn('pdf');
+        $fileEntity->expects('getFileInfo->getSize')->andReturn(456);
+        $fileEntity->expects('getFileInfo->hasPages')->andReturnFalse();
 
         $fileType = DossierFileType::ATTACHMENT;
 
         $this->urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with(
                 'app_dossier_file_download',
                 [
@@ -69,21 +69,21 @@ final class DossierFileViewFactoryTest extends UnitTestCase
     public function testMakeWithPages(): void
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn($prefix = 'foo');
-        $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr = 'bar-123');
+        $dossier->expects('getDocumentPrefix')->times(2)->andReturn($prefix = 'foo');
+        $dossier->expects('getDossierNr')->times(2)->andReturn($dossierNr = 'bar-123');
 
         $fileEntity = Mockery::mock(CovenantAttachment::class);
-        $fileEntity->shouldReceive('getId')->andReturn($entityId = Uuid::v6());
-        $fileEntity->shouldReceive('getFileInfo->hasPages')->andReturnTrue();
-        $fileEntity->shouldReceive('getFileInfo->getPageCount')->andReturn(2);
-        $fileEntity->shouldReceive('getFileInfo->getType')->andReturn('pdf');
-        $fileEntity->shouldReceive('getFileInfo->getSize')->andReturn(456);
-        $fileEntity->shouldReceive('getFileInfo->getHash')->andReturn($fileHash = 'fooBar');
+        $fileEntity->expects('getId')->times(2)->andReturn($entityId = Uuid::v6());
+        $fileEntity->expects('getFileInfo->hasPages')->andReturnTrue();
+        $fileEntity->expects('getFileInfo->getPageCount')->andReturn(2);
+        $fileEntity->expects('getFileInfo->getType')->andReturn('pdf');
+        $fileEntity->expects('getFileInfo->getSize')->andReturn(456);
+        $fileEntity->expects('getFileInfo->getHash')->andReturn($fileHash = 'fooBar');
 
         $fileType = DossierFileType::ATTACHMENT;
 
         $this->urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with(
                 'app_dossier_file_download',
                 [
@@ -99,7 +99,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
         $this->thumbnailStorage->expects('exists')->with($fileEntity, 2)->andReturnTrue();
 
         $this->urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with(
                 'app_dossier_file_thumbnail',
                 [

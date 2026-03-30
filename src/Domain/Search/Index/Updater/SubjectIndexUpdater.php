@@ -14,13 +14,14 @@ readonly class SubjectIndexUpdater
 {
     public function __construct(
         private ElasticClientInterface $elastic,
+        private ElasticConfig $elasticConfig,
     ) {
     }
 
     public function update(Subject $subject): void
     {
         $this->elastic->updateByQuery([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'body' => [
                 'query' => [
                     'bool' => [

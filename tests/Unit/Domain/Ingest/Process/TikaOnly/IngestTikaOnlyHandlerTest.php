@@ -57,9 +57,9 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
             false,
         );
 
-        $this->doctrine->shouldReceive('getRepository')->once()->with(Document::class)->andReturn($this->repository);
+        $this->doctrine->expects('getRepository')->with(Document::class)->andReturn($this->repository);
 
-        $this->repository->shouldReceive('find')->once()->andReturnNull();
+        $this->repository->expects('find')->andReturnNull();
 
         $this->logger->expects('warning');
 
@@ -69,7 +69,6 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
     public function testInvokeSuccessfully(): void
     {
         $entity = Mockery::mock(Document::class);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $command = new IngestTikaOnlyCommand(
             Uuid::v6(),
@@ -77,9 +76,9 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
             false,
         );
 
-        $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
+        $this->doctrine->expects('getRepository')->with($entityClass)->andReturn($this->repository);
 
-        $this->repository->shouldReceive('find')->once()->andReturn($entity);
+        $this->repository->expects('find')->andReturn($entity);
 
         $text = "lorem ipsum tika\nlorem ipsum tesseract";
 
@@ -114,7 +113,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
     {
         $entity = Mockery::mock(Document::class);
         $entity
-            ->shouldReceive('getId')
+            ->expects('getId')
             ->andReturn($entityId = Mockery::mock(Uuid::class));
 
         $command = new IngestTikaOnlyCommand(
@@ -123,9 +122,9 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
             false,
         );
 
-        $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
+        $this->doctrine->expects('getRepository')->with($entityClass)->andReturn($this->repository);
 
-        $this->repository->shouldReceive('find')->once()->andReturn($entity);
+        $this->repository->expects('find')->andReturn($entity);
 
         $text = "lorem ipsum tika\nlorem ipsum tesseract";
 
@@ -155,8 +154,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
             ->andThrow($thrownException = new RuntimeException('oops'));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Failed to index tika content as page', [
                 'id' => $entityId,
                 'class' => $entity::class,

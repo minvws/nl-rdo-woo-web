@@ -27,12 +27,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-
-use function strval;
+use Webmozart\Assert\Assert;
 
 class InquiryController extends AbstractController
 {
-    protected const MAX_ITEMS_PER_PAGE = 100;
+    protected const int MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
         private readonly InquiryRepository $repository,
@@ -79,8 +78,9 @@ class InquiryController extends AbstractController
 
         $form->handleRequest($request);
 
-        /** @var SubmitButton $cancelButton */
         $cancelButton = $form->get('cancel');
+        Assert::isInstanceOf($cancelButton, SubmitButton::class);
+
         if ($cancelButton->isClicked()) {
             return $this->redirectToRoute('app_admin_inquiries');
         }
@@ -89,8 +89,9 @@ class InquiryController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('upload')->getData();
             if ($uploadedFile instanceof UploadedFile) {
-                /** @var DocumentPrefix $prefix */
                 $prefix = $form->get('prefix')->getData();
+                Assert::isInstanceOf($prefix, DocumentPrefix::class);
+
                 $result = $this->inquiryImporter->import(
                     $this->authorizationMatrix->getActiveOrganisation(),
                     $uploadedFile,
@@ -115,20 +116,23 @@ class InquiryController extends AbstractController
 
         $form->handleRequest($request);
 
-        /** @var SubmitButton $cancelButton */
         $cancelButton = $form->get('cancel');
+        Assert::isInstanceOf($cancelButton, SubmitButton::class);
+
         if ($cancelButton->isClicked()) {
             return $this->redirectToRoute('app_admin_inquiries');
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $inquiryChangeset = new InquiryChangeset($this->authorizationMatrix->getActiveOrganisation());
-            $caseNrs = CaseNumbers::fromCommaSeparatedString(
-                strval($form->get('map')->getData()),
-            );
+            $map = $form->get('map')->getData();
+            Assert::string($map);
 
-            /** @var WooDecision[] $dossiers */
+            $caseNrs = CaseNumbers::fromCommaSeparatedString($map);
+
             $dossiers = $form->get('dossiers')->getData();
+            Assert::allIsInstanceOf($dossiers, WooDecision::class);
+
             foreach ($dossiers as $dossier) {
                 $this->denyAccessUnlessGranted('AuthMatrix.dossier.read', subject: $dossier);
                 $inquiryChangeset->addCaseNrsForDossier($dossier, $caseNrs);

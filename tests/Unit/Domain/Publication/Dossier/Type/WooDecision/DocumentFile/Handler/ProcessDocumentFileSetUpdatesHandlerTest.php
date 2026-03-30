@@ -99,7 +99,7 @@ class ProcessDocumentFileSetUpdatesHandlerTest extends UnitTestCase
         $id = Uuid::v6();
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
-            ->expects('getStatus')->twice()
+            ->expects('getStatus')->times(2)
             ->andReturn(DocumentFileSetStatus::REJECTED);
         $documentFileSet
             ->expects('getId')

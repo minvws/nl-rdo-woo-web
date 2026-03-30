@@ -1,0 +1,5 @@
+parameters:
+    es_index_prefix: 'woopie-'
+    es_read_index: 'woopie-read'
+    es_write_index: 'woopie-write'
+    es_suggestions_search_input: 'search-input'

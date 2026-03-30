@@ -4,41 +4,48 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\Dossier\Covenant;
 
-use PublicationApi\Api\Publication\Attachment\AttachmentResponseDto;
+use PublicationApi\Api\Publication\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Publication\Department\DepartmentReferenceDto;
-use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDto;
+use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Publication\Organisation\OrganisationReferenceDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-class CovenantMapper
+readonly class CovenantMapper
 {
+    public function __construct(
+        private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
+        private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+    ) {
+    }
+
     /**
      * @param array<array-key,Covenant> $covenants
      *
      * @return list<CovenantDto>
      */
-    public static function fromEntities(array $covenants): array
+    public function fromEntities(array $covenants): array
     {
         return array_values(array_map(
-            self::fromEntity(...),
+            $this->fromEntity(...),
             $covenants,
         ));
     }
 
-    public static function fromEntity(Covenant $covenant): CovenantDto
+    public function fromEntity(Covenant $covenant): CovenantDto
     {
         $mainDocument = $covenant->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = MainDocumentResponseDto::fromEntity($mainDocument);
+        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
 
         $dateFrom = $covenant->getDateFrom();
         Assert::notNull($dateFrom);
@@ -60,7 +67,7 @@ class CovenantMapper
             $covenant->getPublicationDate(),
             $covenant->getStatus(),
             $mainDocumentDto,
-            AttachmentResponseDto::fromEntities($covenant->getAttachments()->toArray()),
+            $this->attachmentResponseDtoFactory->fromEntities($covenant->getAttachments()->toArray()),
             $dateFrom,
             $covenant->getDateTo(),
             $covenant->getPreviousVersionLink(),
@@ -73,7 +80,7 @@ class CovenantMapper
         Organisation $organisation,
         Department $department,
         ?Subject $subject,
-        string $externalId,
+        ExternalId $externalId,
     ): Covenant {
         $covenant = new Covenant();
         $covenant->setExternalId($externalId);

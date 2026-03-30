@@ -15,10 +15,10 @@ class ResultTest extends UnitTestCase
     public function testGetAggregationReturnsMatchingAggregation(): void
     {
         $aggregationA = Mockery::mock(Aggregation::class);
-        $aggregationA->shouldReceive('getName')->andReturn(FacetKey::TYPE->value);
+        $aggregationA->expects('getName')->andReturn(FacetKey::TYPE->value);
 
         $aggregationB = Mockery::mock(Aggregation::class);
-        $aggregationB->shouldReceive('getName')->andReturn(FacetKey::DATE->value);
+        $aggregationB->expects('getName')->andReturn(FacetKey::DATE->value);
 
         $result = new Result();
         $result->setAggregations([
@@ -35,7 +35,7 @@ class ResultTest extends UnitTestCase
     public function testGetAggregationReturnsNullForNoMatchingAggregation(): void
     {
         $aggregation = Mockery::mock(Aggregation::class);
-        $aggregation->shouldReceive('getName')->andReturn(FacetKey::TYPE->value);
+        $aggregation->expects('getName')->andReturn(FacetKey::TYPE->value);
 
         $result = new Result();
         $result->setAggregations([

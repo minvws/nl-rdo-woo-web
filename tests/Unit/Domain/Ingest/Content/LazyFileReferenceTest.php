@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Ingest\Content;
 
 use Mockery;
-use Mockery\MockInterface;
 use Mockery\VerificationDirector;
 use Shared\Domain\Ingest\Content\ContentExtractException;
 use Shared\Domain\Ingest\Content\ContentExtractOptions;
@@ -19,7 +18,6 @@ class LazyFileReferenceTest extends UnitTestCase
 {
     public function testLazyFileReferenceLoadsFileOnlyWhenNeededAndOnlyOnce(): void
     {
-        /** @var callable&MockInterface $spy */
         $spy = Mockery::spy(
             static fn (): string => '/foo/bar.txt'
         );
@@ -43,17 +41,14 @@ class LazyFileReferenceTest extends UnitTestCase
 
     public function testItThrowsExceptionWhenFilePathCannotBeDetermined(): void
     {
-        /** @var EntityWithFileInfo&MockInterface $entity */
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
+        $entity->expects('getId')->times(2)->andReturn(Uuid::v6());
 
-        /** @var ContentExtractOptions&MockInterface $options */
         $options = Mockery::mock(ContentExtractOptions::class);
-        $options->shouldReceive('hasPageNumber')->once()->andReturn(false);
+        $options->expects('hasPageNumber')->andReturn(false);
 
-        /** @var EntityStorageService&MockInterface $entityStorage */
         $entityStorage = Mockery::mock(EntityStorageService::class);
-        $entityStorage->shouldReceive('downloadEntity')->once()->with($entity)->andReturn(false);
+        $entityStorage->expects('downloadEntity')->with($entity)->andReturn(false);
 
         $result = LazyFileReference::createForEntityWithFileInfo($entity, $options, $entityStorage);
 

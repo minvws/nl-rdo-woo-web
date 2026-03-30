@@ -8,8 +8,8 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Disposition\DispositionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\ValueObject\ExternalId;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class AbstractDossierTest extends SharedWebTestCase
@@ -27,35 +27,26 @@ final class AbstractDossierTest extends SharedWebTestCase
 
     public function testSetAndGetExternalId(): void
     {
+        $externalId = ExternalId::create('mocked-external-id');
+
         $disposition = DispositionFactory::new()->create();
-        $disposition->setExternalId('mocked-external-id');
+        $disposition->setExternalId($externalId);
 
-        self::assertSame('mocked-external-id', $disposition->getExternalId());
-    }
-
-    public function testSetInvalidExternalId(): void
-    {
-        $disposition = DispositionFactory::new()->create();
-        $disposition->setExternalId('*(&#*&ˆ  #*&ˆˆ&%$');
-
-        $errors = $this->validator->validateProperty($disposition, 'externalId');
-        self::assertCount(1, $errors);
-
-        $error = $errors->get(0);
-        self::assertSame(Regex::REGEX_FAILED_ERROR, $error->getCode());
-        self::assertSame('externalId', $error->getPropertyPath());
+        self::assertSame($externalId, $disposition->getExternalId());
     }
 
     public function testSettingIdenticalExternalIdWithinSameOrganisationFails(): void
     {
+        $existingExternalId = $this->getFaker()->externalId();
+
         $organisation = OrganisationFactory::createOne();
         DispositionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => 'existing-external-id',
+            'externalId' => $existingExternalId,
         ]);
         $dispositionTwo = DispositionFactory::new()->withoutPersisting()->create([
             'organisation' => $organisation,
-            'externalId' => 'existing-external-id',
+            'externalId' => $existingExternalId,
         ]);
 
         $errors = $this->validator->validate($dispositionTwo);
@@ -67,15 +58,17 @@ final class AbstractDossierTest extends SharedWebTestCase
 
     public function testSettingIdenticalExternalIdUsingDifferentOrganisations(): void
     {
+        $existingExternalId = $this->getFaker()->externalId();
+
         $organisationOne = OrganisationFactory::createOne();
         $organisationTwo = OrganisationFactory::createOne();
         DispositionFactory::createOne([
             'organisation' => $organisationOne,
-            'externalId' => 'existing-external-id',
+            'externalId' => $existingExternalId,
         ]);
         $dispositionTwo = DispositionFactory::new()->withoutPersisting()->create([
             'organisation' => $organisationTwo,
-            'externalId' => 'existing-external-id',
+            'externalId' => $existingExternalId,
         ]);
 
         $errors = $this->validator->validate($dispositionTwo);
@@ -84,16 +77,18 @@ final class AbstractDossierTest extends SharedWebTestCase
 
     public function testSavingIdenticalExternalIdWithinSameOrganisationFails(): void
     {
+        $existingExternalId = $this->getFaker()->externalId();
+
         $organisation = OrganisationFactory::createOne();
         DispositionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => 'existing-external-id',
+            'externalId' => $existingExternalId,
         ]);
 
         self::expectException(UniqueConstraintViolationException::class);
         DispositionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => 'existing-external-id',
+            'externalId' => $existingExternalId,
         ]);
     }
 }

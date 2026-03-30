@@ -7,10 +7,10 @@ namespace PublicationApi\Serializer;
 use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireDecorated;
-use Symfony\Component\PropertyInfo\Type;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Serializer\Normalizer\BackedEnumNormalizer as BackedEnumDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\TypeInfo\TypeIdentifier;
 
 use function array_key_exists;
 use function is_string;
@@ -33,7 +33,7 @@ readonly class NotNormalizableBackedEnumDenormalizer implements DenormalizerInte
             throw NotNormalizableValueException::createForUnexpectedDataType(
                 $invalidArgumentException->getMessage(),
                 $data,
-                [Type::BUILTIN_TYPE_STRING],
+                [TypeIdentifier::STRING->value],
                 $this->getPathFromContext($context),
                 true,
                 0,
@@ -48,6 +48,14 @@ readonly class NotNormalizableBackedEnumDenormalizer implements DenormalizerInte
     public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
         return $this->backedEnumDenormalizer->supportsDenormalization($data, $type, $format, $context);
+    }
+
+    /**
+     * @return array<class-string|'*'|'object'|string, bool|null>
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return $this->backedEnumDenormalizer->getSupportedTypes($format);
     }
 
     /**

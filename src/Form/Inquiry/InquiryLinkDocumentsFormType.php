@@ -29,11 +29,7 @@ class InquiryLinkDocumentsFormType extends AbstractType
                 'help_html' => true,
                 'required' => true,
                 'constraints' => [
-                    new File([
-                        'maxSize' => '10024k',
-                        'mimeTypes' => FileTypeEnum::XLS->getMimeTypes(),
-                        'mimeTypesMessage' => 'Please upload a valid spreadsheet',
-                    ]),
+                    new File(maxSize: '10024k', mimeTypes: FileTypeEnum::XLS->getMimeTypes(), mimeTypesMessage: 'Please upload a valid spreadsheet'),
                     new NotBlank(),
                 ],
                 'attr' => [

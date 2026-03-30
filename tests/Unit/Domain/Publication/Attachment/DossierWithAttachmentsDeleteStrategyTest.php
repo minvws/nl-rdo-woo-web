@@ -43,14 +43,14 @@ final class DossierWithAttachmentsDeleteStrategyTest extends UnitTestCase
     public function testDeleteAttachments(): void
     {
         $attachmentA = Mockery::mock(CovenantAttachment::class);
-        $attachmentA->shouldReceive('getId')->andReturn($attachmentIdA = Uuid::v6());
+        $attachmentA->expects('getId')->andReturn($attachmentIdA = Uuid::v6());
 
         $attachmentB = Mockery::mock(CovenantAttachment::class);
-        $attachmentB->shouldReceive('getId')->andReturn($attachmentIdB = Uuid::v6());
+        $attachmentB->expects('getId')->andReturn($attachmentIdB = Uuid::v6());
 
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
-        $dossier->shouldReceive('getAttachments')->andReturn(new ArrayCollection([
+        $dossier->expects('getId')->times(2)->andReturn($dossierId = Uuid::v6());
+        $dossier->expects('getAttachments')->andReturn(new ArrayCollection([
             $attachmentA,
             $attachmentB,
         ]));
@@ -79,14 +79,14 @@ final class DossierWithAttachmentsDeleteStrategyTest extends UnitTestCase
     public function testDeleteAttachmentsWithOverride(): void
     {
         $attachmentA = Mockery::mock(CovenantAttachment::class);
-        $attachmentA->shouldReceive('getId')->andReturn($attachmentIdA = Uuid::v6());
+        $attachmentA->expects('getId')->andReturn($attachmentIdA = Uuid::v6());
 
         $attachmentB = Mockery::mock(CovenantAttachment::class);
-        $attachmentB->shouldReceive('getId')->andReturn($attachmentIdB = Uuid::v6());
+        $attachmentB->expects('getId')->andReturn($attachmentIdB = Uuid::v6());
 
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
-        $dossier->shouldReceive('getAttachments')->andReturn(new ArrayCollection([
+        $dossier->expects('getId')->times(2)->andReturn($dossierId = Uuid::v6());
+        $dossier->expects('getAttachments')->andReturn(new ArrayCollection([
             $attachmentA,
             $attachmentB,
         ]));

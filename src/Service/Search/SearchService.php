@@ -26,6 +26,7 @@ readonly class SearchService
         private ObjectHandler $objectHandler,
         private ResultTransformer $resultTransformer,
         private SearchParametersFactory $searchParametersFactory,
+        private ElasticConfig $elasticConfig,
     ) {
     }
 
@@ -38,7 +39,7 @@ readonly class SearchService
         }
 
         $queryBuilder = new QueryBuilder();
-        $queryBuilder->setIndex(ElasticConfig::READ_INDEX);
+        $queryBuilder->setIndex($this->elasticConfig->readIndex);
         $queryBuilder->setSize($searchParameters->limit);
         $queryBuilder->setFrom($searchParameters->offset);
 

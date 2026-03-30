@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+  url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
   body: none
   auth: inherit
 }
 
 params:path {
   organisationId: {{organisationId}}
-  wooDecisionExternalId:
+  wooDecisionExternalId: E:
 }
 
 script:post-response {
@@ -25,12 +25,12 @@ example {
   description: WooDecisionDto resource
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId:
+      wooDecisionExternalId: E:
     }
   }
 
@@ -72,7 +72,8 @@ example {
             "language": "",
             "formalDate": "",
             "internalReference": "",
-            "grounds": []
+            "grounds": [],
+            "fileName": ""
           },
           "attachments": [
             {
@@ -81,7 +82,9 @@ example {
               "language": "",
               "formalDate": "",
               "internalReference": "",
-              "grounds": []
+              "grounds": [],
+              "fileName": "",
+              "externalId": ""
             }
           ],
           "dossierDateFrom": "",
@@ -95,6 +98,7 @@ example {
               "date": "",
               "documentId": "",
               "documentNr": "",
+              "externalId": "",
               "familyId": "",
               "grounds": [],
               "isSuspended": false,
@@ -103,7 +107,12 @@ example {
               "judgement": "",
               "links": [],
               "period": "",
-              "refersTo": [],
+              "refersTo": [
+                {
+                  "documentId": "",
+                  "externalId": ""
+                }
+              ],
               "remark": "",
               "threadId": ""
             }
@@ -119,12 +128,12 @@ example {
   description: Bad request
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId:
+      wooDecisionExternalId: E:
     }
   }
 
@@ -158,12 +167,12 @@ example {
   description: Unauthorized
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId:
+      wooDecisionExternalId: E:
     }
   }
 
@@ -197,12 +206,12 @@ example {
   description: Forbidden
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId:
+      wooDecisionExternalId: E:
     }
   }
 
@@ -236,12 +245,12 @@ example {
   description: Not found
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId:
+      wooDecisionExternalId: E:
     }
   }
 
@@ -275,12 +284,12 @@ example {
   description: Not found
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId:
+      wooDecisionExternalId: E:
     }
   }
 
@@ -314,12 +323,12 @@ example {
   description: Method not allowed
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId:
+      wooDecisionExternalId: E:
     }
   }
 
@@ -353,12 +362,12 @@ example {
   description: Server error
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId:
+      wooDecisionExternalId: E:
     }
   }
 

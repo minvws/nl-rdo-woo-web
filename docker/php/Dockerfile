@@ -1,8 +1,8 @@
-FROM minio/mc:RELEASE.2025-02-15T10-36-16Z AS mc
+FROM minio/mc:RELEASE.2025-08-13T08-35-41Z AS mc
 
-FROM composer:2 AS composer
+FROM composer/composer:2.9.5-bin AS composer
 
-FROM php:8.3.28-apache-bookworm
+FROM php:8.4.18-apache-trixie
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -40,13 +40,13 @@ RUN apt-get update \
     && apt-get install --assume-yes --no-install-recommends \
         $PHPIZE_DEPS \
         # Dependency of the PHP intl-extension
-        libicu72 \
+        libicu76 \
         # Dependency of PHP pdo_pgsql-extension
         libpq5 \
         # Dependency of PHP amqp-extension
         librabbitmq4 \
         # Dependency of PHP zip-extension
-        libzip4 \
+        libzip5 \
         # Dependency of the PHP gd-extension
         libpng16-16 \
         # Dependency of the PHP mbstring-extension
@@ -171,6 +171,6 @@ RUN a2dissite 000-default \
     && a2enmod ssl headers rewrite
 
 COPY --from=mc /usr/bin/mc /usr/local/bin/mc
-COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+COPY --from=composer /composer /usr/local/bin/composer
 
 USER woopie

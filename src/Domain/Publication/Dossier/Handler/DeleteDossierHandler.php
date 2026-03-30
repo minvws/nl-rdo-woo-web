@@ -88,7 +88,7 @@ readonly class DeleteDossierHandler
 
             throw $exception;
         } finally {
-            $this->auditLogger->log((new DossierDeleteLogEvent())
+            $this->auditLogger->log(new DossierDeleteLogEvent()
                 ->asDelete()
                 ->withActor($command->auditUserDetails)
                 ->withSource('woo')

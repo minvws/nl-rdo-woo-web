@@ -5,14 +5,14 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+  url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
   body: json
   auth: inherit
 }
 
 params:path {
   organisationId: {{organisationId}}
-  otherPublicationExternalId:
+  otherPublicationExternalId: E:
 }
 
 body:json {
@@ -20,11 +20,12 @@ body:json {
     "departmentId": "",
     "internalReference": "",
     "mainDocument": {
+      "filename": "",
       "formalDate": "",
-      "grounds": [],
-      "internalReference": "",
       "language": "",
-      "type": ""
+      "type": "",
+      "grounds": [],
+      "internalReference": ""
     },
     "prefix": "",
     "subjectId": "",
@@ -32,11 +33,13 @@ body:json {
     "title": "",
     "attachments": [
       {
+        "fileName": "",
         "formalDate": "",
-        "grounds": [],
-        "internalReference": "",
         "language": "",
-        "type": ""
+        "type": "",
+        "externalId": "",
+        "grounds": {},
+        "internalReference": ""
       }
     ],
     "dossierDate": "",
@@ -61,12 +64,12 @@ example {
   description: OtherPublicationDto resource updated
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      otherPublicationExternalId:
+      otherPublicationExternalId: E:
     }
 
     body:json: {
@@ -74,11 +77,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -86,11 +90,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDate": "",
@@ -138,7 +144,8 @@ example {
             "language": "",
             "formalDate": "",
             "internalReference": "",
-            "grounds": []
+            "grounds": [],
+            "fileName": ""
           },
           "attachments": [
             {
@@ -147,7 +154,9 @@ example {
               "language": "",
               "formalDate": "",
               "internalReference": "",
-              "grounds": []
+              "grounds": [],
+              "fileName": "",
+              "externalId": ""
             }
           ],
           "dossierDate": ""
@@ -162,12 +171,12 @@ example {
   description: Invalid input
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      otherPublicationExternalId:
+      otherPublicationExternalId: E:
     }
 
     body:json: {
@@ -175,11 +184,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -187,11 +197,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDate": "",
@@ -231,12 +243,12 @@ example {
   description: Invalid input
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      otherPublicationExternalId:
+      otherPublicationExternalId: E:
     }
 
     body:json: {
@@ -244,11 +256,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -256,11 +269,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDate": "",
@@ -300,12 +315,12 @@ example {
   description: Unauthorized
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      otherPublicationExternalId:
+      otherPublicationExternalId: E:
     }
 
     body:json: {
@@ -313,11 +328,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -325,11 +341,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDate": "",
@@ -369,12 +387,12 @@ example {
   description: Forbidden
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      otherPublicationExternalId:
+      otherPublicationExternalId: E:
     }
 
     body:json: {
@@ -382,11 +400,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -394,11 +413,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDate": "",
@@ -438,12 +459,12 @@ example {
   description: Not found
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      otherPublicationExternalId:
+      otherPublicationExternalId: E:
     }
 
     body:json: {
@@ -451,11 +472,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -463,11 +485,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDate": "",
@@ -507,12 +531,12 @@ example {
   description: Not found
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      otherPublicationExternalId:
+      otherPublicationExternalId: E:
     }
 
     body:json: {
@@ -520,11 +544,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -532,11 +557,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDate": "",
@@ -576,12 +603,12 @@ example {
   description: Method not allowed
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      otherPublicationExternalId:
+      otherPublicationExternalId: E:
     }
 
     body:json: {
@@ -589,11 +616,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -601,11 +629,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDate": "",
@@ -645,12 +675,12 @@ example {
   description: An error occurred
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      otherPublicationExternalId:
+      otherPublicationExternalId: E:
     }
 
     body:json: {
@@ -658,11 +688,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -670,11 +701,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDate": "",
@@ -702,7 +735,10 @@ example {
           "violations": [
             {
               "propertyPath": "",
-              "message": ""
+              "message": "",
+              "code": "",
+              "hint": "",
+              "payload": []
             }
           ],
           "detail": "",
@@ -720,12 +756,12 @@ example {
   description: An error occurred
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      otherPublicationExternalId:
+      otherPublicationExternalId: E:
     }
 
     body:json: {
@@ -733,11 +769,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -745,11 +782,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDate": "",
@@ -777,7 +816,10 @@ example {
           "violations": [
             {
               "propertyPath": "",
-              "message": ""
+              "message": "",
+              "code": "",
+              "hint": "",
+              "payload": []
             }
           ],
           "detail": "",
@@ -795,12 +837,12 @@ example {
   description: Server error
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/E::otherPublicationExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/other-publication/:otherPublicationExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      otherPublicationExternalId:
+      otherPublicationExternalId: E:
     }
 
     body:json: {
@@ -808,11 +850,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -820,11 +863,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDate": "",

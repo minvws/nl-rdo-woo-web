@@ -34,7 +34,7 @@ class ContentExtractTest extends UnitTestCase
         $this->entityManager = Mockery::mock(EntityManagerInterface::class);
 
         $application = new Application();
-        $application->add(
+        $application->addCommand(
             new ContentExtractCommand(
                 $this->entityManager,
                 $this->contentExtractService,
@@ -48,7 +48,7 @@ class ContentExtractTest extends UnitTestCase
     {
         $commandTester = new CommandTester($this->command);
         $commandTester->setInputs([
-            3,
+            '3',
             $uuid = '1ef42b68-68d2-682a-b16e-bd5397103001',
         ]);
 
@@ -75,7 +75,7 @@ class ContentExtractTest extends UnitTestCase
 
         $commandTester = new CommandTester($this->command);
         $commandTester->setInputs([
-            3,
+            '3',
             $uuid,
         ]);
 

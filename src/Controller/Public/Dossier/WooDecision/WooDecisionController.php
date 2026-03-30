@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Public\Dossier\WooDecision;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Shared\Doctrine\DocumentConditions;
@@ -28,7 +29,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class WooDecisionController extends AbstractController
 {

@@ -39,14 +39,12 @@ final class PagecountExtractorTest extends UnitTestCase
     public function testExtract(): void
     {
         $this->entityStorageService
-            ->shouldReceive('downloadEntity')
-            ->once()
+            ->expects('downloadEntity')
             ->with($this->entity)
             ->andReturn($localPdfPath = 'localPdfPath');
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('download.entity', Mockery::on(function (Closure $closure) use ($localPdfPath) {
                 $result = $closure();
 
@@ -65,14 +63,12 @@ final class PagecountExtractorTest extends UnitTestCase
         );
 
         $this->pdftkService
-            ->shouldReceive('extractNumberOfPages')
-            ->once()
+            ->expects('extractNumberOfPages')
             ->with($localPdfPath)
             ->andReturn($pdftkPageCountResult);
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('pdftk.extractNumberOfPages', Mockery::on(function (Closure $closure) use ($pdftkPageCountResult) {
                 $result = $closure();
 
@@ -83,8 +79,7 @@ final class PagecountExtractorTest extends UnitTestCase
             ->andReturn($pdftkPageCountResult);
 
         $this->entityStorageService
-            ->shouldReceive('removeDownload')
-            ->once()
+            ->expects('removeDownload')
             ->with($localPdfPath);
 
         $extractor = new PagecountExtractor(
@@ -102,27 +97,23 @@ final class PagecountExtractorTest extends UnitTestCase
     public function testExtractWithFailedDownloadingOfEntity(): void
     {
         $this->entityStorageService
-            ->shouldReceive('downloadEntity')
-            ->once()
+            ->expects('downloadEntity')
             ->with($this->entity)
             ->andReturnFalse();
 
         $this->entity
-            ->shouldReceive('getId')
-            ->once()
+            ->expects('getId')
             ->andReturn($entityUuid = Mockery::mock(Uuid::class));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Failed to download entity for page count extraction', [
                 'id' => $entityUuid,
                 'class' => $this->entity::class,
             ]);
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('download.entity', Mockery::on(function (Closure $closure) {
                 $result = $closure();
 
@@ -147,14 +138,12 @@ final class PagecountExtractorTest extends UnitTestCase
     public function testExtractWithFailedNumberOfPagesExtraction(): void
     {
         $this->entityStorageService
-            ->shouldReceive('downloadEntity')
-            ->once()
+            ->expects('downloadEntity')
             ->with($this->entity)
             ->andReturn($localPdfPath = 'localPdfPath');
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('download.entity', Mockery::on(function (Closure $closure) use ($localPdfPath) {
                 $result = $closure();
 
@@ -173,14 +162,12 @@ final class PagecountExtractorTest extends UnitTestCase
         );
 
         $this->pdftkService
-            ->shouldReceive('extractNumberOfPages')
-            ->once()
+            ->expects('extractNumberOfPages')
             ->with($localPdfPath)
             ->andReturn($pdftkPageCountResult);
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('pdftk.extractNumberOfPages', Mockery::on(function (Closure $closure) use ($pdftkPageCountResult) {
                 $result = $closure();
 
@@ -191,18 +178,15 @@ final class PagecountExtractorTest extends UnitTestCase
             ->andReturn($pdftkPageCountResult);
 
         $this->entityStorageService
-            ->shouldReceive('removeDownload')
-            ->once()
+            ->expects('removeDownload')
             ->with($localPdfPath);
 
         $this->entity
-            ->shouldReceive('getId')
-            ->once()
+            ->expects('getId')
             ->andReturn($entityUuid = Mockery::mock(Uuid::class));
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Failed to get number of pages', [
                 'id' => $entityUuid,
                 'class' => $this->entity::class,

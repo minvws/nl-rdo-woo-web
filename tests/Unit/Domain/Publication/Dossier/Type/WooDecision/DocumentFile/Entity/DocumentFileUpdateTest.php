@@ -20,8 +20,8 @@ class DocumentFileUpdateTest extends UnitTestCase
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
-        $document->shouldReceive('isUploaded')->andReturnFalse();
+        $document->expects('isWithdrawn')->andReturnFalse();
+        $document->expects('isUploaded')->andReturnFalse();
 
         $documentFileUpdate = new DocumentFileUpdate($documentFileSet, $document);
 
@@ -36,8 +36,8 @@ class DocumentFileUpdateTest extends UnitTestCase
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
-        $document->shouldReceive('isUploaded')->andReturnFalse();
+        $document->expects('isWithdrawn')->andReturnFalse();
+        $document->expects('isUploaded')->andReturnFalse();
 
         $documentFileUpdate = new DocumentFileUpdate($documentFileSet, $document);
         $documentFileUpdate->setStatus(DocumentFileUpdateStatus::COMPLETED);
@@ -50,8 +50,8 @@ class DocumentFileUpdateTest extends UnitTestCase
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
-        $document->shouldReceive('isUploaded')->andReturnFalse();
+        $document->expects('isWithdrawn')->andReturnFalse();
+        $document->expects('isUploaded')->andReturnFalse();
 
         $documentFileUpdate = new DocumentFileUpdate($documentFileSet, $document);
 

@@ -41,39 +41,32 @@ final class ExtractorTest extends UnitTestCase
     public function testGetFiles(): void
     {
         $this->archive
-            ->shouldReceive('open')
-            ->once()
+            ->expects('open')
             ->with($this->file)
             ->andReturnTrue();
 
         $this->filesystem
-            ->shouldReceive('createTempDir')
-            ->once()
+            ->expects('createTempDir')
             ->andReturn($tempDir = 'tempDir');
 
         $this->archive
-            ->shouldReceive('extract')
-            ->once()
+            ->expects('extract')
             ->with($tempDir);
 
         $this->finderFactory
-            ->shouldReceive('create')
-            ->once()
+            ->expects('create')
             ->with($tempDir)
             ->andReturn($this->finder);
 
         $this->finder
-            ->shouldReceive('getIterator')
-            ->once()
+            ->expects('getIterator')
             ->andReturn(new ArrayIterator($expectedResult = [Mockery::mock(SplFileInfo::class)]));
 
         $this->archive
-            ->shouldReceive('close')
-            ->once();
+            ->expects('close');
 
         $this->filesystem
-            ->shouldReceive('deleteDirectory')
-            ->once()
+            ->expects('deleteDirectory')
             ->with($tempDir);
 
         $extractor = new Extractor($this->archive, $this->filesystem, $this->finderFactory);
@@ -85,11 +78,12 @@ final class ExtractorTest extends UnitTestCase
     public function testGetFilesWrapsExceptionThrownByArchiveOpen(): void
     {
         $this->file
-            ->shouldReceive('getPathname')
+            ->expects('getPathname')
+            ->times(3)
             ->andReturn('my path');
 
         $this->archive
-            ->shouldReceive('open')
+            ->expects('open')
             ->with($this->file)
             ->andThrow($ex = ArchiveRuntimeException::forFailedToOpenArchive($this->file));
 
@@ -102,22 +96,20 @@ final class ExtractorTest extends UnitTestCase
     public function testGetFilesThrowsExceptionIfTempDirCouldNotBeCreated(): void
     {
         $this->file
-            ->shouldReceive('getPathname')
+            ->expects('getPathname')
+            ->times(2)
             ->andReturn('my path');
 
         $this->archive
-            ->shouldReceive('open')
-            ->once()
+            ->expects('open')
             ->with($this->file);
 
         $this->filesystem
-            ->shouldReceive('createTempDir')
-            ->once()
+            ->expects('createTempDir')
             ->andReturnFalse();
 
         $this->archive
-            ->shouldReceive('close')
-            ->once();
+            ->expects('close');
 
         $this->expectExceptionObject(ExtractorException::forFailingToCreateTempDir($this->file));
 
@@ -128,32 +120,28 @@ final class ExtractorTest extends UnitTestCase
     public function testGetFilesWrapsThrownArchiveExceptions(): void
     {
         $this->file
-            ->shouldReceive('getPathname')
+            ->expects('getPathname')
+            ->times(2)
             ->andReturn('my path');
 
         $this->archive
-            ->shouldReceive('open')
-            ->once()
+            ->expects('open')
             ->with($this->file);
 
         $this->filesystem
-            ->shouldReceive('createTempDir')
-            ->once()
+            ->expects('createTempDir')
             ->andReturn($tempDir = 'tempDir');
 
         $this->archive
-            ->shouldReceive('extract')
-            ->once()
+            ->expects('extract')
             ->with($tempDir)
             ->andThrow($ex = ArchiveRuntimeException::forExtractionFailure());
 
         $this->archive
-            ->shouldReceive('close')
-            ->once();
+            ->expects('close');
 
         $this->filesystem
-            ->shouldReceive('deleteDirectory')
-            ->once()
+            ->expects('deleteDirectory')
             ->with($tempDir);
 
         $this->expectExceptionObject(ExtractorException::forFailingToExtractFiles($this->file, $tempDir, $ex));

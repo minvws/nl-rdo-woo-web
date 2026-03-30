@@ -7,6 +7,7 @@ namespace Shared\Service\Security;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inquiry\InquirySessionService;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 use function in_array;
@@ -23,7 +24,7 @@ class WooDecisionVoter extends Voter
         return $attribute === DossierVoter::VIEW && $subject instanceof WooDecision;
     }
 
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         if (! $subject instanceof WooDecision) {
             return false;

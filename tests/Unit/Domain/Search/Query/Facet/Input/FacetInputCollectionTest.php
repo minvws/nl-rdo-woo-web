@@ -50,7 +50,7 @@ final class FacetInputCollectionTest extends UnitTestCase
         ]);
 
         $facetDefinition = Mockery::mock(FacetDefinitionInterface::class);
-        $facetDefinition->shouldReceive('getKey')->andReturn(FacetKey::PREFIXED_DOSSIER_NR);
+        $facetDefinition->expects('getKey')->andReturn(FacetKey::PREFIXED_DOSSIER_NR);
 
         self::assertSame($facetInput, $collection->getByFacetDefinition($facetDefinition));
     }
@@ -60,7 +60,7 @@ final class FacetInputCollectionTest extends UnitTestCase
         $collection = new FacetInputCollection();
 
         $facetDefinition = Mockery::mock(FacetDefinitionInterface::class);
-        $facetDefinition->shouldReceive('getKey')->andReturn(FacetKey::DEPARTMENT);
+        $facetDefinition->expects('getKey')->andReturn(FacetKey::DEPARTMENT);
 
         $this->expectException(InvalidArgumentException::class);
         $collection->getByFacetDefinition($facetDefinition);

@@ -18,7 +18,7 @@ use SplFileInfo;
 
 final class SevenZipArchiveTest extends UnitTestCase
 {
-    private const TIMEOUT = 60.0 * 5;
+    private const float TIMEOUT = 60.0 * 5;
 
     private SevenZipArchiveFactory&MockInterface $factory;
     private Archive7z&MockInterface $factoryResult;
@@ -36,12 +36,11 @@ final class SevenZipArchiveTest extends UnitTestCase
     public function testOpen(): void
     {
         $this->file
-            ->shouldReceive('getPathname')
+            ->expects('getPathname')
             ->andReturn($expectedPath = 'path');
 
         $this->factory
-            ->shouldReceive('create')
-            ->once()
+            ->expects('create')
             ->with($expectedPath, self::TIMEOUT)
             ->andReturn($this->factoryResult);
 
@@ -52,12 +51,12 @@ final class SevenZipArchiveTest extends UnitTestCase
     public function testOpenThrowsExceptionWhenCalledMultipleTimes(): void
     {
         $this->file
-            ->shouldReceive('getPathname')
+            ->expects('getPathname')
+            ->times(3)
             ->andReturn($expectedPath = 'path');
 
         $this->factory
-            ->shouldReceive('create')
-            ->once()
+            ->expects('create')
             ->with($expectedPath, self::TIMEOUT)
             ->andReturn($this->factoryResult);
 
@@ -72,12 +71,11 @@ final class SevenZipArchiveTest extends UnitTestCase
     public function testClose(): void
     {
         $this->file
-            ->shouldReceive('getPathname')
+            ->expects('getPathname')
             ->andReturn($expectedPath = 'path');
 
         $this->factory
-            ->shouldReceive('create')
-            ->once()
+            ->expects('create')
             ->with($expectedPath, self::TIMEOUT)
             ->andReturn($this->factoryResult);
 
@@ -99,23 +97,20 @@ final class SevenZipArchiveTest extends UnitTestCase
     public function testExtract(): void
     {
         $this->file
-            ->shouldReceive('getPathname')
+            ->expects('getPathname')
             ->andReturn($expectedPath = 'path');
 
         $this->factory
-            ->shouldReceive('create')
-            ->once()
+            ->expects('create')
             ->with($expectedPath, self::TIMEOUT)
             ->andReturn($this->factoryResult);
 
         $this->factoryResult
-            ->shouldReceive('setOutputDirectory')
-            ->once()
+            ->expects('setOutputDirectory')
             ->with($destination = 'destination');
 
         $this->factoryResult
-            ->shouldReceive('extract')
-            ->once();
+            ->expects('extract');
 
         $archive = new SevenZipArchive($this->factory);
         $archive->open($this->file);
@@ -134,22 +129,18 @@ final class SevenZipArchiveTest extends UnitTestCase
     public function testExtractThrowsExceptionWhenDestinationDirectoryIsMissing(): void
     {
         $this->file
-            ->shouldReceive('getPathname')
+            ->expects('getPathname')
             ->andReturn($expectedPath = 'path');
 
         $this->factory
-            ->shouldReceive('create')
-            ->once()
+            ->expects('create')
             ->with($expectedPath, self::TIMEOUT)
             ->andReturn($this->factoryResult);
 
         $this->factoryResult
-            ->shouldReceive('setOutputDirectory')
-            ->once()
+            ->expects('setOutputDirectory')
             ->with($destination = 'destination')
             ->andThrow(new Exception('Somthing went wrong'));
-
-        $this->factoryResult->shouldNotReceive('extract');
 
         $archive = new SevenZipArchive($this->factory);
         $archive->open($this->file);
@@ -162,23 +153,20 @@ final class SevenZipArchiveTest extends UnitTestCase
     public function testExtractThrowsExceptionWhenExtractionFails(): void
     {
         $this->file
-            ->shouldReceive('getPathname')
+            ->expects('getPathname')
             ->andReturn($expectedPath = 'path');
 
         $this->factory
-            ->shouldReceive('create')
-            ->once()
+            ->expects('create')
             ->with($expectedPath, self::TIMEOUT)
             ->andReturn($this->factoryResult);
 
         $this->factoryResult
-            ->shouldReceive('setOutputDirectory')
-            ->once()
+            ->expects('setOutputDirectory')
             ->with($destination = 'destination');
 
         $this->factoryResult
-            ->shouldReceive('extract')
-            ->once()
+            ->expects('extract')
             ->andThrow($ex = new Exception('Somthing went wrong'));
 
         $archive = new SevenZipArchive($this->factory);

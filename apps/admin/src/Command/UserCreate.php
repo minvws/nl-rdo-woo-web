@@ -24,7 +24,7 @@ use Webmozart\Assert\Assert;
 
 use function is_null;
 
-#[AsCommand(name: 'woopie:user:create', description: 'Create a new user')]
+#[AsCommand(name: 'woopie:user:create', description: 'Create a new user', help: 'Creates a new user')]
 class UserCreate extends Command
 {
     public function __construct(
@@ -38,7 +38,6 @@ class UserCreate extends Command
     protected function configure(): void
     {
         $this
-            ->setHelp('Creates a new user')
             ->setDefinition([
                 new InputArgument('email', InputArgument::REQUIRED, 'Email of the user'),
                 new InputArgument('name', InputArgument::REQUIRED, 'Full name of user'),

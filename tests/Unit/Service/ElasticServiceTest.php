@@ -15,6 +15,7 @@ use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticDocument;
 use Shared\Service\Elastic\ElasticClientInterface;
 use Shared\Service\Elastic\ElasticService;
+use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
 use Shared\Tests\Unit\UnitTestCase;
 
 class ElasticServiceTest extends UnitTestCase
@@ -22,15 +23,18 @@ class ElasticServiceTest extends UnitTestCase
     private ElasticClientInterface&MockInterface $elasticClient;
     private LoggerInterface&MockInterface $logger;
     private ElasticService $elasticService;
+    private ElasticConfig $elasticConfig;
 
     protected function setUp(): void
     {
         $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
         $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->elasticConfig = ElasticConfigOverride::default();
 
         $this->elasticService = new ElasticService(
             $this->elasticClient,
             $this->logger,
+            $this->elasticConfig,
         );
 
         parent::setUp();
@@ -41,11 +45,11 @@ class ElasticServiceTest extends UnitTestCase
         $id = 'foo-123';
         $docValues = ['foo' => 123];
         $document = Mockery::mock(ElasticDocument::class);
-        $document->shouldReceive('getId')->andReturn($id);
-        $document->shouldReceive('getDocumentValues')->andReturn($docValues);
+        $document->expects('getId')->andReturn($id);
+        $document->expects('getDocumentValues')->andReturn($docValues);
 
         $this->elasticClient->expects('update')->with([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
             'body' => [
                 'doc' => $docValues,
@@ -62,10 +66,10 @@ class ElasticServiceTest extends UnitTestCase
         $documentData = ['foo' => 'bar'];
 
         $result = Mockery::mock(Elasticsearch::class);
-        $result->shouldReceive('asArray')->andReturn($documentData);
+        $result->expects('asArray')->andReturn($documentData);
 
         $this->elasticClient->expects('get')->with([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ])->andReturn($result);
 
@@ -96,10 +100,10 @@ class ElasticServiceTest extends UnitTestCase
         $id = 'foo-123';
 
         $result = Mockery::mock(Elasticsearch::class);
-        $result->shouldReceive('asBool')->andReturnFalse();
+        $result->expects('asBool')->andReturnFalse();
 
         $this->elasticClient->expects('exists')->with([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ])->andReturn($result);
 
@@ -111,15 +115,15 @@ class ElasticServiceTest extends UnitTestCase
         $id = 'foo-123';
 
         $result = Mockery::mock(Elasticsearch::class);
-        $result->shouldReceive('asBool')->andReturnTrue();
+        $result->expects('asBool')->andReturnTrue();
 
         $this->elasticClient->expects('exists')->with([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ])->andReturn($result);
 
         $this->elasticClient->expects('delete')->with([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ]);
 
@@ -129,10 +133,10 @@ class ElasticServiceTest extends UnitTestCase
     public function testRemoveDossierSuccessful(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
-        $dossier->shouldReceive('getId->toRfc4122')->andReturn($id = 'foo-123');
+        $dossier->expects('getId->toRfc4122')->andReturn($id = 'foo-123');
 
         $this->elasticClient->expects('delete')->with([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ]);
 
@@ -142,10 +146,10 @@ class ElasticServiceTest extends UnitTestCase
     public function testRemoveDossierNotFoundIsSilentlyIgnored(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
-        $dossier->shouldReceive('getId->toRfc4122')->andReturn($id = 'foo-123');
+        $dossier->expects('getId->toRfc4122')->andReturn($id = 'foo-123');
 
         $this->elasticClient->expects('delete')->with([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ])->andThrows(new ClientResponseException('', 404));
 
@@ -155,10 +159,10 @@ class ElasticServiceTest extends UnitTestCase
     public function testRemoveDossierExceptionIsThrown(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
-        $dossier->shouldReceive('getId->toRfc4122')->andReturn($id = 'foo-123');
+        $dossier->expects('getId->toRfc4122')->andReturn($id = 'foo-123');
 
         $this->elasticClient->expects('delete')->with([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ])->andThrows(new ClientResponseException('', 500));
 

@@ -21,6 +21,8 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
+use Shared\ValueObject\ExternalId;
+use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -37,6 +39,8 @@ final class OtherPublicationProcessor extends AbstractDossierProcessor
         OrganisationRepository $organisationRepository,
         SubjectRepository $subjectRepository,
         private readonly OtherPublicationRepository $otherPublicationRepository,
+        private readonly Security $security,
+        private readonly OtherPublicationMapper $otherPublicationMapper,
     ) {
         parent::__construct(
             $attachmentService,
@@ -46,6 +50,7 @@ final class OtherPublicationProcessor extends AbstractDossierProcessor
             $mainDocumentService,
             $organisationRepository,
             $subjectRepository,
+            $this->security,
         );
     }
 
@@ -64,6 +69,7 @@ final class OtherPublicationProcessor extends AbstractDossierProcessor
 
         $otherPublicationExternalId = $uriVariables['otherPublicationExternalId'];
         Assert::string($otherPublicationExternalId);
+        $otherPublicationExternalId = ExternalId::create($otherPublicationExternalId);
 
         $organisation = $this->getOrganisation($uriVariables);
         $subject = $this->getSubject($data, $organisation);
@@ -73,12 +79,12 @@ final class OtherPublicationProcessor extends AbstractDossierProcessor
         if ($otherPublication === null) {
             $otherPublication = $this->create($organisation, $department, $subject, $data, $otherPublicationExternalId);
 
-            return OtherPublicationMapper::fromEntity($otherPublication);
+            return $this->otherPublicationMapper->fromEntity($otherPublication);
         }
 
         $this->update($otherPublication, $organisation, $department, $subject, $data);
 
-        return OtherPublicationMapper::fromEntity($otherPublication);
+        return $this->otherPublicationMapper->fromEntity($otherPublication);
     }
 
     private function create(
@@ -86,7 +92,7 @@ final class OtherPublicationProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         OtherPublicationRequestDto $otherPublicationRequestDto,
-        string $otherPublicationExternalId,
+        ExternalId $otherPublicationExternalId,
     ): OtherPublication {
         $otherPublication = OtherPublicationMapper::create(
             $otherPublicationRequestDto,

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory;
 
-use Override;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\InputBag;
@@ -18,8 +17,6 @@ use function sprintf;
 final class UploadEntityFactory extends PersistentObjectFactory
 {
     /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
      * @return array<string, mixed>
      */
     protected function defaults(): array
@@ -30,15 +27,6 @@ final class UploadEntityFactory extends PersistentObjectFactory
             'uploadGroupId' => UploadGroupId::WOO_DECISION_DOCUMENTS,
             'context' => new InputBag(),
         ];
-    }
-
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
-    #[Override]
-    protected function initialize(): static
-    {
-        return $this;
     }
 
     public static function class(): string

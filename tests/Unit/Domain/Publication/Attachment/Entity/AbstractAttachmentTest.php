@@ -28,7 +28,7 @@ class AbstractAttachmentTest extends UnitTestCase
 
     public function testCanWithdrawReturnsFalseWhenDossierIsConcept(): void
     {
-        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
+        $this->dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
 
         $attachment = new CovenantAttachment(
             $this->dossier,
@@ -42,7 +42,7 @@ class AbstractAttachmentTest extends UnitTestCase
 
     public function testCanWithdrawReturnsFalseWhenFileIsNotUploaded(): void
     {
-        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $this->dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $attachment = new CovenantAttachment(
             $this->dossier,
@@ -56,7 +56,7 @@ class AbstractAttachmentTest extends UnitTestCase
 
     public function testCanWithdrawReturnsTrueWhenFileIsUploaded(): void
     {
-        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $this->dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $attachment = new CovenantAttachment(
             $this->dossier,
@@ -75,7 +75,7 @@ class AbstractAttachmentTest extends UnitTestCase
 
     public function testCanWithdrawOnlyOnce(): void
     {
-        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $this->dossier->expects('getStatus')->times(4)->andReturn(DossierStatus::PUBLISHED);
 
         $attachment = new CovenantAttachment(
             $this->dossier,

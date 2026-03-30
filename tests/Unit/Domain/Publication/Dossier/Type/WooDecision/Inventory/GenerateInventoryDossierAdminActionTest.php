@@ -52,7 +52,7 @@ final class GenerateInventoryDossierAdminActionTest extends UnitTestCase
     public function testExecute(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
+        $dossier->expects('getId')->andReturn($dossierId = Uuid::v6());
 
         $this->dispatcher->expects('dispatchGenerateInventoryCommand')->with($dossierId);
 

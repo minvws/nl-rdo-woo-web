@@ -51,7 +51,7 @@ class CsvWriter implements InventoryWriterInterface
             }
         }
 
-        fputcsv($this->filePointer, $values);
+        fputcsv($this->filePointer, $values, escape: '\\');
     }
 
     public function close(): void

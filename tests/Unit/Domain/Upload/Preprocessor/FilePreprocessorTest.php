@@ -35,19 +35,17 @@ final class FilePreprocessorTest extends UnitTestCase
     public function testProcessPassingArrayOfStrategies(): void
     {
         $this->firstPreprocessor
-            ->shouldReceive('canProcess')
-            ->once()
+            ->expects('canProcess')
             ->with($this->file)
             ->andReturnFalse();
         $this->secondPreprocessor
-            ->shouldReceive('canProcess')
-            ->once()
+            ->expects('canProcess')
             ->with($this->file)
             ->andReturnTrue();
 
         $this->firstPreprocessor->shouldNotReceive('process');
         $this->secondPreprocessor
-            ->shouldReceive('process')
+            ->expects('process')
             ->with($this->file)
             ->andReturn($this->iterableToGenerator($expectedResult = [Mockery::mock(UploadedFile::class), Mockery::mock(UploadedFile::class)]));
 
@@ -60,14 +58,13 @@ final class FilePreprocessorTest extends UnitTestCase
     public function testProcessPassingTraversableOfStrategies(): void
     {
         $this->firstPreprocessor
-            ->shouldReceive('canProcess')
-            ->once()
+            ->expects('canProcess')
             ->with($this->file)
             ->andReturnTrue();
         $this->secondPreprocessor->shouldNotReceive('canProcess');
 
         $this->firstPreprocessor
-            ->shouldReceive('process')
+            ->expects('process')
             ->with($this->file)
             ->andReturn($this->iterableToGenerator($expectedResult = [Mockery::mock(UploadedFile::class), Mockery::mock(UploadedFile::class)]));
         $this->secondPreprocessor->shouldNotReceive('process');
@@ -81,13 +78,11 @@ final class FilePreprocessorTest extends UnitTestCase
     public function testProcessReturningOriginalFile(): void
     {
         $this->firstPreprocessor
-            ->shouldReceive('canProcess')
-            ->once()
+            ->expects('canProcess')
             ->with($this->file)
             ->andReturnFalse();
         $this->secondPreprocessor
-            ->shouldReceive('canProcess')
-            ->once()
+            ->expects('canProcess')
             ->with($this->file)
             ->andReturnFalse();
 

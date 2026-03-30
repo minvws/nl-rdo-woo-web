@@ -16,7 +16,7 @@ readonly class ClamAvClientFactory
 
     public function getClient(): Client
     {
-        $socket = (new Factory())->createClient($this->address);
+        $socket = new Factory()->createClient($this->address);
 
         return new Client($socket);
     }

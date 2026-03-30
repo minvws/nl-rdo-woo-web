@@ -80,7 +80,7 @@ final class ProcessInventoryExceptionTest extends TestCase
     public function forDocumentExistsInAnotherDossier(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDocumentId')->andReturn('foo-456');
+        $document->expects('getDocumentId')->andReturn('foo-456');
 
         self::assertStringContainsString(
             'foo-456',

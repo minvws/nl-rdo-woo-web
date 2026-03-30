@@ -149,7 +149,7 @@ class InventoryRunProcessorTest extends UnitTestCase
             ->expects('sendMessagesForChangeset')
             ->with($changeset, $this->dossier, Mockery::type(RunProgress::class));
 
-        $this->progressUpdater->expects('updateProgressForRun')->twice();
+        $this->progressUpdater->expects('updateProgressForRun')->times(2);
 
         $this->entityManager->expects('isOpen')->andReturnTrue();
         $this->entityManager->expects('persist')->with($this->run)->times(3);
@@ -218,7 +218,7 @@ class InventoryRunProcessorTest extends UnitTestCase
             ->expects('sendMessagesForChangeset')
             ->with($changeset, $this->dossier, Mockery::type(RunProgress::class));
 
-        $this->progressUpdater->expects('updateProgressForRun')->twice();
+        $this->progressUpdater->expects('updateProgressForRun')->times(2);
 
         $this->entityManager->expects('persist')->with($this->dossier);
         $this->entityManager->expects('refresh')->with($this->dossier);

@@ -34,7 +34,6 @@ final class ClamAvFileScannerTest extends UnitTestCase
     {
         $this->clamAvClient = Mockery::mock(Client::class);
         $this->clientFactory = Mockery::mock(ClamAvClientFactory::class);
-        $this->clientFactory->shouldReceive('getClient')->andReturn($this->clamAvClient);
 
         $this->logger = Mockery::mock(LoggerInterface::class);
         $this->filesystem = Mockery::mock(LocalFilesystem::class);
@@ -106,6 +105,8 @@ final class ClamAvFileScannerTest extends UnitTestCase
 
     public function testScanReturnsTechnicalErrorWhenClamAvThrowsException(): void
     {
+        $this->clientFactory->expects('getClient')->andReturn($this->clamAvClient);
+
         $path = '/foo/bar/test.txt';
 
         $stream = fopen('php://memory', 'r+');
@@ -125,6 +126,8 @@ final class ClamAvFileScannerTest extends UnitTestCase
 
     public function testScanReturnsUnsafeWhenClamAvReturnsAFailure(): void
     {
+        $this->clientFactory->expects('getClient')->andReturn($this->clamAvClient);
+
         $path = '/foo/bar/test.txt';
 
         $stream = fopen('php://memory', 'r+');
@@ -133,8 +136,8 @@ final class ClamAvFileScannerTest extends UnitTestCase
         $this->filesystem->expects('createStream')->with($path, 'r')->andReturn($stream);
 
         $result = Mockery::mock(Result::class);
-        $result->shouldReceive('hasFailed')->andReturnTrue();
-        $result->shouldReceive('getReason')->andReturns($reason = 'foo bar');
+        $result->expects('hasFailed')->times(2)->andReturnTrue();
+        $result->expects('getReason')->times(2)->andReturns($reason = 'foo bar');
 
         $this->clamAvClient->expects('scanResourceStream')->with($stream)->andReturn($result);
 
@@ -157,6 +160,8 @@ final class ClamAvFileScannerTest extends UnitTestCase
 
     public function testScanReturnsSafeWhenClamAvReturnsNoFailure(): void
     {
+        $this->clientFactory->expects('getClient')->andReturn($this->clamAvClient);
+
         $path = '/foo/bar/test.txt';
 
         $stream = fopen('php://memory', 'r+');
@@ -165,8 +170,8 @@ final class ClamAvFileScannerTest extends UnitTestCase
         $this->filesystem->expects('createStream')->with($path, 'r')->andReturn($stream);
 
         $result = Mockery::mock(Result::class);
-        $result->shouldReceive('hasFailed')->andReturnFalse();
-        $result->shouldReceive('getReason')->andReturnNull();
+        $result->expects('hasFailed')->times(2)->andReturnFalse();
+        $result->expects('getReason')->andReturnNull();
 
         $this->clamAvClient->expects('scanResourceStream')->with($stream)->andReturn($result);
 

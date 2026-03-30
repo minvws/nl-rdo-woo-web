@@ -42,7 +42,7 @@ class AttachmentDispatcherTest extends UnitTestCase
     public function testDispatchAttachmentUpdatedEvent(): void
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
+        $dossier->expects('getId')->andReturn($dossierId = Uuid::v6());
 
         $attachment = new CovenantAttachment(
             $dossier,
@@ -52,9 +52,9 @@ class AttachmentDispatcherTest extends UnitTestCase
         );
 
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getName')->andReturn($fileName = 'foo');
-        $fileInfo->shouldReceive('getType')->andReturn($fileType = 'pdf');
-        $fileInfo->shouldReceive('getSize')->andReturn(123);
+        $fileInfo->expects('getName')->andReturn($fileName = 'foo');
+        $fileInfo->expects('getType')->andReturn($fileType = 'pdf');
+        $fileInfo->expects('getSize')->andReturn(123);
 
         $attachment->setFileInfo($fileInfo);
 
@@ -76,7 +76,7 @@ class AttachmentDispatcherTest extends UnitTestCase
     public function testDispatchAttachmentCreatedEvent(): void
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
+        $dossier->expects('getId')->andReturn($dossierId = Uuid::v6());
 
         $attachment = new CovenantAttachment(
             $dossier,
@@ -86,9 +86,9 @@ class AttachmentDispatcherTest extends UnitTestCase
         );
 
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getName')->andReturn($fileName = 'foo');
-        $fileInfo->shouldReceive('getType')->andReturn($fileType = 'pdf');
-        $fileInfo->shouldReceive('getSize')->andReturn(123);
+        $fileInfo->expects('getName')->andReturn($fileName = 'foo');
+        $fileInfo->expects('getType')->andReturn($fileType = 'pdf');
+        $fileInfo->expects('getSize')->andReturn(123);
 
         $attachment->setFileInfo($fileInfo);
 
@@ -110,8 +110,8 @@ class AttachmentDispatcherTest extends UnitTestCase
     public function testDispatchAttachmentWithdrawnEvent(): void
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $dossier->expects('getId')->andReturn($dossierId = Uuid::v6());
+        $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $attachment = new CovenantAttachment(
             $dossier,
@@ -144,7 +144,7 @@ class AttachmentDispatcherTest extends UnitTestCase
     public function testDispatchWithdrawAttachmentCommand(): void
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
+        $dossier->expects('getId')->andReturn($dossierId = Uuid::v6());
 
         $attachment = new CovenantAttachment(
             $dossier,

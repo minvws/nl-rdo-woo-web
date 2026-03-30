@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Domain\Security;
 
+use Shared\Service\Security\ApiUser;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,7 @@ class PublicationApiAuthenticator extends AbstractAuthenticator
 
     public function __construct(
         private readonly GlobDomainValidator $globDomainValidator,
-        #[Autowire(env: 'PUBLICATION_API_SSL_USERNAME_WHITELIST')]
+        #[Autowire(param: 'publication_api_ssl_username_whitelist')]
         private readonly string $sslUserNameWhitelist,
     ) {
     }
@@ -44,7 +45,9 @@ class PublicationApiAuthenticator extends AbstractAuthenticator
 
         $whitelist = explode(',', $this->sslUserNameWhitelist);
         if (! $this->globDomainValidator->isValid($whitelist, $sslUserName)) {
-            throw new AuthenticationException('Client Certificate Common Name is invalid');
+            throw new AuthenticationException(
+                'Client Certificate Common Name is not whitelisted. Please read the documentation or contact your system administrator.',
+            );
         }
 
         $userBadge = new UserBadge($sslUserName, static function () use ($sslUserName): ApiUser {
@@ -63,11 +66,12 @@ class PublicationApiAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse
     {
-        unset($request, $exception);
+        unset($request);
 
         return new JsonResponse(
             [
                 'title' => 'Authentication Failed',
+                'message' => $exception->getMessage(),
                 'type' => 'errors/authentication-failed',
                 'status' => Response::HTTP_UNAUTHORIZED,
             ],

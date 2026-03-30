@@ -32,7 +32,7 @@ class AuthorizationRequestStoreTest extends UnitTestCase
 
     public function testGetEntriesThrowsExceptionWhenThereIsNoRequest(): void
     {
-        $this->requestStack->shouldReceive('getCurrentRequest')->andReturnNull();
+        $this->requestStack->expects('getCurrentRequest')->andReturnNull();
 
         $this->expectException(RuntimeException::class);
 
@@ -41,7 +41,7 @@ class AuthorizationRequestStoreTest extends UnitTestCase
 
     public function testGetEntriesThrowsExceptionsWhenAttributeIsNotSet(): void
     {
-        $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($this->request);
+        $this->requestStack->expects('getCurrentRequest')->andReturn($this->request);
 
         $this->expectException(RuntimeException::class);
 
@@ -54,7 +54,7 @@ class AuthorizationRequestStoreTest extends UnitTestCase
             Mockery::mock(Entry::class),
         ];
 
-        $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($this->request);
+        $this->requestStack->expects('getCurrentRequest')->andReturn($this->request);
         $this->request->attributes->set('auth_matrix', $entries);
 
         self::assertEquals($entries, $this->store->getEntries());
@@ -66,7 +66,7 @@ class AuthorizationRequestStoreTest extends UnitTestCase
             Mockery::mock(Entry::class),
         ];
 
-        $this->requestStack->shouldReceive('getCurrentRequest')->andReturnNull();
+        $this->requestStack->expects('getCurrentRequest')->andReturnNull();
 
         self::assertFalse($this->store->storeEntries(...$entries));
     }
@@ -77,7 +77,7 @@ class AuthorizationRequestStoreTest extends UnitTestCase
             Mockery::mock(Entry::class),
         ];
 
-        $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($this->request);
+        $this->requestStack->expects('getCurrentRequest')->andReturn($this->request);
 
         self::assertTrue($this->store->storeEntries(...$entries));
         self::assertEquals(

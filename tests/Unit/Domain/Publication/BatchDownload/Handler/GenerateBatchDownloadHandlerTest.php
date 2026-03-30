@@ -41,7 +41,7 @@ class GenerateBatchDownloadHandlerTest extends UnitTestCase
         $batchDownload = Mockery::mock(BatchDownload::class);
 
         $this->repository
-            ->shouldReceive('find')
+            ->expects('find')
             ->with($uuid)
             ->andReturn($batchDownload);
 
@@ -58,7 +58,7 @@ class GenerateBatchDownloadHandlerTest extends UnitTestCase
         $uuid = Uuid::v6();
 
         $this->repository
-            ->shouldReceive('find')
+            ->expects('find')
             ->with($uuid)
             ->andReturnNull();
 

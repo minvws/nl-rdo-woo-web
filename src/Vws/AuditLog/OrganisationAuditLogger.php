@@ -24,7 +24,7 @@ readonly class OrganisationAuditLogger
     #[AsEventListener]
     public function onCreated(OrganisationCreatedEvent $event): void
     {
-        $this->auditLogger->log((new OrganisationCreatedLogEvent())
+        $this->auditLogger->log(new OrganisationCreatedLogEvent()
             ->asCreate()
             ->withActor($event->actor)
             ->withSource('woo')
@@ -40,7 +40,7 @@ readonly class OrganisationAuditLogger
     #[AsEventListener]
     public function onUpdated(OrganisationUpdatedEvent $event): void
     {
-        $this->auditLogger->log((new OrganisationChangeLogEvent())
+        $this->auditLogger->log(new OrganisationChangeLogEvent()
             ->asUpdate()
             ->withActor($event->actor)
             ->withSource('woo')

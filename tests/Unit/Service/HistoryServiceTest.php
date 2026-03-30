@@ -29,7 +29,6 @@ class HistoryServiceTest extends UnitTestCase
 
     public function testAddDossierEntry(): void
     {
-        /** @var HistoryService&MockInterface $service */
         $service = Mockery::mock(HistoryService::class, [
             $this->entityManager,
             $this->translator,
@@ -43,9 +42,8 @@ class HistoryServiceTest extends UnitTestCase
         $mode = HistoryService::MODE_PUBLIC;
 
         $service
-            ->shouldReceive('addEntry')
-            ->with(HistoryService::TYPE_DOSSIER, $uuid, $key, $context, $mode, true)
-            ->once();
+            ->expects('addEntry')
+            ->with(HistoryService::TYPE_DOSSIER, $uuid, $key, $context, $mode, true);
 
         $service->addDossierEntry($uuid, $key, $context, $mode);
     }

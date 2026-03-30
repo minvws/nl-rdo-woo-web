@@ -50,24 +50,24 @@ class DocumentsStepDefinitionTest extends UnitTestCase
 
     public function testIsCompletedReturnsTrueWhenNoInventoryAndDocumentsCanBeProvided(): void
     {
-        $this->dossier->shouldReceive('canProvideInventory')->andReturnFalse();
+        $this->dossier->expects('canProvideInventory')->andReturnFalse();
 
         self::assertTrue($this->isStepCompleted());
     }
 
     public function testIsCompletedReturnsTrueWhenUploadsAreComplete(): void
     {
-        $this->dossier->shouldReceive('canProvideInventory')->andReturnTrue();
-        $this->dossier->shouldReceive('hasAllExpectedUploads')->andReturnTrue();
+        $this->dossier->expects('canProvideInventory')->andReturnTrue();
+        $this->dossier->expects('hasAllExpectedUploads')->andReturnTrue();
 
         self::assertTrue($this->isStepCompleted());
     }
 
     public function testIsCompletedReturnsFalseWhenUploadsAreIncomplete(): void
     {
-        $this->dossier->shouldReceive('canProvideInventory')->andReturnTrue();
-        $this->dossier->shouldReceive('hasAllExpectedUploads')->andReturnFalse();
-        $this->dossier->shouldReceive('hasProductionReport')->andReturnTrue();
+        $this->dossier->expects('canProvideInventory')->andReturnTrue();
+        $this->dossier->expects('hasAllExpectedUploads')->andReturnFalse();
+        $this->dossier->expects('hasProductionReport')->andReturnTrue();
 
         self::assertFalse($this->isStepCompleted());
     }
@@ -75,11 +75,11 @@ class DocumentsStepDefinitionTest extends UnitTestCase
     #[DataProvider('dossierStatusData')]
     public function testIsCompletedForOptionalInventoryAndDossierStatus(DossierStatus $status, bool $expectedIsCompleted): void
     {
-        $this->dossier->shouldReceive('canProvideInventory')->andReturnTrue();
-        $this->dossier->shouldReceive('hasAllExpectedUploads')->andReturnFalse();
-        $this->dossier->shouldReceive('hasProductionReport')->andReturnFalse();
-        $this->dossier->shouldReceive('isInventoryOptional')->andReturnTrue();
-        $this->dossier->shouldReceive('getStatus')->andReturn($status);
+        $this->dossier->expects('canProvideInventory')->andReturnTrue();
+        $this->dossier->expects('hasAllExpectedUploads')->andReturnFalse();
+        $this->dossier->expects('hasProductionReport')->andReturnFalse();
+        $this->dossier->expects('isInventoryOptional')->andReturnTrue();
+        $this->dossier->expects('getStatus')->andReturn($status);
 
         self::assertEquals($expectedIsCompleted, $this->isStepCompleted());
     }

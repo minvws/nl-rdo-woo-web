@@ -98,7 +98,7 @@ class LoginAuditLoggerTest extends UnitTestCase
         $exception = Mockery::mock(AuthenticationException::class);
         $exception->expects('getMessageKey')
             ->andReturn('key');
-        $exception->shouldReceive('getMessageData')
+        $exception->expects('getMessageData')
             ->andReturn(['data']);
 
         $event = Mockery::mock(LoginFailureEvent::class);

@@ -49,7 +49,6 @@ class DossierWorkflowManagerTest extends UnitTestCase
         $this->dossierService = Mockery::mock(DossierService::class);
 
         $this->dossier = Mockery::mock(WooDecision::class);
-        $this->dossier->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $this->workflow = Mockery::mock(WorkflowInterface::class);
 
@@ -67,8 +66,6 @@ class DossierWorkflowManagerTest extends UnitTestCase
 
     public function testIsTransitionAllowedReturnsFalseWhenTheWorkflowDeniesATransition(): void
     {
-        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::NEW);
-
         $this->dossierTypeManager->expects('getStatusWorkflow')->andReturn($this->workflow);
 
         $this->workflow->expects('can')->with($this->dossier, DossierStatusTransition::PUBLISH->value)->andReturnFalse();
@@ -80,7 +77,8 @@ class DossierWorkflowManagerTest extends UnitTestCase
 
     public function testApplyTransitionThrowsExceptionForInvalidTransition(): void
     {
-        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::NEW);
+        $this->dossier->expects('getId')->times(3)->andReturn(Uuid::v6());
+        $this->dossier->expects('getStatus')->times(2)->andReturn(DossierStatus::NEW);
 
         $this->dossierTypeManager->expects('getStatusWorkflow')->andReturn($this->workflow);
 
@@ -104,14 +102,15 @@ class DossierWorkflowManagerTest extends UnitTestCase
     {
         $inquiry = Mockery::mock(Inquiry::class);
 
-        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT, DossierStatus::PUBLISHED);
-        $this->dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([$inquiry]));
+        $this->dossier->expects('getId')->times(3)->andReturn(Uuid::v6());
+        $this->dossier->expects('getStatus')->times(4)->andReturn(DossierStatus::CONCEPT, DossierStatus::PUBLISHED);
+        $this->dossier->expects('getInquiries')->andReturn(new ArrayCollection([$inquiry]));
 
         $this->dossierTypeManager->expects('getStatusWorkflow')->andReturn($this->workflow);
 
         $this->workflow->expects('apply')->with($this->dossier, DossierStatusTransition::PUBLISH->value);
 
-        $this->logger->shouldReceive('info');
+        $this->logger->expects('info');
 
         $this->dossierService->expects('handleEntityUpdate')->with($this->dossier);
         $this->batchDownloadService->expects('refresh')->with(Mockery::on(
@@ -131,8 +130,7 @@ class DossierWorkflowManagerTest extends UnitTestCase
 
     public function testApplyTransitionUpdatesStatusDoesNotLogStatusNewToConcept(): void
     {
-        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::NEW);
-        $this->dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([]));
+        $this->dossier->expects('getStatus')->times(3)->andReturn(DossierStatus::NEW);
 
         $this->dossierTypeManager->expects('getStatusWorkflow')->andReturn($this->workflow);
 
@@ -145,13 +143,11 @@ class DossierWorkflowManagerTest extends UnitTestCase
 
     public function testApplyTransitionWithoutStatusUpdateAddsNoHistory(): void
     {
-        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
+        $this->dossier->expects('getStatus')->times(3)->andReturn(DossierStatus::CONCEPT);
 
         $this->dossierTypeManager->expects('getStatusWorkflow')->andReturn($this->workflow);
 
         $this->workflow->expects('apply')->with($this->dossier, DossierStatusTransition::UPDATE_DOCUMENTS->value);
-
-        $this->logger->shouldReceive('info');
 
         $this->dossierService->expects('handleEntityUpdate')->with($this->dossier);
 

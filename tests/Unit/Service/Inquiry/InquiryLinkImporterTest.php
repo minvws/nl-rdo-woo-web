@@ -55,7 +55,7 @@ class InquiryLinkImporterTest extends UnitTestCase
         $organisationB = Mockery::mock(Organisation::class);
 
         $prefix = Mockery::mock(DocumentPrefix::class);
-        $prefix->shouldReceive('getOrganisation')->andReturn($organisationB);
+        $prefix->expects('getOrganisation')->andReturn($organisationB);
 
         $result = $this->importer->import($organisationA, $upload, $prefix);
 
@@ -69,7 +69,7 @@ class InquiryLinkImporterTest extends UnitTestCase
         $organisation = Mockery::mock(Organisation::class);
 
         $prefix = Mockery::mock(DocumentPrefix::class);
-        $prefix->shouldReceive('getOrganisation')->andReturn($organisation);
+        $prefix->expects('getOrganisation')->andReturn($organisation);
 
         $documentNrA = 'foo-xx-123';
         $documentNrB = 'foo-xx-456';
@@ -117,7 +117,7 @@ class InquiryLinkImporterTest extends UnitTestCase
         $organisation = Mockery::mock(Organisation::class);
 
         $prefix = Mockery::mock(DocumentPrefix::class);
-        $prefix->shouldReceive('getOrganisation')->andReturn($organisation);
+        $prefix->expects('getOrganisation')->andReturn($organisation);
 
         $documentNrA = 'foo-xx-123';
         $documentNrB = 'foo-xx-456';

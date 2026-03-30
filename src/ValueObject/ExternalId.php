@@ -7,6 +7,7 @@ namespace Shared\ValueObject;
 use InvalidArgumentException;
 use Stringable;
 
+use function mb_strlen;
 use function preg_match;
 
 final readonly class ExternalId implements Stringable
@@ -22,6 +23,11 @@ final readonly class ExternalId implements Stringable
     {
         if (preg_match(self::PATTERN, $id) !== 1) {
             throw new InvalidArgumentException('Invalid external ID format');
+        }
+
+        $stringLength = mb_strlen($id);
+        if ($stringLength === 0 || $stringLength > 128) {
+            throw new InvalidArgumentException('Invalid external id length');
         }
 
         return new self($id);

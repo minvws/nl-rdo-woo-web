@@ -16,6 +16,7 @@ use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,6 +28,10 @@ use function array_values;
  * @implements EntityWithMainDocument<RequestForAdviceMainDocument>
  */
 #[ORM\Entity(repositoryClass: RequestForAdviceRepository::class)]
+#[NoIncompleteAttachments(groups: [
+    DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+    DossierValidationGroup::WORKFLOW_PUBLISH->value,
+])]
 class RequestForAdvice extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument
 {
     /** @use HasAttachments<RequestForAdviceAttachment> */
@@ -36,8 +41,16 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     use HasMainDocument;
 
     #[ORM\OneToOne(targetEntity: RequestForAdviceMainDocument::class, mappedBy: 'dossier', cascade: ['remove', 'persist'])]
-    #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
-    #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::CONTENT->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    #[Assert\Valid(groups: [
+        DossierValidationGroup::CONTENT->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     private ?RequestForAdviceMainDocument $document;
 
     /** @var Collection<array-key,RequestForAdviceAttachment> */
@@ -46,7 +59,11 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     private Collection $attachments;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Url(groups: [DossierValidationGroup::CONTENT->value])]
+    #[Assert\Url(groups: [
+        DossierValidationGroup::CONTENT->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     private string $link = '';
 
     /** @var list<string> */
@@ -54,16 +71,51 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     #[Assert\Count(
         min: 0,
         max: 1,
-        groups: [DossierValidationGroup::CONTENT->value],
+        groups: [
+            DossierValidationGroup::CONTENT->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
     )]
     #[Assert\All(
         constraints: [
             new Assert\NotBlank(),
             new Assert\Length(min: 2, max: 100),
         ],
-        groups: [DossierValidationGroup::CONTENT->value],
+        groups: [
+            DossierValidationGroup::CONTENT->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
     )]
     private array $advisoryBodies = [];
+
+    #[Assert\NotNull(
+        message: 'date_mandatory',
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
+    )]
+    #[Assert\LessThanOrEqual(
+        value: 'today',
+        message: 'date_must_not_be_in_future',
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
+    )]
+    protected ?DateTimeImmutable $dateFrom = null;
+
+    #[Assert\Length(min: 1, max: 1000, groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::CONTENT->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    protected string $summary = '';
 
     public function __construct()
     {

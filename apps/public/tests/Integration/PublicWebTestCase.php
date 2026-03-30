@@ -12,7 +12,7 @@ abstract class PublicWebTestCase extends WebTestCase
 {
     use IntegrationTestTrait;
 
-    public static function getAppId(): ApplicationId
+    public static function getApplicationId(): ApplicationId
     {
         return ApplicationId::PUBLIC;
     }

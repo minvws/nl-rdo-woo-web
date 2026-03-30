@@ -40,14 +40,14 @@ final class DepartmentServiceTest extends UnitTestCase
     public function testGetPublicDepartments(): void
     {
         $this->repository
-            ->shouldReceive('getAllPublicDepartments')
+            ->expects('getAllPublicDepartments')
             ->andReturn($departmentEntities = [
                 Mockery::mock(DepartmentEntity::class),
                 Mockery::mock(DepartmentEntity::class),
             ]);
 
         $this->departmentViewFactory
-            ->shouldReceive('makeCollection')
+            ->expects('makeCollection')
             ->with($departmentEntities)
             ->andReturn($expected = [
                 Mockery::mock(Department::class),
@@ -63,7 +63,6 @@ final class DepartmentServiceTest extends UnitTestCase
     public function testUserCanEditLandingpageReturnsFalseWithoutMatrixPermission(): void
     {
         $department = Mockery::mock(DepartmentEntity::class);
-        $department->shouldReceive('getSlug')->andReturn('foo');
 
         $this->authorizationMatrix
             ->expects('isAuthorized')
@@ -78,7 +77,6 @@ final class DepartmentServiceTest extends UnitTestCase
     public function testUserCanEditLandingpageReturnsTrueWhenUserHasPermissionAndNoOrganisationFilter(): void
     {
         $department = Mockery::mock(DepartmentEntity::class);
-        $department->shouldReceive('getSlug')->andReturn('foo');
 
         $this->authorizationMatrix
             ->expects('isAuthorized')
@@ -98,7 +96,6 @@ final class DepartmentServiceTest extends UnitTestCase
     public function testUserCanEditLandingpageReturnsFalseWhenUserHasPermissionButAnOrganisationFilterMismatch(): void
     {
         $department = Mockery::mock(DepartmentEntity::class);
-        $department->shouldReceive('getSlug')->andReturn('foo');
 
         $this->authorizationMatrix
             ->expects('isAuthorized')
@@ -123,7 +120,6 @@ final class DepartmentServiceTest extends UnitTestCase
     public function testUserCanEditLandingpageReturnsTrueWhenUserHasPermissionButAndOrganisationFilterMatches(): void
     {
         $department = Mockery::mock(DepartmentEntity::class);
-        $department->shouldReceive('getSlug')->andReturn('foo');
 
         $this->authorizationMatrix
             ->expects('isAuthorized')

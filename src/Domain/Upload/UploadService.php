@@ -6,6 +6,7 @@ namespace Shared\Domain\Upload;
 
 use League\Flysystem\FilesystemOperator;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use Shared\Domain\Upload\Event\UploadCompletedEvent;
 use Shared\Domain\Upload\Event\UploadValidatedEvent;
 use Shared\Domain\Upload\Exception\UploadException;
@@ -24,6 +25,7 @@ readonly class UploadService
         private EventDispatcherInterface $eventDispatcher,
         private UploadEntityRepository $uploadEntityRepository,
         private FilesystemOperator $workingCopyStorage,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -101,6 +103,11 @@ readonly class UploadService
 
     public function passValidation(UploadEntity $uploadEntity, string $mimeType): void
     {
+        $this->logger->debug('UploadService passValidation', [
+            'uploadEntity' => $uploadEntity->getId(),
+            'mimeType' => $mimeType,
+        ]);
+
         $uploadEntity->passValidation($mimeType);
 
         $this->uploadEntityRepository->save($uploadEntity, true);

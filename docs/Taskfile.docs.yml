@@ -93,7 +93,7 @@ tasks:
       - |
         cat <<EOF > bruno-collection/environments/Local.bru
         vars {
-          baseUrl: {{.PUBLICATION_API_URL}}
+          baseUrl: {{.MINVWS_PUBLICATION_API_URL}}
           organisationId:
         }
         EOF

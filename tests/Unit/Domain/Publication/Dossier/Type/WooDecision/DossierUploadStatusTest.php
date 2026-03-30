@@ -23,16 +23,8 @@ class DossierUploadStatusTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->missingUpload = Mockery::mock(Document::class);
-        $this->missingUpload->shouldReceive('shouldBeUploaded')->andReturnTrue();
-        $this->missingUpload->shouldReceive('isUploaded')->andReturnFalse();
-
         $this->completedUpload = Mockery::mock(Document::class);
-        $this->completedUpload->shouldReceive('shouldBeUploaded')->andReturnTrue();
-        $this->completedUpload->shouldReceive('isUploaded')->andReturnTrue();
-
         $this->unwantedUpload = Mockery::mock(Document::class);
-        $this->unwantedUpload->shouldReceive('shouldBeUploaded')->andReturnFalse();
-        $this->unwantedUpload->shouldReceive('isUploaded')->andReturnFalse();
 
         $this->dossier = Mockery::mock(WooDecision::class);
 
@@ -43,7 +35,11 @@ class DossierUploadStatusTest extends UnitTestCase
 
     public function testGetExpectedDocuments(): void
     {
-        $this->dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([
+        $this->missingUpload->expects('shouldBeUploaded')->andReturnTrue();
+        $this->completedUpload->expects('shouldBeUploaded')->andReturnTrue();
+        $this->unwantedUpload->expects('shouldBeUploaded')->andReturnFalse();
+
+        $this->dossier->expects('getDocuments')->andReturn(new ArrayCollection([
             $this->missingUpload,
             $this->completedUpload,
             $this->unwantedUpload,
@@ -60,7 +56,11 @@ class DossierUploadStatusTest extends UnitTestCase
 
     public function testGetUploadedDocuments(): void
     {
-        $this->dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([
+        $this->missingUpload->expects('isUploaded')->andReturnFalse();
+        $this->completedUpload->expects('isUploaded')->andReturnTrue();
+        $this->unwantedUpload->expects('isUploaded')->andReturnFalse();
+
+        $this->dossier->expects('getDocuments')->andReturn(new ArrayCollection([
             $this->missingUpload,
             $this->completedUpload,
             $this->unwantedUpload,
@@ -76,7 +76,11 @@ class DossierUploadStatusTest extends UnitTestCase
 
     public function testGetExpectedUploadCount(): void
     {
-        $this->dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([
+        $this->missingUpload->expects('shouldBeUploaded')->andReturnTrue();
+        $this->completedUpload->expects('shouldBeUploaded')->andReturnTrue();
+        $this->unwantedUpload->expects('shouldBeUploaded')->andReturnFalse();
+
+        $this->dossier->expects('getDocuments')->andReturn(new ArrayCollection([
             $this->missingUpload,
             $this->completedUpload,
             $this->unwantedUpload,
@@ -90,7 +94,13 @@ class DossierUploadStatusTest extends UnitTestCase
 
     public function testGetActualUploadCount(): void
     {
-        $this->dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([
+        $this->missingUpload->expects('shouldBeUploaded')->andReturnTrue();
+        $this->missingUpload->expects('isUploaded')->andReturnFalse();
+        $this->completedUpload->expects('shouldBeUploaded')->andReturnTrue();
+        $this->completedUpload->expects('isUploaded')->andReturnTrue();
+        $this->unwantedUpload->expects('shouldBeUploaded')->andReturnFalse();
+
+        $this->dossier->expects('getDocuments')->andReturn(new ArrayCollection([
             $this->missingUpload,
             $this->completedUpload,
             $this->unwantedUpload,
@@ -104,7 +114,13 @@ class DossierUploadStatusTest extends UnitTestCase
 
     public function testIsCompleteReturnsFalseWithMissingUpload(): void
     {
-        $this->dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([
+        $this->missingUpload->expects('shouldBeUploaded')->andReturnTrue();
+        $this->missingUpload->expects('isUploaded')->andReturnFalse();
+        $this->completedUpload->expects('shouldBeUploaded')->andReturnTrue();
+        $this->completedUpload->expects('isUploaded')->andReturnTrue();
+        $this->unwantedUpload->expects('shouldBeUploaded')->andReturnFalse();
+
+        $this->dossier->expects('getDocuments')->andReturn(new ArrayCollection([
             $this->missingUpload,
             $this->completedUpload,
             $this->unwantedUpload,
@@ -117,7 +133,11 @@ class DossierUploadStatusTest extends UnitTestCase
 
     public function testIsCompleteReturnsTrueWhenAllExpectedUploadsAreDone(): void
     {
-        $this->dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([
+        $this->completedUpload->expects('shouldBeUploaded')->andReturnTrue();
+        $this->completedUpload->expects('isUploaded')->andReturnTrue();
+        $this->unwantedUpload->expects('shouldBeUploaded')->andReturnFalse();
+
+        $this->dossier->expects('getDocuments')->andReturn(new ArrayCollection([
             $this->completedUpload,
             $this->unwantedUpload,
         ]));
@@ -129,13 +149,21 @@ class DossierUploadStatusTest extends UnitTestCase
 
     public function testGetDocumentsToUpload(): void
     {
-        $this->dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([
+        $this->missingUpload->expects('shouldBeUploaded')->times(2)->andReturnTrue();
+        $this->missingUpload->expects('isUploaded')->times(2)->andReturnFalse();
+
+        $this->completedUpload->expects('shouldBeUploaded')->times(2)->andReturnTrue();
+        $this->completedUpload->expects('isUploaded')->times(2)->andReturnTrue();
+
+        $this->unwantedUpload->expects('shouldBeUploaded')->times(2)->andReturnFalse();
+
+        $this->dossier->expects('getDocuments')->times(2)->andReturn(new ArrayCollection([
             $this->missingUpload,
             $this->completedUpload,
             $this->unwantedUpload,
         ]));
 
-        $this->missingUpload->shouldReceive('getDocumentId')->andReturn(123);
+        $this->missingUpload->expects('getDocumentId')->times(4)->andReturn(123);
 
         self::assertEquals(
             [$this->missingUpload],
@@ -150,7 +178,37 @@ class DossierUploadStatusTest extends UnitTestCase
 
     public function testGetMissingDocuments(): void
     {
-        $this->dossier->shouldReceive('getDocuments')->andReturn($this->getDocuments());
+        $document1 = Mockery::mock(Document::class);
+        $document1->expects('shouldBeUploaded')->andReturn(false);
+
+        $document2 = Mockery::mock(Document::class);
+        $document2->expects('getDocumentId')->andReturn('1002');
+        $document2->expects('shouldBeUploaded')->andReturn(true);
+        $document2->expects('isUploaded')->andReturn(false);
+
+        $document3 = Mockery::mock(Document::class);
+        $document3->expects('shouldBeUploaded')->andReturn(true);
+        $document3->expects('isUploaded')->andReturn(true);
+
+        $document4 = Mockery::mock(Document::class);
+        $document4->expects('getDocumentId')->andReturn('1004');
+        $document4->expects('shouldBeUploaded')->andReturn(true);
+        $document4->expects('isUploaded')->andReturn(false);
+
+        $document5 = Mockery::mock(Document::class);
+        $document5->expects('getDocumentId')->andReturn('1005');
+        $document5->expects('shouldBeUploaded')->andReturn(true);
+        $document5->expects('isUploaded')->andReturn(false);
+
+        $documents = new ArrayCollection([
+            $document1,
+            $document2,
+            $document3,
+            $document4,
+            $document5,
+        ]);
+
+        $this->dossier->expects('getDocuments')->andReturn($documents);
 
         self::assertEquals(
             [
@@ -166,7 +224,37 @@ class DossierUploadStatusTest extends UnitTestCase
 
     public function testGetMissingDocumentIds(): void
     {
-        $this->dossier->shouldReceive('getDocuments')->andReturn($this->getDocuments());
+        $document1 = Mockery::mock(Document::class);
+        $document1->expects('shouldBeUploaded')->andReturn(false);
+
+        $document2 = Mockery::mock(Document::class);
+        $document2->expects('getDocumentId')->andReturn('1002');
+        $document2->expects('shouldBeUploaded')->andReturn(true);
+        $document2->expects('isUploaded')->andReturn(false);
+
+        $document3 = Mockery::mock(Document::class);
+        $document3->expects('shouldBeUploaded')->andReturn(true);
+        $document3->expects('isUploaded')->andReturn(true);
+
+        $document4 = Mockery::mock(Document::class);
+        $document4->expects('getDocumentId')->andReturn('1004');
+        $document4->expects('shouldBeUploaded')->andReturn(true);
+        $document4->expects('isUploaded')->andReturn(false);
+
+        $document5 = Mockery::mock(Document::class);
+        $document5->expects('getDocumentId')->andReturn('1005');
+        $document5->expects('shouldBeUploaded')->andReturn(true);
+        $document5->expects('isUploaded')->andReturn(false);
+
+        $documents = new ArrayCollection([
+            $document1,
+            $document2,
+            $document3,
+            $document4,
+            $document5,
+        ]);
+
+        $this->dossier->expects('getDocuments')->andReturn($documents);
 
         self::assertEquals(
             [
@@ -176,30 +264,5 @@ class DossierUploadStatusTest extends UnitTestCase
             ],
             $this->dossierUploadStatus->getMissingDocumentIds()->getValues(),
         );
-    }
-
-    /**
-     * @return ArrayCollection<array-key,Document&MockInterface>
-     */
-    private function getDocuments(): ArrayCollection
-    {
-        return new ArrayCollection([
-            $this->getDocument(documentId: '1001', shouldBeUploaded: false, isUploaded: false),
-            $this->getDocument(documentId: '1002', shouldBeUploaded: true, isUploaded: false),
-            $this->getDocument(documentId: '1003', shouldBeUploaded: true, isUploaded: true),
-            $this->getDocument(documentId: '1004', shouldBeUploaded: true, isUploaded: false),
-            $this->getDocument(documentId: '1005', shouldBeUploaded: true, isUploaded: false),
-        ]);
-    }
-
-    private function getDocument(string $documentId, bool $shouldBeUploaded, bool $isUploaded): Document&MockInterface
-    {
-        /** @var Document&MockInterface $document */
-        $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDocumentId')->andReturn($documentId);
-        $document->shouldReceive('shouldBeUploaded')->andReturn($shouldBeUploaded);
-        $document->shouldReceive('isUploaded')->andReturn($isUploaded);
-
-        return $document;
     }
 }

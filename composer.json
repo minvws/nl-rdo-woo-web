@@ -6,7 +6,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.3",
+        "php": "^8.4",
         "ext-ctype": "*",
         "ext-fileinfo": "*",
         "ext-iconv": "*",
@@ -27,6 +27,7 @@
         "fakerphp/faker": "^1.21",
         "gemorroj/archive7z": "^5.6",
         "guzzlehttp/psr7": "^2.7",
+        "huluti/breadcrumbs-bundle": "^1.6",
         "indiehd/filename-sanitizer": "^0.1.0",
         "knplabs/knp-paginator-bundle": "^6.2",
         "league/commonmark": "^2.7",
@@ -37,9 +38,8 @@
         "league/openapi-psr7-validator": "^0.22.0",
         "maennchen/zipstream-php": "^3.1",
         "martin-georgiev/postgresql-for-doctrine": "^4.0.0",
-        "mhujer/breadcrumbs-bundle": "^1.5",
         "minvws/audit-logger": "^0.4.0",
-        "minvws/audit-logger-bundle": "^0.5.3",
+        "minvws/audit-logger-bundle": "^0.6.0",
         "minvws/horsebattery": "^1.1",
         "minvws/icore-php-typearray": "^1.0.0",
         "nesbot/carbon": "^3.7",
@@ -48,66 +48,66 @@
         "paragonie/halite": "^5.1",
         "pentatrion/vite-bundle": "^8.0",
         "php-amqplib/rabbitmq-bundle": "^2.11",
-        "phpdocumentor/reflection-docblock": "5.2.0",
+        "phpdocumentor/reflection-docblock": "^5.0",
         "phpoffice/phpspreadsheet": "^5.0.0",
         "predis/predis": "^3.4",
         "presta/sitemap-bundle": "^4.0.0",
         "psr/http-message": "^2.0",
-        "scheb/2fa-backup-code": "^7.2.0",
-        "scheb/2fa-bundle": "^7.2.0",
-        "scheb/2fa-email": "^7.2.0",
-        "scheb/2fa-totp": "^7.2.0",
+        "scheb/2fa-backup-code": "^8.3.0",
+        "scheb/2fa-bundle": "^8.3.0",
+        "scheb/2fa-email": "^8.3.0",
+        "scheb/2fa-totp": "^8.3.0",
         "snc/redis-bundle": "^4.6",
-        "symfony/amqp-messenger": "6.4.*",
-        "symfony/asset": "6.4.*",
-        "symfony/cache": "6.4.*",
-        "symfony/clock": "6.4.*",
-        "symfony/config": "6.4.*",
-        "symfony/console": "6.4.*",
-        "symfony/dependency-injection": "6.4.*",
-        "symfony/doctrine-messenger": "6.4.*",
-        "symfony/dotenv": "6.4.*",
-        "symfony/error-handler": "6.4.*",
-        "symfony/event-dispatcher": "6.4.*",
-        "symfony/expression-language": "6.4.*",
-        "symfony/filesystem": "6.4.*",
-        "symfony/finder": "6.4.*",
+        "symfony/amqp-messenger": "*",
+        "symfony/asset": "*",
+        "symfony/cache": "*",
+        "symfony/clock": "*",
+        "symfony/config": "*",
+        "symfony/console": "*",
+        "symfony/dependency-injection": "*",
+        "symfony/doctrine-messenger": "*",
+        "symfony/dotenv": "*",
+        "symfony/error-handler": "*",
+        "symfony/event-dispatcher": "*",
+        "symfony/expression-language": "*",
+        "symfony/filesystem": "*",
+        "symfony/finder": "*",
         "symfony/flex": "^2",
-        "symfony/form": "6.4.*",
-        "symfony/framework-bundle": "6.4.*",
-        "symfony/http-client": "6.4.*",
-        "symfony/http-foundation": "6.4.*",
-        "symfony/intl": "6.4.*",
-        "symfony/mailer": "6.4.*",
-        "symfony/messenger": "6.4.*",
-        "symfony/mime": "6.4.*",
-        "symfony/monolog-bundle": "^3.0",
-        "symfony/notifier": "6.4.*",
-        "symfony/password-hasher": "6.4.*",
-        "symfony/process": "6.4.*",
-        "symfony/property-access": "6.4.*",
-        "symfony/property-info": "6.4.*",
+        "symfony/form": "*",
+        "symfony/framework-bundle": "*",
+        "symfony/http-client": "*",
+        "symfony/http-foundation": "*",
+        "symfony/intl": "*",
+        "symfony/mailer": "*",
+        "symfony/messenger": "*",
+        "symfony/mime": "*",
+        "symfony/monolog-bundle": "^4.0.0",
+        "symfony/notifier": "*",
+        "symfony/password-hasher": "*",
+        "symfony/process": "*",
+        "symfony/property-access": "*",
+        "symfony/property-info": "*",
         "symfony/psr-http-message-bridge": "^7.4.0",
-        "symfony/rate-limiter": "6.4.*",
-        "symfony/routing": "6.4.*",
-        "symfony/runtime": "6.4.*",
-        "symfony/security-bundle": "6.4.*",
-        "symfony/security-core": "6.4.*",
-        "symfony/security-csrf": "6.4.*",
-        "symfony/security-http": "6.4.*",
-        "symfony/serializer": "6.4.*",
+        "symfony/rate-limiter": "*",
+        "symfony/routing": "*",
+        "symfony/runtime": "*",
+        "symfony/security-bundle": "*",
+        "symfony/security-core": "*",
+        "symfony/security-csrf": "*",
+        "symfony/security-http": "*",
+        "symfony/serializer": "*",
         "symfony/stimulus-bundle": "^2.13",
-        "symfony/stopwatch": "6.4.*",
-        "symfony/string": "6.4.*",
-        "symfony/translation": "6.4.*",
-        "symfony/twig-bundle": "6.4.*",
-        "symfony/uid": "6.4.*",
+        "symfony/stopwatch": "*",
+        "symfony/string": "*",
+        "symfony/translation": "*",
+        "symfony/twig-bundle": "*",
+        "symfony/uid": "*",
         "symfony/ux-twig-component": "^2.11",
         "symfony/ux-vue": "^2.23",
-        "symfony/validator": "6.4.*",
-        "symfony/web-link": "6.4.*",
-        "symfony/workflow": "6.4.*",
-        "symfony/yaml": "6.4.*",
+        "symfony/validator": "*",
+        "symfony/web-link": "*",
+        "symfony/workflow": "*",
+        "symfony/yaml": "*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/intl-extra": "^3.7",
         "twig/string-extra": "^3.6",
@@ -123,12 +123,7 @@
             "symfony/flex": true,
             "symfony/runtime": true
         },
-        "sort-packages": true,
-        "audit": {
-            "ignore": {
-                "CVE-2024-36611": "See https://github.com/symfony/symfony/issues/59077"
-            }
-        }
+        "sort-packages": true
     },
     "autoload": {
         "psr-4": {
@@ -145,7 +140,8 @@
             "Admin\\Tests\\": "apps/admin/tests/",
             "Public\\Tests\\": "apps/public/tests/",
             "PublicationApi\\Tests\\": "apps/publication_api/tests/",
-            "Worker\\Tests\\": "apps/worker/tests/"
+            "Worker\\Tests\\": "apps/worker/tests/",
+            "Woo\\Stan\\": "utils/PHPStan/"
         }
     },
     "replace": {
@@ -161,13 +157,13 @@
     "scripts": {
         "pre-autoload-dump": "Aws\\Script\\Composer\\Composer::removeUnusedServices",
         "auto-scripts": {
-            "cache:clear -ishared": "symfony-cmd",
-            "cache:clear -iadmin": "symfony-cmd",
-            "cache:clear -ipublic": "symfony-cmd",
-            "cache:clear -ipublication_api": "symfony-cmd",
-            "cache:clear -iworker": "symfony-cmd",
-            "assets:install %PUBLIC_DIR% -iadmin": "symfony-cmd",
-            "assets:install %PUBLIC_DIR% -ipublic": "symfony-cmd"
+            "XDEBUG_MODE=off bin/console cache:clear --tenant=minvws --id=shared": "script",
+            "XDEBUG_MODE=off bin/console cache:clear --tenant=minvws --id=admin": "script",
+            "XDEBUG_MODE=off bin/console cache:clear --tenant=minvws --id=public": "script",
+            "XDEBUG_MODE=off bin/console cache:clear --tenant=minvws --id=publication_api": "script",
+            "XDEBUG_MODE=off bin/console cache:clear --tenant=minvws --id=worker": "script",
+            "XDEBUG_MODE=off bin/console assets:install %PUBLIC_DIR% --tenant=minvws --id=admin": "script",
+            "XDEBUG_MODE=off bin/console assets:install %PUBLIC_DIR% --tenant=minvws --id=public": "script"
         },
         "post-install-cmd": [
             "@auto-scripts",
@@ -187,17 +183,17 @@
             "XDEBUG_MODE=off php-cs-fixer fix --diff"
         ],
         "checktype": [
-            "XDEBUG_MODE=off bin/console cache:warmup --no-optional-warmers",
+            "XDEBUG_MODE=off bin/console --tenant=minvws cache:warmup --no-optional-warmers",
             "XDEBUG_MODE=off phpstan analyse --memory-limit=-1"
         ],
         "update-type-baseline": [
-            "XDEBUG_MODE=off bin/console cache:warmup --no-optional-warmers",
+            "XDEBUG_MODE=off bin/console --tenant=minvws cache:warmup --no-optional-warmers",
             "XDEBUG_MODE=off phpstan --generate-baseline"
         ],
-        "checktranslations": "XDEBUG_MODE=off bin/console lint:yaml translations",
+        "checktranslations": "XDEBUG_MODE=off bin/console --tenant=minvws lint:yaml translations",
         "checktemplates": [
-            "XDEBUG_MODE=off APP_DEBUG=false php bin/console cache:clear",
-            "XDEBUG_MODE=off APP_DEBUG=false php bin/console lint:twig templates"
+            "XDEBUG_MODE=off APP_DEBUG=false php bin/console --tenant=minvws cache:clear",
+            "XDEBUG_MODE=off APP_DEBUG=false php bin/console --tenant=minvws lint:twig templates"
         ],
         "checkall": [
             "@checkstyle",
@@ -211,19 +207,19 @@
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off phpunit -d --without-creating-snapshots"
+            "XDEBUG_MODE=off CREATE_SNAPSHOTS=false phpunit"
         ],
         "openapi:export": [
-            "XDEBUG_MODE=off bin/console -ipublication_api api:openapi:export --output public/api/publication/v1/openapi.json",
-            "XDEBUG_MODE=off bin/console -ipublication_api api:openapi:export --output public/api/publication/v1/openapi.yaml --yaml",
-            "XDEBUG_MODE=off bin/console -iadmin api:openapi:export --output public/api/admin/openapi.json",
-            "XDEBUG_MODE=off bin/console -iadmin api:openapi:export --output public/api/admin/openapi.yaml --yaml"
+            "XDEBUG_MODE=off bin/console --tenant=minvws --id=publication_api api:openapi:export --output public/api/publication/v1/openapi.json",
+            "XDEBUG_MODE=off bin/console --tenant=minvws --id=publication_api api:openapi:export --output public/api/publication/v1/openapi.yaml --yaml",
+            "XDEBUG_MODE=off bin/console --tenant=minvws --id=admin api:openapi:export --output public/api/admin/openapi.json",
+            "XDEBUG_MODE=off bin/console --tenant=minvws --id=admin api:openapi:export --output public/api/admin/openapi.yaml --yaml"
         ],
         "test-report": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit -d --without-creating-snapshots --coverage-text --coverage-html coverage/html"
+            "XDEBUG_MODE=off CREATE_SNAPSHOTS=false php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit --coverage-text --coverage-html coverage/html"
         ],
-        "update-test-snapshots": "XDEBUG_MODE=off phpunit -d --update-snapshots",
+        "update-test-snapshots": "XDEBUG_MODE=off UPDATE_SNAPSHOTS=true phpunit",
         "rector": "rector",
         "rector-preview": "rector --dry-run",
         "checkarc": "phparkitect check"
@@ -250,7 +246,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "6.4.*"
+            "require": "7.4.*"
         },
         "aws/aws-sdk-php": [
             "S3"
@@ -263,10 +259,11 @@
         "league/flysystem-memory": "^3.0",
         "mikey179/vfsstream": "^1.6",
         "mockery/mockery": "^1.6.12",
-        "phparkitect/phparkitect": "^0.7.0",
+        "phparkitect/phparkitect": "^0.8.0",
         "phpcompatibility/php-compatibility": "^10.0.0-alpha1",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-doctrine": "^2.0",
         "phpstan/phpstan-mockery": "^2.0",
         "phpstan/phpstan-symfony": "^2.0",
@@ -278,11 +275,11 @@
         "squizlabs/php_codesniffer": "^4.0",
         "stefanocbt/phpdotenv-sync": "^1.2",
         "swisnl/phpstan-faker": "^1.0",
-        "symfony/browser-kit": "6.4.*",
-        "symfony/css-selector": "6.4.*",
-        "symfony/debug-bundle": "6.4.*",
+        "symfony/browser-kit": "*",
+        "symfony/css-selector": "*",
+        "symfony/debug-bundle": "*",
         "symfony/maker-bundle": "^1.0",
-        "symfony/web-profiler-bundle": "6.4.*",
+        "symfony/web-profiler-bundle": "*",
         "zenstruck/foundry": "^2.0"
     }
 }

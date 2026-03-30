@@ -17,7 +17,7 @@ Validate DiWoo Sitemap
 
 *** Keywords ***
 Command Generate WooIndex
-  VAR  ${command} =  docker exec ${ADMIN_CONTAINER_NAME} bin/console Woo-index:generate
+  VAR  ${command} =  docker exec ${ADMIN_CONTAINER_NAME} bin/console --tenant=minvws Woo-index:generate
   Run Process  ${command}  shell=True  alias=shell
   ${result} =  Get Process Result  shell
   Should Be Empty  ${result.stderr}

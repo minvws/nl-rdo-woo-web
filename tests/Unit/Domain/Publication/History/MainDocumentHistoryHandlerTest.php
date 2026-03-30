@@ -46,7 +46,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
         $dossier = $this->getDossier();
         $mainDocument = $this->getMainDocument($fileInfo, $dossier);
 
-        $this->repository->shouldReceive('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
+        $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
 
         $event = MainDocumentCreatedEvent::forDocument($mainDocument);
 
@@ -59,8 +59,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
                     'filename' => $expectedName,
                 ],
                 HistoryService::MODE_PRIVATE,
-            )
-            ->once();
+            );
 
         $this->handler->handleCreate($event);
     }
@@ -73,7 +72,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
         $dossier = $this->getDossier();
         $mainDocument = $this->getMainDocument($fileInfo, $dossier);
 
-        $this->repository->shouldReceive('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
+        $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
 
         $event = MainDocumentUpdatedEvent::forDocument($mainDocument);
 
@@ -86,8 +85,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
                     'filename' => $expectedName,
                 ],
                 HistoryService::MODE_BOTH,
-            )
-            ->once();
+            );
 
         $this->handler->handleUpdate($event);
     }
@@ -100,7 +98,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
         $dossier = $this->getDossier();
         $mainDocument = $this->getMainDocument($fileInfo, $dossier);
 
-        $this->repository->shouldReceive('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
+        $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
 
         $event = MainDocumentDeletedEvent::forDocument($mainDocument);
 
@@ -113,8 +111,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
                     'filename' => $expectedName,
                 ],
                 HistoryService::MODE_PRIVATE,
-            )
-            ->once();
+            );
 
         $this->handler->handleDelete($event);
     }
@@ -122,8 +119,8 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
     private function getDossier(): Covenant
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
-        $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
+        $dossier->expects('getId')->times(4)->andReturn(Uuid::v6());
+        $dossier->expects('getType')->andReturn(DossierType::COVENANT);
 
         return $dossier;
     }
@@ -131,7 +128,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
     private function getFileInfo(string $name): FileInfo
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getName')->andReturn($name);
+        $fileInfo->expects('getName')->andReturn($name);
 
         return $fileInfo;
     }
@@ -139,10 +136,9 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
     private function getMainDocument(FileInfo $fileInfo, Covenant $dossier): AbstractMainDocument
     {
         $document = Mockery::mock(AbstractMainDocument::class);
-        $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $document->shouldReceive('getId')->andReturn(Uuid::v6());
-        $document->shouldReceive('getDossier')->andReturn($dossier);
+        $document->expects('getFileInfo')->andReturn($fileInfo);
+        $document->expects('getId')->andReturn(Uuid::v6());
+        $document->expects('getDossier')->andReturn($dossier);
 
         return $document;
     }

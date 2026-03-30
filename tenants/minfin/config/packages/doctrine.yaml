@@ -1,0 +1,3 @@
+doctrine:
+    dbal:
+        url: '%env(resolve:MINFIN_DATABASE_URL)%'

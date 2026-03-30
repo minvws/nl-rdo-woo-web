@@ -29,11 +29,10 @@ final class AnnualReportViewFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        /** @var Department&MockInterface $expectedMainDepartment */
         $expectedMainDepartment = Mockery::mock(Department::class);
 
         $this->commonDossierViewFactory
-            ->shouldReceive('make')
+            ->expects('make')
             ->andReturn(new CommonDossierProperties(
                 dossierId: $expectedUuid = 'my uuid',
                 dossierNr: $expectedDossierNr = 'my dossier nr',
@@ -48,11 +47,10 @@ final class AnnualReportViewFactoryTest extends UnitTestCase
                 subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
-        /** @var AnnualReport&MockInterface $dossier */
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable('2023-05-27 10:56:03'));
+        $dossier->expects('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable('2023-05-27 10:56:03'));
 
-        $result = (new AnnualReportViewFactory($this->commonDossierViewFactory))->make($dossier);
+        $result = new AnnualReportViewFactory($this->commonDossierViewFactory)->make($dossier);
 
         $this->assertSame($expectedUuid, $result->getDossierId());
         $this->assertSame($expectedDossierNr, $result->getDossierNr());

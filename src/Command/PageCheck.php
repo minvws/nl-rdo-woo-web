@@ -16,7 +16,11 @@ use Webmozart\Assert\Assert;
 
 use function sprintf;
 
-#[AsCommand(name: 'woopie:page:check', description: 'Checks if there are pages that are not yet indexed')]
+#[AsCommand(
+    name: 'woopie:page:check',
+    description: 'Checks if there are pages that are not yet indexed',
+    help: 'Checks if there are pages that are not yet indexed',
+)]
 class PageCheck extends Command
 {
     public function __construct(
@@ -24,12 +28,6 @@ class PageCheck extends Command
         private readonly ElasticService $elasticService,
     ) {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->setHelp('Checks if there are pages that are not yet indexed');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

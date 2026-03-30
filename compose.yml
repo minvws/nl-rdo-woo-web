@@ -17,11 +17,11 @@ networks:
 services:
 
   public:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.9.1}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.10.1}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: public-woo.local
+      dev.orbstack.domains: public-minvws.local,public-minfin.local
       dev.orbstack.http-port: 80
     volumes:
       - ./:/var/www/html
@@ -30,21 +30,24 @@ services:
       - woo_composer:/home/woopie/.composer
       - woo_npm:/home/woopie/.npm
       - ./docker/php/files/etc/apache2/sites-available/public-woo.conf:/etc/apache2/sites-available/public-woo.conf
+      - ./docker/php/files/etc/apache2/conf-available/public-woo-common.conf:/etc/apache2/conf-available/public-woo-common.conf
+      - ./docker/php/files/etc/apache2/ports.conf:/etc/apache2/ports.conf
     networks:
       woopie:
         aliases:
-          - public-woo.local
+          - public-minvws.local
+          - public-minfin.local
     extra_hosts:
       - host.docker.internal:host-gateway
     environment:
       APP_ID: PUBLIC
 
   admin:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.9.1}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.10.1}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: admin-woo.local
+      dev.orbstack.domains: admin-minvws.local,admin-minfin.local
       dev.orbstack.http-port: 80
     volumes:
       - ./:/var/www/html
@@ -53,10 +56,13 @@ services:
       - woo_composer:/home/woopie/.composer
       - woo_npm:/home/woopie/.npm
       - ./docker/php/files/etc/apache2/sites-available/admin-woo.conf:/etc/apache2/sites-available/admin-woo.conf
+      - ./docker/php/files/etc/apache2/conf-available/admin-woo-common.conf:/etc/apache2/conf-available/admin-woo-common.conf
+      - ./docker/php/files/etc/apache2/ports.conf:/etc/apache2/ports.conf
     networks:
       woopie:
         aliases:
-          - admin-woo.local
+          - admin-minvws.local
+          - admin-minfin.local
     extra_hosts:
       - host.docker.internal:host-gateway
     environment:
@@ -65,20 +71,20 @@ services:
       MC_HOST_local: http://root:password@minio:9000
 
   publication_api:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.9.1}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.10.1}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
     ports:
-      - ${DOCKER_PUBLICATION_API_HTTPS_PORT:-8443}:443
+      - ${DOCKER_MINVWS_PUBLICATION_API_HTTPS_PORT:-8443}:443
+      - ${DOCKER_MINFIN_PUBLICATION_API_HTTPS_PORT:-8444}:444
     volumes:
       - ./:/var/www/html
       - ./docker/php/files/usr/local/etc/php/conf.d/zzz-custom.ini:/usr/local/etc/php/conf.d/zzz-custom.ini
       - ./docker/php/files/usr/local/etc/php/conf.d/090-xdebug.ini:/usr/local/etc/php/conf.d/090-xdebug.ini
       - woo_composer:/home/woopie/.composer
       - woo_npm:/home/woopie/.npm
-      - ./docker/php/files/etc/apache2/sites-available/publication-api-woo.conf:/etc/apache2/sites-available/publication-api-woo.conf
-      - ./docker/php/files/etc/apache2/sites-available/publication-api-woo-ssl.conf:/etc/apache2/sites-available/publication-api-woo-ssl.conf
+      - ./docker/php/files/etc/apache2/sites-available/publication_api-woo.conf:/etc/apache2/sites-available/publication_api-woo.conf
       - ./docker/certs/generated/server-bundle.pem:/etc/apache2/certs/server-bundle.pem:ro
       - ./docker/certs/generated/private/server.key.pem:/etc/apache2/certs/server.key.pem:ro
       - ./docker/certs/generated/client-bundle.pem:/etc/apache2/certs/client-bundle.pem:ro
@@ -86,14 +92,17 @@ services:
     networks:
       woopie:
         aliases:
-          - publication-api-woo.local
+          - publication-api-minvws.local
+          - publication-api-minfin.local
+    extra_hosts:
+      - host.docker.internal:host-gateway
     environment:
       APP_ID: PUBLICATION_API
 
   worker:
     depends_on:
       - rabbitmq
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.9.1}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.10.1}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -111,7 +120,7 @@ services:
       [
         "bash",
         "-c",
-        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor php -d memory_limit=-1 bin/console messenger:consume --memory-limit=1G -vv high esupdater ingestor global",
+        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor php -d memory_limit=-1 bin/console --tenant=minvws messenger:consume --memory-limit=1G -vv high esupdater ingestor global",
       ]
 
   tika:
@@ -155,6 +164,9 @@ services:
       dev.orbstack.domains: rabbitmq-woo.local
     networks:
       - woopie
+    volumes:
+      - ./docker/rabbitmq/10-definitions.conf:/etc/rabbitmq/conf.d/10-definitions.conf:ro
+      - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
 
   postgres:
     image: postgres:14.10-bookworm
@@ -164,7 +176,6 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -241,8 +252,8 @@ services:
       - woopie
     environment:
       ENVIRONMENT: docker
-      URL_PUBLIC: http://public-woo.local
-      URL_ADMIN: http://admin-woo.local/balie
+      URL_PUBLIC: http://public-minvws.local
+      URL_ADMIN: http://admin-minvws.local/balie
       HEADLESS: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -252,5 +263,6 @@ services:
       - ./tests/robot_framework/files:/home/pwuser/files
       - ./tests/robot_framework/results:/home/pwuser/results
       - ./tests/robot_framework/.otp_secret:/home/pwuser/.otp_secret
+      - ./tests/robot_framework/.temp_password:/home/pwuser/.temp_password
       - ./tests/robot_framework/order.txt:/home/pwuser/order.txt
       - ./docker/certs/generated:/home/pwuser/certs/generated

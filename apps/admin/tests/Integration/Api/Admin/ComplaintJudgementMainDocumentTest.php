@@ -75,8 +75,7 @@ final class ComplaintJudgementMainDocumentTest extends AdminApiTestCase
         save($upload);
 
         $this->uploadHandler
-            ->shouldReceive('moveUploadedFileToStorage')
-            ->once()
+            ->expects('moveUploadedFileToStorage')
             ->with(
                 Mockery::on(fn (UploadEntity $uploadEntity) => $uploadEntity->getId() == $upload->getId()),
                 Mockery::type(FilesystemOperator::class),

@@ -13,11 +13,7 @@ Resource            WooDecision.resource
 
 
 *** Variables ***
-${CURRENT_TIME}             ${EMPTY}
-${CURRENT_DATE}             ${EMPTY}
-${CURRENT_DATE_FORMAT2}     ${EMPTY}
-${CURRENT_EPOCH}            ${EMPTY}
-${PREFIX_INDEX}             ${EMPTY}
+${CURRENT_DATE}     ${EMPTY}
 
 
 *** Keywords ***

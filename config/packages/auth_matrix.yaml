@@ -163,6 +163,20 @@ auth_matrix:
                 unpublished_dossiers: true,
             }
         },
+        {
+            prefix: "dossier",
+            roles: [ "ROLE_API_CLIENT" ],
+            permissions: {
+                create: true,
+                read: true,
+                update: true,
+                delete: false,
+            },
+            filters: {
+                published_dossiers: false,
+                unpublished_dossiers: true,
+            }
+        },
 
       # -- Document ----------------------------------------------------------------------------
         {

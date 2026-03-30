@@ -49,7 +49,7 @@ class SimilarityEmailValidatorTest extends UnitTestCase
         $token = Mockery::mock(TokenInterface::class);
         $token->expects('getUser')->andReturnNull();
         $tokenStorage = Mockery::mock(TokenStorageInterface::class);
-        $tokenStorage->expects('getToken')->twice()->andReturn($token);
+        $tokenStorage->expects('getToken')->times(2)->andReturn($token);
 
         $validator = new SimilarityEmailValidator($tokenStorage);
         $validator->initialize($context);
@@ -67,7 +67,7 @@ class SimilarityEmailValidatorTest extends UnitTestCase
         $user->expects('getEmail')->andReturn('fooo@bar.text');
         $token->expects('getUser')->andReturn($user);
         $tokenStorage = Mockery::mock(TokenStorageInterface::class);
-        $tokenStorage->expects('getToken')->twice()->andReturn($token);
+        $tokenStorage->expects('getToken')->times(2)->andReturn($token);
 
         $input = 'foo@bar.test';
 
@@ -90,7 +90,7 @@ class SimilarityEmailValidatorTest extends UnitTestCase
         $user->expects('getEmail')->andReturn('user@some.domain');
         $token->expects('getUser')->andReturn($user);
         $tokenStorage = Mockery::mock(TokenStorageInterface::class);
-        $tokenStorage->expects('getToken')->twice()->andReturn($token);
+        $tokenStorage->expects('getToken')->times(2)->andReturn($token);
 
         $input = 'foo@bar.test';
 

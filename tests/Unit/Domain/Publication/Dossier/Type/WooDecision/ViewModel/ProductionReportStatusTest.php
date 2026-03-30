@@ -23,7 +23,6 @@ class ProductionReportStatusTest extends UnitTestCase
     {
         $this->processRun = Mockery::mock(ProductionReportProcessRun::class);
         $this->dossier = Mockery::mock(WooDecision::class);
-        $this->dossier->shouldReceive('getProcessRun')->andReturn($this->processRun);
 
         $this->status = new ProductionReportStatus($this->dossier);
 
@@ -32,185 +31,225 @@ class ProductionReportStatusTest extends UnitTestCase
 
     public function testNeedsUploadReturnsTrueWhenThereIsNoProductionReport(): void
     {
-        $this->dossier->shouldReceive('getProductionReport')->andReturnNull();
+        $this->dossier->expects('getProductionReport')->andReturnNull();
 
         self::assertTrue($this->status->needsUpload());
     }
 
     public function testNeedsUploadReturnsFalseWhenThereIsAProductionReport(): void
     {
-        $this->dossier->shouldReceive('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
+        $this->dossier->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
         self::assertFalse($this->status->needsUpload());
     }
 
     public function testIsReadyForDocumentUploadReturnsTrueWhenAllConditionsAreMet(): void
     {
-        $this->processRun->shouldReceive('isFinal')->andReturnTrue();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
 
-        $this->dossier->shouldReceive('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
+        $this->processRun->expects('isFinal')->andReturnTrue();
+
+        $this->dossier->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
         self::assertTrue($this->status->isReadyForDocumentUpload());
     }
 
     public function testIsReadyForDocumentUploadReturnsFalseWhenProductionReportIsNotFinal(): void
     {
-        $this->processRun->shouldReceive('isFinal')->andReturnFalse();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
 
-        $this->dossier->shouldReceive('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
+        $this->processRun->expects('isFinal')->andReturnFalse();
 
         self::assertFalse($this->status->isReadyForDocumentUpload());
     }
 
     public function testNeedsUpdateReturnsTrueWhenAllConditionsAreMet(): void
     {
-        $this->processRun->shouldReceive('isNotFinal')->andReturnTrue();
-        $this->processRun->shouldReceive('needsConfirmation')->andReturnFalse();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isNotFinal')->andReturnTrue();
+        $this->processRun->expects('needsConfirmation')->andReturnFalse();
 
         self::assertTrue($this->status->needsUpdate());
     }
 
     public function testNeedsUpdateReturnsFalseWhenRunIsFinal(): void
     {
-        $this->processRun->shouldReceive('isNotFinal')->andReturnFalse();
-        $this->processRun->shouldReceive('needsConfirmation')->andReturnFalse();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isNotFinal')->andReturnFalse();
 
         self::assertFalse($this->status->needsUpdate());
     }
 
     public function testNeedsUpdateReturnsFalseWhenRunNeedsConfirmation(): void
     {
-        $this->processRun->shouldReceive('isNotFinal')->andReturnTrue();
-        $this->processRun->shouldReceive('needsConfirmation')->andReturnTrue();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isNotFinal')->andReturnTrue();
+        $this->processRun->expects('needsConfirmation')->andReturnTrue();
 
         self::assertFalse($this->status->needsUpdate());
     }
 
     public function testIsQueuedReturnsTrueWhenRunIsPending(): void
     {
-        $this->processRun->shouldReceive('isPending')->andReturnTrue();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isPending')->andReturnTrue();
 
         self::assertTrue($this->status->isQueued());
     }
 
     public function testIsQueuedReturnsTrueWhenRunIsConfirmed(): void
     {
-        $this->processRun->shouldReceive('isPending')->andReturnFalse();
-        $this->processRun->shouldReceive('isConfirmed')->andReturnTrue();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isPending')->andReturnFalse();
+        $this->processRun->expects('isConfirmed')->andReturnTrue();
 
         self::assertTrue($this->status->isQueued());
     }
 
     public function testIsQueuedReturnsFalse(): void
     {
-        $this->processRun->shouldReceive('isPending')->andReturnFalse();
-        $this->processRun->shouldReceive('isConfirmed')->andReturnFalse();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isPending')->andReturnFalse();
+        $this->processRun->expects('isConfirmed')->andReturnFalse();
 
         self::assertFalse($this->status->isQueued());
     }
 
     public function testIsRunningReturnsTrueWhenRunIsComparing(): void
     {
-        $this->processRun->shouldReceive('isComparing')->andReturnTrue();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isComparing')->andReturnTrue();
 
         self::assertTrue($this->status->isRunning());
     }
 
     public function testIsRunningReturnsTrueWhenRunIsUpdating(): void
     {
-        $this->processRun->shouldReceive('isComparing')->andReturnFalse();
-        $this->processRun->shouldReceive('isUpdating')->andReturnTrue();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isComparing')->andReturnFalse();
+        $this->processRun->expects('isUpdating')->andReturnTrue();
 
         self::assertTrue($this->status->isRunning());
     }
 
     public function testIsRunningReturnsFalse(): void
     {
-        $this->processRun->shouldReceive('isComparing')->andReturnFalse();
-        $this->processRun->shouldReceive('isUpdating')->andReturnFalse();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isComparing')->andReturnFalse();
+        $this->processRun->expects('isUpdating')->andReturnFalse();
 
         self::assertFalse($this->status->isRunning());
     }
 
     public function testIsComparingReturnsTrue(): void
     {
-        $this->processRun->shouldReceive('isComparing')->andReturnTrue();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isComparing')->andReturnTrue();
 
         self::assertTrue($this->status->isComparing());
     }
 
     public function testIsComparingReturnsFalse(): void
     {
-        $this->processRun->shouldReceive('isComparing')->andReturnFalse();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isComparing')->andReturnFalse();
 
         self::assertFalse($this->status->isComparing());
     }
 
     public function testIsUpdatingReturnsTrue(): void
     {
-        $this->processRun->shouldReceive('isUpdating')->andReturnTrue();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isUpdating')->andReturnTrue();
 
         self::assertTrue($this->status->isUpdating());
     }
 
     public function testIsUpdatingReturnsFalse(): void
     {
-        $this->processRun->shouldReceive('isUpdating')->andReturnFalse();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isUpdating')->andReturnFalse();
 
         self::assertFalse($this->status->isUpdating());
     }
 
     public function testNeedsConfirmationReturnsTrue(): void
     {
-        $this->processRun->shouldReceive('needsConfirmation')->andReturnTrue();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('needsConfirmation')->andReturnTrue();
 
         self::assertTrue($this->status->needsConfirmation());
     }
 
     public function testNeedsConfirmationReturnsFalse(): void
     {
-        $this->processRun->shouldReceive('needsConfirmation')->andReturnFalse();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('needsConfirmation')->andReturnFalse();
 
         self::assertFalse($this->status->needsConfirmation());
     }
 
     public function testGetChangeset(): void
     {
-        $changeset = Mockery::mock(InventoryChangeset::class);
-        $changeset->shouldReceive('getCounts')->andReturn($counts = ['a' => 1, 'b' => 2, 'c' => 3]);
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
 
-        $this->processRun->shouldReceive('getChangeset')->andReturn($changeset);
+        $changeset = Mockery::mock(InventoryChangeset::class);
+        $changeset->expects('getCounts')->andReturn($counts = ['a' => 1, 'b' => 2, 'c' => 3]);
+
+        $this->processRun->expects('getChangeset')->andReturn($changeset);
 
         self::assertEquals($counts, $this->status->getChangeset());
     }
 
     public function testGetChangesetReturnsEmptyArrayForMissingChangeset(): void
     {
-        $this->processRun->shouldReceive('getChangeset')->andReturnNull();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('getChangeset')->andReturnNull();
 
         self::assertEquals([], $this->status->getChangeset());
     }
 
     public function testHasErrorsReturnsFalse(): void
     {
-        $this->processRun->shouldReceive('isRejected')->andReturnFalse();
-        $this->processRun->shouldReceive('hasErrors')->andReturnFalse();
+        $this->dossier->expects('getProcessRun')->times(2)->andReturn($this->processRun);
+
+        $this->processRun->expects('isRejected')->andReturnFalse();
+        $this->processRun->expects('hasErrors')->andReturnFalse();
 
         self::assertFalse($this->status->hasErrors());
     }
 
     public function testHasErrorsReturnsFalseWhenRejected(): void
     {
-        $this->processRun->shouldReceive('isRejected')->andReturnTrue();
-        $this->processRun->shouldReceive('hasErrors')->andReturnTrue();
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('isRejected')->andReturnTrue();
 
         self::assertFalse($this->status->hasErrors());
     }
 
     public function testHasErrorsReturnsTrue(): void
     {
-        $this->processRun->shouldReceive('isRejected')->andReturnFalse();
-        $this->processRun->shouldReceive('hasErrors')->andReturnTrue();
+        $this->dossier->expects('getProcessRun')->times(2)->andReturn($this->processRun);
+
+        $this->processRun->expects('isRejected')->andReturnFalse();
+        $this->processRun->expects('hasErrors')->andReturnTrue();
 
         self::assertTrue($this->status->hasErrors());
     }

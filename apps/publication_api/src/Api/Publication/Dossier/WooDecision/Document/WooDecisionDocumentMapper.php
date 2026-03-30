@@ -7,7 +7,6 @@ namespace PublicationApi\Api\Publication\Dossier\WooDecision\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Service\Inventory\DocumentNumber;
-use Shared\ValueObject\ExternalId;
 
 class WooDecisionDocumentMapper
 {
@@ -25,7 +24,7 @@ class WooDecisionDocumentMapper
         $fileInfo->setName($wooDecisionDocumentRequestDto->fileName);
 
         $document = new Document();
-        $document->setExternalId(ExternalId::create($wooDecisionDocumentRequestDto->externalId));
+        $document->setExternalId($wooDecisionDocumentRequestDto->externalId);
         $document->setDocumentNr($documentNr->getValue());
         $document->setFileInfo($fileInfo);
 

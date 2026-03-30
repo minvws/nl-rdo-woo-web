@@ -8,6 +8,7 @@ use League\CommonMark\Output\RenderedContentInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Override;
 use Shared\Domain\Content\Markdown\MarkdownConverter;
 use Shared\Twig\Runtime\MarkdownExtensionRuntime;
 
@@ -16,6 +17,7 @@ class MarkdownExtensionRuntimeTest extends MockeryTestCase
     private MarkdownConverter&MockInterface $converter;
     private MarkdownExtensionRuntime $runtime;
 
+    #[Override]
     protected function setUp(): void
     {
         $this->converter = Mockery::mock(MarkdownConverter::class);

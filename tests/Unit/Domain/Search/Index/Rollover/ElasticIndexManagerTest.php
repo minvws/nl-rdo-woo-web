@@ -12,6 +12,7 @@ use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Shared\Domain\Search\Index\Rollover\MappingService;
 use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
 use Shared\Tests\Unit\UnitTestCase;
 
 class ElasticIndexManagerTest extends UnitTestCase
@@ -19,15 +20,18 @@ class ElasticIndexManagerTest extends UnitTestCase
     private ElasticIndexManager $indexManager;
     private ElasticClientInterface&MockInterface $elasticClient;
     private MappingService&MockInterface $mappingService;
+    private ElasticConfig $elasticConfig;
 
     protected function setUp(): void
     {
+        $this->elasticConfig = ElasticConfigOverride::default();
         $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
         $this->mappingService = Mockery::mock(MappingService::class);
 
         $this->indexManager = new ElasticIndexManager(
             $this->elasticClient,
             $this->mappingService,
+            $this->elasticConfig,
         );
 
         parent::setUp();
@@ -73,8 +77,8 @@ class ElasticIndexManagerTest extends UnitTestCase
         $this->elasticClient->expects('indices->updateAliases')->with([
             'body' => [
                 'actions' => [
-                    ['remove' => ['index' => '*', 'alias' => ElasticConfig::READ_INDEX]],
-                    ['add' => ['index' => $name, 'alias' => ElasticConfig::READ_INDEX]],
+                    ['remove' => ['index' => '*', 'alias' => $this->elasticConfig->readIndex]],
+                    ['add' => ['index' => $name, 'alias' => $this->elasticConfig->readIndex]],
                 ],
             ],
         ]);
@@ -82,8 +86,8 @@ class ElasticIndexManagerTest extends UnitTestCase
         $this->elasticClient->expects('indices->updateAliases')->with([
             'body' => [
                 'actions' => [
-                    ['remove' => ['index' => '*', 'alias' => ElasticConfig::WRITE_INDEX]],
-                    ['add' => ['index' => $name, 'alias' => ElasticConfig::WRITE_INDEX]],
+                    ['remove' => ['index' => '*', 'alias' => $this->elasticConfig->writeIndex]],
+                    ['add' => ['index' => $name, 'alias' => $this->elasticConfig->writeIndex]],
                 ],
             ],
         ]);

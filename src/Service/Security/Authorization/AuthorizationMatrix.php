@@ -9,12 +9,14 @@ use Shared\Service\Security\OrganisationSwitcher;
 use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
+use function array_any;
 use function count;
 
 class AuthorizationMatrix
 {
-    public const AUTH_MATRIX_ATTRIB = 'auth_matrix';
+    public const string AUTH_MATRIX_ATTRIB = 'auth_matrix';
 
     /**
      * @param Entry[] $entries
@@ -38,7 +40,7 @@ class AuthorizationMatrix
 
     public function isAuthorized(string $prefix, string $permission): bool
     {
-        return $this->security->getUser() instanceof User && count($this->findMatches($prefix, $permission)) > 0;
+        return $this->security->getUser() instanceof UserInterface && count($this->findMatches($prefix, $permission)) > 0;
     }
 
     /**
@@ -75,13 +77,7 @@ class AuthorizationMatrix
 
     public function hasFilter(AuthorizationMatrixFilter $filter): bool
     {
-        foreach ($this->entryStore->getEntries() as $entry) {
-            if ($this->entryMatchesFilter($entry, $filter)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->entryStore->getEntries(), fn ($entry) => $this->entryMatchesFilter($entry, $filter));
     }
 
     private function entryMatchesFilter(Entry $entry, AuthorizationMatrixFilter $filter): bool

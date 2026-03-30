@@ -32,7 +32,7 @@ class ResultFactoryTest extends UnitTestCase
     public function testMapIsForwardedToFirstSupportingMapper(): void
     {
         $hit = Mockery::mock(TypeArray::class);
-        $hit->shouldReceive('getString')->with('[fields][type][0]')->andReturn(ElasticDocumentType::WOO_DECISION->value);
+        $hit->expects('getString')->with('[fields][type][0]')->andReturn(ElasticDocumentType::WOO_DECISION->value);
 
         $mode = ApplicationMode::ADMIN;
 
@@ -47,7 +47,7 @@ class ResultFactoryTest extends UnitTestCase
     public function testMapThrowsExceptionWhenNoMapperSupportsTheHit(): void
     {
         $hit = Mockery::mock(TypeArray::class);
-        $hit->shouldReceive('getString')->with('[fields][type][0]')->andReturn(ElasticDocumentType::WOO_DECISION->value);
+        $hit->expects('getString')->with('[fields][type][0]')->andReturn(ElasticDocumentType::WOO_DECISION->value);
 
         $this->firstMapper->expects('supports')->with(ElasticDocumentType::WOO_DECISION)->andReturnFalse();
         $this->secondMapper->expects('supports')->with(ElasticDocumentType::WOO_DECISION)->andReturnFalse();

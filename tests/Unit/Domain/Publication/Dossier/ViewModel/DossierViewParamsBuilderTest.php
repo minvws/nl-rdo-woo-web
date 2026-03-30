@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Department\DepartmentRepository;
@@ -19,7 +20,6 @@ use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Service\DossierWizard\DossierWizardStatus;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Form\FormInterface;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 final class DossierViewParamsBuilderTest extends UnitTestCase
 {
@@ -71,7 +71,7 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
 
     public function testWithMainDocumentParams(): void
     {
-        $this->dossier->shouldReceive('getMainDocumentEntityClass')->andReturn(CovenantMainDocument::class);
+        $this->dossier->expects('getMainDocumentEntityClass')->times(2)->andReturn(CovenantMainDocument::class);
 
         $this->workflowManager
             ->expects('isTransitionAllowed')
@@ -108,7 +108,7 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
 
     public function testWithAttachmentParams(): void
     {
-        $this->dossier->shouldReceive('getAttachmentEntityClass')->andReturn(CovenantAttachment::class);
+        $this->dossier->expects('getAttachmentEntityClass')->times(2)->andReturn(CovenantAttachment::class);
 
         $this->workflowManager
             ->expects('isTransitionAllowed')

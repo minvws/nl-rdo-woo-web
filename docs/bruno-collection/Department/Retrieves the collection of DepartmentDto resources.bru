@@ -14,6 +14,18 @@ params:query {
   ~pagination[cursor]: 
 }
 
+script:post-response {
+  const data = res.getBody();
+  
+  const dept = data.find(item => item.name === "E2E Test Department 1");
+  
+  if (dept) {
+    bru.setEnvVar("departmentId", dept.id);
+  } else {
+    console.log("Department not found");
+  }
+}
+
 example {
   name: 200 Response
   description: DepartmentDto collection

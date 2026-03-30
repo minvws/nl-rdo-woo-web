@@ -50,7 +50,7 @@ class UserCreateFormType extends AbstractType
                 'help' => 'admin.user.name_help',
                 'empty_data' => '',
                 'constraints' => [
-                    new Length(['min' => 1, 'max' => 255]),
+                    new Length(min: 1, max: 255),
                 ],
             ])
             ->add('roles', HiddenType::class)
@@ -60,7 +60,7 @@ class UserCreateFormType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                     new Email(),
-                    new Length(['min' => 4, 'max' => 180]),
+                    new Length(min: 4, max: 180),
                     new Callback($this->validateEmail(...)),
                 ],
             ])
@@ -90,9 +90,7 @@ class UserCreateFormType extends AbstractType
                 'label' => 'admin.user.roles',
                 'help' => 'admin.user.roles_help',
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'admin.user.roles.validation',
-                    ]),
+                    new NotBlank(message: 'admin.user.roles.validation'),
                 ],
             ]);
         });

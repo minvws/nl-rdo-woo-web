@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webmozart\Assert\Assert;
 
-#[AsCommand(name: 'woopie:user:reset', description: 'Reset user credentials')]
+#[AsCommand(name: 'woopie:user:reset', description: 'Reset user credentials', help: 'Reset user credentials')]
 class UserReset extends Command
 {
     public function __construct(
@@ -26,7 +26,6 @@ class UserReset extends Command
     protected function configure(): void
     {
         $this
-            ->setHelp('Reset user credentials')
             ->setDefinition([
                 new InputArgument('email', InputArgument::REQUIRED, 'Email of the user'),
             ]);

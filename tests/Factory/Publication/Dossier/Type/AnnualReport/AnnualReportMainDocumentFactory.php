@@ -56,7 +56,6 @@ final class AnnualReportMainDocumentFactory extends PersistentObjectFactory
 
                     $reflection = new ReflectionClass($document);
                     $property = $reflection->getProperty('id');
-                    $property->setAccessible(true);
                     $property->setValue($document, $attributes['overwrite_id']);
 
                     $this->entityManager->persist($document);

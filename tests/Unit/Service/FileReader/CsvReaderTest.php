@@ -36,8 +36,8 @@ class CsvReaderTest extends UnitTestCase
 
     public function testIteratorSkipsFirstRowAndEmptyRows(): void
     {
-        $this->headerMap->shouldReceive('has')->with('id')->andReturnTrue();
-        $this->headerMap->shouldReceive('getCellCoordinate')->with('id')->andReturn(1);
+        $this->headerMap->expects('has')->times(2)->with('id')->andReturnTrue();
+        $this->headerMap->expects('getCellCoordinate')->times(2)->with('id')->andReturn(1);
 
         $ids = [];
         foreach ($this->csvReader as $rowIndex => $data) {
@@ -52,7 +52,7 @@ class CsvReaderTest extends UnitTestCase
 
     public function testGetOptionalStringReturnsNullForNonExistingColumn(): void
     {
-        $this->headerMap->shouldReceive('has')->with('foobar')->andReturnFalse();
+        $this->headerMap->expects('has')->times(2)->with('foobar')->andReturnFalse();
 
         $values = [];
         foreach ($this->csvReader as $rowIndex => $data) {
@@ -67,8 +67,8 @@ class CsvReaderTest extends UnitTestCase
 
     public function testGetOptionalIntReturnsValueForExistingColumnWhenFilled(): void
     {
-        $this->headerMap->shouldReceive('has')->with('family')->andReturnTrue();
-        $this->headerMap->shouldReceive('getCellCoordinate')->with('family')->andReturn(0);
+        $this->headerMap->expects('has')->times(2)->with('family')->andReturnTrue();
+        $this->headerMap->expects('getCellCoordinate')->times(2)->with('family')->andReturn(0);
 
         $familyIds = [];
         foreach ($this->csvReader as $rowIndex => $data) {
@@ -83,7 +83,7 @@ class CsvReaderTest extends UnitTestCase
 
     public function testGetOptionalIntReturnsNullForNonExistingColumn(): void
     {
-        $this->headerMap->shouldReceive('has')->with('foobar')->andReturnFalse();
+        $this->headerMap->expects('has')->times(2)->with('foobar')->andReturnFalse();
 
         $values = [];
         foreach ($this->csvReader as $rowIndex => $data) {
@@ -98,8 +98,8 @@ class CsvReaderTest extends UnitTestCase
 
     public function testGetOptionalIntReturnsNullForEmptyColumn(): void
     {
-        $this->headerMap->shouldReceive('has')->with('family')->andReturnTrue();
-        $this->headerMap->shouldReceive('getCellCoordinate')->with('family')->andReturn('');
+        $this->headerMap->expects('has')->with('family')->andReturnTrue();
+        $this->headerMap->expects('getCellCoordinate')->with('family')->andReturn('');
 
         self::assertNull(
             $this->csvReader->getOptionalInt(1, 'family'),
@@ -108,8 +108,8 @@ class CsvReaderTest extends UnitTestCase
 
     public function testGetDateTimeReturnsValueForExistingColumnWhenFilledAndThrowsExceptionForMissingValue(): void
     {
-        $this->headerMap->shouldReceive('has')->with('date')->andReturnTrue();
-        $this->headerMap->shouldReceive('getCellCoordinate')->with('date')->andReturn(5);
+        $this->headerMap->expects('has')->times(2)->with('date')->andReturnTrue();
+        $this->headerMap->expects('getCellCoordinate')->times(2)->with('date')->andReturn(5);
 
         $rows = iterator_to_array($this->csvReader);
 
@@ -127,8 +127,8 @@ class CsvReaderTest extends UnitTestCase
 
     public function testGetDateTimeThrowsExceptionForInvalidDate(): void
     {
-        $this->headerMap->shouldReceive('has')->with('subject')->andReturnTrue();
-        $this->headerMap->shouldReceive('getCellCoordinate')->with('subject')->andReturn(8);
+        $this->headerMap->expects('has')->with('subject')->andReturnTrue();
+        $this->headerMap->expects('getCellCoordinate')->with('subject')->andReturn(8);
 
         $this->expectException(FileReaderException::class);
 
@@ -139,8 +139,8 @@ class CsvReaderTest extends UnitTestCase
 
     public function testGetOptionalDateTimeReturnsValueForExistingColumnWhenFilled(): void
     {
-        $this->headerMap->shouldReceive('has')->with('date')->andReturnTrue();
-        $this->headerMap->shouldReceive('getCellCoordinate')->with('date')->andReturn(5);
+        $this->headerMap->expects('has')->times(2)->with('date')->andReturnTrue();
+        $this->headerMap->expects('getCellCoordinate')->times(2)->with('date')->andReturn(5);
 
         $dates = [];
         foreach ($this->csvReader as $rowIndex => $data) {
@@ -155,7 +155,7 @@ class CsvReaderTest extends UnitTestCase
 
     public function testGetOptionalDateTimeReturnsNullForNonExistingColumn(): void
     {
-        $this->headerMap->shouldReceive('has')->with('non-existent-column')->andReturnFalse();
+        $this->headerMap->expects('has')->times(2)->with('non-existent-column')->andReturnFalse();
 
         $dates = [];
         foreach ($this->csvReader as $rowIndex => $data) {

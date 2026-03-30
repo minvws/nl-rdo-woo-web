@@ -6,7 +6,7 @@ services:
         bind:
             $configPageLimit: '%configPageLimit%'
             Psr\Log\LoggerInterface $logger: '@Shared\Service\Logging\EnrichedPsrLogger'
-            string $publicBaseUrl: '%env(PUBLIC_BASE_URL)%'
+            string $publicBaseUrl: '%public_base_url%'
             int $thumbnailLimit: '%thumbnail_limit%'
 
     Shared\:

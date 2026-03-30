@@ -17,6 +17,7 @@ readonly class RolloverService
         private MessageBusInterface $messageBus,
         private MappingService $mappingService,
         private RolloverCounter $counter,
+        private ElasticConfig $elasticConfig,
     ) {
     }
 
@@ -26,11 +27,11 @@ readonly class RolloverService
     public function getDetailsFromIndices(array $indices): ?RolloverDetails
     {
         foreach ($indices as $index) {
-            if (in_array(ElasticConfig::READ_INDEX, $index->aliases)) {
+            if (in_array($this->elasticConfig->readIndex, $index->aliases)) {
                 continue;
             }
 
-            if (! in_array(ElasticConfig::WRITE_INDEX, $index->aliases)) {
+            if (! in_array($this->elasticConfig->writeIndex, $index->aliases)) {
                 continue;
             }
 
@@ -53,14 +54,14 @@ readonly class RolloverService
         $this->messageBus->dispatch(
             new SetElasticAliasCommand(
                 indexName: $indexName,
-                aliasName: ElasticConfig::READ_INDEX,
+                aliasName: $this->elasticConfig->readIndex
             )
         );
 
         $this->messageBus->dispatch(
             new SetElasticAliasCommand(
                 indexName: $indexName,
-                aliasName: ElasticConfig::WRITE_INDEX,
+                aliasName: $this->elasticConfig->writeIndex,
             )
         );
     }
@@ -70,7 +71,7 @@ readonly class RolloverService
         $this->messageBus->dispatch(
             new InitiateElasticRolloverCommand(
                 mappingVersion: $rollover->getMappingVersion(),
-                indexName: ElasticConfig::INDEX_PREFIX . date('Ymd-His'),
+                indexName: $this->elasticConfig->indexPrefix . date('Ymd-His'),
             )
         );
     }

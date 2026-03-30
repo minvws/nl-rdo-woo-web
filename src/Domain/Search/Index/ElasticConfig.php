@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index;
 
-class ElasticConfig
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+
+readonly class ElasticConfig
 {
-    // The elasticsearch index we are using.
-    public const string INDEX_PREFIX = 'woopie-';
-
-    // Aliases
-    public const string READ_INDEX = 'woopie-read';
-    public const string WRITE_INDEX = 'woopie-write';
-
-    // Suggestion set names
-    public const string SUGGESTIONS_SEARCH_INPUT = 'search-input';
+    public function __construct(
+        #[Autowire(param: 'es_index_prefix')]
+        public string $indexPrefix,
+        #[Autowire(param: 'es_read_index')]
+        public string $readIndex,
+        #[Autowire(param: 'es_write_index')]
+        public string $writeIndex,
+        #[Autowire(param: 'es_suggestions_search_input')]
+        public string $suggestionsSearchInput,
+    ) {
+    }
 }

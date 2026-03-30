@@ -89,7 +89,7 @@ jobs:
           URL_PUBLIC: http://localhost:8000
           URL_ADMIN: http://localhost:8001/balie
           HEADLESS: true
-        run: uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --name 'E2E Tests' ./tests
+        run: uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include init --include api --exclude failing --ordering order.txt --name 'E2E Tests' ./tests
       - name: Upload test results
         uses: actions/upload-artifact@v6
         if: ${{ always() }}

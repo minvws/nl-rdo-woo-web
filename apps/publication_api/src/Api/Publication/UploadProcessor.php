@@ -34,6 +34,7 @@ readonly class UploadProcessor
 
     public function process(
         Uuid $dossierId,
+        Uuid $docuemntId,
         UploadGroupId $uploadGroupId,
         string $content,
         string $fileName,
@@ -50,15 +51,19 @@ readonly class UploadProcessor
 
             $uploadEntityId = Uuid::v6()->toRfc4122();
 
-            $additionalParameters = new InputBag();
-            $additionalParameters->set('dossierId', $dossierId->toRfc4122());
+            $context = new InputBag();
+            $context->set('dossierId', $dossierId->toRfc4122());
+            $context->set('documentId', $docuemntId->toRfc4122());
 
-            $uploadEntity = new UploadEntity($uploadEntityId, $uploadGroupId, null, $additionalParameters);
+            $uploadEntity = new UploadEntity($uploadEntityId, $uploadGroupId, null, $context);
             $this->uploadEntityRepository->save($uploadEntity, true);
+
+            $additionalParamaters = new InputBag();
+            $additionalParamaters->set('dossierId', $dossierId->toRfc4122());
 
             $chunkIndex = 1;
             $chunkCount = 1;
-            $uploadRequest = new UploadRequest($chunkIndex, $chunkCount, $uploadEntityId, $uploadedFile, $uploadGroupId, $additionalParameters);
+            $uploadRequest = new UploadRequest($chunkIndex, $chunkCount, $uploadEntityId, $uploadedFile, $uploadGroupId, $additionalParamaters);
             $this->uploadService->handleUploadRequest($uploadRequest, null);
         } finally {
             unlink($tempPath);

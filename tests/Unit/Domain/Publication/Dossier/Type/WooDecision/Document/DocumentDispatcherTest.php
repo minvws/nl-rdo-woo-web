@@ -59,11 +59,11 @@ class DocumentDispatcherTest extends UnitTestCase
     {
         $wooDecisionId = Uuid::v6();
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getId')->andReturn($wooDecisionId);
+        $wooDecision->expects('getId')->andReturn($wooDecisionId);
 
         $documentId = Uuid::v6();
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->andReturn($documentId);
+        $document->expects('getId')->andReturn($documentId);
 
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'oops';

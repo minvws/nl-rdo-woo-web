@@ -38,25 +38,23 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
     public function testMake(): void
     {
         $doc = Mockery::mock(Document::class);
-        $uploadStatus = Mockery::mock(DossierUploadStatus::class);
-        $uploadStatus->shouldReceive('getExpectedUploadCount')->andReturn(4);
-        $uploadStatus->shouldReceive('getUploadedDocuments')->andReturn(new ArrayCollection([$doc]));
-        $uploadStatus->shouldReceive('getMissingDocumentIds')->andReturn(new ArrayCollection(['1002', '1004', '1005']));
 
-        /** @var WooDecision&MockInterface $wooDecision */
+        $uploadStatus = Mockery::mock(DossierUploadStatus::class);
+        $uploadStatus->expects('getExpectedUploadCount')->andReturn(4);
+        $uploadStatus->expects('getUploadedDocuments')->andReturn(new ArrayCollection([$doc]));
+        $uploadStatus->expects('getMissingDocumentIds')->andReturn(new ArrayCollection(['1002', '1004', '1005']));
+
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getId')->andReturn(Uuid::fromString('00000000-0000-0000-0000-000000000001'));
-        $wooDecision->shouldReceive('getDocuments')->andReturn($this->getDocuments());
+        $wooDecision->expects('getId')->times(2)->andReturn(Uuid::fromString('00000000-0000-0000-0000-000000000001'));
         $wooDecision->expects('getUploadStatus')->andReturn($uploadStatus);
 
-        /** @var DocumentFileSet&MockInterface $documentFileSet */
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
-        $documentFileSet->shouldReceive('getStatus')->andReturn(DocumentFileSetStatus::OPEN_FOR_UPLOADS);
-        $documentFileSet->shouldReceive('getUploads')->andReturn($this->getUploads());
+        $documentFileSet->expects('getStatus')->times(2)->andReturn(DocumentFileSetStatus::OPEN_FOR_UPLOADS);
+        $documentFileSet->expects('getUploads')->andReturn($this->getUploads());
 
-        $this->documentFileService->shouldReceive('canProcess')->with($documentFileSet)->andReturn(true);
+        $this->documentFileService->expects('canProcess')->with($documentFileSet)->andReturn(true);
 
-        $result = (new UploadStatusDtoFactory($this->documentFileService))->make($wooDecision, $documentFileSet);
+        $result = new UploadStatusDtoFactory($this->documentFileService)->make($wooDecision, $documentFileSet);
 
         $this->assertMatchesYamlSnapshot([
             'dossierId' => $result->wooDecision->getId()->__toString(),
@@ -81,25 +79,22 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
     {
         $doc = Mockery::mock(Document::class);
         $uploadStatus = Mockery::mock(DossierUploadStatus::class);
-        $uploadStatus->shouldReceive('getExpectedUploadCount')->andReturn(4);
-        $uploadStatus->shouldReceive('getUploadedDocuments')->andReturn(new ArrayCollection([$doc]));
-        $uploadStatus->shouldReceive('getMissingDocumentIds')->andReturn(new ArrayCollection(['1002', '1004', '1005']));
+        $uploadStatus->expects('getExpectedUploadCount')->andReturn(4);
+        $uploadStatus->expects('getUploadedDocuments')->andReturn(new ArrayCollection([$doc]));
+        $uploadStatus->expects('getMissingDocumentIds')->andReturn(new ArrayCollection(['1002', '1004', '1005']));
 
-        /** @var WooDecision&MockInterface $wooDecision */
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getId')->andReturn(Uuid::fromString('00000000-0000-0000-0000-000000000001'));
-        $wooDecision->shouldReceive('getDocuments')->andReturn($this->getDocuments());
+        $wooDecision->expects('getId')->times(2)->andReturn(Uuid::fromString('00000000-0000-0000-0000-000000000001'));
         $wooDecision->expects('getUploadStatus')->andReturn($uploadStatus);
 
-        /** @var DocumentFileSet&MockInterface $documentFileSet */
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
-        $documentFileSet->shouldReceive('getStatus')->andReturn(DocumentFileSetStatus::NEEDS_CONFIRMATION);
-        $documentFileSet->shouldReceive('getUploads')->andReturn(new ArrayCollection());
-        $documentFileSet->shouldReceive('getUpdates')->andReturn($this->getUpdates());
+        $documentFileSet->expects('getStatus')->times(2)->andReturn(DocumentFileSetStatus::NEEDS_CONFIRMATION);
+        $documentFileSet->expects('getUploads')->andReturn(new ArrayCollection());
+        $documentFileSet->expects('getUpdates')->andReturn($this->getUpdates());
 
-        $this->documentFileService->shouldReceive('canProcess')->with($documentFileSet)->andReturn(true);
+        $this->documentFileService->expects('canProcess')->with($documentFileSet)->andReturn(true);
 
-        $result = (new UploadStatusDtoFactory($this->documentFileService))->make($wooDecision, $documentFileSet);
+        $result = new UploadStatusDtoFactory($this->documentFileService)->make($wooDecision, $documentFileSet);
 
         $this->assertMatchesYamlSnapshot([
             'dossierId' => $result->wooDecision->getId()->__toString(),
@@ -121,32 +116,6 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
     }
 
     /**
-     * @return ArrayCollection<array-key,Document&MockInterface>
-     */
-    private function getDocuments(): ArrayCollection
-    {
-        return new ArrayCollection([
-            $this->getDocument(documentId: '1001', name: 'file1.pdf', shouldBeUploaded: false, isUploaded: false),
-            $this->getDocument(documentId: '1002', name: 'file2.pdf', shouldBeUploaded: true, isUploaded: false),
-            $this->getDocument(documentId: '1003', name: 'archive1.zip', shouldBeUploaded: true, isUploaded: true),
-            $this->getDocument(documentId: '1004', name: 'archive2.7zip', shouldBeUploaded: true, isUploaded: false),
-            $this->getDocument(documentId: '1005', name: 'file3.pdf', shouldBeUploaded: true, isUploaded: false),
-        ]);
-    }
-
-    private function getDocument(string $documentId, string $name, bool $shouldBeUploaded, bool $isUploaded): Document&MockInterface
-    {
-        /** @var Document&MockInterface $document */
-        $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getFileInfo')->andReturn($this->getFileInfo($name));
-        $document->shouldReceive('getDocumentId')->andReturn($documentId);
-        $document->shouldReceive('shouldBeUploaded')->andReturn($shouldBeUploaded);
-        $document->shouldReceive('isUploaded')->andReturn($isUploaded);
-
-        return $document;
-    }
-
-    /**
      * @return ArrayCollection<array-key,DocumentFileUpload&MockInterface>
      */
     private function getUploads(): ArrayCollection
@@ -161,18 +130,17 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
     private function getDocumentFileUpload(string $name, string $mimeType, string $uuid): DocumentFileUpload&MockInterface
     {
         $upload = Mockery::mock(DocumentFileUpload::class);
-        $upload->shouldReceive('getId')->andReturn(Uuid::fromString($uuid));
-        $upload->shouldReceive('getFileInfo')->andReturn($this->getFileInfo($name, $mimeType));
+        $upload->expects('getId')->andReturn(Uuid::fromString($uuid));
+        $upload->expects('getFileInfo')->times(2)->andReturn($this->getFileInfo($name, $mimeType));
 
         return $upload;
     }
 
     private function getFileInfo(string $name, ?string $mimeType = null): FileInfo&MockInterface
     {
-        /** @var FileInfo&MockInterface $fileInfo */
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getName')->andReturn($name);
-        $fileInfo->shouldReceive('getMimeType')->andReturn($mimeType);
+        $fileInfo->expects('getName')->andReturn($name);
+        $fileInfo->expects('getMimeType')->andReturn($mimeType);
 
         return $fileInfo;
     }
@@ -191,7 +159,7 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
     private function getDocumentFileUpdate(DocumentFileUpdateType $updateType): DocumentFileUpdate&MockInterface
     {
         $update = Mockery::mock(DocumentFileUpdate::class);
-        $update->shouldReceive('getType')->andReturn($updateType);
+        $update->expects('getType')->andReturn($updateType);
 
         return $update;
     }

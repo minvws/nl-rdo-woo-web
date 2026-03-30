@@ -27,7 +27,7 @@ readonly class TwoFactorAuditLogger
         $user = $event->getToken()->getUser();
 
         $this->auditLogger->log(
-            (new UserLoginTwoFactorFailedEvent())
+            new UserLoginTwoFactorFailedEvent()
                 ->asExecute()
                 ->withActor($user)
                 ->withSource('woo')
@@ -42,7 +42,7 @@ readonly class TwoFactorAuditLogger
             return;
         }
 
-        $this->auditLogger->log((new UserLoginLogEvent())
+        $this->auditLogger->log(new UserLoginLogEvent()
             ->asExecute()
             ->withActor($user)
             ->withSource('woo')

@@ -18,6 +18,7 @@ use PublicationApi\Api\Publication\Dossier\DossierDtoInterface;
 use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDto;
 use PublicationApi\Api\Publication\Organisation\OrganisationReferenceDto;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(
@@ -69,7 +70,7 @@ final class InvestigationReportDto implements DossierDtoInterface
      */
     final public function __construct(
         public Uuid $id,
-        public ?string $externalId,
+        public ?ExternalId $externalId,
         public OrganisationReferenceDto $organisation,
         public string $prefix,
         public string $dossierNumber,

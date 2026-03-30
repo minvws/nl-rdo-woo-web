@@ -58,29 +58,6 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
         $this->batchDownloadType = Mockery::mock(BatchDownloadTypeInterface::class);
         $this->batchDownload = Mockery::mock(BatchDownload::class);
 
-        $this->batchDownloadService
-            ->shouldReceive('getType')
-            ->with(Mockery::on(function (BatchDownloadScope $scope): bool {
-                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
-            }))
-            ->andReturn($this->batchDownloadType);
-
-        $this->batchDownloadType
-            ->shouldReceive('getFileBaseName')
-            ->with(Mockery::on(function (BatchDownloadScope $scope) {
-                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
-            }))
-            ->andReturn($this->fileBaseName);
-
-        $this->archiveNamer
-            ->shouldReceive('getArchiveName')
-            ->with($this->fileBaseName, $this->batchDownload)
-            ->andReturn($this->archiveName);
-
-        $this->batchDownload->shouldReceive('getDossier')->andReturn($this->wooDecision);
-        $this->batchDownload->shouldReceive('getInquiry')->andReturn($this->inquiry);
-        $this->batchDownload->shouldReceive('getId')->andReturn(Uuid::v6());
-
         $this->zipGenerator = new BatchDownloadZipGenerator(
             $this->doctrine,
             $this->logger,
@@ -92,30 +69,51 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
 
     public function testGenerateArchive(): void
     {
-        $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
+        $this->batchDownloadService
+            ->expects('getType')
+            ->with(Mockery::on(function (BatchDownloadScope $scope): bool {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->batchDownloadType);
+
+        $this->batchDownloadType
+            ->expects('getFileBaseName')
+            ->with(Mockery::on(function (BatchDownloadScope $scope) {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->fileBaseName);
+
+        $this->archiveNamer
+            ->expects('getArchiveName')
+            ->with($this->fileBaseName, $this->batchDownload)
+            ->andReturn($this->archiveName);
+
+        $this->batchDownload->expects('getDossier')->andReturn($this->wooDecision);
+        $this->batchDownload->expects('getInquiry')->andReturn($this->inquiry);
+
+        $this->batchDownloadType->expects('isAvailableForBatchDownload')->andReturnTrue();
 
         $documentOne = Mockery::mock(Document::class);
         $documentTwo = Mockery::mock(Document::class);
 
         $this->batchDownloadType
-            ->shouldReceive('getDocumentsQuery->getQuery->getResult')
+            ->expects('getDocumentsQuery->getQuery->getResult')
             ->andReturn([$documentOne, $documentTwo]);
 
         $this->batchArchiver
-            ->shouldReceive('start')->with($this->batchDownloadType, $this->batchDownload, $this->archiveName)
-            ->once();
+            ->expects('start')->with($this->batchDownloadType, $this->batchDownload, $this->archiveName);
 
-        $this->batchDownload->shouldReceive('setFilename')->with($this->archiveName)->once();
-        $this->doctrine->shouldReceive('persist')->with($this->batchDownload)->once();
-        $this->doctrine->shouldReceive('flush')->once();
+        $this->batchDownload->expects('setFilename')->with($this->archiveName);
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
-        $this->batchDownloadService->shouldReceive('exists')->with($this->batchDownload)->twice()->andReturnTrue();
+        $this->batchDownloadService->expects('exists')->with($this->batchDownload)->times(2)->andReturnTrue();
 
-        $this->batchDownload->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::PENDING);
-        $this->doctrine->shouldReceive('refresh')->with($this->batchDownload)->twice();
+        $this->batchDownload->expects('getStatus')->times(2)->andReturn(BatchDownloadStatus::PENDING);
+        $this->doctrine->expects('refresh')->with($this->batchDownload)->times(2);
 
-        $this->batchArchiver->shouldReceive('addDocument')->with($documentOne)->once()->andReturnTrue();
-        $this->batchArchiver->shouldReceive('addDocument')->with($documentTwo)->once()->andReturnTrue();
+        $this->batchArchiver->expects('addDocument')->with($documentOne)->andReturnTrue();
+        $this->batchArchiver->expects('addDocument')->with($documentTwo)->andReturnTrue();
 
         $batchArchiverResult = new BatchArchiverResult(
             filename: 'archive.zip',
@@ -123,70 +121,116 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
             fileCount: 2,
         );
 
-        $this->batchArchiver->shouldReceive('finish')->once()->andReturn($batchArchiverResult);
+        $this->batchArchiver->expects('finish')->andReturn($batchArchiverResult);
 
         $this->batchDownload
-            ->shouldReceive('complete')
+            ->expects('complete')
             ->with(
                 $batchArchiverResult->filename,
                 $batchArchiverResult->size,
                 $batchArchiverResult->fileCount,
-            )
-            ->once();
-        $this->doctrine->shouldReceive('persist')->with($this->batchDownload)->once();
-        $this->doctrine->shouldReceive('flush')->once();
+            );
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
         $this->assertTrue($this->zipGenerator->generateArchive($this->batchDownload));
     }
 
     public function testGenerateArchiveFailsIfNotAvailableForDownload(): void
     {
-        $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnFalse();
+        $this->batchDownloadService
+            ->expects('getType')
+            ->with(Mockery::on(function (BatchDownloadScope $scope): bool {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->batchDownloadType);
 
-        $this->expectToFail($this->batchDownload);
+        $this->batchDownload->expects('getDossier')->andReturn($this->wooDecision);
+        $this->batchDownload->expects('getInquiry')->andReturn($this->inquiry);
+
+        $this->batchDownloadType->expects('isAvailableForBatchDownload')->andReturnFalse();
+
+        $this->batchDownload->expects('markAsFailed');
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
         $this->assertFalse($this->zipGenerator->generateArchive($this->batchDownload));
     }
 
     public function testGenerateArchiveFailsIfNoDocumentsAreFound(): void
     {
-        $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
+        $this->batchDownloadService
+            ->expects('getType')
+            ->with(Mockery::on(function (BatchDownloadScope $scope): bool {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->batchDownloadType);
 
-        $this->batchDownloadType->shouldReceive('getDocumentsQuery->getQuery->getResult')->andReturn([]);
+        $this->batchDownload->expects('getDossier')->andReturn($this->wooDecision);
+        $this->batchDownload->expects('getInquiry')->andReturn($this->inquiry);
 
-        $this->expectToFail($this->batchDownload);
+        $this->batchDownloadType->expects('isAvailableForBatchDownload')->andReturnTrue();
+
+        $this->batchDownloadType->expects('getDocumentsQuery->getQuery->getResult')->andReturn([]);
+
+        $this->batchDownload->expects('markAsFailed');
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
         $this->assertFalse($this->zipGenerator->generateArchive($this->batchDownload));
     }
 
     public function testGenerateArchiveFailsIfBatchDownloadHasBeenDeleted(): void
     {
-        $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
+        $this->batchDownloadService
+            ->expects('getType')
+            ->with(Mockery::on(function (BatchDownloadScope $scope): bool {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->batchDownloadType);
+
+        $this->batchDownloadType
+            ->expects('getFileBaseName')
+            ->with(Mockery::on(function (BatchDownloadScope $scope) {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->fileBaseName);
+
+        $this->archiveNamer
+            ->expects('getArchiveName')
+            ->with($this->fileBaseName, $this->batchDownload)
+            ->andReturn($this->archiveName);
+
+        $this->batchDownload->expects('getDossier')->andReturn($this->wooDecision);
+        $this->batchDownload->expects('getInquiry')->andReturn($this->inquiry);
+        $this->batchDownload->expects('getId')->times(2)->andReturn(Uuid::v6());
+
+        $this->batchDownloadType->expects('isAvailableForBatchDownload')->andReturnTrue();
 
         $documentOne = Mockery::mock(Document::class);
         $documentTwo = Mockery::mock(Document::class);
 
         $this->batchDownloadType
-            ->shouldReceive('getDocumentsQuery->getQuery->getResult')
+            ->expects('getDocumentsQuery->getQuery->getResult')
             ->andReturn([$documentOne, $documentTwo]);
 
         $this->batchArchiver
-            ->shouldReceive('start')
-            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName)->once();
+            ->expects('start')
+            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName);
 
-        $this->batchDownload->shouldReceive('setFilename')->with($this->archiveName)->once();
-        $this->doctrine->shouldReceive('persist')->with($this->batchDownload)->once();
-        $this->doctrine->shouldReceive('flush')->once();
+        $this->batchDownload->expects('setFilename')->with($this->archiveName);
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
-        $this->batchDownloadService->shouldReceive('exists')->with($this->batchDownload)->once()->andReturnTrue();
-        $this->batchDownloadService->shouldReceive('exists')->with($this->batchDownload)->once()->andReturnFalse();
+        $this->batchDownloadService->expects('exists')->with($this->batchDownload)->andReturnTrue();
+        $this->batchDownloadService->expects('exists')->with($this->batchDownload)->andReturnFalse();
 
-        $this->batchDownload->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::PENDING);
-        $this->doctrine->shouldReceive('refresh')->with($this->batchDownload)->once();
+        $this->batchDownload->expects('getStatus')->andReturn(BatchDownloadStatus::PENDING);
+        $this->doctrine->expects('refresh')->with($this->batchDownload);
 
-        $this->batchArchiver->shouldReceive('addDocument')->with($documentOne)->once()->andReturnTrue();
+        $this->batchArchiver->expects('addDocument')->with($documentOne)->andReturnTrue();
 
-        $this->logger->shouldReceive('info')->with('Batch download has been deleted, stopping processing', [
+        $this->logger->expects('info')->with('Batch download has been deleted, stopping processing', [
             'batch_id' => $this->batchDownload->getId()->toRfc4122(),
         ]);
 
@@ -195,35 +239,56 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
 
     public function testGenerateArchiveFailsIfBatchIsNoLongerPending(): void
     {
-        $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
+        $this->batchDownloadService
+            ->expects('getType')
+            ->with(Mockery::on(function (BatchDownloadScope $scope): bool {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->batchDownloadType);
+
+        $this->batchDownloadType
+            ->expects('getFileBaseName')
+            ->with(Mockery::on(function (BatchDownloadScope $scope) {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->fileBaseName);
+
+        $this->archiveNamer
+            ->expects('getArchiveName')
+            ->with($this->fileBaseName, $this->batchDownload)
+            ->andReturn($this->archiveName);
+
+        $this->batchDownload->expects('getDossier')->andReturn($this->wooDecision);
+        $this->batchDownload->expects('getInquiry')->andReturn($this->inquiry);
+        $this->batchDownload->expects('getId')->times(2)->andReturn(Uuid::v6());
+
+        $this->batchDownloadType->expects('isAvailableForBatchDownload')->andReturnTrue();
 
         $documentOne = Mockery::mock(Document::class);
-        $documentOne->shouldReceive('getId')->andReturn(Uuid::v6());
 
-        $this->batchDownloadType->shouldReceive('getDocumentsQuery->getQuery->getResult')->andReturn([$documentOne]);
+        $this->batchDownloadType->expects('getDocumentsQuery->getQuery->getResult')->andReturn([$documentOne]);
 
         $this->batchArchiver
-            ->shouldReceive('start')
-            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName)
-            ->once();
+            ->expects('start')
+            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName);
 
-        $this->batchDownload->shouldReceive('setFilename')->with($this->archiveName)->once();
-        $this->doctrine->shouldReceive('persist')->with($this->batchDownload)->once();
-        $this->doctrine->shouldReceive('flush')->once();
+        $this->batchDownload->expects('setFilename')->with($this->archiveName);
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
-        $this->batchDownloadService->shouldReceive('exists')->with($this->batchDownload)->once()->andReturnTrue();
+        $this->batchDownloadService->expects('exists')->with($this->batchDownload)->andReturnTrue();
 
-        $this->batchDownload->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::OUTDATED);
-        $this->doctrine->shouldReceive('refresh')->with($this->batchDownload)->once();
+        $this->batchDownload->expects('getStatus')->andReturn(BatchDownloadStatus::OUTDATED);
+        $this->doctrine->expects('refresh')->with($this->batchDownload);
 
         $this->logger
-            ->shouldReceive('info')
+            ->expects('info')
             ->with(
                 'Batch download status is no longer pending, stopping batch archive generation',
                 ['batch_id' => $this->batchDownload->getId()->toRfc4122()],
             );
 
-        $this->batchArchiver->shouldReceive('cleanup')->once();
+        $this->batchArchiver->expects('cleanup');
 
         $this->batchArchiver->shouldNotReceive('addDocument')->with($documentOne);
 
@@ -232,37 +297,55 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
 
     public function testGenerateArchiveOnlyChecksIsNoLongerPendingEveryXDocuments(): void
     {
-        $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
+        $this->batchDownload->expects('getDossier')->andReturn($this->wooDecision);
+        $this->batchDownload->expects('getInquiry')->andReturn($this->inquiry);
+
+        $this->batchDownloadService
+            ->expects('getType')
+            ->with(Mockery::on(function (BatchDownloadScope $scope): bool {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->batchDownloadType);
+
+        $this->batchDownloadType
+            ->expects('getFileBaseName')
+            ->with(Mockery::on(function (BatchDownloadScope $scope) {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->fileBaseName);
+
+        $this->archiveNamer
+            ->expects('getArchiveName')
+            ->with($this->fileBaseName, $this->batchDownload)
+            ->andReturn($this->archiveName);
+
+        $this->batchDownloadType->expects('isAvailableForBatchDownload')->andReturnTrue();
 
         $numberOfDocuments = 50;
         $documents = array_map(function () {
-            $document = Mockery::mock(Document::class);
-            $document->shouldReceive('getId')->andReturn(Uuid::v6());
-
-            return $document;
+            return Mockery::mock(Document::class);
         }, range(1, $numberOfDocuments));
 
-        $this->batchDownloadType->shouldReceive('getDocumentsQuery->getQuery->getResult')->andReturn($documents);
+        $this->batchDownloadType->expects('getDocumentsQuery->getQuery->getResult')->andReturn($documents);
 
         $this->batchArchiver
-            ->shouldReceive('start')
-            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName)
-            ->once();
+            ->expects('start')
+            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName);
 
-        $this->batchDownload->shouldReceive('setFilename')->with($this->archiveName)->once();
-        $this->doctrine->shouldReceive('persist')->with($this->batchDownload)->once();
-        $this->doctrine->shouldReceive('flush')->once();
+        $this->batchDownload->expects('setFilename')->with($this->archiveName);
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
         $this->batchDownloadService
-            ->shouldReceive('exists')
+            ->expects('exists')
             ->with($this->batchDownload)
             ->times($numberOfDocuments)
             ->andReturnTrue();
 
-        $this->batchDownload->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::PENDING);
-        $this->doctrine->shouldReceive('refresh')->with($this->batchDownload)->times(6);
+        $this->batchDownload->expects('getStatus')->times(6)->andReturn(BatchDownloadStatus::PENDING);
+        $this->doctrine->expects('refresh')->with($this->batchDownload)->times(6);
 
-        $this->batchArchiver->shouldReceive('addDocument')->times($numberOfDocuments)->andReturnTrue();
+        $this->batchArchiver->expects('addDocument')->times($numberOfDocuments)->andReturnTrue();
 
         $batchArchiverResult = new BatchArchiverResult(
             filename: 'archive.zip',
@@ -270,120 +353,187 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
             fileCount: $numberOfDocuments,
         );
 
-        $this->batchArchiver->shouldReceive('finish')->once()->andReturn($batchArchiverResult);
+        $this->batchArchiver->expects('finish')->andReturn($batchArchiverResult);
 
         $this->batchDownload
-            ->shouldReceive('complete')
+            ->expects('complete')
             ->with(
                 $batchArchiverResult->filename,
                 $batchArchiverResult->size,
                 $batchArchiverResult->fileCount,
-            )
-            ->once();
-        $this->doctrine->shouldReceive('persist')->with($this->batchDownload)->once();
-        $this->doctrine->shouldReceive('flush')->once();
+            );
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
         $this->assertTrue($this->zipGenerator->generateArchive($this->batchDownload));
     }
 
     public function testGenerateArchiveFailsIfItFailedToAddDocument(): void
     {
-        $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
+        $this->batchDownloadService
+            ->expects('getType')
+            ->with(Mockery::on(function (BatchDownloadScope $scope): bool {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->batchDownloadType);
+
+        $this->batchDownloadType
+            ->expects('getFileBaseName')
+            ->with(Mockery::on(function (BatchDownloadScope $scope) {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->fileBaseName);
+
+        $this->archiveNamer
+            ->expects('getArchiveName')
+            ->with($this->fileBaseName, $this->batchDownload)
+            ->andReturn($this->archiveName);
+
+        $this->batchDownload->expects('getDossier')->andReturn($this->wooDecision);
+        $this->batchDownload->expects('getInquiry')->andReturn($this->inquiry);
+        $this->batchDownload->expects('getId')->times(2)->andReturn(Uuid::v6());
+
+        $this->batchDownloadType->expects('isAvailableForBatchDownload')->andReturnTrue();
 
         $documentOne = Mockery::mock(Document::class);
         $documentTwo = Mockery::mock(Document::class);
-        $documentTwo->shouldReceive('getId')->andReturn(Uuid::v6());
+        $documentTwo->expects('getId')->times(2)->andReturn(Uuid::v6());
 
         $this->batchDownloadType
-            ->shouldReceive('getDocumentsQuery->getQuery->getResult')
+            ->expects('getDocumentsQuery->getQuery->getResult')
             ->andReturn([$documentOne, $documentTwo]);
 
         $this->batchArchiver
-            ->shouldReceive('start')
-            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName)
-            ->once();
+            ->expects('start')
+            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName);
 
-        $this->batchDownload->shouldReceive('setFilename')->with($this->archiveName)->once();
-        $this->doctrine->shouldReceive('persist')->with($this->batchDownload)->once();
-        $this->doctrine->shouldReceive('flush')->once();
+        $this->batchDownload->expects('setFilename')->with($this->archiveName);
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
-        $this->batchDownloadService->shouldReceive('exists')->with($this->batchDownload)->twice()->andReturnTrue();
+        $this->batchDownloadService->expects('exists')->with($this->batchDownload)->times(2)->andReturnTrue();
 
-        $this->batchDownload->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::PENDING);
-        $this->doctrine->shouldReceive('refresh')->with($this->batchDownload)->once();
+        $this->batchDownload->expects('getStatus')->andReturn(BatchDownloadStatus::PENDING);
+        $this->doctrine->expects('refresh')->with($this->batchDownload);
 
-        $this->batchArchiver->shouldReceive('addDocument')->with($documentOne)->once()->andReturnTrue();
-        $this->batchArchiver->shouldReceive('addDocument')->with($documentTwo)->once()->andReturnFalse();
+        $this->batchArchiver->expects('addDocument')->with($documentOne)->andReturnTrue();
+        $this->batchArchiver->expects('addDocument')->with($documentTwo)->andReturnFalse();
 
-        $this->logger->shouldReceive('error')->with('Could not add document to archive', [
+        $this->logger->expects('error')->with('Could not add document to archive', [
             'batch_id' => $this->batchDownload->getId()->toRfc4122(),
             'document_id' => $documentTwo->getId()->toRfc4122(),
         ]);
 
-        $this->expectToFail($this->batchDownload);
+        $this->batchDownload->expects('markAsFailed');
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
         $this->assertFalse($this->zipGenerator->generateArchive($this->batchDownload));
     }
 
     public function testGenerateArchiveFailsFinishingArchive(): void
     {
-        $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
+        $this->batchDownloadService
+            ->expects('getType')
+            ->with(Mockery::on(function (BatchDownloadScope $scope): bool {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->batchDownloadType);
+
+        $this->batchDownloadType
+            ->expects('getFileBaseName')
+            ->with(Mockery::on(function (BatchDownloadScope $scope) {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->fileBaseName);
+
+        $this->archiveNamer
+            ->expects('getArchiveName')
+            ->with($this->fileBaseName, $this->batchDownload)
+            ->andReturn($this->archiveName);
+
+        $this->batchDownload->expects('getDossier')->andReturn($this->wooDecision);
+        $this->batchDownload->expects('getInquiry')->andReturn($this->inquiry);
+
+        $this->batchDownloadType->expects('isAvailableForBatchDownload')->andReturnTrue();
 
         $document = Mockery::mock(Document::class);
 
-        $this->batchDownloadType->shouldReceive('getDocumentsQuery->getQuery->getResult')->andReturn([$document]);
+        $this->batchDownloadType->expects('getDocumentsQuery->getQuery->getResult')->andReturn([$document]);
 
         $this->batchArchiver
-            ->shouldReceive('start')
-            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName)
-            ->once();
+            ->expects('start')
+            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName);
 
-        $this->batchDownload->shouldReceive('setFilename')->with($this->archiveName)->once();
-        $this->doctrine->shouldReceive('persist')->with($this->batchDownload)->once();
-        $this->doctrine->shouldReceive('flush')->once();
+        $this->batchDownload->expects('setFilename')->with($this->archiveName);
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
-        $this->batchDownloadService->shouldReceive('exists')->with($this->batchDownload)->once()->andReturnTrue();
+        $this->batchDownloadService->expects('exists')->with($this->batchDownload)->andReturnTrue();
 
-        $this->batchDownload->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::PENDING);
-        $this->doctrine->shouldReceive('refresh')->with($this->batchDownload)->once();
+        $this->batchDownload->expects('getStatus')->andReturn(BatchDownloadStatus::PENDING);
+        $this->doctrine->expects('refresh')->with($this->batchDownload);
 
-        $this->batchArchiver->shouldReceive('addDocument')->with($document)->once()->andReturnTrue();
+        $this->batchArchiver->expects('addDocument')->with($document)->andReturnTrue();
 
-        $this->batchArchiver->shouldReceive('finish')->once()->andReturnFalse();
+        $this->batchArchiver->expects('finish')->andReturnFalse();
 
-        $this->expectToFail($this->batchDownload);
+        $this->batchDownload->expects('markAsFailed');
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
         $this->assertFalse($this->zipGenerator->generateArchive($this->batchDownload));
     }
 
     public function testGenerateArchiveCallsCleanupWhenBatchNoLongerPendingWhenFinishing(): void
     {
-        $this->batchDownloadType->shouldReceive('isAvailableForBatchDownload')->andReturnTrue();
+        $this->batchDownloadService
+            ->expects('getType')
+            ->with(Mockery::on(function (BatchDownloadScope $scope): bool {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->batchDownloadType);
+
+        $this->batchDownloadType
+            ->expects('getFileBaseName')
+            ->with(Mockery::on(function (BatchDownloadScope $scope) {
+                return $scope->wooDecision === $this->wooDecision && $scope->inquiry === $this->inquiry;
+            }))
+            ->andReturn($this->fileBaseName);
+
+        $this->archiveNamer
+            ->expects('getArchiveName')
+            ->with($this->fileBaseName, $this->batchDownload)
+            ->andReturn($this->archiveName);
+
+        $this->batchDownload->expects('getDossier')->andReturn($this->wooDecision);
+        $this->batchDownload->expects('getInquiry')->andReturn($this->inquiry);
+
+        $this->batchDownloadType->expects('isAvailableForBatchDownload')->andReturnTrue();
 
         $documentOne = Mockery::mock(Document::class);
         $documentTwo = Mockery::mock(Document::class);
 
         $this->batchDownloadType
-            ->shouldReceive('getDocumentsQuery->getQuery->getResult')
+            ->expects('getDocumentsQuery->getQuery->getResult')
             ->andReturn([$documentOne, $documentTwo]);
 
         $this->batchArchiver
-            ->shouldReceive('start')
-            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName)
-            ->once();
+            ->expects('start')
+            ->with($this->batchDownloadType, $this->batchDownload, $this->archiveName);
 
-        $this->batchDownload->shouldReceive('setFilename')->with($this->archiveName)->once();
-        $this->doctrine->shouldReceive('persist')->with($this->batchDownload)->once();
-        $this->doctrine->shouldReceive('flush')->once();
+        $this->batchDownload->expects('setFilename')->with($this->archiveName);
+        $this->doctrine->expects('persist')->with($this->batchDownload);
+        $this->doctrine->expects('flush');
 
-        $this->batchDownloadService->shouldReceive('exists')->with($this->batchDownload)->twice()->andReturnTrue();
+        $this->batchDownloadService->expects('exists')->with($this->batchDownload)->times(2)->andReturnTrue();
 
-        $this->batchDownload->shouldReceive('getStatus')->once()->andReturn(BatchDownloadStatus::PENDING);
-        $this->batchDownload->shouldReceive('getStatus')->once()->andReturn(BatchDownloadStatus::OUTDATED);
-        $this->doctrine->shouldReceive('refresh')->with($this->batchDownload)->twice();
+        $this->batchDownload->expects('getStatus')->andReturn(BatchDownloadStatus::PENDING);
+        $this->batchDownload->expects('getStatus')->andReturn(BatchDownloadStatus::OUTDATED);
+        $this->doctrine->expects('refresh')->with($this->batchDownload)->times(2);
 
-        $this->batchArchiver->shouldReceive('addDocument')->with($documentOne)->once()->andReturnTrue();
-        $this->batchArchiver->shouldReceive('addDocument')->with($documentTwo)->once()->andReturnTrue();
+        $this->batchArchiver->expects('addDocument')->with($documentOne)->andReturnTrue();
+        $this->batchArchiver->expects('addDocument')->with($documentTwo)->andReturnTrue();
 
         $batchArchiverResult = new BatchArchiverResult(
             filename: 'archive.zip',
@@ -391,19 +541,12 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
             fileCount: 2,
         );
 
-        $this->batchArchiver->shouldReceive('finish')->once()->andReturn($batchArchiverResult);
+        $this->batchArchiver->expects('finish')->andReturn($batchArchiverResult);
 
-        $this->batchArchiver->shouldReceive('cleanup')->once();
+        $this->batchArchiver->expects('cleanup');
 
         $this->batchDownload->shouldNotReceive('complete');
 
         $this->assertFalse($this->zipGenerator->generateArchive($this->batchDownload));
-    }
-
-    private function expectToFail(BatchDownload&MockInterface $batchDownload): void
-    {
-        $batchDownload->shouldReceive('markAsFailed')->once();
-        $this->doctrine->shouldReceive('persist')->with($batchDownload)->once();
-        $this->doctrine->shouldReceive('flush')->once();
     }
 }

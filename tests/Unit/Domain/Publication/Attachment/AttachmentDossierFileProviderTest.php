@@ -33,8 +33,10 @@ final class AttachmentDossierFileProviderTest extends UnitTestCase
 
     public function testGetEntityForPublicUseThrowsExceptionWhenEntityIsNotFound(): void
     {
+        $dossierId = Uuid::v6();
+
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
+        $dossier->expects('getId')->times(2)->andReturn($dossierId);
 
         $idInput = '55ae5de9-55f4-3420-b50b-5cde6e07fc5a';
 
@@ -53,7 +55,7 @@ final class AttachmentDossierFileProviderTest extends UnitTestCase
         $attachment = Mockery::mock(CovenantAttachment::class);
 
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
+        $dossier->expects('getId')->andReturn($dossierId = Uuid::v6());
 
         $idInput = '55ae5de9-55f4-3420-b50b-5cde6e07fc5a';
 
@@ -73,7 +75,7 @@ final class AttachmentDossierFileProviderTest extends UnitTestCase
         $attachment = Mockery::mock(CovenantAttachment::class);
 
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
+        $dossier->expects('getId')->andReturn($dossierId = Uuid::v6());
 
         $idInput = '55ae5de9-55f4-3420-b50b-5cde6e07fc5a';
 

@@ -29,12 +29,12 @@ final class DossierFormParamBuilderTest extends UnitTestCase
     public function testGetDepartmentsFieldParams(): void
     {
         $fooDepartment = Mockery::mock(Department::class);
-        $fooDepartment->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('1ef401f7-958a-65c4-a92c-25f027c8b5e7'));
-        $fooDepartment->shouldReceive('getName')->andReturn('foo');
+        $fooDepartment->expects('getId')->times(2)->andReturn(Uuid::fromRfc4122('1ef401f7-958a-65c4-a92c-25f027c8b5e7'));
+        $fooDepartment->expects('getName')->andReturn('foo');
 
         $barDepartment = Mockery::mock(Department::class);
-        $barDepartment->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'));
-        $barDepartment->shouldReceive('getName')->andReturn('bar');
+        $barDepartment->expects('getId')->andReturn(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'));
+        $barDepartment->expects('getName')->andReturn('bar');
 
         $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->expects('getOrganisation->getDepartments')->andReturn(
@@ -42,10 +42,10 @@ final class DossierFormParamBuilderTest extends UnitTestCase
         );
 
         $form = Mockery::mock(FormInterface::class);
-        $form->shouldReceive('get->getData')->andReturn(new ArrayCollection([
+        $form->expects('get->getData')->andReturn(new ArrayCollection([
             $fooDepartment,
         ]));
-        $form->shouldReceive('get->getErrors')->andReturn(
+        $form->expects('get->getErrors')->andReturn(
             new FormErrorIterator(
                 $form,
                 [
@@ -62,12 +62,12 @@ final class DossierFormParamBuilderTest extends UnitTestCase
     public function testGetDepartmentsFieldParamsWithEmptyFormData(): void
     {
         $fooDepartment = Mockery::mock(Department::class);
-        $fooDepartment->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('1ef401f7-958a-65c4-a92c-25f027c8b5e7'));
-        $fooDepartment->shouldReceive('getName')->andReturn('foo');
+        $fooDepartment->expects('getId')->andReturn(Uuid::fromRfc4122('1ef401f7-958a-65c4-a92c-25f027c8b5e7'));
+        $fooDepartment->expects('getName')->andReturn('foo');
 
         $barDepartment = Mockery::mock(Department::class);
-        $barDepartment->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'));
-        $barDepartment->shouldReceive('getName')->andReturn('bar');
+        $barDepartment->expects('getId')->andReturn(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'));
+        $barDepartment->expects('getName')->andReturn('bar');
 
         $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->expects('getOrganisation->getDepartments')->andReturn(
@@ -75,8 +75,8 @@ final class DossierFormParamBuilderTest extends UnitTestCase
         );
 
         $form = Mockery::mock(FormInterface::class);
-        $form->shouldReceive('get->getData')->andReturnNull();
-        $form->shouldReceive('get->getErrors')->andReturn(
+        $form->expects('get->getData')->andReturnNull();
+        $form->expects('get->getErrors')->andReturn(
             new FormErrorIterator(
                 $form,
                 [

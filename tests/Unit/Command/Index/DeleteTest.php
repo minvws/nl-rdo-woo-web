@@ -25,7 +25,7 @@ class DeleteTest extends UnitTestCase
             ->with($name);
 
         $application = new Application();
-        $application->add(new Delete($elasticIndexManager));
+        $application->addCommand(new Delete($elasticIndexManager));
 
         $command = $application->find(Delete::COMMAND_NAME);
         $commandTester = new CommandTester($command);
@@ -49,7 +49,7 @@ class DeleteTest extends UnitTestCase
             ->andReturn(true);
 
         $application = new Application();
-        $application->add(new Delete($elasticIndexManager));
+        $application->addCommand(new Delete($elasticIndexManager));
 
         $command = $application->find(Delete::COMMAND_NAME);
         $commandTester = new CommandTester($command);

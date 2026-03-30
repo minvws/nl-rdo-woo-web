@@ -9,7 +9,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use Shared\Domain\Upload\Exception\UploadNotFoundException;
 use Shared\Domain\Upload\UploadEntity;
-use Shared\Domain\Upload\UploadStatus;
+use Shared\Domain\Upload\UploadEntityStatus;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(
@@ -30,7 +30,7 @@ readonly class UploadStatusDto
 {
     public function __construct(
         public string $uploadId,
-        public UploadStatus $status,
+        public UploadEntityStatus $status,
         #[ApiProperty(readable: false)]
         public ?Uuid $userId,
     ) {

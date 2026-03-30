@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Integration\Domain\Upload\MimeTypes;
+namespace Shared\Tests\Integration\Domain\Upload\MimeTypes;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Upload\FileType\FileType;

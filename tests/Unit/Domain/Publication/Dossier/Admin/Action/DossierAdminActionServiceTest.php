@@ -62,7 +62,7 @@ class DossierAdminActionServiceTest extends UnitTestCase
     public function testExecuteThrowsExceptionForNoMatchingImplementation(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
+        $dossier->expects('getId')->andReturn(Uuid::v6());
 
         $this->actionA->expects('getAdminAction')->andReturn(DossierAdminAction::GENERATE_ARCHIVES);
 
@@ -76,10 +76,10 @@ class DossierAdminActionServiceTest extends UnitTestCase
 
     public function testNeedsConfirmation(): void
     {
-        $this->actionA->shouldReceive('getAdminAction')->andReturn(DossierAdminAction::GENERATE_ARCHIVES);
+        $this->actionA->expects('getAdminAction')->times(2)->andReturn(DossierAdminAction::GENERATE_ARCHIVES);
         $this->actionA->expects('needsConfirmation')->andReturnTrue();
 
-        $this->actionB->shouldReceive('getAdminAction')->andReturn(DossierAdminAction::INGEST);
+        $this->actionB->expects('getAdminAction')->andReturn(DossierAdminAction::INGEST);
         $this->actionB->expects('needsConfirmation')->andReturnFalse();
 
         self::assertTrue(

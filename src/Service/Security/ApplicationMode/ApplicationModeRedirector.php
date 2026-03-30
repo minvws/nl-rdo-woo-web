@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Security\ApplicationMode;
 
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -22,6 +23,7 @@ readonly class ApplicationModeRedirector
     public const string PUBLIC_PATH = '/';
 
     public function __construct(
+        #[Autowire(service: ApplicationMode::class)]
         private ApplicationMode $applicationMode,
     ) {
     }

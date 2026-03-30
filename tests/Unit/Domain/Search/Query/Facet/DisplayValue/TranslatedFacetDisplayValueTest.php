@@ -18,7 +18,7 @@ class TranslatedFacetDisplayValueTest extends UnitTestCase
         $facet = TranslatedFacetDisplayValue::fromString('  foo.bar  ');
 
         $translator
-            ->shouldReceive('trans')
+            ->expects('trans')
             ->with('foo.bar', [], null, null)
             ->andReturn($expectedValue = 'Foo value');
 

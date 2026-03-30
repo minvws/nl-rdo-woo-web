@@ -8,7 +8,7 @@ use Mockery;
 use PublicationApi\Tests\Integration\Api\Publication\ApiPublicationV1TestCase;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use Shared\Domain\Upload\Handler\UploadHandlerInterface;
+use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Domain\Upload\UploadRequest;
 use Shared\Domain\Upload\UploadService;
 use Shared\Service\Uploader\UploadGroupId;
@@ -16,6 +16,7 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
 use Shared\ValueObject\ExternalId;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,10 +33,11 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $wooDecision = WooDecisionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => $this->getFaker()->uuid(),
+            'externalId' => $this->getFaker()->externalId(),
             'previewDate' => $this->getFaker()->dateTime(),
             'departments' => [$department],
         ]);
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
         $document = DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'externalId' => ExternalId::create($this->getFaker()->uuid()),
@@ -48,11 +50,14 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         $testFilePath = sprintf('%s/tests/robot_framework/files/woodecision/%s', static::$kernel->getProjectDir(), $testFileName);
         $fileContent = file_get_contents($testFilePath);
 
+        $uploadEntityRepository = Mockery::mock(UploadEntityRepository::class);
+        $uploadEntityRepository->expects('save');
+        self::getContainer()->set(UploadEntityRepository::class, $uploadEntityRepository);
+
         $uploadService = Mockery::mock(UploadService::class);
         self::getContainer()->set(UploadService::class, $uploadService);
         $uploadService
-            ->shouldReceive('handleUploadRequest')
-            ->once()
+            ->expects('handleUploadRequest')
             ->with(
                 Mockery::on(function (UploadRequest $uploadRequest) use ($document) {
                     if ($uploadRequest->chunkIndex !== 1) {
@@ -75,6 +80,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
                 }),
                 null
             );
+
         $url = sprintf(
             '/api/publication/v1/organisation/%s/dossiers/woo-decision/E:%s/uploads/document/E:%s',
             $organisation->getId(),
@@ -98,7 +104,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $wooDecision = WooDecisionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => $this->getFaker()->uuid(),
+            'externalId' => $this->getFaker()->externalId(),
             'previewDate' => $this->getFaker()->dateTime(),
             'departments' => [$department],
         ]);
@@ -107,8 +113,6 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
             'externalId' => ExternalId::create($this->getFaker()->uuid()),
         ]);
         $client = self::createPublicationApiClient();
-
-        Mockery::mock(UploadHandlerInterface::class);
 
         $url = sprintf(
             '/api/publication/v1/organisation/%s/dossiers/woo-decision/E:%s/uploads/document/E:%s',
@@ -131,7 +135,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $wooDecision = WooDecisionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => $this->getFaker()->uuid(),
+            'externalId' => $this->getFaker()->externalId(),
             'previewDate' => $this->getFaker()->dateTime(),
             'departments' => [$department],
         ]);
@@ -173,7 +177,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $wooDecision = WooDecisionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => $this->getFaker()->uuid(),
+            'externalId' => $this->getFaker()->externalId(),
             'previewDate' => $this->getFaker()->dateTime(),
             'departments' => [$department],
         ]);
@@ -216,7 +220,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $wooDecision = WooDecisionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => $this->getFaker()->uuid(),
+            'externalId' => $this->getFaker()->externalId(),
             'previewDate' => $this->getFaker()->dateTime(),
             'departments' => [$department],
         ]);

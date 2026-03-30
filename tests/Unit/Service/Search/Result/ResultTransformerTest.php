@@ -74,13 +74,13 @@ class ResultTransformerTest extends UnitTestCase
         }
 
         $data = json_decode($json, true);
-        $response->shouldReceive('asArray')->andReturn($data);
+        $response->expects('asArray')->andReturn($data);
 
-        $this->aggregationMapper->shouldReceive('map');
-        $this->resultFactory->shouldReceive('map');
+        $this->aggregationMapper->expects('map')->times(7);
+        $this->resultFactory->expects('map')->times(10);
 
         $sortItems = Mockery::mock(SortItems::class);
-        $this->sortItemViewFactory->shouldReceive('make')->with($searchParameters)->andReturn($sortItems);
+        $this->sortItemViewFactory->expects('make')->with($searchParameters)->andReturn($sortItems);
 
         $result = $this->transformer->transform(
             [],

@@ -4,7 +4,7 @@ import { validateFiles } from './validate';
 
 describe('The "validateFiles" function', () => {
   test('should return files which are too large', () => {
-    let invalidSize = [];
+    let invalidSize: File[];
     ({ invalidSize } = validateFiles(
       [
         createTestFile({ size: 1024, type: 'image/png', name: 'valid-size' }),
@@ -64,7 +64,7 @@ describe('The "validateFiles" function', () => {
   });
 
   test('should return files which are valid', () => {
-    let valid = [];
+    let valid: File[];
     ({ valid } = validateFiles(
       [
         createTestFile({ size: 1024, name: 'valid-size', type: 'image/png' }),

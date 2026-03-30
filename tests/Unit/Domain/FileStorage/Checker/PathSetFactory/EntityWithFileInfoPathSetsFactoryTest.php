@@ -61,21 +61,21 @@ class EntityWithFileInfoPathSetsFactoryTest extends UnitTestCase
         $fileInfoA->setPath('/doc/a');
         $fileInfoA->setPageCount(3);
 
-        $docA->shouldReceive('getFileInfo')->andReturn($fileInfoA);
-        $docA->shouldReceive('getId')->andReturn($uuidA = Uuid::v6());
+        $docA->expects('getFileInfo')->times(6)->andReturn($fileInfoA);
+        $docA->expects('getId')->andReturn($uuidA = Uuid::v6());
 
         $this->thumbnailStorageService->expects('generateThumbPath')->with($docA, 1)->andReturn('/doc/a/thumb/1');
         $this->thumbnailStorageService->expects('generateThumbPath')->with($docA, 2)->andReturn('/doc/a/thumb/2');
 
-        $docB->shouldReceive('getFileInfo->getPath')->andReturnNull();
+        $docB->expects('getFileInfo->getPath')->andReturnNull();
 
         $fileInfoC = new FileInfo();
         $fileInfoC->setUploaded(true);
         $fileInfoC->setPath('/doc/c');
         $fileInfoC->setPageCount(0);
 
-        $docC->shouldReceive('getFileInfo')->andReturn($fileInfoC);
-        $docC->shouldReceive('getId')->andReturn($uuidC = Uuid::v6());
+        $docC->expects('getFileInfo')->times(3)->andReturn($fileInfoC);
+        $docC->expects('getId')->andReturn($uuidC = Uuid::v6());
 
         $this->entityManager->expects('detach')->with($docA);
         $this->entityManager->expects('detach')->with($docB);

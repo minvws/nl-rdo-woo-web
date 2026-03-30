@@ -32,13 +32,12 @@ class SitemapDepartmentSubscriberTest extends UnitTestCase
     public function testPopulate(): void
     {
         $department = Mockery::mock(Department::class);
-        $department->shouldReceive('getSlug')->andReturn($slug = 'foobar');
+        $department->expects('getSlug')->andReturn($slug = 'foobar');
 
         $urlContainer = Mockery::mock(UrlContainerInterface::class);
 
         $this->departmentRepository
             ->expects('getAllPublicDepartments')
-            ->once()
             ->andReturn([$department]);
 
         $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);

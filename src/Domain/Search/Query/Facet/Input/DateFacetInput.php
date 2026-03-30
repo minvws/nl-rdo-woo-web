@@ -9,6 +9,7 @@ use Shared\Domain\Search\Query\Facet\FacetDefinitionInterface;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Utils\CastTypes;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Webmozart\Assert\Assert;
 
 use function strlen;
 use function trim;
@@ -25,8 +26,14 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
     {
         $values = $bag->all($facet->getRequestParameter());
 
-        // any value except whitespace is considered as true
-        $withoutDate = isset($values[self::WITHOUT_DATE]) && strlen(trim($values[self::WITHOUT_DATE])) > 0;
+        $withoutDate = false;
+        if (isset($values[self::WITHOUT_DATE])) {
+            $rawWithoutDate = $values[self::WITHOUT_DATE];
+            Assert::nullOrScalar($rawWithoutDate);
+
+            // any value except whitespace is considered as true
+            $withoutDate = strlen(trim((string) $rawWithoutDate)) > 0;
+        }
 
         $from = CastTypes::asImmutableDate($values[self::FROM] ?? null, DateFacetInputInterface::DATE_FORMAT)?->setTime(0, 0);
         $to = CastTypes::asImmutableDate($values[self::TO] ?? null, DateFacetInputInterface::DATE_FORMAT)?->setTime(0, 0);

@@ -34,15 +34,15 @@ final class MetadataOnlySubTypeIngestStrategyTest extends UnitTestCase
     public function testHandle(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->andReturn($id = Mockery::mock(Uuid::class));
+        $document->expects('getId')->andReturn($id = Mockery::mock(Uuid::class));
         $options = Mockery::mock(IngestProcessOptions::class);
 
-        $this->logger->shouldReceive('info')->once()->with('Dispatching ingest for metadata-only entity', [
+        $this->logger->expects('info')->with('Dispatching ingest for metadata-only entity', [
             'id' => $id,
             'class' => $document::class,
         ]);
 
-        $this->ingestDispatcher->shouldReceive('dispatchIngestMetadataOnlyCommandForEntity')->with(
+        $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommandForEntity')->with(
             $document,
             true,
         );
@@ -53,10 +53,10 @@ final class MetadataOnlySubTypeIngestStrategyTest extends UnitTestCase
     public function testCanHandleReturnsTrueWhenThereIsNoUploadedFile(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('isUploaded')->once()->andReturnFalse();
+        $fileInfo->expects('isUploaded')->andReturnFalse();
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $document->expects('getFileInfo')->andReturn($fileInfo);
 
         $this->assertTrue($this->strategy->canHandle($document));
     }
@@ -64,10 +64,10 @@ final class MetadataOnlySubTypeIngestStrategyTest extends UnitTestCase
     public function testCanHandleReturnsFalseWhenThereIsAnUploadedFile(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('isUploaded')->once()->andReturnTrue();
+        $fileInfo->expects('isUploaded')->andReturnTrue();
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $document->expects('getFileInfo')->andReturn($fileInfo);
 
         $this->assertFalse($this->strategy->canHandle($document));
     }

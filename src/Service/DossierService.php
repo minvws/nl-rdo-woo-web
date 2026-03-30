@@ -15,12 +15,10 @@ use Shared\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-use function array_column;
-
 readonly class DossierService
 {
     public function __construct(
-        private EntityManagerInterface $doctrine,
+        private EntityManagerInterface $entityManager,
         private WizardStatusFactory $statusFactory,
         private SearchDispatcher $searchDispatcher,
         private ValidatorInterface $validator,
@@ -39,17 +37,17 @@ readonly class DossierService
         }
 
         $dossier->setCompleted($completed);
-        $this->doctrine->persist($dossier);
+        $this->entityManager->persist($dossier);
 
         if ($flush) {
-            $this->doctrine->flush();
+            $this->entityManager->flush();
         }
 
         return $completed;
     }
 
     /**
-     * @deprecated to be removed in woo-2066
+     * @deprecated to be removed in WOO-2066
      */
     public function handleEntityUpdate(AbstractDossier $dossier): void
     {
@@ -63,19 +61,25 @@ readonly class DossierService
     }
 
     /**
+     * @param array<DossierValidationGroup> $validationGroups
+     *
      * @throws ValidationFailedException
      */
-    public function validate(AbstractDossier $dossier): void
+    public function validate(AbstractDossier $dossier, array $validationGroups): void
     {
-        $errors = $this->validator->validate($dossier, groups: array_column(DossierValidationGroup::cases(), 'value'));
+        $errors = $this->validator->validate($dossier, groups: EnumHelper::getStringValues($validationGroups));
 
         if ($errors->count() > 0) {
             throw new ValidationFailedException($dossier, $errors);
         }
     }
 
-    public function isApiUpdateAllowed(AbstractDossier $dossier): bool
+    public function refreshDossier(AbstractDossier $dossier): void
     {
-        return $dossier->getStatus()->isNewOrConcept();
+        $uow = $this->entityManager->getUnitOfWork();
+
+        if ($this->entityManager->contains($dossier) && ! $uow->isScheduledForInsert($dossier)) {
+            $this->entityManager->refresh($dossier);
+        }
     }
 }

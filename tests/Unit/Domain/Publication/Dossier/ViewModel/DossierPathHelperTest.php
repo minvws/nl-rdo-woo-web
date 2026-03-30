@@ -60,9 +60,9 @@ final class DossierPathHelperTest extends UnitTestCase
     public function testGetDetailsPathWithDossier(): void
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getDossierNr')->andReturn('dos-nr');
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn('dos-prefix');
-        $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
+        $dossier->expects('getDossierNr')->andReturn('dos-nr');
+        $dossier->expects('getDocumentPrefix')->andReturn('dos-prefix');
+        $dossier->expects('getType')->andReturn(DossierType::COVENANT);
 
         $this->router->expects('generate')->with(
             'app_covenant_detail',
@@ -104,9 +104,9 @@ final class DossierPathHelperTest extends UnitTestCase
     public function testGetDetailsPathWithOtherPublication(): void
     {
         $dossier = Mockery::mock(OtherPublication::class);
-        $dossier->shouldReceive('getDossierNr')->andReturn('dos-nr');
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn('dos-prefix');
-        $dossier->shouldReceive('getType')->andReturn(DossierType::OTHER_PUBLICATION);
+        $dossier->expects('getDossierNr')->andReturn('dos-nr');
+        $dossier->expects('getDocumentPrefix')->andReturn('dos-prefix');
+        $dossier->expects('getType')->andReturn(DossierType::OTHER_PUBLICATION);
 
         $this->router->expects('generate')->with(
             'app_otherpublication_detail',
@@ -125,9 +125,9 @@ final class DossierPathHelperTest extends UnitTestCase
     public function testGetDetailsPathWithAdvice(): void
     {
         $dossier = Mockery::mock(Advice::class);
-        $dossier->shouldReceive('getDossierNr')->andReturn('dos-nr');
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn('dos-prefix');
-        $dossier->shouldReceive('getType')->andReturn(DossierType::ADVICE);
+        $dossier->expects('getDossierNr')->andReturn('dos-nr');
+        $dossier->expects('getDocumentPrefix')->andReturn('dos-prefix');
+        $dossier->expects('getType')->andReturn(DossierType::ADVICE);
 
         $this->router->expects('generate')->with(
             'app_advice_detail',
@@ -146,9 +146,9 @@ final class DossierPathHelperTest extends UnitTestCase
     public function testGetDetailsPathWithRequestForAdvice(): void
     {
         $dossier = Mockery::mock(RequestForAdvice::class);
-        $dossier->shouldReceive('getDossierNr')->andReturn('dos-nr');
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn('dos-prefix');
-        $dossier->shouldReceive('getType')->andReturn(DossierType::REQUEST_FOR_ADVICE);
+        $dossier->expects('getDossierNr')->andReturn('dos-nr');
+        $dossier->expects('getDocumentPrefix')->andReturn('dos-prefix');
+        $dossier->expects('getType')->andReturn(DossierType::REQUEST_FOR_ADVICE);
 
         $this->router->expects('generate')->with(
             'app_requestforadvice_detail',

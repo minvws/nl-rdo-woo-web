@@ -54,7 +54,7 @@ class DownloadResponseHelperTest extends UnitTestCase
     public function testGetResponseForEntityWithFileInfoThrowsExceptionWhenEntityHasNoUpload(): void
     {
         $entity = Mockery::mock(Document::class);
-        $entity->shouldReceive('getFileInfo->isUploaded')->andReturnFalse();
+        $entity->expects('getFileInfo->isUploaded')->andReturnFalse();
 
         $this->expectException(NotFoundHttpException::class);
 
@@ -64,7 +64,9 @@ class DownloadResponseHelperTest extends UnitTestCase
     public function testGetResponseForEntityWithFileInfoThrowsExceptionWhenUploadCannotBeRetrievedFromStorage(): void
     {
         $entity = Mockery::mock(Document::class);
-        $entity->shouldReceive('getFileInfo->isUploaded')->andReturnTrue();
+        $entity->expects('getFileInfo->isUploaded')
+            ->times(2)
+            ->andReturnTrue();
 
         $this->entityStorageService->expects('retrieveResourceEntity')->with($entity)->andReturnNull();
 
@@ -77,11 +79,11 @@ class DownloadResponseHelperTest extends UnitTestCase
     public function testGetResponseForEntityWithPdf(string $type, string $mimetype): void
     {
         $entity = Mockery::mock(Document::class);
-        $entity->shouldReceive('getFileInfo->isUploaded')->andReturnTrue();
-        $entity->shouldReceive('getFileInfo->getType')->andReturn($type);
-        $entity->shouldReceive('getFileInfo->getMimeType')->andReturn($mimetype);
-        $entity->shouldReceive('getFileInfo->getSize')->andReturn(456);
-        $entity->shouldReceive('getUpdatedAt->format')->andReturn('Wed, 27 Nov 2024 11:56:18 GMT');
+        $entity->expects('getFileInfo->isUploaded')->times(2)->andReturnTrue();
+        $entity->expects('getFileInfo->getType')->andReturn($type);
+        $entity->expects('getFileInfo->getMimeType')->andReturn($mimetype);
+        $entity->expects('getFileInfo->getSize')->andReturn(456);
+        $entity->expects('getUpdatedAt->format')->andReturn('Wed, 27 Nov 2024 11:56:18 GMT');
 
         $stream = fopen('php://memory', 'r+');
         if ($stream === false) {
@@ -130,8 +132,8 @@ class DownloadResponseHelperTest extends UnitTestCase
     public function testGetResponseForBatchDownloadSuccessful(): void
     {
         $batch = Mockery::mock(BatchDownload::class);
-        $batch->shouldReceive('getSize')->andReturn($size = '123');
-        $batch->shouldReceive('getFilename')->andReturn('foo.bar');
+        $batch->expects('getSize')->andReturn($size = '123');
+        $batch->expects('getFilename')->andReturn('foo.bar');
 
         $stream = fopen('php://memory', 'r+');
         self::assertNotFalse($stream);

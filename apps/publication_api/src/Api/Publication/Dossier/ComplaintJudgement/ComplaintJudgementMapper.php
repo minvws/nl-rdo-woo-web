@@ -5,39 +5,45 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Publication\Dossier\ComplaintJudgement;
 
 use PublicationApi\Api\Publication\Department\DepartmentReferenceDto;
-use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDto;
+use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Publication\Organisation\OrganisationReferenceDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-class ComplaintJudgementMapper
+readonly class ComplaintJudgementMapper
 {
+    public function __construct(
+        private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+    ) {
+    }
+
     /**
      * @param array<array-key,ComplaintJudgement> $complaintJudgements
      *
      * @return list<ComplaintJudgementDto>
      */
-    public static function fromEntities(array $complaintJudgements): array
+    public function fromEntities(array $complaintJudgements): array
     {
         return array_values(array_map(
-            self::fromEntity(...),
+            $this->fromEntity(...),
             $complaintJudgements
         ));
     }
 
-    public static function fromEntity(ComplaintJudgement $complaintJudgement): ComplaintJudgementDto
+    public function fromEntity(ComplaintJudgement $complaintJudgement): ComplaintJudgementDto
     {
         $mainDocument = $complaintJudgement->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = MainDocumentResponseDto::fromEntity($mainDocument);
+        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
 
         $dateFrom = $complaintJudgement->getDateFrom();
         Assert::notNull($dateFrom);
@@ -68,7 +74,7 @@ class ComplaintJudgementMapper
         Organisation $organisation,
         Department $department,
         ?Subject $subject,
-        string $externalId,
+        ExternalId $externalId,
     ): ComplaintJudgement {
         $complaintJudgement = new ComplaintJudgement();
         $complaintJudgement->setExternalId($externalId);

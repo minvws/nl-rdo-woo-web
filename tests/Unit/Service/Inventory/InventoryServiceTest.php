@@ -45,7 +45,7 @@ class InventoryServiceTest extends UnitTestCase
 
     public function testGetReaderThrowsExceptionWhenUploadIsMissing(): void
     {
-        $this->run->shouldReceive('getFileInfo->isUploaded')->andReturnFalse();
+        $this->run->expects('getFileInfo->isUploaded')->andReturnFalse();
 
         $this->expectException(RuntimeException::class);
 
@@ -54,7 +54,7 @@ class InventoryServiceTest extends UnitTestCase
 
     public function testGetReaderThrowsExceptionWhenFileCannotBeDownloaded(): void
     {
-        $this->run->shouldReceive('getFileInfo->isUploaded')->andReturnTrue();
+        $this->run->expects('getFileInfo->isUploaded')->andReturnTrue();
 
         $this->entityStorageService->expects('downloadEntity')->with($this->run)->andReturnFalse();
 
@@ -65,8 +65,8 @@ class InventoryServiceTest extends UnitTestCase
 
     public function testGetReaderReturnsAnOpenReaderAndSetsTmpFilenameOnRun(): void
     {
-        $this->run->shouldReceive('getFileInfo->isUploaded')->andReturnTrue();
-        $this->run->shouldReceive('getFileInfo->getMimetype')->andReturn('text/csv');
+        $this->run->expects('getFileInfo->isUploaded')->andReturnTrue();
+        $this->run->expects('getFileInfo->getMimetype')->andReturn('text/csv');
 
         $filename = 'tst/123.csv';
         $this->entityStorageService->expects('downloadEntity')->with($this->run)->andReturn($filename);
@@ -93,7 +93,7 @@ class InventoryServiceTest extends UnitTestCase
     public function testCleanupTmpFileRemovesAndResetsTmpFile(): void
     {
         $filename = 'tst/123.csv';
-        $this->run->shouldReceive('getTmpFilename')->andReturn($filename);
+        $this->run->expects('getTmpFilename')->times(2)->andReturn($filename);
         $this->run->expects('setTmpFilename')->with(null);
 
         $this->entityStorageService->expects('removeDownload')->with($filename);

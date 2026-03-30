@@ -46,7 +46,7 @@ class CreateDossierHandlerTest extends UnitTestCase
     {
         $annualReportUuid = Uuid::v6();
         $annualReport = Mockery::mock(AnnualReport::class);
-        $annualReport->shouldReceive('getId')->andReturn($annualReportUuid);
+        $annualReport->expects('getId')->andReturn($annualReportUuid);
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($annualReport, DossierStatusTransition::UPDATE_DETAILS);
 

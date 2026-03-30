@@ -39,8 +39,10 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverThrowsExceptionForUnsupportedArgumentType(): void
     {
         $request = new Request();
+
         $argument = Mockery::mock(ArgumentMetadata::class);
-        $argument->shouldReceive('getType')->andReturn(self::class);
+        $argument->expects('getType')
+            ->andReturn(self::class);
 
         $this->expectException(ViewingNotAllowedException::class);
         $this->resolver->resolve($request, $argument);
@@ -49,8 +51,10 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverThrowsExceptionForMissingPrefix(): void
     {
         $request = new Request(attributes: ['dossierId' => 'bar']);
+
         $argument = Mockery::mock(ArgumentMetadata::class);
-        $argument->shouldReceive('getType')->andReturn(Covenant::class);
+        $argument->expects('getType')
+            ->andReturn(Covenant::class);
 
         $this->expectException(ViewingNotAllowedException::class);
         $this->resolver->resolve($request, $argument);
@@ -59,8 +63,10 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverThrowsExceptionForMissingDocumentId(): void
     {
         $request = new Request(attributes: ['prefix' => 'foo']);
+
         $argument = Mockery::mock(ArgumentMetadata::class);
-        $argument->shouldReceive('getType')->andReturn(Covenant::class);
+        $argument->expects('getType')
+            ->andReturn(Covenant::class);
 
         $this->expectException(ViewingNotAllowedException::class);
         $this->resolver->resolve($request, $argument);
@@ -69,8 +75,10 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverThrowsExceptionWhenDossierCannotBeFound(): void
     {
         $request = new Request(attributes: ['prefix' => 'foo', 'dossierId' => 'bar']);
+
         $argument = Mockery::mock(ArgumentMetadata::class);
-        $argument->shouldReceive('getType')->andReturn(Covenant::class);
+        $argument->expects('getType')
+            ->andReturn(Covenant::class);
 
         $repository = Mockery::mock(ServiceEntityRepository::class);
         $repository->expects('findOneBy')->with(
@@ -80,7 +88,10 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
             ]
         )->andReturnNull();
 
-        $this->entityManager->shouldReceive('getRepository')->with(Covenant::class)->andReturn($repository);
+        $this->entityManager
+            ->expects('getRepository')
+            ->with(Covenant::class)
+            ->andReturn($repository);
 
         $this->expectException(ViewingNotAllowedException::class);
         $this->resolver->resolve($request, $argument);
@@ -89,8 +100,10 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverThrowsExceptionWhenDossierIsNotAccessible(): void
     {
         $request = new Request(attributes: ['prefix' => 'foo', 'dossierId' => 'bar']);
+
         $argument = Mockery::mock(ArgumentMetadata::class);
-        $argument->shouldReceive('getType')->andReturn(Covenant::class);
+        $argument->expects('getType')
+            ->andReturn(Covenant::class);
 
         $dossier = Mockery::mock(Covenant::class);
 
@@ -102,7 +115,10 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
             ]
         )->andReturn($dossier);
 
-        $this->entityManager->shouldReceive('getRepository')->with(Covenant::class)->andReturn($repository);
+        $this->entityManager
+            ->expects('getRepository')
+            ->with(Covenant::class)
+            ->andReturn($repository);
 
         $this->authorizationChecker->expects('isGranted')->with(DossierVoter::VIEW, $dossier)->andReturnFalse();
 
@@ -113,22 +129,28 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
     public function testResolverReturnsDossierWhenFoundAndAccessible(): void
     {
         $request = new Request(attributes: ['prefix' => 'foo', 'dossierId' => 'bar']);
+
         $argument = Mockery::mock(ArgumentMetadata::class);
-        $argument->shouldReceive('getType')->andReturn(Covenant::class);
+        $argument->expects('getType')
+            ->andReturn(Covenant::class);
 
         $dossier = Mockery::mock(Covenant::class);
 
         $repository = Mockery::mock(ServiceEntityRepository::class);
-        $repository->expects('findOneBy')->with(
-            [
+        $repository->expects('findOneBy')
+            ->with([
                 'documentPrefix' => 'foo',
                 'dossierNr' => 'bar',
-            ]
-        )->andReturn($dossier);
+            ])
+            ->andReturn($dossier);
 
-        $this->entityManager->shouldReceive('getRepository')->with(Covenant::class)->andReturn($repository);
+        $this->entityManager->expects('getRepository')
+            ->with(Covenant::class)
+            ->andReturn($repository);
 
-        $this->authorizationChecker->expects('isGranted')->with(DossierVoter::VIEW, $dossier)->andReturnTrue();
+        $this->authorizationChecker->expects('isGranted')
+            ->with(DossierVoter::VIEW, $dossier)
+            ->andReturnTrue();
 
         self::assertEquals(
             [$dossier],

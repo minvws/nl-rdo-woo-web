@@ -15,14 +15,14 @@ final class PublicationItemViewFactoryTest extends UnitTestCase
     public function testMake(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getName')->andReturn('file-name');
-        $fileInfo->shouldReceive('getSize')->andReturn(100);
-        $fileInfo->shouldReceive('isUploaded')->andReturn(true);
+        $fileInfo->expects('getName')->andReturn('file-name');
+        $fileInfo->expects('getSize')->andReturn(100);
+        $fileInfo->expects('isUploaded')->andReturn(true);
 
         $publicationItem = Mockery::mock(AbstractPublicationItem::class);
-        $publicationItem->shouldReceive('getFileInfo')->andReturn($fileInfo);
+        $publicationItem->expects('getFileInfo')->times(3)->andReturn($fileInfo);
 
-        $result = (new PublicationItemViewFactory())->make($publicationItem);
+        $result = new PublicationItemViewFactory()->make($publicationItem);
 
         $this->assertSame('file-name', $result->fileName);
         $this->assertSame(100, $result->fileSize);

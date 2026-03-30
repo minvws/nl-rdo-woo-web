@@ -24,9 +24,36 @@ class ComplaintJudgement extends AbstractDossier implements EntityWithMainDocume
     use HasMainDocument;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ComplaintJudgementMainDocument::class, cascade: ['remove', 'persist'])]
-    #[Assert\NotBlank(groups: [DossierValidationGroup::CONTENT->value])]
-    #[Assert\Valid(groups: [DossierValidationGroup::CONTENT->value])]
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    #[Assert\Valid(groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     private ?ComplaintJudgementMainDocument $document;
+
+    #[Assert\NotNull(
+        message: 'date_mandatory',
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
+    )]
+    #[Assert\LessThanOrEqual(
+        value: 'today',
+        message: 'date_must_not_be_in_future',
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
+    )]
+    protected ?DateTimeImmutable $dateFrom = null;
 
     public function __construct()
     {

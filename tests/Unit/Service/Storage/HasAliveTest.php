@@ -32,17 +32,15 @@ final class HasAliveTest extends UnitTestCase
         $instance = $this->getInstance();
 
         $this->storage
-            ->shouldReceive('write')
-            ->once()
+            ->expects('write')
             ->with($this->locationMatcher($location), $this->hashMatcher($hash))
             ->andReturnTrue();
         $this->storage
-            ->shouldReceive('read')
-            ->once()
+            ->expects('read')
             ->andReturnUsing(function () use (&$hash) {
                 return $hash;
             });
-        $this->storage->shouldReceive('delete')->once()->andReturnTrue();
+        $this->storage->expects('delete')->andReturnTrue();
 
         $this->assertTrue($instance->isAlive(), 'The storage is not alive');
     }
@@ -52,15 +50,13 @@ final class HasAliveTest extends UnitTestCase
         $instance = $this->getInstance();
 
         $this->storage
-            ->shouldReceive('write')
-            ->once()
+            ->expects('write')
             ->with($this->locationMatcher($location), $this->hashMatcher($hash))
             ->andReturnTrue();
         $this->storage
-            ->shouldReceive('read')
-            ->once()
+            ->expects('read')
             ->andReturn('non-matching-content');
-        $this->storage->shouldReceive('delete')->once()->andReturnTrue();
+        $this->storage->expects('delete')->andReturnTrue();
 
         $this->assertFalse($instance->isAlive(), 'The storage is alive');
     }
@@ -70,8 +66,7 @@ final class HasAliveTest extends UnitTestCase
         $instance = $this->getInstance();
 
         $this->storage
-            ->shouldReceive('write')
-            ->once()
+            ->expects('write')
             ->andReturnFalse();
 
         $this->assertFalse($instance->isAlive(), 'The storage is alive');
@@ -82,13 +77,11 @@ final class HasAliveTest extends UnitTestCase
         $instance = $this->getInstance();
 
         $this->storage
-            ->shouldReceive('write')
-            ->once()
+            ->expects('write')
             ->with($this->locationMatcher($location), $this->hashMatcher($hash))
             ->andReturnTrue();
         $this->storage
-            ->shouldReceive('read')
-            ->once()
+            ->expects('read')
             ->andReturnFalse();
 
         $this->assertFalse($instance->isAlive(), 'The storage is alive');
@@ -99,17 +92,15 @@ final class HasAliveTest extends UnitTestCase
         $instance = $this->getInstance();
 
         $this->storage
-            ->shouldReceive('write')
-            ->once()
+            ->expects('write')
             ->with($this->locationMatcher($location), $this->hashMatcher($hash))
             ->andReturnTrue();
         $this->storage
-            ->shouldReceive('read')
-            ->once()
+            ->expects('read')
             ->andReturnUsing(function () use (&$hash) {
                 return $hash;
             });
-        $this->storage->shouldReceive('delete')->once()->andReturnFalse();
+        $this->storage->expects('delete')->andReturnFalse();
 
         $this->assertFalse($instance->isAlive(), 'The storage is alive');
     }

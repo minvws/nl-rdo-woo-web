@@ -54,10 +54,10 @@ class InitiateProductionReportUpdateHandlerTest extends UnitTestCase
     public function testInvokeSuccessfully(): void
     {
         $oldRun = Mockery::mock(ProductionReportProcessRun::class);
-        $oldRun->shouldReceive('isNotFinal')->andReturnFalse();
+        $oldRun->expects('isNotFinal')->andReturnFalse();
 
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getProcessRun')->andReturn($oldRun);
+        $wooDecision->expects('getProcessRun')->andReturn($oldRun);
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($wooDecision, DossierStatusTransition::UPDATE_PRODUCTION_REPORT);
 
@@ -65,15 +65,15 @@ class InitiateProductionReportUpdateHandlerTest extends UnitTestCase
         $this->processRunRepository->expects('remove')->with($oldRun, true);
 
         $newRun = Mockery::mock(ProductionReportProcessRun::class);
-        $newRun->shouldReceive('getId')->andReturn(Uuid::v6());
-        $newRun->shouldReceive('getFileInfo')->andReturn(new FileInfo());
+        $newRun->expects('getId')->times(2)->andReturn(Uuid::v6());
+        $newRun->expects('getFileInfo')->andReturn(new FileInfo());
 
         $this->processRunRepository->expects('create')->with($wooDecision)->andReturn($newRun);
 
         $this->processRunRepository->expects('save')->with($newRun, true);
 
         $upload = Mockery::mock(UploadedFile::class);
-        $upload->shouldReceive('getClientOriginalName')->andReturn('foo.pdf');
+        $upload->expects('getClientOriginalName')->andReturn('foo.pdf');
 
         $this->entityStorage->expects('storeEntity')->andReturnTrue();
 
@@ -87,20 +87,19 @@ class InitiateProductionReportUpdateHandlerTest extends UnitTestCase
     public function testInvokeFailsWhenUploadCannotBeStored(): void
     {
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getProcessRun')->andReturnNull();
-        $wooDecision->shouldReceive('getId')->andReturn(Uuid::v6());
+        $wooDecision->expects('getProcessRun')->andReturnNull();
+        $wooDecision->expects('getId')->andReturn(Uuid::v6());
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($wooDecision, DossierStatusTransition::UPDATE_PRODUCTION_REPORT);
 
         $run = Mockery::mock(ProductionReportProcessRun::class);
-        $run->shouldReceive('getId')->andReturn(Uuid::v6());
-        $run->shouldReceive('getFileInfo')->andReturn(new FileInfo());
+        $run->expects('getFileInfo')->andReturn(new FileInfo());
 
         $this->processRunRepository->expects('create')->with($wooDecision)->andReturn($run);
         $this->processRunRepository->expects('save')->with($run, true);
 
         $upload = Mockery::mock(UploadedFile::class);
-        $upload->shouldReceive('getClientOriginalName')->andReturn('foo.pdf');
+        $upload->expects('getClientOriginalName')->times(2)->andReturn('foo.pdf');
 
         $this->entityStorage->expects('storeEntity')->andReturnFalse();
 
@@ -136,10 +135,10 @@ class InitiateProductionReportUpdateHandlerTest extends UnitTestCase
     public function testInvokeThrowsExceptionWhenExistingRunIsNotFinal(): void
     {
         $run = Mockery::mock(ProductionReportProcessRun::class);
-        $run->shouldReceive('isNotFinal')->andReturnTrue();
+        $run->expects('isNotFinal')->andReturnTrue();
 
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getProcessRun')->andReturn($run);
+        $wooDecision->expects('getProcessRun')->andReturn($run);
         $upload = Mockery::mock(UploadedFile::class);
 
         $this->dossierWorkflowManager

@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webmozart\Assert\Assert;
 
-#[AsCommand(name: self::COMMAND_NAME, description: 'Deletes an ES index')]
+#[AsCommand(name: self::COMMAND_NAME, description: 'Deletes an ES index', help: 'Deletes an ES index')]
 class Delete extends Command
 {
     public const string COMMAND_NAME = 'woopie:index:delete';
@@ -29,8 +29,7 @@ class Delete extends Command
             ->setDefinition([
                 new InputArgument('name', InputArgument::REQUIRED, 'Name of the index'),
                 new InputOption('force', '', InputOption::VALUE_NONE, 'Force'),
-            ])
-            ->setHelp('Deletes an ES index');
+            ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin\Dossier;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
@@ -18,7 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Webmozart\Assert\Assert;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class AttachmentActionController extends AbstractController
 {

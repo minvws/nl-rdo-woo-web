@@ -2,6 +2,31 @@
 
 # Release notes
 
+## v2.4.0
+
+*maart 2026*
+
+### Publicatie API
+
+- **Zaaknummers via de API aanmaken en koppelen**: Net als in de webinterface via het productierapport, kunnen zaken nu ook via de API worden aangemaakt en documenten aan zaaknummers worden gekoppeld.
+- **Uitgebreide workflow-guards voor statustransities**: Dossiers die niet aan de vereisten voldoen kunnen geen statustransitie meer doorvoeren. De guards zijn uitgebreid met business logic die geldt
+ voor alle dossiers — zowel via de balie als de API. Dossiers die gereed zijn voor publicatie krijgen automatisch de juiste status.
+- **External IDs ondersteuning in upload-URLs**: Upload-URLs accepteren nu het external ID van het dossier én de external IDs van alle entiteiten met een file upload.
+- **Uploadstatus in document GET-responses**: `MainDocument`, `Attachment` en `Document` bevatten nu een `uploadStatus`-veld met één van de volgende waarden: `no upload required`, `upload required`,
+ `processing`, `processed`, `processing failed`. Zo kan een client helder bepalen wat de al dan niet vereiste acties zijn bij het aanleveren van bestanden.
+- **Meerdere 500-fouten in non-happy-flows afgehandeld**: Serverfoutmeldingen die eerder onbehandeld bleven worden nu netjes opgepikt en de juiste responses worden teruggegeven.
+
+### Tenant Awareness
+
+- **Tenant-aware Multi-kernel**: Het platform bepaalt nu de configuratie op basis van de route en authenticatie. We lanceren met één tenantconfiguratie (MinVWS) en breiden dit stapsgewijs uit. Deze
+release bewijst dat het principe productiewaardig kan draaien.
+- **Tenant-specifieke foutmeldingen, vertalingen en thema's**: Foutmeldingen zijn nu tenant-aware. Vertalingen, thema's en de publieke website worden per tenant geconfigureerd.
+
+### Overig
+
+- **Performanceproblemen na Symfony 7.4-upgrade opgelost**: Waargenomen regressies in responsetijden bij ontwikkelomgevingen die na de upgrade waren opgetreden zijn geadresseerd om het risico te
+minimaliseren dat deze regressie ook op productie plaats zou kunnen vinden.
+
 ## v2.3.0
 
 *februari 2026*

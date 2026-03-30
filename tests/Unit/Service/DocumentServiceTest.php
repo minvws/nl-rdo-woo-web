@@ -7,7 +7,6 @@ namespace Shared\Tests\Unit\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery;
 use Mockery\MockInterface;
-use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
@@ -20,17 +19,15 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-use function array_column;
-
 class DocumentServiceTest extends UnitTestCase
 {
     private DocumentService $documentService;
     private EntityManagerInterface&MockInterface $entityManager;
-    private MockInterface&EntityStorageService $entityStorageService;
+    private EntityStorageService&MockInterface $entityStorageService;
     private ThumbnailStorageService&MockInterface $thumbnailStorageService;
     private SubTypeIndexer&MockInterface $subTypeIndexer;
     private HistoryService&MockInterface $historyService;
-    private ValidatorInterface&MockInterface $validatorInterface;
+    private ValidatorInterface&MockInterface $validator;
 
     protected function setUp(): void
     {
@@ -39,9 +36,7 @@ class DocumentServiceTest extends UnitTestCase
         $this->thumbnailStorageService = Mockery::mock(ThumbnailStorageService::class);
         $this->subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
         $this->historyService = Mockery::mock(HistoryService::class);
-        $this->validatorInterface = Mockery::mock(ValidatorInterface::class);
-
-        $this->historyService->shouldReceive('addDocumentEntry');
+        $this->validator = Mockery::mock(ValidatorInterface::class);
 
         $this->documentService = new DocumentService(
             $this->entityManager,
@@ -49,7 +44,7 @@ class DocumentServiceTest extends UnitTestCase
             $this->thumbnailStorageService,
             $this->subTypeIndexer,
             $this->historyService,
-            $this->validatorInterface,
+            $this->validator,
         );
 
         parent::setUp();
@@ -60,8 +55,10 @@ class DocumentServiceTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $document = Mockery::mock(Document::class);
 
-        $document->shouldReceive('getDossiers->contains')->with($dossier)->andReturnFalse();
-        $document->shouldReceive('getDossiers->isEmpty')->andReturnTrue();
+        $this->historyService->expects('addDocumentEntry');
+
+        $document->expects('getDossiers->contains')->with($dossier)->andReturnFalse();
+        $document->expects('getDossiers->isEmpty')->andReturnTrue();
 
         $this->entityManager->expects('remove')->with($document);
         $this->entityManager->expects('flush');
@@ -79,8 +76,10 @@ class DocumentServiceTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $document = Mockery::mock(Document::class);
 
+        $this->historyService->expects('addDocumentEntry');
+
         $document->expects('getDossiers->contains')->with($dossier)->andReturnTrue();
-        $document->shouldReceive('getDossiers->isEmpty')->andReturnFalse();
+        $document->expects('getDossiers->isEmpty')->andReturnFalse();
 
         $dossier->expects('removeDocument')->with($document);
 
@@ -97,10 +96,12 @@ class DocumentServiceTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $document = Mockery::mock(Document::class);
 
+        $this->historyService->expects('addDocumentEntry');
+
         $dossier->expects('removeDocument')->with($document);
 
-        $document->shouldReceive('getDossiers->contains')->with($dossier)->andReturnTrue();
-        $document->shouldReceive('getDossiers->isEmpty')->andReturnTrue();
+        $document->expects('getDossiers->contains')->with($dossier)->andReturnTrue();
+        $document->expects('getDossiers->isEmpty')->andReturnTrue();
 
         $this->entityManager->expects('remove')->with($document);
         $this->entityManager->expects('persist')->with($dossier);
@@ -125,8 +126,8 @@ class DocumentServiceTest extends UnitTestCase
         $constraintViolationList->expects('count')
             ->andReturn(1);
 
-        $this->validatorInterface->expects('validate')
-            ->with($documents, null, array_column(DossierValidationGroup::cases(), 'value'))
+        $this->validator->expects('validate')
+            ->with($documents)
             ->andReturn($constraintViolationList);
 
         $this->expectException(ValidationFailedException::class);

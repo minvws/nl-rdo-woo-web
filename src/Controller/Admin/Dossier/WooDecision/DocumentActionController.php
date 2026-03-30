@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin\Dossier\WooDecision;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
@@ -18,7 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class DocumentActionController extends AbstractController
 {

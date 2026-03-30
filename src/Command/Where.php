@@ -17,7 +17,7 @@ use Webmozart\Assert\Assert;
 
 use function parse_url;
 
-#[AsCommand(name: 'woopie:where', description: 'Returns path information about a URL')]
+#[AsCommand(name: 'woopie:where', description: 'Returns path information about a URL', help: 'Returns path information about a URL')]
 class Where extends Command
 {
     public function __construct(
@@ -31,7 +31,6 @@ class Where extends Command
     protected function configure(): void
     {
         $this
-            ->setHelp('Returns path information about a URL')
             ->setDefinition([
                 new InputArgument('url', InputArgument::REQUIRED, 'url to parse'),
             ]);

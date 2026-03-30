@@ -73,11 +73,10 @@ class MimeTypeHelperTest extends UnitTestCase
     public function testDetectMimetypeFromPath(): void
     {
         $upload = Mockery::mock(UploadedFile::class);
-        $upload->shouldReceive('getOriginalFilename')->andReturn($filename = 'upload.bat');
-        $upload->shouldReceive('getPathname')->andReturn('/var/www/foobar/upload.bat');
+        $upload->expects('getOriginalFilename')->andReturn($filename = 'upload.bat');
 
         $this->mimeTypeDetector
-            ->shouldReceive('detectMimeTypeFromPath')
+            ->expects('detectMimeTypeFromPath')
             ->with($filename)
             ->andReturn($mimeType = 'application/x-msdownload');
 
@@ -92,7 +91,7 @@ class MimeTypeHelperTest extends UnitTestCase
         $pathname = '/var/www/foobar/upload-file.csv';
 
         $this->mimeTypeDetector
-            ->shouldReceive('detectMimeType')
+            ->expects('detectMimeType')
             ->with($pathname, $contents = 'some contents')
             ->andReturn($mimeType = 'text/csv');
 

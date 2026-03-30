@@ -56,33 +56,33 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
     public function testInvokeSuccessfully(): void
     {
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getId')->andReturn(Uuid::v6());
 
         $document = Mockery::mock(Document::class);
         $document
-            ->shouldReceive('getDocumentId')
+            ->expects('getDocumentId')
             ->andReturn($documentId = 'foo-123');
 
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet
-            ->shouldReceive('getDossier')
+            ->expects('getDossier')
             ->andReturn($wooDecision);
 
         $id = Uuid::v6();
 
         $update = Mockery::mock(DocumentFileUpdate::class);
         $update
-            ->shouldReceive('getStatus')
+            ->expects('getStatus')
             ->andReturn(DocumentFileUpdateStatus::PENDING);
         $update
-            ->shouldReceive('getDocumentFileSet')
+            ->expects('getDocumentFileSet')
+            ->times(2)
             ->andReturn($documentFileSet);
         $update
-            ->shouldReceive('getDocument')
+            ->expects('getDocument')
             ->andReturn($document);
 
         $update
-            ->shouldReceive('getFileInfo->getName')
+            ->expects('getFileInfo->getName')
             ->andReturn('foo.bar');
 
         $update->expects('getFileInfo->removeFileProperties');
@@ -132,7 +132,7 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
         $id = Uuid::v6();
 
         $update = Mockery::mock(DocumentFileUpdate::class);
-        $update->shouldReceive('getStatus')->andReturn(DocumentFileUpdateStatus::PENDING);
+        $update->expects('getStatus')->andReturn(DocumentFileUpdateStatus::PENDING);
 
         $this->documentFileUpdateRepository->expects('find')->with($id)->andReturn($update);
 

@@ -33,24 +33,22 @@ class DefaultDossierIngestStrategyTest extends UnitTestCase
     {
         $mainDocumentId = Uuid::v6();
         $mainDocument = Mockery::mock(CovenantMainDocument::class);
-        $mainDocument->shouldReceive('getId')->andReturn($mainDocumentId);
+        $mainDocument->expects('getId')->andReturn($mainDocumentId);
 
         $attachmentIdA = Uuid::v6();
         $attachmentA = Mockery::mock(CovenantAttachment::class);
-        $attachmentA->shouldReceive('getId')->andReturn($attachmentIdA);
-        $attachmentA->shouldReceive('isWithdrawn')->andReturnFalse();
+        $attachmentA->expects('getId')->andReturn($attachmentIdA);
+        $attachmentA->expects('isWithdrawn')->andReturnFalse();
 
         // This attachment is withdrawn and should NOT be indexed
-        $attachmentIdB = Uuid::v6();
         $attachmentB = Mockery::mock(CovenantAttachment::class);
-        $attachmentB->shouldReceive('getId')->andReturn($attachmentIdB);
-        $attachmentB->shouldReceive('isWithdrawn')->andReturnTrue();
+        $attachmentB->expects('isWithdrawn')->andReturnTrue();
 
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId);
-        $dossier->shouldReceive('getAttachments')->andReturn(new ArrayCollection([$attachmentA, $attachmentB]));
-        $dossier->shouldReceive('getMainDocument')->andReturn($mainDocument);
+        $dossier->expects('getId')->andReturn($dossierId);
+        $dossier->expects('getAttachments')->andReturn(new ArrayCollection([$attachmentA, $attachmentB]));
+        $dossier->expects('getMainDocument')->times(2)->andReturn($mainDocument);
 
         $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($dossierId, false);
         $this->searchDispatcher->expects('dispatchIndexMainDocumentCommand')->with($mainDocumentId);

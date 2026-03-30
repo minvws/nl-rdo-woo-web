@@ -19,7 +19,7 @@ tasks:
     cmds:
       - task: :dc
         vars:
-          SUB_CMD: run --rm spectral lint http://open.local/documentatie/api/publication/v1/openapi.json {{.CLI_ARGS}}
+          SUB_CMD: run --rm spectral lint http://public-woo.local/api/publication/v1/openapi.json {{.CLI_ARGS}}
 
   lint:shell:
     desc: Open a shell within the Spectral container

@@ -26,7 +26,7 @@ class AliasTest extends UnitTestCase
             ->andReturn(true);
 
         $application = new Application();
-        $application->add(new Alias($elasticIndexManager));
+        $application->addCommand(new Alias($elasticIndexManager));
 
         $command = $application->find(Alias::COMMAND_NAME);
         $commandTester = new CommandTester($command);
@@ -48,7 +48,7 @@ class AliasTest extends UnitTestCase
             ->never();
 
         $application = new Application();
-        $application->add(new Alias($elasticIndexManager));
+        $application->addCommand(new Alias($elasticIndexManager));
 
         $command = $application->find(Alias::COMMAND_NAME);
         $commandTester = new CommandTester($command);

@@ -42,7 +42,7 @@ class MoveOrphanedFilesTest extends UnitTestCase
         $command = new MoveOrphanedFiles($fileStorageChecker, $orphanedFileMover);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $command = $application->find(MoveOrphanedFiles::COMMAND_NAME);
         $commandTester = new CommandTester($command);
@@ -72,7 +72,7 @@ class MoveOrphanedFilesTest extends UnitTestCase
         $command = new MoveOrphanedFiles($fileStorageChecker, $orphanedFileMover);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $command = $application->find(MoveOrphanedFiles::COMMAND_NAME);
         $commandTester = new CommandTester($command);

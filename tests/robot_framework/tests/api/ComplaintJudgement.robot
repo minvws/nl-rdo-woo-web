@@ -6,6 +6,7 @@
 Documentation       Tests for the Complaint Judgement endpoint
 Library             RequestsLibrary
 Resource            ../../resources/API.resource
+Resource            ../../resources/ComplaintJudgement.resource
 Resource            ../../resources/Dossier.resource
 Suite Setup         Suite Setup
 Test Tags           api  complaint-judgement
@@ -68,16 +69,3 @@ We Can Find It
   ...  alias=publication_api
   ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/complaint-judgement/${EXTERNAL_ID}
   VAR  ${RESPONSE} =  ${get_response.json()}  scope=TEST
-
-A Complaint Judgement Is Updated
-  Set To Dictionary  ${BODY}  title  Robot - Gewijzigde titel
-  PUT On Session
-  ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/complaint-judgement/${EXTERNAL_ID}
-  ...  json=${BODY}
-
-The Complaint Judgement Has The New Values
-  ${get_response} =  GET On Session
-  ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/complaint-judgement/${EXTERNAL_ID}
-  Should Be Equal  ${get_response.json()}[title]  Robot - Gewijzigde titel

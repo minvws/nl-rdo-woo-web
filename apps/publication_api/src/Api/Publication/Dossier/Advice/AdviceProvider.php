@@ -12,6 +12,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceRepository;
 use Shared\Service\ApiPlatformService;
+use Shared\ValueObject\ExternalId;
 
 use function count;
 
@@ -20,6 +21,7 @@ final readonly class AdviceProvider implements ProviderInterface
     public function __construct(
         private OrganisationRepository $organisationRepository,
         private AdviceRepository $adviceRepository,
+        private AdviceMapper $adviceMapper,
         private int $itemsPerPage,
     ) {
     }
@@ -38,7 +40,7 @@ final readonly class AdviceProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, $uriVariables['adviceExternalId']);
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['adviceExternalId']));
     }
 
     /**
@@ -52,16 +54,16 @@ final readonly class AdviceProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(AdviceMapper::fromEntities($advices), 0, count($advices));
+        return new ArrayPaginator($this->adviceMapper->fromEntities($advices), 0, count($advices));
     }
 
-    private function provideSingle(Organisation $organisation, string $adviceExternalId): ?AdviceDto
+    private function provideSingle(Organisation $organisation, ExternalId $adviceExternalId): ?AdviceDto
     {
         $advice = $this->adviceRepository->findByOrganisationAndExternalId($organisation, $adviceExternalId);
         if ($advice === null) {
             return null;
         }
 
-        return AdviceMapper::fromEntity($advice);
+        return $this->adviceMapper->fromEntity($advice);
     }
 }

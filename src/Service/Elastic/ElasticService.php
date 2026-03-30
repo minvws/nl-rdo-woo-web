@@ -22,13 +22,14 @@ class ElasticService
     public function __construct(
         private readonly ElasticClientInterface $elastic,
         private LoggerInterface $logger,
+        private readonly ElasticConfig $elasticConfig,
     ) {
     }
 
     public function updateDocument(ElasticDocument $document): void
     {
         $this->elastic->update([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $document->getId(),
             'body' => [
                 'doc' => $document->getDocumentValues(),
@@ -40,7 +41,7 @@ class ElasticService
     private function documentExists(string $id): bool
     {
         $result = $this->elastic->exists([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ]);
 
@@ -51,7 +52,7 @@ class ElasticService
     public function getDocument(string $id): TypeArray
     {
         $result = $this->elastic->get([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ]);
 
@@ -77,7 +78,7 @@ class ElasticService
 
         // @Note: it's possible that the document is removed in between checking for existence and deleting.
         $this->elastic->delete([
-            'index' => ElasticConfig::WRITE_INDEX,
+            'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ]);
     }
@@ -88,7 +89,7 @@ class ElasticService
         try {
             // Delete dossier document
             $this->elastic->delete([
-                'index' => ElasticConfig::WRITE_INDEX,
+                'index' => $this->elasticConfig->writeIndex,
                 'id' => ElasticDocumentId::forDossier($dossier),
             ]);
         } catch (ClientResponseException $exception) {

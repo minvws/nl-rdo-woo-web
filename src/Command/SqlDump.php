@@ -29,7 +29,7 @@ use function strtolower;
 /**
  * @codeCoverageIgnore This command should get refactored and get full coverage then.
  */
-#[AsCommand(name: 'woopie:sql:dump', description: 'Dumps SQL from migrations')]
+#[AsCommand(name: 'woopie:sql:dump', description: 'Dumps SQL from migrations', help: 'Dumps SQL from migrations')]
 class SqlDump extends Command
 {
     public const SQL_MIGRATION_PATH = __DIR__ . '/../../migrations/sql';
@@ -37,7 +37,6 @@ class SqlDump extends Command
     protected function configure(): void
     {
         $this
-            ->setHelp('Dumps SQL from migrations')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite existing sql files');
     }
 
@@ -45,7 +44,7 @@ class SqlDump extends Command
     {
         unset($output);
 
-        $parser = (new ParserFactory())->createForVersion(PhpVersion::fromString('7.0'));
+        $parser = new ParserFactory()->createForVersion(PhpVersion::fromString('7.0'));
         $finder = new Finder();
         foreach ($finder->in(__DIR__ . '/../../migrations')->files()->name('*.php') as $file) {
             $sqlFilename = $this->getSqlFilename($file);

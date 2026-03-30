@@ -9,7 +9,7 @@ use Shared\Service\Storage\EntityStorageService;
 
 class LazyFileReference implements FileReferenceInterface
 {
-    /** @var callable */
+    /** @var callable(): string */
     private $loader;
 
     private ?string $path = null;

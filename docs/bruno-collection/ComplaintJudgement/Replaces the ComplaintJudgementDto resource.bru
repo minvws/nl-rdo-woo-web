@@ -5,14 +5,14 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+  url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
   body: json
   auth: inherit
 }
 
 params:path {
   organisationId: {{organisationId}}
-  complaintJudgementExternalId:
+  complaintJudgementExternalId: E:
 }
 
 body:json {
@@ -20,11 +20,12 @@ body:json {
     "departmentId": "",
     "internalReference": "",
     "mainDocument": {
+      "filename": "",
       "formalDate": "",
-      "grounds": [],
-      "internalReference": "",
       "language": "",
-      "type": ""
+      "type": "",
+      "grounds": [],
+      "internalReference": ""
     },
     "prefix": "",
     "subjectId": "",
@@ -52,12 +53,12 @@ example {
   description: ComplaintJudgementDto resource updated
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      complaintJudgementExternalId:
+      complaintJudgementExternalId: E:
     }
 
     body:json: {
@@ -65,11 +66,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -120,7 +122,8 @@ example {
             "language": "",
             "formalDate": "",
             "internalReference": "",
-            "grounds": []
+            "grounds": [],
+            "fileName": ""
           },
           "dossierDate": ""
         }
@@ -134,12 +137,12 @@ example {
   description: Invalid input
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      complaintJudgementExternalId:
+      complaintJudgementExternalId: E:
     }
 
     body:json: {
@@ -147,11 +150,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -194,12 +198,12 @@ example {
   description: Invalid input
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      complaintJudgementExternalId:
+      complaintJudgementExternalId: E:
     }
 
     body:json: {
@@ -207,11 +211,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -254,12 +259,12 @@ example {
   description: Unauthorized
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      complaintJudgementExternalId:
+      complaintJudgementExternalId: E:
     }
 
     body:json: {
@@ -267,11 +272,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -314,12 +320,12 @@ example {
   description: Forbidden
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      complaintJudgementExternalId:
+      complaintJudgementExternalId: E:
     }
 
     body:json: {
@@ -327,11 +333,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -374,12 +381,12 @@ example {
   description: Not found
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      complaintJudgementExternalId:
+      complaintJudgementExternalId: E:
     }
 
     body:json: {
@@ -387,11 +394,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -434,12 +442,12 @@ example {
   description: Not found
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      complaintJudgementExternalId:
+      complaintJudgementExternalId: E:
     }
 
     body:json: {
@@ -447,11 +455,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -494,12 +503,12 @@ example {
   description: Method not allowed
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      complaintJudgementExternalId:
+      complaintJudgementExternalId: E:
     }
 
     body:json: {
@@ -507,11 +516,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -554,12 +564,12 @@ example {
   description: An error occurred
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      complaintJudgementExternalId:
+      complaintJudgementExternalId: E:
     }
 
     body:json: {
@@ -567,11 +577,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -602,7 +613,10 @@ example {
           "violations": [
             {
               "propertyPath": "",
-              "message": ""
+              "message": "",
+              "code": "",
+              "hint": "",
+              "payload": []
             }
           ],
           "detail": "",
@@ -620,12 +634,12 @@ example {
   description: An error occurred
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      complaintJudgementExternalId:
+      complaintJudgementExternalId: E:
     }
 
     body:json: {
@@ -633,11 +647,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -668,7 +683,10 @@ example {
           "violations": [
             {
               "propertyPath": "",
-              "message": ""
+              "message": "",
+              "code": "",
+              "hint": "",
+              "payload": []
             }
           ],
           "detail": "",
@@ -686,12 +704,12 @@ example {
   description: Server error
 
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/E::complaintJudgementExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/complaint-judgement/:complaintJudgementExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      complaintJudgementExternalId:
+      complaintJudgementExternalId: E:
     }
 
     body:json: {
@@ -699,11 +717,12 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
-          "grounds": [],
-          "internalReference": "",
           "language": "",
-          "type": ""
+          "type": "",
+          "grounds": [],
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",

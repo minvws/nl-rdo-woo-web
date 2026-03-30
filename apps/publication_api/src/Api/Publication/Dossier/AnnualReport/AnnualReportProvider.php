@@ -12,6 +12,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportRepository;
 use Shared\Service\ApiPlatformService;
+use Shared\ValueObject\ExternalId;
 
 use function count;
 
@@ -20,6 +21,7 @@ final readonly class AnnualReportProvider implements ProviderInterface
     public function __construct(
         private OrganisationRepository $organisationRepository,
         private AnnualReportRepository $annualReportRepository,
+        private AnnualReportMapper $annualReportMapper,
         private int $itemsPerPage,
     ) {
     }
@@ -38,7 +40,7 @@ final readonly class AnnualReportProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, $uriVariables['annualReportExternalId']);
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['annualReportExternalId']));
     }
 
     /**
@@ -52,16 +54,16 @@ final readonly class AnnualReportProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(AnnualReportMapper::fromEntities($annualReport), 0, count($annualReport));
+        return new ArrayPaginator($this->annualReportMapper->fromEntities($annualReport), 0, count($annualReport));
     }
 
-    private function provideSingle(Organisation $organisation, string $annualReportExternalId): ?AnnualReportDto
+    private function provideSingle(Organisation $organisation, ExternalId $annualReportExternalId): ?AnnualReportDto
     {
         $annualReport = $this->annualReportRepository->findByOrganisationAndExternalId($organisation, $annualReportExternalId);
         if ($annualReport === null) {
             return null;
         }
 
-        return AnnualReportMapper::fromEntity($annualReport);
+        return $this->annualReportMapper->fromEntity($annualReport);
     }
 }

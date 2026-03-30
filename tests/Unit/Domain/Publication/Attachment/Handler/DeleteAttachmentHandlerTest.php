@@ -49,17 +49,16 @@ class DeleteAttachmentHandlerTest extends UnitTestCase
     {
         $dossierUuid = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getAttachmentEntityClass')->andReturn(CovenantAttachment::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::DELETED);
+        $dossier->expects('getId')->andReturn($dossierUuid);
+        $dossier->expects('getStatus')->andReturn(DossierStatus::DELETED);
 
         $attachmentId = Uuid::v6();
         $attachment = Mockery::mock(CovenantAttachment::class);
-        $attachment->shouldReceive('getId')->andReturn($attachmentId);
-        $attachment->shouldReceive('getDossier')->andReturn($dossier);
-        $attachment->shouldReceive('getFileInfo->getName')->andReturn('foo');
-        $attachment->shouldReceive('getFileInfo->getType')->andReturn('pdf');
-        $attachment->shouldReceive('getFileInfo->getSize')->andReturn(123);
+        $attachment->expects('getId')->andReturn($attachmentId);
+        $attachment->expects('getDossier')->times(2)->andReturn($dossier);
+        $attachment->expects('getFileInfo->getName')->andReturn('foo');
+        $attachment->expects('getFileInfo->getType')->andReturn('pdf');
+        $attachment->expects('getFileInfo->getSize')->andReturn(123);
 
         $this->entityLoader
             ->expects('loadAndValidateAttachment')
@@ -79,17 +78,16 @@ class DeleteAttachmentHandlerTest extends UnitTestCase
     {
         $dossierUuid = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-        $dossier->shouldReceive('getAttachmentEntityClass')->andReturn(CovenantAttachment::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::DELETED);
+        $dossier->expects('getId')->andReturn($dossierUuid);
+        $dossier->expects('getStatus')->andReturn(DossierStatus::DELETED);
 
         $attachmentId = Uuid::v6();
         $attachment = Mockery::mock(CovenantAttachment::class);
-        $attachment->shouldReceive('getId')->andReturn($attachmentId);
-        $attachment->shouldReceive('getDossier')->andReturn($dossier);
-        $attachment->shouldReceive('getFileInfo->getName')->andReturn('foo');
-        $attachment->shouldReceive('getFileInfo->getType')->andReturn('pdf');
-        $attachment->shouldReceive('getFileInfo->getSize')->andReturn(123);
+        $attachment->expects('getId')->andReturn($attachmentId);
+        $attachment->expects('getDossier')->times(2)->andReturn($dossier);
+        $attachment->expects('getFileInfo->getName')->andReturn('foo');
+        $attachment->expects('getFileInfo->getType')->andReturn('pdf');
+        $attachment->expects('getFileInfo->getSize')->andReturn(123);
 
         $this->entityLoader
             ->expects('loadAttachment')

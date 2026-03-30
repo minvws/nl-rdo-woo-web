@@ -49,7 +49,7 @@ class BatchDownloadStorageTest extends UnitTestCase
     {
         $batch = Mockery::mock(BatchDownload::class);
         $batch
-            ->shouldReceive('getFilename')
+            ->expects('getFilename')
             ->andReturn($filename = 'foo/bar.zip');
 
         $stream = Mockery::mock(StreamInterface::class);
@@ -69,10 +69,11 @@ class BatchDownloadStorageTest extends UnitTestCase
     {
         $batch = Mockery::mock(BatchDownload::class);
         $batch
-            ->shouldReceive('getFilename')
+            ->expects('getFilename')
+            ->times(2)
             ->andReturn($filename = 'foo/bar.pdf');
         $batch
-            ->shouldReceive('getId')
+            ->expects('getId')
             ->andReturn(Uuid::v6());
 
         $this->filesystemOperator
@@ -91,7 +92,8 @@ class BatchDownloadStorageTest extends UnitTestCase
     {
         $batch = Mockery::mock(BatchDownload::class);
         $batch
-            ->shouldReceive('getFilename')
+            ->expects('getFilename')
+            ->times(2)
             ->andReturn($filename = 'foo/bar.pdf');
 
         $this->filesystemOperator
@@ -106,7 +108,7 @@ class BatchDownloadStorageTest extends UnitTestCase
     public function testRemoveFileForBatchWhenFilenameIsNotSet(): void
     {
         $batch = Mockery::mock(BatchDownload::class);
-        $batch->shouldReceive('getFilename')->andReturn('');
+        $batch->expects('getFilename')->andReturn('');
 
         $this->filesystemOperator->shouldNotReceive('delete');
 
@@ -119,10 +121,11 @@ class BatchDownloadStorageTest extends UnitTestCase
     {
         $batch = Mockery::mock(BatchDownload::class);
         $batch
-            ->shouldReceive('getFilename')
+            ->expects('getFilename')
+            ->times(3)
             ->andReturn($filename = 'foo/bar.pdf');
         $batch
-            ->shouldReceive('getId')
+            ->expects('getId')
             ->andReturn(Uuid::v6());
 
         $this->filesystemOperator

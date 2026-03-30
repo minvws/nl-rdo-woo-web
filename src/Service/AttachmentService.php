@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Shared\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
-use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
-use function array_column;
 
 readonly class AttachmentService
 {
     public function __construct(
-        private ValidatorInterface $validatorInterface,
+        private EntityManagerInterface $entityManager,
+        private ValidatorInterface $validator,
     ) {
     }
 
@@ -25,10 +24,24 @@ readonly class AttachmentService
      */
     public function validate(array $attachments): void
     {
-        $validationGroups = array_column(DossierValidationGroup::cases(), 'value');
-        $errors = $this->validatorInterface->validate($attachments, groups: $validationGroups);
+        $errors = $this->validator->validate($attachments);
+
         if ($errors->count() > 0) {
             throw new ValidationFailedException($attachments, $errors);
+        }
+    }
+
+    /**
+     * @param array<array-key,AbstractAttachment> $attachements
+     */
+    public function refreshAttachments(array $attachements): void
+    {
+        $unitOfWork = $this->entityManager->getUnitOfWork();
+
+        foreach ($attachements as $attachment) {
+            if ($this->entityManager->contains($attachment) && ! $unitOfWork->isScheduledForInsert($attachment)) {
+                $this->entityManager->refresh($attachment);
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ readonly class FileScanAuditLogger
 
     public function onFileScanned(FileScannedEvent $event): void
     {
-        $logEvent = (new FileUploadLogEvent())
+        $logEvent = new FileUploadLogEvent()
             ->withData([
                 'filename' => $event->path,
             ])

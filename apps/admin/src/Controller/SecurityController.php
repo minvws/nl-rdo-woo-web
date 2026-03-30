@@ -7,7 +7,6 @@ namespace Admin\Controller;
 use Admin\Form\User\ChangePasswordType;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
-use MinVWS\AuditLogger\Contracts\LoggableUser;
 use Shared\Service\Security\Roles;
 use Shared\Service\Security\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,9 +16,10 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webmozart\Assert\Assert;
 
 use function count;
-use function strval;
+use function is_string;
 
 class SecurityController extends AbstractController
 {
@@ -52,14 +52,15 @@ class SecurityController extends AbstractController
     {
         $form = $this->createForm(ChangePasswordType::class);
 
+        $user = $this->getUser();
+        Assert::isInstanceOf($user, User::class);
+
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var User $user */
-            $user = $this->getUser();
+            $plainPassword = $form->get('plainPassword')->getData();
+            Assert::string($plainPassword);
+            $hash = $this->passwordEncoder->hashPassword($user, $plainPassword);
 
-            // Encode the new password
-            $newpassword = strval($form->get('plainPassword')->getData());
-            $hash = $this->passwordEncoder->hashPassword($user, $newpassword);
             $user->setPassword($hash);
             $user->setChangepwd(false);
 
@@ -67,24 +68,18 @@ class SecurityController extends AbstractController
 
             $this->addFlash('backend', ['success' => $this->translator->trans('admin.user.password_changed')]);
 
-            // Redirect to target path if exists
-            if ($request->getSession()->has('target_path')) {
-                $targetPath = strval($request->getSession()->get('target_path'));
-                $request->getSession()->remove('target_path');
-
+            $targetPath = $request->getSession()->remove('target_path');
+            if (is_string($targetPath)) {
                 return $this->redirect($targetPath);
             }
 
             return $this->redirectToRoute('app_admin_user_profile');
         }
 
-        /** @var LoggableUser $loggedInUser */
-        $loggedInUser = $this->getUser();
-
         return $this->render('admin/security/profile.html.twig', [
             'form' => $form,
             'hasFormErrors' => count($form->getErrors(true)) > 0,
-            'user' => $loggedInUser,
+            'user' => $user,
             'role_descriptions' => Roles::roleDescriptions(),
         ]);
     }

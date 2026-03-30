@@ -38,7 +38,7 @@ class DocumentFileSetEventHandlerTest extends UnitTestCase
     public function testHandleDocumentFileSetProcessedUpdatesBatchDownloadForPublicDossier(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
         $dossierId = Uuid::v6();
 
         $event = new DocumentFileSetProcessedEvent($dossierId);
@@ -55,7 +55,7 @@ class DocumentFileSetEventHandlerTest extends UnitTestCase
     public function testHandleDocumentFileSetProcessedSkipsNonPublicDossier(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
+        $dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
         $dossierId = Uuid::v6();
 
         $event = new DocumentFileSetProcessedEvent($dossierId);

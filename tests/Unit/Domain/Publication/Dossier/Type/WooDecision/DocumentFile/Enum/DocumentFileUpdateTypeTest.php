@@ -14,7 +14,7 @@ class DocumentFileUpdateTypeTest extends UnitTestCase
     public function testForDocumentWithWithdrawnDocument(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('isWithdrawn')->andReturnTrue();
+        $document->expects('isWithdrawn')->andReturnTrue();
 
         $updateType = DocumentFileUpdateType::forDocument($document);
 
@@ -27,8 +27,8 @@ class DocumentFileUpdateTypeTest extends UnitTestCase
     public function testForDocumentWithUploadedDocument(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
-        $document->shouldReceive('isUploaded')->andReturnTrue();
+        $document->expects('isWithdrawn')->andReturnFalse();
+        $document->expects('isUploaded')->andReturnTrue();
 
         $updateType = DocumentFileUpdateType::forDocument($document);
 
@@ -41,8 +41,8 @@ class DocumentFileUpdateTypeTest extends UnitTestCase
     public function testForDocumentWithoutUploadedDocument(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
-        $document->shouldReceive('isUploaded')->andReturnFalse();
+        $document->expects('isWithdrawn')->andReturnFalse();
+        $document->expects('isUploaded')->andReturnFalse();
 
         $updateType = DocumentFileUpdateType::forDocument($document);
 

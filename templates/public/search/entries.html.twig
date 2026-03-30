@@ -23,7 +23,7 @@
         {% endif %}
 
         {# Suggestions #}
-        {% set suggestionsId = constant('Shared\\Domain\\Search\\Index\\ElasticConfig::SUGGESTIONS_SEARCH_INPUT') %}
+        {% set suggestionsId = ELASTIC_CONFIG.suggestionsSearchInput %}
         {% if result.suggestion(suggestionsId) is not null and result.suggestion(suggestionsId).entries|length %}
         <p class="italic pt-1">
             {% if result.suggestion(suggestionsId).entries | length == 1 %}

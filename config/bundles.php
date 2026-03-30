@@ -15,7 +15,6 @@ return [
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
     League\FlysystemBundle\FlysystemBundle::class => ['all' => true],
     Snc\RedisBundle\SncRedisBundle::class => ['all' => true],
-    WhiteOctober\BreadcrumbsBundle\WhiteOctoberBreadcrumbsBundle::class => ['all' => true],
     Presta\SitemapBundle\PrestaSitemapBundle::class => ['all' => true],
     Symfony\UX\TwigComponent\TwigComponentBundle::class => ['all' => true],
     MinVWS\AuditLoggerBundle\AuditLoggerBundle::class => ['all' => true],
@@ -25,4 +24,5 @@ return [
     Zenstruck\Foundry\ZenstruckFoundryBundle::class => ['dev' => true, 'test' => true],
     DAMA\DoctrineTestBundle\DAMADoctrineTestBundle::class => ['test' => true],
     Pentatrion\ViteBundle\PentatrionViteBundle::class => ['all' => true],
+    Huluti\BreadcrumbsBundle\HulutiBreadcrumbsBundle::class => ['all' => true],
 ];

@@ -50,13 +50,13 @@ class SitemapDossierSubscriberTest extends UnitTestCase
         ]);
 
         $queryBuilder = Mockery::mock(QueryBuilder::class);
-        $queryBuilder->shouldReceive('select')->andReturnSelf();
-        $queryBuilder->shouldReceive('where')->andReturnSelf();
-        $queryBuilder->shouldReceive('setParameter')->andReturnSelf();
-        $queryBuilder->shouldReceive('getQuery')->andReturn($query);
+        $queryBuilder->expects('select')->andReturnSelf();
+        $queryBuilder->expects('where')->andReturnSelf();
+        $queryBuilder->expects('setParameter')->andReturnSelf();
+        $queryBuilder->expects('getQuery')->andReturn($query);
 
         $this->dossierRepository
-            ->shouldReceive('createQueryBuilder')
+            ->expects('createQueryBuilder')
             ->andReturn($queryBuilder);
 
         $this->dossierPathHelper->expects('getAbsoluteDetailsPath')->with($dossier)->andReturn($url = '/foo/bar');

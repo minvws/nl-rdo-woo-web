@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Unit\Domain\Security;
 
 use Mockery;
-use PublicationApi\Domain\Security\ApiUser;
 use PublicationApi\Domain\Security\GlobDomainValidator;
 use PublicationApi\Domain\Security\PublicationApiAuthenticator;
+use Shared\Service\Security\ApiUser;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;

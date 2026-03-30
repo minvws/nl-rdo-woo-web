@@ -46,10 +46,18 @@ export default defineConfig({
     cors: {
       origin: [
         'http://localhost:8000',
-        'https://public-woo.local',
-        'http://public-woo.local',
-        'https://admin-woo.local',
-        'http://admin-woo.local',
+
+        'https://public-minvws.local',
+        'http://public-minvws.local',
+
+        'https://public-minfin.local',
+        'http://public-minfin.local',
+
+        'https://admin-minvws.local',
+        'http://admin-minvws.local',
+
+        'https://admin-minfin.local',
+        'http://admin-minfin.local',
       ],
     },
     host: 'localhost',

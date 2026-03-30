@@ -4,7 +4,6 @@ Documentation       Tests that focus on the public pages.
 ...                 To run only this suite, run the tag 'public-init'.
 Resource            ../../resources/Dossier.resource
 Resource            ../../resources/Setup.resource
-Library             DependencyLibrary
 Suite Setup         Suite Setup
 Test Setup          Test Setup
 Test Teardown       Run Keyword If Test Failed  Take Screenshot

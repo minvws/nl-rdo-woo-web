@@ -95,7 +95,10 @@ final class WooIndexTest extends SharedWebTestCase
         $this->setTestNow('2025-01-01 00:00:00');
 
         // On the 7th iteration we will reach the file size limit, the rest will return 0 bytes
-        $this->streamHelper->shouldReceive('size')->andReturnValues([0, 0, 0, 0, 0, 0, 49 * 1024 * 1024 + 1, 0]);
+        $this->streamHelper
+            ->expects('size')
+            ->times(29)
+            ->andReturnValues([0, 0, 0, 0, 0, 0, 49 * 1024 * 1024 + 1, 0]);
 
         $wooIndexSitemap = $this->getWooIndexSitemap(Uuid::fromRfc4122('1efe8c60-9d44-6c08-8984-db09e5d32982'));
         $subPath = $this->wooIndexNamer->getStorageSubpath($wooIndexSitemap);
@@ -122,7 +125,6 @@ final class WooIndexTest extends SharedWebTestCase
 
         $reflection = new ReflectionClass($wooIndexSitemap);
         $property = $reflection->getProperty('id');
-        $property->setAccessible(true);
         $property->setValue($wooIndexSitemap, $uuid);
 
         return $wooIndexSitemap;

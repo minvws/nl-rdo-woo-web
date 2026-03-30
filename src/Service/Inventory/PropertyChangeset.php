@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory;
 
+use function array_any;
 use function array_key_exists;
 
 class PropertyChangeset
@@ -20,13 +21,7 @@ class PropertyChangeset
 
     public function hasChanges(): bool
     {
-        foreach ($this->changes as $changed) {
-            if ($changed) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->changes, fn ($changed) => $changed);
     }
 
     public function isChanged(string $key): bool

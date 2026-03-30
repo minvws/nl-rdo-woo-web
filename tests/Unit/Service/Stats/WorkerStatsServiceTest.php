@@ -7,7 +7,6 @@ namespace Shared\Tests\Unit\Service\Stats;
 use Carbon\CarbonImmutable;
 use DateTimeImmutable;
 use Mockery;
-use Mockery\MockInterface;
 use Shared\Service\Stats\Handler\StatsHandlerInterface;
 use Shared\Service\Stats\WorkerStatsService;
 use Shared\Tests\Unit\UnitTestCase;
@@ -41,8 +40,7 @@ final class WorkerStatsServiceTest extends UnitTestCase
         $section = 'test-section';
         $statsHandlerOne = Mockery::mock(StatsHandlerInterface::class);
         $statsHandlerOne
-            ->shouldReceive('store')
-            ->once()
+            ->expects('store')
             ->with(
                 Mockery::on(fn (DateTimeImmutable $date): bool => $date == $testNow),
                 $hostname,
@@ -51,8 +49,7 @@ final class WorkerStatsServiceTest extends UnitTestCase
             );
         $statsHandlerTwo = Mockery::mock(StatsHandlerInterface::class);
         $statsHandlerTwo
-            ->shouldReceive('store')
-            ->once()
+            ->expects('store')
             ->with(
                 Mockery::on(fn (DateTimeImmutable $date): bool => $date == $testNow),
                 $hostname,
@@ -62,13 +59,11 @@ final class WorkerStatsServiceTest extends UnitTestCase
 
         $handlers = [$statsHandlerOne, $statsHandlerTwo];
 
-        /** @var WorkerStatsService&MockInterface $statsService */
         $statsService = Mockery::mock(WorkerStatsService::class, [$handlers])
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
         $statsService
-            ->shouldReceive('getHostname')
-            ->once()
+            ->expects('getHostname')
             ->andReturn($hostname);
         $result = $statsService->measure($section, $closure, $args);
 

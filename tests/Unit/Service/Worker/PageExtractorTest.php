@@ -37,13 +37,12 @@ final class PageExtractorTest extends UnitTestCase
     public function testThrowsExceptionWhenExtractFails(): void
     {
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
+        $entity->expects('getId')->andReturn(Uuid::v6());
 
         $context = Mockery::mock(PdfPageProcessingContext::class);
-        $context->shouldReceive('getWorkDirPath')->andReturn('/foo/bar');
-        $context->shouldReceive('getLocalDocument')->andReturn('/baz/doc.pdf');
-        $context->shouldReceive('getPageNumber')->andReturn(2);
-        $context->shouldReceive('getEntity')->andReturn($entity);
+        $context->expects('getWorkDirPath')->andReturn('/foo/bar');
+        $context->expects('getPageNumber')->andReturn(2);
+        $context->expects('getEntity')->times(2)->andReturn($entity);
 
         $result = new PdftkPageExtractResult(
             exitCode: 1,
@@ -55,8 +54,7 @@ final class PageExtractorTest extends UnitTestCase
         );
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('pdftk.extractPage', Mockery::on(function () {
                 return true;
             }))
@@ -69,14 +67,8 @@ final class PageExtractorTest extends UnitTestCase
 
     public function testSetLocalPageDocumentOnSuccess(): void
     {
-        $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
-
         $context = Mockery::mock(PdfPageProcessingContext::class);
-        $context->shouldReceive('getWorkDirPath')->andReturn('/foo/bar');
-        $context->shouldReceive('getLocalDocument')->andReturn('/baz/doc.pdf');
-        $context->shouldReceive('getPageNumber')->andReturn(2);
-        $context->shouldReceive('getEntity')->andReturn($entity);
+        $context->expects('getWorkDirPath')->andReturn('/foo/bar');
 
         $result = new PdftkPageExtractResult(
             exitCode: 0,
@@ -88,8 +80,7 @@ final class PageExtractorTest extends UnitTestCase
         );
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('pdftk.extractPage', Mockery::on(function () {
                 return true;
             }))

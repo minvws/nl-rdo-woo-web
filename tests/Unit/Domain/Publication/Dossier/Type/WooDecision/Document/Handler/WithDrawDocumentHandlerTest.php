@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document\Handler;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
@@ -58,7 +57,6 @@ class WithDrawDocumentHandlerTest extends UnitTestCase
 
         $documentId = Uuid::v6();
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossier]));
 
         $this->wooDecisionRepository->expects('find')->with($dossierId)->andReturn($dossier);
         $this->documentRepository->expects('findOneByDossierAndId')->with($dossier, $documentId)->andReturn($document);

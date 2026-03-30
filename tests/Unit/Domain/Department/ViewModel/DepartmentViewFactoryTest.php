@@ -22,14 +22,13 @@ final class DepartmentViewFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        /** @var Department&MockInterface $department */
         $department = Mockery::mock(Department::class);
-        $department->shouldReceive('getName')->andReturn($expectedName = 'my name');
-        $department->shouldReceive('getShortTag')->andReturn($expectedShortTag = 'my short tag');
-        $department->shouldReceive('getSlug')->andReturn($expectedSlug = 'my-slug');
+        $department->expects('getName')->andReturn($expectedName = 'my name');
+        $department->expects('getShortTag')->andReturn($expectedShortTag = 'my short tag');
+        $department->expects('getSlug')->andReturn($expectedSlug = 'my-slug');
 
         $this->urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with('app_department_detail', ['slug' => $expectedSlug])
             ->andReturn($expectedUrl = 'my-url');
 
@@ -44,36 +43,33 @@ final class DepartmentViewFactoryTest extends UnitTestCase
 
     public function testMakeCollection(): void
     {
-        /** @var Department&MockInterface $departmentOne */
         $departmentOne = Mockery::mock(Department::class);
-        $departmentOne->shouldReceive('getName')->andReturn('Department B');
-        $departmentOne->shouldReceive('getShortTag')->andReturn($expectedShortB = 'my short tag b');
-        $departmentOne->shouldReceive('getSlug')->andReturn($expectedSlugB = 'my-slug-b');
+        $departmentOne->expects('getName')->andReturn('Department B');
+        $departmentOne->expects('getShortTag')->andReturn($expectedShortB = 'my short tag b');
+        $departmentOne->expects('getSlug')->andReturn($expectedSlugB = 'my-slug-b');
 
-        /** @var Department&MockInterface $departmentTwo */
         $departmentTwo = Mockery::mock(Department::class);
-        $departmentTwo->shouldReceive('getName')->andReturn('Department C');
-        $departmentTwo->shouldReceive('getShortTag')->andReturn($expectedShortC = 'my short tag c');
-        $departmentTwo->shouldReceive('getSlug')->andReturn($expectedSlugC = 'my-slug-c');
+        $departmentTwo->expects('getName')->andReturn('Department C');
+        $departmentTwo->expects('getShortTag')->andReturn($expectedShortC = 'my short tag c');
+        $departmentTwo->expects('getSlug')->andReturn($expectedSlugC = 'my-slug-c');
 
-        /** @var Department&MockInterface $departmentThree */
         $departmentThree = Mockery::mock(Department::class);
-        $departmentThree->shouldReceive('getName')->andReturn('Department A');
-        $departmentThree->shouldReceive('getShortTag')->andReturn($expectedShortA = 'my short tag a');
-        $departmentThree->shouldReceive('getSlug')->andReturn($expectedSlugA = 'my-slug-a');
+        $departmentThree->expects('getName')->andReturn('Department A');
+        $departmentThree->expects('getShortTag')->andReturn($expectedShortA = 'my short tag a');
+        $departmentThree->expects('getSlug')->andReturn($expectedSlugA = 'my-slug-a');
 
         $this->urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with('app_department_detail', ['slug' => $expectedSlugA])
             ->andReturn($expectedUrlA = 'my-url-a');
 
         $this->urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with('app_department_detail', ['slug' => $expectedSlugB])
             ->andReturn($expectedUrlB = 'my-url-b');
 
         $this->urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with('app_department_detail', ['slug' => $expectedSlugC])
             ->andReturn($expectedUrlC = 'my-url-c');
 

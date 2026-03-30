@@ -52,7 +52,7 @@ class OrganisationFormType extends AbstractType
                 'empty_data' => '',
                 'constraints' => [
                     new NotBlank(),
-                    new Length(['min' => 3, 'max' => 255]),
+                    new Length(min: 3, max: 255),
                 ],
             ])
             ->add('departments', EntityType::class, [

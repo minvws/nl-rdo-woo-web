@@ -6,12 +6,12 @@ namespace Shared\Tests\Unit\Domain\Publication\Dossier\Handler;
 
 use Mockery;
 use Mockery\MockInterface;
+use Psr\Log\NullLogger;
 use Shared\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
 use Shared\Domain\Publication\Dossier\DossierPublisher;
 use Shared\Domain\Publication\Dossier\Event\DossierUpdatedEvent;
 use Shared\Domain\Publication\Dossier\Handler\UpdateDossierPublicationHandler;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
-use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
 use Shared\Service\DossierService;
 use Shared\Tests\Unit\UnitTestCase;
 use stdClass;
@@ -24,7 +24,7 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
     private MessageBusInterface&MockInterface $messageBus;
     private DossierPublisher&MockInterface $dossierPublisher;
     private UpdateDossierPublicationHandler $handler;
-    private MockInterface&DossierService $dossierService;
+    private DossierService&MockInterface $dossierService;
 
     protected function setUp(): void
     {
@@ -36,6 +36,7 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
             $this->dossierService,
             $this->messageBus,
             $this->dossierPublisher,
+            new NullLogger(),
         );
 
         parent::setUp();
@@ -45,8 +46,7 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId);
-        $dossier->shouldReceive('isCompleted')->andReturnTrue();
+        $dossier->expects('getId')->times(2)->andReturn($dossierId);
 
         $this->dossierService->expects('validateCompletion')->with($dossier, false);
 
@@ -73,8 +73,7 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId);
-        $dossier->shouldReceive('isCompleted')->andReturnTrue();
+        $dossier->expects('getId')->times(2)->andReturn($dossierId);
 
         $this->dossierService->expects('validateCompletion')->with($dossier, false);
 
@@ -102,8 +101,7 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId);
-        $dossier->shouldReceive('isCompleted')->andReturnTrue();
+        $dossier->expects('getId')->times(2)->andReturn($dossierId);
 
         $this->dossierService->expects('validateCompletion')->with($dossier, false);
 
@@ -132,16 +130,13 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId);
-        $dossier->shouldReceive('isCompleted')->andReturnTrue();
+        $dossier->expects('getId')->times(3)->andReturn($dossierId);
 
         $this->dossierService->expects('validateCompletion')->with($dossier, false);
 
         $this->dossierPublisher->expects('canPublish')->with($dossier)->andReturnFalse();
         $this->dossierPublisher->expects('canPublishAsPreview')->with($dossier)->andReturnFalse();
         $this->dossierPublisher->expects('canSchedulePublication')->with($dossier)->andReturnFalse();
-
-        $this->expectException(DossierWorkflowException::class);
 
         $this->handler->__invoke(
             new UpdateDossierPublicationCommand($dossier)

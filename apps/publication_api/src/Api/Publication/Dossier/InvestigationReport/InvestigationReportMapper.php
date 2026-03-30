@@ -4,41 +4,48 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\Dossier\InvestigationReport;
 
-use PublicationApi\Api\Publication\Attachment\AttachmentResponseDto;
+use PublicationApi\Api\Publication\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Publication\Department\DepartmentReferenceDto;
-use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDto;
+use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Publication\Organisation\OrganisationReferenceDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-class InvestigationReportMapper
+readonly class InvestigationReportMapper
 {
+    public function __construct(
+        private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
+        private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+    ) {
+    }
+
     /**
      * @param array<array-key,InvestigationReport> $investigationReports
      *
      * @return list<InvestigationReportDto>
      */
-    public static function fromEntities(array $investigationReports): array
+    public function fromEntities(array $investigationReports): array
     {
         return array_values(array_map(
-            self::fromEntity(...),
+            $this->fromEntity(...),
             $investigationReports,
         ));
     }
 
-    public static function fromEntity(InvestigationReport $investigationReport): InvestigationReportDto
+    public function fromEntity(InvestigationReport $investigationReport): InvestigationReportDto
     {
         $mainDocument = $investigationReport->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = MainDocumentResponseDto::fromEntity($mainDocument);
+        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
 
         $dateFrom = $investigationReport->getDateFrom();
         Assert::notNull($dateFrom);
@@ -60,7 +67,7 @@ class InvestigationReportMapper
             $investigationReport->getPublicationDate(),
             $investigationReport->getStatus(),
             $mainDocumentDto,
-            AttachmentResponseDto::fromEntities($investigationReport->getAttachments()->toArray()),
+            $this->attachmentResponseDtoFactory->fromEntities($investigationReport->getAttachments()->toArray()),
             $dateFrom,
         );
     }
@@ -70,7 +77,7 @@ class InvestigationReportMapper
         Organisation $organisation,
         Department $department,
         ?Subject $subject,
-        string $externalId,
+        ExternalId $externalId,
     ): InvestigationReport {
         $investigationReport = new InvestigationReport();
         $investigationReport->setExternalId($externalId);

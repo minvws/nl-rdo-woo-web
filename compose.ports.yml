@@ -1,15 +1,13 @@
 services:
   public:
     ports:
-      - ${DOCKER_PUBLIC_PORT:-8000}:80
+      - ${DOCKER_MINVWS_PUBLIC_PORT:-8000}:80
+      - ${DOCKER_MINFIN_PUBLIC_PORT:-8100}:81
 
   admin:
     ports:
-      - ${DOCKER_ADMIN_PORT:-8001}:80
-
-  publication_api:
-    ports:
-      - ${DOCKER_PUBLICATION_API_PORT:-8002}:80
+      - ${DOCKER_MINVWS_ADMIN_PORT:-8001}:80
+      - ${DOCKER_MINFIN_ADMIN_PORT:-8101}:81
 
   tika:
     ports:

@@ -44,9 +44,9 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
 
-        $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
-        $this->repository->shouldReceive('find')->once()->andReturn($entity);
-        $this->subTypeIndexer->shouldReceive('index')->once()->with($entity, null, null);
+        $this->doctrine->expects('getRepository')->with($entityClass)->andReturn($this->repository);
+        $this->repository->expects('find')->andReturn($entity);
+        $this->subTypeIndexer->expects('index')->with($entity, null, null);
 
         $handler = new IngestMetadataOnlyHandler($this->doctrine, $this->logger, $this->subTypeIndexer);
         $handler->__invoke($message);
@@ -62,9 +62,9 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
 
-        $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
-        $this->repository->shouldReceive('find')->once()->andReturn($entity);
-        $this->subTypeIndexer->shouldReceive('index')->once()->with($entity, [], []);
+        $this->doctrine->expects('getRepository')->with($entityClass)->andReturn($this->repository);
+        $this->repository->expects('find')->andReturn($entity);
+        $this->subTypeIndexer->expects('index')->with($entity, [], []);
 
         $handler = new IngestMetadataOnlyHandler($this->doctrine, $this->logger, $this->subTypeIndexer);
         $handler->__invoke($message);
@@ -78,9 +78,9 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
             false,
         );
 
-        $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
-        $this->repository->shouldReceive('find')->once()->andReturnNull();
-        $this->logger->shouldReceive('warning')->once()->with('No entity found in IngestMetadataOnlyHandler', [
+        $this->doctrine->expects('getRepository')->with($entityClass)->andReturn($this->repository);
+        $this->repository->expects('find')->andReturnNull();
+        $this->logger->expects('warning')->with('No entity found in IngestMetadataOnlyHandler', [
             'id' => $id->toRfc4122(),
             'class' => $entityClass,
         ]);
@@ -100,11 +100,11 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
 
-        $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
-        $this->repository->shouldReceive('find')->once()->andReturn($entity);
-        $this->subTypeIndexer->shouldReceive('index')->andThrow($thrownException = new RuntimeException('My exception'));
+        $this->doctrine->expects('getRepository')->with($entityClass)->andReturn($this->repository);
+        $this->repository->expects('find')->andReturn($entity);
+        $this->subTypeIndexer->expects('index')->andThrow($thrownException = new RuntimeException('My exception'));
 
-        $this->logger->shouldReceive('error')->once()->with('Failed to update ES document in IngestMetadataOnlyHandler', [
+        $this->logger->expects('error')->with('Failed to update ES document in IngestMetadataOnlyHandler', [
             'id' => $id->toRfc4122(),
             'class' => $entityClass,
             'exception' => $thrownException->getMessage(),

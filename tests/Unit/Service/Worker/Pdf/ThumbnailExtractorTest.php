@@ -132,7 +132,7 @@ final class ThumbnailExtractorTest extends UnitTestCase
     {
         $pageNr = 345;
         $context = Mockery::mock(PdfPageProcessingContext::class);
-        $context->shouldReceive('getPageNumber')->andReturn($pageNr);
+        $context->expects('getPageNumber')->andReturn($pageNr);
 
         self::assertFalse($this->extractor->needsThumbGeneration($context));
     }
@@ -143,8 +143,8 @@ final class ThumbnailExtractorTest extends UnitTestCase
         $entity = Mockery::mock(EntityWithFileInfo::class);
 
         $context = Mockery::mock(PdfPageProcessingContext::class);
-        $context->shouldReceive('getPageNumber')->andReturn($pageNr);
-        $context->shouldReceive('getEntity')->andReturn($entity);
+        $context->expects('getPageNumber')->times(2)->andReturn($pageNr);
+        $context->expects('getEntity')->andReturn($entity);
 
         $this->thumbnailStorageService->expects('exists')->with($entity, $pageNr)->andReturnFalse();
 
@@ -157,8 +157,8 @@ final class ThumbnailExtractorTest extends UnitTestCase
         $entity = Mockery::mock(EntityWithFileInfo::class);
 
         $context = Mockery::mock(PdfPageProcessingContext::class);
-        $context->shouldReceive('getPageNumber')->andReturn($pageNr);
-        $context->shouldReceive('getEntity')->andReturn($entity);
+        $context->expects('getPageNumber')->times(2)->andReturn($pageNr);
+        $context->expects('getEntity')->andReturn($entity);
 
         $this->thumbnailStorageService->expects('exists')->with($entity, $pageNr)->andReturnTrue();
 

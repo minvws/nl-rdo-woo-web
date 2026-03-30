@@ -12,6 +12,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportRepository;
 use Shared\Service\ApiPlatformService;
+use Shared\ValueObject\ExternalId;
 
 use function count;
 
@@ -20,6 +21,7 @@ final readonly class InvestigationReportProvider implements ProviderInterface
     public function __construct(
         private OrganisationRepository $organisationRepository,
         private InvestigationReportRepository $investigationReportRepository,
+        private InvestigationReportMapper $investigationReportMapper,
         private int $itemsPerPage,
     ) {
     }
@@ -38,7 +40,7 @@ final readonly class InvestigationReportProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, $uriVariables['investigationReportExternalId']);
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['investigationReportExternalId']));
     }
 
     /**
@@ -52,16 +54,16 @@ final readonly class InvestigationReportProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(InvestigationReportMapper::fromEntities($investigationReports), 0, count($investigationReports));
+        return new ArrayPaginator($this->investigationReportMapper->fromEntities($investigationReports), 0, count($investigationReports));
     }
 
-    private function provideSingle(Organisation $organisation, string $investigationReportExternalId): ?InvestigationReportDto
+    private function provideSingle(Organisation $organisation, ExternalId $investigationReportExternalId): ?InvestigationReportDto
     {
         $investigationReport = $this->investigationReportRepository->findByOrganisationAndExternalId($organisation, $investigationReportExternalId);
         if ($investigationReport === null) {
             return null;
         }
 
-        return InvestigationReportMapper::fromEntity($investigationReport);
+        return $this->investigationReportMapper->fromEntity($investigationReport);
     }
 }

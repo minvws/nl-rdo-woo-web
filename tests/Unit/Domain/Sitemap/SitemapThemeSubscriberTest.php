@@ -40,7 +40,6 @@ class SitemapThemeSubscriberTest extends UnitTestCase
 
         $this->themeManager
             ->expects('getViewsForAllThemes')
-            ->once()
             ->andReturn($this->iterableToGenerator([$themeView]));
 
         $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);

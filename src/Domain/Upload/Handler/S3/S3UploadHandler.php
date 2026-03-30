@@ -11,6 +11,7 @@ use Shared\Domain\Upload\Result\UploadCompletedResult;
 use Shared\Domain\Upload\Result\UploadResultInterface;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadRequest;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 use function filesize;
@@ -34,13 +35,14 @@ readonly class S3UploadHandler implements UploadHandlerInterface
     private function handleMultipartUpload(UploadEntity $uploadEntity, UploadRequest $request): UploadResultInterface
     {
         if ($request->chunkIndex === 0) {
-            $s3UploadId = $this->s3UploadHelper->createMultipartUpload($request);
-            $uploadEntity->setExternalId($s3UploadId);
+            $externalId = ExternalId::create($this->s3UploadHelper->createMultipartUpload($request));
+            $uploadEntity->setExternalId($externalId);
         } else {
-            $s3UploadId = $uploadEntity->getExternalId();
+            $externalId = $uploadEntity->getExternalId();
         }
 
-        Assert::notNull($s3UploadId);
+        Assert::notNull($externalId);
+        $s3UploadId = $externalId->__toString();
 
         $this->s3UploadHelper->uploadPart($request, $s3UploadId);
 

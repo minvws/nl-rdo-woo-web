@@ -15,7 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webmozart\Assert\Assert;
 
-#[AsCommand(name: self::COMMAND_NAME, description: 'Creates a new ES index')]
+#[AsCommand(name: self::COMMAND_NAME, description: 'Creates a new ES index', help: 'Creates a new ES index')]
 class Create extends Command
 {
     public const string COMMAND_NAME = 'woopie:index:create';
@@ -23,6 +23,7 @@ class Create extends Command
     public function __construct(
         protected ElasticIndexManager $indexService,
         protected MappingService $mappingService,
+        private readonly ElasticConfig $elasticConfig,
     ) {
         parent::__construct();
     }
@@ -35,8 +36,7 @@ class Create extends Command
                 new InputArgument('version', InputArgument::REQUIRED, 'Mapping version to use or "latest" for the latest version'),
                 new InputOption('read', 'r', InputOption::VALUE_NONE, 'Set read alias'),
                 new InputOption('write', 'w', InputOption::VALUE_NONE, 'Set write alias'),
-            ])
-            ->setHelp('Creates a new ES index');
+            ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -64,10 +64,10 @@ class Create extends Command
         $this->indexService->create($name, $version);
 
         if ($input->getOption('read')) {
-            $this->indexService->switch(ElasticConfig::READ_INDEX, '*', $name);
+            $this->indexService->switch($this->elasticConfig->readIndex, '*', $name);
         }
         if ($input->getOption('write')) {
-            $this->indexService->switch(ElasticConfig::WRITE_INDEX, '*', $name);
+            $this->indexService->switch($this->elasticConfig->writeIndex, '*', $name);
         }
 
         return self::SUCCESS;

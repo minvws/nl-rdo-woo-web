@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\Type\Disposition;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Override;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -35,6 +36,7 @@ class DispositionAttachment extends AbstractAttachment
     /**
      * @return list<AttachmentType>
      */
+    #[Override]
     public static function getAllowedTypes(): array
     {
         $filterTypes = DispositionMainDocument::getAllowedTypes();

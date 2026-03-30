@@ -43,16 +43,15 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
 
     public function testCreateContentThrowsExceptionWhenDownloadFails(): void
     {
-        $this->fileInfo->shouldReceive('isUploaded')->andReturnTrue();
+        $this->fileInfo->expects('isUploaded')->andReturnTrue();
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
+        $entity->expects('getFileInfo')->andReturn($this->fileInfo);
+        $entity->expects('getId')->andReturn(Uuid::v6());
         $pageNumber = 123;
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('download.entity', Mockery::on(function (Closure $closure) {
                 $closure();
 
@@ -69,18 +68,16 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
 
     public function testCreateContentThrowsExceptionWhenTempDirCannotBeCreated(): void
     {
-        $this->fileInfo->shouldReceive('isUploaded')->andReturnTrue();
+        $this->fileInfo->expects('isUploaded')->andReturnTrue();
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
+        $entity->expects('getFileInfo')->andReturn($this->fileInfo);
 
         $localFile = '/local/file.pdf';
         $pageNumber = 123;
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('download.entity', Mockery::on(function (Closure $closure) use ($localFile) {
                 $result = $closure();
 
@@ -101,19 +98,17 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
 
     public function testCreateContentSuccessful(): void
     {
-        $this->fileInfo->shouldReceive('isUploaded')->andReturnTrue();
+        $this->fileInfo->expects('isUploaded')->andReturnTrue();
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
-        $entity->shouldReceive('getId')->andReturn(Uuid::v6());
+        $entity->expects('getFileInfo')->andReturn($this->fileInfo);
 
         $localFile = '/local/file.pdf';
         $tempDir = '/tmp/dir';
         $pageNumber = 123;
 
         $this->statsService
-            ->shouldReceive('measure')
-            ->once()
+            ->expects('measure')
             ->with('download.entity', Mockery::on(function (Closure $closure) use ($localFile) {
                 $result = $closure();
 
@@ -137,10 +132,10 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
 
     public function testCreateContextOnEntityWithoutUploadedFile(): void
     {
-        $this->fileInfo->shouldReceive('isUploaded')->andReturnFalse();
+        $this->fileInfo->expects('isUploaded')->andReturnFalse();
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo')->andReturn($this->fileInfo);
+        $entity->expects('getFileInfo')->andReturn($this->fileInfo);
 
         $pageNumber = 123;
 
@@ -152,8 +147,8 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
     public function testTeardown(): void
     {
         $context = Mockery::mock(PdfPageProcessingContext::class);
-        $context->shouldReceive('getLocalDocument')->andReturn($localDocument = '/local/file.pdf');
-        $context->shouldReceive('getWorkDirPath')->andReturn($workDir = '/temp/dir');
+        $context->expects('getLocalDocument')->andReturn($localDocument = '/local/file.pdf');
+        $context->expects('getWorkDirPath')->andReturn($workDir = '/temp/dir');
 
         $this->entityStorage->expects('removeDownload')->with($localDocument);
         $this->localFilesytem->expects('deleteDirectory')->with($workDir);

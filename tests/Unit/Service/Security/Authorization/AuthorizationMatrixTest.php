@@ -41,7 +41,6 @@ class AuthorizationMatrixTest extends UnitTestCase
         $this->user = Mockery::mock(User::class);
 
         $this->mockSecurity = Mockery::mock(Security::class);
-        $this->mockSecurity->shouldReceive('getUser')->andReturn($this->user);
 
         $this->mockRequestStack = Mockery::mock(RequestStack::class);
         $this->entryStore = new AuthorizationEntryRequestStore($this->mockRequestStack);
@@ -64,6 +63,8 @@ class AuthorizationMatrixTest extends UnitTestCase
 
     public function testAdminUser(): void
     {
+        $this->mockSecurity->expects('getUser')->times(6)->andReturn($this->user);
+
         $this->setupRoles(['ROLE_ADMIN']);
 
         self::assertTrue($this->authorizationMatrix->isAuthorized('user', 'create'));
@@ -81,6 +82,8 @@ class AuthorizationMatrixTest extends UnitTestCase
 
     public function testRegularUser(): void
     {
+        $this->mockSecurity->expects('getUser')->times(6)->andReturn($this->user);
+
         $this->setupRoles(['ROLE_BALIE']);
 
         self::assertFalse($this->authorizationMatrix->isAuthorized('user', 'create'));
@@ -103,7 +106,7 @@ class AuthorizationMatrixTest extends UnitTestCase
         $entries = $this->getEntries();
         $request = new Request();
         $request->attributes->set(AuthorizationMatrix::AUTH_MATRIX_ATTRIB, [$entries[0]]);
-        $this->mockRequestStack->shouldReceive('getCurrentRequest')->andReturn($request);
+        $this->mockRequestStack->expects('getCurrentRequest')->times(3)->andReturn($request);
 
         self::assertTrue($this->authorizationMatrix->hasFilter(AuthorizationMatrixFilter::ORGANISATION_ONLY));
         self::assertFalse($this->authorizationMatrix->hasFilter(AuthorizationMatrixFilter::PUBLISHED_DOSSIERS));
@@ -117,7 +120,7 @@ class AuthorizationMatrixTest extends UnitTestCase
         $entries = $this->getEntries();
         $request = new Request();
         $request->attributes->set(AuthorizationMatrix::AUTH_MATRIX_ATTRIB, [$entries[1]]);
-        $this->mockRequestStack->shouldReceive('getCurrentRequest')->andReturn($request);
+        $this->mockRequestStack->expects('getCurrentRequest')->times(3)->andReturn($request);
 
         self::assertFalse($this->authorizationMatrix->hasFilter(AuthorizationMatrixFilter::ORGANISATION_ONLY));
         self::assertTrue($this->authorizationMatrix->hasFilter(AuthorizationMatrixFilter::PUBLISHED_DOSSIERS));
@@ -126,6 +129,8 @@ class AuthorizationMatrixTest extends UnitTestCase
 
     public function testGetActiveOrganisationReturnsTheOrganisationUsingTheOrganisationSwitcher(): void
     {
+        $this->mockSecurity->expects('getUser')->andReturn($this->user);
+
         $this->setupRoles(['ROLE_BALIE']);
 
         $organisation = Mockery::mock(Organisation::class);
@@ -141,7 +146,7 @@ class AuthorizationMatrixTest extends UnitTestCase
     public function testGetActiveOrganisationThrowsExceptionWhenThereIsNoUser(): void
     {
         $mockSecurity = Mockery::mock(Security::class);
-        $mockSecurity->shouldReceive('getUser')->andReturnNull();
+        $mockSecurity->expects('getUser')->andReturnNull();
 
         $authorizationMatrix = new AuthorizationMatrix(
             $mockSecurity,

@@ -8,6 +8,7 @@ use Carbon\CarbonImmutable;
 use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Publication\Dossier\ComplaintJudgement\ComplaintJudgementDto;
+use PublicationApi\Api\Publication\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Publication\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
@@ -15,6 +16,7 @@ use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
+use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
@@ -46,7 +48,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $complaintJudgement = ComplaintJudgementFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
-            'externalId' => $this->getFaker()->word(),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
         ]);
@@ -55,7 +57,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
         self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $complaintJudgement->getExternalId()]]);
+        self::assertJsonContains([['externalId' => $complaintJudgement->getExternalId()?->__toString()]]);
     }
 
     public function testGetComplaintJudgement(): void
@@ -64,7 +66,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $complaintJudgement = ComplaintJudgementFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
-            'externalId' => $this->getFaker()->word(),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
         ]);
@@ -76,7 +78,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
 
         $expectedResponse = [
             'id' => (string) $complaintJudgement->getId(),
-            'externalId' => $complaintJudgement->getExternalId(),
+            'externalId' => $complaintJudgement->getExternalId()?->__toString(),
             'organisation' => [
                 'id' => (string) $complaintJudgement->getOrganisation()->getId(),
                 'name' => $complaintJudgement->getOrganisation()->getName(),
@@ -101,6 +103,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                 'internalReference' => $complaintJudgementMainDocument->getInternalReference(),
                 'grounds' => $complaintJudgementMainDocument->getGrounds(),
                 'fileName' => $complaintJudgementMainDocument->getFileInfo()->getName(),
+                'uploadStatus' => UploadStatus::PROCESSED->value,
             ],
             'dossierDate' => $complaintJudgement->getDateFrom()?->format(DateTime::RFC3339),
         ];
@@ -114,7 +117,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $complaintJudgement = ComplaintJudgementFactory::createOne([
-            'externalId' => $this->getFaker()->word(),
+            'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
         ]);
 
@@ -281,7 +284,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $complaintJudgement = ComplaintJudgementFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
-            'externalId' => $this->getFaker()->word(),
+            'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
             'organisation' => $organisation,
             'status' => DossierStatus::CONCEPT,
@@ -322,7 +325,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $complaintJudgement = ComplaintJudgementFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
-            'externalId' => $this->getFaker()->word(),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
             'status' => DossierStatus::CONCEPT,
@@ -377,7 +380,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $complaintJudgement = ComplaintJudgementFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
-            'externalId' => $this->getFaker()->word(),
+            'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
             'organisation' => $organisation,
             'status' => $this->getFaker()->randomElement(DossierStatus::nonConceptCases()),
@@ -396,7 +399,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
             ['json' => $data],
         );
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'dossier update not allowed, in non-concept state']]]);
+        self::assertJsonContains(['violations' => [['message' => 'dossier update is not allowed in non-concept state']]]);
 
         self::assertDatabaseHas(ComplaintJudgement::class, [
             'title' => $complaintJudgement->getTitle(),
@@ -411,7 +414,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
     {
         return [
             'title' => $this->getFaker()->sentence(),
-            'externalId' => $this->getFaker()->word(),
+            'externalId' => $this->getFaker()->externalId()->__toString(),
             'dossierNumber' => $this->getFaker()->slug(2),
             'internalReference' => $this->getFaker()->optional(default: '')->uuid(),
             'prefix' => $this->getFaker()->slug(2),
@@ -423,7 +426,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
             'mainDocument' => [
                 'filename' => $this->getFaker()->word(),
                 'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
-                'type' => $this->getFaker()->randomElement(AttachmentType::cases()),
+                'type' => $this->getFaker()->randomElement(ComplaintJudgementMainDocument::getAllowedTypes()),
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],
         ];

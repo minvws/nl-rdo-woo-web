@@ -41,8 +41,8 @@ class DocumentFileSetRemoverTest extends UnitTestCase
         $updateA2 = Mockery::mock(DocumentFileUpdate::class);
 
         $setA = Mockery::mock(DocumentFileSet::class);
-        $setA->shouldReceive('getUploads')->andReturn(new ArrayCollection([$uploadA1, $uploadA2]));
-        $setA->shouldReceive('getUpdates')->andReturn(new ArrayCollection([$updateA1, $updateA2]));
+        $setA->expects('getUploads')->andReturn(new ArrayCollection([$uploadA1, $uploadA2]));
+        $setA->expects('getUpdates')->andReturn(new ArrayCollection([$updateA1, $updateA2]));
 
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($uploadA1);
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($uploadA2);
@@ -54,8 +54,8 @@ class DocumentFileSetRemoverTest extends UnitTestCase
         $uploadB1 = Mockery::mock(DocumentFileUpload::class);
 
         $setB = Mockery::mock(DocumentFileSet::class);
-        $setB->shouldReceive('getUploads')->andReturn(new ArrayCollection([$uploadB1]));
-        $setB->shouldReceive('getUpdates')->andReturn(new ArrayCollection());
+        $setB->expects('getUploads')->andReturn(new ArrayCollection([$uploadB1]));
+        $setB->expects('getUpdates')->andReturn(new ArrayCollection());
 
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($uploadB1);
         $this->documentFileSetRepository->expects('remove')->with($setB, true);

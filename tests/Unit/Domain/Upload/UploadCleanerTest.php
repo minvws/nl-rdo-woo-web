@@ -54,16 +54,28 @@ class UploadCleanerTest extends UnitTestCase
         $this->uploadEntityRepository->expects('remove')->with($uploadB, true);
 
         $directory = Mockery::mock(StorageAttributes::class);
-        $directory->shouldReceive('isFile')->andReturnFalse();
+        $directory->expects('isFile')
+            ->times(2)
+            ->andReturnFalse();
 
         $oldFile = Mockery::mock(StorageAttributes::class);
-        $oldFile->shouldReceive('isFile')->andReturnTrue();
-        $oldFile->shouldReceive('lastModified')->andReturn(CarbonImmutable::now()->subMonths(2)->timestamp);
-        $oldFile->shouldReceive('path')->andReturn($oldFilePath = 'foo.bar');
+        $oldFile->expects('isFile')
+            ->times(2)
+            ->andReturnTrue();
+        $oldFile->expects('lastModified')
+            ->times(4)
+            ->andReturn(CarbonImmutable::now()->subMonths(2)->timestamp);
+        $oldFile->expects('path')
+            ->times(2)
+            ->andReturn($oldFilePath = 'foo.bar');
 
         $recentFile = Mockery::mock(StorageAttributes::class);
-        $recentFile->shouldReceive('isFile')->andReturnTrue();
-        $recentFile->shouldReceive('lastModified')->andReturn(CarbonImmutable::now()->subDay()->timestamp);
+        $recentFile->expects('isFile')
+            ->times(2)
+            ->andReturnTrue();
+        $recentFile->expects('lastModified')
+            ->times(4)
+            ->andReturn(CarbonImmutable::now()->subDay()->timestamp);
 
         $this->uploadStorage
             ->expects('listContents')

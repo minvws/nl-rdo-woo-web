@@ -11,7 +11,7 @@ concurrency:
 
 env:
   NODE_VERSION: 20
-  PHP_VERSION: 8.3
+  PHP_VERSION: 8.4
 
 jobs:
   test-ci:

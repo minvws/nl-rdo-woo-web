@@ -57,10 +57,9 @@ final class AttachmentTypeBranchTest extends UnitTestCase
     public function testToArrayWithABranchAndWithoutAttachmentTypes(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->shouldReceive('trans')->andReturnArg(0);
 
         $branch = Mockery::mock(AttachmentTypeBranch::class);
-        $branch->shouldReceive('toArray')->with($translator)->once()->andReturn(['placeholder']);
+        $branch->expects('toArray')->with($translator)->andReturn(['placeholder']);
 
         $dto = new AttachmentTypeBranch(
             name: 'test',
@@ -80,9 +79,9 @@ final class AttachmentTypeBranchTest extends UnitTestCase
     public function testToArrayWithoutABranchAndWithAttachmentTypes(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->shouldReceive('trans')->andReturnArg(0)->byDefault();
-        $translator->shouldReceive('trans')->with('advice', [], AttachmentType::TRANS_DOMAIN, null)->once()->andReturnArg(0);
-        $translator->shouldReceive('trans')->with('request_for_advice', [], AttachmentType::TRANS_DOMAIN, null)->once()->andReturnArg(0);
+        $translator->expects('trans')->andReturnArg(0)->byDefault();
+        $translator->expects('trans')->with('advice', [], AttachmentType::TRANS_DOMAIN, null)->andReturnArg(0);
+        $translator->expects('trans')->with('request_for_advice', [], AttachmentType::TRANS_DOMAIN, null)->andReturnArg(0);
 
         $attachmentTypes = [AttachmentType::ADVICE, AttachmentType::REQUEST_FOR_ADVICE];
 
@@ -122,7 +121,7 @@ final class AttachmentTypeBranchTest extends UnitTestCase
         );
 
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->shouldReceive('trans')->andReturnArg(0);
+        $translator->expects('trans')->times(2)->andReturnArg(0);
 
         $result = $dto->toArray($translator);
 
@@ -148,14 +147,14 @@ final class AttachmentTypeBranchTest extends UnitTestCase
     public function testToArrayWithABranchAndWithAttachmentTypes(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->shouldReceive('trans')->andReturnArg(0)->byDefault();
-        $translator->shouldReceive('trans')->with('advice', [], AttachmentType::TRANS_DOMAIN, null)->once()->andReturnArg(0);
-        $translator->shouldReceive('trans')->with('request_for_advice', [], AttachmentType::TRANS_DOMAIN, null)->once()->andReturnArg(0);
+        $translator->expects('trans')->andReturnArg(0)->byDefault();
+        $translator->expects('trans')->with('advice', [], AttachmentType::TRANS_DOMAIN, null)->andReturnArg(0);
+        $translator->expects('trans')->with('request_for_advice', [], AttachmentType::TRANS_DOMAIN, null)->andReturnArg(0);
 
         $attachmentTypes = [AttachmentType::ADVICE, AttachmentType::REQUEST_FOR_ADVICE];
 
         $branch = Mockery::mock(AttachmentTypeBranch::class);
-        $branch->shouldReceive('toArray')->with($translator)->once()->andReturn(['placeholder']);
+        $branch->expects('toArray')->with($translator)->andReturn(['placeholder']);
 
         $dto = new AttachmentTypeBranch(
             name: 'test',
@@ -193,7 +192,7 @@ final class AttachmentTypeBranchTest extends UnitTestCase
         ];
 
         $mockedbranch = Mockery::mock(AttachmentTypeBranch::class);
-        $mockedbranch->shouldReceive('filter')->with($allowedTypes)->once()->andReturn($mockedbranch);
+        $mockedbranch->expects('filter')->with($allowedTypes)->andReturn($mockedbranch);
 
         $dto = new AttachmentTypeBranch(
             name: 'test',
@@ -215,7 +214,6 @@ final class AttachmentTypeBranchTest extends UnitTestCase
     public function testFilterWithoutPassingAnyAllowedTypes(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->shouldReceive('trans')->andReturnArg(0);
 
         $dto = new AttachmentTypeBranch(
             name: 'test',
@@ -230,7 +228,6 @@ final class AttachmentTypeBranchTest extends UnitTestCase
     public function testFilterPassingEmptyAllowedTypesArray(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->shouldReceive('trans')->andReturnArg(0);
 
         $dto = new AttachmentTypeBranch(
             name: 'test',

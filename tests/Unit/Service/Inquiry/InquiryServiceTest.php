@@ -67,49 +67,49 @@ class InquiryServiceTest extends UnitTestCase
             $this->ingestDispatcher
         );
 
-        $this->historyService->shouldReceive('addInquiryEntry')->andReturnNull();
-
-        $this->organisation = Mockery::mock(Organisation::class);
-        $this->organisation->shouldReceive('getId->toRfc4122')->andReturn('dummy-org-id-123');
-
-        $this->inquiryRepo = Mockery::mock(InquiryRepository::class);
-        $this->documentRepo = Mockery::mock(DocumentRepository::class);
-
-        $this->entityManager->shouldReceive('getRepository')->with(Inquiry::class)->andReturn($this->inquiryRepo);
-        $this->entityManager->shouldReceive('getRepository')->with(Document::class)->andReturn($this->documentRepo);
-
-        $this->dossierId = Uuid::v6();
-        $this->dossier = Mockery::mock(WooDecision::class);
-        $this->dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $this->dossier->shouldReceive('getId')->andReturn($this->dossierId);
-
         parent::setUp();
     }
 
     public function testUpdateInquiryLinks(): void
     {
+        $this->historyService->expects('addInquiryEntry')->times(2)->andReturnNull();
+
+        $this->dossierId = Uuid::v6();
+        $this->dossier = Mockery::mock(WooDecision::class);
+        $this->dossier->expects('getId')->times(3)->andReturn($this->dossierId);
+        $this->dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
+
+        $this->organisation = Mockery::mock(Organisation::class);
+
+        $this->inquiryRepo = Mockery::mock(InquiryRepository::class);
+        $this->documentRepo = Mockery::mock(DocumentRepository::class);
+
+        $this->entityManager->expects('getRepository')->with(Inquiry::class)->andReturn($this->inquiryRepo);
+        $this->entityManager->expects('getRepository')->times(3)->with(Document::class)->andReturn($this->documentRepo);
+
         $addDoc1Id = Uuid::v6();
         $addDoc2Id = Uuid::v6();
         $removeDocId = Uuid::v6();
 
         $addDoc1 = Mockery::mock(Document::class);
         $addDoc1->expects('addInquiry');
-        $addDoc1->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$this->dossier]));
-        $addDoc1->shouldReceive('getId')->andReturn($addDoc1Id);
+        $addDoc1->expects('getDossiers')->andReturn(new ArrayCollection([$this->dossier]));
+        $addDoc1->expects('getId')->andReturn($addDoc1Id);
 
         $newDossierId = Uuid::v6();
         $newDossier = Mockery::mock(WooDecision::class);
-        $newDossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $newDossier->shouldReceive('getId')->andReturn($newDossierId);
+        $newDossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $newDossier->expects('getId')->times(3)->andReturn($newDossierId);
 
         $addDoc2 = Mockery::mock(Document::class);
         $addDoc2->expects('addInquiry');
-        $addDoc2->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$this->dossier]));
-        $addDoc2->shouldReceive('getId')->andReturn($addDoc2Id);
+        $addDoc2->expects('getDossiers')->andReturn(new ArrayCollection([$this->dossier]));
+        $addDoc2->expects('getId')->andReturn($addDoc2Id);
 
         $removeDoc = Mockery::mock(Document::class);
-        // Disabled as part of #2868: $removeDoc->expects('removeInquiry');
-        $removeDoc->shouldReceive('getId')->andReturn($removeDocId);
+        // Document removal for inquiries is disabled as part of #2868:
+        // $removeDoc->expects('removeInquiry');
+        $removeDoc->expects('getId')->andReturn($removeDocId);
 
         $caseNr = 'case-123';
         $inquiryId = Uuid::v6();
@@ -134,7 +134,6 @@ class InquiryServiceTest extends UnitTestCase
                 // Set fake ID on doctrine entity
                 $reflectionClass = new ReflectionClass($inquiry::class);
                 $idProperty = $reflectionClass->getProperty('id');
-                $idProperty->setAccessible(true);
                 $idProperty->setValue($inquiry, $inquiryId);
 
                 return true;
@@ -142,10 +141,10 @@ class InquiryServiceTest extends UnitTestCase
         ));
 
         $dossierRepo = Mockery::mock(WooDecisionRepository::class);
-        $dossierRepo->shouldReceive('find')->with($newDossierId)->andReturn($newDossier);
+        $dossierRepo->expects('find')->with($newDossierId)->andReturn($newDossier);
 
         $this->entityManager->expects('persist')->with(Mockery::type(Inquiry::class));
-        $this->entityManager->expects('flush')->twice();
+        $this->entityManager->expects('flush')->times(2);
         $this->entityManager->expects('getRepository')->with(WooDecision::class)->andReturn($dossierRepo);
 
         $this->wooDecisionDispatcher->expects('dispatchGenerateInquiryInventoryCommand')->with($inquiryId);
@@ -162,36 +161,50 @@ class InquiryServiceTest extends UnitTestCase
 
     public function testUpdateInquiryLinksWithNewDossier(): void
     {
+        $this->historyService->expects('addInquiryEntry')->times(2)->andReturnNull();
+
+        $this->organisation = Mockery::mock(Organisation::class);
+
+        $this->inquiryRepo = Mockery::mock(InquiryRepository::class);
+        $this->documentRepo = Mockery::mock(DocumentRepository::class);
+
+        $this->entityManager->expects('getRepository')->with(Inquiry::class)->andReturn($this->inquiryRepo);
+        $this->entityManager->expects('getRepository')->times(3)->with(Document::class)->andReturn($this->documentRepo);
+
+        $this->dossierId = Uuid::v6();
+        $this->dossier = Mockery::mock(WooDecision::class);
+
         $newDossierId = Uuid::v6();
         $newDossier = Mockery::mock(WooDecision::class);
-        $newDossier->shouldReceive('getId')->andReturn($newDossierId);
-        $newDossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $newDossier->expects('getId')->times(2)->andReturn($newDossierId);
+        $newDossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $addDoc1Id = Uuid::v6();
         $addDoc2Id = Uuid::v6();
         $removeDocId = Uuid::v6();
 
         $addDoc1 = Mockery::mock(Document::class);
-        $addDoc1->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$this->dossier]));
-        $addDoc1->shouldReceive('getId')->andReturn($addDoc1Id);
+        $addDoc1->expects('getDossiers')->andReturn(new ArrayCollection([$this->dossier]));
+        $addDoc1->expects('getId')->andReturn($addDoc1Id);
 
         $addDoc2 = Mockery::mock(Document::class);
-        $addDoc2->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$this->dossier]));
-        $addDoc2->shouldReceive('getId')->andReturn($addDoc2Id);
+        $addDoc2->expects('getDossiers')->andReturn(new ArrayCollection([$this->dossier]));
+        $addDoc2->expects('getId')->andReturn($addDoc2Id);
 
         $removeDoc = Mockery::mock(Document::class);
-        $removeDoc->shouldReceive('getId')->andReturn($removeDocId);
+        $removeDoc->expects('getId')->andReturn($removeDocId);
 
         $caseNr = 'case-123';
         $inquiryId = Uuid::v6();
         $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->shouldReceive('getCasenr')->andReturn($caseNr);
         $inquiry->expects('addDocument')->with($addDoc1);
         $inquiry->expects('addDocument')->with($addDoc2);
-        $inquiry->expects('removeDocument')->with($removeDoc);
+
+        // Document removal for inquiries is disabled as part of #2868:
+        // $inquiry->expects('removeDocument')->with($removeDoc);
         $inquiry->expects('addDossier')->with($newDossier);
-        $inquiry->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$this->dossier]));
-        $inquiry->shouldReceive('getId')->andReturn($inquiryId);
+        $inquiry->expects('getDossiers')->times(3)->andReturn(new ArrayCollection([$this->dossier]));
+        $inquiry->expects('getId')->andReturn($inquiryId);
 
         $this->historyService->expects('addDossierEntry');
 
@@ -202,9 +215,9 @@ class InquiryServiceTest extends UnitTestCase
         $this->documentRepo->expects('find')->with($removeDocId)->andReturn($removeDoc);
 
         $dossierRepo = Mockery::mock(WooDecisionRepository::class);
-        $dossierRepo->shouldReceive('find')->with($newDossierId)->andReturn($newDossier);
+        $dossierRepo->expects('find')->with($newDossierId)->andReturn($newDossier);
 
-        $this->entityManager->shouldReceive('getRepository')->with(WooDecision::class)->andReturn($dossierRepo);
+        $this->entityManager->expects('getRepository')->with(WooDecision::class)->andReturn($dossierRepo);
         $this->entityManager->expects('persist')->with($inquiry);
         $this->entityManager->expects('flush');
 
@@ -223,7 +236,7 @@ class InquiryServiceTest extends UnitTestCase
     {
         $organisationId = Uuid::v6();
         $organisation = Mockery::mock(Organisation::class);
-        $organisation->shouldReceive('getId')->andReturn($organisationId);
+        $organisation->expects('getId')->times(4)->andReturn($organisationId);
         $changeset = new InquiryChangeset($organisation);
 
         // Has no linked inquiries yet, so should be linked twice

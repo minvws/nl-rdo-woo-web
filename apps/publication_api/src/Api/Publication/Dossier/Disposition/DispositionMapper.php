@@ -4,38 +4,45 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\Dossier\Disposition;
 
-use PublicationApi\Api\Publication\Attachment\AttachmentResponseDto;
+use PublicationApi\Api\Publication\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Publication\Department\DepartmentReferenceDto;
-use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDto;
+use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Publication\Organisation\OrganisationReferenceDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-class DispositionMapper
+readonly class DispositionMapper
 {
+    public function __construct(
+        private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
+        private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+    ) {
+    }
+
     /**
      * @param array<array-key,Disposition> $dispositions
      *
      * @return list<DispositionDto>
      */
-    public static function fromEntities(array $dispositions): array
+    public function fromEntities(array $dispositions): array
     {
-        return array_values(array_map(self::fromEntity(...), $dispositions));
+        return array_values(array_map($this->fromEntity(...), $dispositions));
     }
 
-    public static function fromEntity(Disposition $disposition): DispositionDto
+    public function fromEntity(Disposition $disposition): DispositionDto
     {
         $mainDocument = $disposition->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = MainDocumentResponseDto::fromEntity($mainDocument);
+        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
 
         $dateFrom = $disposition->getDateFrom();
         Assert::notNull($dateFrom);
@@ -57,7 +64,7 @@ class DispositionMapper
             $disposition->getPublicationDate(),
             $disposition->getStatus(),
             $mainDocumentDto,
-            AttachmentResponseDto::fromEntities($disposition->getAttachments()->toArray()),
+            $this->attachmentResponseDtoFactory->fromEntities($disposition->getAttachments()->toArray()),
             $dateFrom,
         );
     }
@@ -67,7 +74,7 @@ class DispositionMapper
         Organisation $organisation,
         Department $department,
         ?Subject $subject,
-        string $externalId,
+        ExternalId $externalId,
     ): Disposition {
         $disposition = new Disposition();
         $disposition->setExternalId($externalId);

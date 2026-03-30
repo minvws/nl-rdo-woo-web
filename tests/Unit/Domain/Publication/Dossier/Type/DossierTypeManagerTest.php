@@ -24,16 +24,15 @@ class DossierTypeManagerTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->configWoo = Mockery::mock(DossierTypeConfigInterface::class);
-        $this->configWoo->shouldReceive('getDossierType')->andReturn(DossierType::WOO_DECISION);
-
         $this->configCovenant = Mockery::mock(DossierTypeConfigInterface::class);
-        $this->configCovenant->shouldReceive('getDossierType')->andReturn(DossierType::COVENANT);
-
         $this->authChecker = Mockery::mock(AuthorizationCheckerInterface::class);
     }
 
     public function testGetConfigReturnsCorrectConfigByType(): void
     {
+        $this->configWoo->expects('getDossierType')->andReturn(DossierType::WOO_DECISION);
+        $this->configCovenant->expects('getDossierType')->andReturn(DossierType::COVENANT);
+
         $manager = new DossierTypeManager($this->authChecker, [$this->configWoo, $this->configCovenant]);
 
         self::assertSame(
@@ -44,6 +43,9 @@ class DossierTypeManagerTest extends UnitTestCase
 
     public function testGetConfigWithAccessCheckReturnsCorrectConfigByTypeWhenAccessIsGranted(): void
     {
+        $this->configWoo->expects('getDossierType')->andReturn(DossierType::WOO_DECISION);
+        $this->configCovenant->expects('getDossierType')->andReturn(DossierType::COVENANT);
+
         $expressionWoo = new Expression('foo');
         $this->configCovenant->expects('getSecurityExpression')->andReturn($expressionWoo);
 
@@ -59,6 +61,8 @@ class DossierTypeManagerTest extends UnitTestCase
 
     public function testGetConfigThrowsExceptionForUnknownType(): void
     {
+        $this->configWoo->expects('getDossierType')->andReturn(DossierType::WOO_DECISION);
+
         $manager = new DossierTypeManager($this->authChecker, [$this->configWoo]);
 
         $this->expectExceptionObject(DossierTypeException::forDossierTypeNotAvailable(DossierType::COVENANT));
@@ -67,6 +71,8 @@ class DossierTypeManagerTest extends UnitTestCase
 
     public function testGetConfigThrowsExceptionForTypeWithoutAccess(): void
     {
+        $this->configWoo->expects('getDossierType')->andReturn(DossierType::WOO_DECISION);
+
         $expressionWoo = new Expression('foo');
         $this->configWoo->expects('getSecurityExpression')->andReturn($expressionWoo);
         $this->authChecker->expects('isGranted')->with($expressionWoo)->andReturnFalse();
@@ -79,6 +85,9 @@ class DossierTypeManagerTest extends UnitTestCase
 
     public function testGetAvailableConfigsReturnsOnlyConfigsWithAccess(): void
     {
+        $this->configWoo->expects('getDossierType')->andReturn(DossierType::WOO_DECISION);
+        $this->configCovenant->expects('getDossierType')->andReturn(DossierType::COVENANT);
+
         $expressionWoo = new Expression('foo');
         $this->configWoo->expects('getSecurityExpression')->andReturn($expressionWoo);
         $this->authChecker->expects('isGranted')->with($expressionWoo)->andReturnTrue();
@@ -97,6 +106,9 @@ class DossierTypeManagerTest extends UnitTestCase
 
     public function testGetAvailableConfigsReturnsConfigWithNullExpression(): void
     {
+        $this->configWoo->expects('getDossierType')->andReturn(DossierType::WOO_DECISION);
+        $this->configCovenant->expects('getDossierType')->andReturn(DossierType::COVENANT);
+
         $expressionWoo = new Expression('foo');
         $this->configWoo->expects('getSecurityExpression')->andReturn($expressionWoo);
         $this->authChecker->expects('isGranted')->with($expressionWoo)->andReturnTrue();
@@ -113,6 +125,9 @@ class DossierTypeManagerTest extends UnitTestCase
 
     public function testCreateDossier(): void
     {
+        $this->configWoo->expects('getDossierType')->andReturn(DossierType::WOO_DECISION);
+        $this->configCovenant->expects('getDossierType')->andReturn(DossierType::COVENANT);
+
         $manager = new DossierTypeManager($this->authChecker, [$this->configWoo, $this->configCovenant]);
 
         $this->configWoo->expects('getEntityClass')->andReturn(WooDecision::class);

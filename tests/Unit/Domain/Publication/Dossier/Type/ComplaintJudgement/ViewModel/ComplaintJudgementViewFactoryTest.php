@@ -29,11 +29,10 @@ final class ComplaintJudgementViewFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        /** @var Department&MockInterface $expectedMainDepartment */
         $expectedMainDepartment = Mockery::mock(Department::class);
 
         $this->commonDossierViewFactory
-            ->shouldReceive('make')
+            ->expects('make')
             ->andReturn(new CommonDossierProperties(
                 dossierId: $expectedUuid = 'my uuid',
                 dossierNr: $expectedDossierNr = 'my dossier nr',
@@ -48,11 +47,10 @@ final class ComplaintJudgementViewFactoryTest extends UnitTestCase
                 subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
-        /** @var ComplaintJudgement&MockInterface $dossier */
         $dossier = Mockery::mock(ComplaintJudgement::class);
-        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable());
+        $dossier->expects('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable());
 
-        $result = (new ComplaintJudgementViewFactory($this->commonDossierViewFactory))->make($dossier);
+        $result = new ComplaintJudgementViewFactory($this->commonDossierViewFactory)->make($dossier);
 
         $this->assertSame($expectedUuid, $result->getDossierId());
         $this->assertSame($expectedDossierNr, $result->getDossierNr());

@@ -7,15 +7,17 @@ namespace PublicationApi\Api\Publication;
 use Monolog\Attribute\AsMonologProcessor;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
-use PublicationApi\Domain\Security\ApiUser;
+use Shared\Service\Security\ApiUser;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[AsMonologProcessor()]
 readonly class RequestLogProcessor implements ProcessorInterface
 {
     public function __construct(
         private Security $security,
+        #[Autowire(service: ApplicationMode::class)]
         private ApplicationMode $applicationMode,
     ) {
     }

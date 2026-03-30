@@ -44,8 +44,8 @@ class WooDecisionBatchDownloadTest extends UnitTestCase
     public function testGetFileBasename(): void
     {
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getDocumentPrefix')->andReturn('FOO');
-        $wooDecision->shouldReceive('getDossierNr')->andReturn('BAR-123');
+        $wooDecision->expects('getDocumentPrefix')->andReturn('FOO');
+        $wooDecision->expects('getDossierNr')->andReturn('BAR-123');
         $scope = BatchDownloadScope::forWooDecision($wooDecision);
 
         self::assertEquals(
@@ -60,7 +60,7 @@ class WooDecisionBatchDownloadTest extends UnitTestCase
         $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->repository
-            ->shouldReceive('getDocumentsForBatchDownload')
+            ->expects('getDocumentsForBatchDownload')
             ->with($wooDecision)
             ->andReturn($queryBuilder);
 
@@ -79,7 +79,7 @@ class WooDecisionBatchDownloadTest extends UnitTestCase
         $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->repository
-            ->shouldReceive('getDocumentsForBatchDownload')
+            ->expects('getDocumentsForBatchDownload')
             ->with($wooDecision)
             ->andReturn($queryBuilder);
 
@@ -96,7 +96,7 @@ class WooDecisionBatchDownloadTest extends UnitTestCase
         $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->repository
-            ->shouldReceive('getDocumentsForBatchDownload')
+            ->expects('getDocumentsForBatchDownload')
             ->with($wooDecision)
             ->andReturn($queryBuilder);
 

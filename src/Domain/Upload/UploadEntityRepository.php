@@ -10,6 +10,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Shared\Service\Security\User;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\InputBag;
+use Webmozart\Assert\Assert;
 
 /**
  * @extends ServiceEntityRepository<UploadEntity>
@@ -60,8 +61,24 @@ class UploadEntityRepository extends ServiceEntityRepository
             ->where('u.updatedAt < :maxUpdatedAt')
             ->orWhere('u.status = :stored')
             ->setParameter('maxUpdatedAt', $maxUpdatedAt)
-            ->setParameter('stored', UploadStatus::STORED);
+            ->setParameter('stored', UploadEntityStatus::STORED);
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findLatestByContextData(string $key, string $value): ?UploadEntity
+    {
+        $uploadEntity = $this->createQueryBuilder('uploadEntity')
+            ->where('json_extract_path_text(uploadEntity.context, :key) = :value')
+            ->setParameter('key', $key)
+            ->setParameter('value', $value)
+            ->orderBy('uploadEntity.createdAt', 'desc')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        Assert::nullOrIsInstanceOf($uploadEntity, UploadEntity::class);
+
+        return $uploadEntity;
     }
 }

@@ -52,26 +52,25 @@ class BatchDownloadServiceTest extends UnitTestCase
         $scope = BatchDownloadScope::forWooDecision($dossier);
 
         $oldBatchA = Mockery::mock(BatchDownload::class);
-        $oldBatchA->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
+        $oldBatchA->expects('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
         $oldBatchA->expects('markAsOutdated');
 
         $oldBatchB = Mockery::mock(BatchDownload::class);
-        $oldBatchB->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
+        $oldBatchB->expects('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
         $oldBatchB->expects('markAsOutdated');
 
         // Already outdated so should not be updated again
         $oldBatchC = Mockery::mock(BatchDownload::class);
-        $oldBatchC->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::OUTDATED);
+        $oldBatchC->expects('getStatus')->andReturn(BatchDownloadStatus::OUTDATED);
 
         $this->batchRepository->expects('getAllForScope')->with($scope)->andReturns([$oldBatchA, $oldBatchB, $oldBatchC]);
 
         $this->batchRepository->expects('save')->with($oldBatchA);
         $this->batchRepository->expects('save')->with($oldBatchB);
 
-        $this->typeA->shouldReceive('supports')->with($scope)->andReturnFalse();
-        $this->typeB->shouldReceive('supports')->with($scope)->andReturnTrue();
-        $this->typeB->shouldReceive('isAvailableForBatchDownload')->with($scope)->andReturnTrue();
-        $this->typeB->shouldReceive('getFileBaseName')->with($scope)->andReturn('123');
+        $this->typeA->expects('supports')->with($scope)->andReturnFalse();
+        $this->typeB->expects('supports')->with($scope)->andReturnTrue();
+        $this->typeB->expects('isAvailableForBatchDownload')->with($scope)->andReturnTrue();
 
         $batchValidator = Mockery::on(
             static function (BatchDownload $batch) use ($dossier): bool {
@@ -95,11 +94,11 @@ class BatchDownloadServiceTest extends UnitTestCase
         $scope = BatchDownloadScope::forWooDecision($dossier);
 
         $oldBatchA = Mockery::mock(BatchDownload::class);
-        $oldBatchA->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
+        $oldBatchA->expects('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
         $oldBatchA->expects('markAsOutdated');
 
         $oldBatchB = Mockery::mock(BatchDownload::class);
-        $oldBatchB->shouldReceive('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
+        $oldBatchB->expects('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
         $oldBatchB->expects('markAsOutdated');
 
         $this->batchRepository->expects('getAllForScope')->with($scope)->andReturns([$oldBatchA, $oldBatchB]);
@@ -107,9 +106,9 @@ class BatchDownloadServiceTest extends UnitTestCase
         $this->batchRepository->expects('save')->with($oldBatchA);
         $this->batchRepository->expects('save')->with($oldBatchB);
 
-        $this->typeA->shouldReceive('supports')->with($scope)->andReturnFalse();
-        $this->typeB->shouldReceive('supports')->with($scope)->andReturnTrue();
-        $this->typeB->shouldReceive('isAvailableForBatchDownload')->with($scope)->andReturnFalse();
+        $this->typeA->expects('supports')->with($scope)->andReturnFalse();
+        $this->typeB->expects('supports')->with($scope)->andReturnTrue();
+        $this->typeB->expects('isAvailableForBatchDownload')->with($scope)->andReturnFalse();
 
         $this->service->refresh($scope);
     }
@@ -130,12 +129,10 @@ class BatchDownloadServiceTest extends UnitTestCase
         $this->batchRepository->expects('save')->with($oldBatchA);
         $this->batchRepository->expects('save')->with($oldBatchB);
 
-        $this->typeA->shouldReceive('supports')->with($scope)->andReturnFalse();
-        $this->typeB->shouldReceive('supports')->with($scope)->andReturnTrue();
-        $this->typeB->shouldReceive('isAvailableForBatchDownload')->with($scope)->andReturnTrue();
-        // $this->typeB->shouldReceive('getFileBaseName')->with($scope)->andReturn('123');
+        $this->typeA->expects('supports')->with($scope)->andReturnFalse();
+        $this->typeB->expects('supports')->with($scope)->andReturnTrue();
+        $this->typeB->expects('isAvailableForBatchDownload')->with($scope)->andReturnTrue();
 
-        /** @var BatchDownloadService&MockInterface $service */
         $service = Mockery::mock(BatchDownloadService::class, [
             $this->batchRepository,
             $this->dispatcher,
@@ -154,7 +151,6 @@ class BatchDownloadServiceTest extends UnitTestCase
         $inquiry = Mockery::mock(Inquiry::class);
         $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier);
 
-        /** @var BatchDownloadService&MockInterface $service */
         $service = Mockery::mock(BatchDownloadService::class, [
             $this->batchRepository,
             $this->dispatcher,
@@ -163,7 +159,7 @@ class BatchDownloadServiceTest extends UnitTestCase
         ])->makePartial();
 
         $service
-            ->shouldReceive('findOrCreate')
+            ->expects('findOrCreate')
             ->with(Mockery::on(function (BatchDownloadScope $scope) use ($dossier) {
                 if ($scope->containsBothInquiryAndWooDecision()) {
                     return false;
@@ -175,7 +171,7 @@ class BatchDownloadServiceTest extends UnitTestCase
 
                 return true;
             }))
-            ->once()
+
             ->andReturn(Mockery::mock(BatchDownload::class));
 
         $service->create($scope);
@@ -223,9 +219,9 @@ class BatchDownloadServiceTest extends UnitTestCase
     public function testExists(): void
     {
         $batchDownload = Mockery::mock(BatchDownload::class);
-        $batchDownload->shouldReceive('getId')->once()->andReturn($uuid = Uuid::v6());
+        $batchDownload->expects('getId')->andReturn($uuid = Uuid::v6());
 
-        $this->batchRepository->shouldReceive('exists')->once()->with($uuid)->andReturnTrue();
+        $this->batchRepository->expects('exists')->with($uuid)->andReturnTrue();
 
         $this->assertTrue($this->service->exists($batchDownload));
     }

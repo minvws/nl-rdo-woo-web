@@ -37,32 +37,31 @@ final class EnrichedPsrLoggerTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->request = Mockery::mock(Request::class);
-        $this->request->shouldReceive('getClientIps')->andReturn(self::IPS);
+        $this->request->expects('getClientIps')->andReturn(self::IPS);
 
         $this->logger = Mockery::mock(Logger::class);
 
         $this->userId = Uuid::v6();
 
         $this->user = Mockery::mock(User::class);
-        $this->user->shouldReceive('getId')->andReturn($this->userId);
-        $this->user->shouldReceive('getRoles')->andReturn(self::MY_ROLES);
+        $this->user->expects('getId')->andReturn($this->userId);
+        $this->user->expects('getRoles')->andReturn(self::MY_ROLES);
 
         $this->token = Mockery::mock(TokenInterface::class);
-        $this->token->shouldReceive('getUser')->andReturn($this->user);
+        $this->token->expects('getUser')->andReturn($this->user);
 
         $this->tokenStorage = Mockery::mock(TokenStorageInterface::class);
-        $this->tokenStorage->shouldReceive('getToken')->andReturn($this->token);
+        $this->tokenStorage->expects('getToken')->andReturn($this->token);
 
         $this->requestStack = Mockery::mock(RequestStack::class);
-        $this->requestStack->shouldReceive('getCurrentRequest')->andReturn($this->request);
+        $this->requestStack->expects('getCurrentRequest')->andReturn($this->request);
     }
 
     #[DataProvider('logLevels')]
     public function testLogging(string $logLevel): void
     {
         $this->logger
-            ->shouldReceive($logLevel)
-            ->once()
+            ->expects($logLevel)
             ->with(
                 'my message',
                 [
@@ -88,8 +87,7 @@ final class EnrichedPsrLoggerTest extends UnitTestCase
         };
 
         $this->logger
-            ->shouldReceive('alert')
-            ->once()
+            ->expects('alert')
             ->with(
                 $message,
                 [
@@ -109,8 +107,7 @@ final class EnrichedPsrLoggerTest extends UnitTestCase
     public function testLog(string $logLevel): void
     {
         $this->logger
-            ->shouldReceive('log')
-            ->once()
+            ->expects('log')
             ->with(
                 $logLevel,
                 'my message',
@@ -147,17 +144,16 @@ final class EnrichedPsrLoggerTest extends UnitTestCase
     private function getLogger(): EnrichedPsrLogger
     {
         $normalizerFormatter = Mockery::mock(NormalizerFormatter::class);
-        $normalizerFormatter->shouldReceive('setMaxNormalizeDepth')->once()->with(20);
+        $normalizerFormatter->expects('setMaxNormalizeDepth')->with(20);
 
-        /** @var FormattableHandlerInterface&MockInterface $formattableHandler */
         $formattableHandler = Mockery::mock(FormattableHandlerInterface::class);
-        $formattableHandler->shouldReceive('getFormatter')->andReturn($normalizerFormatter);
+        $formattableHandler->expects('getFormatter')->andReturn($normalizerFormatter);
 
         $handler = Mockery::mock(HandlerInterface::class);
         $handler->shouldNotReceive('getFormatter');
 
         $this->logger
-            ->shouldReceive('getHandlers')
+            ->expects('getHandlers')
             ->andReturn([$formattableHandler, $handler]);
 
         return new EnrichedPsrLogger($this->logger, $this->tokenStorage, $this->requestStack);

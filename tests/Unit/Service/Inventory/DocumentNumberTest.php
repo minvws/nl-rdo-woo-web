@@ -20,11 +20,11 @@ class DocumentNumberTest extends UnitTestCase
     public function testFromReferral(string $documentNr, string $prefix, string $documentId, string $referral, string $expected): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn($prefix);
+        $dossier->expects('getDocumentPrefix')->times(3)->andReturn($prefix);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDocumentNr')->andReturn($documentNr);
-        $document->shouldReceive('getDocumentId')->andReturn($documentId);
+        $document->expects('getDocumentNr')->andReturn($documentNr);
+        $document->expects('getDocumentId')->times(3)->andReturn($documentId);
 
         $documentNumber = DocumentNumber::fromReferral($dossier, $document, $referral);
 
@@ -88,11 +88,11 @@ class DocumentNumberTest extends UnitTestCase
     public function testFromDossierAndDocumentMetadata(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn('pr3f1x');
+        $dossier->expects('getDocumentPrefix')->andReturn('pr3f1x');
 
         $documentMetadata = Mockery::mock(DocumentMetadata::class);
-        $documentMetadata->shouldReceive('getMatter')->andReturn('bar');
-        $documentMetadata->shouldReceive('getId')->andReturn('foo123');
+        $documentMetadata->expects('getMatter')->andReturn('bar');
+        $documentMetadata->expects('getId')->andReturn('foo123');
 
         $documentNumber = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
 

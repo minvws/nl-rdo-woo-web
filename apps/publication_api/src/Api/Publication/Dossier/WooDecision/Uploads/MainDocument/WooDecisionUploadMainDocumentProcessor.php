@@ -7,13 +7,12 @@ namespace PublicationApi\Api\Publication\Dossier\WooDecision\Uploads\MainDocumen
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
-use PublicationApi\Api\Publication\UploadProcessor;
+use PublicationApi\Api\Publication\MainDocumentUploadProcessor;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use Shared\Domain\Publication\MainDocument\MainDocumentRepository;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Webmozart\Assert\Assert;
@@ -21,9 +20,8 @@ use Webmozart\Assert\Assert;
 readonly class WooDecisionUploadMainDocumentProcessor implements ProcessorInterface
 {
     public function __construct(
-        private MainDocumentRepository $mainDocumentRepository,
         private OrganisationRepository $organisationRepository,
-        private UploadProcessor $uploadProcessor,
+        private MainDocumentUploadProcessor $mainDocumentUploadProcessor,
         private WooDecisionRepository $wooDecisionRepository,
     ) {
     }
@@ -37,14 +35,14 @@ readonly class WooDecisionUploadMainDocumentProcessor implements ProcessorInterf
         $organisation = $this->organisationRepository->find($data->organisationId);
         Assert::isInstanceOf($organisation, Organisation::class);
 
-        $wooDecision = $this->wooDecisionRepository->find($data->dossierId);
+        $wooDecision = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $data->dossierExternalId);
         Assert::isInstanceOf($wooDecision, WooDecision::class);
 
         if (! $organisation->getId()->equals($wooDecision->getOrganisation()->getId())) {
             throw new ValidationException(ConstraintViolationList::createFromMessage('No dossier found for this organisation'));
         }
 
-        $mainDocument = $this->mainDocumentRepository->find($data->uploadId);
+        $mainDocument = $wooDecision->getMainDocument();
         if (! $mainDocument instanceof WooDecisionMainDocument) {
             throw new ValidationException(ConstraintViolationList::createFromMessage('No main document found'));
         }
@@ -60,7 +58,13 @@ readonly class WooDecisionUploadMainDocumentProcessor implements ProcessorInterf
         $fileName = $mainDocument->getFileInfo()->getName();
         Assert::notNull($fileName);
 
-        $this->uploadProcessor->process($wooDecision->getId(), UploadGroupId::MAIN_DOCUMENTS, $data->content, $fileName);
+        $this->mainDocumentUploadProcessor->process(
+            $wooDecision->getId(),
+            $mainDocument->getId(),
+            UploadGroupId::MAIN_DOCUMENTS,
+            $data->content,
+            $fileName,
+        );
 
         return null;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Public\Dossier\WooDecision;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Knp\Component\Pager\PaginatorInterface;
 use Shared\Doctrine\DocumentConditions;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
@@ -22,7 +23,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class InquiryController extends AbstractController
 {

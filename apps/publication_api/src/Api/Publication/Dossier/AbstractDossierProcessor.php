@@ -14,18 +14,26 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
+use Shared\ValueObject\ExternalId;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints\Unique;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Webmozart\Assert\Assert;
+
+use function array_map;
+use function array_unique;
+use function count;
 
 /**
  * @implements ProcessorInterface<AbstractDossierRequestDto,?DossierDtoInterface>
@@ -40,6 +48,7 @@ abstract class AbstractDossierProcessor implements ProcessorInterface
         private readonly MainDocumentService $mainDocumentService,
         private readonly OrganisationRepository $organisationRepository,
         private readonly SubjectRepository $subjectRepository,
+        private readonly Security $security,
     ) {
     }
 
@@ -105,13 +114,20 @@ abstract class AbstractDossierProcessor implements ProcessorInterface
 
     protected function validateDossier(AbstractDossier $dossier): void
     {
-        if (! $this->dossierService->isApiUpdateAllowed($dossier)) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('dossier update not allowed, in non-concept state'));
+        if (! $this->security->isGranted('AuthMatrix.dossier.update', $dossier)) {
+            throw new ValidationException(ConstraintViolationList::createFromMessage('dossier update is not allowed in non-concept state'));
         }
 
         try {
-            $this->dossierService->validate($dossier);
+            $this->dossierService->validate($dossier, [
+                DossierValidationGroup::DETAILS,
+                DossierValidationGroup::DECISION,
+                DossierValidationGroup::DOCUMENTS,
+                DossierValidationGroup::PUBLICATION,
+                DossierValidationGroup::CONTENT,
+            ]);
         } catch (ValidationFailedException $validationFailedException) {
+            $this->dossierService->refreshDossier($dossier);
             throw new ValidationException($validationFailedException->getViolations(), previous: $validationFailedException);
         }
     }
@@ -121,13 +137,37 @@ abstract class AbstractDossierProcessor implements ProcessorInterface
      */
     protected function validateAttachments(array $attachments): void
     {
+        $externalIdValues = array_map(static function (AbstractAttachment $attachment): string {
+            $externalId = $attachment->getExternalId();
+            Assert::isInstanceOf($externalId, ExternalId::class);
+
+            return $externalId->__toString();
+        }, $attachments);
+
+        if (count($externalIdValues) !== count(array_unique($externalIdValues))) {
+            $constraintViolation = new ConstraintViolation(
+                'attachments contain non-unique external-ids',
+                null,
+                [],
+                $attachments,
+                'attachments',
+                $externalIdValues,
+                null,
+                Unique::IS_NOT_UNIQUE,
+            );
+            throw new ValidationException(new ConstraintViolationList([$constraintViolation]));
+        }
+
         try {
             $this->attachmentService->validate($attachments);
         } catch (ValidationFailedException $validationFailedException) {
+            $this->attachmentService->refreshAttachments($attachments);
+
             $violations = $this->prefixViolationsPropertyPath(
                 $validationFailedException->getViolations(),
                 'attachments.'
             );
+
             throw new ValidationException($violations, previous: $validationFailedException);
         }
     }
@@ -137,10 +177,13 @@ abstract class AbstractDossierProcessor implements ProcessorInterface
         try {
             $this->mainDocumentService->validate($mainDocument);
         } catch (ValidationFailedException $validationFailedException) {
+            $this->mainDocumentService->refreshMainDocument($mainDocument);
+
             $violations = $this->prefixViolationsPropertyPath(
                 $validationFailedException->getViolations(),
                 'mainDocument.'
             );
+
             throw new ValidationException($violations, previous: $validationFailedException);
         }
     }

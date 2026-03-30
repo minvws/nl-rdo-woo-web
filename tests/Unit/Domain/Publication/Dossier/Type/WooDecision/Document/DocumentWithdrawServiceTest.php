@@ -50,14 +50,6 @@ class DocumentWithdrawServiceTest extends UnitTestCase
 
     public function testWithdrawSuccessfully(): void
     {
-        $dossierUuid = Uuid::v6();
-        $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierUuid);
-
-        $secondDossierUuid = Uuid::v6();
-        $secondDossier = Mockery::mock(WooDecision::class);
-        $secondDossier->shouldReceive('getId')->andReturn($secondDossierUuid);
-
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
         $document = Mockery::mock(Document::class);
@@ -67,10 +59,8 @@ class DocumentWithdrawServiceTest extends UnitTestCase
 
         $uuid = Uuid::v6();
         $document->expects('withdraw')->with($reason, $explanation);
-        $document->shouldReceive('getId')->andReturn($uuid);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossier, $secondDossier]));
-        $document->shouldReceive('shouldBeUploaded')->andReturnTrue();
-        $document->shouldReceive('isWithdrawn')->andReturnFalse();
+        $document->expects('shouldBeUploaded')->andReturnTrue();
+        $document->expects('isWithdrawn')->andReturnFalse();
 
         $this->ingestDispatcher->expects('dispatchIngestMetadataOnlyCommandForEntity')->with($document, true);
 
@@ -89,9 +79,7 @@ class DocumentWithdrawServiceTest extends UnitTestCase
         $explanation = 'foo bar';
         $document = Mockery::mock(Document::class);
 
-        $uuid = Uuid::v6();
-        $document->shouldReceive('getId')->andReturn($uuid);
-        $document->shouldReceive('shouldBeUploaded')->andReturnFalse();
+        $document->expects('shouldBeUploaded')->andReturnFalse();
 
         $this->expectException(DocumentWorkflowException::class);
 
@@ -100,19 +88,15 @@ class DocumentWithdrawServiceTest extends UnitTestCase
 
     public function testWithdrawAllDocuments(): void
     {
-        $dossierUuid = Uuid::v6();
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierUuid);
 
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
 
-        $idA = Uuid::v6();
         $documentA = Mockery::mock(Document::class);
         $documentA->expects('withdraw')->with($reason, $explanation);
-        $documentA->shouldReceive('getId')->andReturn($idA);
-        $documentA->shouldReceive('shouldBeUploaded')->andReturnTrue();
-        $documentA->shouldReceive('isWithdrawn')->andReturnFalse();
+        $documentA->expects('shouldBeUploaded')->andReturnTrue();
+        $documentA->expects('isWithdrawn')->andReturnFalse();
 
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($documentA);
         $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($documentA);
@@ -124,12 +108,10 @@ class DocumentWithdrawServiceTest extends UnitTestCase
 
         $this->documentRepository->expects('save')->with($documentA, true);
 
-        $idB = Uuid::v6();
         $documentB = Mockery::mock(Document::class);
         $documentB->expects('withdraw')->with($reason, $explanation);
-        $documentB->shouldReceive('getId')->andReturn($idB);
-        $documentB->shouldReceive('shouldBeUploaded')->andReturnTrue();
-        $documentB->shouldReceive('isWithdrawn')->andReturnFalse();
+        $documentB->expects('shouldBeUploaded')->andReturnTrue();
+        $documentB->expects('isWithdrawn')->andReturnFalse();
 
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($documentB);
         $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($documentB);
@@ -141,7 +123,7 @@ class DocumentWithdrawServiceTest extends UnitTestCase
 
         $this->documentRepository->expects('save')->with($documentB, true);
 
-        $dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([$documentA, $documentB]));
+        $dossier->expects('getDocuments')->andReturn(new ArrayCollection([$documentA, $documentB]));
 
         $this->documentDispatcher
             ->expects('dispatchAllDocumentsWithdrawnEvent')

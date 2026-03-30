@@ -60,13 +60,12 @@ class OrganisationTest extends UnitTestCase
 
         $activePrefix = Mockery::mock(DocumentPrefix::class);
         $activePrefix->expects('setOrganisation')->with($organisation);
-        $activePrefix->shouldReceive('isArchived')->andReturn(false);
-        $activePrefix->shouldReceive('getPrefix')->andReturn('foo');
+        $activePrefix->expects('isArchived')->times(2)->andReturn(false);
+        $activePrefix->expects('getPrefix')->andReturn('foo');
 
         $archivedPrefix = Mockery::mock(DocumentPrefix::class);
         $archivedPrefix->expects('setOrganisation')->with($organisation);
-        $archivedPrefix->shouldReceive('isArchived')->andReturn(true);
-        $archivedPrefix->shouldReceive('getPrefix')->andReturn('bar');
+        $archivedPrefix->expects('isArchived')->times(2)->andReturn(true);
 
         $organisation->addDocumentPrefix($activePrefix);
         $organisation->addDocumentPrefix($archivedPrefix);

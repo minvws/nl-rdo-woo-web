@@ -39,7 +39,7 @@ class IngestDossierHandlerTest extends UnitTestCase
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(WooDecision::class);
 
-        $this->doctrine->shouldReceive('getRepository->find')->with($dossierId)->andReturn($dossier);
+        $this->doctrine->expects('getRepository->find')->with($dossierId)->andReturn($dossier);
 
         $this->ingester->expects('ingest')->with($dossier, $refresh);
 
@@ -54,7 +54,7 @@ class IngestDossierHandlerTest extends UnitTestCase
 
         $dossierId = Uuid::v6();
 
-        $this->doctrine->shouldReceive('getRepository->find')->with($dossierId)->andReturnNull();
+        $this->doctrine->expects('getRepository->find')->with($dossierId)->andReturnNull();
 
         $this->expectExceptionObject(IngestProcessException::forCannotFindDossier($dossierId));
 

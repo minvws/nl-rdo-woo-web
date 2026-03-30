@@ -27,7 +27,7 @@ final class ProductionReportDossierFileProviderTest extends UnitTestCase
     public function testGetEntityForPublicUseThrowsException(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
+        $dossier->expects('getId')->andReturn(Uuid::v6());
 
         $this->expectException(DossierFileNotFoundException::class);
 
@@ -37,7 +37,7 @@ final class ProductionReportDossierFileProviderTest extends UnitTestCase
     public function testGetEntityForAdminUseThrowsExceptionForDossierTypeMismatch(): void
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
+        $dossier->expects('getId')->andReturn(Uuid::v6());
 
         $this->expectException(DossierFileNotFoundException::class);
 
@@ -47,8 +47,8 @@ final class ProductionReportDossierFileProviderTest extends UnitTestCase
     public function testGetEntityForAdminUseThrowsExceptionWhenWooDecisionHasNoProductionReport(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
-        $dossier->shouldReceive('getProductionReport')->andReturnNull();
+        $dossier->expects('getId')->andReturn(Uuid::v6());
+        $dossier->expects('getProductionReport')->andReturnNull();
 
         $this->expectException(DossierFileNotFoundException::class);
 
@@ -60,8 +60,7 @@ final class ProductionReportDossierFileProviderTest extends UnitTestCase
         $productionReport = Mockery::mock(ProductionReport::class);
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
-        $dossier->shouldReceive('getProductionReport')->andReturn($productionReport);
+        $dossier->expects('getProductionReport')->andReturn($productionReport);
 
         $idInput = '55ae5de9-55f4-3420-b50b-5cde6e07fc5a';
 

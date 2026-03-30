@@ -6,6 +6,7 @@
 Documentation       Tests for the Annual Report endpoint
 Library             RequestsLibrary
 Resource            ../../resources/API.resource
+Resource            ../../resources/AnnualReport.resource
 Resource            ../../resources/Dossier.resource
 Suite Setup         Suite Setup
 Test Tags           api  annual-report
@@ -34,8 +35,9 @@ Suite Setup
 
 We Create Test Data For Annual Report
   [Arguments]  ${publication_date}
-  ${main_document} =  Generate Main Document  type=c_38ba44de
-  ${attachments} =  Generate Attachments
+  ${main_document} =  Generate Main Document  type=c_3d782f30
+  ${allowed_attachment_types} =  Get Annual Report Attachment Types
+  ${attachments} =  Generate Attachments  ${allowed_attachment_types}
   # Build body
   ${department_id} =  Get Department ID
   ${subject_id} =  Get Subject ID
@@ -71,16 +73,3 @@ We Can Find It
   ...  alias=publication_api
   ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/annual-report/${EXTERNAL_ID}
   VAR  ${RESPONSE} =  ${get_response.json()}  scope=TEST
-
-A Annual Report Is Updated
-  Set To Dictionary  ${BODY}  title  Robot - Gewijzigde titel
-  PUT On Session
-  ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/annual-report/${EXTERNAL_ID}
-  ...  json=${BODY}
-
-The Annual Report Has The New Values
-  ${get_response} =  GET On Session
-  ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/annual-report/${EXTERNAL_ID}
-  Should Be Equal  ${get_response.json()}[title]  Robot - Gewijzigde titel

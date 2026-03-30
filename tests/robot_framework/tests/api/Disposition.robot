@@ -6,16 +6,16 @@
 Documentation       Tests for the Disposition endpoint
 Library             RequestsLibrary
 Resource            ../../resources/API.resource
+Resource            ../../resources/Disposition.resource
 Resource            ../../resources/Dossier.resource
 Suite Setup         Suite Setup
 Test Tags           api  disposition
 
 
 *** Variables ***
-${ORGANISATION_ID}      ${EMPTY}
-${CURRENT_DATE_RFC}     ${EMPTY}
-${EXTERNAL_ID}          ${EMPTY}
-${BODY}                 ${EMPTY}
+${ORGANISATION_ID}  ${EMPTY}
+${EXTERNAL_ID}      ${EMPTY}
+${BODY}             ${EMPTY}
 
 
 *** Test Cases ***
@@ -35,6 +35,8 @@ Suite Setup
 We Create Test Data For Disposition
   [Arguments]  ${publication_date}
   ${main_document} =  Generate Main Document  type=c_2ab17960
+  ${allowed_attachment_types} =  Get Disposition Attachment Types
+  ${attachments} =  Generate Attachments  ${allowed_attachment_types}
   # Build body
   ${department_id} =  Get Department ID
   ${subject_id} =  Get Subject ID
@@ -45,11 +47,11 @@ We Create Test Data For Disposition
   ${summary} =  Fakerlibrary.Text  200
   ${dossier_date} =  Get Date Minus  1 day
   VAR  &{BODY} =
-  ...  attachments=@{EMPTY}
+  ...  attachments=${attachments}
   ...  departmentId=${department_id}
   ...  dossierDate=${dossier_date}
   ...  dossierNumber=${dossier_number}
-  ...  internalReference=
+  ...  internalReference=${internal_reference}
   ...  mainDocument=${main_document}
   ...  prefix=${prefix_id}
   ...  publicationDate=${publication_date}
@@ -70,16 +72,3 @@ We Can Find It
   ...  alias=publication_api
   ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/disposition/${EXTERNAL_ID}
   VAR  ${RESPONSE} =  ${get_response.json()}  scope=TEST
-
-A Disposition Is Updated
-  Set To Dictionary  ${BODY}  title  Robot - Gewijzigde titel
-  PUT On Session
-  ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/disposition/${EXTERNAL_ID}
-  ...  json=${BODY}
-
-The Disposition Has The New Values
-  ${get_response} =  GET On Session
-  ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/disposition/${EXTERNAL_ID}
-  Should Be Equal  ${get_response.json()}[title]  Robot - Gewijzigde titel

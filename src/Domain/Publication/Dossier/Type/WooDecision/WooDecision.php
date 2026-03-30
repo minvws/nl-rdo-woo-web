@@ -25,6 +25,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
+use Shared\Domain\Publication\Dossier\Validator\NoIncompleteDocuments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -36,6 +38,16 @@ use function in_array;
  * @implements EntityWithAttachments<WooDecisionAttachment>
  */
 #[ORM\Entity(repositoryClass: WooDecisionRepository::class)]
+#[NoIncompleteAttachments(groups: [
+    DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+    DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+    DossierValidationGroup::WORKFLOW_PUBLISH->value,
+])]
+#[NoIncompleteDocuments(groups: [
+    DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+    DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+    DossierValidationGroup::WORKFLOW_PUBLISH->value,
+])]
 class WooDecision extends AbstractDossier implements DossierTypeWithPreview, EntityWithAttachments, EntityWithMainDocument
 {
     /** @use HasMainDocument<WooDecisionMainDocument> */
@@ -44,13 +56,34 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     /** @use HasAttachments<WooDecisionAttachment> */
     use HasAttachments;
 
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::CONTENT->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    #[Assert\Length(min: 1, max: 1000, groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::CONTENT->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    protected string $summary = '';
+
     /** @var Collection<array-key, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'dossiers', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
     #[ORM\OrderBy(['documentNr' => 'ASC'])]
     protected Collection $documents;
 
     #[ORM\Column(length: 255, nullable: true, enumType: PublicationReason::class)]
-    #[Assert\NotBlank(groups: [DossierValidationGroup::DETAILS->value])]
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::DETAILS->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     private ?PublicationReason $publicationReason = null;
 
     /** @var Collection<array-key,Inquiry> */
@@ -64,23 +97,55 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     protected ?ProductionReport $productionReport = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    #[Assert\LessThanOrEqual('today', groups: [
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+    ])]
     private ?DateTimeImmutable $previewDate = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ProductionReportProcessRun::class, cascade: ['remove'])]
     private ?ProductionReportProcessRun $processRun = null;
 
     #[ORM\Column(length: 255, nullable: true, enumType: DecisionType::class)]
-    #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value])]
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     private ?DecisionType $decision = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
-    #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value])]
-    #[Assert\LessThanOrEqual(value: 'today', message: 'date_must_not_be_in_future', groups: [DossierValidationGroup::DECISION->value])]
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    #[Assert\LessThanOrEqual(value: 'today', message: 'date_must_not_be_in_future', groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     private ?DateTimeImmutable $decisionDate = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: WooDecisionMainDocument::class, cascade: ['remove', 'persist'])]
-    #[Assert\NotBlank(groups: [DossierValidationGroup::DECISION->value])]
-    #[Assert\Valid(groups: [DossierValidationGroup::DECISION->value])]
+    #[Assert\NotBlank(groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
+    #[Assert\Valid(groups: [
+        DossierValidationGroup::DECISION->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ])]
     private ?WooDecisionMainDocument $document;
 
     /** @var Collection<array-key,WooDecisionAttachment> */

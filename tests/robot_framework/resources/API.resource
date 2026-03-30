@@ -26,15 +26,15 @@ Suite Setup API
 
 Create Session
   IF  '%{ENVIRONMENT}' == 'docker'
-    VAR  ${BASE_URL} =  https://publication-api-woo.local  scope=global
-    VAR  ${client_cert} =  ./certs/generated/client-vws.pem
-    VAR  ${client_key} =  ./certs/generated/private/client-vws.key
+    VAR  ${BASE_URL} =  https://publication-api-minvws.local  scope=global
+    VAR  ${client_cert} =  ./certs/generated/client-minvws.pem
+    VAR  ${client_key} =  ./certs/generated/private/client-minvws.key
     VAR  ${ca_bundle} =  ./certs/generated/client-bundle.pem
   ELSE
     VAR  ${BASE_URL} =  https://localhost:8443  scope=global
-    VAR  ${client_cert} =  ../../docker/certs/generated/client-vws.pem
-    VAR  ${client_key} =  ../../docker/certs/generated/private/client-vws.key
-    VAR  ${ca_bundle} =  ../../docker/certs/generated/client-bundle.pem
+    VAR  ${client_cert} =  ../../certs/dev/client-minvws.pem
+    VAR  ${client_key} =  ../../certs/dev/client-minvws.key
+    VAR  ${ca_bundle} =  ../../certs/dev/client-bundle.pem
   END
   VAR  @{client_certs} =  ${client_cert}  ${client_key}
   Set Environment Variable  REQUESTS_CA_BUNDLE  ${ca_bundle}
@@ -154,12 +154,17 @@ Get Random Attachment Type
   RETURN  ${random_attachment_type}
 
 Upload File
-  [Arguments]  ${dossier_type}  ${dossier_id}  ${upload_id}  ${file_location}  ${document_type}
+  [Arguments]  ${file_location}  ${dossier_type}  ${dossier_id}  ${document_type}  ${document_id}=${EMPTY}
   ${binary_file} =  Get Binary File  ${file_location}
   VAR  &{headers} =  Content-Type=application/octet-stream
+  IF  '${document_id}' != '${EMPTY}'
+    VAR  ${document_id_snippet} =  /${document_id}
+  ELSE
+    VAR  ${document_id_snippet} =  ${EMPTY}
+  END
   ${put_response} =  PUT On Session
   ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/${dossier_type}/${dossier_id}/uploads/${document_type}/${upload_id}
+  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/${dossier_type}/${dossier_id}/uploads/${document_type}${document_id_snippet}
   ...  data=${binary_file}
   ...  headers=${headers}
   RETURN  ${put_response}
@@ -206,10 +211,11 @@ Generate Main Document
   RETURN  ${main_document}
 
 Generate Attachment
+  [Arguments]  ${allowed_types}
   ${file_name} =  FakerLibrary.Sentence
-  ${file_name} =  Catenate  ${file_name}.txt
+  ${file_name} =  Catenate  ${file_name}txt
   ${internal_reference} =  FakerLibrary.Sentence
-  ${attachment_type} =  Get Random Attachment Type
+  ${type} =  FakerLibrary.Random Element  ${allowed_types}
   ${formal_date} =  Get Date Minus  1 day
   ${external_id} =  FakerLibrary.Uuid 4
   VAR  ${language} =  Dutch
@@ -219,14 +225,15 @@ Generate Attachment
   ...  grounds=@{EMPTY}
   ...  internalReference=${internal_reference}
   ...  language=${language}
-  ...  type=${attachment_type}
+  ...  type=${type}
   ...  externalId=${external_id}
   RETURN  ${main_document}
 
 Generate Attachments
+  [Arguments]  ${allowed_types}
   VAR  @{attachments} =  @{EMPTY}
   WHILE  True  limit=5  on_limit=pass
-    ${attachment} =  Generate Attachment
+    ${attachment} =  Generate Attachment  ${allowed_types}
     Append To List  ${attachments}  ${attachment}
   END
   RETURN  ${attachments}
@@ -238,3 +245,11 @@ Its Not Published Yet
   Log  ${RESPONSE}[publicationDate]
   Log  ${RESPONSE}[status]
   Should Be Equal  ${RESPONSE}[status]  concept
+
+Parse Text To Date
+  [Arguments]  ${dict}  ${field}
+  ${match} =  Get Regexp Matches  ${dict}[${field}]  <ROBOT DATE (?P<offset>[+-]+[0-9]+)>  offset
+  IF  ${match}
+    ${date} =  Get Current Date  result_format=%Y-%m-%dT00:00:00.000Z  increment=${match[0]} days
+    Set To Dictionary  ${dict}  ${field}  ${date}
+  END

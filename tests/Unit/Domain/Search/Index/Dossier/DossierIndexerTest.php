@@ -42,15 +42,12 @@ class DossierIndexerTest extends UnitTestCase
 
     public function testIndex(): void
     {
-        $dossierNr = 'test-123';
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
-        $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr);
 
         $docValues = ['foo' => 'bar'];
 
         $document = Mockery::mock(ElasticDocument::class);
-        $document->shouldReceive('getDocumentValues')->andReturn($docValues);
+        $document->expects('getDocumentValues')->andReturn($docValues);
 
         $this->firstMapper->expects('supports')->with($dossier)->andReturnTrue();
         $this->firstMapper->expects('map')->with($dossier)->andReturn($document);
@@ -64,7 +61,7 @@ class DossierIndexerTest extends UnitTestCase
     public function testMapThrowsExceptionWhenNoMapperSupportsTheDossier(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
+        $dossier->expects('getType')->andReturn(DossierType::COVENANT);
 
         $this->firstMapper->expects('supports')->with($dossier)->andReturnFalse();
         $this->secondMapper->expects('supports')->with($dossier)->andReturnFalse();
@@ -77,8 +74,6 @@ class DossierIndexerTest extends UnitTestCase
     public function testMapUsesFirstMapperWhenItSupportsTheDossier(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
-
         $document = Mockery::mock(ElasticDocument::class);
 
         $this->firstMapper->expects('supports')->with($dossier)->andReturnTrue();
@@ -93,7 +88,6 @@ class DossierIndexerTest extends UnitTestCase
     public function testMapUsesSecondMapperWhenFirstDoesNotSupportTheDossier(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getType')->andReturn(DossierType::COVENANT);
 
         $document = Mockery::mock(ElasticDocument::class);
 

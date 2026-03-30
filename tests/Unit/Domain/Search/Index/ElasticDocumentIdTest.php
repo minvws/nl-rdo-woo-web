@@ -17,7 +17,7 @@ class ElasticDocumentIdTest extends UnitTestCase
     public function testForDossier(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
-        $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
+        $dossier->expects('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
 
         self::assertEquals(
             $dossierId,
@@ -28,7 +28,7 @@ class ElasticDocumentIdTest extends UnitTestCase
     public function testForEntityWithFileInfo(): void
     {
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId->toRfc4122')->andReturn($entityId = 'foo-123');
+        $entity->expects('getId->toRfc4122')->andReturn($entityId = 'foo-123');
 
         self::assertEquals(
             $entityId,
@@ -39,7 +39,7 @@ class ElasticDocumentIdTest extends UnitTestCase
     public function testForObjectWithDossier(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
-        $dossier->shouldReceive('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
+        $dossier->expects('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
 
         self::assertEquals(
             $dossierId,
@@ -50,7 +50,7 @@ class ElasticDocumentIdTest extends UnitTestCase
     public function testForObjectWithEntityWithFileInfo(): void
     {
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getId->toRfc4122')->andReturn($entityId = 'foo-123');
+        $entity->expects('getId->toRfc4122')->andReturn($entityId = 'foo-123');
 
         self::assertEquals(
             $entityId,

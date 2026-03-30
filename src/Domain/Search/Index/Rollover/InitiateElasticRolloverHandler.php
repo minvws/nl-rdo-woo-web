@@ -21,6 +21,7 @@ class InitiateElasticRolloverHandler
         protected ElasticIndexManager $indexService,
         protected LoggerInterface $logger,
         protected IngestDispatcher $ingestDispatcher,
+        private readonly ElasticConfig $elasticConfig,
     ) {
     }
 
@@ -33,7 +34,7 @@ class InitiateElasticRolloverHandler
             );
 
             $this->indexService->switch(
-                ElasticConfig::WRITE_INDEX,
+                $this->elasticConfig->writeIndex,
                 srcIndex: '*',
                 dstIndex: $message->indexName,
             );

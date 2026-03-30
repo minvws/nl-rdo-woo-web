@@ -14,7 +14,6 @@ use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Unit\UnitTestCase;
-use Symfony\Component\Uid\Uuid;
 
 class WooDecisionIngestStrategyTest extends UnitTestCase
 {
@@ -38,10 +37,8 @@ class WooDecisionIngestStrategyTest extends UnitTestCase
         $docA = Mockery::mock(Document::class);
         $docB = Mockery::mock(Document::class);
 
-        $dossierId = Uuid::v6();
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn($dossierId);
-        $dossier->shouldReceive('getDocuments')->andReturn(new ArrayCollection([
+        $dossier->expects('getDocuments')->andReturn(new ArrayCollection([
             $docA,
             $docB,
         ]));

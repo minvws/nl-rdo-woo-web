@@ -109,9 +109,8 @@ class Inquiry
 
     public function removeDocument(Document $document): self
     {
-        // Document removal for inquiries is disabled as part of #2868:
-        // $this->documents->removeElement($document);
-        // $document->removeInquiry($this);
+        $this->documents->removeElement($document);
+        $document->removeInquiry($this);
 
         return $this;
     }

@@ -11,6 +11,7 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use Override;
 use Shared\Domain\Upload\Handler\S3\S3UploadHandler;
 use Shared\Domain\Upload\Handler\S3\S3UploadHelper;
 use Shared\Domain\Upload\Result\PartialUploadResult;
@@ -18,6 +19,7 @@ use Shared\Domain\Upload\Result\UploadCompletedResult;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadRequest;
 use Shared\Service\Uploader\UploadGroupId;
+use Shared\ValueObject\ExternalId;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
@@ -35,6 +37,7 @@ class S3UploadHandlerTest extends MockeryTestCase
     private S3UploadHelper&MockInterface $s3uploadHelper;
     private vfsStreamDirectory $vfs;
 
+    #[Override]
     protected function setUp(): void
     {
         $this->s3uploadHelper = Mockery::mock(S3UploadHelper::class);
@@ -55,9 +58,9 @@ class S3UploadHandlerTest extends MockeryTestCase
             ->at($this->vfs);
 
         $uploadedFile = Mockery::mock(UploadedFile::class);
-        $uploadedFile->shouldReceive('getRealPath')->andReturn(sprintf('%s/%s', $this->vfs->url(), $path));
-        $uploadedFile->shouldReceive('getClientOriginalName')->andReturn('foo.bar');
-        $uploadedFile->shouldReceive('getClientMimeType')->andReturn('foo/bar');
+        $uploadedFile->expects('getRealPath')->andReturn(sprintf('%s/%s', $this->vfs->url(), $path));
+        $uploadedFile->expects('getClientOriginalName')->andReturn('foo.bar');
+        $uploadedFile->expects('getClientMimeType')->andReturn('foo/bar');
 
         $request = new UploadRequest(
             chunkIndex: 0,
@@ -68,7 +71,7 @@ class S3UploadHandlerTest extends MockeryTestCase
             additionalParameters: new InputBag(),
         );
 
-        $this->s3uploadHelper->shouldReceive('uploadFile')->with($request);
+        $this->s3uploadHelper->expects('uploadFile')->with($request);
 
         $result = $this->handler->handleUpload($uploadEntity, $request);
 
@@ -81,8 +84,7 @@ class S3UploadHandlerTest extends MockeryTestCase
         $uploadEntity = Mockery::mock(UploadEntity::class);
 
         $uploadedFile = Mockery::mock(UploadedFile::class);
-        $uploadedFile->shouldReceive('getClientOriginalName')->andReturn('foo.bar');
-        $uploadedFile->shouldReceive('getClientMimeType')->andReturn('foo/bar');
+        $uploadedFile->expects('getClientOriginalName')->andReturn('foo.bar');
 
         $request = new UploadRequest(
             chunkIndex: 0,
@@ -94,14 +96,14 @@ class S3UploadHandlerTest extends MockeryTestCase
         );
 
         $this->s3uploadHelper
-            ->shouldReceive('createMultipartUpload')
+            ->expects('createMultipartUpload')
             ->with($request)
             ->andReturn($externalId = 'foo-789');
 
         $uploadEntity->expects('setExternalId')->with($externalId);
 
         $this->s3uploadHelper
-            ->shouldReceive('uploadPart')
+            ->expects('uploadPart')
             ->with($request, $externalId);
 
         $result = $this->handler->handleUpload($uploadEntity, $request);
@@ -112,12 +114,14 @@ class S3UploadHandlerTest extends MockeryTestCase
 
     public function testHandleLastChunkOfMultiPartUploadRequest(): void
     {
+        $externalId = 'foo-789';
+
         $uploadEntity = Mockery::mock(UploadEntity::class);
-        $uploadEntity->shouldReceive('getExternalId')->andReturn($externalId = 'foo-789');
+        $uploadEntity->expects('getExternalId')->andReturn(ExternalId::create($externalId));
 
         $uploadedFile = Mockery::mock(UploadedFile::class);
-        $uploadedFile->shouldReceive('getClientOriginalName')->andReturn('foo.bar');
-        $uploadedFile->shouldReceive('getClientMimeType')->andReturn('foo/bar');
+        $uploadedFile->expects('getClientOriginalName')->andReturn('foo.bar');
+        $uploadedFile->expects('getClientMimeType')->andReturn('foo/bar');
 
         $request = new UploadRequest(
             chunkIndex: 2,
@@ -129,11 +133,11 @@ class S3UploadHandlerTest extends MockeryTestCase
         );
 
         $this->s3uploadHelper
-            ->shouldReceive('uploadPart')
+            ->expects('uploadPart')
             ->with($request, $externalId);
 
         $this->s3uploadHelper
-            ->shouldReceive('completeMultipartUpload')
+            ->expects('completeMultipartUpload')
             ->with($request, $externalId)
             ->andReturn(345);
 
@@ -146,7 +150,7 @@ class S3UploadHandlerTest extends MockeryTestCase
     public function testMoveUploadedFileToStorage(): void
     {
         $uploadEntity = Mockery::mock(UploadEntity::class);
-        $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId = 'foo-789');
+        $uploadEntity->expects('getUploadId')->andReturn($uploadId = 'foo-789');
 
         $path = 'foo/bar.baz';
 
@@ -161,7 +165,7 @@ class S3UploadHandlerTest extends MockeryTestCase
     public function testDeleteUploadedFile(): void
     {
         $uploadEntity = Mockery::mock(UploadEntity::class);
-        $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId = 'foo-789');
+        $uploadEntity->expects('getUploadId')->andReturn($uploadId = 'foo-789');
 
         $this->s3uploadHelper->expects('deleteUpload')->with($uploadId);
 
@@ -171,7 +175,7 @@ class S3UploadHandlerTest extends MockeryTestCase
     public function testCopyUploadedFileToFilesystem(): void
     {
         $uploadEntity = Mockery::mock(UploadEntity::class);
-        $uploadEntity->shouldReceive('getUploadId')->andReturn($uploadId = 'foo-789');
+        $uploadEntity->expects('getUploadId')->andReturn($uploadId = 'foo-789');
 
         $limit = 789;
         $path = 'foo/bar.baz';

@@ -25,13 +25,18 @@ The following environment variables are used by the application:
 |---------------------------|---------------------------------------------------------------|-------------------------|
 | `APP_ENV`                 | The application environment.                                  | `prod`                  |
 | `APP_DEBUG`               | Whether the application is in debug mode.                     | `false`                 |
-| `APP_SECRET`              | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                  |
-| `SITE_NAME`               | The name of the site. Used only for displaying purposes.      | het publicatieplatform  |
-| `COOKIE_NAME`             | The name of session cookie to use.                            | `WOOPID`                |
+| `MINVWS_APP_SECRET`       | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                  |
+| `MINFIN_APP_SECRET`       | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                  |
+| `MINVWS_SITE_NAME`        | The name of the site. Used only for displaying purposes.      | het publicatieplatform  |
+| `MINFIN_SITE_NAME`        | The name of the site. Used only for displaying purposes.      | het publicatieplatform  |
+| `MINVWS_COOKIE_NAME`      | The name of session cookie to use.                            | `MINVWS_WOOPID`         |
+| `MINFIN_COOKIE_NAME`      | The name of session cookie to use.                            | `MINFIN_WOOPID`         |
 | `SESSION_COOKIE_LIFETIME` | The lifetime of session cookies.                              | `86400`                 |
-| `TOTP_ISSUER`             | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`             |
+| `MINVWS_TOTP_ISSUER`      | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`             |
+| `MINFIN_TOTP_ISSUER`      | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`             |
 | `APP_MODE`                | Application mode (see below)                                  | `ALL`                   |
-| `PUBLIC_BASE_URL`         | The url of the FRONTEND site                                  | `http://localhost:8000` |
+| `MINVWS_PUBLIC_BASE_URL`  | The url of the PUBLIC site                                    | `http://localhost:8000` |
+| `MINFIN_PUBLIC_BASE_URL`  | The url of the PUBLIC site                                    | `http://localhost:8100` |
 | `PIWIK_ANALYTICS_ID`      | Identification number for Piwik analytics                     | `0`                     |
 
 Cookie names should be prefixed with `__Host-` when running on HTTPS. However, this will break the application when running on
@@ -46,10 +51,12 @@ The `APP_MODE` defines how the given instance behaves. It can be `ALL`, `FRONTEN
 
 ### Database settings
 
-| Variable                  | Description                                                                              | Default value |
-| ------------------------- | ---------------------------------------------------------------------------------------- | ------------- |
-| `DATABASE_URL`            | The DSN of the database connection.                                                      | `null`        |
-| `DATABASE_ENCRYPTION_KEY` | Database at-rest encryption key (generated with "php bin/console generate:database-key") | `null`        |
+| Variable                         | Description                                                                                              | Default value |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------- |
+| `MINVWS_DATABASE_URL`            | The DSN of the database connection.                                                                      | `null`        |
+| `MINFIN_DATABASE_URL`            | The DSN of the database connection.                                                                      | `null`        |
+| `MINVWS_DATABASE_ENCRYPTION_KEY` | Database at-rest encryption key (generated with "php bin/console --tenant=minvws generate:database-key") | `null`        |
+| `MINFIN_DATABASE_ENCRYPTION_KEY` | Database at-rest encryption key (generated with "php bin/console --tenant=minfin generate:database-key") | `null`        |
 
 ### Messenger settings
 
@@ -57,12 +64,16 @@ This is a list of DSNs for the different queues that are used by the application
 can also be configured to use the database, redis or any other
 storage system.
 
-| Variable                  | Description                            | Default value                                      |
-| ------------------------- | -------------------------------------- | -------------------------------------------------- |
-| `HIGH_TRANSPORT_DSN`      | DSN for high priority work             | `amqp://guest:guest@localhost:5672/%2f/high`       |
-| `INGESTOR_TRANSPORT_DSN`  | DSN for ingesting documents            | `amqp://guest:guest@localhost:5672/%2f/ingestor`   |
-| `ESUPDATER_TRANSPORT_DSN` | DSN for updates on the elastic search  | `amqp://guest:guest@localhost:5672/%2f/es_updates` |
-| `GLOBAL_TRANSPORT_DSN`    | DSN for global household functionality | `amqp://guest:guest@localhost:5672/%2f/global`     |
+| Variable                         | Description                            | Default value                                      |
+| -------------------------------- | -------------------------------------- | -------------------------------------------------- |
+| `MINVWS_HIGH_TRANSPORT_DSN`      | DSN for high priority work             | `amqp://guest:guest@localhost:5672/%2f/high`       |
+| `MINFIN_HIGH_TRANSPORT_DSN`      | DSN for high priority work             | `amqp://guest:guest@localhost:5672/%2f/high`       |
+| `MINVWS_INGESTOR_TRANSPORT_DSN`  | DSN for ingesting documents            | `amqp://guest:guest@localhost:5672/%2f/ingestor`   |
+| `MINFIN_INGESTOR_TRANSPORT_DSN`  | DSN for ingesting documents            | `amqp://guest:guest@localhost:5672/%2f/ingestor`   |
+| `MINVWS_ESUPDATER_TRANSPORT_DSN` | DSN for updates on the elastic search  | `amqp://guest:guest@localhost:5672/%2f/es_updates` |
+| `MINFIN_ESUPDATER_TRANSPORT_DSN` | DSN for updates on the elastic search  | `amqp://guest:guest@localhost:5672/%2f/es_updates` |
+| `MINVWS_GLOBAL_TRANSPORT_DSN`    | DSN for global household functionality | `amqp://guest:guest@localhost:5672/%2f/global`     |
+| `MINFIN_GLOBAL_TRANSPORT_DSN`    | DSN for global household functionality | `amqp://guest:guest@localhost:5672/%2f/global`     |
 
 These settings are in order of priority. So if there is a message in the high priority queue, it will be processed before any other messages.
 
@@ -132,7 +143,7 @@ In order to configure them, you have to change the `config/packages/audit_logger
 To generate the keys for the encryption, you can use the following command:
 
 ```bash
-  php bin/console woopie:auditlog:generate-keys
+  php bin/console --tenant=minvws woopie:auditlog:generate-keys
 ```
 
 and copy the output to the env vars.
@@ -158,10 +169,12 @@ The following settings are available:
 
 ### Miscellaneous settings
 
-| Variable               | Description                                                                                                            | Default value                        |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| `RABBITMQ_STATS_URL`   | Url to the RabbitMQ management interface for statistics. This needs to have the management plugin enabled on rabbitmq. | `http://guest:guest@127.0.0.1:15672` |
-| `TIKA_HOST`            | Url on which Tika is running. Used for the workers that extract content through tika                                   | `http://127.0.0.1:9998`              |
-| `RABBITMQ_URL`         | Default rabbitMQ entrypoint. This is used for the audit logger functionality.                                          | `amqp://guest:guest@localhost:5672`  |
-| `CLAM_AV_ADDRESS`      | This is used for validating uploaded files.                                                                            | `tcp://clamav:3310`                  |
-| `CLAM_AV_MAX_FILESIZE` | Max filesize to be scanned in bytes                                                                                    | `1073741824` (1GiB)                  |
+| Variable                    | Description                                                                                                            | Default value                        |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `MINVWS_RABBITMQ_STATS_URL` | Url to the RabbitMQ management interface for statistics. This needs to have the management plugin enabled on rabbitmq. | `http://guest:guest@127.0.0.1:15672` |
+| `MINFIN_RABBITMQ_STATS_URL` | Url to the RabbitMQ management interface for statistics. This needs to have the management plugin enabled on rabbitmq. | `http://guest:guest@127.0.0.1:15672` |
+| `TIKA_HOST`                 | Url on which Tika is running. Used for the workers that extract content through tika                                   | `http://127.0.0.1:9998`              |
+| `MINVWS_RABBITMQ_URL`       | Default rabbitMQ entrypoint. This is used for the audit logger functionality.                                          | `amqp://guest:guest@localhost:5672`  |
+| `MINFIN_RABBITMQ_URL`       | Default rabbitMQ entrypoint. This is used for the audit logger functionality.                                          | `amqp://guest:guest@localhost:5672`  |
+| `CLAM_AV_ADDRESS`           | This is used for validating uploaded files.                                                                            | `tcp://clamav:3310`                  |
+| `CLAM_AV_MAX_FILESIZE`      | Max filesize to be scanned in bytes                                                                                    | `1073741824` (1GiB)                  |

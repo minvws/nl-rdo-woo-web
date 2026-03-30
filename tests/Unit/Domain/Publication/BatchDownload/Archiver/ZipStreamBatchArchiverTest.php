@@ -14,11 +14,8 @@ use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\BatchDownload\Archiver\ZipStreamBatchArchiver;
 use Shared\Domain\Publication\BatchDownload\Archiver\ZipStreamFactory;
 use Shared\Domain\Publication\BatchDownload\BatchDownload;
-use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\S3\StreamFactory;
 use Shared\Service\DownloadFilenameGenerator;
@@ -68,53 +65,52 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
 
     public function testStart(): void
     {
-        $this->startArchiver();
-    }
-
-    public function testStartWithExceptionThrown(): void
-    {
-        $wooDecision = Mockery::mock(WooDecision::class);
-        $inquiry = Mockery::mock(Inquiry::class);
-
         $batchDownload = Mockery::mock(BatchDownload::class);
-        $batchDownload->shouldReceive('getDossier')->andReturn($wooDecision);
-        $batchDownload->shouldReceive('getInquiry')->andReturn($inquiry);
 
         $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
-        $downloadType
-            ->shouldReceive('getFileBaseName')
-            ->with(Mockery::on(
-                static function (BatchDownloadScope $scope) use ($wooDecision, $inquiry): bool {
-                    return $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry;
-                }
-            ))
-            ->andReturn('file-base-name');
 
-        $this->s3Client->shouldReceive('registerStreamWrapperV2')->once();
+        $this->s3Client->expects('registerStreamWrapperV2');
         $this->streamFactory
-            ->shouldReceive('createWriteOnlyStream')
+            ->expects('createWriteOnlyStream')
             ->with(self::BATCH_BUCKET, self::BATCH_FILE_NAME)
             ->andReturn($this->zipFile);
 
         $this->zipStreamFactory
-            ->shouldReceive('create')
+            ->expects('create')
+            ->with($this->zipFile)
+            ->andReturn($this->zipStream);
+
+        $this->batchArchiver->start($downloadType, $batchDownload, self::BATCH_FILE_NAME);
+    }
+
+    public function testStartWithExceptionThrown(): void
+    {
+        $batchDownload = Mockery::mock(BatchDownload::class);
+
+        $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
+
+        $this->s3Client->expects('registerStreamWrapperV2');
+        $this->streamFactory
+            ->expects('createWriteOnlyStream')
+            ->with(self::BATCH_BUCKET, self::BATCH_FILE_NAME)
+            ->andReturn($this->zipFile);
+
+        $this->zipStreamFactory
+            ->expects('create')
             ->with($this->zipFile)
             ->andThrow($ex = new FileNotReadableException('my path'));
 
         $this->logger
-            ->shouldReceive('error')
+            ->expects('error')
             ->with('"ZipStream\Exception\FileNotReadableException" exception thrown', [
                 'exceptionMessage' => $ex->getMessage(),
-            ])
-            ->once();
+            ]);
 
         $this->zipFile
-            ->shouldReceive('close')
-            ->once();
+            ->expects('close');
 
         $this->s3Client
-            ->shouldReceive('deleteObject')->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME])
-            ->once();
+            ->expects('deleteObject')->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME]);
 
         $this->expectExceptionObject($ex);
 
@@ -123,57 +119,40 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
 
     public function testStartWithExceptionThrownAndFailingToDeleteS3Object(): void
     {
-        $wooDecision = Mockery::mock(WooDecision::class);
-        $inquiry = Mockery::mock(Inquiry::class);
-
         $batchDownload = Mockery::mock(BatchDownload::class);
-        $batchDownload->shouldReceive('getDossier')->andReturn($wooDecision);
-        $batchDownload->shouldReceive('getInquiry')->andReturn($inquiry);
-
         $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
-        $downloadType
-            ->shouldReceive('getFileBaseName')
-            ->with(Mockery::on(
-                static function (BatchDownloadScope $scope) use ($wooDecision, $inquiry): bool {
-                    return $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry;
-                }
-            ))
-            ->andReturn('file-base-name');
 
-        $this->s3Client->shouldReceive('registerStreamWrapperV2')->once();
+        $this->s3Client->expects('registerStreamWrapperV2');
         $this->streamFactory
-            ->shouldReceive('createWriteOnlyStream')
+            ->expects('createWriteOnlyStream')
             ->with(self::BATCH_BUCKET, self::BATCH_FILE_NAME)
             ->andReturn($this->zipFile);
 
         $this->zipStreamFactory
-            ->shouldReceive('create')
+            ->expects('create')
             ->with($this->zipFile)
             ->andThrow($ex1 = new FileNotReadableException('my path'));
 
         $this->logger
-            ->shouldReceive('error')
+            ->expects('error')
             ->with('"ZipStream\Exception\FileNotReadableException" exception thrown', [
                 'exceptionMessage' => $ex1->getMessage(),
-            ])
-            ->once();
+            ]);
 
         $this->zipFile
-            ->shouldReceive('close')
-            ->once();
+            ->expects('close');
 
         $this->s3Client
-            ->shouldReceive('deleteObject')
+            ->expects('deleteObject')
             ->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME])
-            ->once()
+
             ->andThrow($ex2 = new S3Exception('failed to delete', Mockery::mock(CommandInterface::class)));
 
         $this->logger
-            ->shouldReceive('error')
+            ->expects('error')
             ->with('"Aws\S3\Exception\S3Exception" exception thrown', [
                 'exceptionMessage' => $ex2->getMessage(),
-            ])
-            ->once();
+            ]);
 
         $this->expectExceptionObject($ex1);
 
@@ -182,72 +161,142 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
 
     public function testAddDocument(): void
     {
-        $this->startArchiver();
+        $batchDownload = Mockery::mock(BatchDownload::class);
 
-        $document = $this->createDocument($path = 'path');
+        $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
 
-        $this->addDocument($document, $path);
-    }
+        $this->s3Client->expects('registerStreamWrapperV2');
+        $this->streamFactory
+            ->expects('createWriteOnlyStream')
+            ->with(self::BATCH_BUCKET, self::BATCH_FILE_NAME)
+            ->andReturn($this->zipFile);
 
-    public function testAddDocumentWithFailure(): void
-    {
-        $this->startArchiver();
+        $this->zipStreamFactory
+            ->expects('create')
+            ->with($this->zipFile)
+            ->andReturn($this->zipStream);
 
-        $document = $this->createDocument($path = 'path');
+        $this->batchArchiver->start($downloadType, $batchDownload, self::BATCH_FILE_NAME);
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getPath')->andReturn('path');
+
+        $path = 'path';
+        $document = Mockery::mock(Document::class);
+        $document->expects('getFileInfo')->andReturn($fileInfo);
 
         $documentResource = Mockery::mock(StreamInterface::class);
 
         $this->streamFactory
-            ->shouldReceive('createReadOnlyStream')
+            ->expects('createReadOnlyStream')
             ->with(self::DOCUMENT_BUCKET, $path)
-            ->once()
+
             ->andReturn($documentResource);
 
         $this->filenameGenerator
-            ->shouldReceive('getFileName')
+            ->expects('getFileName')
             ->with($document)
             ->andReturn($filename = 'filename');
 
         $this->zipStream
-            ->shouldReceive('addFileFromPsr7Stream')
+            ->expects('addFileFromPsr7Stream')
+            ->with($filename, $documentResource);
+
+        $documentResource->expects('close');
+
+        $this->assertTrue($this->batchArchiver->addDocument($document));
+    }
+
+    public function testAddDocumentWithFailure(): void
+    {
+        $batchDownload = Mockery::mock(BatchDownload::class);
+
+        $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
+
+        $this->s3Client->expects('registerStreamWrapperV2');
+        $this->streamFactory
+            ->expects('createWriteOnlyStream')
+            ->with(self::BATCH_BUCKET, self::BATCH_FILE_NAME)
+            ->andReturn($this->zipFile);
+
+        $this->zipStreamFactory
+            ->expects('create')
+            ->with($this->zipFile)
+            ->andReturn($this->zipStream);
+
+        $this->batchArchiver->start($downloadType, $batchDownload, self::BATCH_FILE_NAME);
+
+        $path = 'path';
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getPath')->andReturn($path);
+
+        $document = Mockery::mock(Document::class);
+        $document->expects('getFileInfo')->andReturn($fileInfo);
+
+        $documentResource = Mockery::mock(StreamInterface::class);
+
+        $this->streamFactory
+            ->expects('createReadOnlyStream')
+            ->with(self::DOCUMENT_BUCKET, $path)
+
+            ->andReturn($documentResource);
+
+        $this->filenameGenerator
+            ->expects('getFileName')
+            ->with($document)
+            ->andReturn($filename = 'filename');
+
+        $this->zipStream
+            ->expects('addFileFromPsr7Stream')
             ->with($filename, $documentResource)
-            ->once()
+
             ->andThrow($ex = new FileNotReadableException('my path'));
 
         $this->logger
-            ->shouldReceive('error')
+            ->expects('error')
             ->with('"ZipStream\Exception\FileNotReadableException" exception thrown', [
                 'exceptionMessage' => $ex->getMessage(),
-            ])
-            ->once();
+            ]);
 
-        $this->zipStream->shouldReceive('finish')->once()->andReturn(0);
+        $this->zipStream->expects('finish')->andReturn(0);
 
         $this->zipFile
-            ->shouldReceive('close')
-            ->once();
+            ->expects('close');
 
         $this->s3Client
-            ->shouldReceive('deleteObject')
-            ->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME])
-            ->once();
+            ->expects('deleteObject')
+            ->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME]);
 
-        $documentResource->shouldReceive('close')->once();
+        $documentResource->expects('close');
 
         $this->assertFalse($this->batchArchiver->addDocument($document));
     }
 
     public function testFinish(): void
     {
-        $this->startArchiver();
+        $batchDownload = Mockery::mock(BatchDownload::class);
+
+        $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
+
+        $this->s3Client->expects('registerStreamWrapperV2');
+        $this->streamFactory
+            ->expects('createWriteOnlyStream')
+            ->with(self::BATCH_BUCKET, self::BATCH_FILE_NAME)
+            ->andReturn($this->zipFile);
+
+        $this->zipStreamFactory
+            ->expects('create')
+            ->with($this->zipFile)
+            ->andReturn($this->zipStream);
+
+        $this->batchArchiver->start($downloadType, $batchDownload, self::BATCH_FILE_NAME);
 
         $this->zipStream
-            ->shouldReceive('finish')
+            ->expects('finish')
             ->andReturn($fileSize = 123);
 
         $this->zipFile
-            ->shouldReceive('close')
-            ->once();
+            ->expects('close');
 
         $result = $this->batchArchiver->finish();
 
@@ -259,25 +308,110 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
 
     public function testFinishWithMultipleDocumentsAdded(): void
     {
-        $this->startArchiver();
+        $batchDownload = Mockery::mock(BatchDownload::class);
 
-        $documentOne = $this->createDocument($pathOne = 'path-one');
-        $this->addDocument($documentOne, $pathOne);
+        $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
 
-        $documentTwo = $this->createDocument($pathTwo = 'path-two');
-        $this->addDocument($documentTwo, $pathTwo);
+        $this->s3Client->expects('registerStreamWrapperV2');
+        $this->streamFactory
+            ->expects('createWriteOnlyStream')
+            ->with(self::BATCH_BUCKET, self::BATCH_FILE_NAME)
+            ->andReturn($this->zipFile);
 
-        $documentThree = $this->createDocument($pathThree = 'path-three');
-        $this->addDocument($documentThree, $pathThree);
+        $this->zipStreamFactory
+            ->expects('create')
+            ->with($this->zipFile)
+            ->andReturn($this->zipStream);
+
+        $this->batchArchiver->start($downloadType, $batchDownload, self::BATCH_FILE_NAME);
+
+        $documentResource = Mockery::mock(StreamInterface::class);
+        $filename = 'filename';
+
+        // document 1
+        $pathOne = 'path-one';
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getPath')->andReturn($pathOne);
+
+        $documentOne = Mockery::mock(Document::class);
+        $documentOne->expects('getFileInfo')->andReturn($fileInfo);
+
+        $this->streamFactory
+            ->expects('createReadOnlyStream')
+            ->with(self::DOCUMENT_BUCKET, $pathOne)
+            ->andReturn($documentResource);
+
+        $this->filenameGenerator
+            ->expects('getFileName')
+            ->with($documentOne)
+            ->andReturn($filename);
 
         $this->zipStream
-            ->shouldReceive('finish')
-            ->once()
+            ->expects('addFileFromPsr7Stream')
+            ->with($filename, $documentResource);
+
+        $documentResource->expects('close');
+
+        $this->assertTrue($this->batchArchiver->addDocument($documentOne));
+
+        // document 2
+        $pathTwo = 'path-two';
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getPath')->andReturn($pathTwo);
+
+        $documentTwo = Mockery::mock(Document::class);
+        $documentTwo->expects('getFileInfo')->andReturn($fileInfo);
+
+        $this->streamFactory
+            ->expects('createReadOnlyStream')
+            ->with(self::DOCUMENT_BUCKET, $pathTwo)
+            ->andReturn($documentResource);
+
+        $this->filenameGenerator
+            ->expects('getFileName')
+            ->with($documentTwo)
+            ->andReturn($filename);
+
+        $this->zipStream
+            ->expects('addFileFromPsr7Stream')
+            ->with($filename, $documentResource);
+
+        $documentResource->expects('close');
+
+        $this->assertTrue($this->batchArchiver->addDocument($documentTwo));
+
+        // document 3
+        $pathThree = 'path-three';
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getPath')->andReturn($pathThree);
+
+        $documentThree = Mockery::mock(Document::class);
+        $documentThree->expects('getFileInfo')->andReturn($fileInfo);
+
+        $this->streamFactory
+            ->expects('createReadOnlyStream')
+            ->with(self::DOCUMENT_BUCKET, $pathThree)
+            ->andReturn($documentResource);
+
+        $this->filenameGenerator
+            ->expects('getFileName')
+            ->with($documentThree)
+            ->andReturn($filename);
+
+        $this->zipStream
+            ->expects('addFileFromPsr7Stream')
+            ->with($filename, $documentResource);
+
+        $documentResource->expects('close');
+
+        $this->assertTrue($this->batchArchiver->addDocument($documentThree));
+
+        $this->zipStream
+            ->expects('finish')
             ->andReturn($fileSize = 123);
 
         $this->zipFile
-            ->shouldReceive('close')
-            ->once();
+            ->expects('close');
 
         $result = $this->batchArchiver->finish();
 
@@ -290,25 +424,111 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
     public function testDocumentCountIsResetOnStartOfANewArchive(): void
     {
         // First run
-        $this->startArchiver();
+        $batchDownload = Mockery::mock(BatchDownload::class);
 
-        $documentOne = $this->createDocument($pathOne = 'path-one');
-        $this->addDocument($documentOne, $pathOne);
+        $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
 
-        $documentTwo = $this->createDocument($pathTwo = 'path-two');
-        $this->addDocument($documentTwo, $pathTwo);
+        $this->s3Client->expects('registerStreamWrapperV2');
+        $this->streamFactory
+            ->expects('createWriteOnlyStream')
+            ->with(self::BATCH_BUCKET, self::BATCH_FILE_NAME)
+            ->andReturn($this->zipFile);
 
-        $documentThree = $this->createDocument($pathThree = 'path-three');
-        $this->addDocument($documentThree, $pathThree);
+        $this->zipStreamFactory
+            ->expects('create')
+            ->with($this->zipFile)
+            ->andReturn($this->zipStream);
+
+        $this->batchArchiver->start($downloadType, $batchDownload, self::BATCH_FILE_NAME);
+
+        $documentResource = Mockery::mock(StreamInterface::class);
+        $filename = 'filename';
+
+        // document 1
+        $pathOne = 'path-one';
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getPath')->times(2)->andReturn($pathOne);
+
+        $documentOne = Mockery::mock(Document::class);
+        $documentOne->expects('getFileInfo')->times(2)->andReturn($fileInfo);
+
+        $this->streamFactory
+            ->expects('createReadOnlyStream')
+            ->with(self::DOCUMENT_BUCKET, $pathOne)
+            ->andReturn($documentResource);
+
+        $this->filenameGenerator
+            ->expects('getFileName')
+            ->times(2)
+            ->with($documentOne)
+            ->andReturn($filename);
 
         $this->zipStream
-            ->shouldReceive('finish')
-            ->once()
+            ->expects('addFileFromPsr7Stream')
+            ->with($filename, $documentResource);
+
+        $documentResource->expects('close');
+
+        $this->assertTrue($this->batchArchiver->addDocument($documentOne));
+
+        // document 2
+        $pathTwo = 'path-two';
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getPath')->andReturn($pathTwo);
+
+        $documentTwo = Mockery::mock(Document::class);
+        $documentTwo->expects('getFileInfo')->andReturn($fileInfo);
+
+        $this->streamFactory
+            ->expects('createReadOnlyStream')
+            ->with(self::DOCUMENT_BUCKET, $pathTwo)
+            ->andReturn($documentResource);
+
+        $this->filenameGenerator
+            ->expects('getFileName')
+            ->with($documentTwo)
+            ->andReturn($filename);
+
+        $this->zipStream
+            ->expects('addFileFromPsr7Stream')
+            ->with($filename, $documentResource);
+
+        $documentResource->expects('close');
+
+        $this->assertTrue($this->batchArchiver->addDocument($documentTwo));
+
+        // document 3
+        $pathThree = 'path-three';
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getPath')->andReturn($pathThree);
+
+        $documentThree = Mockery::mock(Document::class);
+        $documentThree->expects('getFileInfo')->andReturn($fileInfo);
+
+        $this->streamFactory
+            ->expects('createReadOnlyStream')
+            ->with(self::DOCUMENT_BUCKET, $pathThree)
+            ->andReturn($documentResource);
+
+        $this->filenameGenerator
+            ->expects('getFileName')
+            ->with($documentThree)
+            ->andReturn($filename);
+
+        $this->zipStream
+            ->expects('addFileFromPsr7Stream')
+            ->with($filename, $documentResource);
+
+        $documentResource->expects('close');
+
+        $this->assertTrue($this->batchArchiver->addDocument($documentThree));
+
+        $this->zipStream
+            ->expects('finish')
             ->andReturn($fileSize = 123);
 
         $this->zipFile
-            ->shouldReceive('close')
-            ->once();
+            ->expects('close');
 
         $result = $this->batchArchiver->finish();
 
@@ -318,17 +538,45 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
         self::assertEquals(3, $result->fileCount);
 
         // Second run
-        $this->startArchiver();
-        $this->addDocument($documentOne, $pathOne);
+        $batchDownload = Mockery::mock(BatchDownload::class);
+
+        $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
+
+        $this->s3Client->expects('registerStreamWrapperV2');
+        $this->streamFactory
+            ->expects('createWriteOnlyStream')
+            ->with(self::BATCH_BUCKET, self::BATCH_FILE_NAME)
+            ->andReturn($this->zipFile);
+
+        $this->zipStreamFactory
+            ->expects('create')
+            ->with($this->zipFile)
+            ->andReturn($this->zipStream);
+
+        $this->batchArchiver->start($downloadType, $batchDownload, self::BATCH_FILE_NAME);
+
+        $documentResource = Mockery::mock(StreamInterface::class);
+
+        $this->streamFactory
+            ->expects('createReadOnlyStream')
+            ->with(self::DOCUMENT_BUCKET, $pathOne)
+
+            ->andReturn($documentResource);
 
         $this->zipStream
-            ->shouldReceive('finish')
-            ->once()
+            ->expects('addFileFromPsr7Stream')
+            ->with($filename, $documentResource);
+
+        $documentResource->expects('close');
+
+        $this->assertTrue($this->batchArchiver->addDocument($documentOne));
+
+        $this->zipStream
+            ->expects('finish')
             ->andReturn($fileSize = 123);
 
         $this->zipFile
-            ->shouldReceive('close')
-            ->once();
+            ->expects('close');
 
         $result = $this->batchArchiver->finish();
 
@@ -340,111 +588,69 @@ final class ZipStreamBatchArchiverTest extends UnitTestCase
 
     public function testFinishWithFailure(): void
     {
-        $this->startArchiver();
+        $batchDownload = Mockery::mock(BatchDownload::class);
+        $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
+
+        $this->s3Client->expects('registerStreamWrapperV2');
+        $this->streamFactory
+            ->expects('createWriteOnlyStream')
+            ->with(self::BATCH_BUCKET, self::BATCH_FILE_NAME)
+            ->andReturn($this->zipFile);
+
+        $this->zipStreamFactory
+            ->expects('create')
+            ->with($this->zipFile)
+            ->andReturn($this->zipStream);
+
+        $this->batchArchiver->start($downloadType, $batchDownload, self::BATCH_FILE_NAME);
 
         $this->zipStream
-            ->shouldReceive('finish')
+            ->expects('finish')
+            ->times(2)
             ->andThrow($ex = new FileNotReadableException('my path'));
 
         $this->logger
-            ->shouldReceive('error')
+            ->expects('error')
             ->with('"ZipStream\Exception\FileNotReadableException" exception thrown', [
                 'exceptionMessage' => $ex->getMessage(),
-            ])
-            ->once();
+            ]);
 
         $this->zipFile
-            ->shouldReceive('close')
-            ->twice();
+            ->expects('close')
+            ->times(2);
 
         $this->s3Client
-            ->shouldReceive('deleteObject')
-            ->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME])
-            ->once();
+            ->expects('deleteObject')
+            ->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME]);
 
         self::assertFalse($this->batchArchiver->finish());
     }
 
     public function testCleanup(): void
     {
-        $this->startArchiver();
-
-        $this->zipStream->shouldReceive('finish')->once()->andReturn(0);
-        $this->zipFile->shouldReceive('close')->once();
-        $this->s3Client
-            ->shouldReceive('deleteObject')
-            ->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME])
-            ->once();
-
-        self::assertTrue($this->batchArchiver->cleanup());
-    }
-
-    private function startArchiver(): void
-    {
-        $wooDecision = Mockery::mock(WooDecision::class);
-        $inquiry = Mockery::mock(Inquiry::class);
-
         $batchDownload = Mockery::mock(BatchDownload::class);
-        $batchDownload->shouldReceive('getDossier')->andReturn($wooDecision);
-        $batchDownload->shouldReceive('getInquiry')->andReturn($inquiry);
 
         $downloadType = Mockery::mock(BatchDownloadTypeInterface::class);
-        $downloadType
-            ->shouldReceive('getFileBaseName')
-            ->with(Mockery::on(
-                function (BatchDownloadScope $scope) use ($wooDecision, $inquiry): bool {
-                    return $scope->wooDecision === $wooDecision && $scope->inquiry === $inquiry;
-                }
-            ))
-            ->andReturn($basename = 'file-base-name');
 
-        $this->s3Client->shouldReceive('registerStreamWrapperV2')->once();
+        $this->s3Client->expects('registerStreamWrapperV2');
         $this->streamFactory
-            ->shouldReceive('createWriteOnlyStream')
+            ->expects('createWriteOnlyStream')
             ->with(self::BATCH_BUCKET, self::BATCH_FILE_NAME)
             ->andReturn($this->zipFile);
 
         $this->zipStreamFactory
-            ->shouldReceive('create')
+            ->expects('create')
             ->with($this->zipFile)
             ->andReturn($this->zipStream);
 
         $this->batchArchiver->start($downloadType, $batchDownload, self::BATCH_FILE_NAME);
-    }
 
-    private function addDocument(Document $document, string $path): void
-    {
-        $documentResource = Mockery::mock(StreamInterface::class);
+        $this->zipStream->expects('finish')->andReturn(0);
+        $this->zipFile->expects('close');
+        $this->s3Client
+            ->expects('deleteObject')
+            ->with(['Bucket' => self::BATCH_BUCKET, 'Key' => self::BATCH_FILE_NAME]);
 
-        $this->streamFactory
-            ->shouldReceive('createReadOnlyStream')
-            ->with(self::DOCUMENT_BUCKET, $path)
-            ->once()
-            ->andReturn($documentResource);
-
-        $this->filenameGenerator
-            ->shouldReceive('getFileName')
-            ->with($document)
-            ->andReturn($filename = 'filename');
-
-        $this->zipStream
-            ->shouldReceive('addFileFromPsr7Stream')
-            ->with($filename, $documentResource)
-            ->once();
-
-        $documentResource->shouldReceive('close')->once();
-
-        $this->assertTrue($this->batchArchiver->addDocument($document));
-    }
-
-    private function createDocument(string $path): Document&MockInterface
-    {
-        $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getPath')->andReturn($path);
-
-        $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getFileInfo')->andReturn($fileInfo);
-
-        return $document;
+        self::assertTrue($this->batchArchiver->cleanup());
     }
 }

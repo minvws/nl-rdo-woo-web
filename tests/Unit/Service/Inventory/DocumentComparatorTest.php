@@ -29,13 +29,8 @@ class DocumentComparatorTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->dossier = Mockery::mock(WooDecision::class);
-        $this->dossier->shouldReceive('getDocumentPrefix')->andReturn('prefix');
-
         $this->repository = Mockery::mock(DocumentRepository::class);
-
-        $this->documentComparator = new DocumentComparator(
-            $this->repository,
-        );
+        $this->documentComparator = new DocumentComparator($this->repository);
 
         parent::setUp();
     }
@@ -45,35 +40,35 @@ class DocumentComparatorTest extends UnitTestCase
         $documentNr = Mockery::mock(DocumentNumber::class);
 
         $document = Mockery::mock(Document::class);
-        $document->expects('getJudgement')->twice()->andReturn(Judgement::NOT_PUBLIC);
-        $document->expects('getFamilyId')->twice()->andReturn(1);
-        $document->expects('getThreadId')->twice()->andReturn(1);
-        $document->expects('getGrounds')->twice()->andReturn([]);
-        $document->expects('getPeriod')->twice()->andReturnNull();
-        $document->expects('isSuspended')->twice()->andReturnFalse();
-        $document->expects('getLinks')->twice()->andReturn([]);
-        $document->expects('getRemark')->twice()->andReturnNull();
-        $document->expects('getDocumentDate')->twice()->andReturnNull();
-        $document->expects('getFileInfo->getSourceType')->twice()->andReturn(SourceType::EMAIL);
-        $document->expects('getFileInfo->getName')->twice()->andReturn('foo.txt');
-        $document->expects('getInquiries')->twice()->andReturn(new ArrayCollection());
-        $document->expects('getRefersTo')->twice()->andReturn(new ArrayCollection());
-        $document->shouldReceive('getDocumentNr')->andReturn($documentNr);
+        $document->expects('getJudgement')->times(2)->andReturn(Judgement::NOT_PUBLIC);
+        $document->expects('getFamilyId')->times(2)->andReturn(1);
+        $document->expects('getThreadId')->times(2)->andReturn(1);
+        $document->expects('getGrounds')->times(2)->andReturn([]);
+        $document->expects('getPeriod')->times(2)->andReturnNull();
+        $document->expects('isSuspended')->times(2)->andReturnFalse();
+        $document->expects('getLinks')->times(2)->andReturn([]);
+        $document->expects('getRemark')->times(2)->andReturnNull();
+        $document->expects('getDocumentDate')->times(2)->andReturnNull();
+        $document->expects('getFileInfo->getSourceType')->times(2)->andReturn(SourceType::EMAIL);
+        $document->expects('getFileInfo->getName')->times(2)->andReturn('foo.txt');
+        $document->expects('getInquiries')->times(2)->andReturn(new ArrayCollection());
+        $document->expects('getRefersTo')->times(2)->andReturn(new ArrayCollection());
+        $document->expects('getDocumentNr')->times(2)->andReturn($documentNr);
 
         $metadata = Mockery::mock(DocumentMetadata::class);
-        $metadata->expects('getJudgement')->twice()->andReturn(Judgement::ALREADY_PUBLIC);
-        $metadata->expects('getFamilyId')->twice()->andReturn(1);
-        $metadata->expects('getThreadId')->twice()->andReturn(1);
-        $metadata->expects('getGrounds')->twice()->andReturn([]);
-        $metadata->expects('getPeriod')->twice()->andReturnNull();
-        $metadata->expects('isSuspended')->twice()->andReturnFalse();
-        $metadata->expects('getLinks')->twice()->andReturn([]);
-        $metadata->expects('getRemark')->twice()->andReturnNull();
-        $metadata->expects('getDate')->twice()->andReturnNull();
-        $metadata->expects('getSourceType')->twice()->andReturn(SourceType::EMAIL);
-        $metadata->expects('getFilename')->twice()->andReturn('foo.txt');
-        $metadata->expects('getCaseNumbers')->twice()->andReturn(CaseNumbers::empty());
-        $metadata->expects('getRefersTo')->twice()->andReturn([]);
+        $metadata->expects('getJudgement')->times(2)->andReturn(Judgement::ALREADY_PUBLIC);
+        $metadata->expects('getFamilyId')->times(2)->andReturn(1);
+        $metadata->expects('getThreadId')->times(2)->andReturn(1);
+        $metadata->expects('getGrounds')->times(2)->andReturn([]);
+        $metadata->expects('getPeriod')->times(2)->andReturnNull();
+        $metadata->expects('isSuspended')->times(2)->andReturnFalse();
+        $metadata->expects('getLinks')->times(2)->andReturn([]);
+        $metadata->expects('getRemark')->times(2)->andReturnNull();
+        $metadata->expects('getDate')->times(2)->andReturnNull();
+        $metadata->expects('getSourceType')->times(2)->andReturn(SourceType::EMAIL);
+        $metadata->expects('getFilename')->times(2)->andReturn('foo.txt');
+        $metadata->expects('getCaseNumbers')->times(2)->andReturn(CaseNumbers::empty());
+        $metadata->expects('getRefersTo')->times(2)->andReturn([]);
 
         $changeset = $this->documentComparator->getChangeset($this->dossier, $document, $metadata);
         self::assertTrue($changeset->hasChanges());
@@ -87,38 +82,38 @@ class DocumentComparatorTest extends UnitTestCase
     {
         $documentNr = Mockery::mock(DocumentNumber::class);
         $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->shouldReceive('getCaseNr')->andReturn('foo-123');
+        $inquiry->expects('getCaseNr')->times(2)->andReturn('foo-123');
 
         $document = Mockery::mock(Document::class);
-        $document->expects('getJudgement')->twice()->andReturn(Judgement::NOT_PUBLIC);
-        $document->expects('getFamilyId')->twice()->andReturn(1);
-        $document->expects('getThreadId')->twice()->andReturn(1);
-        $document->expects('getGrounds')->twice()->andReturn([]);
-        $document->expects('getPeriod')->twice()->andReturnNull();
-        $document->expects('isSuspended')->twice()->andReturnFalse();
-        $document->expects('getLinks')->twice()->andReturn([]);
-        $document->expects('getRemark')->twice()->andReturnNull();
-        $document->expects('getDocumentDate')->twice()->andReturnNull();
-        $document->expects('getFileInfo->getSourceType')->twice()->andReturn(SourceType::EMAIL);
-        $document->expects('getFileInfo->getName')->twice()->andReturn('foo.txt');
-        $document->expects('getInquiries')->twice()->andReturn(new ArrayCollection([$inquiry]));
-        $document->expects('getRefersTo')->twice()->andReturn(new ArrayCollection());
-        $document->shouldReceive('getDocumentNr')->andReturn($documentNr);
+        $document->expects('getJudgement')->times(2)->andReturn(Judgement::NOT_PUBLIC);
+        $document->expects('getFamilyId')->times(2)->andReturn(1);
+        $document->expects('getThreadId')->times(2)->andReturn(1);
+        $document->expects('getGrounds')->times(2)->andReturn([]);
+        $document->expects('getPeriod')->times(2)->andReturnNull();
+        $document->expects('isSuspended')->times(2)->andReturnFalse();
+        $document->expects('getLinks')->times(2)->andReturn([]);
+        $document->expects('getRemark')->times(2)->andReturnNull();
+        $document->expects('getDocumentDate')->times(2)->andReturnNull();
+        $document->expects('getFileInfo->getSourceType')->times(2)->andReturn(SourceType::EMAIL);
+        $document->expects('getFileInfo->getName')->times(2)->andReturn('foo.txt');
+        $document->expects('getInquiries')->times(2)->andReturn(new ArrayCollection([$inquiry]));
+        $document->expects('getRefersTo')->times(2)->andReturn(new ArrayCollection());
+        $document->expects('getDocumentNr')->times(2)->andReturn($documentNr);
 
         $metadata = Mockery::mock(DocumentMetadata::class);
-        $metadata->expects('getJudgement')->twice()->andReturn(Judgement::NOT_PUBLIC);
-        $metadata->expects('getFamilyId')->twice()->andReturn(1);
-        $metadata->expects('getThreadId')->twice()->andReturn(1);
-        $metadata->expects('getGrounds')->twice()->andReturn([]);
-        $metadata->expects('getPeriod')->twice()->andReturnNull();
-        $metadata->expects('isSuspended')->twice()->andReturnFalse();
-        $metadata->expects('getLinks')->twice()->andReturn([]);
-        $metadata->expects('getRemark')->twice()->andReturnNull();
-        $metadata->expects('getDate')->twice()->andReturnNull();
-        $metadata->expects('getSourceType')->twice()->andReturn(SourceType::EMAIL);
-        $metadata->expects('getFilename')->twice()->andReturn('foo.txt');
-        $metadata->expects('getCaseNumbers')->twice()->andReturn(CaseNumbers::empty());
-        $metadata->expects('getRefersTo')->twice()->andReturn([]);
+        $metadata->expects('getJudgement')->times(2)->andReturn(Judgement::NOT_PUBLIC);
+        $metadata->expects('getFamilyId')->times(2)->andReturn(1);
+        $metadata->expects('getThreadId')->times(2)->andReturn(1);
+        $metadata->expects('getGrounds')->times(2)->andReturn([]);
+        $metadata->expects('getPeriod')->times(2)->andReturnNull();
+        $metadata->expects('isSuspended')->times(2)->andReturnFalse();
+        $metadata->expects('getLinks')->times(2)->andReturn([]);
+        $metadata->expects('getRemark')->times(2)->andReturnNull();
+        $metadata->expects('getDate')->times(2)->andReturnNull();
+        $metadata->expects('getSourceType')->times(2)->andReturn(SourceType::EMAIL);
+        $metadata->expects('getFilename')->times(2)->andReturn('foo.txt');
+        $metadata->expects('getCaseNumbers')->times(2)->andReturn(CaseNumbers::empty());
+        $metadata->expects('getRefersTo')->times(2)->andReturn([]);
 
         $changeset = $this->documentComparator->getChangeset($this->dossier, $document, $metadata);
         self::assertFalse($changeset->hasChanges());
@@ -142,17 +137,18 @@ class DocumentComparatorTest extends UnitTestCase
 
     public function testHasRefersToUpdateReturnsTrueWhenAReferralIsAdded(): void
     {
+        $this->dossier->expects('getDocumentPrefix')->times(3)->andReturn('prefix');
+
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
-        $document->shouldReceive('getDocumentNr')->andReturn('bar-123');
-        $document->shouldReceive('getDocumentId')->andReturn('123');
+        $document->expects('getDocumentNr')->andReturn('bar-123');
+        $document->expects('getDocumentId')->times(3)->andReturn('123');
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123']);
 
         $referredDocument = Mockery::mock(Document::class);
-        $referredDocument->shouldReceive('getDocumentNr')->andReturn('foo-123');
-        $referredDocument->shouldReceive('getDocumentId')->andReturn('123');
+        $referredDocument->expects('getDocumentNr')->andReturn('foo-123');
 
         $this->repository->expects('findByDocumentNumber')->andReturn($referredDocument);
 
@@ -163,17 +159,18 @@ class DocumentComparatorTest extends UnitTestCase
 
     public function testHasRefersToUpdateIgnoresInvalidReferral(): void
     {
+        $this->dossier->expects('getDocumentPrefix')->times(6)->andReturn('prefix');
+
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
-        $document->shouldReceive('getDocumentNr')->andReturn('bar-123');
-        $document->shouldReceive('getDocumentId')->andReturn('123');
+        $document->expects('getDocumentNr')->times(2)->andReturn('bar-123');
+        $document->expects('getDocumentId')->times(6)->andReturn('123');
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123', 'invalid-456']);
 
         $referredDocument = Mockery::mock(Document::class);
-        $referredDocument->shouldReceive('getDocumentNr')->andReturn('foo-123');
-        $referredDocument->shouldReceive('getDocumentId')->andReturn('123');
+        $referredDocument->expects('getDocumentNr')->andReturn('foo-123');
 
         $this->repository->expects('findByDocumentNumber')->andReturn($referredDocument);
         $this->repository->expects('findByDocumentNumber')->andReturnNull();

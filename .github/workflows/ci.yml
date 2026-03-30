@@ -176,7 +176,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Linting Twig
-        run: bin/console lint:twig templates
+        run: bin/console --tenant=minvws lint:twig templates
 
   be-linting-yaml-translations:
     name: Check YAML translation files
@@ -190,7 +190,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Linting Translations
-        run: bin/console lint:yaml translations
+        run: bin/console --tenant=minvws lint:yaml translations
 
   be-static-code-analysis:
     name: Check back-end Static Code Analysis
@@ -248,7 +248,6 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres_test
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -261,8 +260,10 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Copy .env.ci to .env.local
         run: cp .env.ci .env.test.local
-      - name: Migrate Test DB
-        run: bin/console doctrine:schema:create --no-interaction --env=test
+      - name: Create Test Database
+        run: bin/console --tenant=minvws doctrine:database:create --if-not-exists --no-interaction --env=test
+      - name: Migrate Test Database
+        run: bin/console --tenant=minvws doctrine:schema:create --no-interaction --env=test
 
   be-unit-tests:
     name: Check back-end Unit tests

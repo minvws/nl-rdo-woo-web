@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Shared\ApplicationId;
 use Shared\Kernel;
+use Shared\TenantId;
 use Symfony\Component\Dotenv\Dotenv;
 
 require __DIR__ . '/vendor/autoload.php';
@@ -11,8 +12,9 @@ require __DIR__ . '/vendor/autoload.php';
 (new Dotenv())->bootEnv(__DIR__ . '/.env');
 
 $applicationId = ApplicationId::fromString($_SERVER['APP_ID'] ?? null);
+$tenantId = TenantId::fromString($_SERVER['TENANT_ID'] ?? 'minvws');
 
-$kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG'], $applicationId);
+$kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG'], $applicationId, $tenantId);
 $kernel->boot();
 
 return $kernel->getContainer()->get('doctrine')->getManager();

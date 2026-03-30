@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function sprintf;
 
-#[AsCommand(name: 'woopie:cron:clean-archives', description: 'Cleans up expired archives')]
+#[AsCommand(name: 'woopie:cron:clean-archives', description: 'Cleans up expired archives', help: 'Cleans up expired archives')]
 class CleanArchives extends Command
 {
     public function __construct(
@@ -21,12 +21,6 @@ class CleanArchives extends Command
         private readonly BatchDownloadStorage $storage,
     ) {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->setHelp('Cleans up expired archives');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

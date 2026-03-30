@@ -17,7 +17,7 @@ final class DiWooXMLWriter
     /**
      * @param resource $stream
      */
-    private function __construct(private $stream, private XMLWriter $writer = new XMLWriter())
+    private function __construct(private $stream, private readonly XMLWriter $writer = new XMLWriter())
     {
     }
 

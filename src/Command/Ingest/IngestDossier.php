@@ -17,7 +17,7 @@ use Webmozart\Assert\Assert;
 use function boolval;
 use function sprintf;
 
-#[AsCommand(name: self::COMMAND_NAME, description: 'Ingests a complete dossier into elasticsearch')]
+#[AsCommand(name: self::COMMAND_NAME, description: 'Ingests a complete dossier into elasticsearch', help: 'Ingests a complete dossier')]
 class IngestDossier extends Command
 {
     public const string COMMAND_NAME = 'woopie:ingest:dossier';
@@ -32,7 +32,6 @@ class IngestDossier extends Command
     protected function configure(): void
     {
         $this
-            ->setHelp('Ingests a complete dossier')
             ->setDefinition([
                 new InputArgument('prefix', InputArgument::REQUIRED, 'The prefix of the dossier to ingest'),
                 new InputArgument('dossierNr', InputArgument::REQUIRED, 'The dossiernr of the dossier to ingest'),

@@ -4,3 +4,5 @@ files/generated
 .venv
 .pabotsuitenames
 .otp_secret
+.robocop_cache
+.temp_password

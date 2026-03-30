@@ -32,7 +32,7 @@ class OrganisationAuditLoggerTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->internalAuditLogger = Mockery::mock(AuditLoggerInterface::class);
-        $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
+        $this->internalAuditLogger->expects('canHandleEvent')->andReturnTrue();
         $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
 
         $this->organisationAuditLogger = new OrganisationAuditLogger(
@@ -45,12 +45,12 @@ class OrganisationAuditLoggerTest extends UnitTestCase
         $actor = Mockery::mock(User::class);
 
         $department = Mockery::mock(Department::class);
-        $department->shouldReceive('getName')->andReturn('department Foo');
+        $department->expects('getName')->andReturn('department Foo');
 
         $organisation = Mockery::mock(Organisation::class);
-        $organisation->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('1efe88cf-1e86-6a86-a022-dfa43a74a2ab'));
-        $organisation->shouldReceive('getName')->andReturn('Foo');
-        $organisation->shouldReceive('getDepartments')->andReturn(new ArrayCollection([
+        $organisation->expects('getId')->andReturn(Uuid::fromRfc4122('1efe88cf-1e86-6a86-a022-dfa43a74a2ab'));
+        $organisation->expects('getName')->andReturn('Foo');
+        $organisation->expects('getDepartments')->andReturn(new ArrayCollection([
             $department,
         ]));
 
@@ -70,15 +70,8 @@ class OrganisationAuditLoggerTest extends UnitTestCase
     {
         $actor = Mockery::mock(User::class);
 
-        $department = Mockery::mock(Department::class);
-        $department->shouldReceive('getName')->andReturn('department Foo');
-
         $organisation = Mockery::mock(Organisation::class);
-        $organisation->shouldReceive('getId')->andReturn(Uuid::fromRfc4122('1efe88cf-1e86-6a86-a022-dfa43a74a2ab'));
-        $organisation->shouldReceive('getName')->andReturn('Foo');
-        $organisation->shouldReceive('getDepartments')->andReturn(new ArrayCollection([
-            $department,
-        ]));
+        $organisation->expects('getId')->andReturn(Uuid::fromRfc4122('1efe88cf-1e86-6a86-a022-dfa43a74a2ab'));
 
         $this->internalAuditLogger->expects('log')->with(Mockery::on(
             function (OrganisationChangeLogEvent $event) use ($actor): bool {

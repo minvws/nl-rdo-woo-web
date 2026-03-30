@@ -29,7 +29,7 @@ final class DateFacetInputTest extends UnitTestCase
 
         $this->facet = new DateFacet();
         $this->bag = Mockery::mock(ParameterBag::class);
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn([])->byDefault();
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn([])->byDefault();
     }
 
     public function testItCanBeInitialized(): void
@@ -42,7 +42,7 @@ final class DateFacetInputTest extends UnitTestCase
 
     public function testIsActiveReturnsTrueWhenItHasValues(): void
     {
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn(['without_date' => '1']);
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn(['without_date' => '1']);
 
         $input = DateFacetInput::fromParameterBag($this->facet, $this->bag);
 
@@ -58,7 +58,7 @@ final class DateFacetInputTest extends UnitTestCase
 
     public function testIsNotActiveReturnsFalseWhenItHasValues(): void
     {
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn(['without_date' => '1']);
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn(['without_date' => '1']);
 
         $input = DateFacetInput::fromParameterBag($this->facet, $this->bag);
 
@@ -67,7 +67,7 @@ final class DateFacetInputTest extends UnitTestCase
 
     public function testWithoutDateCanBeUsedInCombinationWithFromAndToDate(): void
     {
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn([
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn([
             'without_date' => '1',
             'from' => '2021-01-01',
             'to' => '2024-01-01',
@@ -100,9 +100,9 @@ final class DateFacetInputTest extends UnitTestCase
     #[DataProvider('getWithoutDateData')]
     public function testGetWithoutDate(string $input, bool $expected): void
     {
-        $this->bag->shouldReceive('all')
+        $this->bag->expects('all')
             ->with($this->facet->getRequestParameter())
-            ->once()
+
             ->andReturn(['without_date' => $input]);
 
         $input = DateFacetInput::fromParameterBag($this->facet, $this->bag);
@@ -157,9 +157,9 @@ final class DateFacetInputTest extends UnitTestCase
     #[DataProvider('datesData')]
     public function testGetPeriodFilterFrom(string $input, ?string $expected): void
     {
-        $this->bag->shouldReceive('all')
+        $this->bag->expects('all')
             ->with($this->facet->getRequestParameter())
-            ->once()
+
             ->andReturn(['from' => $input]);
 
         $input = DateFacetInput::fromParameterBag($this->facet, $this->bag);
@@ -171,9 +171,9 @@ final class DateFacetInputTest extends UnitTestCase
     #[DataProvider('datesData')]
     public function testGetPeriodFilterTo(string $input, ?string $expected): void
     {
-        $this->bag->shouldReceive('all')
+        $this->bag->expects('all')
             ->with($this->facet->getRequestParameter())
-            ->once()
+
             ->andReturn(['to' => $input]);
 
         $input = DateFacetInput::fromParameterBag($this->facet, $this->bag);
@@ -221,9 +221,9 @@ final class DateFacetInputTest extends UnitTestCase
     #[DataProvider('hasAnyPeriodFilterDatesData')]
     public function testHasAnyPeriodFilterDates(array $bagInput, bool $expected): void
     {
-        $this->bag->shouldReceive('all')
+        $this->bag->expects('all')
             ->with($this->facet->getRequestParameter())
-            ->once()
+
             ->andReturn($bagInput);
 
         $input = DateFacetInput::fromParameterBag($this->facet, $this->bag);
@@ -293,7 +293,7 @@ final class DateFacetInputTest extends UnitTestCase
 
     public function testGetRequestParameters(): void
     {
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn(['without_date' => '1']);
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn(['without_date' => '1']);
 
         $input = DateFacetInput::fromParameterBag($this->facet, $this->bag);
 
@@ -302,7 +302,7 @@ final class DateFacetInputTest extends UnitTestCase
             $input->getRequestParameters(),
         );
 
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn([
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn([
             'from' => '2022-03-12',
             'to' => '2024-12-01',
         ]);
@@ -317,7 +317,7 @@ final class DateFacetInputTest extends UnitTestCase
 
     public function testWithoutFrom(): void
     {
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn([
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn([
             'without_date' => '1',
             'from' => '2021-01-01',
             'to' => '2024-01-01',
@@ -337,7 +337,7 @@ final class DateFacetInputTest extends UnitTestCase
 
     public function testWithoutTo(): void
     {
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn([
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn([
             'without_date' => '1',
             'from' => '2021-01-01',
             'to' => '2024-01-01',
@@ -357,7 +357,7 @@ final class DateFacetInputTest extends UnitTestCase
 
     public function testWithoutWithoutDate(): void
     {
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn([
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn([
             'without_date' => '1',
             'from' => '2021-01-01',
             'to' => '2024-01-01',

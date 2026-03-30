@@ -8,12 +8,15 @@ use Carbon\CarbonImmutable;
 use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Publication\Dossier\Advice\AdviceDto;
+use PublicationApi\Api\Publication\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Publication\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
+use Shared\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
+use Shared\Domain\Publication\Dossier\Type\Advice\AdviceMainDocument;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
@@ -42,7 +45,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $advice = AdviceFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
         ]);
@@ -52,7 +55,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
         self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $advice->getExternalId()]]);
+        self::assertJsonContains([['externalId' => $advice->getExternalId()?->__toString()]]);
     }
 
     public function testGetAdvice(): void
@@ -61,7 +64,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $advice = AdviceFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
         ]);
@@ -74,7 +77,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
 
         $expectedResponse = [
             'id' => (string) $advice->getId(),
-            'externalId' => $advice->getExternalId(),
+            'externalId' => $advice->getExternalId()?->__toString(),
             'organisation' => [
                 'id' => (string) $advice->getOrganisation()->getId(),
                 'name' => $advice->getOrganisation()->getName(),
@@ -99,6 +102,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
                 'internalReference' => $adviceMainDocument->getInternalReference(),
                 'grounds' => $adviceMainDocument->getGrounds(),
                 'fileName' => $adviceMainDocument->getFileInfo()->getName(),
+                'uploadStatus' => UploadStatus::PROCESSED->value,
             ],
             'attachments' => [
                 [
@@ -110,6 +114,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
                     'grounds' => $adviceAttachment->getGrounds(),
                     'fileName' => $adviceAttachment->getFileInfo()->getName(),
                     'externalId' => $adviceAttachment->getExternalId()?->__toString(),
+                    'uploadStatus' => UploadStatus::PROCESSED->value,
                 ],
             ],
             'dossierDate' => $advice->getDateFrom()?->format(DateTime::RFC3339),
@@ -125,7 +130,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $advice = AdviceFactory::createOne([
             'departments' => [$department],
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation, $advice));
@@ -215,7 +220,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseCount(Advice::class, 0);
 
         $data = $this->createValidAdviceDataPayload($department, $subject, 0);
-        $attachments = $this->createAttachments(2);
+        $attachments = $this->createValidAttachmentsPayload(2, AdviceAttachment::getAllowedTypes());
         $attachments[0]['type'] = AttachmentType::REQUEST_FOR_ADVICE;
         $attachments[1]['type'] = AttachmentType::REQUEST_FOR_ADVICE;
         $data['attachments'] = $attachments;
@@ -337,7 +342,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $advice = AdviceFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
             'departments' => [$department],
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'status' => DossierStatus::CONCEPT,
         ]);
@@ -374,7 +379,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $advice = AdviceFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
             'status' => DossierStatus::CONCEPT,
@@ -423,7 +428,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $advice = AdviceFactory::createOne([
             'date_from' => $this->getFaker()->dateTime(),
             'departments' => [$department],
-            'externalId' => $this->getFaker()->slug(1),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'status' => $this->getFaker()->randomElement(DossierStatus::nonConceptCases()),
         ]);
@@ -463,10 +468,10 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
             'mainDocument' => [
                 'filename' => $this->getFaker()->word(),
                 'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
-                'type' => $this->getFaker()->randomElement(AttachmentType::cases()),
+                'type' => $this->getFaker()->randomElement(AdviceMainDocument::getAllowedTypes()),
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],
-            'attachments' => $this->createAttachments($attachmentCount),
+            'attachments' => $this->createValidAttachmentsPayload($attachmentCount, AdviceAttachment::getAllowedTypes()),
         ];
     }
 }

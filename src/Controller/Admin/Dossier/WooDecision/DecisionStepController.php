@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin\Dossier\WooDecision;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
 use Shared\Domain\Publication\Dossier\Step\StepName;
@@ -17,7 +18,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 class DecisionStepController extends AbstractController
 {

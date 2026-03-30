@@ -4,41 +4,48 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\Dossier\Advice;
 
-use PublicationApi\Api\Publication\Attachment\AttachmentResponseDto;
+use PublicationApi\Api\Publication\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Publication\Department\DepartmentReferenceDto;
-use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDto;
+use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Publication\Organisation\OrganisationReferenceDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-class AdviceMapper
+readonly class AdviceMapper
 {
+    public function __construct(
+        private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
+        private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+    ) {
+    }
+
     /**
      * @param array<array-key,Advice> $advices
      *
      * @return list<AdviceDto>
      */
-    public static function fromEntities(array $advices): array
+    public function fromEntities(array $advices): array
     {
         return array_values(array_map(
-            self::fromEntity(...),
+            $this->fromEntity(...),
             $advices,
         ));
     }
 
-    public static function fromEntity(Advice $advice): AdviceDto
+    public function fromEntity(Advice $advice): AdviceDto
     {
         $mainDocument = $advice->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = MainDocumentResponseDto::fromEntity($mainDocument);
+        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
 
         $dateFrom = $advice->getDateFrom();
         Assert::notNull($dateFrom);
@@ -60,7 +67,7 @@ class AdviceMapper
             $advice->getPublicationDate(),
             $advice->getStatus(),
             $mainDocumentDto,
-            AttachmentResponseDto::fromEntities($advice->getAttachments()->toArray()),
+            $this->attachmentResponseDtoFactory->fromEntities($advice->getAttachments()->toArray()),
             $dateFrom,
         );
     }
@@ -70,7 +77,7 @@ class AdviceMapper
         Organisation $organisation,
         Department $department,
         ?Subject $subject,
-        string $externalId,
+        ExternalId $externalId,
     ): Advice {
         $advice = new Advice();
         $advice->setExternalId($externalId);

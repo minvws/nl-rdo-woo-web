@@ -11,6 +11,8 @@ use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 final class WooIndexGenerateCommandTest extends SharedWebTestCase
@@ -21,7 +23,7 @@ final class WooIndexGenerateCommandTest extends SharedWebTestCase
 
     private WooIndexNamer $wooIndexNamer;
 
-    private Application $applicaton;
+    private Application $application;
 
     protected function setUp(): void
     {
@@ -33,8 +35,10 @@ final class WooIndexGenerateCommandTest extends SharedWebTestCase
         $this->wooIndexSitemapRepository = self::getContainer()->get(WooIndexSitemapRepository::class);
         $this->wooIndexNamer = self::getContainer()->get(WooIndexNamer::class);
 
-        $this->applicaton = new Application(self::$kernel);
-        $this->applicaton->setAutoExit(false);
+        Assert::isInstanceOf(self::$kernel, KernelInterface::class);
+
+        $this->application = new Application(self::$kernel);
+        $this->application->setAutoExit(false);
     }
 
     #[WithStory(WooIndexWooDecisionStory::class)]
@@ -42,7 +46,7 @@ final class WooIndexGenerateCommandTest extends SharedWebTestCase
     {
         $this->setTestNow('2025-01-01 00:00:00.123456');
 
-        $command = $this->applicaton->find('woo-index:generate');
+        $command = $this->application->find('woo-index:generate');
         $commandTester = new CommandTester($command);
         $commandTester->execute([], ['interactive' => false]);
 
@@ -73,7 +77,7 @@ final class WooIndexGenerateCommandTest extends SharedWebTestCase
     {
         $this->setTestNow('2025-01-01 00:00:00.123456');
 
-        $command = $this->applicaton->find('woo-index:generate');
+        $command = $this->application->find('woo-index:generate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--cleanup' => true], ['interactive' => false]);
 

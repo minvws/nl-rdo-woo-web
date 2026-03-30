@@ -30,7 +30,7 @@ class StepDefinitionTest extends UnitTestCase
     public function testIsCompletedReturnsTrueWhenTheValidatorReturnsNoErrors(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getType')->andReturn(DossierType::WOO_DECISION);
+        $dossier->expects('getType')->andReturn(DossierType::WOO_DECISION);
 
         $violations = Mockery::mock(ConstraintViolationListInterface::class);
         $violations->expects('count')->andReturn(0);
@@ -46,7 +46,7 @@ class StepDefinitionTest extends UnitTestCase
     public function testIsCompletedReturnsFalseWhenTheValidatorReturnsErrors(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getType')->andReturn(DossierType::WOO_DECISION);
+        $dossier->expects('getType')->andReturn(DossierType::WOO_DECISION);
 
         $violations = Mockery::mock(ConstraintViolationListInterface::class);
         $violations->expects('count')->andReturn(2);
@@ -62,7 +62,7 @@ class StepDefinitionTest extends UnitTestCase
     public function testIsCompletedThrowsExceptionForTypeMismatch(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getType')->andReturn(DossierType::WOO_DECISION);
+        $dossier->expects('getType')->andReturn(DossierType::WOO_DECISION);
 
         $step = new StepDefinition(StepName::DECISION, DossierType::COVENANT);
 
@@ -75,7 +75,7 @@ class StepDefinitionTest extends UnitTestCase
     public function testCreate(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getType')->andReturn(DossierType::WOO_DECISION);
+        $dossier->expects('getType')->andReturn(DossierType::WOO_DECISION);
 
         $violations = Mockery::mock(ConstraintViolationListInterface::class);
         $violations->expects('count')->andReturn(0);
@@ -84,7 +84,7 @@ class StepDefinitionTest extends UnitTestCase
         $validator->expects('validate')->with($dossier, null, [StepName::DECISION->value])->andReturn($violations);
 
         $config = Mockery::mock(DossierTypeConfigInterface::class);
-        $config->shouldReceive('getDossierType')->andReturn(DossierType::WOO_DECISION);
+        $config->expects('getDossierType')->andReturn(DossierType::WOO_DECISION);
 
         $step = StepDefinition::create($config, StepName::DECISION);
 

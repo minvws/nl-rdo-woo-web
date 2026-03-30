@@ -12,10 +12,10 @@ use Shared\ApplicationId;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Kernel;
 use Shared\Service\Security\OrganisationSwitcher;
+use Shared\TenantId;
 use Shared\Tests\CarbonHelpers;
 use Shared\Tests\Faker\FakerFactory;
 use Spatie\Snapshots\MatchesSnapshots;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Test\Factories;
@@ -31,20 +31,27 @@ trait IntegrationTestTrait
 
     protected Generator $faker;
 
-    abstract protected static function getAppId(): ApplicationId;
+    abstract protected static function getApplicationId(): ApplicationId;
+
+    protected static function getTenantId(): TenantId
+    {
+        return TenantId::MINVWS;
+    }
 
     /**
-     * @param array{environment?:string,debug?:bool} $options
+     * @param array{environment?:string,debug?:bool,applicationId?:ApplicationId,tenantId?:TenantId} $options
      */
     #[Override]
     protected static function createKernel(array $options = []): KernelInterface
     {
         $env = $options['environment'] ?? $_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? 'test';
         $debug = $options['debug'] ?? (bool) ($_ENV['APP_DEBUG'] ?? $_SERVER['APP_DEBUG'] ?? true);
+        $applicationId = $options['applicationId'] ?? self::getApplicationId();
+        $tenantId = $options['tenantId'] ?? self::getTenantId();
 
         Assert::string($env);
 
-        return new Kernel($env, $debug, self::getAppId());
+        return new Kernel($env, $debug, $applicationId, $tenantId);
     }
 
     public static function createFaker(): Generator
@@ -55,7 +62,6 @@ trait IntegrationTestTrait
     public function getFaker(): Generator
     {
         if (! isset($this->faker)) {
-            /** @var ContainerInterface $container */
             $container = $this->getContainer();
 
             $faker = $container->get(Generator::class);

@@ -1,0 +1,9 @@
+---
+profile: profiles/G4TRIALEEPrivGTLSSYS2025.yaml
+subject:
+  C: NL
+  O: TRIAL MINFIN
+  CN: TRIAL MINFIN
+  organizationIdentifier: NTRNL-99999993  # This is the KvK Registration number in an ETSI format
+subjectAltNames:
+  - minfin.nl

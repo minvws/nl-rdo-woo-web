@@ -32,7 +32,7 @@ final class StringValuesFacetInputTest extends UnitTestCase
         $this->key = current(FacetKey::cases());
         $this->facet = new SourceFacet();
         $this->bag = Mockery::mock(ParameterBag::class);
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn([])->byDefault();
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn([])->byDefault();
     }
 
     public function testItCanBeInitialized(): void
@@ -45,7 +45,7 @@ final class StringValuesFacetInputTest extends UnitTestCase
 
     public function testIsActiveReturnsTrueWhenItHasValues(): void
     {
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn(['one']);
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn(['one']);
 
         $input = StringValuesFacetInput::fromParameterBag($this->facet, $this->bag);
 
@@ -61,7 +61,7 @@ final class StringValuesFacetInputTest extends UnitTestCase
 
     public function testIsNotActiveReturnsFalseWhenItHasValues(): void
     {
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn(['one']);
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn(['one']);
 
         $input = StringValuesFacetInput::fromParameterBag($this->facet, $this->bag);
 
@@ -77,7 +77,7 @@ final class StringValuesFacetInputTest extends UnitTestCase
 
     public function testGetStringValues(): void
     {
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn(['one' => 'foo', 'two' => 'bar']);
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn(['one' => 'foo', 'two' => 'bar']);
 
         $input = StringValuesFacetInput::fromParameterBag($this->facet, $this->bag);
 
@@ -88,14 +88,14 @@ final class StringValuesFacetInputTest extends UnitTestCase
     {
         $this->expectExceptionObject(new InvalidArgumentException('Expected a string. Got: integer'));
 
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn(['one' => 1]);
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn(['one' => 1]);
 
         StringValuesFacetInput::fromParameterBag($this->facet, $this->bag);
     }
 
     public function testGetRequestParameters(): void
     {
-        $this->bag->shouldReceive('all')->with($this->facet->getRequestParameter())->once()->andReturn(['one' => 'foo', 'two' => 'bar']);
+        $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn(['one' => 'foo', 'two' => 'bar']);
 
         $input = StringValuesFacetInput::fromParameterBag($this->facet, $this->bag);
 
@@ -105,9 +105,9 @@ final class StringValuesFacetInputTest extends UnitTestCase
     public function testContains(): void
     {
         $this->bag
-            ->shouldReceive('all')
+            ->expects('all')
             ->with($this->facet->getRequestParameter())
-            ->once()
+
             ->andReturn(['one' => 'foo', 'two' => 'bar']);
 
         $input = StringValuesFacetInput::fromParameterBag($this->facet, $this->bag);
@@ -119,9 +119,9 @@ final class StringValuesFacetInputTest extends UnitTestCase
     public function testWithout(): void
     {
         $this->bag
-            ->shouldReceive('all')
+            ->expects('all')
             ->with($this->facet->getRequestParameter())
-            ->once()
+
             ->andReturn(['foo', 'bar']);
 
         $input = StringValuesFacetInput::fromParameterBag($this->facet, $this->bag);

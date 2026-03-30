@@ -72,7 +72,7 @@ class WooDecisionVoterTest extends UnitTestCase
         $token = Mockery::mock(TokenInterface::class);
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         self::assertEquals(
             VoterInterface::ACCESS_GRANTED,
@@ -85,7 +85,7 @@ class WooDecisionVoterTest extends UnitTestCase
         $token = Mockery::mock(TokenInterface::class);
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
+        $dossier->expects('getStatus')->times(2)->andReturn(DossierStatus::CONCEPT);
 
         self::assertEquals(
             VoterInterface::ACCESS_DENIED,
@@ -98,16 +98,16 @@ class WooDecisionVoterTest extends UnitTestCase
         $token = Mockery::mock(TokenInterface::class);
 
         $inquiryA = Mockery::mock(Inquiry::class);
-        $inquiryA->shouldReceive('getId')->andReturn(Uuid::v6());
+        $inquiryA->expects('getId')->andReturn(Uuid::v6());
 
         $inquiryB = Mockery::mock(Inquiry::class);
-        $inquiryB->shouldReceive('getId')->andReturn(Uuid::v6());
+        $inquiryB->expects('getId')->andReturn(Uuid::v6());
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
-        $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([$inquiryA, $inquiryB]));
+        $dossier->expects('getStatus')->times(2)->andReturn(DossierStatus::PREVIEW);
+        $dossier->expects('getInquiries')->andReturn(new ArrayCollection([$inquiryA, $inquiryB]));
 
-        $this->inquirySessionService->shouldReceive('getInquiries')->andReturn(['foo', 'bar']);
+        $this->inquirySessionService->expects('getInquiries')->andReturn(['foo', 'bar']);
 
         self::assertEquals(
             VoterInterface::ACCESS_DENIED,
@@ -120,16 +120,16 @@ class WooDecisionVoterTest extends UnitTestCase
         $token = Mockery::mock(TokenInterface::class);
 
         $inquiryA = Mockery::mock(Inquiry::class);
-        $inquiryA->shouldReceive('getId')->andReturn(Uuid::v6());
+        $inquiryA->expects('getId')->andReturn(Uuid::v6());
 
         $inquiryB = Mockery::mock(Inquiry::class);
-        $inquiryB->shouldReceive('getId')->andReturn($inquiryIdB = Uuid::v6());
+        $inquiryB->expects('getId')->andReturn($inquiryIdB = Uuid::v6());
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
-        $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([$inquiryA, $inquiryB]));
+        $dossier->expects('getStatus')->times(2)->andReturn(DossierStatus::PREVIEW);
+        $dossier->expects('getInquiries')->andReturn(new ArrayCollection([$inquiryA, $inquiryB]));
 
-        $this->inquirySessionService->shouldReceive('getInquiries')->andReturn(['foo', 'bar', $inquiryIdB]);
+        $this->inquirySessionService->expects('getInquiries')->andReturn(['foo', 'bar', $inquiryIdB]);
 
         self::assertEquals(
             VoterInterface::ACCESS_GRANTED,

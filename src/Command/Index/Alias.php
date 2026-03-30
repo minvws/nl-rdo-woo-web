@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webmozart\Assert\Assert;
 
-#[AsCommand(name: self::COMMAND_NAME, description: 'Creates a new alias for an index')]
+#[AsCommand(name: self::COMMAND_NAME, description: 'Creates a new alias for an index', help: 'Creates a new alias for the given index')]
 class Alias extends Command
 {
     public const string COMMAND_NAME = 'woopie:index:alias';
@@ -28,8 +28,7 @@ class Alias extends Command
             ->setDefinition([
                 new InputArgument('name', InputArgument::REQUIRED, 'Name of the index'),
                 new InputArgument('alias', InputArgument::REQUIRED, 'Name of the alias'),
-            ])
-            ->setHelp('Creates a new alias for the given index');
+            ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

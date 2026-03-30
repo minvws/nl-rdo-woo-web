@@ -41,28 +41,28 @@ class RevokedUrlServiceTest extends UnitTestCase
     public function testGetUrls(): void
     {
         $conceptDossier = Mockery::mock(WooDecision::class);
-        $conceptDossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
+        $conceptDossier->expects('getStatus')->times(2)->andReturn(DossierStatus::CONCEPT);
 
         $publishedDossier = Mockery::mock(WooDecision::class);
-        $publishedDossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $publishedDossier->shouldReceive('getDocumentPrefix')->andReturn($docPrefix = 'FOO');
-        $publishedDossier->shouldReceive('getDossierNr')->andReturn($dossierNr = '123');
+        $publishedDossier->expects('getStatus')->times(2)->andReturn(DossierStatus::PUBLISHED);
+        $publishedDossier->expects('getDocumentPrefix')->times(2)->andReturn($docPrefix = 'FOO');
+        $publishedDossier->expects('getDossierNr')->times(2)->andReturn($dossierNr = '123');
 
         $documentInConceptDossier = Mockery::mock(Document::class);
-        $documentInConceptDossier->shouldReceive('getDossiers')
+        $documentInConceptDossier->expects('getDossiers')
             ->andReturn(new ArrayCollection([$conceptDossier]));
 
         $documentInPublishedDossier = Mockery::mock(Document::class);
-        $documentInPublishedDossier->shouldReceive('getDossiers')
+        $documentInPublishedDossier->expects('getDossiers')
             ->andReturn(new ArrayCollection([$publishedDossier]));
-        $documentInPublishedDossier->shouldReceive('getDocumentNr')->andReturn($docNrA = 'D1');
+        $documentInPublishedDossier->expects('getDocumentNr')->andReturn($docNrA = 'D1');
 
         $documentInConceptAndPublishedDossier = Mockery::mock(Document::class);
-        $documentInConceptAndPublishedDossier->shouldReceive('getDossiers')
+        $documentInConceptAndPublishedDossier->expects('getDossiers')
             ->andReturn(new ArrayCollection([$conceptDossier, $publishedDossier]));
-        $documentInConceptAndPublishedDossier->shouldReceive('getDocumentNr')->andReturn($docNrB = 'D2');
+        $documentInConceptAndPublishedDossier->expects('getDocumentNr')->andReturn($docNrB = 'D2');
 
-        $this->router->shouldReceive('generate')->with(
+        $this->router->expects('generate')->with(
             'app_document_detail',
             [
                 'prefix' => $docPrefix,
@@ -71,7 +71,7 @@ class RevokedUrlServiceTest extends UnitTestCase
             ]
         )->andReturn('link_A');
 
-        $this->router->shouldReceive('generate')->with(
+        $this->router->expects('generate')->with(
             'app_legacy_document_detail',
             [
                 'dossierId' => $dossierNr,
@@ -79,7 +79,7 @@ class RevokedUrlServiceTest extends UnitTestCase
             ]
         )->andReturn('link_B');
 
-        $this->router->shouldReceive('generate')->with(
+        $this->router->expects('generate')->with(
             'app_document_detail',
             [
                 'prefix' => $docPrefix,
@@ -88,7 +88,7 @@ class RevokedUrlServiceTest extends UnitTestCase
             ]
         )->andReturn('link_C');
 
-        $this->router->shouldReceive('generate')->with(
+        $this->router->expects('generate')->with(
             'app_legacy_document_detail',
             [
                 'dossierId' => $dossierNr,

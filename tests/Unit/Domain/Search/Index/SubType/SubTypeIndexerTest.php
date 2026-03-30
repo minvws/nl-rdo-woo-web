@@ -15,7 +15,6 @@ use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Shared\Domain\Search\Index\Updater\PageIndexUpdater;
 use Shared\Service\Elastic\ElasticService;
 use Shared\Tests\Unit\UnitTestCase;
-use Symfony\Component\Uid\Uuid;
 
 class SubTypeIndexerTest extends UnitTestCase
 {
@@ -42,9 +41,7 @@ class SubTypeIndexerTest extends UnitTestCase
 
     public function testIndex(): void
     {
-        $documentId = Uuid::v6();
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->andReturn($documentId);
 
         $metadata = ['foo' => 'bar'];
         $pages = ['dummy', 'content'];
@@ -73,9 +70,7 @@ class SubTypeIndexerTest extends UnitTestCase
 
     public function testIndexUsesSecondMapperWhenFirstDoesNotSupportTheEntity(): void
     {
-        $documentId = Uuid::v6();
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->andReturn($documentId);
 
         $metadata = ['foo' => 'bar'];
         $pages = ['dummy', 'content'];
@@ -94,7 +89,7 @@ class SubTypeIndexerTest extends UnitTestCase
     public function testRemove(): void
     {
         $entity = Mockery::mock(Document::class);
-        $entity->shouldReceive('getId->toRfc4122')->andReturn($documentId = 'foo-123');
+        $entity->expects('getId->toRfc4122')->andReturn($documentId = 'foo-123');
 
         $this->elasticService->expects('removeDocument')->with($documentId);
 
@@ -104,7 +99,7 @@ class SubTypeIndexerTest extends UnitTestCase
     public function testUpdatePage(): void
     {
         $entity = Mockery::mock(Document::class);
-        $entity->shouldReceive('getId->toRfc4122')->andReturn($documentId = 'foo-123');
+        $entity->expects('getId->toRfc4122')->andReturn($documentId = 'foo-123');
         $pageNr = 12;
         $content = 'foo bar';
 

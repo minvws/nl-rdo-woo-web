@@ -4,41 +4,48 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\Dossier\OtherPublication;
 
-use PublicationApi\Api\Publication\Attachment\AttachmentResponseDto;
+use PublicationApi\Api\Publication\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Publication\Department\DepartmentReferenceDto;
-use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDto;
+use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Publication\Organisation\OrganisationReferenceDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-class OtherPublicationMapper
+readonly class OtherPublicationMapper
 {
+    public function __construct(
+        private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
+        private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+    ) {
+    }
+
     /**
      * @param array<array-key,OtherPublication> $otherPublications
      *
      * @return list<OtherPublicationDto>
      */
-    public static function fromEntities(array $otherPublications): array
+    public function fromEntities(array $otherPublications): array
     {
         return array_values(array_map(
-            self::fromEntity(...),
+            $this->fromEntity(...),
             $otherPublications,
         ));
     }
 
-    public static function fromEntity(OtherPublication $otherPublication): OtherPublicationDto
+    public function fromEntity(OtherPublication $otherPublication): OtherPublicationDto
     {
         $mainDocument = $otherPublication->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = MainDocumentResponseDto::fromEntity($mainDocument);
+        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
 
         $dateFrom = $otherPublication->getDateFrom();
         Assert::notNull($dateFrom);
@@ -60,7 +67,7 @@ class OtherPublicationMapper
             $otherPublication->getPublicationDate(),
             $otherPublication->getStatus(),
             $mainDocumentDto,
-            AttachmentResponseDto::fromEntities($otherPublication->getAttachments()->toArray()),
+            $this->attachmentResponseDtoFactory->fromEntities($otherPublication->getAttachments()->toArray()),
             $dateFrom,
         );
     }
@@ -70,7 +77,7 @@ class OtherPublicationMapper
         Organisation $organisation,
         Department $department,
         ?Subject $subject,
-        string $externalId,
+        ExternalId $externalId,
     ): OtherPublication {
         $otherPublication = new OtherPublication();
         $otherPublication->setExternalId($externalId);

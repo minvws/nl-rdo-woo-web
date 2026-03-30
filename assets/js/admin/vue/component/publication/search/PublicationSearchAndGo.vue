@@ -74,7 +74,7 @@ const onResultsUpdated = (results: PublicationSearchResult[]) => {
 
     <div
       :class="{ hidden: !areResultsVisible }"
-      class="bhr-overlay-card right-0 mt-2 w-[56rem]"
+      class="bhr-overlay-card right-0 mt-2 w-4xl p-4"
       data-e2e-name="search-previews-results"
       :id="PUBLICATION_SEARCH_RESULTS_ID"
       role="dialog"

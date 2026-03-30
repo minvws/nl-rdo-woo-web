@@ -59,14 +59,14 @@ class DocumentCaseNumbersTest extends UnitTestCase
     public function testFromDocumentEntity(): void
     {
         $inquiryA = Mockery::mock(Inquiry::class);
-        $inquiryA->shouldReceive('getCasenr')->andReturn($caseNr1 = '123-foo');
+        $inquiryA->expects('getCasenr')->andReturn($caseNr1 = '123-foo');
 
         $inquiryB = Mockery::mock(Inquiry::class);
-        $inquiryB->shouldReceive('getCasenr')->andReturn($caseNr2 = '456-bar');
+        $inquiryB->expects('getCasenr')->andReturn($caseNr2 = '456-bar');
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getId')->andReturn($documentId = Uuid::v6());
-        $document->shouldReceive('getInquiries')->andReturn(new ArrayCollection([$inquiryA, $inquiryB]));
+        $document->expects('getId')->andReturn($documentId = Uuid::v6());
+        $document->expects('getInquiries')->andReturn(new ArrayCollection([$inquiryA, $inquiryB]));
 
         $documentCaseNumbers = DocumentCaseNumbers::fromDocumentEntity($document);
 

@@ -12,6 +12,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationRepository;
 use Shared\Service\ApiPlatformService;
+use Shared\ValueObject\ExternalId;
 
 use function count;
 
@@ -20,6 +21,7 @@ final readonly class OtherPublicationProvider implements ProviderInterface
     public function __construct(
         private OrganisationRepository $organisationRepository,
         private OtherPublicationRepository $otherPublicationRepository,
+        private OtherPublicationMapper $otherPublicationMapper,
         private int $itemsPerPage,
     ) {
     }
@@ -38,7 +40,7 @@ final readonly class OtherPublicationProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, $uriVariables['otherPublicationExternalId']);
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['otherPublicationExternalId']));
     }
 
     /**
@@ -52,16 +54,16 @@ final readonly class OtherPublicationProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(OtherPublicationMapper::fromEntities($otherPublications), 0, count($otherPublications));
+        return new ArrayPaginator($this->otherPublicationMapper->fromEntities($otherPublications), 0, count($otherPublications));
     }
 
-    private function provideSingle(Organisation $organisation, string $otherPublicationExternalId): ?OtherPublicationDto
+    private function provideSingle(Organisation $organisation, ExternalId $otherPublicationExternalId): ?OtherPublicationDto
     {
         $otherPublication = $this->otherPublicationRepository->findByOrganisationAndExternalId($organisation, $otherPublicationExternalId);
         if ($otherPublication === null) {
             return null;
         }
 
-        return OtherPublicationMapper::fromEntity($otherPublication);
+        return $this->otherPublicationMapper->fromEntity($otherPublication);
     }
 }

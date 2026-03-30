@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Override;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem;
@@ -195,7 +196,7 @@ class Document extends AbstractPublicationItem
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public function getGrounds(): array
     {
@@ -203,7 +204,7 @@ class Document extends AbstractPublicationItem
     }
 
     /**
-     * @param string[] $grounds
+     * @param array<array-key,string> $grounds
      *
      * @return $this
      */
@@ -305,7 +306,7 @@ class Document extends AbstractPublicationItem
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public function getLinks(): array
     {
@@ -313,7 +314,7 @@ class Document extends AbstractPublicationItem
     }
 
     /**
-     * @param string[] $links
+     * @param array<array-key,string> $links
      */
     public function setLinks(array $links): static
     {
@@ -356,6 +357,7 @@ class Document extends AbstractPublicationItem
         return $this;
     }
 
+    #[Override]
     public function getFileCacheKey(): string
     {
         return $this->documentNr;

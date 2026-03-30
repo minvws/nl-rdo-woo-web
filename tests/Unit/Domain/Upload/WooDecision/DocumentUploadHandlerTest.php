@@ -54,11 +54,9 @@ class DocumentUploadHandlerTest extends UnitTestCase
         $dossierId = Uuid::v6();
 
         $uploadEntity = Mockery::mock(UploadEntity::class);
-        $uploadEntity->shouldReceive('getUploadGroupId')->andReturn(UploadGroupId::WOO_DECISION_DOCUMENTS);
-        $uploadEntity->shouldReceive('getContext->getString')->with('dossierId')->andReturn($dossierId->toRfc4122());
-        $uploadEntity->shouldReceive('getFilename')->andReturn($filename = 'foo.bar');
-        $uploadEntity->shouldReceive('getSize')->andReturn($size = 123);
-        $uploadEntity->shouldReceive('getMimetype')->andReturn($mimetype = 'foo/bar');
+        $uploadEntity->expects('getUploadGroupId')->andReturn(UploadGroupId::WOO_DECISION_DOCUMENTS);
+        $uploadEntity->expects('getContext->getString')->with('dossierId')->andReturn($dossierId->toRfc4122());
+        $uploadEntity->expects('getFilename')->andReturn($filename = 'foo.bar');
 
         $wooDecision = Mockery::mock(WooDecision::class);
 

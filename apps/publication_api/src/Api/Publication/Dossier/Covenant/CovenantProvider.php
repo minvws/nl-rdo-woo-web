@@ -12,6 +12,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantRepository;
 use Shared\Service\ApiPlatformService;
+use Shared\ValueObject\ExternalId;
 
 use function count;
 
@@ -20,6 +21,7 @@ final readonly class CovenantProvider implements ProviderInterface
     public function __construct(
         private OrganisationRepository $organisationRepository,
         private CovenantRepository $covenantRepository,
+        private CovenantMapper $covenantMapper,
         private int $itemsPerPage,
     ) {
     }
@@ -38,7 +40,7 @@ final readonly class CovenantProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, $uriVariables['covenantExternalId']);
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['covenantExternalId']));
     }
 
     /**
@@ -52,16 +54,16 @@ final readonly class CovenantProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(CovenantMapper::fromEntities($covenants), 0, count($covenants));
+        return new ArrayPaginator($this->covenantMapper->fromEntities($covenants), 0, count($covenants));
     }
 
-    private function provideSingle(Organisation $organisation, string $covenantExternalId): ?CovenantDto
+    private function provideSingle(Organisation $organisation, ExternalId $covenantExternalId): ?CovenantDto
     {
         $covenant = $this->covenantRepository->findByOrganisationAndExternalId($organisation, $covenantExternalId);
         if ($covenant === null) {
             return null;
         }
 
-        return CovenantMapper::fromEntity($covenant);
+        return $this->covenantMapper->fromEntity($covenant);
     }
 }

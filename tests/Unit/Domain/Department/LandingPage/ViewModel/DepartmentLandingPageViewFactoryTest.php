@@ -27,31 +27,29 @@ final class DepartmentLandingPageViewFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        /** @var FileInfo&MockInterface $fileInfo */
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('isUploaded')->andReturnTrue();
+        $fileInfo->expects('isUploaded')->andReturnTrue();
 
-        /** @var Department&MockInterface $department */
         $department = Mockery::mock(Department::class);
-        $department->shouldReceive('getName')->andReturn('my name');
-        $department->shouldReceive('getId')->andReturn($expectedId = Uuid::fromRfc4122('1f040b49-271c-6a7c-9421-c9c7fcf0c37d'));
-        $department->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $department->shouldReceive('getUpdatedAt')->andReturn($updatedAt = new DateTimeImmutable('2023-10-01 12:00:00'));
+        $department->expects('getName')->andReturn('my name');
+        $department->expects('getId')->times(3)->andReturn($expectedId = Uuid::fromRfc4122('1f040b49-271c-6a7c-9421-c9c7fcf0c37d'));
+        $department->expects('getFileInfo')->andReturn($fileInfo);
+        $department->expects('getUpdatedAt')->andReturn($updatedAt = new DateTimeImmutable('2023-10-01 12:00:00'));
 
         $hash = hash('sha256', (string) $updatedAt->getTimestamp());
 
         $this->urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with('api_uploader_department_remove_logo', ['departmentId' => $expectedId])
             ->andReturn('delete-logo-endpoint');
 
         $this->urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with('app_admin_department_logo_download', ['id' => $expectedId, 'cacheKey' => $hash])
             ->andReturn('/logo-endpoint');
 
         $this->urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with('app_admin_upload')
             ->andReturn('upload-logo-endpoint');
 

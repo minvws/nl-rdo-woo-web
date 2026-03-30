@@ -7,6 +7,7 @@ namespace Shared\Domain\Publication\Dossier\Type;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
 
 use function array_key_exists;
@@ -89,7 +90,7 @@ abstract class AbstractDossierRepository extends ServiceEntityRepository
     /**
      * @return ?T
      */
-    public function findByOrganisationAndExternalId(Organisation $organisation, string $externalId): ?AbstractDossier
+    public function findByOrganisationAndExternalId(Organisation $organisation, ExternalId $externalId): ?AbstractDossier
     {
         /** @var ?T */
         return $this->createQueryBuilder('dossier')

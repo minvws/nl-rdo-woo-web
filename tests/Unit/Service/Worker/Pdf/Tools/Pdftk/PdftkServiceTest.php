@@ -25,12 +25,11 @@ final class PdftkServiceTest extends UnitTestCase
     public function testExtractPage(): void
     {
         $this->process
-            ->shouldReceive('run')
-            ->once()
+            ->expects('run')
             ->andReturn($exitCode = 0);
 
         $this->process
-            ->shouldReceive('isSuccessful')
+            ->expects('isSuccessful')
             ->andReturn(true);
 
         $service = $this->getService();
@@ -47,17 +46,16 @@ final class PdftkServiceTest extends UnitTestCase
     public function testExtractNumberOfPages(): void
     {
         $this->process
-            ->shouldReceive('run')
-            ->once()
+            ->expects('run')
             ->andReturn($exitCode = 0);
 
         $this->process
-            ->shouldReceive('isSuccessful')
+            ->expects('isSuccessful')
+            ->times(2)
             ->andReturn(true);
 
         $this->process
-            ->shouldReceive('getOutput')
-            ->once()
+            ->expects('getOutput')
             ->andReturn($this->getMockDumpDataOutput($numberOfPages = 4));
 
         $service = $this->getService();
@@ -73,17 +71,15 @@ final class PdftkServiceTest extends UnitTestCase
     public function testExtractNumberOfPagesWithInvalidOutput(): void
     {
         $this->process
-            ->shouldReceive('run')
-            ->once()
-            ->andReturn($exitCode = 0);
+            ->expects('run')
+            ->andReturn(0);
 
         $this->process
-            ->shouldReceive('isSuccessful')
+            ->expects('isSuccessful')
             ->andReturn(true);
 
         $this->process
-            ->shouldReceive('getOutput')
-            ->once()
+            ->expects('getOutput')
             ->andReturn('Lorem ipsum yada yada yada');
 
         $this->expectExceptionObject(PdftkRuntimeException::noPageCountResultFound());
@@ -94,13 +90,12 @@ final class PdftkServiceTest extends UnitTestCase
 
     private function getService(): PdftkService&MockInterface
     {
-        /** @var PdftkService&MockInterface $instance */
         $instance = Mockery::mock(PdftkService::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
         $instance
-            ->shouldReceive('getNewProcess')
+            ->expects('getNewProcess')
             ->andReturn($this->process);
 
         return $instance;

@@ -38,8 +38,7 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testIteratorSkipsFirstRowAndEmptyRows(): void
     {
-        $this->headerMap->shouldReceive('has')->with('id')->andReturnTrue();
-        $this->headerMap->shouldReceive('getCellCoordinate')->with('id')->andReturn('B');
+        $this->headerMap->expects('getCellCoordinate')->times(2)->with('id')->andReturn('B');
 
         $ids = [];
         foreach ($this->excelReader as $row) {
@@ -54,7 +53,7 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetOptionalStringReturnsNullForNonExistingColumn(): void
     {
-        $this->headerMap->shouldReceive('has')->with('foobar')->andReturnFalse();
+        $this->headerMap->expects('has')->times(2)->with('foobar')->andReturnFalse();
 
         $values = [];
         foreach ($this->excelReader as $row) {
@@ -69,8 +68,8 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetOptionalIntReturnsValueForExistingColumnWhenFilled(): void
     {
-        $this->headerMap->shouldReceive('has')->with('family')->andReturnTrue();
-        $this->headerMap->shouldReceive('getCellCoordinate')->with('family')->andReturn('A');
+        $this->headerMap->expects('has')->times(2)->with('family')->andReturnTrue();
+        $this->headerMap->expects('getCellCoordinate')->times(2)->with('family')->andReturn('A');
 
         $familyIds = [];
         foreach ($this->excelReader as $row) {
@@ -85,7 +84,7 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetOptionalIntReturnsNullForNonExistingColumn(): void
     {
-        $this->headerMap->shouldReceive('has')->with('foobar')->andReturnFalse();
+        $this->headerMap->expects('has')->times(2)->with('foobar')->andReturnFalse();
 
         $values = [];
         foreach ($this->excelReader as $row) {
@@ -100,8 +99,7 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetDateTimeReturnsValueForExistingColumnWhenFilledAndThrowsExceptionForMissingValue(): void
     {
-        $this->headerMap->shouldReceive('has')->with('date')->andReturnTrue();
-        $this->headerMap->shouldReceive('getCellCoordinate')->with('date')->andReturn('F');
+        $this->headerMap->expects('getCellCoordinate')->times(2)->with('date')->andReturn('F');
 
         $rows = iterator_to_array($this->excelReader, false);
 
@@ -118,8 +116,7 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetDateTimeThrowsExceptionForInvalidDate(): void
     {
-        $this->headerMap->shouldReceive('has')->with('subject')->andReturnTrue();
-        $this->headerMap->shouldReceive('getCellCoordinate')->with('subject')->andReturn('I');
+        $this->headerMap->expects('getCellCoordinate')->with('subject')->andReturn('I');
 
         $this->expectException(FileReaderException::class);
 
@@ -130,8 +127,8 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetOptionalDateTimeReturnsValueForExistingColumnWhenFilled(): void
     {
-        $this->headerMap->shouldReceive('has')->with('date')->andReturnTrue();
-        $this->headerMap->shouldReceive('getCellCoordinate')->with('date')->andReturn('F');
+        $this->headerMap->expects('has')->times(2)->with('date')->andReturnTrue();
+        $this->headerMap->expects('getCellCoordinate')->times(2)->with('date')->andReturn('F');
 
         $dates = [];
         foreach ($this->excelReader as $row) {
@@ -146,7 +143,7 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetOptionalDateTimeReturnsNullForNonExistingColumn(): void
     {
-        $this->headerMap->shouldReceive('has')->with('non-existent-column')->andReturnFalse();
+        $this->headerMap->expects('has')->times(2)->with('non-existent-column')->andReturnFalse();
 
         $dates = [];
         foreach ($this->excelReader as $row) {

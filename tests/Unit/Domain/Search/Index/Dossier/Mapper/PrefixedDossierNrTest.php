@@ -15,10 +15,10 @@ class PrefixedDossierNrTest extends UnitTestCase
     {
         $dossier = Mockery::mock(AbstractDossier::class);
         $dossier
-            ->shouldReceive('getDocumentPrefix')
+            ->expects('getDocumentPrefix')
             ->andReturn('prefix');
         $dossier
-            ->shouldReceive('getDossierNr')
+            ->expects('getDossierNr')
             ->andReturn('foo-123');
 
         self::assertEquals(

@@ -103,7 +103,6 @@ final class DocumentFactory extends PersistentObjectFactory
 
                     $reflection = new ReflectionClass($document);
                     $property = $reflection->getProperty('id');
-                    $property->setAccessible(true);
                     $property->setValue($document, $attributes['overwrite_id']);
 
                     $this->entityManager->persist($document);
@@ -151,6 +150,11 @@ final class DocumentFactory extends PersistentObjectFactory
     public function withAlreadyPublicJudgement(): self
     {
         return $this->with(['judgement' => Judgement::ALREADY_PUBLIC]);
+    }
+
+    public function withExternalId(): self
+    {
+        return $this->with(['externalId' => ExternalId::create(self::faker()->uuid())]);
     }
 
     public static function class(): string

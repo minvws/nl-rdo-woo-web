@@ -76,7 +76,7 @@ final class DossierTypeTest extends UnitTestCase
     {
         $translator = Mockery::mock(TranslatorInterface::class);
         $translator
-            ->shouldReceive('trans')
+            ->expects('trans')
             ->with(
                 Mockery::on(function (string $key) use ($expectedKey): bool {
                     $this->assertSame($expectedKey, $key, 'The translation key does not match expected value');

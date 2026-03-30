@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use function trim;
@@ -34,6 +35,11 @@ class FileInfo
     private ?string $name = null;
 
     #[ORM\Column(nullable: false)]
+    #[Assert\IsTrue(groups: [
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+    ])]
     private bool $uploaded = false;
 
     /* The type of the original file. This could be a spreadsheet, word document or email */

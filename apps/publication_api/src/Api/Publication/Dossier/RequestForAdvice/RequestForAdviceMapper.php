@@ -4,41 +4,48 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\Dossier\RequestForAdvice;
 
-use PublicationApi\Api\Publication\Attachment\AttachmentResponseDto;
+use PublicationApi\Api\Publication\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Publication\Department\DepartmentReferenceDto;
-use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDto;
+use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Publication\Organisation\OrganisationReferenceDto;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\ExternalId;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-class RequestForAdviceMapper
+readonly class RequestForAdviceMapper
 {
+    public function __construct(
+        private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
+        private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+    ) {
+    }
+
     /**
      * @param array<array-key,RequestForAdvice> $requestForAdvices
      *
      * @return list<RequestForAdviceDto>
      */
-    public static function fromEntities(array $requestForAdvices): array
+    public function fromEntities(array $requestForAdvices): array
     {
         return array_values(array_map(
-            self::fromEntity(...),
+            $this->fromEntity(...),
             $requestForAdvices,
         ));
     }
 
-    public static function fromEntity(RequestForAdvice $requestForAdvice): RequestForAdviceDto
+    public function fromEntity(RequestForAdvice $requestForAdvice): RequestForAdviceDto
     {
         $mainDocument = $requestForAdvice->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = MainDocumentResponseDto::fromEntity($mainDocument);
+        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
 
         $dateFrom = $requestForAdvice->getDateFrom();
         Assert::notNull($dateFrom);
@@ -60,7 +67,7 @@ class RequestForAdviceMapper
             $requestForAdvice->getPublicationDate(),
             $requestForAdvice->getStatus(),
             $mainDocumentDto,
-            AttachmentResponseDto::fromEntities($requestForAdvice->getAttachments()->toArray()),
+            $this->attachmentResponseDtoFactory->fromEntities($requestForAdvice->getAttachments()->toArray()),
             $dateFrom,
             $requestForAdvice->getLink(),
             $requestForAdvice->getAdvisoryBodies(),
@@ -72,7 +79,7 @@ class RequestForAdviceMapper
         Organisation $organisation,
         Department $department,
         ?Subject $subject,
-        string $externalId,
+        ExternalId $externalId,
     ): RequestForAdvice {
         $requestForAdvice = new RequestForAdvice();
         $requestForAdvice->setExternalId($externalId);

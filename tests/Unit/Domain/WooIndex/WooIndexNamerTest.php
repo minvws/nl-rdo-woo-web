@@ -81,7 +81,6 @@ final class WooIndexNamerTest extends UnitTestCase
 
         $reflection = new ReflectionClass($wooIndexSitemap);
         $property = $reflection->getProperty('id');
-        $property->setAccessible(true);
         $property->setValue($wooIndexSitemap, $uuid);
 
         return $wooIndexSitemap;

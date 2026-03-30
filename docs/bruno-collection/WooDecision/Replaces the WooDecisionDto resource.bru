@@ -5,67 +5,68 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+  url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
   body: json
   auth: inherit
 }
 
 params:path {
   organisationId: {{organisationId}}
-  wooDecisionExternalId: 
+  wooDecisionExternalId: E:{{$randomBankAccountIban}}
 }
 
 body:json {
   {
-    "departmentId": "",
+    "departmentId": "{{departmentId}}",
     "internalReference": "{{$randomUUID}}",
     "mainDocument": {
-      "formalDate": "1-1-2000",
-      "grounds": [],
-      "internalReference": "{{$randomUUID}}",
+      "filename": "{{$randomFileName}}",
+      "formalDate": "2026-02-01T00:00:00.000Z",
       "language": "Dutch",
-      "filename": "{{$randomFileName}}"
+      "grounds": [],
+      "internalReference": "{{$randomUUID}}"
     },
-    "prefix": "prefix",
-    "subjectId": "",
+    "prefix": "VWS-1",
+    "subjectId": "{{subjectId}}",
     "summary": "{{$randomUUID}}",
     "title": "{{$randomUUID}}",
     "attachments": [
       {
-        "formalDate": "1-1-2000",
-        "grounds": [],
-        "internalReference": "",
+        "fileName": "{{$randomFileName}}",
+        "formalDate": "2026-02-01T00:00:00.000Z",
         "language": "Dutch",
-        "type": "c_d506b718",
+        "type": "c_002fc258",
         "externalId": "{{$randomUUID}}",
-        "fileName": "{{$randomFileName}}"
+        "grounds": [],
+        "internalReference": "Zomer 2025, fase 1"
       }
     ],
-    "dossierDateFrom": "1-1-2026",
-    "dossierDateTo": "1-1-2026",
+    "dossierDateFrom": "2025-01-01T00:00:00.000Z",
+    "dossierDateTo": "2025-06-01T00:00:00.000Z",
     "dossierNumber": "{{$randomUUID}}",
-    "publicationDate": "1-1-2002",
-    "decision": "already_public",
+    "publicationDate": "2026-02-01T00:00:00.000Z",
+    "decision": "public",
     "reason": "wob_request",
-    "previewDate": "1-1-2000",
+    "previewDate": "2026-02-01T00:00:00.000Z",
     "documents": [
       {
         "caseNumbers": [],
-        "date": "1-1-2000",
-        "documentId": "",
+        "date": "2025-01-01T00:00:00.000Z",
+        "documentId": "{{$randomUUID}}",
+        "documentNr": "{{$randomUUID}}",
         "externalId": "{{$randomUUID}}",
-        "familyId": null,
-        "fileName": "",
+        "familyId": 333,
+        "fileName": "{{$randomFileName}}",
         "grounds": [],
         "isSuspended": false,
         "judgement": "public",
         "links": [],
-        "matter": "",
+        "matter": "2025-01",
         "period": "",
         "refersTo": [],
-        "remark": "",
+        "remark": "None",
         "sourceType": "pdf",
-        "threadId": null
+        "threadId": 12345
       }
     ]
   }
@@ -87,12 +88,12 @@ example {
   description: WooDecisionDto resource updated
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId: 
+      wooDecisionExternalId: E:
     }
   
     body:json: {
@@ -100,10 +101,11 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
+          "language": "",
           "grounds": [],
-          "internalReference": "",
-          "language": ""
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -111,11 +113,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDateFrom": "",
@@ -130,6 +134,7 @@ example {
             "caseNumbers": [],
             "date": "",
             "documentId": "",
+            "externalId": "",
             "familyId": "",
             "fileName": "",
             "grounds": [],
@@ -186,7 +191,8 @@ example {
             "language": "",
             "formalDate": "",
             "internalReference": "",
-            "grounds": []
+            "grounds": [],
+            "fileName": ""
           },
           "attachments": [
             {
@@ -195,7 +201,9 @@ example {
               "language": "",
               "formalDate": "",
               "internalReference": "",
-              "grounds": []
+              "grounds": [],
+              "fileName": "",
+              "externalId": ""
             }
           ],
           "dossierDateFrom": "",
@@ -209,6 +217,7 @@ example {
               "date": "",
               "documentId": "",
               "documentNr": "",
+              "externalId": "",
               "familyId": "",
               "grounds": [],
               "isSuspended": false,
@@ -217,7 +226,12 @@ example {
               "judgement": "",
               "links": [],
               "period": "",
-              "refersTo": [],
+              "refersTo": [
+                {
+                  "documentId": "",
+                  "externalId": ""
+                }
+              ],
               "remark": "",
               "threadId": ""
             }
@@ -233,12 +247,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId: 
+      wooDecisionExternalId: E:
     }
   
     body:json: {
@@ -246,10 +260,11 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
+          "language": "",
           "grounds": [],
-          "internalReference": "",
-          "language": ""
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -257,11 +272,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDateFrom": "",
@@ -276,6 +293,7 @@ example {
             "caseNumbers": [],
             "date": "",
             "documentId": "",
+            "externalId": "",
             "familyId": "",
             "fileName": "",
             "grounds": [],
@@ -324,12 +342,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId: 
+      wooDecisionExternalId: E:
     }
   
     body:json: {
@@ -337,10 +355,11 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
+          "language": "",
           "grounds": [],
-          "internalReference": "",
-          "language": ""
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -348,11 +367,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDateFrom": "",
@@ -367,6 +388,7 @@ example {
             "caseNumbers": [],
             "date": "",
             "documentId": "",
+            "externalId": "",
             "familyId": "",
             "fileName": "",
             "grounds": [],
@@ -415,12 +437,12 @@ example {
   description: Unauthorized
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId: 
+      wooDecisionExternalId: E:
     }
   
     body:json: {
@@ -428,10 +450,11 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
+          "language": "",
           "grounds": [],
-          "internalReference": "",
-          "language": ""
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -439,11 +462,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDateFrom": "",
@@ -458,6 +483,7 @@ example {
             "caseNumbers": [],
             "date": "",
             "documentId": "",
+            "externalId": "",
             "familyId": "",
             "fileName": "",
             "grounds": [],
@@ -506,12 +532,12 @@ example {
   description: Forbidden
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId: 
+      wooDecisionExternalId: E:
     }
   
     body:json: {
@@ -519,10 +545,11 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
+          "language": "",
           "grounds": [],
-          "internalReference": "",
-          "language": ""
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -530,11 +557,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDateFrom": "",
@@ -549,6 +578,7 @@ example {
             "caseNumbers": [],
             "date": "",
             "documentId": "",
+            "externalId": "",
             "familyId": "",
             "fileName": "",
             "grounds": [],
@@ -597,12 +627,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId: 
+      wooDecisionExternalId: E:
     }
   
     body:json: {
@@ -610,10 +640,11 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
+          "language": "",
           "grounds": [],
-          "internalReference": "",
-          "language": ""
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -621,11 +652,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDateFrom": "",
@@ -640,6 +673,7 @@ example {
             "caseNumbers": [],
             "date": "",
             "documentId": "",
+            "externalId": "",
             "familyId": "",
             "fileName": "",
             "grounds": [],
@@ -688,12 +722,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId: 
+      wooDecisionExternalId: E:
     }
   
     body:json: {
@@ -701,10 +735,11 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
+          "language": "",
           "grounds": [],
-          "internalReference": "",
-          "language": ""
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -712,11 +747,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDateFrom": "",
@@ -731,6 +768,7 @@ example {
             "caseNumbers": [],
             "date": "",
             "documentId": "",
+            "externalId": "",
             "familyId": "",
             "fileName": "",
             "grounds": [],
@@ -779,12 +817,12 @@ example {
   description: Method not allowed
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId: 
+      wooDecisionExternalId: E:
     }
   
     body:json: {
@@ -792,10 +830,11 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
+          "language": "",
           "grounds": [],
-          "internalReference": "",
-          "language": ""
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -803,11 +842,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDateFrom": "",
@@ -822,6 +863,7 @@ example {
             "caseNumbers": [],
             "date": "",
             "documentId": "",
+            "externalId": "",
             "familyId": "",
             "fileName": "",
             "grounds": [],
@@ -870,12 +912,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId: 
+      wooDecisionExternalId: E:
     }
   
     body:json: {
@@ -883,10 +925,11 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
+          "language": "",
           "grounds": [],
-          "internalReference": "",
-          "language": ""
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -894,11 +937,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDateFrom": "",
@@ -913,6 +958,7 @@ example {
             "caseNumbers": [],
             "date": "",
             "documentId": "",
+            "externalId": "",
             "familyId": "",
             "fileName": "",
             "grounds": [],
@@ -949,7 +995,10 @@ example {
           "violations": [
             {
               "propertyPath": "",
-              "message": ""
+              "message": "",
+              "code": "",
+              "hint": "",
+              "payload": []
             }
           ],
           "detail": "",
@@ -967,12 +1016,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId: 
+      wooDecisionExternalId: E:
     }
   
     body:json: {
@@ -980,10 +1029,11 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
+          "language": "",
           "grounds": [],
-          "internalReference": "",
-          "language": ""
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -991,11 +1041,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDateFrom": "",
@@ -1010,6 +1062,7 @@ example {
             "caseNumbers": [],
             "date": "",
             "documentId": "",
+            "externalId": "",
             "familyId": "",
             "fileName": "",
             "grounds": [],
@@ -1046,7 +1099,10 @@ example {
           "violations": [
             {
               "propertyPath": "",
-              "message": ""
+              "message": "",
+              "code": "",
+              "hint": "",
+              "payload": []
             }
           ],
           "detail": "",
@@ -1064,12 +1120,12 @@ example {
   description: Server error
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/E::wooDecisionExternalId
+    url: {{baseUrl}}/api/publication/v1/organisation/:organisationId/dossiers/woo-decision/:wooDecisionExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      wooDecisionExternalId: 
+      wooDecisionExternalId: E:
     }
   
     body:json: {
@@ -1077,10 +1133,11 @@ example {
         "departmentId": "",
         "internalReference": "",
         "mainDocument": {
+          "filename": "",
           "formalDate": "",
+          "language": "",
           "grounds": [],
-          "internalReference": "",
-          "language": ""
+          "internalReference": ""
         },
         "prefix": "",
         "subjectId": "",
@@ -1088,11 +1145,13 @@ example {
         "title": "",
         "attachments": [
           {
+            "fileName": "",
             "formalDate": "",
-            "grounds": [],
-            "internalReference": "",
             "language": "",
-            "type": ""
+            "type": "",
+            "externalId": "",
+            "grounds": {},
+            "internalReference": ""
           }
         ],
         "dossierDateFrom": "",
@@ -1107,6 +1166,7 @@ example {
             "caseNumbers": [],
             "date": "",
             "documentId": "",
+            "externalId": "",
             "familyId": "",
             "fileName": "",
             "grounds": [],

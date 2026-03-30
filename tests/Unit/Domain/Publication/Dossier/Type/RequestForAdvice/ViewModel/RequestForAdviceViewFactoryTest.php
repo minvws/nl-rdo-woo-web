@@ -29,11 +29,10 @@ final class RequestForAdviceViewFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        /** @var Department&MockInterface $expectedMainDepartment */
         $expectedMainDepartment = Mockery::mock(Department::class);
 
         $this->commonDossierViewFactory
-            ->shouldReceive('make')
+            ->expects('make')
             ->andReturn(new CommonDossierProperties(
                 dossierId: $expectedUuid = 'my uuid',
                 dossierNr: $expectedDossierNr = 'my dossier nr',
@@ -48,13 +47,12 @@ final class RequestForAdviceViewFactoryTest extends UnitTestCase
                 subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
-        /** @var RequestForAdvice&MockInterface $dossier */
         $dossier = Mockery::mock(RequestForAdvice::class);
-        $dossier->shouldReceive('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable());
-        $dossier->shouldReceive('getLink')->andReturn($expectedLink = 'http://foo.bar');
-        $dossier->shouldReceive('getAdvisoryBodies')->andReturn($expectedAdvisoryBodies = ['FooBar']);
+        $dossier->expects('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable());
+        $dossier->expects('getLink')->andReturn($expectedLink = 'http://foo.bar');
+        $dossier->expects('getAdvisoryBodies')->andReturn($expectedAdvisoryBodies = ['FooBar']);
 
-        $result = (new RequestForAdviceViewFactory($this->commonDossierViewFactory))->make($dossier);
+        $result = new RequestForAdviceViewFactory($this->commonDossierViewFactory)->make($dossier);
 
         $this->assertSame($expectedUuid, $result->getDossierId());
         $this->assertSame($expectedDossierNr, $result->getDossierNr());

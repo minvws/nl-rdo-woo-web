@@ -6,9 +6,9 @@ namespace PublicationApi\Api\Publication\MainDocument;
 
 use ApiPlatform\Metadata\ApiProperty;
 use DateTimeImmutable;
+use PublicationApi\Api\Publication\UploadStatus;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
-use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Symfony\Component\Uid\Uuid;
 
 final readonly class MainDocumentResponseDto
@@ -29,19 +29,7 @@ final readonly class MainDocumentResponseDto
         public string $internalReference,
         public array $grounds,
         public ?string $fileName,
+        public UploadStatus $uploadStatus,
     ) {
-    }
-
-    public static function fromEntity(AbstractMainDocument $entity): self
-    {
-        return new self(
-            $entity->getId(),
-            $entity->getType(),
-            $entity->getLanguage(),
-            $entity->getFormalDate(),
-            $entity->getInternalReference(),
-            $entity->getGrounds(),
-            $entity->getFileInfo()->getName(),
-        );
     }
 }

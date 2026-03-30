@@ -19,7 +19,6 @@ use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Handler\DeleteDossierHandler;
 use Shared\Domain\Publication\Dossier\Type\DossierDeleteStrategyInterface;
-use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Service\Security\AuditUserDetails;
@@ -53,7 +52,6 @@ class DeleteDossierHandlerTest extends UnitTestCase
         $this->dossierWorkflowManager = Mockery::mock(DossierWorkflowManager::class);
         $this->entityManager = Mockery::mock(EntityManagerInterface::class);
         $this->internalAuditLogger = Mockery::mock(AuditLoggerInterface::class);
-        $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
         $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
 
         $this->strategyA = Mockery::mock(DossierDeleteStrategyInterface::class);
@@ -67,12 +65,6 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
         $this->dossierId = Uuid::v6();
         $this->dossier = Mockery::mock(AbstractDossier::class);
-        $this->dossier->shouldReceive('getType')->andReturn(DossierType::WOO_DECISION);
-        $this->dossier->shouldReceive('getId')->andReturn($this->dossierId);
-        $this->dossier->shouldReceive('getDocumentPrefix')->andReturn($this->documentPrefix);
-        $this->dossier->shouldReceive('getDossierNr')->andReturn($this->dossierNr);
-        $this->dossier->shouldReceive('getTitle')->andReturn($this->dossierTitle);
-        $this->dossier->shouldReceive('getStatus')->andReturn($this->dossierStatus);
 
         $this->handler = new DeleteDossierHandler(
             $this->dossierRepository,
@@ -97,6 +89,13 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
     public function testDeleteSuccessful(): void
     {
+        $this->internalAuditLogger->expects('canHandleEvent')->andReturnTrue();
+        $this->dossier->expects('getId')->andReturn($this->dossierId);
+        $this->dossier->expects('getDocumentPrefix')->andReturn($this->documentPrefix);
+        $this->dossier->expects('getDossierNr')->andReturn($this->dossierNr);
+        $this->dossier->expects('getTitle')->andReturn($this->dossierTitle);
+        $this->dossier->expects('getStatus')->andReturn($this->dossierStatus);
+
         $userDetails = Mockery::mock(AuditUserDetails::class);
         $command = new DeleteDossierCommand($this->dossierUuid, $userDetails);
 
@@ -138,6 +137,13 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
     public function testDeleteWithOverrideSuccessful(): void
     {
+        $this->internalAuditLogger->expects('canHandleEvent')->andReturnTrue();
+        $this->dossier->expects('getId')->andReturn($this->dossierId);
+        $this->dossier->expects('getDocumentPrefix')->andReturn($this->documentPrefix);
+        $this->dossier->expects('getDossierNr')->andReturn($this->dossierNr);
+        $this->dossier->expects('getTitle')->andReturn($this->dossierTitle);
+        $this->dossier->expects('getStatus')->andReturn($this->dossierStatus);
+
         $userDetails = Mockery::mock(AuditUserDetails::class);
         $command = new DeleteDossierCommand($this->dossierUuid, $userDetails, overrideWorkflow: true);
 
@@ -179,6 +185,13 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
     public function testDeleteRollsBackChangesOnException(): void
     {
+        $this->internalAuditLogger->expects('canHandleEvent')->andReturnTrue();
+        $this->dossier->expects('getId')->andReturn($this->dossierId);
+        $this->dossier->expects('getDocumentPrefix')->andReturn($this->documentPrefix);
+        $this->dossier->expects('getDossierNr')->andReturn($this->dossierNr);
+        $this->dossier->expects('getTitle')->andReturn($this->dossierTitle);
+        $this->dossier->expects('getStatus')->andReturn($this->dossierStatus);
+
         $userDetails = Mockery::mock(AuditUserDetails::class);
         $command = new DeleteDossierCommand($this->dossierUuid, $userDetails);
 

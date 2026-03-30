@@ -32,7 +32,7 @@ class InquiryLinkDossierFormType extends AbstractType
                 'help' => 'admin.dossiers.inquiries.help',
                 'required' => true,
                 'constraints' => [
-                    new NotBlank(['message' => 'Enter a case number or multiple case numbers, separate multiple case numbers with commas']),
+                    new NotBlank(message: 'Enter a case number or multiple case numbers, separate multiple case numbers with commas'),
                     new Callback($this->validateCaseNumbers(...)),
                 ],
             ])
@@ -51,7 +51,7 @@ class InquiryLinkDossierFormType extends AbstractType
                 ],
                 'required' => true,
                 'constraints' => [
-                    new NotBlank(['message' => 'Choose from the selection of published decisions']),
+                    new NotBlank(message: 'Choose from the selection of published decisions'),
                 ],
             ])
             ->add('link', SubmitType::class, [

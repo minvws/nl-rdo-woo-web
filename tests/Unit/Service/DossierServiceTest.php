@@ -6,8 +6,6 @@ namespace Shared\Tests\Unit\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery;
-use Shared\Domain\Publication\Dossier\DossierStatus;
-use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Search\SearchDispatcher;
 use Shared\Service\DossierService;
@@ -16,8 +14,6 @@ use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
-use function array_column;
 
 class DossierServiceTest extends UnitTestCase
 {
@@ -34,8 +30,6 @@ class DossierServiceTest extends UnitTestCase
         );
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $dossier->shouldReceive('hasWithdrawnOrSuspendedDocuments')->andReturnTrue();
         $dossier->expects('setCompleted')->with(false);
 
         $doctrine->expects('persist')->with($dossier);
@@ -53,9 +47,11 @@ class DossierServiceTest extends UnitTestCase
         $constraintViolationList->expects('count')
             ->andReturn(0);
 
+        $validationGroups = [];
+
         $validator = Mockery::mock(ValidatorInterface::class);
         $validator->expects('validate')
-            ->with($dossier, null, array_column(DossierValidationGroup::cases(), 'value'))
+            ->with($dossier, null, $validationGroups)
             ->andReturn($constraintViolationList);
 
         $dossierService = new DossierService(
@@ -65,7 +61,7 @@ class DossierServiceTest extends UnitTestCase
             $validator,
         );
 
-        $dossierService->validate($dossier);
+        $dossierService->validate($dossier, $validationGroups);
     }
 
     public function testValidateWithErrors(): void
@@ -75,9 +71,11 @@ class DossierServiceTest extends UnitTestCase
         $constraintViolationList->expects('count')
             ->andReturn(1);
 
+        $validationGroups = [];
+
         $validator = Mockery::mock(ValidatorInterface::class);
         $validator->expects('validate')
-            ->with($dossier, null, array_column(DossierValidationGroup::cases(), 'value'))
+            ->with($dossier, null, $validationGroups)
             ->andReturn($constraintViolationList);
 
         $dossierService = new DossierService(
@@ -88,6 +86,6 @@ class DossierServiceTest extends UnitTestCase
         );
 
         $this->expectException(ValidationFailedException::class);
-        $dossierService->validate($dossier);
+        $dossierService->validate($dossier, $validationGroups);
     }
 }

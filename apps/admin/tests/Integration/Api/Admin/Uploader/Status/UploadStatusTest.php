@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Admin\Tests\Integration\Api\Admin\Uploader\Status;
 
 use Admin\Tests\Integration\Api\Admin\AdminApiTestCase;
-use Shared\Domain\Upload\UploadStatus;
+use Shared\Domain\Upload\UploadEntityStatus;
 use Shared\Tests\Factory\UploadEntityFactory;
 use Shared\Tests\Factory\UserFactory;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,7 +45,7 @@ final class UploadStatusTest extends AdminApiTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
         self::assertJsonContains([
             'uploadId' => $uploadId,
-            'status' => UploadStatus::INCOMPLETE->value,
+            'status' => UploadEntityStatus::INCOMPLETE->value,
         ]);
     }
 

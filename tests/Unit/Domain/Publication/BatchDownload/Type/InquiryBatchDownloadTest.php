@@ -44,7 +44,7 @@ class InquiryBatchDownloadTest extends UnitTestCase
     public function testGetFileBasename(): void
     {
         $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->shouldReceive('getCasenr')->andReturn($caseNr = 'foo-123');
+        $inquiry->expects('getCasenr')->andReturn($caseNr = 'foo-123');
         $scope = BatchDownloadScope::forInquiry($inquiry);
 
         self::assertEquals(
@@ -59,7 +59,7 @@ class InquiryBatchDownloadTest extends UnitTestCase
         $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->repository
-            ->shouldReceive('getDocumentsForBatchDownload')
+            ->expects('getDocumentsForBatchDownload')
             ->with($inquiry)
             ->andReturn($queryBuilder);
 
@@ -78,7 +78,7 @@ class InquiryBatchDownloadTest extends UnitTestCase
         $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->repository
-            ->shouldReceive('getDocumentsForBatchDownload')
+            ->expects('getDocumentsForBatchDownload')
             ->with($inquiry)
             ->andReturn($queryBuilder);
 
@@ -95,7 +95,7 @@ class InquiryBatchDownloadTest extends UnitTestCase
         $queryBuilder = Mockery::mock(QueryBuilder::class);
 
         $this->repository
-            ->shouldReceive('getDocumentsForBatchDownload')
+            ->expects('getDocumentsForBatchDownload')
             ->with($inquiry)
             ->andReturn($queryBuilder);
 

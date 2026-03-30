@@ -158,6 +158,10 @@ admin.user.password.validation.digits_only: 'Je wachtwoord mag niet alleen uit c
 admin.user.password.validation.same_current: 'Je nieuwe wachtwoord mag niet hetzelfde zijn als je huidige wachtwoord'
 admin.user.password.validation.common: 'Het gekozen wachtwoord is niet veilig'
 admin.user.reset.at_lease_one_of: 'Vul tenminste 1 waarde in'
+dossier.main_document.no_document: 'Een dossier zonder hoofddocument kan niet gepubliceerd worden'
+dossier.main_document.not_uploaded: 'Een dossier zonder geüpload hoofddocument kan niet gepubliceerd worden'
+dossier.incomplete_documents: 'Een dossier met onvolledige documenten kan niet gepubliceerd worden'
+dossier.incomplete_attachments: 'Een dossier met onvolledige bijlagen kan niet gepubliceerd worden'
 subject_already_exists: 'Dit onderwerp bestaat al'
 alpha_numeric_dash_only: 'Prefix mag alleen bestaan uit letters, cijfers en streepjes'
 casenumbers_invalid: "Zaaknummers mogen alleen letters, cijfers en verbindingstekens bevatten. Maximale lengte is 255 tekens."

@@ -52,17 +52,16 @@ class WooDecisionMapperTest extends UnitTestCase
         $inquiryId = Uuid::v6();
         $caseNr = '123-45';
         $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->shouldReceive('getId')->andReturn($inquiryId);
-        $inquiry->shouldReceive('getCasenr')->andReturn($caseNr);
+        $inquiry->expects('getId')->andReturn($inquiryId);
+        $inquiry->expects('getCasenr')->andReturn($caseNr);
 
         $dossierNr = 'test-123';
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getDossierNr')->andReturn($dossierNr);
-        $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([$inquiry]));
-        $dossier->shouldReceive('getPublicationReason')->andReturn(PublicationReason::WOO_REQUEST);
-        $dossier->shouldReceive('getDecisionDate')->andReturn(new DateTimeImmutable('2024-04-16 10:54:15'));
-        $dossier->shouldReceive('getDecision')->andReturn(DecisionType::PUBLIC);
+        $dossier->expects('getInquiries')->times(2)->andReturn(new ArrayCollection([$inquiry]));
+        $dossier->expects('getPublicationReason')->andReturn(PublicationReason::WOO_REQUEST);
+        $dossier->expects('getDecisionDate')->andReturn(new DateTimeImmutable('2024-04-16 10:54:15'));
+        $dossier->expects('getDecision')->andReturn(DecisionType::PUBLIC);
 
         $this->defaultMapper
             ->expects('map')

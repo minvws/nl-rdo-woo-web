@@ -27,7 +27,7 @@ final class InventoryDossierFileProviderTest extends UnitTestCase
     public function testGetEntityForPublicUseThrowsExceptionForDossierTypeMismatch(): void
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
+        $dossier->expects('getId')->andReturn(Uuid::v6());
 
         $this->expectException(DossierFileNotFoundException::class);
 
@@ -37,8 +37,8 @@ final class InventoryDossierFileProviderTest extends UnitTestCase
     public function testGetEntityForAdminUseThrowsExceptionWhenWooDecisionHasNoInventory(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
-        $dossier->shouldReceive('getInventory')->andReturnNull();
+        $dossier->expects('getId')->andReturn(Uuid::v6());
+        $dossier->expects('getInventory')->andReturnNull();
 
         $this->expectException(DossierFileNotFoundException::class);
 
@@ -50,8 +50,7 @@ final class InventoryDossierFileProviderTest extends UnitTestCase
         $inventory = Mockery::mock(Inventory::class);
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
-        $dossier->shouldReceive('getInventory')->andReturn($inventory);
+        $dossier->expects('getInventory')->andReturn($inventory);
 
         self::assertSame(
             $inventory,
@@ -64,8 +63,7 @@ final class InventoryDossierFileProviderTest extends UnitTestCase
         $inventory = Mockery::mock(Inventory::class);
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getId')->andReturn(Uuid::v6());
-        $dossier->shouldReceive('getInventory')->andReturn($inventory);
+        $dossier->expects('getInventory')->andReturn($inventory);
 
         self::assertSame(
             $inventory,

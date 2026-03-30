@@ -46,16 +46,18 @@ class CleanSheetTest extends UnitTestCase
         $this->cacheClearCommand->expects('getDefinition')
             ->andReturn(new InputDefinition());
         $this->cacheClearCommand->expects('getName')
-            ->twice()
+            ->times(2)
             ->andReturn('cache:pool:clear');
         $this->cacheClearCommand->expects('getAliases')
             ->times(3)
             ->andReturn([]);
         $this->cacheClearCommand->expects('getHelperSet')
             ->andReturn($helperSet);
+        $this->cacheClearCommand->expects('getSubscribedSignals')
+            ->andReturn([]);
 
         $application = new Application();
-        $application->add(
+        $application->addCommand(
             new CleanSheet(
                 ['dummy-dsn'],
                 $this->entityManager,
@@ -64,7 +66,7 @@ class CleanSheetTest extends UnitTestCase
                 $this->wooIndexSitemapService,
             ),
         );
-        $application->add($this->cacheClearCommand);
+        $application->addCommand($this->cacheClearCommand);
 
         $this->command = $application->find('woopie:dev:clean-sheet');
     }

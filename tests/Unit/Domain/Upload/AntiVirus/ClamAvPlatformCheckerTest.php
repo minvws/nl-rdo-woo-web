@@ -24,7 +24,7 @@ final class ClamAvPlatformCheckerTest extends UnitTestCase
         $this->client = Mockery::mock(Client::class);
 
         $this->clientFactory = Mockery::mock(ClamAvClientFactory::class);
-        $this->clientFactory->shouldReceive('getClient')->andReturn($this->client);
+        $this->clientFactory->expects('getClient')->andReturn($this->client);
 
         $this->checker = new ClamAvPlatformChecker($this->clientFactory);
 

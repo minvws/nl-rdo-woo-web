@@ -26,11 +26,7 @@ class InventoryType extends AbstractType
         $inventoryRequired = $dossier->isInventoryRequired();
 
         $inventoryConstraints = [
-            new File([
-                'maxSize' => '10024k',
-                'mimeTypes' => FileTypeEnum::XLS->getMimeTypes(),
-                'mimeTypesMessage' => 'Please upload a valid spreadsheet',
-            ]),
+            new File(maxSize: '10024k', mimeTypes: FileTypeEnum::XLS->getMimeTypes(), mimeTypesMessage: 'Please upload a valid spreadsheet'),
         ];
 
         if ($inventoryRequired) {

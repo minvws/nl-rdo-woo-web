@@ -48,7 +48,7 @@ class PdfPageProcessorTest extends UnitTestCase
     public function testProcessPageThrowsExceptionWhenEntityIsNotPaginatable(): void
     {
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnFalse();
+        $entity->expects('getFileInfo->isPaginatable')->andReturnFalse();
 
         $this->expectException(InvalidArgumentException::class);
         $this->processor->processPage($entity, 1);
@@ -57,7 +57,7 @@ class PdfPageProcessorTest extends UnitTestCase
     public function testProcessPageDoesNothingIfContextIsNull(): void
     {
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnTrue();
+        $entity->expects('getFileInfo->isPaginatable')->andReturnTrue();
 
         $this->contextFactory->expects('createContext')->with($entity, 1)->andReturnNull();
 
@@ -69,7 +69,7 @@ class PdfPageProcessorTest extends UnitTestCase
         $pageNr = 1;
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnTrue();
+        $entity->expects('getFileInfo->isPaginatable')->andReturnTrue();
 
         $context = Mockery::mock(PdfPageProcessingContext::class);
         $this->contextFactory->expects('createContext')->with($entity, $pageNr)->andReturn($context);
@@ -91,7 +91,7 @@ class PdfPageProcessorTest extends UnitTestCase
         $pageNr = 1;
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnTrue();
+        $entity->expects('getFileInfo->isPaginatable')->andReturnTrue();
 
         $context = Mockery::mock(PdfPageProcessingContext::class);
         $this->contextFactory->expects('createContext')->with($entity, $pageNr)->andReturn($context);
@@ -111,7 +111,7 @@ class PdfPageProcessorTest extends UnitTestCase
         $pageNr = 1;
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->shouldReceive('getFileInfo->isPaginatable')->andReturnTrue();
+        $entity->expects('getFileInfo->isPaginatable')->andReturnTrue();
 
         $exception = new RuntimeException();
 

@@ -37,7 +37,7 @@ class SubjectUpdatedHandlerTest extends UnitTestCase
     public function testInvokeSuccessfully(): void
     {
         $subject = Mockery::mock(Subject::class);
-        $subject->shouldReceive('getId')->andReturn($subjectId = Uuid::v6());
+        $subject->expects('getId')->andReturn($subjectId = Uuid::v6());
 
         $this->repository->expects('find')->with($subjectId)->andReturn($subject);
         $this->indexUpdater->expects('update')->with($subject);
@@ -50,7 +50,7 @@ class SubjectUpdatedHandlerTest extends UnitTestCase
     public function testInvokeThrowsExceptionWhenEntityCannotBeLoaded(): void
     {
         $subject = Mockery::mock(Subject::class);
-        $subject->shouldReceive('getId')->andReturn($subjectId = Uuid::v6());
+        $subject->expects('getId')->andReturn($subjectId = Uuid::v6());
 
         $this->repository->expects('find')->with($subjectId)->andReturnNull();
 

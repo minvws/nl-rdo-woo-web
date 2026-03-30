@@ -46,10 +46,10 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         // @TODO should be replaced by an instance of EntityWithFileInfo
         $entity = Mockery::mock(Document::class);
 
-        $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
-        $this->repository->shouldReceive('find')->once()->andReturn($entity);
+        $this->doctrine->expects('getRepository')->with($entityClass)->andReturn($this->repository);
+        $this->repository->expects('find')->andReturn($entity);
 
-        $this->processor->shouldReceive('processPage')->once()->with($entity, $pageNr);
+        $this->processor->expects('processPage')->with($entity, $pageNr);
 
         $handler = new IngestPdfPageHandler($this->processor, $this->doctrine, $this->logger);
         $handler->__invoke($message);
@@ -66,10 +66,10 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         // @TODO should be replaced by an instance of EntityWithFileInfo
         $entity = Mockery::mock(Document::class);
 
-        $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
-        $this->repository->shouldReceive('find')->once()->andReturn($entity);
+        $this->doctrine->expects('getRepository')->with($entityClass)->andReturn($this->repository);
+        $this->repository->expects('find')->andReturn($entity);
 
-        $this->processor->shouldReceive('processPage')->once()->with($entity, $pageNr);
+        $this->processor->expects('processPage')->with($entity, $pageNr);
 
         $handler = new IngestPdfPageHandler($this->processor, $this->doctrine, $this->logger);
         $handler->__invoke($message);
@@ -83,9 +83,9 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
             $pageNr = 101,
         );
 
-        $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
-        $this->repository->shouldReceive('find')->once()->andReturnNull();
-        $this->logger->shouldReceive('warning')->once()->with('No entity found in IngestPdfPageHandler', [
+        $this->doctrine->expects('getRepository')->with($entityClass)->andReturn($this->repository);
+        $this->repository->expects('find')->andReturnNull();
+        $this->logger->expects('warning')->with('No entity found in IngestPdfPageHandler', [
             'id' => $id->toRfc4122(),
             'class' => $entityClass,
             'pageNr' => $pageNr,
@@ -108,12 +108,12 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
         // @TODO should be replaced by an instance of EntityWithFileInfo
         $entity = Mockery::mock(Document::class);
 
-        $this->doctrine->shouldReceive('getRepository')->once()->with($entityClass)->andReturn($this->repository);
-        $this->repository->shouldReceive('find')->once()->andReturn($entity);
+        $this->doctrine->expects('getRepository')->with($entityClass)->andReturn($this->repository);
+        $this->repository->expects('find')->andReturn($entity);
 
-        $this->processor->shouldReceive('processPage')->once()->andThrow($thrownException = new RuntimeException('My exception'));
+        $this->processor->expects('processPage')->andThrow($thrownException = new RuntimeException('My exception'));
 
-        $this->logger->shouldReceive('error')->once()->with('Error processing document in IngestPdfPageHandler', [
+        $this->logger->expects('error')->with('Error processing document in IngestPdfPageHandler', [
             'id' => $id->toRfc4122(),
             'class' => $entityClass,
             'pageNr' => $pageNr,

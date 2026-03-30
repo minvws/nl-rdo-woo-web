@@ -9,6 +9,7 @@ use Shared\Domain\Publication\Dossier\Step\StepDefinitionInterface;
 use Shared\Domain\Publication\Dossier\Step\StepName;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -18,6 +19,7 @@ use Symfony\Component\Workflow\WorkflowInterface;
 readonly class OtherPublicationConfig implements DossierTypeConfigInterface
 {
     public function __construct(
+        #[Target(OtherPublicationWorkflow::OTHER_PUBLICATION_WORKFLOW_NAME)]
         private WorkflowInterface $otherPublicationWorkflow,
     ) {
     }

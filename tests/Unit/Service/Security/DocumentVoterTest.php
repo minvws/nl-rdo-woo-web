@@ -40,12 +40,7 @@ class DocumentVoterTest extends UnitTestCase
     public function testAbstainForUnknownAttribute(): void
     {
         $token = Mockery::mock(TokenInterface::class);
-        $dossier = Mockery::mock(WooDecision::class);
-
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
-            $dossier,
-        ]));
 
         self::assertEquals(
             VoterInterface::ACCESS_ABSTAIN,
@@ -56,15 +51,7 @@ class DocumentVoterTest extends UnitTestCase
     public function testAbstainWhenDocumentHasMultipleDossiers(): void
     {
         $token = Mockery::mock(TokenInterface::class);
-
-        $dossierA = Mockery::mock(WooDecision::class);
-        $dossierB = Mockery::mock(WooDecision::class);
-
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
-            $dossierA,
-            $dossierB,
-        ]));
 
         self::assertEquals(
             VoterInterface::ACCESS_ABSTAIN,
@@ -86,10 +73,10 @@ class DocumentVoterTest extends UnitTestCase
     {
         $token = Mockery::mock(TokenInterface::class);
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
+        $document->expects('getDossiers')->times(2)->andReturn(new ArrayCollection([
             $dossier,
         ]));
 
@@ -103,15 +90,15 @@ class DocumentVoterTest extends UnitTestCase
     {
         $token = Mockery::mock(TokenInterface::class);
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
+        $dossier->expects('getStatus')->times(2)->andReturn(DossierStatus::CONCEPT);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
+        $document->expects('getDossiers')->times(2)->andReturn(new ArrayCollection([
             $dossier,
         ]));
-        $document->shouldReceive('getInquiries')->andReturn(new ArrayCollection());
+        $document->expects('getInquiries')->andReturn(new ArrayCollection());
 
-        $this->inquirySessionService->shouldReceive('getInquiries')->andReturn(['foo', 'bar']);
+        $this->inquirySessionService->expects('getInquiries')->andReturn(['foo', 'bar']);
 
         self::assertEquals(
             VoterInterface::ACCESS_DENIED,
@@ -124,24 +111,24 @@ class DocumentVoterTest extends UnitTestCase
         $token = Mockery::mock(TokenInterface::class);
 
         $inquiryA = Mockery::mock(Inquiry::class);
-        $inquiryA->shouldReceive('getId')->andReturn(Uuid::v6());
+        $inquiryA->expects('getId')->andReturn(Uuid::v6());
 
         $inquiryB = Mockery::mock(Inquiry::class);
-        $inquiryB->shouldReceive('getId')->andReturn(Uuid::v6());
+        $inquiryB->expects('getId')->andReturn(Uuid::v6());
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
+        $dossier->expects('getStatus')->times(2)->andReturn(DossierStatus::CONCEPT);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
+        $document->expects('getDossiers')->times(2)->andReturn(new ArrayCollection([
             $dossier,
         ]));
-        $document->shouldReceive('getInquiries')->andReturn(new ArrayCollection([
+        $document->expects('getInquiries')->andReturn(new ArrayCollection([
             $inquiryA,
             $inquiryB,
         ]));
 
-        $this->inquirySessionService->shouldReceive('getInquiries')->andReturn(['foo', 'bar']);
+        $this->inquirySessionService->expects('getInquiries')->andReturn(['foo', 'bar']);
 
         self::assertEquals(
             VoterInterface::ACCESS_DENIED,
@@ -154,24 +141,24 @@ class DocumentVoterTest extends UnitTestCase
         $token = Mockery::mock(TokenInterface::class);
 
         $inquiryA = Mockery::mock(Inquiry::class);
-        $inquiryA->shouldReceive('getId')->andReturn(Uuid::v6());
+        $inquiryA->expects('getId')->andReturn(Uuid::v6());
 
         $inquiryB = Mockery::mock(Inquiry::class);
-        $inquiryB->shouldReceive('getId')->andReturn($inquiryBId = Uuid::v6());
+        $inquiryB->expects('getId')->andReturn($inquiryBId = Uuid::v6());
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
-        $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection([
+        $dossier->expects('getStatus')->times(2)->andReturn(DossierStatus::PREVIEW);
+        $dossier->expects('getInquiries')->andReturn(new ArrayCollection([
             $inquiryA,
             $inquiryB,
         ]));
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
+        $document->expects('getDossiers')->times(2)->andReturn(new ArrayCollection([
             $dossier,
         ]));
 
-        $this->inquirySessionService->shouldReceive('getInquiries')->andReturn(['foo', 'bar', $inquiryBId]);
+        $this->inquirySessionService->expects('getInquiries')->andReturn(['foo', 'bar', $inquiryBId]);
 
         self::assertEquals(
             VoterInterface::ACCESS_GRANTED,
@@ -184,25 +171,25 @@ class DocumentVoterTest extends UnitTestCase
         $token = Mockery::mock(TokenInterface::class);
 
         $inquiryA = Mockery::mock(Inquiry::class);
-        $inquiryA->shouldReceive('getId')->andReturn(Uuid::v6());
+        $inquiryA->expects('getId')->andReturn(Uuid::v6());
 
         $inquiryB = Mockery::mock(Inquiry::class);
-        $inquiryB->shouldReceive('getId')->andReturn($inquiryBId = Uuid::v6());
+        $inquiryB->expects('getId')->andReturn($inquiryBId = Uuid::v6());
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getStatus')->andReturn(DossierStatus::PREVIEW);
-        $dossier->shouldReceive('getInquiries')->andReturn(new ArrayCollection());
+        $dossier->expects('getStatus')->times(2)->andReturn(DossierStatus::PREVIEW);
+        $dossier->expects('getInquiries')->andReturn(new ArrayCollection());
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([
+        $document->expects('getDossiers')->times(2)->andReturn(new ArrayCollection([
             $dossier,
         ]));
-        $document->shouldReceive('getInquiries')->andReturn(new ArrayCollection([
+        $document->expects('getInquiries')->andReturn(new ArrayCollection([
             $inquiryA,
             $inquiryB,
         ]));
 
-        $this->inquirySessionService->shouldReceive('getInquiries')->andReturn(['foo', 'bar', $inquiryBId]);
+        $this->inquirySessionService->expects('getInquiries')->times(2)->andReturn(['foo', 'bar', $inquiryBId]);
 
         self::assertEquals(
             VoterInterface::ACCESS_GRANTED,

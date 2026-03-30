@@ -13,6 +13,7 @@ use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementRepository;
 use Shared\Service\ApiPlatformService;
+use Shared\ValueObject\ExternalId;
 
 use function count;
 
@@ -21,6 +22,7 @@ final readonly class ComplaintJudgementProvider implements ProviderInterface
     public function __construct(
         private OrganisationRepository $organisationRepository,
         private ComplaintJudgementRepository $complaintJudgementRepository,
+        private ComplaintJudgementMapper $complaintJudgementMapper,
         private int $itemsPerPage,
     ) {
     }
@@ -39,9 +41,7 @@ final readonly class ComplaintJudgementProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        $complaintJudgementExternalId = $uriVariables['complaintJudgementExternalId'];
-
-        return $this->provideSingle($organisation, $complaintJudgementExternalId);
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['complaintJudgementExternalId']));
     }
 
     /**
@@ -55,16 +55,16 @@ final readonly class ComplaintJudgementProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(ComplaintJudgementMapper::fromEntities($complaintJudgements), 0, count($complaintJudgements));
+        return new ArrayPaginator($this->complaintJudgementMapper->fromEntities($complaintJudgements), 0, count($complaintJudgements));
     }
 
-    private function provideSingle(Organisation $organisation, string $complaintJudgementExternalId): ?ComplaintJudgementDto
+    private function provideSingle(Organisation $organisation, ExternalId $complaintJudgementExternalId): ?ComplaintJudgementDto
     {
         $complaintJudgement = $this->complaintJudgementRepository->findByOrganisationAndExternalId($organisation, $complaintJudgementExternalId);
         if (! $complaintJudgement instanceof ComplaintJudgement) {
             return null;
         }
 
-        return ComplaintJudgementMapper::fromEntity($complaintJudgement);
+        return $this->complaintJudgementMapper->fromEntity($complaintJudgement);
     }
 }

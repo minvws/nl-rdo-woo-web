@@ -34,12 +34,12 @@ class CsvReader implements FileReaderInterface
             throw new RuntimeException('Failed to open file: ' . $this->filepath);
         }
         // read/skip the header row
-        fgetcsv($handle);
+        fgetcsv($handle, escape: '\\');
 
         // Ensure a 1-indexed array
         $this->rows[0] = [];
 
-        while (($data = fgetcsv($handle)) !== false) {
+        while (($data = fgetcsv($handle, escape: '\\')) !== false) {
             $tmp = array_filter($data);
             if (count($tmp) == 0) {
                 // Skip if all fields are empty

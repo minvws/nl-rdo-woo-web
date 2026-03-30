@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Upload\Command;
 
 use League\Flysystem\FilesystemOperator;
+use Psr\Log\LoggerInterface;
 use Shared\Domain\Upload\AntiVirus\ClamAvFileScanner;
 use Shared\Domain\Upload\Exception\UploadException;
 use Shared\Domain\Upload\Exception\UploadValidationException;
@@ -32,11 +33,14 @@ readonly class ValidateUploadCommandHandler
         private ClamAvFileScanner $clamAvFileScanner,
         private MimeTypeHelper $mimeTypeHelper,
         private SevenZipFileStrategy $sevenZipFileStrategy,
+        private LoggerInterface $logger,
     ) {
     }
 
     public function __invoke(ValidateUploadCommand $message): void
     {
+        $this->logger->debug('ValidateUploadCommand invoked');
+
         $uploadEntity = $this->loadUploadEntity($message->uuid);
 
         $scanSizeExceeded = $uploadEntity->getSize() > $this->clamAvFileScanner->getFileSizeLimit();

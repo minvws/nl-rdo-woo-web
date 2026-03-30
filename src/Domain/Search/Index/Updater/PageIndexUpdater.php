@@ -17,6 +17,7 @@ class PageIndexUpdater
     public function __construct(
         private readonly ElasticClientInterface $elastic,
         private LoggerInterface $logger,
+        private ElasticConfig $elasticConfig,
     ) {
     }
 
@@ -28,7 +29,7 @@ class PageIndexUpdater
         $this->logger->debug('[Elasticsearch] Updating page');
         $this->retry(function () use ($id, $pageNr, $content) {
             $this->elastic->update([
-                'index' => ElasticConfig::WRITE_INDEX,
+                'index' => $this->elasticConfig->writeIndex,
                 'id' => $id,
                 'body' => [
                     'script' => [

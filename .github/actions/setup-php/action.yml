@@ -4,7 +4,7 @@ description: Compose action that sets up PHP and Composer
 inputs:
   php-version:
     description: The PHP version
-    default: "8.3"
+    default: "8.4"
   coverage:
     description: Set PHP coverage driver
     default: none

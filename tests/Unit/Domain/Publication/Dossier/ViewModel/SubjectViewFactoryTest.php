@@ -30,9 +30,8 @@ final class SubjectViewFactoryTest extends UnitTestCase
 
     public function testMake(): void
     {
-        /** @var Subject&MockInterface $subject */
         $subject = Mockery::mock(Subject::class);
-        $subject->shouldReceive('getName')->andReturn($expectedSubject = 'Foo');
+        $subject->expects('getName')->times(2)->andReturn($expectedSubject = 'Foo');
 
         $this->urlGenerator
             ->expects('generate')
@@ -47,12 +46,11 @@ final class SubjectViewFactoryTest extends UnitTestCase
 
     public function testGetSubjectForDossier(): void
     {
-        /** @var Subject&MockInterface $subject */
         $subject = Mockery::mock(Subject::class);
-        $subject->shouldReceive('getName')->andReturn($expectedSubject = 'Foo');
+        $subject->expects('getName')->times(2)->andReturn($expectedSubject = 'Foo');
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->shouldReceive('getSubject')->andReturn($subject);
+        $dossier->expects('getSubject')->times(2)->andReturn($subject);
 
         $this->urlGenerator
             ->expects('generate')

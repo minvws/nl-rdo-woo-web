@@ -17,8 +17,8 @@ final class ZipStreamFactoryTest extends UnitTestCase
         $factory = new ZipStreamFactory();
 
         $stream = Mockery::mock(StreamInterface::class);
-        $stream->shouldReceive('isReadable')->andReturnTrue();
-        $stream->shouldReceive('isWritable')->andReturnTrue();
+        $stream->expects('isReadable')->andReturnTrue();
+        $stream->expects('isWritable')->andReturnTrue();
 
         $result = $factory->create($stream);
 
@@ -28,10 +28,6 @@ final class ZipStreamFactoryTest extends UnitTestCase
     public function testForStreamingArchive(): void
     {
         $factory = new ZipStreamFactory();
-
-        $stream = Mockery::mock(StreamInterface::class);
-        $stream->shouldReceive('isReadable')->andReturnTrue();
-        $stream->shouldReceive('isWritable')->andReturnTrue();
 
         $result = $factory->forStreamingArchive('base-name');
 

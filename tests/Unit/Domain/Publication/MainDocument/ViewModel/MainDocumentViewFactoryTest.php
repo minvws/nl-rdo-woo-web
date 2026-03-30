@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\MainDocument\ViewModel;
 
 use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
 use Mockery\Matcher\Closure;
-use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -48,51 +46,49 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
         array $expectedDetailsParameterKeys,
     ): void {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->shouldReceive('getName')->andReturn($expectedFileName = 'file name');
-        $fileInfo->shouldReceive('getMimetype')->andReturn($expectedMimeType = 'file mime type');
-        $fileInfo->shouldReceive('getSize')->andReturn($expectedSize = 101);
-        $fileInfo->shouldReceive('getSourceType')->andReturn($expectedSourceType = SourceType::PDF);
-        $fileInfo->shouldReceive('getPageCount')->andReturn($expectedPageCount = 12);
+        $fileInfo->expects('getName')->andReturn($expectedFileName = 'file name');
+        $fileInfo->expects('getMimetype')->andReturn($expectedMimeType = 'file mime type');
+        $fileInfo->expects('getSize')->andReturn($expectedSize = 101);
+        $fileInfo->expects('getSourceType')->andReturn($expectedSourceType = SourceType::PDF);
+        $fileInfo->expects('getPageCount')->andReturn($expectedPageCount = 12);
 
         $uuid = Mockery::mock(UuidV6::class);
-        $uuid->shouldReceive('toRfc4122')->andReturn($expectedUuid = 'my-uuid');
+        $uuid->expects('toRfc4122')->andReturn($expectedUuid = 'my-uuid');
 
         $expectedDocumentPrefix = 'prefix';
         $expectedDossierId = 'dossier nr';
 
         $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
         $urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with(
                 $expectedDownloadRouteName,
                 $this->assertParameters($expectedDownloadParameterKeys),
             )
             ->andReturn($expectedDownloadUrl = 'http://download.test');
         $urlGenerator
-            ->shouldReceive('generate')
+            ->expects('generate')
             ->with(
                 $expectedDetailsRouteName,
                 $this->assertParameters($expectedDetailsParameterKeys),
             )
             ->andReturn($expectedDetailsUrl = 'http://details.test');
 
-        /** @var AbstractMainDocument&MockInterface $mainDocument */
         $mainDocument = Mockery::mock($mainDocumentClass);
-        $mainDocument->shouldReceive('getId')->andReturn($uuid);
-        $mainDocument->shouldReceive('getFormalDate')->andReturn(new DateTimeImmutable($expectedFormalDate = '2021-05-10'));
-        $mainDocument->shouldReceive('getFileInfo')->andReturn($fileInfo);
-        $mainDocument->shouldReceive('getType')->andReturn(AttachmentType::ADVICE);
-        $mainDocument->shouldReceive('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
-        $mainDocument->shouldReceive('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
-        $mainDocument->shouldReceive('getGrounds')->andReturn($expectedGrounds = ['bar', 'foo']);
+        $mainDocument->expects('getId')->times(2)->andReturn($uuid);
+        $mainDocument->expects('getFormalDate')->andReturn(new DateTimeImmutable($expectedFormalDate = '2021-05-10'));
+        $mainDocument->expects('getFileInfo')->times(5)->andReturn($fileInfo);
+        $mainDocument->expects('getType')->andReturn(AttachmentType::ADVICE);
+        $mainDocument->expects('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
+        $mainDocument->expects('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
+        $mainDocument->expects('getGrounds')->andReturn($expectedGrounds = ['bar', 'foo']);
 
         $dossier = Mockery::mock(Disposition::class);
-        $dossier->shouldReceive('getDocumentPrefix')->andReturn($expectedDocumentPrefix);
-        $dossier->shouldReceive('getDossierNr')->andReturn($expectedDossierId);
-        $dossier->shouldReceive('getAttachments')->andReturn(new ArrayCollection([$mainDocument]));
-        $dossier->shouldReceive('getType')->andReturn($dossierType);
+        $dossier->expects('getDocumentPrefix')->times(2)->andReturn($expectedDocumentPrefix);
+        $dossier->expects('getDossierNr')->times(2)->andReturn($expectedDossierId);
+        $dossier->expects('getType')->andReturn($dossierType);
 
-        $result = (new MainDocumentViewFactory($urlGenerator))->make($dossier, $mainDocument, $applicationMode);
+        $result = new MainDocumentViewFactory($urlGenerator)->make($dossier, $mainDocument, $applicationMode);
 
         $this->assertInstanceOf(MainDocument::class, $result);
         $this->assertSame($expectedUuid, $result->id);

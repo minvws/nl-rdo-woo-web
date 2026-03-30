@@ -21,6 +21,8 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
+use Shared\ValueObject\ExternalId;
+use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -37,6 +39,8 @@ final class DispositionProcessor extends AbstractDossierProcessor
         OrganisationRepository $organisationRepository,
         SubjectRepository $subjectRepository,
         private readonly DispositionRepository $dispositionRepository,
+        private readonly Security $security,
+        private readonly DispositionMapper $dispositionMapper,
     ) {
         parent::__construct(
             $attachmentService,
@@ -46,6 +50,7 @@ final class DispositionProcessor extends AbstractDossierProcessor
             $mainDocumentService,
             $organisationRepository,
             $subjectRepository,
+            $this->security,
         );
     }
 
@@ -64,6 +69,7 @@ final class DispositionProcessor extends AbstractDossierProcessor
 
         $dispositionExternalId = $uriVariables['dispositionExternalId'];
         Assert::string($dispositionExternalId);
+        $dispositionExternalId = ExternalId::create($dispositionExternalId);
 
         $organisation = $this->getOrganisation($uriVariables);
         $subject = $this->getSubject($data, $organisation);
@@ -73,12 +79,12 @@ final class DispositionProcessor extends AbstractDossierProcessor
         if ($disposition === null) {
             $disposition = $this->create($organisation, $department, $subject, $data, $dispositionExternalId);
 
-            return DispositionMapper::fromEntity($disposition);
+            return $this->dispositionMapper->fromEntity($disposition);
         }
 
         $this->update($disposition, $organisation, $department, $subject, $data);
 
-        return DispositionMapper::fromEntity($disposition);
+        return $this->dispositionMapper->fromEntity($disposition);
     }
 
     private function create(
@@ -86,7 +92,7 @@ final class DispositionProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         DispositionRequestDto $dispositionRequestDto,
-        string $dispositionExternalId,
+        ExternalId $dispositionExternalId,
     ): Disposition {
         $disposition = DispositionMapper::create($dispositionRequestDto, $organisation, $department, $subject, $dispositionExternalId);
         $mainDocument = DispositionMainDocumentMapper::create($disposition, $dispositionRequestDto->mainDocument);

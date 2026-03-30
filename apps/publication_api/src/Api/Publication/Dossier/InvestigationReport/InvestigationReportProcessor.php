@@ -21,6 +21,8 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
+use Shared\ValueObject\ExternalId;
+use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -37,6 +39,8 @@ final class InvestigationReportProcessor extends AbstractDossierProcessor
         OrganisationRepository $organisationRepository,
         SubjectRepository $subjectRepository,
         private readonly InvestigationReportRepository $investigationReportRepository,
+        private readonly Security $security,
+        private readonly InvestigationReportMapper $investigationReportMapper,
     ) {
         parent::__construct(
             $attachmentService,
@@ -46,6 +50,7 @@ final class InvestigationReportProcessor extends AbstractDossierProcessor
             $mainDocumentService,
             $organisationRepository,
             $subjectRepository,
+            $this->security,
         );
     }
 
@@ -64,6 +69,7 @@ final class InvestigationReportProcessor extends AbstractDossierProcessor
 
         $investigationReportExternalId = $uriVariables['investigationReportExternalId'];
         Assert::string($investigationReportExternalId);
+        $investigationReportExternalId = ExternalId::create($investigationReportExternalId);
 
         $organisation = $this->getOrganisation($uriVariables);
         $subject = $this->getSubject($data, $organisation);
@@ -73,12 +79,12 @@ final class InvestigationReportProcessor extends AbstractDossierProcessor
         if ($investigationReport === null) {
             $investigationReport = $this->create($organisation, $department, $subject, $data, $investigationReportExternalId);
 
-            return InvestigationReportMapper::fromEntity($investigationReport);
+            return $this->investigationReportMapper->fromEntity($investigationReport);
         }
 
         $this->update($investigationReport, $organisation, $department, $subject, $data);
 
-        return InvestigationReportMapper::fromEntity($investigationReport);
+        return $this->investigationReportMapper->fromEntity($investigationReport);
     }
 
     private function create(
@@ -86,7 +92,7 @@ final class InvestigationReportProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         InvestigationReportRequestDto $investigationReportRequestDto,
-        string $investigationReportExternalId,
+        ExternalId $investigationReportExternalId,
     ): InvestigationReport {
         $investigationReport = InvestigationReportMapper::create(
             $investigationReportRequestDto,

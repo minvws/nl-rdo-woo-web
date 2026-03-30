@@ -21,9 +21,9 @@ body:
   - type: dropdown
     id: branch
     attributes:
-      label: Git branch kiezen
+      label: Target branch
       options:
-        - Maak een PR naar de huidige release branch (vX.X.X)
-        - Maak een PR naar de main branch
+        - Main
+        - Release branch (vX.X.X)
     validations:
       required: true

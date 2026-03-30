@@ -81,9 +81,9 @@ final class LocalFilesystemTest extends SharedWebTestCase
 
     public function testCopyWhenFwriteReturnsFalse(): void
     {
-        $this->logger->shouldReceive('error')->once()->with('Could not copy data between streams', [
-            'exception' => 'Could not write data to target stream',
-        ]);
+        $this->logger
+            ->expects('error')
+            ->with('Could not copy data between streams', ['exception' => 'Could not write data to target stream']);
 
         $contents = 'Hello World!';
 
@@ -110,8 +110,8 @@ final class LocalFilesystemTest extends SharedWebTestCase
         $tmpFile = vfsStream::newFile('tempfile')->at($tmpDir);
 
         $fs = $this->getPartialLocalFilesystem();
-        $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
-        $fs->shouldReceive('tempname')->once()->with($tmpDir->url())->andReturn($tmpFile->url());
+        $fs->expects('sysGetTempDir')->andReturn($tmpDir->url());
+        $fs->expects('tempname')->with($tmpDir->url())->andReturn($tmpFile->url());
 
         $result = $fs->createTempFile();
 
@@ -123,13 +123,12 @@ final class LocalFilesystemTest extends SharedWebTestCase
     {
         $tmpDir = vfsStream::newDirectory('tmp')->at($this->root);
 
-        $this->logger->shouldReceive('error')->once()->with('Could not create temporary file', [
-            'tempDir' => $tmpDir->url(),
-        ]);
+        $this->logger->expects('error')
+            ->with('Could not create temporary file', ['tempDir' => $tmpDir->url()]);
 
         $fs = $this->getPartialLocalFilesystem();
-        $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
-        $fs->shouldReceive('tempname')->once()->with($tmpDir->url())->andReturnFalse();
+        $fs->expects('sysGetTempDir')->andReturn($tmpDir->url());
+        $fs->expects('tempname')->with($tmpDir->url())->andReturnFalse();
 
         $path = $fs->createTempFile();
 
@@ -143,8 +142,8 @@ final class LocalFilesystemTest extends SharedWebTestCase
         $expectedPath = sprintf('%s/%s', $tmpDir->url(), $uniqueId);
 
         $fs = $this->getPartialLocalFilesystem();
-        $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
-        $fs->shouldReceive('uniqid')->once()->andReturn($uniqueId);
+        $fs->expects('sysGetTempDir')->andReturn($tmpDir->url());
+        $fs->expects('uniqid')->andReturn($uniqueId);
         $result = $fs->createTempDir();
 
         $this->assertSame($expectedPath, $result);
@@ -159,8 +158,8 @@ final class LocalFilesystemTest extends SharedWebTestCase
         $expectedPath = sprintf('%s/%s/my-subdir/another-one', $tmpDir->url(), $uniqueId);
 
         $fs = $this->getPartialLocalFilesystem();
-        $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
-        $fs->shouldReceive('uniqid')->once()->andReturn($uniqueId);
+        $fs->expects('sysGetTempDir')->andReturn($tmpDir->url());
+        $fs->expects('uniqid')->andReturn($uniqueId);
         $result = $fs->createTempDir($mySubdir);
 
         $this->assertSame($expectedPath, $result);
@@ -176,15 +175,14 @@ final class LocalFilesystemTest extends SharedWebTestCase
         $expectedPath = sprintf('%s/%s', $tmpDir->url(), $uniqueId);
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Could not create temporary dir', [
                 'tempDir' => $expectedPath,
             ]);
 
         $fs = $this->getPartialLocalFilesystem();
-        $fs->shouldReceive('sysGetTempDir')->once()->andReturn($tmpDir->url());
-        $fs->shouldReceive('uniqid')->once()->andReturn($uniqueId);
+        $fs->expects('sysGetTempDir')->andReturn($tmpDir->url());
+        $fs->expects('uniqid')->andReturn($uniqueId);
         $result = $fs->createTempDir();
 
         $this->assertFalse($result);
@@ -239,8 +237,7 @@ final class LocalFilesystemTest extends SharedWebTestCase
         $subDir = $this->root->getChild('dir/subdir');
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Could not delete directory', [
                 'dirPath' => $subDir->url(),
             ]);
@@ -277,9 +274,8 @@ final class LocalFilesystemTest extends SharedWebTestCase
         $parentDir = vfsStream::newDirectory('parentDir', 0400)->at($this->root);
         $file = vfsStream::newFile('file.txt')->at($parentDir);
 
-        $this->logger->shouldReceive('error')->once()->with('Could not delete local file', [
-            'local_path' => $file->url(),
-        ]);
+        $this->logger->expects('error')
+            ->with('Could not delete local file', ['local_path' => $file->url()]);
 
         $fs = new LocalFilesystem($this->logger);
         $result = $fs->deleteFile($file->url());
@@ -305,10 +301,11 @@ final class LocalFilesystemTest extends SharedWebTestCase
     {
         $nonExistingFile = $this->root->url() . '/file.txt';
 
-        $this->logger->shouldReceive('error')->once()->with('Could not open local file file', [
-            'local_path' => $nonExistingFile,
-            'mode' => $mode = 'r',
-        ]);
+        $this->logger->expects('error')
+            ->with('Could not open local file file', [
+                'local_path' => $nonExistingFile,
+                'mode' => $mode = 'r',
+            ]);
 
         $fs = new LocalFilesystem($this->logger);
         $result = $fs->createStream($nonExistingFile, $mode);
@@ -331,11 +328,11 @@ final class LocalFilesystemTest extends SharedWebTestCase
         $nonExistingFile = $this->root->url() . '/file.txt';
 
         $fs = $this->getPartialLocalFilesystem();
-        $fs->shouldReceive('filesize')->once()->andReturnFalse();
+        $fs->expects('filesize')
+            ->andReturnFalse();
 
         $this->logger
-            ->shouldReceive('error')
-            ->once()
+            ->expects('error')
             ->with('Could not get file size', [
                 'local_path' => $nonExistingFile,
             ]);

@@ -32,7 +32,7 @@ class BatchDownloadDispatcherTest extends UnitTestCase
     public function testDispatchGenerateBatchDownloadCommand(): void
     {
         $batch = Mockery::mock(BatchDownload::class);
-        $batch->shouldReceive('getId')->andReturn($dossierId = Uuid::v6());
+        $batch->expects('getId')->andReturn($dossierId = Uuid::v6());
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
             static function (GenerateBatchDownloadCommand $event) use ($dossierId) {

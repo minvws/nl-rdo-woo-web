@@ -17,14 +17,13 @@ Resource            Public.resource
 
 
 *** Variables ***
-${HEADLESS}                 ${EMPTY}
 ${OTP_SECRET_PATH}          .otp_secret
 ${ADMIN_CONTAINER_NAME}     nl-rdo-woo-web-private-admin-1
 
 
 *** Keywords ***
 Suite Setup Generic
-  [Documentation]  Creates an admin user if there isn't any, then logs in to the admin interface.
+  [Documentation]  Opens a new browser and sets environment specific credential variables.
   Set DateTime Variables
   IF  '%{ENVIRONMENT}' == 'local' or '%{ENVIRONMENT}' == 'ci' or '%{ENVIRONMENT}' == 'docker'
     Open Browser And BaseUrl
@@ -46,23 +45,6 @@ Set Credential Variables
   VAR  ${ADMIN_USER} =  ${username}  scope=global
   VAR  ${ADMIN_PASSWORD} =  ${password}  scope=global
   VAR  ${ADMIN_OTP_SECRET} =  ${otp_secret}  scope=global
-
-Cleansheet
-  [Documentation]  In some tests we want unique prefixes, which must also be cleaned up afterwards. Also allows for removing users. Always keeps subjects.
-  [Arguments]  ${keep_prefixes}=${TRUE}  ${include_users}=${FALSE}
-  Run Process  task worker:stop  shell=True
-  VAR  ${args} =  -- --keep-subjects
-  IF  ${keep_prefixes}
-    ${args} =  Catenate  ${args}  --keep-prefixes
-  END
-  IF  ${include_users}
-    ${args} =  Catenate  ${args}  --users
-    Clear OTP Secret
-  END
-  Run Process  task rf:cleansheet ${args}  shell=True  alias=cleansheet
-  ${result} =  Get Process Result  cleansheet
-  Should Not Contain  ${result.stdout}  exception
-  Run Process  task worker:start  shell=True
 
 Set DateTime Variables
   ${time} =  Get Time  format=%Y-%m-%d %H:%M:%S
@@ -107,7 +89,7 @@ Open Browser And BaseUrl
 Create Woo Admin User
   [Documentation]  Creates a super admin user using the CLI, that can be used for all robot tests. Returns the temporary password.
   VAR  ${make_user_command} =
-  ...  docker exec ${ADMIN_CONTAINER_NAME} bin/console woopie:user:create "${TST_BALIE_USER}" "Robot Admin" --super-admin
+  ...  docker exec ${ADMIN_CONTAINER_NAME} bin/console --tenant=minvws woopie:user:create "${TST_BALIE_USER}" "Robot Admin" --super-admin
   Run Process  ${make_user_command}  shell=True  alias=create_admin
   ${stdout}  ${stderr} =  Get Process Result  create_admin  stdout=True  stderr=True
   Should Be Empty  ${stderr}  Error creating admin user: ${stdout}
@@ -130,6 +112,3 @@ Store OTP Secret
 Get OTP Secret
   ${otp_secret} =  Get File  ${OTP_SECRET_PATH}
   RETURN  ${otp_secret}
-
-Clear OTP Secret
-  Remove File  ${OTP_SECRET_PATH}

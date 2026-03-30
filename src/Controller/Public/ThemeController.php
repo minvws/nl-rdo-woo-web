@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Public;
 
+use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Search\Query\SearchParametersFactory;
 use Shared\Domain\Search\Theme\ThemeInterface;
 use Shared\Domain\Search\Theme\ThemeManager;
@@ -16,7 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use WhiteOctober\BreadcrumbsBundle\Model\Breadcrumbs;
 
 use function array_merge;
 use function json_encode;

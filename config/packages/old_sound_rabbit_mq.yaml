@@ -1,7 +1,7 @@
 old_sound_rabbit_mq:
     connections:
         default:
-            url: '%env(RABBITMQ_URL)%'
+            url: '%rabbitmq_url%'
     producers:
         audit_logger:
             connection:       default

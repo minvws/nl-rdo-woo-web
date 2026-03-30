@@ -39,7 +39,7 @@ class DocumentEventHandlerTest extends UnitTestCase
         $dossierB = Mockery::mock(WooDecision::class);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossierA, $dossierB]));
+        $document->expects('getDossiers')->andReturn(new ArrayCollection([$dossierA, $dossierB]));
 
         $this->dossierService->expects('validateCompletion')->with($dossierA);
         $this->dossierService->expects('validateCompletion')->with($dossierB);
@@ -77,7 +77,7 @@ class DocumentEventHandlerTest extends UnitTestCase
         $dossierB = Mockery::mock(WooDecision::class);
 
         $document = Mockery::mock(Document::class);
-        $document->shouldReceive('getDossiers')->andReturn(new ArrayCollection([$dossierA, $dossierB]));
+        $document->expects('getDossiers')->andReturn(new ArrayCollection([$dossierA, $dossierB]));
 
         $this->dossierService->expects('validateCompletion')->with($dossierA);
         $this->dossierService->expects('validateCompletion')->with($dossierB);

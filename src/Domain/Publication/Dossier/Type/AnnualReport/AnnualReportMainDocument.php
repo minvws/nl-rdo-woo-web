@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\Type\AnnualReport;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Override;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
@@ -35,6 +36,7 @@ class AnnualReportMainDocument extends AbstractMainDocument
     /**
      * @return list<AttachmentType::ANNUAL_REPORT|AttachmentType::ANNUAL_PLAN>
      */
+    #[Override]
     public static function getAllowedTypes(): array
     {
         return [

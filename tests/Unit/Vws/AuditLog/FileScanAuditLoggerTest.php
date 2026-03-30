@@ -25,7 +25,7 @@ final class FileScanAuditLoggerTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->internalAuditLogger = Mockery::mock(AuditLoggerInterface::class);
-        $this->internalAuditLogger->shouldReceive('canHandleEvent')->andReturnTrue();
+        $this->internalAuditLogger->expects('canHandleEvent')->andReturnTrue();
 
         $this->auditLogger = new AuditLogger([$this->internalAuditLogger]);
 
@@ -45,8 +45,8 @@ final class FileScanAuditLoggerTest extends UnitTestCase
         $reason = 'test reason';
 
         $user = Mockery::mock(User::class);
-        $user->shouldReceive('getAuditId')->andReturn('user-id');
-        $this->security->shouldReceive('getUser')->andReturn($user);
+        $user->expects('getAuditId')->times(2)->andReturn('user-id');
+        $this->security->expects('getUser')->andReturn($user);
 
         $this->internalAuditLogger->expects('log')->with(Mockery::on(
             static function (FileUploadLogEvent $event) use ($reason): bool {

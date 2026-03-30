@@ -7,18 +7,19 @@ namespace PublicationApi\Api\Publication\Dossier\WooDecision\Uploads\MainDocumen
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\HttpFoundation\Response;
 
 #[ApiResource(
     operations: [
         new Put(
-            uriTemplate: '/organisation/{organisationId}/dossiers/woo-decision/{dossierId}/uploads/main-document/{uploadId}',
+            uriTemplate: '/organisation/{organisationId}/dossiers/woo-decision/E:{dossierExternalId}/uploads/main-document',
             inputFormats: ['binary' => ['application/octet-stream']],
             outputFormats: [],
             requirements: [
-                'organisationId' => '[0-9a-fA-F-]+',
-                'dossierId' => '[0-9a-fA-F-]+',
-                'uploadId' => '[0-9a-fA-F-]+',
+                'organisationId' => '[0-9a-zA-Z-]+',
+                'dossierId' => '[0-9a-zA-Z-]+',
+                'uploadId' => '[0-9a-zA-Z-]+',
             ],
             status: Response::HTTP_NO_CONTENT,
             controller: WooDecisionUploadMainDocumentController::class,
@@ -39,8 +40,7 @@ final readonly class WooDecisionUploadMainDocument
     public function __construct(
         public string $content,
         public string $organisationId,
-        public string $dossierId,
-        public string $uploadId,
+        public ExternalId $dossierExternalId,
     ) {
     }
 }

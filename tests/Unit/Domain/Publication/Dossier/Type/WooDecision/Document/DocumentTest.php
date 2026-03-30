@@ -134,14 +134,14 @@ final class DocumentTest extends UnitTestCase
     public function testHasPubliclyAvailableDossier(): void
     {
         $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->shouldReceive('getStatus')->andReturn(DossierStatus::CONCEPT);
+        $wooDecision->expects('getStatus')->times(2)->andReturn(DossierStatus::CONCEPT);
 
         $document = new Document();
         $document->addDossier($wooDecision);
         self::assertFalse($document->hasPubliclyAvailableDossier());
 
         $wooDecisionB = Mockery::mock(WooDecision::class);
-        $wooDecisionB->shouldReceive('getStatus')->andReturn(DossierStatus::PUBLISHED);
+        $wooDecisionB->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $document->addDossier($wooDecisionB);
         self::assertTrue($document->hasPubliclyAvailableDossier());

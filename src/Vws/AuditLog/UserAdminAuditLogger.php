@@ -29,7 +29,7 @@ readonly class UserAdminAuditLogger
     {
         $actor = $this->getActor($event);
 
-        $this->auditLogger->log((new UserCreatedLogEvent())
+        $this->auditLogger->log(new UserCreatedLogEvent()
             ->asCreate()
             ->withActor($actor)
             ->withTarget($event->user)
@@ -45,7 +45,7 @@ readonly class UserAdminAuditLogger
     {
         $actor = $this->getActor($event);
 
-        $this->auditLogger->log((new ResetCredentialsLogEvent())
+        $this->auditLogger->log(new ResetCredentialsLogEvent()
             ->asUpdate()
             ->withActor($actor)
             ->withTarget($event->user)
@@ -60,7 +60,7 @@ readonly class UserAdminAuditLogger
     #[AsEventListener]
     public function onDisable(UserDisableEvent $event): void
     {
-        $this->auditLogger->log((new AccountChangeLogEvent())
+        $this->auditLogger->log(new AccountChangeLogEvent()
             ->asUpdate()
             ->withActor($event->actor)
             ->withTarget($event->user)
@@ -75,7 +75,7 @@ readonly class UserAdminAuditLogger
     #[AsEventListener]
     public function onEnable(UserEnableEvent $event): void
     {
-        $this->auditLogger->log((new AccountChangeLogEvent())
+        $this->auditLogger->log(new AccountChangeLogEvent()
             ->asUpdate()
             ->withActor($event->actor)
             ->withTarget($event->user)
@@ -90,7 +90,7 @@ readonly class UserAdminAuditLogger
     #[AsEventListener]
     public function onUpdate(UserUpdatedEvent $event): void
     {
-        $this->auditLogger->log((new AccountChangeLogEvent())
+        $this->auditLogger->log(new AccountChangeLogEvent()
             ->asUpdate()
             ->withActor($event->actor)
             ->withTarget($event->updatedUser)
