@@ -234,6 +234,7 @@ tasks:
       - task: down
       - task: down
       - rm -rf var
+      - rm -rf tests/robot_framework/secrets
       - task: dc:pull
       - task: dc:rebuild
       - task: up
@@ -273,7 +274,9 @@ tasks:
       Cleanup of almost all gitignored files, untracked files and development containers.
 
       The following files/dirs are excluded:
-        - /.idea
+        - .idea
+        - certs/test
+        - certs/acc
     cmds:
       - task: down
       - task: down
@@ -283,6 +286,8 @@ tasks:
         -xd
         --force
         --exclude .idea
+        --exclude certs/test
+        --exclude certs/acc
 
   app:user:create:
     desc: Create an user
@@ -343,7 +348,7 @@ tasks:
       TENANT: '{{.TENANT | default "minvws"}}'
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: 'admin bin/console --tenant={{.TENANT}} woopie:dev:clean-sheet --force --keep-prefixes {{.CLI_ARGS}}' }
+        vars: { SUB_CMD: 'admin bin/console --tenant={{.TENANT}} woopie:dev:clean-sheet --index woopie-{{.TENANT}} --force --keep-prefixes {{.CLI_ARGS}}' }
       - task: minio:clear-buckets
 
   app:db:reset:
@@ -360,6 +365,14 @@ tasks:
         vars: { TENANT: '{{.TENANT}}'}
       - task: app:loadfixtures
         vars: { TENANT: '{{.TENANT}}'}
+
+  app:db:reset:all:
+    desc: Reset the application database for all tenants including RabbitMQ queues and ElasticSearch indexes
+    cmds:
+      - task: app:db:reset
+        vars: { TENANT: minvws }
+      - task: app:db:reset
+        vars: { TENANT: minfin }
 
   db:logs:
     desc: Display last 30 lines of db query logs and follow the rest

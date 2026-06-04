@@ -117,6 +117,7 @@ class yaml_reader(AbstractReaderClass):
                         "files": files,
                         "expected_response_status": req.get("expected_response_status"),
                         "expected_publication_status": req.get("expected_publication_status"),
+                        "reuse_previous_request": step.get("reuse_previous_request", req.get("reuse_previous_request")),
                     })
                     continue
 

@@ -16,6 +16,7 @@ use Shared\ValueObject\ExternalId;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 use function array_filter;
+use function array_key_exists;
 use function in_array;
 use function is_scalar;
 use function sprintf;
@@ -72,11 +73,11 @@ final class DocumentFactory extends PersistentObjectFactory
     {
         return $this
             ->beforeInstantiate(function (array $attributes): array {
-                if (! isset($attributes['documentNr']) && is_scalar($attributes['documentId'])) {
+                if (! array_key_exists('documentNr', $attributes) && is_scalar($attributes['documentId'])) {
                     $attributes['documentNr'] = sprintf('PREF-%s', $attributes['documentId']);
                 }
 
-                if (! isset($attributes['fileInfo']) && is_scalar($attributes['documentNr'])) {
+                if (! array_key_exists('fileInfo', $attributes) && is_scalar($attributes['documentNr'])) {
                     $attributes['fileInfo'] = FileInfoFactory::new([
                         'name' => 'document-' . $attributes['documentNr'] . '.pdf',
                         'mimetype' => 'application/pdf',
@@ -98,7 +99,7 @@ final class DocumentFactory extends PersistentObjectFactory
                         ));
                 }
 
-                if (isset($attributes['overwrite_id'])) {
+                if (array_key_exists('overwrite_id', $attributes)) {
                     $this->entityManager->detach($document);
 
                     $reflection = new ReflectionClass($document);

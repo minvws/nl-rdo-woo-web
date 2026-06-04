@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Service\Storage\Streams;
 
+use function array_key_exists;
 use function sprintf;
 use function stream_wrapper_register;
 use function stream_wrapper_unregister;
@@ -25,7 +26,7 @@ abstract class StreamWrapper
 
     public static function register(): void
     {
-        if (isset(static::$registered[static::class])) {
+        if (array_key_exists(static::class, static::$registered)) {
             return;
         }
 
@@ -35,7 +36,7 @@ abstract class StreamWrapper
 
     public static function unregister(): void
     {
-        if (! isset(static::$registered[static::class])) {
+        if (! array_key_exists(static::class, static::$registered)) {
             return;
         }
 

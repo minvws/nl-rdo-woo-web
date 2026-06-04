@@ -8,10 +8,12 @@ use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
+use Webmozart\Assert\Assert;
 
 /**
  * @template-extends AbstractType<DocumentPrefixType>
@@ -43,6 +45,12 @@ class DocumentPrefixType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => DocumentPrefix::class,
+            'empty_data' => static function (FormInterface $form): DocumentPrefix {
+                $prefix = $form->get('prefix')->getData();
+                Assert::string($prefix);
+
+                return new DocumentPrefix($prefix);
+            },
         ]);
     }
 }

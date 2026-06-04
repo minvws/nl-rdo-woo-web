@@ -1,0 +1,108 @@
+<?php
+
+declare(strict_types=1);
+
+namespace PublicationApi\Api\Dossier\AnnualReport;
+
+use PublicationApi\Api\Attachment\AttachmentResponseDtoFactory;
+use PublicationApi\Api\Department\DepartmentMapper;
+use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
+use PublicationApi\Api\Organisation\OrganisationMapper;
+use Shared\Domain\Department\Department;
+use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\PlainDate;
+use Webmozart\Assert\Assert;
+
+use function array_map;
+use function array_values;
+use function sprintf;
+
+readonly class AnnualReportMapper
+{
+    public function __construct(
+        private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
+        private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+    ) {
+    }
+
+    /**
+     * @param array<array-key,AnnualReport> $annualReports
+     *
+     * @return list<AnnualReportResponseDto>
+     */
+    public function fromEntities(array $annualReports): array
+    {
+        return array_values(array_map($this->fromEntity(...), $annualReports));
+    }
+
+    public function fromEntity(AnnualReport $annualReport): AnnualReportResponseDto
+    {
+        $mainDocument = $annualReport->getMainDocument();
+        Assert::notNull($mainDocument);
+
+        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
+
+        $dateFrom = $annualReport->getDateFrom();
+        Assert::notNull($dateFrom);
+
+        $department = $annualReport->getDepartments()->first();
+        Assert::isInstanceOf($department, Department::class);
+
+        return new AnnualReportResponseDto(
+            $annualReport->getId(),
+            $annualReport->getExternalId(),
+            OrganisationMapper::fromEntity($annualReport->getOrganisation()),
+            $annualReport->getDossierNr(),
+            $annualReport->getTitle(),
+            $annualReport->getSummary(),
+            $annualReport->getSubject()?->getName(),
+            DepartmentMapper::fromEntity($department),
+            $annualReport->getPublicationDate(),
+            $annualReport->getStatus(),
+            $mainDocumentDto,
+            $this->attachmentResponseDtoFactory->fromEntities($annualReport->getAttachments()->toArray()),
+            (int) $dateFrom->format('Y'),
+        );
+    }
+
+    public static function create(
+        AnnualReportRequestDto $annualReportRequestDto,
+        Organisation $organisation,
+        Department $department,
+        ?Subject $subject,
+        ExternalId $externalId,
+        string $documentPrefix,
+    ): AnnualReport {
+        $annualReport = new AnnualReport();
+        $annualReport->setExternalId($externalId);
+        $annualReport->setStatus(DossierStatus::NEW);
+        $annualReport->setDocumentPrefix($documentPrefix);
+
+        self::update($annualReport, $annualReportRequestDto, $organisation, $department, $subject);
+
+        return $annualReport;
+    }
+
+    public static function update(
+        AnnualReport $annualReport,
+        AnnualReportRequestDto $annualReportRequestDto,
+        Organisation $organisation,
+        Department $department,
+        ?Subject $subject,
+    ): AnnualReport {
+        $annualReport->setDateFrom(PlainDate::createFromFormat('Y-m-d', sprintf('%d-01-01', $annualReportRequestDto->year)));
+        $annualReport->setDepartments([$department]);
+        $annualReport->setDossierNr($annualReportRequestDto->dossierNumber);
+        $annualReport->setOrganisation($organisation);
+        $annualReport->setPublicationDate($annualReportRequestDto->publicationDate);
+        $annualReport->setSubject($subject);
+        $annualReport->setSummary($annualReportRequestDto->summary);
+        $annualReport->setTitle($annualReportRequestDto->title);
+
+        return $annualReport;
+    }
+}

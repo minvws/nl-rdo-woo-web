@@ -81,6 +81,7 @@
                 <element key="delete" value="unset"/>
                 <element key="create_function" value="null"/>
                 <element key="empty" value="null"/>
+                <element key="isset" value="null"/>
             </property>
         </properties>
     </rule>

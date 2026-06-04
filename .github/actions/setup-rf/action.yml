@@ -33,12 +33,3 @@ runs:
       shell: bash
       run: |
         task setup
-    - name: Disable Symfony toolbar
-      shell: bash
-      run: |
-        task rf:disable-toolbar
-    - name: Create virtual environment and admin user
-      if: ${{ inputs.robot-only != 'true' }}
-      shell: bash
-      run: |
-        task rf:init

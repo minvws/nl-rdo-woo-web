@@ -7,6 +7,7 @@ namespace Shared\EventSubscriber;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Webmozart\Assert\Assert;
 
 use function in_array;
 use function strval;
@@ -16,7 +17,7 @@ use function strval;
  */
 class LocaleListener
 {
-    protected const LOCALE_KEY = '_locale';
+    protected const string LOCALE_KEY = '_locale';
 
     /**
      * @param list<string> $allowedLocales
@@ -44,7 +45,10 @@ class LocaleListener
             }
 
             // Try and fetch the locale from the session, otherwise use the default locale if none is found
-            $request->setLocale(strval($request->getSession()->get(self::LOCALE_KEY, $this->defaultLocale)));
+            $locale = $request->getSession()->get(self::LOCALE_KEY, $this->defaultLocale);
+            Assert::string($locale);
+
+            $request->setLocale($locale);
         }
     }
 }

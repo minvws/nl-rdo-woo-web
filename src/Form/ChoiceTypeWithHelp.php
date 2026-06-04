@@ -22,7 +22,7 @@ class ChoiceTypeWithHelp extends ChoiceType
     }
 
     /**
-     * @param array<array-key, mixed> $options
+     * @param array<string, mixed> $options
      */
     #[Override]
     public function finishView(FormView $view, FormInterface $form, array $options): void

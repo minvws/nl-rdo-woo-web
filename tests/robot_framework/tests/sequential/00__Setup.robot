@@ -7,6 +7,7 @@ Resource            ../../resources/Setup.resource
 Do First Login
   [Documentation]  Logs into the Robot Admin account and changes the temporary password if necessary.
   [Tags]  first-login
+  Set Tenant Context  %{TENANT}
   Open Browser And BaseUrl
   ${tst_balie_otp_secret} =  Get OTP Secret
   ${temp_password} =  Get File  secrets/.temp_password

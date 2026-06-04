@@ -33,8 +33,7 @@ class OrganisationFormType extends AbstractType
         /** @var Organisation|null $organisation */
         $organisation = $builder->getData();
         if ($organisation === null) {
-            // This ensures one empty field is shown when first loading the form
-            $documentPrefixes = [new DocumentPrefix()];
+            $documentPrefixes = [];
         } else {
             $documentPrefixes = $organisation->getDocumentPrefixes();
         }
@@ -103,11 +102,8 @@ class OrganisationFormType extends AbstractType
     {
         $prefixes = [];
         foreach ($documentPrefixes as $documentPrefix) {
-            if (! $documentPrefix->issetPrefix()) {
-                continue;
-            }
-
             $prefix = $documentPrefix->getPrefix();
+
             if (in_array($prefix, $prefixes, true)) {
                 $context
                     ->buildViolation('no_double_prefixes_allowed')

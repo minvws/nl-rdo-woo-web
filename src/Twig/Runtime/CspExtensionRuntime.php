@@ -6,6 +6,7 @@ namespace Shared\Twig\Runtime;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;
+use Webmozart\Assert\Assert;
 
 use function strval;
 
@@ -21,6 +22,9 @@ class CspExtensionRuntime implements RuntimeExtensionInterface
             return '';
         }
 
-        return strval($this->requestStack->getCurrentRequest()->attributes->get('csp_nonce'));
+        $cspNonce = $this->requestStack->getCurrentRequest()->attributes->get('csp_nonce');
+        Assert::nullOrScalar($cspNonce);
+
+        return strval($cspNonce);
     }
 }

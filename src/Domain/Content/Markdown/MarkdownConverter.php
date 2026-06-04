@@ -22,7 +22,7 @@ use League\Config\Exception\ConfigurationExceptionInterface;
 
 class MarkdownConverter implements ConverterInterface
 {
-    private EnvironmentInterface&EnvironmentBuilderInterface $environment;
+    private (EnvironmentInterface&EnvironmentBuilderInterface)|null $environment = null;
     private MarkdownParserInterface $parser;
     private DocumentRendererInterface $renderer;
 
@@ -49,7 +49,7 @@ class MarkdownConverter implements ConverterInterface
 
     private function getEnvironment(): EnvironmentInterface&EnvironmentBuilderInterface
     {
-        if (isset($this->environment)) {
+        if ($this->environment !== null) {
             return $this->environment;
         }
 

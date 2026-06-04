@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type;
 
-use DateTimeImmutable;
+use Shared\ValueObject\PlainDate;
 
 interface DossierTypeWithPreview
 {
-    public function getPreviewDate(): ?DateTimeImmutable;
+    public function getPreviewDate(): ?PlainDate;
 
-    public function setPreviewDate(?DateTimeImmutable $previewDate): static;
+    public function setPreviewDate(?PlainDate $previewDate): static;
 
     public function hasFuturePreviewDate(): bool;
 }

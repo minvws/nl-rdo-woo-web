@@ -10,8 +10,8 @@ use ApiPlatform\OpenApi\Model\Info;
 use ApiPlatform\OpenApi\Model\Paths;
 use ApiPlatform\OpenApi\Model\Server;
 use ApiPlatform\OpenApi\OpenApi;
-use PublicationApi\Api\Publication\PublicationV1Api;
 use PublicationApi\Domain\OpenApi\Decorator\ServersOpenApiFactoryDecorator;
+use PublicationApi\Domain\OpenApi\PublicationV1Api;
 use Shared\Tests\Unit\UnitTestCase;
 use Webmozart\Assert\Assert;
 

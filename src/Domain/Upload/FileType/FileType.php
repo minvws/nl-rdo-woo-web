@@ -44,6 +44,21 @@ enum FileType: string
         return null;
     }
 
+    public static function fromExtension(string $extension): ?self
+    {
+        if ($extension === '') {
+            return null;
+        }
+
+        foreach (self::cases() as $fileType) {
+            if (in_array($extension, $fileType->getExtensions(), true)) {
+                return $fileType;
+            }
+        }
+
+        return null;
+    }
+
     public function getMaxUploadSize(): int
     {
         return match ($this) {

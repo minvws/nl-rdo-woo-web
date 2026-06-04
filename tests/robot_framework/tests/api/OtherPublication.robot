@@ -1,66 +1,104 @@
-*** Comments ***
-# robocop: off=no-suite-variable
-
-
 *** Settings ***
-Documentation       Tests for the Other Publication endpoint
-Library             RequestsLibrary
+Documentation       Tests for the Other Publication endpoint, utilizing a custom DataDriver reader. Actual testcases are in the file files/api/otherpublication.yaml.
+Library             DataDriver  reader_class=libraries/yaml_reader.py  file_path=files/api/otherpublication.yaml
 Resource            ../../resources/API.resource
 Resource            ../../resources/Dossier.resource
-Resource            ../../resources/OtherPublication.resource
 Suite Setup         Suite Setup
-Test Tags           api  other-publication
-
-
-*** Variables ***
-${ORGANISATION_ID}  ${EMPTY}
-${EXTERNAL_ID}      ${EMPTY}
-${BODY}             ${EMPTY}
+Test Template       Other Publication Test Case
+Test Tags           api  api-otherpublication
 
 
 *** Test Cases ***
-Create A Other Publication
-  When A Other Publication Is Created
-  Then We Can Find It
+Testcases     placeholder_arg
 
 
 *** Keywords ***
 Suite Setup
   Suite Setup API
-  Create Test Data For Other Publication
 
-Create Test Data For Other Publication
-  ${main_document} =  Generate Main Document  type=overig
-  ${allowed_attachment_types} =  Get Other Publication Attachment Types
-  ${attachments} =  Generate Attachments  ${allowed_attachment_types}
-  # Build body
-  ${department_id} =  Get Department ID
-  ${subject_id} =  Get Subject ID
+Other Publication Test Case
+  [Arguments]  ${steps}
+  FOR  ${step}  IN  @{steps}
+    Log  ${step}[name]
+    IF  '${step}[type]' == 'request'
+      Create Other Publication
+      ...  ${step}[expected_response_status]
+      ...  ${step}[body]
+      ...  ${step}[files]
+      ...  ${step}[expected_publication_status]
+      ...  ${step}[reuse_previous_request]
+    ELSE IF  '${step}[type]' == 'keyword'
+      Run Keyword  ${step}[keyword]  @{step["args"]}
+    END
+  END
+
+Create Other Publication
+  [Arguments]
+  ...  ${expected_response_status}
+  ...  ${body}
+  ...  ${files}
+  ...  ${expected_publication_status}
+  ...  ${reuse_previous_request}=${FALSE}
+  IF  ${reuse_previous_request}
+    VAR  ${external_id} =  ${EXTERNAL_ID}
+    VAR  ${body} =  ${PREVIOUS_REQUEST_BODY}
+  ELSE
+    ${external_id} =  Generate External ID
+    Parse And Randomize Dossier Data  ${body}
+    VAR  ${PREVIOUS_REQUEST_BODY} =  ${body}  scope=test
+  END
+  ${response} =  Send Put Request Other Publication  ${external_id}  ${body}  ${expected_response_status}
+  IF  '${expected_response_status}' == '200'
+    IF  $files["mainDocument"] is not None
+      Upload Main Document
+      ...  other-publication
+      ...  ${files}[mainDocument][file]
+      ...  ${response}[externalId]
+      ...  ${files}[mainDocument][expected_response_status]
+    END
+    FOR  ${attachment}  IN  @{files}[attachments]
+      Upload Attachment Document
+      ...  other-publication
+      ...  ${attachment}[file]
+      ...  ${response}[externalId]
+      ...  ${attachment}[externalId]
+      ...  ${attachment}[expected_response_status]
+    END
+    Publication Status Should Be  other-publication  ${expected_publication_status}
+  END
+
+Parse And Randomize Dossier Data
+  [Arguments]  ${body}
   ${dossier_number} =  Generate Dossier Reference Number
   ${title} =  Catenate  Robot API ${dossier_number}
-  ${summary} =  Fakerlibrary.Text  200
-  ${dossier_date} =  Get Date Minus  1 day
-  ${publication_date} =  Get Date Plus  1 week
-  VAR  &{BODY} =
-  ...  attachments=${attachments}
-  ...  departmentId=${department_id}
-  ...  dossierDate=${dossier_date}
-  ...  dossierNumber=${dossier_number}
-  ...  mainDocument=${main_document}
-  ...  publicationDate=${publication_date}
-  ...  subjectId=${subject_id}
-  ...  summary=${summary}
-  ...  title=${title}
-  ...  scope=SUITE
-  Generate External ID
+  ${department_id} =  Get Department ID
+  ${subject_id} =  Get Subject ID
+  Set To Dictionary  ${body}  dossierNumber  robot-api-${dossier_number}
+  Set To Dictionary  ${body}  title  ${title}
+  Set To Dictionary  ${body}  departmentId  ${department_id}
+  Set To Dictionary  ${body}  subjectId  ${subject_id}
+  Parse Dates  ${body}
+  Set Random Grounds  ${body}
 
-A Other Publication Is Created
-  PUT On Session
-  ...  alias=publication_api
-  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/other-publication/${EXTERNAL_ID}
-  ...  json=${BODY}
+Parse Dates
+  [Arguments]  ${body}
+  Parse Text To Date  ${body}  dossierDate
+  Parse Text To Date  ${body}  publicationDate
+  Parse Text To Date  ${body}[mainDocument]  formalDate
+  IF  ${body}[attachments]
+    FOR  ${attachment}  IN  @{body}[attachments]
+      Parse Text To Date  ${attachment}  formalDate
+    END
+  END
 
-We Can Find It
-  GET On Session
+Send Put Request Other Publication
+  [Arguments]  ${external_id}  ${body}  ${expected_response_status}
+  ${put_response} =  PUT On Session
   ...  alias=publication_api
-  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/other-publication/${EXTERNAL_ID}
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/other-publication/external/${external_id}
+  ...  json=${body}
+  ...  expected_status=any
+  Should Be True
+  ...  ${put_response.status_code} == ${expected_response_status}
+  ...  msg=Other publication PUT returned ${put_response.status_code} while expecting ${expected_response_status}
+  RETURN  ${put_response.json()}

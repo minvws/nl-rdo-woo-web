@@ -62,7 +62,7 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
     }
 
     /**
-     * @param array<array-key, ElasticDocumentType> $subTypes
+     * @param array<int, ElasticDocumentType> $subTypes
      */
     private function createSubTypesQuery(
         StringValuesFacetInput $inquiryDossierFacetInput,
@@ -124,7 +124,7 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
     }
 
     /**
-     * @param array<array-key, ElasticDocumentType> $types
+     * @param array<int, ElasticDocumentType> $types
      */
     private function createTypesQuery(StringValuesFacetInput $inquiryDossierFacetInput, array $types): BoolQuery
     {
@@ -182,9 +182,9 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
     }
 
     /**
-     * @param array<array-key, ElasticDocumentType> $types
+     * @param array<int, ElasticDocumentType> $types
      *
-     * @return array<array-key, string>
+     * @return array<int, string>
      */
     private function getTypeTerms(array $types): array
     {

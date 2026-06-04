@@ -14,11 +14,12 @@ ${ATTACHMENT_LOCATION}  ${EMPTY}
 ${ADMIN_USER}           ${EMPTY}
 ${ADMIN_PASSWORD}       ${EMPTY}
 ${ADMIN_OTP_SECRET}     ${EMPTY}
+${URL_ADMIN}            ${EMPTY}
 
 
 *** Keywords ***
 Go To Admin
-  Go To  %{URL_ADMIN}
+  Go To  ${URL_ADMIN}
 
 Login Admin
   [Documentation]  Logs in to the admin section. Will change password if it's the first login.
@@ -75,7 +76,7 @@ Click Log Out
   Click  //*[@data-e2e-name="logout-link"]
 
 No-Click Logout
-  Go To  %{URL_ADMIN}/logout
+  Go To  ${URL_ADMIN}/logout
 
 Upload Attachment
   [Arguments]  ${type}  ${date}=01012022
@@ -88,7 +89,7 @@ Upload Attachment
   Wait For Condition  Text  //*[@id="inhoud"]  contains  Bijlage '${ATTACHMENT_FILENAME}' is toegevoegd.
 
 Wait For Queue To Empty
-  New Page  %{URL_ADMIN}/stats
+  New Page  ${URL_ADMIN}/stats
   Wait Until Keyword Succeeds  10min  5s  Is Queue Empty
   Close Page
 

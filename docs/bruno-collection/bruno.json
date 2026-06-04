@@ -12,10 +12,17 @@
     "enabled": true,
     "certs": [
       {
-        "domain": "localhost",
+        "domain": "localhost:8443",
         "type": "cert",
         "certFilePath": "../../certs/dev/client-minvws.pem",
         "keyFilePath": "../../certs/dev/client-minvws.key",
+        "passphrase": ""
+      },
+      {
+        "domain": "localhost:8444",
+        "type": "cert",
+        "certFilePath": "../../certs/dev/client-minfin.pem",
+        "keyFilePath": "../../certs/dev/client-minfin.key",
         "passphrase": ""
       },
       {

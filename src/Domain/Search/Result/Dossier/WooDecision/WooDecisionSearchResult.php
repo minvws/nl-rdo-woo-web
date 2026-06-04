@@ -16,7 +16,7 @@ readonly class WooDecisionSearchResult extends AbstractDossierTypeSearchResult
         Uuid $id,
         string $dossierNr,
         string $documentPrefix,
-        public string $title,
+        string $title,
         public ?DecisionType $decision,
         public ?string $summary,
         public ?PlainDate $publicationDate,
@@ -24,6 +24,6 @@ readonly class WooDecisionSearchResult extends AbstractDossierTypeSearchResult
         public ?int $documentCount,
         public PublicationReason $publicationReason,
     ) {
-        parent::__construct($id, $dossierNr, $documentPrefix);
+        parent::__construct($id, $dossierNr, $documentPrefix, $title);
     }
 }

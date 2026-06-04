@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Unit\Domain\Security;
 
+use MinVWS\AuditLogger\AuditLoggerInterface;
+use MinVWS\AuditLogger\Events\Logging\UserLoginLogEvent;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PublicationApi\Domain\OpenApi\ProblemDetailsFactory;
+use PublicationApi\Domain\Security\AuditLog\LoginFailedAuditLogEvent;
 use PublicationApi\Domain\Security\GlobDomainValidator;
 use PublicationApi\Domain\Security\PublicationApiAuthenticator;
 use Shared\Service\Security\ApiUser;
@@ -59,10 +63,17 @@ class PublicationApiAuthenticatorTest extends UnitTestCase
     #[DataProvider('invalidSslClientVerifyProvider')]
     public function testAuthenticateThrowsWhenSslClientVerifyIsNotSuccess(array $serverParams): void
     {
+        $auditLogger = Mockery::mock(AuditLoggerInterface::class);
+        $auditLogger->expects('log')
+            ->with(Mockery::on(static function (LoginFailedAuditLogEvent $event): bool {
+                return $event->failed === true && $event->failedReason === 'publication_api_invalid_certificate';
+            }));
+
         $this->expectException(AuthenticationException::class);
         $this->expectExceptionMessage('not verified');
 
-        $this->buildAuthenticator()->authenticate(new Request(server: $serverParams));
+        $this->buildAuthenticator($auditLogger)
+            ->authenticate(new Request(server: $serverParams));
     }
 
     /**
@@ -89,14 +100,27 @@ class PublicationApiAuthenticatorTest extends UnitTestCase
     #[DataProvider('invalidOrganizationIdentifierProvider')]
     public function testAuthenticateThrowsWhenOrganizationIdentifierIsInvalid(array $serverParams): void
     {
+        $auditLogger = Mockery::mock(AuditLoggerInterface::class);
+        $auditLogger->expects('log')
+            ->with(Mockery::on(static function (LoginFailedAuditLogEvent $event): bool {
+                return $event->failed === true && $event->failedReason === 'publication_api_invalid_organization_identifier';
+            }));
+
         $this->expectException(AuthenticationException::class);
         $this->expectExceptionMessage('Organization Identifier');
 
-        $this->buildAuthenticator()->authenticate(new Request(server: $serverParams));
+        $this->buildAuthenticator($auditLogger)
+            ->authenticate(new Request(server: $serverParams));
     }
 
     public function testAuthenticateThrowsWhenSslUserNameIsMissing(): void
     {
+        $auditLogger = Mockery::mock(AuditLoggerInterface::class);
+        $auditLogger->expects('log')
+            ->with(Mockery::on(static function (LoginFailedAuditLogEvent $event): bool {
+                return $event->failed === true && $event->failedReason === 'publication_api_invalid_common_name';
+            }));
+
         $request = new Request(server: [
             self::SSL_VERIFY => 'SUCCESS',
             self::SSL_DN => self::VALID_DN,
@@ -106,12 +130,19 @@ class PublicationApiAuthenticatorTest extends UnitTestCase
         $this->expectException(AuthenticationException::class);
         $this->expectExceptionMessage('Common Name is missing or invalid');
 
-        $this->buildAuthenticator()->authenticate($request);
+        $this->buildAuthenticator($auditLogger)
+            ->authenticate($request);
     }
 
     public function testAuthenticateThrowsWhenCommonNameIsNotWhitelisted(): void
     {
         $sslUserName = 'attacker.example.com';
+
+        $auditLogger = Mockery::mock(AuditLoggerInterface::class);
+        $auditLogger->expects('log')
+            ->with(Mockery::on(static function (LoginFailedAuditLogEvent $event): bool {
+                return $event->failed === true && $event->failedReason === 'publication_api_common_name_not_whitelisted';
+            }));
 
         $globDomainValidator = Mockery::mock(GlobDomainValidator::class);
         $globDomainValidator->expects('isValid')
@@ -127,21 +158,29 @@ class PublicationApiAuthenticatorTest extends UnitTestCase
         $this->expectException(AuthenticationException::class);
         $this->expectExceptionMessage('not whitelisted');
 
-        $this->buildAuthenticator($globDomainValidator)->authenticate($request);
+        $this->buildAuthenticator($auditLogger, $globDomainValidator)
+            ->authenticate($request);
     }
 
     public function testAuthenticateReturnsPassportWithCorrectUserOnValidRequest(): void
     {
+        $auditLogger = Mockery::mock(AuditLoggerInterface::class);
+        $auditLogger->expects('log')
+            ->with(Mockery::on(static function (UserLoginLogEvent $event): bool {
+                return $event->data === ['common_name' => self::VALID_USERNAME];
+            }));
+
         $globDomainValidator = Mockery::mock(GlobDomainValidator::class);
         $globDomainValidator->expects('isValid')
             ->with([self::VALID_WHITELIST], self::VALID_USERNAME)
             ->andReturn(true);
 
-        $passport = $this->buildAuthenticator($globDomainValidator)->authenticate(new Request(server: [
-            self::SSL_CN => self::VALID_USERNAME,
-            self::SSL_VERIFY => 'SUCCESS',
-            self::SSL_DN => self::VALID_DN,
-        ]));
+        $passport = $this->buildAuthenticator($auditLogger, $globDomainValidator)
+            ->authenticate(new Request(server: [
+                self::SSL_CN => self::VALID_USERNAME,
+                self::SSL_VERIFY => 'SUCCESS',
+                self::SSL_DN => self::VALID_DN,
+            ]));
 
         $this->assertInstanceOf(SelfValidatingPassport::class, $passport);
         $this->assertInstanceOf(ApiUser::class, $passport->getUser());
@@ -165,22 +204,33 @@ class PublicationApiAuthenticatorTest extends UnitTestCase
     #[DataProvider('dnWithValidOinProvider')]
     public function testAuthenticateExtractsOinFromVariousDnFormats(string $dn): void
     {
+        $auditLogger = Mockery::mock(AuditLoggerInterface::class);
+        $auditLogger->expects('log')
+            ->with(Mockery::on(static function (UserLoginLogEvent $event): bool {
+                return $event->data === ['common_name' => self::VALID_USERNAME];
+            }));
+
         $globDomainValidator = Mockery::mock(GlobDomainValidator::class);
         $globDomainValidator->expects('isValid')->andReturn(true);
 
-        $passport = $this->buildAuthenticator($globDomainValidator)->authenticate(new Request(server: [
-            self::SSL_CN => self::VALID_USERNAME,
-            self::SSL_VERIFY => 'SUCCESS',
-            self::SSL_DN => $dn,
-        ]));
+        $passport = $this->buildAuthenticator($auditLogger, $globDomainValidator)
+            ->authenticate(new Request(server: [
+                self::SSL_CN => self::VALID_USERNAME,
+                self::SSL_VERIFY => 'SUCCESS',
+                self::SSL_DN => $dn,
+            ]));
 
         $this->assertInstanceOf(SelfValidatingPassport::class, $passport);
     }
 
-    private function buildAuthenticator(?GlobDomainValidator $globDomainValidator = null): PublicationApiAuthenticator
-    {
+    private function buildAuthenticator(
+        ?AuditLoggerInterface $auditLogger = null,
+        ?GlobDomainValidator $globDomainValidator = null,
+    ): PublicationApiAuthenticator {
         return new PublicationApiAuthenticator(
+            $auditLogger ?? Mockery::mock(AuditLoggerInterface::class),
             $globDomainValidator ?? Mockery::mock(GlobDomainValidator::class),
+            new ProblemDetailsFactory(),
             self::VALID_WHITELIST,
             self::VALID_OIN,
         );

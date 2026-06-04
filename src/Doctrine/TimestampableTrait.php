@@ -50,9 +50,4 @@ trait TimestampableTrait
 
         return $this;
     }
-
-    public function hasCreatedAt(): bool
-    {
-        return isset($this->createdAt);
-    }
 }

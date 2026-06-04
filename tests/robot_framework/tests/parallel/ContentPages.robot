@@ -13,7 +13,7 @@ Edit ContentPage
   Go To ContentPage Admin
   ${title} =  FakerLibrary.Sentence
   Update Content Page  over-dit-platform  ${title}  **Ok gaan we dan**\n\n_Hoppa!_\n\n- Hatsee\n- Bam!
-  Go To  %{URL_PUBLIC}/over-dit-platform
+  Go To  ${URL_PUBLIC}/over-dit-platform
   Verify Content Page
   ...  ${title}
   ...  <p><span class="font-bold">Ok gaan we dan</span></p>\n<p><span class="italic">Hoppa!</span></p>\n<ul>\n<li>Hatsee</li>\n<li>Bam!</li>
@@ -26,7 +26,7 @@ Suite Setup
   Select Organisation
 
 Go To ContentPage Admin
-  Go To  %{URL_ADMIN}/admin/content-pages
+  Go To  ${URL_ADMIN}/admin/content-pages
 
 Update Content Page
   [Arguments]  ${slug}  ${title}  ${content}

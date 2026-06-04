@@ -8,11 +8,18 @@ use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Form\Dossier\AbstractDossierStepType;
 use Shared\Form\Dossier\DossierFormBuilderTrait;
 use Shared\Form\YearMonthType;
+use Shared\Service\Security\Roles;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class DetailsType extends AbstractDossierStepType
 {
     use DossierFormBuilderTrait;
+
+    public function __construct(
+        private readonly Security $security,
+    ) {
+    }
 
     public function getDataClass(): string
     {
@@ -54,7 +61,7 @@ class DetailsType extends AbstractDossierStepType
         $this->addInternalReferenceField($builder);
         $this->addDepartmentsField($builder);
         $this->addSubjectField($builder);
-        $this->addDossierNrField($builder);
+        $this->addDossierNrField($builder, $this->security->isGranted(Roles::ROLE_ORGANISATION_ADMIN));
         $this->addDocumentPrefixField($builder);
         $this->addSubmits($builder);
     }

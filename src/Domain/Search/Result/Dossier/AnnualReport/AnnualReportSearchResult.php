@@ -16,7 +16,7 @@ readonly class AnnualReportSearchResult extends AbstractDossierTypeSearchResult
         Uuid $id,
         string $dossierNr,
         string $documentPrefix,
-        public string $title,
+        string $title,
         public ?string $summary,
         public ?PlainDate $publicationDate,
         // This count is actually the attachment count + 1 (for the main document)
@@ -25,6 +25,6 @@ readonly class AnnualReportSearchResult extends AbstractDossierTypeSearchResult
     ) {
         $this->year = $dateFrom?->format('Y');
 
-        parent::__construct($id, $dossierNr, $documentPrefix);
+        parent::__construct($id, $dossierNr, $documentPrefix, $title);
     }
 }

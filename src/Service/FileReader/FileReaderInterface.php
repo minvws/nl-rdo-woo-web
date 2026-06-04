@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use IteratorAggregate;
 
 /**
- * @template-extends IteratorAggregate<mixed>
+ * @template-extends IteratorAggregate<array-key, mixed>
  *
  * It would make more sense from a CSV perspective to have the the FileReaderInterface to only use the getIterator. From that iterator we have a
  * "row" on which we can do getCell, getString etc. This way we do not have to store the whole CSV file directly into memory but we can use a

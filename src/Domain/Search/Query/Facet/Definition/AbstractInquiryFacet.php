@@ -14,6 +14,7 @@ use Shared\Service\Inquiry\InquirySessionService;
 use Shared\Service\Search\Query\Aggregation\AggregationStrategyInterface;
 use Shared\Service\Search\Query\Filter\FilterInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Webmozart\Assert\Assert;
 
 use function array_intersect;
 use function array_values;
@@ -87,10 +88,9 @@ abstract readonly class AbstractInquiryFacet implements FacetDefinitionInterface
         $requestedInquiries = $queryParams->all()[$this->getRequestParameter()];
         $requestedInquiries = is_array($requestedInquiries) ? array_values($requestedInquiries) : [$requestedInquiries];
 
-        /** @var array<array-key, string> $validatedInquiries */
+        Assert::allString($requestedInquiries);
         $validatedInquiries = array_intersect($requestedInquiries, $validInquiries);
-        $validatedInquiries = array_values($validatedInquiries);
 
-        return $validatedInquiries;
+        return array_values($validatedInquiries);
     }
 }

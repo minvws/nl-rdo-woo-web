@@ -17,13 +17,13 @@ final class GroundsFakerProvider extends Base
     /**
      * @var list<string>
      */
-    private static array $grounds;
+    private static array $grounds = [];
 
     public function __construct(Generator $generator)
     {
         parent::__construct($generator);
 
-        $this->updateGrounds();
+        self::$grounds = array_values(array_unique(Citation::ALL_GROUND_KEYS));
     }
 
     public function ground(): string
@@ -57,14 +57,5 @@ final class GroundsFakerProvider extends Base
         Assert::allString($grounds);
 
         return $grounds;
-    }
-
-    private function updateGrounds(): void
-    {
-        if (isset(self::$grounds)) {
-            return;
-        }
-
-        self::$grounds = array_values(array_unique(Citation::ALL_GROUND_KEYS));
     }
 }

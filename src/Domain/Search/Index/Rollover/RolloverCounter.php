@@ -18,6 +18,7 @@ use Shared\Domain\Search\Index\Schema\ElasticNestedField;
 use Shared\Service\Elastic\ElasticClientInterface;
 use Shared\Service\Search\Query\Dsl\Aggregation;
 use Shared\Service\Search\Query\Dsl\Query;
+use Webmozart\Assert\Assert;
 
 use function is_subclass_of;
 
@@ -42,14 +43,15 @@ readonly class RolloverCounter
 
         foreach ($this->dossierTypeManager->getAllConfigs() as $typeConfig) {
             $type = ElasticDocumentType::fromEntityClass($typeConfig->getEntityClass());
-            /** @var string $typeKey */
             $typeKey = $type->value;
+            Assert::string($typeKey);
 
             $subCounts = [];
             foreach ($typeConfig->getSubEntityClasses() as $subTypeClass) {
                 $subType = ElasticDocumentType::fromEntityClass($subTypeClass);
-                /** @var string $subTypeKey */
                 $subTypeKey = $subType->value;
+                Assert::string($subTypeKey);
+
                 $subCounts[] = new SubtypeCount(
                     $subType,
                     $databaseCounts[$typeKey]['subtypes'][$subTypeKey]['count'] ?? 0,
@@ -113,12 +115,14 @@ readonly class RolloverCounter
 
         $counts = [];
         foreach ($typedResponse->getIterable('[aggregations][toplevel_type][buckets]') as $dossierTypeCount) {
-            /** @var string $dossierTypeKey */
+            Assert::isInstanceOf($dossierTypeCount, TypeArray::class);
+
             $dossierTypeKey = $dossierTypeCount->getString('[key]');
             $counts[$dossierTypeKey]['count'] = $dossierTypeCount->getInt('[main_types_only][doc_count]');
 
             foreach ($dossierTypeCount->getIterable('[sublevel_type][buckets]') as $subTypeCount) {
-                /** @var string $subTypeKey */
+                Assert::isInstanceOf($subTypeCount, TypeArray::class);
+
                 $subTypeKey = $subTypeCount->getString('[key]');
                 $counts[$dossierTypeKey]['subtypes'][$subTypeKey]['count'] = $subTypeCount->getInt('[doc_count]');
                 $counts[$dossierTypeKey]['subtypes'][$subTypeKey][ElasticNestedField::PAGES->value] = $subTypeCount->getInt('[pages][doc_count]');
@@ -138,8 +142,9 @@ readonly class RolloverCounter
         foreach ($this->dossierTypeManager->getAllConfigs() as $typeConfig) {
             $entityClass = $typeConfig->getEntityClass();
             $type = ElasticDocumentType::fromEntityClass($entityClass);
-            /** @var string $typeKey */
             $typeKey = $type->value;
+            Assert::string($typeKey);
+
             $repository = $this->entityManager->getRepository($entityClass);
             $typeCount = $repository->count([]);
 
@@ -153,8 +158,9 @@ readonly class RolloverCounter
 
             foreach ($typeConfig->getSubEntityClasses() as $subTypeClass) {
                 $subType = ElasticDocumentType::fromEntityClass($subTypeClass);
-                /** @var string $subTypeKey */
                 $subTypeKey = $subType->value;
+                Assert::string($subTypeKey);
+
                 $counts[$typeKey]['subtypes'][$subTypeKey] = $this->getSubtypeDatabaseCounts($subTypeClass);
             }
         }

@@ -2,7 +2,8 @@
 version: "3.48.0"
 
 vars:
-  ROBOT_PARAMS: --outputdir results  --name 'E2E Tests' ./tests
+  ROBOT_PARAMS: --variablefile libraries/tenants.py --outputdir results  --name 'E2E Tests' ./tests
+  DEFAULT_TENANT: minvws
 
 env:
   VIRTUAL_ENV: ""
@@ -14,16 +15,35 @@ tasks:
      - uv lock --upgrade
 
   init:
-    aliases: [temp:init]
-    desc: Loads E2E fixtures and create a super-admin user
+    desc: Loads E2E fixtures and create a super-admin user for minvws and minfin tenants
+    status:
+      - test -f secrets/.otp_secret_minvws
+      - test -f secrets/.otp_secret_minfin
     cmds:
+      - cmd: mkdir -p results
+      - task: init:single
+        vars:
+          tenant: minvws
+      - task: init:single
+        vars:
+          tenant: minfin
+
+  init:single:
+    internal: true
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
+    cmds:
+      - cmd: |
+          echo Tenant: {{.tenant}}
       - task: fixtures:load:e2e
+        vars:
+          tenant: '{{.tenant}}'
       - cmd: |
           #!/usr/bin/env bash
           set -euo pipefail
 
           EMAIL="email@example.org"
-          CMD="docker compose run --rm admin bin/console --no-interaction --tenant=minvws"
+          CMD="docker compose run --rm admin bin/console --no-interaction --tenant={{.tenant}}"
 
           # Capture output safely: grep failure won't trigger exit
           CREATE_OUTPUT="$($CMD woopie:user:create "$EMAIL" "Robot Admin" --super-admin 2>&1 || true)"
@@ -40,13 +60,16 @@ tasks:
           fi
 
           mkdir -p secrets
-          printf "%s" "$OTP_SECRET" > secrets/.otp_secret
+          printf "%s" "$OTP_SECRET" > secrets/.otp_secret_{{.tenant}}
           printf "%s" "$TEMP_PASSWORD" > secrets/.temp_password
           echo "User $EMAIL created successfully, secrets saved."
         silent: true
-      - task: docker:run
+      - task: disable-toolbar
+      - task: :dc
         vars:
-          tag: first-login
+          SUB_CMD: >
+            run -e ENVIRONMENT=local -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            /bin/bash -c "uv run robot --include 'first-login' {{.ROBOT_PARAMS}}"
 
   local:venv:
     desc: Create virtual environment
@@ -63,12 +86,15 @@ tasks:
   local:run:
     aliases: [run-local]
     desc: Run Robot tests with browser on local
-    dotenv:
-      - .env.rf.local
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     env:
+      ENVIRONMENT: local
+      TENANT: '{{.tenant}}'
       HEADLESS: false
     cmds:
       - task: :up
+      - task: init
       - task: clear-results
       - task: disable-toolbar
       - cmd: uv run robot --include '{{.tag | default "single"}}' --exclude '{{.exclude | default ""}}' {{.ROBOT_PARAMS}}
@@ -76,99 +102,141 @@ tasks:
   local:run:api:
     aliases: [run-api]
     desc: Run all API Robot tests
-    dotenv:
-      - .env.rf.local
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
+    env:
+      ENVIRONMENT: local
+      TENANT: '{{.tenant}}'
+      HEADLESS: true
     cmds:
       - task: :up
+      - task: init
       - task: clear-results
       - task: disable-toolbar
       - cmd: uv run pabot --processes 8 --artifactsinsubfolders --include api --exclude failing {{.ROBOT_PARAMS}}
 
   local:run:mobile:
     desc: Run Robot tests with browser on Docker
-    dotenv:
-      - .env.rf.local
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     env:
+      ENVIRONMENT: local
+      TENANT: '{{.tenant}}'
       HEADLESS: false
       DEVICE: iPhone 14
     cmds:
       - task: run-local
         env:
-          tag: {{.tag}}
+          tag: '{{.tag}}'
 
   docker:otp:
     aliases: [otp]
     desc: Returns an OTP code from the secret in .otp_secret
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
       - task: :dc
-        vars: { SUB_CMD: "run --rm robot uv run python -c 'import pyotp; print(pyotp.TOTP(open(\"secrets/.otp_secret\").read().strip()).now())'" }
+        vars: { SUB_CMD: "run --rm robot uv run python -c 'import pyotp; print(pyotp.TOTP(open(\"secrets/.otp_secret_{{.tenant}}\").read().strip()).now())'" }
 
   docker:run:
     aliases: [run-docker]
     desc: Run Robot Framework tests in headless mode inside a docker container
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
       - task: :up
+      - task: init
       - task: clear-results
       - task: disable-toolbar
       - task: :dc
         vars:
           SUB_CMD: >
-            run --env-from-file ./tests/robot_framework/.env.rf.local --rm robot
+            run -e ENVIRONMENT=local -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run robot --include '{{.tag | default "single"}}' --exclude '{{.exclude | default ""}}' {{.ROBOT_PARAMS}}"
 
   docker:run:ci:
     aliases: [run-ci]
     desc: Run all CI Robot tests with headless browser on Docker, parallel where possible.
-    env:
-      HEADLESS: true
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
       - task: :up
+      - task: init
       - task: clear-results
       - task: disable-toolbar
       - task: :dc
         vars:
           SUB_CMD: >
-            run --env-from-file ./tests/robot_framework/.env.rf.local --rm robot
+            run -e ENVIRONMENT=local -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include ci --exclude init --exclude sitemap --ordering order.txt {{.ROBOT_PARAMS}}"
 
   docker:run:api:
     aliases: [run-api]
     desc: Run all API Robot tests in docker
-    env:
-      HEADLESS: true
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
       - task: :up
+      - task: init
       - task: clear-results
       - task: disable-toolbar
       - task: :dc
         vars:
           SUB_CMD: >
-            run --env-from-file ./tests/robot_framework/.env.rf.local --rm robot
+            run -e ENVIRONMENT=local -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --exclude failing {{.ROBOT_PARAMS}}"
 
   docker:shell:
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
       - task: :dc
         vars:
-          SUB_CMD: "run --rm robot /bin/bash"
+          SUB_CMD: "run -e ENVIRONMENT=local -e TENANT={{.tenant}} --rm robot /bin/bash"
 
   test:run:
     desc: Run Robot tests with browser on TEST
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
       - task: :dc
         vars:
           SUB_CMD: >
-            run --env-from-file ./tests/robot_framework/.env.rf.test --rm robot
-            /bin/bash -c "uv run robot --include '{{.tag | default "testdossiers"}}' {{.ROBOT_PARAMS}}"
+            run -e ENVIRONMENT=test -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            /bin/bash -c "uv run robot --include '{{.tag | default "testdossiers"}}' --exclude skip-test-acc {{.ROBOT_PARAMS}}"
+
+  test:run:api:
+    desc: Run all API Robot tests on TEST
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
+    cmds:
+      - task: :dc
+        vars:
+          SUB_CMD: >
+            run -e ENVIRONMENT=test -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --exclude failing --exclude skip-test-acc {{.ROBOT_PARAMS}}"
 
   acc:run:
     desc: Run Robot tests with browser on ACC
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
       - task: :dc
         vars:
           SUB_CMD: >
-            run --env-from-file ./tests/robot_framework/.env.rf.acc --rm robot
-            /bin/bash -c "uv run robot --include '{{.tag | default "testdossiers"}}' {{.ROBOT_PARAMS}}"
+            run -e ENVIRONMENT=acc -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            /bin/bash -c "uv run robot --include '{{.tag | default "testdossiers"}}' --exclude skip-test-acc {{.ROBOT_PARAMS}}"
+
+  acc:run:api:
+    desc: Run all API Robot tests on ACC
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
+    cmds:
+      - task: :dc
+        vars:
+          SUB_CMD: >
+            run -e ENVIRONMENT=acc -e TENANT={{.tenant}} --rm robot
+            /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --exclude failing --exclude skip-test-acc {{.ROBOT_PARAMS}}"
 
   lint:
     desc: Run Robocop linter
@@ -196,9 +264,11 @@ tasks:
 
   fixtures:load:e2e:
     desc: Load the E2E fixtures
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
       - task: :dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant=minvws doctrine:fixtures:load --no-interaction --append --group=e2e" }
+        vars: { SUB_CMD: "admin bin/console --tenant={{.tenant}} doctrine:fixtures:load --no-interaction --append --group=e2e" }
 
   clear-results:
     desc: Empties the results folder, as well as creating it if it does not exist

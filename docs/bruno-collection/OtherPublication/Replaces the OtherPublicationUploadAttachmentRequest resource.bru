@@ -8,26 +8,19 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
-  body: text
+  url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
+  body: file
   auth: inherit
 }
 
 params:path {
   organisationId: {{organisationId}}
-  dossierExternalId: E:{{dossierExternalId}}
-  attachmentExternalId: E:
+  dossierExternalId: {{otherPublicationDossierExternalId}}
+  attachmentExternalId: {{otherPublicationAttachmentExternalId}}
 }
 
-script:post-response {
-  if (res.status === 204) {
-  }
-  if (res.status === 400) {
-  }
-  if (res.status === 404) {
-  }
-  if (res.status === 422) {
-  }
+body:file {
+  file: @file(dummy.pdf) @contentType(application/octet-stream)
 }
 
 docs {
@@ -39,12 +32,12 @@ example {
   description: OtherPublicationUploadAttachmentRequest resource updated
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
     method: PUT
     mode: text
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
       attachmentExternalId: E:
     }
   }
@@ -69,12 +62,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
     method: PUT
     mode: text
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
       attachmentExternalId: E:
     }
   }
@@ -109,12 +102,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
     method: PUT
     mode: text
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
       attachmentExternalId: E:
     }
   }
@@ -149,12 +142,12 @@ example {
   description: Unauthorized
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
     method: PUT
     mode: text
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
       attachmentExternalId: E:
     }
   }
@@ -189,12 +182,12 @@ example {
   description: Forbidden
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
     method: PUT
     mode: text
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
       attachmentExternalId: E:
     }
   }
@@ -229,12 +222,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
     method: PUT
     mode: text
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
       attachmentExternalId: E:
     }
   }
@@ -269,12 +262,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
     method: PUT
     mode: text
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
       attachmentExternalId: E:
     }
   }
@@ -309,12 +302,12 @@ example {
   description: Method Not Allowed
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
     method: PUT
     mode: text
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
       attachmentExternalId: E:
     }
   }
@@ -349,12 +342,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
     method: PUT
     mode: text
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
       attachmentExternalId: E:
     }
   }
@@ -398,12 +391,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
     method: PUT
     mode: text
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
       attachmentExternalId: E:
     }
   }
@@ -447,12 +440,12 @@ example {
   description: Internal Server Error
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId/uploads/attachment/:attachmentExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId/uploads/attachment/external/:attachmentExternalId
     method: PUT
     mode: text
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
       attachmentExternalId: E:
     }
   }

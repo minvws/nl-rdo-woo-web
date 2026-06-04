@@ -1,14 +1,32 @@
 name: Build Robot image
 
 on:
+  schedule:
+    - cron: "0 0 * * 1"
   workflow_dispatch:
     inputs:
       image-tag:
-        description: "The tag of the image to build"
-        required: true
+        description: "The version tag to use for the image (e.g., '2024.04.15'). If not provided, it defaults to the current year, month and week number in 'YYYY.MM.WW' format."
+        required: false
 
 jobs:
+  setup:
+    name: Determine version
+    runs-on: ubuntu-24.04
+    outputs:
+      image-tag: ${{ steps.tag.outputs.value }}
+    steps:
+      - name: Generate tag
+        id: tag
+        run: |
+          if [ -n "${{ inputs.image-tag }}" ]; then
+            echo "value=${{ inputs.image-tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "value=$(date -u +'%Y.%m.%V')" >> $GITHUB_OUTPUT
+          fi
+
   build:
+    needs: setup
     name: Build image
     runs-on: ubuntu-24.04
     strategy:
@@ -54,7 +72,8 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ${{ steps.image_name.outputs.lowercase }}
-          tags: type=raw,value=${{ inputs.image-tag }}
+          tags: |
+            type=raw,value=${{ needs.setup.outputs.image-tag }}
       - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v7
@@ -89,7 +108,7 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   merge:
-    needs: build
+    needs: [build, setup]
     name: Merge Images
     runs-on: ubuntu-24.04
     steps:
@@ -119,7 +138,8 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ${{ steps.image_name.outputs.lowercase }}
-          tags: type=raw,value=${{ inputs.image-tag }}
+          tags: |
+            type=raw,value=${{ needs.setup.outputs.image-tag }}
       - name: Create manifest list and push
         working-directory: /tmp/digests
         run: |

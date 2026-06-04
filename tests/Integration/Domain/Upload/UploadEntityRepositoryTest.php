@@ -96,4 +96,41 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
 
         self::assertNull($result);
     }
+
+    public function testRemoveAllByContextData(): void
+    {
+        $key = $this->getFaker()->word();
+        $value = $this->getFaker()->word();
+
+        UploadEntityFactory::createOne(['context' => new InputBag([$key => $value])]);
+        UploadEntityFactory::createOne(['context' => new InputBag([$key => $value])]);
+
+        $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
+        $uploadEntityRepository->removeAllByContextData($key, $value);
+
+        self::assertNull($uploadEntityRepository->findLatestByContextData($key, $value));
+    }
+
+    public function testRemoveAllByContextDataOnlyRemovesMatching(): void
+    {
+        $key = $this->getFaker()->word();
+        $value = $this->getFaker()->word();
+
+        UploadEntityFactory::createOne(['context' => new InputBag([$key => $value])]);
+        UploadEntityFactory::createOne(['context' => new InputBag([$this->getFaker()->unique()->word() => $this->getFaker()->word()])]);
+
+        $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
+        $uploadEntityRepository->removeAllByContextData($key, $value);
+
+        self::assertNull($uploadEntityRepository->findLatestByContextData($key, $value));
+        self::assertCount(1, $uploadEntityRepository->findAll());
+    }
+
+    public function testRemoveAllByContextDataWhenNothingMatches(): void
+    {
+        $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
+        $uploadEntityRepository->removeAllByContextData($this->getFaker()->word(), $this->getFaker()->word());
+
+        self::assertCount(0, $uploadEntityRepository->findAll());
+    }
 }

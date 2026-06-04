@@ -1,0 +1,16 @@
+-
+    valid: true
+    invalid: false
+    name: VALID
+-
+    valid: false
+    invalid: true
+    name: INVALID_MIME_TYPE
+-
+    valid: false
+    invalid: true
+    name: INVALID_EXTENSION
+-
+    valid: false
+    invalid: true
+    name: MISMATCH_BETWEEN_EXTENSION_AND_MIME_TYPE

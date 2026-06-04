@@ -13,6 +13,7 @@ use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Form\Organisation\OrganisationFormType;
 use Shared\Service\OrganisationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -140,6 +141,8 @@ class OrganisationController extends AbstractController
     {
         $errors = [];
         foreach ($form->get('departments')->getErrors(true) as $error) {
+            Assert::isInstanceOf($error, FormError::class);
+
             $errors[] = $error->getMessage();
         }
 
@@ -158,11 +161,6 @@ class OrganisationController extends AbstractController
         }
 
         return $prefixes
-            ->filter(static function ($documentPrefix): bool {
-                Assert::isInstanceOf($documentPrefix, DocumentPrefix::class);
-
-                return $documentPrefix->issetPrefix();
-            })
             ->map(static function ($documentPrefix): string {
                 Assert::isInstanceOf($documentPrefix, DocumentPrefix::class);
 
@@ -177,6 +175,8 @@ class OrganisationController extends AbstractController
     {
         $errors = [];
         foreach ($form->get('documentPrefixes')->getErrors(true) as $error) {
+            Assert::isInstanceOf($error, FormError::class);
+
             $errors[] = $error->getMessage();
         }
 

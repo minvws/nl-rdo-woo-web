@@ -9,10 +9,9 @@ use Exception;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
-use PublicationApi\Api\Publication\PublicationV1Api;
 use PublicationApi\Domain\OpenApi\Exception\ValidationException;
-use PublicationApi\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
 use PublicationApi\Domain\OpenApi\OpenApiValidator;
+use PublicationApi\Domain\OpenApi\PublicationV1Api;
 use PublicationApi\EventSubscriber\PublicationV1ApiRequestResponseValidatorSubscriber;
 use Shared\Tests\Unit\UnitTestCase;
 use stdClass;
@@ -44,7 +43,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: false,
             enableResponseValidation: true,
@@ -63,7 +61,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: true,
@@ -83,7 +80,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: true,
@@ -103,7 +99,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: true,
@@ -132,12 +127,10 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
         $expectedPath = sprintf('%s%s%s', PublicationV1Api::API_PREFIX, $expectedRoutePrefix, $expectedUriTemplate);
         $this->openApiValidator
             ->expects('validateRequest')
-
             ->with($request, $expectedPath, $expectedMethod);
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: true,
@@ -146,7 +139,7 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
         $publicationV1ApiRequestResponseValidatorSubscriber->onRequest($requestEvent);
     }
 
-    public function testOnRequestHandlesValidationException(): void
+    public function testOnRequestPropagatesValidationException(): void
     {
         $expectedRoutePrefix = '/my-prefix';
         $expectedUriTemplate = '/foobar/{id}';
@@ -166,20 +159,15 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
         $requestEvent = new RequestEvent(Mockery::mock(KernelInterface::class), $request, 1);
 
         $expectedPath = sprintf('%s%s%s', PublicationV1Api::API_PREFIX, $expectedRoutePrefix, $expectedUriTemplate);
-        $validatonException = new ValidationException('foo', 0, new Exception());
         $this->openApiValidator
             ->expects('validateRequest')
             ->with($request, $expectedPath, $expectedMethod)
-            ->andThrows($validatonException);
+            ->andThrows(new ValidationException('foo', 0, new Exception()));
 
-        $openApiValidationExceptionResponseFactory = Mockery::mock(OpenApiValidationExceptionResponseFactory::class);
-        $openApiValidationExceptionResponseFactory
-            ->expects('buildJsonResponse')
-            ->with($validatonException);
+        $this->expectException(ValidationException::class);
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            $openApiValidationExceptionResponseFactory,
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: true,
@@ -201,7 +189,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: false,
@@ -223,7 +210,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: true,
@@ -245,7 +231,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: true,
@@ -265,7 +250,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: true,
@@ -274,7 +258,7 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
         $publicationV1ApiRequestResponseValidatorSubscriber->onResponse($responseEvent);
     }
 
-    public function testOnResponseHandlesValidationExceptions(): void
+    public function testOnResponsePropagatesValidationException(): void
     {
         $expectedRoutePrefix = '/api';
         $expectedUriTemplate = '/foobar/{id}';
@@ -294,25 +278,18 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $response = Mockery::mock(Response::class);
 
-        $validatonException = new ValidationException('foo', 0, new Exception());
-
         $expectedPath = sprintf('%s%s%s', PublicationV1Api::API_PREFIX, $expectedRoutePrefix, $expectedUriTemplate);
         $this->openApiValidator
             ->expects('validateResponse')
             ->with($response, $expectedPath, $expectedMethod)
-            ->andThrow($validatonException);
-
-        $openApiPublicationV1ValidationExceptionResponseFactory = Mockery::mock(OpenApiValidationExceptionResponseFactory::class);
-        $openApiPublicationV1ValidationExceptionResponseFactory
-            ->expects('buildJsonResponse')
-
-            ->with($validatonException);
+            ->andThrow(new ValidationException('foo', 0, new Exception()));
 
         $responseEvent = new ResponseEvent(Mockery::mock(KernelInterface::class), $request, 1, $response);
 
+        $this->expectException(ValidationException::class);
+
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            $openApiPublicationV1ValidationExceptionResponseFactory,
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: true,
@@ -333,7 +310,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: false,
@@ -354,7 +330,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: true,
@@ -374,7 +349,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             Mockery::mock(LoggerInterface::class),
             enableRequestValidation: true,
             enableResponseValidation: true,
@@ -428,7 +402,6 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $publicationV1ApiRequestResponseValidatorSubscriber = new PublicationV1ApiRequestResponseValidatorSubscriber(
             $this->openApiValidator,
-            Mockery::mock(OpenApiValidationExceptionResponseFactory::class),
             $logger,
             enableRequestValidation: true,
             enableResponseValidation: true,

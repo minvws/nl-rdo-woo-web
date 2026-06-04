@@ -8,7 +8,7 @@ use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\OpenApi\Model\PathItem;
 use ApiPlatform\OpenApi\Model\Paths;
 use ApiPlatform\OpenApi\OpenApi;
-use PublicationApi\Api\Publication\PublicationV1Api;
+use PublicationApi\Domain\OpenApi\PublicationV1Api;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Webmozart\Assert\Assert;
 

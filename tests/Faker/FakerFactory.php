@@ -13,6 +13,7 @@ class FakerFactory
     /** @var list<class-string<Base>> */
     protected static array $providers = [
         DateTimeFakerProvider::class,
+        FileFakerProvider::class,
         GroundsFakerProvider::class,
         UuidFakerProvider::class,
     ];

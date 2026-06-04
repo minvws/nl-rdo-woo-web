@@ -23,7 +23,7 @@ Get All Subjects
   [Tags]  api-single
   ${response} =  GET On Session
   ...  alias=publication_api
-  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/subject
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/subject
   ...  msg=GET request failed
   Get Object From Json By Attribute  ${response.json()}  name  E2E Test Subject
   Status Should Be  200  ${response}  msg=GET request did not return a 200
@@ -48,7 +48,7 @@ A Subject Is Created
   VAR  &{subject} =  name=${name}
   ${post_response} =  POST On Session
   ...  alias=publication_api
-  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/subject
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/subject
   ...  json=${subject}
   ...  expected_status=201
   ...  msg=POST request failed
@@ -57,7 +57,7 @@ A Subject Is Created
 We Can Find It
   GET On Session
   ...  alias=publication_api
-  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/subject/${CREATED_SUBJECT}[id]
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/subject/${CREATED_SUBJECT}[id]
   ...  expected_status=200
 
 The Subject Is Updated
@@ -66,7 +66,7 @@ The Subject Is Updated
   VAR  &{body} =  name=${NEW_NAME}
   ${put_response} =  PUT On Session
   ...  alias=publication_api
-  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/subject/${CREATED_SUBJECT}[id]
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/subject/${CREATED_SUBJECT}[id]
   ...  json=${body}
   ...  expected_status=200
   ...  msg=PUT request failed

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Domain\Upload;
 
-use PublicationApi\Api\Publication\UploadStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadEntityRepository;

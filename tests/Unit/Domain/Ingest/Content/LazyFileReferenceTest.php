@@ -13,14 +13,14 @@ use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 class LazyFileReferenceTest extends UnitTestCase
 {
     public function testLazyFileReferenceLoadsFileOnlyWhenNeededAndOnlyOnce(): void
     {
-        $spy = Mockery::spy(
-            static fn (): string => '/foo/bar.txt',
-        );
+        $spy = Mockery::spy(static fn (): string => '/foo/bar.txt');
+        Assert::isCallable($spy);
 
         $reference = new LazyFileReference($spy);
 
@@ -28,15 +28,15 @@ class LazyFileReferenceTest extends UnitTestCase
 
         self::assertEquals('/foo/bar.txt', $reference->getPath());
 
-        /** @var VerificationDirector $verfication */
-        $verfication = $spy->shouldHaveBeenCalled();
-        $verfication->once();
+        $verficationDirector = $spy->shouldHaveBeenCalled();
+        Assert::isInstanceOf($verficationDirector, VerificationDirector::class);
+        $verficationDirector->once();
 
         self::assertEquals('/foo/bar.txt', $reference->getPath());
 
-        /** @var VerificationDirector $verfication */
-        $verfication = $spy->shouldHaveBeenCalled();
-        $verfication->once();
+        $verficationDirector = $spy->shouldHaveBeenCalled();
+        Assert::isInstanceOf($verficationDirector, VerificationDirector::class);
+        $verficationDirector->once();
     }
 
     public function testItThrowsExceptionWhenFilePathCannotBeDetermined(): void

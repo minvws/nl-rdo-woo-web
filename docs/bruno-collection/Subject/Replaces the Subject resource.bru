@@ -25,15 +25,6 @@ body:json {
 }
 
 script:post-response {
-  if (res.status === 200) {
-  }
-  if (res.status === 400) {
-  }
-  if (res.status === 404) {
-  }
-  if (res.status === 422) {
-  }
-
   const data = res.getBody();
   const dossierExternalId = data.externalId;
   bru.setVar("dossierExternalId", dossierExternalId);

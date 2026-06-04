@@ -81,4 +81,15 @@ class UploadEntityRepository extends ServiceEntityRepository
 
         return $uploadEntity;
     }
+
+    public function removeAllByContextData(string $key, string $value): void
+    {
+        $this->createQueryBuilder('uploadEntity')
+            ->delete()
+            ->where('json_extract_path_text(uploadEntity.context, :key) = :value')
+            ->setParameter('key', $key)
+            ->setParameter('value', $value)
+            ->getQuery()
+            ->execute();
+    }
 }

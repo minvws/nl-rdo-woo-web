@@ -1,0 +1,25 @@
+-
+    failed: false
+    processing: false
+    name: NO_UPLOAD_REQUIRED
+    value: no_upload_required
+-
+    failed: false
+    processing: false
+    name: UPLOAD_REQUIRED
+    value: upload_required
+-
+    failed: false
+    processing: true
+    name: PROCESSING
+    value: processing
+-
+    failed: false
+    processing: false
+    name: PROCESSED
+    value: processed
+-
+    failed: true
+    processing: false
+    name: PROCESSING_FAILED
+    value: processing_failed

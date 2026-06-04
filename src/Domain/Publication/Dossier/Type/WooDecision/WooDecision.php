@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use RuntimeException;
 use Shared\Doctrine\PlainDateType;
@@ -99,15 +97,15 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ProductionReport::class, cascade: ['remove'])]
     protected ?ProductionReport $productionReport = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: PlainDateType::NAME, nullable: true)]
     #[Assert\NotBlank(groups: [
         DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
         DossierValidationGroup::WORKFLOW_PUBLISH->value,
     ])]
-    #[Assert\LessThan('tomorrow', groups: [
+    #[PlainDateBeforeOrEqual('today', groups: [
         DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
     ])]
-    private ?DateTimeImmutable $previewDate = null;
+    private ?PlainDate $previewDate = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ProductionReportProcessRun::class, cascade: ['remove'])]
     private ?ProductionReportProcessRun $processRun = null;
@@ -246,12 +244,12 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
         return $this->hasProductionReport() && $this->getUploadStatus()->isComplete();
     }
 
-    public function getPreviewDate(): ?DateTimeImmutable
+    public function getPreviewDate(): ?PlainDate
     {
         return $this->previewDate;
     }
 
-    public function setPreviewDate(?DateTimeImmutable $previewDate): static
+    public function setPreviewDate(?PlainDate $previewDate): static
     {
         $this->previewDate = $previewDate;
 
@@ -260,7 +258,11 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
 
     public function hasFuturePreviewDate(): bool
     {
-        return $this->previewDate > new DateTimeImmutable('today midnight');
+        if (! $this->previewDate instanceof PlainDate) {
+            return false;
+        }
+
+        return $this->previewDate->isAfter(PlainDate::today());
     }
 
     public function getProcessRun(): ?ProductionReportProcessRun

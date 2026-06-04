@@ -11,6 +11,7 @@ use Shared\Domain\Upload\Exception\UploadException;
 use Shared\Domain\Upload\Exception\UploadValidationException;
 use Shared\Domain\Upload\FileType\FileType;
 use Shared\Domain\Upload\FileType\MimeTypeHelper;
+use Shared\Domain\Upload\FileType\MimeTypeHelperResult;
 use Shared\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadEntityRepository;
@@ -95,11 +96,22 @@ readonly class ValidateUploadCommandHandler
         Assert::string($uploadEntity->getFilename());
         $fileExtension = pathinfo($uploadEntity->getFilename(), PATHINFO_EXTENSION);
 
-        if (! $this->mimeTypeHelper->isValidForUploadGroup($fileExtension, $mimeType, $uploadEntity->getUploadGroupId())) {
-            throw UploadValidationException::forInvalidMimetype($uploadEntity, $mimeType);
-        }
+        $mimeTypeHelperResult = $this->mimeTypeHelper->isValidForUploadGroup(
+            $fileExtension,
+            $mimeType,
+            $uploadEntity->getUploadGroupId(),
+        );
 
-        return $mimeType;
+        return match ($mimeTypeHelperResult) {
+            MimeTypeHelperResult::VALID
+                => $mimeType,
+            MimeTypeHelperResult::INVALID_EXTENSION
+                => throw UploadValidationException::forInvalidExtension($uploadEntity, $fileExtension),
+            MimeTypeHelperResult::INVALID_MIME_TYPE
+                => throw UploadValidationException::forInvalidMimetype($uploadEntity, $mimeType),
+            MimeTypeHelperResult::MISMATCH_BETWEEN_EXTENSION_AND_MIME_TYPE
+                => throw UploadValidationException::forMismatchBetweenExtensionAndMimetype(FileType::fromExtension($fileExtension), $mimeType),
+        };
     }
 
     private function validateUploadSize(UploadEntity $uploadEntity, string $mimeType): void

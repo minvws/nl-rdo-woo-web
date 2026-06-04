@@ -28,7 +28,7 @@ readonly class MimeTypeHelper
         string $fileExtension,
         ?string $mimeType,
         UploadGroupId $groupId,
-    ): bool {
+    ): MimeTypeHelperResult {
         $groupExtensions = $groupId->getExtensions();
         if (! in_array($fileExtension, $groupExtensions, true)) {
             $this->logger->warning('fileExtension not allowed in groupExtensions', [
@@ -36,7 +36,7 @@ readonly class MimeTypeHelper
                 'uploadGroupId' => $groupId->value,
             ]);
 
-            return false;
+            return MimeTypeHelperResult::INVALID_EXTENSION;
         }
 
         $groupMimeTypes = $groupId->getMimeTypes();
@@ -46,7 +46,7 @@ readonly class MimeTypeHelper
                 'uploadGroupId' => $groupId->value,
             ]);
 
-            return false;
+            return MimeTypeHelperResult::INVALID_MIME_TYPE;
         }
 
         $fileExtensionsFromMimeType = FileType::fromMimeType($mimeType);
@@ -58,10 +58,10 @@ readonly class MimeTypeHelper
                 'fileExtensionsFromMimeType' => json_encode($fileExtensionsFromMimeType),
             ]);
 
-            return false;
+            return MimeTypeHelperResult::MISMATCH_BETWEEN_EXTENSION_AND_MIME_TYPE;
         }
 
-        return true;
+        return MimeTypeHelperResult::VALID;
     }
 
     public function detectMimeType(string $path, string $contents): ?string

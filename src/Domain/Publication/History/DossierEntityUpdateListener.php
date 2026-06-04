@@ -13,6 +13,7 @@ use Doctrine\ORM\Events;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeWithPreview;
 use Shared\Service\HistoryService;
+use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
 use function count;
@@ -57,7 +58,7 @@ final class DossierEntityUpdateListener
 
         if ($dossier instanceof DossierTypeWithPreview && $this->isFieldUpdated($args, 'previewDate')) {
             $date = $dossier->getPreviewDate();
-            Assert::notNull($date);
+            Assert::isInstanceOf($date, PlainDate::class);
 
             $this->addHistoryEntry(
                 $dossier,

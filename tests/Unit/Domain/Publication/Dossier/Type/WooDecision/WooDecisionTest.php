@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
 
-use Carbon\CarbonImmutable;
-use DateTimeImmutable;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
@@ -161,7 +159,7 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testSetAndGetPreviewDate(): void
     {
-        $previewDate = new DateTimeImmutable();
+        $previewDate = PlainDate::today();
 
         $this->wooDecision->setPreviewDate($previewDate);
         self::assertEquals($previewDate, $this->wooDecision->getPreviewDate());
@@ -169,7 +167,7 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testHasFuturePreviewDateReturnsTrueForTomorrow(): void
     {
-        $previewDate = CarbonImmutable::tomorrow();
+        $previewDate = PlainDate::today()->addDays(1);
 
         $this->wooDecision->setPreviewDate($previewDate);
         self::assertTrue($this->wooDecision->hasFuturePreviewDate());
@@ -177,7 +175,7 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testHasFuturePreviewDateReturnsFalseForToday(): void
     {
-        $previewDate = CarbonImmutable::today();
+        $previewDate = PlainDate::today();
 
         $this->wooDecision->setPreviewDate($previewDate);
         self::assertFalse($this->wooDecision->hasFuturePreviewDate());

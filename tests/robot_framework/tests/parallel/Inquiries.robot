@@ -218,6 +218,30 @@ Large Inquiry
   ...  should be
   ...  11
 
+Replacing Production Report Updates Document Names In Inventory Pages
+  [Documentation]  Create a WooDecision with an inquiry, replace the production report with
+  ...              updated document names, and verify that the inventory on the public dossier
+  ...              page and on the public inquiry dossier page are both updated.
+  Click Publications
+  ${case_id} =  FakerLibrary.Uuid 4
+  Generate Test Data Set  woo-decision  case_id=${case_id}
+  ${old_doc_name} =  FakerLibrary.Sentence  nb_words=4
+  ${old_doc_name} =  Catenate  ${old_doc_name}txt
+  Modify Production Report  ${PRODUCTION_REPORT}  2  5  ${old_doc_name}
+  Publish Test WooDecision
+  ...  production_report=${PRODUCTION_REPORT}
+  ...  documents=${DOCUMENTS}
+  ...  number_of_documents=${NUMBER_OF_DOCUMENTS}
+  ...  prefix=${NEW_PREFIX}
+  Wait For Queue To Empty
+  # Update the production report file with a new document name
+  ${new_doc_name} =  FakerLibrary.Sentence  nb_words=4
+  ${new_doc_name} =  Catenate  ${new_doc_name}txt
+  Modify Production Report  ${PRODUCTION_REPORT}  2  5  ${new_doc_name}
+  Replace The Production Report On The Published Dossier
+  Verify Updated Document Name In Public Inventory  ${new_doc_name}  ${old_doc_name}
+  Verify Updated Document Name In Inquiry Inventory  ${new_doc_name}  ${old_doc_name}  ${CASE_ID}
+
 
 *** Keywords ***
 Suite Setup
@@ -259,3 +283,38 @@ Modify Production Report
   Write Excel Cell  ${row_num}  ${col_num}  ${value}
   Save Excel Document  ${production_report}
   Close All Excel Documents
+
+Replace The Production Report On The Published Dossier
+  Search For A Publication  ${DOSSIER_REFERENCE}
+  Click Documents Edit
+  Click Replace Report
+  Upload Production Report  ${PRODUCTION_REPORT}  ${TRUE}
+  Verify Production Report Replace  Productierapport geüpload en gecontroleerd
+  Verify Production Report Replace  1 bestaand document wordt aangepast.
+  Click Confirm Production Report Replacement
+  Verify Production Report Replace  Het productierapport is succesvol vervangen.
+  Click Continue To Documents
+
+Verify Updated Document Name In Public Inventory
+  [Arguments]  ${new_doc_name}  ${old_doc_name}
+  Go To Admin
+  Search For A Publication  ${DOSSIER_REFERENCE}
+  Click Public URL
+  ${inventory_file} =  Generic Download Click  //*[@data-e2e-name="download-inventory-file-link"]
+  Open Excel Document  ${inventory_file}  inventory
+  ${names_column} =  Read Excel Column  col_num=3  row_offset=0  max_num=10
+  Should Contain  ${names_column}  ${new_doc_name}
+  Should Not Contain  ${names_column}  ${old_doc_name}
+  Close Current Excel Document
+
+Verify Updated Document Name In Inquiry Inventory
+  [Arguments]  ${new_doc_name}  ${old_doc_name}  ${CASE_ID}
+  Go To Admin
+  Click Inquiries
+  Open Inquiry  ${CASE_ID}
+  ${inventory_file} =  Generic Download Click  //*[@data-e2e-name="download-inventory"]
+  Open Excel Document  ${inventory_file}  inventory
+  ${names_column} =  Read Excel Column  col_num=3  row_offset=0  max_num=10
+  Should Contain  ${names_column}  ${new_doc_name}
+  Should Not Contain  ${names_column}  ${old_doc_name}
+  Close Current Excel Document

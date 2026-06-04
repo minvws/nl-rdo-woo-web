@@ -6,10 +6,9 @@ namespace PublicationApi\EventSubscriber;
 
 use ApiPlatform\Metadata\HttpOperation;
 use Psr\Log\LoggerInterface;
-use PublicationApi\Api\Publication\PublicationV1Api;
 use PublicationApi\Domain\OpenApi\Exception\ValidationException;
-use PublicationApi\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
 use PublicationApi\Domain\OpenApi\OpenApiValidator;
+use PublicationApi\Domain\OpenApi\PublicationV1Api;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -24,7 +23,6 @@ final readonly class PublicationV1ApiRequestResponseValidatorSubscriber
 {
     public function __construct(
         private OpenApiValidator $openApiValidator,
-        private OpenApiValidationExceptionResponseFactory $openApiValidationExceptionResponseFactory,
         private LoggerInterface $logger,
         private bool $enableRequestValidation = true,
         private bool $enableResponseValidation = true,
@@ -48,11 +46,7 @@ final readonly class PublicationV1ApiRequestResponseValidatorSubscriber
             return;
         }
 
-        try {
-            $this->openApiValidator->validateRequest($request, $this->getAbsolutePath($request), $request->getMethod());
-        } catch (ValidationException $exception) {
-            $event->setResponse($this->openApiValidationExceptionResponseFactory->buildJsonResponse($exception));
-        }
+        $this->openApiValidator->validateRequest($request, $this->getAbsolutePath($request), $request->getMethod());
     }
 
     #[AsEventListener(event: KernelEvents::RESPONSE)]
@@ -75,11 +69,7 @@ final readonly class PublicationV1ApiRequestResponseValidatorSubscriber
             return;
         }
 
-        try {
-            $this->openApiValidator->validateResponse($event->getResponse(), $this->getAbsolutePath($request), $request->getMethod());
-        } catch (ValidationException $exception) {
-            $event->setResponse($this->openApiValidationExceptionResponseFactory->buildJsonResponse($exception));
-        }
+        $this->openApiValidator->validateResponse($event->getResponse(), $this->getAbsolutePath($request), $request->getMethod());
     }
 
     #[AsEventListener(event: KernelEvents::TERMINATE)]

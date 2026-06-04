@@ -12,6 +12,7 @@ readonly class AbstractDossierTypeSearchResult implements DossierTypeSearchResul
         public Uuid $id,
         public string $dossierNr,
         public string $documentPrefix,
+        public string $title,
     ) {
     }
 }

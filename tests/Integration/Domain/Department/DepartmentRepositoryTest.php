@@ -39,7 +39,7 @@ final class DepartmentRepositoryTest extends SharedWebTestCase
         );
 
         $this->expectException(NoResultException::class);
-        $this->repository->findPublicDepartmentBySlug($this->faker->unique()->slug());
+        $this->repository->findPublicDepartmentBySlug($this->getFaker()->unique()->slug());
     }
 
     public function testGetAllPublicDepartments(): void

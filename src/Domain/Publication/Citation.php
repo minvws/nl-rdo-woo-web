@@ -7,6 +7,7 @@ namespace Shared\Domain\Publication;
 use Webmozart\Assert\Assert;
 
 use function array_flip;
+use function array_key_exists;
 use function array_keys;
 use function key_exists;
 use function str_replace;
@@ -154,10 +155,10 @@ class Citation
         $citation = str_replace(' ', '', $citation);
         $citation = strtolower($citation);
 
-        if (isset(self::$wooCitations[$citation])) {
+        if (array_key_exists($citation, self::$wooCitations)) {
             return self::TYPE_WOO;
         }
-        if (isset(self::$wobCitations[$citation])) {
+        if (array_key_exists($citation, self::$wobCitations)) {
             return self::TYPE_WOB;
         }
 
@@ -183,15 +184,15 @@ class Citation
         $allCitations = array_flip($allCitations);
 
         usort($citations, static function (string $a, string $b) use ($allCitations): int {
-            if (isset($allCitations[$a], $allCitations[$b])) {
+            if (array_key_exists($a, $allCitations) && array_key_exists($b, $allCitations)) {
                 return $allCitations[$a] <=> $allCitations[$b];
             }
 
-            if (isset($allCitations[$a])) {
+            if (array_key_exists($a, $allCitations)) {
                 return -1;
             }
 
-            if (isset($allCitations[$b])) {
+            if (array_key_exists($b, $allCitations)) {
                 return 1;
             }
 

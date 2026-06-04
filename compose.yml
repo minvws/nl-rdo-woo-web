@@ -17,7 +17,7 @@ networks:
 services:
 
   public:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.10.1}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.12.0}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -43,7 +43,7 @@ services:
       APP_ID: PUBLIC
 
   admin:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.10.1}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.12.0}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -71,7 +71,7 @@ services:
       MC_HOST_local: http://root:password@minio:9000
 
   publication_api:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.10.1}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.12.0}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -102,7 +102,7 @@ services:
   worker_minvws:
     depends_on:
       - rabbitmq
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.10.1}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.12.0}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -126,7 +126,7 @@ services:
   worker_minfin:
     depends_on:
       - rabbitmq
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.10.1}
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.12.0}
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -290,5 +290,6 @@ services:
       - ./tests/robot_framework/files:/home/pwuser/files
       - ./tests/robot_framework/results:/home/pwuser/results
       - ./tests/robot_framework/secrets:/home/pwuser/secrets
+      - ./tests/robot_framework/envs:/home/pwuser/envs
       - ./tests/robot_framework/order.txt:/home/pwuser/order.txt
       - ./certs:/home/pwuser/certs

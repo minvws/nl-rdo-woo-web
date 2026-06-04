@@ -6,9 +6,11 @@ namespace Shared\Form\Dossier;
 
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Form\PlainDateType;
 use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
+use Shared\Validator\UniqueDossierNr;
 use Shared\ValueObject\PlainDate;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -116,11 +118,11 @@ trait DossierFormBuilderTrait
         ]);
     }
 
-    private function addDossierNrField(FormBuilderInterface $builder): void
+    protected function addDossierNrField(FormBuilderInterface $builder, bool $allowEdit): void
     {
         $dossier = $this->getDossier($builder);
 
-        if ($dossier->getStatus()->isNewOrConcept()) {
+        if ($dossier->getStatus()->isNewOrConcept() || $allowEdit) {
             $builder->add('dossierNr', TextType::class, [
                 'label' => 'global.ref_number',
                 'required' => true,
@@ -129,6 +131,18 @@ trait DossierFormBuilderTrait
                 'empty_data' => '',
                 'attr' => [
                     'class' => 'bhr-input-text w-full',
+                ],
+                'constraints' => [
+                    new UniqueDossierNr(
+                        documentPrefix: $dossier->getDocumentPrefix(),
+                        excludeId: $dossier->getId(),
+                        groups: [
+                            DossierValidationGroup::DETAILS->value,
+                            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+                            DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+                            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+                        ],
+                    ),
                 ],
             ]);
         }

@@ -14,18 +14,21 @@ get {
 }
 
 params:query {
-  ~cursor: 
+  ~cursor:
 }
 
 script:post-response {
   const data = res.getBody();
   
-  const dept = data.find(item => item.name === "E2E Test Department 1") ?? data[0];
+  const dept = data.find(item => item.name === "E2E Test Department 1");
   
   if (dept) {
     bru.setEnvVar("departmentId", dept.id);
+  } else if (data.length > 0) {
+    console.warn('Set the first department found instead of "E2E Test Department 1"');
+    bru.setEnvVar("departmentId", data[0].id);
   } else {
-    console.log("Department not found");
+    throw new Error("E2E Test Department 1 not found, variable could not be set");
   }
 }
 
@@ -42,7 +45,7 @@ example {
     method: GET
     mode: none
     params:query: {
-      ~cursor: 
+      ~cursor:
     }
   }
   
@@ -79,7 +82,7 @@ example {
     method: GET
     mode: none
     params:query: {
-      ~cursor: 
+      ~cursor:
     }
   }
   
@@ -117,7 +120,7 @@ example {
     method: GET
     mode: none
     params:query: {
-      ~cursor: 
+      ~cursor:
     }
   }
   
@@ -155,7 +158,7 @@ example {
     method: GET
     mode: none
     params:query: {
-      ~cursor: 
+      ~cursor:
     }
   }
   
@@ -193,7 +196,7 @@ example {
     method: GET
     mode: none
     params:query: {
-      ~cursor: 
+      ~cursor:
     }
   }
   
@@ -231,7 +234,7 @@ example {
     method: GET
     mode: none
     params:query: {
-      ~cursor: 
+      ~cursor:
     }
   }
   
@@ -269,7 +272,7 @@ example {
     method: GET
     mode: none
     params:query: {
-      ~cursor: 
+      ~cursor:
     }
   }
   

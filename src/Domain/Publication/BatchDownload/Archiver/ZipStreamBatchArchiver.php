@@ -22,12 +22,9 @@ use function sprintf;
 
 final class ZipStreamBatchArchiver implements BatchArchiver
 {
-    private ZipStream $zipStream;
-
+    private ?ZipStream $zipStream = null;
     private StreamInterface $zipFile;
-
     private string $batchFileName;
-
     private int $fileCount = 0;
 
     public function __construct(
@@ -64,6 +61,7 @@ final class ZipStreamBatchArchiver implements BatchArchiver
         Assert::string($path);
 
         $documentResource = $this->streamFactory->createReadOnlyStream($this->documentBucket, $path);
+        Assert::isInstanceOf($this->zipStream, ZipStream::class);
 
         try {
             $this->zipStream->addFileFromPsr7Stream(
@@ -88,7 +86,7 @@ final class ZipStreamBatchArchiver implements BatchArchiver
     {
         try {
             $fileSize = 0;
-            if (isset($this->zipStream)) {
+            if ($this->zipStream !== null) {
                 $fileSize = $this->zipStream->finish();
                 unset($this->zipStream);
             }
@@ -98,9 +96,7 @@ final class ZipStreamBatchArchiver implements BatchArchiver
 
             return false;
         } finally {
-            if (isset($this->zipFile)) {
-                $this->zipFile->close();
-            }
+            $this->zipFile->close();
         }
 
         return new BatchArchiverResult(
@@ -112,7 +108,7 @@ final class ZipStreamBatchArchiver implements BatchArchiver
 
     public function cleanup(): bool
     {
-        if (isset($this->zipStream)) {
+        if ($this->zipStream !== null) {
             try {
                 $this->zipStream->finish();
                 unset($this->zipStream);
@@ -120,9 +116,7 @@ final class ZipStreamBatchArchiver implements BatchArchiver
             }
         }
 
-        if (isset($this->zipFile)) {
-            $this->zipFile->close();
-        }
+        $this->zipFile->close();
 
         try {
             $this->s3Client->deleteObject([

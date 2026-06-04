@@ -8,19 +8,14 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+  url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
   body: none
   auth: inherit
 }
 
 params:path {
   organisationId: {{organisationId}}
-  dossierExternalId: E:{{dossierExternalId}}
-}
-
-script:post-response {
-  if (res.status === 404) {
-  }
+  dossierExternalId: {{requestForAdviceDossierExternalId}}
 }
 
 docs {
@@ -32,12 +27,12 @@ example {
   description: RequestForAdvice resource
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   }
   
@@ -106,12 +101,12 @@ example {
   description: Bad Request
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   }
   
@@ -145,12 +140,12 @@ example {
   description: Unauthorized
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   }
   
@@ -184,12 +179,12 @@ example {
   description: Forbidden
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   }
   
@@ -223,12 +218,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   }
   
@@ -262,12 +257,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   }
   
@@ -301,12 +296,12 @@ example {
   description: Method Not Allowed
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   }
   
@@ -340,12 +335,12 @@ example {
   description: Internal Server Error
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: GET
     mode: none
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   }
   

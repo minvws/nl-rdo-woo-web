@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Admin\Api\Admin\Publication\Search\Parameter;
 
+use Admin\Api\Admin\Publication\ContextGetter;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Parameter;
 use ApiPlatform\State\ParameterProviderInterface;
-use PublicationApi\Api\Publication\ContextGetter;
 use Symfony\Component\HttpFoundation\Request;
 use Webmozart\Assert\Assert;
 

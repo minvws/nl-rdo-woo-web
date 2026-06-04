@@ -17,7 +17,7 @@ Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Teardown       Run Keyword If Test Failed  Go To Admin
 Test Template       Create Test Dossier
-Test Tags           ci  testdossiers  public-init  sitemap-init
+Test Tags           ci  testdossiers  public-init  sitemap-init  test-acc
 
 
 *** Test Cases ***                                    type                  publication_status    has_attachment    decision

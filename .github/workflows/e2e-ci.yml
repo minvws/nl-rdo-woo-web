@@ -61,7 +61,8 @@ jobs:
   e2e-tests-api:
     name: Run E2E tests on API
     runs-on: ubuntu-latest-m
-    if: ${{ inputs.test_tag == 'ci' || inputs.test_tag == 'api' }}
+    if: ${{ github.event_name == 'schedule' || inputs.test_tag == 'ci' ||
+      inputs.test_tag == 'api' }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6

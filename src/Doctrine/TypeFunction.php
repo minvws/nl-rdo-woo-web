@@ -22,12 +22,15 @@ class TypeFunction extends FunctionNode
 {
     public string $dqlAlias;
 
+    /**
+     * @throws QueryException
+     */
     public function getSql(SqlWalker $sqlWalker): string
     {
         $meta = $sqlWalker->getMetadataForDqlAlias($this->dqlAlias);
         $tableAlias = $sqlWalker->getSQLTableAlias($meta->getTableName(), $this->dqlAlias);
 
-        if (! isset($meta->discriminatorColumn['name'])) {
+        if ($meta->discriminatorColumn === null) {
             throw QueryException::semanticalError('TYPE() only supports entities with a discriminator column.');
         }
 
@@ -37,6 +40,9 @@ class TypeFunction extends FunctionNode
         return sprintf('%s.%s', $tableAlias, $name);
     }
 
+    /**
+     * @throws QueryException
+     */
     public function parse(Parser $parser): void
     {
         $parser->match(TokenType::T_IDENTIFIER);

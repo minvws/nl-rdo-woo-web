@@ -13,6 +13,8 @@ use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument
 use Shared\Tests\Factory\FileInfoFactory;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
+use function array_key_exists;
+
 /**
  * @extends PersistentObjectFactory<AnnualReportMainDocument>
  */
@@ -51,7 +53,7 @@ final class AnnualReportMainDocumentFactory extends PersistentObjectFactory
     {
         return $this
             ->afterInstantiate(function (AnnualReportMainDocument $document, array $attributes): void {
-                if (isset($attributes['overwrite_id'])) {
+                if (array_key_exists('overwrite_id', $attributes)) {
                     $this->entityManager->detach($document);
 
                     $reflection = new ReflectionClass($document);

@@ -940,6 +940,8 @@ history.dossier_update_inventory.private: 'Nieuwe inventarislijst toegevoegd ({f
 history.dossier_update_inventory.public: 'Inventarislijst vervangen'
 history.dossier_update_preview_date.private: 'Datum feitelijke verstrekking aangepast naar {date}'
 history.dossier_update_preview_date.public: null
+history.dossier_update_dossier_nr.private: 'Besluitnummer aangepast van {oldNr} naar {newNr}'
+history.dossier_update_dossier_nr.public: 'Besluitnummer aangepast van {oldNr} naar {newNr}'
 history.dossier_update_publication_date.private: 'Datum publicatie aangepast naar {date}'
 history.dossier_update_publication_date.public: null
 history.dossier_inquiry_added.public: null

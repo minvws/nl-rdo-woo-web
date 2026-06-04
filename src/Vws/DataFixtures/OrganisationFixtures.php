@@ -29,8 +29,7 @@ class OrganisationFixtures extends Fixture implements DependentFixtureInterface,
 
     public function load(ObjectManager $manager): void
     {
-        $documentPrefix1 = new DocumentPrefix();
-        $documentPrefix1->setPrefix('MINVWS');
+        $documentPrefix1 = new DocumentPrefix('MINVWS');
 
         $entity = new Organisation();
         $entity->setName('Directie Open Overheid');

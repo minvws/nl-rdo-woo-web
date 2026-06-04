@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Webmozart\Assert\Assert;
 
+use function array_key_exists;
 use function sprintf;
 use function strtolower;
 use function ucfirst;
@@ -100,7 +101,7 @@ final readonly class ApiVersionHeaderOpenApiFactoryDecorator implements OpenApiF
 
             $headers = $response->getHeaders() ?? new ArrayObject();
 
-            if (isset($headers[ApiVersionHeaderSubscriber::HEADER_NAME])) {
+            if (array_key_exists(ApiVersionHeaderSubscriber::HEADER_NAME, (array) $headers)) {
                 continue;
             }
 

@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Form\Dossier\WooDecision;
 
-use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Form\Dossier\DossierFormBuilderTrait;
 use Shared\Form\PlainDateType;
 use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
@@ -29,17 +26,16 @@ class PublishType extends AbstractType
         $dossier = $builder->getData();
 
         if ($dossier->getStatus()->isConceptOrScheduled()) {
-            $builder->add('preview_date', DateType::class, [
+            $builder->add('preview_date', PlainDateType::class, [
                 'label' => 'admin.decision.preview_date',
                 'help' => 'admin.decision.preview_date_help',
                 'required' => true,
                 'widget' => 'single_text',
-                'input' => 'datetime_immutable',
-                'data' => $dossier->getPreviewDate() ?? new DateTimeImmutable(),
+                'data' => $dossier->getPreviewDate() ?? PlainDate::today(),
                 'constraints' => [
                     new NotBlank(),
-                    new GreaterThanOrEqual(
-                        new DateTimeImmutable('today midnight'),
+                    new PlainDateAfterOrEqual(
+                        date: 'today',
                         message: 'preview_date_must_be_today_or_future',
                     ),
                 ],

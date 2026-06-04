@@ -13,6 +13,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAtt
 use Shared\Tests\Factory\FileInfoFactory;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
+use function array_key_exists;
+
 /**
  * @extends PersistentObjectFactory<WooDecisionAttachment>
  */
@@ -51,7 +53,7 @@ final class WooDecisionAttachmentFactory extends PersistentObjectFactory
     {
         return $this
             ->afterInstantiate(function (WooDecisionAttachment $attachment, array $attributes): void {
-                if (isset($attributes['overwrite_id'])) {
+                if (array_key_exists('overwrite_id', $attributes)) {
                     $this->entityManager->detach($attachment);
 
                     $reflection = new ReflectionClass($attachment);

@@ -10,8 +10,8 @@ use ApiPlatform\OpenApi\Model\Info;
 use ApiPlatform\OpenApi\Model\PathItem;
 use ApiPlatform\OpenApi\Model\Paths;
 use ApiPlatform\OpenApi\OpenApi;
-use PublicationApi\Api\Publication\PublicationV1Api;
 use PublicationApi\Domain\OpenApi\Decorator\StripApiPrefixFromPathsOpenApiFactoryDecorator;
+use PublicationApi\Domain\OpenApi\PublicationV1Api;
 use Shared\Tests\Unit\UnitTestCase;
 
 use function array_keys;

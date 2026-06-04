@@ -23,7 +23,7 @@ Fill Out Basic Details
   ...  ${type}=${EMPTY}
   ...  ${prefix}=E2E-A
   Generate Dossier Reference Number
-  Fill Text  id=details_title  Robot ${DOSSIER_REFERENCE}
+  Fill Text  id=details_title  Robot Admin ${DOSSIER_REFERENCE}
   IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement' or '${type}' == 'other-publication' or '${type}' == 'advice' or '${type}' == 'request-for-advice'
     Type Text  id=details_date  01012022
   ELSE IF  '${type}' == 'annual-report'
@@ -38,7 +38,7 @@ Fill Out Basic Details
   END
   Select Random Subject
   Select Options By  id=details_documentPrefix_documentPrefix  text  ${prefix}
-  Fill Text  id=details_dossierNr  ${DOSSIER_REFERENCE}
+  Fill Text  id=details_dossierNr  robot-admin-${DOSSIER_REFERENCE}
   Click  "Opslaan en verder"
 
 Select Random Subject

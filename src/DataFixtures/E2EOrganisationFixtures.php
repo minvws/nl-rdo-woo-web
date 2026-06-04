@@ -36,11 +36,8 @@ class E2EOrganisationFixtures extends Fixture implements DependentFixtureInterfa
             return;
         }
 
-        $documentPrefix1 = new DocumentPrefix();
-        $documentPrefix1->setPrefix('E2E-A');
-
-        $documentPrefix2 = new DocumentPrefix();
-        $documentPrefix2->setPrefix('E2E-B');
+        $documentPrefix1 = new DocumentPrefix('E2E-A');
+        $documentPrefix2 = new DocumentPrefix('E2E-B');
 
         $entity = new Organisation();
         $entity->setName($organisationName);

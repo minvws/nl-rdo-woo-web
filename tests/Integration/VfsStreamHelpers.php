@@ -20,11 +20,6 @@ trait VfsStreamHelpers
         string $pathPrefix,
         string $contents = 'This is a test file.',
     ): void {
-        Assert::true(
-            isset($this->root),
-            sprintf('The "root" propery should exist and be an instance of "%s"', vfsStreamDirectory::class),
-        );
-
         $fileInfoPath = $entity->getFileInfo()->getPath();
         Assert::string($fileInfoPath);
 

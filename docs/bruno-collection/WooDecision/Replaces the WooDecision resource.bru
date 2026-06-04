@@ -8,14 +8,14 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+  url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
   body: json
   auth: inherit
 }
 
 params:path {
   organisationId: {{organisationId}}
-  dossierExternalId: E:{{$randomBankAccountIban}}
+  dossierExternalId: {{wooDecisionDossierExternalId}}
 }
 
 body:json {
@@ -30,20 +30,20 @@ body:json {
     },
     "subjectId": "{{subjectId}}",
     "summary": "{{$randomUUID}}",
-    "title": "{{$randomUUID}}",
+    "title": "Bruno {{$randomUUID}}",
     "attachments": [
       {
         "fileName": "{{$randomWords}}.pdf",
         "formalDate": "2026-02-01",
         "language": "NLD",
         "type": "c_d506b718",
-        "externalId": "{{$randomUUID}}",
+        "externalId": "{{wooDecisionAttachmentExternalId}}",
         "grounds": []
       }
     ],
     "dateFrom": "2025-01-01",
     "dateTo": "2025-06-01",
-    "dossierNumber": "{{$randomUUID}}",
+    "dossierNumber": "bruno-{{$randomUUID}}",
     "publicationDate": "2026-02-01",
     "decision": "already_public",
     "reason": "woo_request",
@@ -51,9 +51,9 @@ body:json {
     "documents": [
       {
         "caseNumbers": [],
-        "date": "2025-01-01",
+        "documentDate": "2025-01-01",
         "documentId": "{{$randomUUID}}",
-        "externalId": "{{$randomUUID}}",
+        "externalId": "{{wooDecisionDocumentExternalId}}",
         "familyId": 333,
         "fileName": "{{$randomWords}}.pdf",
         "grounds": [],
@@ -70,19 +70,22 @@ body:json {
   }
 }
 
-script:post-response {
-  if (res.status === 200) {
-  }
-  if (res.status === 400) {
-  }
-  if (res.status === 404) {
-  }
-  if (res.status === 422) {
+script:pre-request {
+  if (bru.isSafeMode()) {
+    throw new Error("Enable develop mode to support the scripts");
   }
   
-  const data = res.getBody();
-  const dossierExternalId = data.externalId;
-  bru.setVar("dossierExternalId", dossierExternalId);
+  const crypto = require('crypto');
+  
+  if (!bru.getEnvVar("wooDecisionDossierExternalId")) {
+    bru.setEnvVar("wooDecisionDossierExternalId", crypto.randomUUID());
+  }
+  if (!bru.getEnvVar("wooDecisionAttachmentExternalId")) {
+    bru.setEnvVar("wooDecisionAttachmentExternalId", crypto.randomUUID());
+  }
+  if (!bru.getEnvVar("wooDecisionDocumentExternalId")) {
+    bru.setEnvVar("wooDecisionDocumentExternalId", crypto.randomUUID());
+  }
 }
 
 docs {
@@ -94,12 +97,12 @@ example {
   description: WooDecision resource updated
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -247,12 +250,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -338,12 +341,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -429,12 +432,12 @@ example {
   description: Unauthorized
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -520,12 +523,12 @@ example {
   description: Forbidden
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -611,12 +614,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -702,12 +705,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -793,12 +796,12 @@ example {
   description: Method Not Allowed
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -884,12 +887,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -984,12 +987,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -1084,12 +1087,12 @@ example {
   description: Internal Server Error
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {

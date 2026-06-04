@@ -24,8 +24,11 @@ script:post-response {
   
   if (org) {
     bru.setEnvVar("organisationId", org.id);
+  } else if (data.length > 0) {
+    console.warn('Set the first organisation found instead of "E2E Test Organisation"');
+    bru.setEnvVar("organisationId", data[0].id);
   } else {
-    console.log("Organisation not found");
+    throw new Error("E2E Test Organisation not found, variable could not be set");
   }
 }
 

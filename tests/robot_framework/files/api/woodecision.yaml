@@ -38,11 +38,11 @@ baseline:
       documents:
        - externalId: <PYTHON GUID>
          caseNumbers: [E2E-CASE-001]
-         date: "2020-06-01"
+         documentDate: "2020-06-01"
          documentId: <ROBOT RANDOM INT>
          familyId: 333
          fileName: quality.doc
-         grounds: [pietjepuk]
+         grounds: [<ROBOT RANDOMIZE>]
          isSuspended: false
          judgement: public
          links: []
@@ -53,11 +53,11 @@ baseline:
          threadId: 12345
        - externalId: <PYTHON GUID>
          caseNumbers: [E2E-CASE-001, E2E-CASE-333]
-         date: "2020-06-02"
+         documentDate: "2020-06-02"
          documentId: <ROBOT RANDOM INT>
          familyId: 333
          fileName: Dit document is meesterlijk.doc
-         grounds: [pietjepuk]
+         grounds: [<ROBOT RANDOMIZE>]
          isSuspended: false
          judgement: public
          links: []
@@ -68,11 +68,11 @@ baseline:
          threadId: 12345
        - externalId: <PYTHON GUID>
          caseNumbers: [E2E-CASE-001, E2E-CASE-333]
-         date: "2020-06-03"
+         documentDate: "2020-06-03"
          documentId: <ROBOT RANDOM INT>
          familyId: 333
          fileName: leipste slides.pptx
-         grounds: [pietjepuk]
+         grounds: [<ROBOT RANDOMIZE>]
          isSuspended: false
          judgement: public
          links: []
@@ -82,21 +82,29 @@ baseline:
          sourceType: spreadsheet
          threadId:
     files:
-      mainDocument: files/dummy.txt
+      mainDocument:
+        file: files/dummy.txt
+        expected_response_status: 204
       attachments:
         - externalId: <PYTHON GUID>
           file: files/dummy.txt
+          expected_response_status: 204
         - externalId: <PYTHON GUID>
           file: files/dummy.txt
+          expected_response_status: 204
       documents:
         - externalId: <PYTHON GUID>
           file: files/dummy.txt
+          expected_response_status: 204
         - externalId: <PYTHON GUID>
           file: files/dummy.txt
+          expected_response_status: 204
         - externalId: <PYTHON GUID>
           file: files/dummy.txt
+          expected_response_status: 204
     expected_response_status: 200
     expected_publication_status: published
+    reuse_previous_request: false
 
 testcases:
 - title: Happy flow
@@ -175,7 +183,9 @@ testcases:
     - name: Create dossier
       request:
         files:
-          mainDocument: files/dummy.txt
+          mainDocument:
+            file: files/dummy.txt
+            expected_response_status: 204
 
 - title: Create dossier with a PDF main document
   steps:
@@ -185,7 +195,9 @@ testcases:
           mainDocument:
             fileName: 16115.pdf
         files:
-          mainDocument: files/filetypes/16115.pdf
+          mainDocument:
+            file: files/filetypes/16115.pdf
+            expected_response_status: 204
 
 - title: Non-unique attachment externalIds
   steps:
@@ -207,8 +219,7 @@ testcases:
               type: c_002fc258
         expected_response_status: 422
 
-- title: Upload zip files # https://github.com/minvws/nl-rdo-woo-web-private/issues/6630
-  tags: [failing]
+- title: Upload zip files
   steps:
     - name: Create dossier
       request:
@@ -225,11 +236,11 @@ testcases:
           documents:
             - externalId: <PYTHON GUID>
               caseNumbers: [E2E-CASE-001]
-              date: "2020-06-01"
+              documentDate: "2020-06-01"
               documentId: <ROBOT RANDOM INT>
               familyId: 333
               fileName: relations.zip
-              grounds: [pietjepuk]
+              grounds: [<ROBOT RANDOMIZE>]
               isSuspended: false
               judgement: public
               links: []
@@ -239,7 +250,9 @@ testcases:
               sourceType: doc
               threadId: 12345
         files:
-          mainDocument: files/woodecision/relations.zip
+          mainDocument:
+            file: files/woodecision/relations.zip
+            expected_response_status: 204
           attachments:
             - externalId: <PYTHON GUID>
               file: files/woodecision/relations.zip
@@ -294,11 +307,11 @@ testcases:
           documents:
             - externalId: <PYTHON GUID>
               caseNumbers: [E2E-CASE-001]
-              date: "2020-06-01"
+              documentDate: "2020-06-01"
               documentId: DOCUMENT-A
               familyId: 111
               fileName: quality.doc
-              grounds: [pietjepuk]
+              grounds: [<ROBOT RANDOMIZE>]
               isSuspended: false
               judgement: public
               links: []
@@ -319,11 +332,11 @@ testcases:
           documents:
             - externalId: <PYTHON GUID>
               caseNumbers: [E2E-CASE-001]
-              date: "2020-06-01"
+              documentDate: "2020-06-01"
               documentId: DOCUMENT-A
               familyId: 111
               fileName: quality.doc
-              grounds: [pietjepuk]
+              grounds: [<ROBOT RANDOMIZE>]
               isSuspended: false
               judgement: public
               links: []
@@ -347,7 +360,7 @@ testcases:
           documents:
             - externalId: <PYTHON GUID>
               caseNumbers: [E2E-CASE-001]
-              date: "2020-06-01"
+              documentDate: "2020-06-01"
               documentId: <ROBOT RANDOM INT>
               familyId: 333
               fileName: magicbytes-fail.xlsx
@@ -364,6 +377,7 @@ testcases:
           documents:
             - externalId: <PYTHON GUID>
               file: files/magicbytes-fail.xlsx
+              expected_response_status: 422
         expected_response_status: 200
         expected_publication_status: concept
     - name: Document processing check
@@ -380,28 +394,151 @@ testcases:
           documents:
             - externalId: <PYTHON GUID>
               caseNumbers: [E2E-CASE-001]
-              date: "2020-06-01"
+              documentDate: "2020-06-01"
               documentId: <ROBOT RANDOM INT>
               familyId: 333
               fileName: quality.doc
-              grounds: [pietjepuk]
+              grounds: [<ROBOT RANDOMIZE>]
               isSuspended: false
               judgement: public
               links: []
               matter: "2025-01"
               refersTo: []
-              remark: Uploading a zip file while fileName says it's a doc.
+              remark: Uploading an xlsx file while metadata says it's a pdf.
               sourceType: doc
               threadId: 12345
         files:
           documents:
             - externalId: <PYTHON GUID>
-              file: files/woodecision/relations.zip
-        expected_response_status: 200
+              file: files/woodecision/productierapport - 10 openbaar waarvan 1 verwisseld.xlsx
+              expected_response_status: 422
         expected_publication_status: concept
     - name: Document processing check
       keyword:
         name: Verify WooDecision Document Processing
         args:
           - processing_failed
+
+- title: Create dossier with invalid grounds
+  steps:
+    - name: Create dossier
+      request:
+        body:
+          mainDocument:
+            grounds: [foobar]
+          attachments:
+            - externalId: <PYTHON GUID>
+              fileName: kranten artikel.txt
+              formalDate: <ROBOT DATE -12>
+              grounds: [foobar]
+              language: NLD
+              type: c_c2f56984
+            - externalId: <PYTHON GUID>
+              fileName: bijbehorende vergunning.txt
+              formalDate: <ROBOT DATE -25>
+              grounds: [foobar]
+              language: NLD
+              type: c_002fc258
+          documents:
+            - externalId: <PYTHON GUID>
+              caseNumbers: [E2E-CASE-001]
+              documentDate: "2020-06-01"
+              documentId: <ROBOT RANDOM INT>
+              familyId: 333
+              fileName: quality.doc
+              grounds: [foobar]
+              isSuspended: false
+              judgement: public
+              links: []
+              matter: "2025-01"
+              refersTo: []
+              remark: "Niets op aan te merken"
+              sourceType: doc
+              threadId: 12345
+        expected_response_status: 422
+
+- title: Change document date requires re-upload
+  steps:
+    - name: Create dossier and upload documents
+      request:
+        body:
+          documents:
+            - externalId: <PYTHON GUID>
+              caseNumbers: [E2E-CASE-001]
+              documentDate: "2020-06-01"
+              documentId: <ROBOT RANDOM INT>
+              familyId: 333
+              fileName: quality.doc
+              grounds: [<ROBOT RANDOMIZE>]
+              isSuspended: false
+              judgement: public
+              links: []
+              matter: "2025-01"
+              refersTo: []
+              remark: "Niets op aan te merken"
+              sourceType: doc
+              threadId: 12345
+        files:
+          mainDocument:
+          documents:
+            - externalId: <PYTHON GUID>
+              file: files/dummy.txt
+              expected_response_status: 204
+        expected_publication_status: concept
+    - name: Wait until all documents are processed
+      keyword:
+        name: Wait For WooDecision Document Processing
+        args:
+          - processed
+    - name: Change document date of metadata
+      keyword:
+        name: Change Document Date
+    - name: Re-send metadata with changed document date, document needs to be re-uploaded
+      reuse_previous_request: true
+      request:
+        body:
+          documents:
+            - externalId: <PYTHON GUID>
+              caseNumbers: [E2E-CASE-001]
+              documentDate: "2020-06-01"
+              documentId: <ROBOT RANDOM INT>
+              familyId: 333
+              fileName: quality.doc
+              grounds: [<ROBOT RANDOMIZE>]
+              isSuspended: false
+              judgement: public
+              links: []
+              matter: "2025-01"
+              refersTo: []
+              remark: "Niets op aan te merken"
+              sourceType: doc
+              threadId: 12345
+        files:
+          mainDocument:
+          attachments: []
+          documents: []
+        expected_publication_status: concept
+    - name: Verify document upload status is upload_required
+      keyword:
+        name: Verify WooDecision Document Processing
+        args:
+          - upload_required
+
+- title: Upload the exact same request twice
+  steps:
+    - name: Create dossier
+      request:
+        files:
+          mainDocument:
+          attachments: []
+          documents: []
+        expected_publication_status: concept
+    - name: Create dossier again with identical request
+      reuse_previous_request: true
+      request:
+        files:
+          mainDocument:
+          attachments: []
+          documents: []
+        expected_publication_status: concept
 

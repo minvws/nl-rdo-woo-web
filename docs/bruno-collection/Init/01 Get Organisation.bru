@@ -1,0 +1,26 @@
+meta {
+  name: Get Organisation
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/organisation
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  const data = res.getBody();
+  
+  const org = data.find(item => item.name === "E2E Test Organisation");
+  
+  if (org) {
+    bru.setEnvVar("organisationId", org.id);
+  } else if (data.length > 0) {
+    console.warn('Set the first organisation found instead of "E2E Test Organisation"');
+    bru.setEnvVar("organisationId", data[0].id);
+  } else {
+    throw new Error("E2E Test Organisation not found, variable could not be set");
+  }
+}

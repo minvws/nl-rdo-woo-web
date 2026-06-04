@@ -15,7 +15,6 @@ use Shared\Tests\Unit\UnitTestCase;
 
 use function end;
 use function iterator_to_array;
-use function key;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -116,13 +115,13 @@ class CsvReaderTest extends UnitTestCase
         // First row has a valid date
         self::assertEquals(
             new DateTimeImmutable('2022-10-09 13:34'),
-            $this->csvReader->getDateTime(key($rows), 'date'),
+            $this->csvReader->getDateTime(1, 'date'),
         );
 
         // Last row has an empty value in date column
         end($rows);
         $this->expectException(FileReaderException::class);
-        $this->csvReader->getDateTime(key($rows), 'date');
+        $this->csvReader->getDateTime(2, 'date');
     }
 
     public function testGetDateTimeThrowsExceptionForInvalidDate(): void

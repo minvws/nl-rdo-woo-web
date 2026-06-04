@@ -76,42 +76,6 @@ parameters:
 			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
 
 		-
-			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
-
-		-
-			message: '#^Cannot call method getInt\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
-
-		-
-			message: '#^Cannot call method getIterable\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
-
-		-
-			message: '#^Cannot call method getString\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
-
-		-
-			message: '#^Method Shared\\Domain\\Search\\Index\\Rollover\\RolloverCounter\:\:getElasticCounts\(\) should return array\<string, array\{count\: int, subtypes\?\: non\-empty\-array\<string, array\{count\: int, pages\: int\}\>\}\> but returns array\<string, array\{count\: mixed, subtypes\?\: non\-empty\-array\<string, array\{count\: mixed, pages\: mixed\}\>\}\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
-
-		-
-			message: '#^Parameter \#1 \$array of function array_intersect expects an array of values castable to string, list\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Domain/Search/Query/Facet/Definition/AbstractInquiryFacet.php
-
-		-
 			message: '''
 				#^Call to deprecated method getParamName\(\) of enum Shared\\Service\\Search\\Model\\FacetKey\:
 				use FacetDefinition\:\:\$requestParameter instead, see WOO\-6328$#
@@ -136,28 +100,10 @@ parameters:
 			path: src/Domain/WooIndex/Producer/UrlProducer.php
 
 		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|GMP\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/EventSubscriber/LocaleListener.php
-
-		-
 			message: '#^Cannot access offset mixed on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: src/Form/ChoiceTypeWithHelp.php
-
-		-
-			message: '#^Parameter \#3 \$options of method Symfony\\Component\\Form\\Extension\\Core\\Type\\ChoiceType\:\:finishView\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Form/ChoiceTypeWithHelp.php
-
-		-
-			message: '#^Parameter \$values of static method Erichard\\ElasticQueryBuilder\\Query\\Query\:\:terms\(\) expects array\<int, bool\|float\|int\|string\>, array\<string\> given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Service/Search/Query/Condition/ContentAccessConditionBuilder.php
 
 		-
 			message: '#^Method Shared\\Service\\Search\\Query\\Dsl\\GlobalAggregation\:\:build\(\) should return array\<string, mixed\> but returns array\.$#'
@@ -236,30 +182,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Service/Search/SearchService.php
-
-		-
-			message: '#^Method Shared\\Service\\Security\\ApiUser\:\:getUserIdentifier\(\) should return non\-empty\-string but returns string\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Service/Security/ApiUser.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|GMP\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Twig/Runtime/CspExtensionRuntime.php
-
-		-
-			message: '#^Anonymous function should return bool but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Unit/Domain/Department/Twig/DepartmentsTest.php
-
-		-
-			message: '#^Parameter \#1 \$loader of class Shared\\Domain\\Ingest\\Content\\LazyFileReference constructor expects callable\(\)\: mixed, Mockery\\MockInterface given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Unit/Domain/Ingest/Content/LazyFileReferenceTest.php
 
 		-
 			message: '#^Cannot access offset ''bool'' on mixed\.$#'
@@ -479,39 +401,3 @@ parameters:
 			identifier: method.deprecated
 			count: 1
 			path: tests/Unit/Domain/Search/Query/SearchParametersFactoryTest.php
-
-		-
-			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getDateTime\(\) expects int, int\|string\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Unit/Service/FileReader/CsvReaderTest.php
-
-		-
-			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getDateTime\(\) expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Unit/Service/FileReader/CsvReaderTest.php
-
-		-
-			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getInt\(\) expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Unit/Service/FileReader/CsvReaderTest.php
-
-		-
-			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getOptionalDateTime\(\) expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Unit/Service/FileReader/CsvReaderTest.php
-
-		-
-			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getOptionalInt\(\) expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Unit/Service/FileReader/CsvReaderTest.php
-
-		-
-			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getOptionalString\(\) expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Unit/Service/FileReader/CsvReaderTest.php

@@ -4,7 +4,7 @@ description: Compose action that sets up node
 inputs:
   node-version:
     description: The node version
-    default: "20"
+    default: "22"
   github-token:
     description: Add a Github Token which will be used for fetching node and npm packages
   run-npm-build:
@@ -22,6 +22,10 @@ runs:
         cache: npm
         registry-url: https://npm.pkg.github.com
         token: ${{ inputs.github-token }}
+
+    - name: Enable corepack
+      shell: bash
+      run: corepack enable npm
 
     - name: Install npm dependencies
       shell: bash

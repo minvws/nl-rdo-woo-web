@@ -1,0 +1,88 @@
+baseline:
+  skip: false
+  tags: []
+  request:
+    body:
+      departmentId: <ROBOT SELECT>
+      dossierDate: <ROBOT DATE -1>
+      dossierNumber: <ROBOT RANDOMIZE>
+      publicationDate: <ROBOT DATE -1>
+      subjectId: <ROBOT SELECT>
+      summary: |
+        Officer factor language reveal Mrs color space. Always conference themselves study over.
+        Seem happen civil begin that out. Occur either couple parent appear operation hair simple.
+      title: <ROBOT RANDOMIZE>
+      mainDocument:
+        fileName: dummy.txt
+        formalDate: <ROBOT DATE -1>
+        grounds: [<ROBOT RANDOMIZE>]
+        language: NLD
+        type: c_38ba44de
+      attachments:
+        - externalId: <PYTHON GUID>
+          fileName: kranten artikel.txt
+          formalDate: <ROBOT DATE -12>
+          grounds: [<ROBOT RANDOMIZE>]
+          language: NLD
+          type: c_002fc258
+        - externalId: <PYTHON GUID>
+          fileName: bijbehorende vergunning.txt
+          formalDate: <ROBOT DATE -25>
+          grounds: [<ROBOT RANDOMIZE>]
+          language: NLD
+          type: c_03c52ba0
+    files:
+      mainDocument:
+        file: files/dummy.txt
+        expected_response_status: 204
+      attachments:
+        - externalId: <PYTHON GUID>
+          file: files/dummy.txt
+          expected_response_status: 204
+        - externalId: <PYTHON GUID>
+          file: files/dummy.txt
+          expected_response_status: 204
+    expected_response_status: 200
+    expected_publication_status: published
+
+testcases:
+- title: Happy flow
+  steps:
+    - name: Create dossier
+      request: {}
+
+- title: Create without uploading main document
+  steps:
+    - name: Create dossier
+      request:
+        files:
+          mainDocument:
+        expected_publication_status: concept
+
+- title: Create without attachments and without uploading a main document
+  steps:
+    - name: Create dossier
+      request:
+        body:
+          attachments: []
+        files:
+          attachments: []
+          mainDocument:
+        expected_publication_status: concept
+
+- title: Upload the exact same request twice
+  steps:
+    - name: Create dossier
+      request:
+        files:
+          mainDocument:
+          attachments: []
+          documents: []
+        expected_publication_status: concept
+    - name: Create dossier again with identical request
+      reuse_previous_request: true
+      request:
+        files:
+          mainDocument:
+          attachments: []
+        expected_publication_status: concept

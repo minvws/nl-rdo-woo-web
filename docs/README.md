@@ -6,6 +6,7 @@ De `bruno-collection` map bevat een Collection die je in de open-source API tool
 
 1. [Download](https://www.usebruno.com/downloads), installeer en open Bruno.
 2. Klik op het plusje linksboven en kies **Open collection**. Kies de bruno-collection map in de repo.
+3. Als er rechtsboven een groen schildje met vinkje te zien is dan zit je in safe mode. Klik hierop en schakel de `developer mode` in waarna icoontje verandert naar `</>`. Dit is nodig voor de uitvoer van pre-request scripts.
 
 ### Lokaal
 

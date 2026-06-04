@@ -11,6 +11,8 @@ use PublicationApi\Domain\OpenApi\Schema\Component\OpenApiSchemasComponentProvid
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
+use function array_key_exists;
+
 #[AsDecorator(decorates: 'api_platform.openapi.factory')]
 final readonly class SchemasComponentOpenApiFactoryDecorator implements OpenApiFactoryInterface
 {
@@ -52,7 +54,7 @@ final readonly class SchemasComponentOpenApiFactoryDecorator implements OpenApiF
             $providedSchemas = $provider->getSchemas();
 
             foreach ($providedSchemas as $key => $schema) {
-                if (isset($schemas[$key])) {
+                if (array_key_exists($key, (array) $schemas)) {
                     continue;
                 }
 

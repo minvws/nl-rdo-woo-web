@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Admin\Api\Admin\Publication\Search;
 
+use Admin\Api\Admin\Publication\ContextGetter;
 use Admin\Service\Search\Query\Definition\AdminDossiersAndDocumentsQueryDefinition;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use PublicationApi\Api\Publication\ContextGetter;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;

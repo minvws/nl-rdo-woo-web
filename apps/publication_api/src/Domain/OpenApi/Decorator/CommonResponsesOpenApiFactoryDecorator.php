@@ -28,7 +28,7 @@ final class CommonResponsesOpenApiFactoryDecorator implements OpenApiFactoryInte
     /**
      * @var array<array-key,OperationResponseDefinition>
      */
-    private array $commonResponses;
+    private array $commonResponses = [];
 
     /**
      * @param iterable<array-key,OpenApiCommonResponsesProvider> $commonResponsesProviders
@@ -134,7 +134,7 @@ final class CommonResponsesOpenApiFactoryDecorator implements OpenApiFactoryInte
      */
     private function getCommonResponses(): array
     {
-        if (isset($this->commonResponses)) {
+        if ($this->commonResponses !== []) {
             return $this->commonResponses;
         }
 

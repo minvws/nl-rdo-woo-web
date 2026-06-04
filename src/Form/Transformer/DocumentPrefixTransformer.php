@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Symfony\Component\Form\DataTransformerInterface;
 
+use function array_key_exists;
 use function is_array;
 use function is_null;
 
@@ -31,7 +32,7 @@ class DocumentPrefixTransformer implements DataTransformerInterface
 
     public function reverseTransform(mixed $value): string
     {
-        if (! is_array($value) || ! isset($value['documentPrefix']) || ! $value['documentPrefix'] instanceof DocumentPrefix) {
+        if (! is_array($value) || ! array_key_exists('documentPrefix', $value) || ! $value['documentPrefix'] instanceof DocumentPrefix) {
             return '';
         }
 

@@ -22,6 +22,7 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Webmozart\Assert\Assert;
 
+use function array_key_exists;
 use function strval;
 
 abstract class AbstractAttachmentProcessor implements ProcessorInterface
@@ -52,7 +53,7 @@ abstract class AbstractAttachmentProcessor implements ProcessorInterface
         $dossierId = Uuid::fromString(strval($uriVariables['dossierId']));
         $this->dossierAccessChecker->ensureUserIsAllowedToUpdateDossier($dossierId);
 
-        $attachmentId = isset($uriVariables['attachmentId']) ? Uuid::fromString($uriVariables['attachmentId']) : null;
+        $attachmentId = array_key_exists('attachmentId', $uriVariables) ? Uuid::fromString($uriVariables['attachmentId']) : null;
 
         try {
             return match (true) {

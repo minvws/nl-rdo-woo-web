@@ -15,21 +15,24 @@ baseline:
       mainDocument:
         fileName: dummy.txt
         formalDate: <ROBOT DATE -1>
-        grounds: []
+        grounds: [<ROBOT RANDOMIZE>]
         language: NLD
         type: c_2ab17960
       attachments:
         - externalId: <PYTHON GUID>
           fileName: attachment.txt
           formalDate: <ROBOT DATE -1>
-          grounds: []
+          grounds: [<ROBOT RANDOMIZE>]
           language: NLD
           type: c_03c52ba0
     files:
-      mainDocument: files/dummy.txt
+      mainDocument:
+        file: files/dummy.txt
+        expected_response_status: 204
       attachments:
         - externalId: <PYTHON GUID>
           file: files/dummy.txt
+          expected_response_status: 204
     expected_response_status: 200
     expected_publication_status: published
 
@@ -68,4 +71,21 @@ testcases:
         files:
           attachments: []
           mainDocument:
+        expected_publication_status: concept
+
+- title: Upload the exact same request twice
+  steps:
+    - name: Create dossier
+      request:
+        files:
+          mainDocument:
+          attachments: []
+          documents: []
+        expected_publication_status: concept
+    - name: Create dossier again with identical request
+      reuse_previous_request: true
+      request:
+        files:
+          mainDocument:
+          attachments: []
         expected_publication_status: concept

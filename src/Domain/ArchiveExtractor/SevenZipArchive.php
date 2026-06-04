@@ -14,15 +14,16 @@ use SplFileInfo;
 
 final class SevenZipArchive implements ArchiveInterface
 {
-    private Archive7z $archive;
+    private ?Archive7z $archive = null;
 
-    public function __construct(private readonly SevenZipArchiveFactory $factory)
-    {
+    public function __construct(
+        private readonly SevenZipArchiveFactory $factory,
+    ) {
     }
 
     public function open(SplFileInfo $file): void
     {
-        if (isset($this->archive)) {
+        if ($this->archive !== null) {
             throw ArchiveLogicException::forArchiveIsAlreadyOpen($file);
         }
 
@@ -31,22 +32,22 @@ final class SevenZipArchive implements ArchiveInterface
 
     public function close(): void
     {
-        if (! isset($this->archive)) {
+        if ($this->archive === null) {
             throw ArchiveLogicException::forNoOpenArchive();
         }
 
-        unset($this->archive);
+        $this->archive = null;
     }
 
     public function extract(string $destination): void
     {
-        if (! isset($this->archive)) {
+        if ($this->archive === null) {
             throw ArchiveLogicException::forNoOpenArchive();
         }
 
         try {
             $this->archive->setOutputDirectory($destination);
-        } catch (Exception $e) {
+        } catch (Exception) {
             throw ArchiveMissingDestinationException::create($destination);
         }
 

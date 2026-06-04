@@ -17,26 +17,18 @@ class InquiryLinkImportParserTest extends UnitTestCase
 {
     use MatchesSnapshots;
 
-    private InquiryLinkImportParser $parser;
-
-    protected function setUp(): void
-    {
-        $this->parser = new InquiryLinkImportParser(
-            new ExcelReaderFactory(),
-        );
-
-        parent::setUp();
-    }
-
     public function testParse(): void
     {
         $input = new UploadedFile(__DIR__ . '/input.xlsx', 'input.xlsx');
 
-        $prefix = new DocumentPrefix();
-        $prefix->setPrefix('TEST');
+        $prefix = new DocumentPrefix('TEST');
+
+        $parser = new InquiryLinkImportParser(
+            new ExcelReaderFactory(),
+        );
 
         $this->assertMatchesSnapshot(
-            iterator_to_array($this->parser->parse($input, $prefix)),
+            iterator_to_array($parser->parse($input, $prefix)),
         );
     }
 }

@@ -51,7 +51,7 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
     private ?AnnualReportMainDocument $document;
 
     /** @var Collection<array-key,AnnualReportAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: AnnualReportAttachment::class, cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: AnnualReportAttachment::class, cascade: ['persist'], orphanRemoval: true)]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 

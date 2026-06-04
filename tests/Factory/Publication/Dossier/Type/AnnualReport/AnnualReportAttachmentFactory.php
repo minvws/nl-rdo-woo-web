@@ -14,6 +14,8 @@ use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
+use function array_key_exists;
+
 /**
  * @extends PersistentObjectFactory<AnnualReportAttachment>
  */
@@ -52,7 +54,7 @@ final class AnnualReportAttachmentFactory extends PersistentObjectFactory
     {
         return $this
             ->afterInstantiate(function (AnnualReportAttachment $attachment, array $attributes): void {
-                if (isset($attributes['overwrite_id'])) {
+                if (array_key_exists('overwrite_id', $attributes)) {
                     $this->entityManager->detach($attachment);
 
                     $reflection = new ReflectionClass($attachment);

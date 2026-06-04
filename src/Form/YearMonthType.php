@@ -125,7 +125,7 @@ class YearMonthType extends ChoiceType
             'reverse' => $options[self::REVERSE],
         ];
 
-        if (isset($options['dossier']) && $options['dossier'] instanceof AbstractDossier) {
+        if (array_key_exists('dossier', $options) && $options['dossier'] instanceof AbstractDossier) {
             $choiceOptions['minDate'] = PlainDate::create($options['dossier']->getCreatedAt()->format('Y-m-d'))->subYears($minYears);
         }
 

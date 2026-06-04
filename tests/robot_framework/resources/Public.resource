@@ -13,9 +13,13 @@ Library             DependencyLibrary
 Resource            Generic.resource
 
 
+*** Variables ***
+${URL_PUBLIC}   ${EMPTY}
+
+
 *** Keywords ***
 Go To Public
-  Go To  %{URL_PUBLIC}
+  Go To  ${URL_PUBLIC}
 
 Search On Public For
   [Documentation]  Provide the expected search results. '0 resultaten' can be used to expect no results.
@@ -87,23 +91,28 @@ Select Filter Options - Dossier
     IF  not ${publications}
       Wait For Elements State  //input[@data-e2e-name="input_${id}.publication"]  visible
       Uncheck Checkbox  //input[@data-e2e-name="input_${id}.publication"]
+      Wait For Load State  networkidle
     END
     IF  not ${main_document}
       IF  '${dossier_type}' == 'woo-decision'
         Wait For Elements State  //input[@data-e2e-name="input_${id}.woo_decision_main_document"]  visible
         Uncheck Checkbox  //input[@data-e2e-name="input_${id}.woo_decision_main_document"]
+        Wait For Load State  networkidle
       ELSE
         Wait For Elements State  //input[@data-e2e-name="input_${id}.${id}_main_document"]  visible
         Uncheck Checkbox  //input[@data-e2e-name="input_${id}.${id}_main_document"]
+        Wait For Load State  networkidle
       END
     END
     IF  '${dossier_type}' == 'woo-decision' and not ${documents}
       Wait For Elements State  //input[@data-e2e-name="input_${id}.document"]  visible
       Uncheck Checkbox  //input[@data-e2e-name="input_${id}.document"]
+      Wait For Load State  networkidle
     END
     IF  not ${attachments} and '${dossier_type}' != 'complaint-judgement'
       Wait For Elements State  //input[@data-e2e-name="input_${id}.attachment"]  visible
       Uncheck Checkbox  //input[@data-e2e-name="input_${id}.attachment"]
+      Wait For Load State  networkidle
     END
   ELSE
     Uncheck Checkbox  id=input_${id}
@@ -153,8 +162,11 @@ Select Filter Options - Document Type
   END
 
 Click First Search Result With Documents
+  Wait For Load State  networkidle
   ${elements} =  Get Elements  css=li[data-e2e-name="search-result"]
   FOR  ${element}  IN  @{elements}
+    ${count} =  Get Element Count  ${element} >> ul li[data-e2e-name="nr-of-documents"]
+    IF  ${count} == 0  CONTINUE
     ${text} =  Get Text  ${element} >> ul li[data-e2e-name="nr-of-documents"]
     VAR  ${text} =  ${text.strip()}
     IF  '${text}' != '0 documenten'

@@ -55,7 +55,7 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     private ?RequestForAdviceMainDocument $document;
 
     /** @var Collection<array-key,RequestForAdviceAttachment> */
-    #[ORM\OneToMany(targetEntity: RequestForAdviceAttachment::class, mappedBy: 'dossier', cascade: ['persist'])]
+    #[ORM\OneToMany(targetEntity: RequestForAdviceAttachment::class, mappedBy: 'dossier', cascade: ['persist'], orphanRemoval: true)]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 

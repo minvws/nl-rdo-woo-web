@@ -15,6 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Webmozart\Assert\Assert;
 
+use function array_key_exists;
 use function parse_url;
 
 #[AsCommand(name: 'woopie:where', description: 'Returns path information about a URL', help: 'Returns path information about a URL')]
@@ -57,7 +58,7 @@ class Where extends Command
 
         $output->writeln("<info>Matched {$parts['path']} to {$match['_route']}</info>");
 
-        if (! isset($match['dossierId'])) {
+        if (! array_key_exists('dossierId', $match)) {
             $output->writeln('<error>No dossierId found</error>');
 
             return self::FAILURE;
@@ -70,7 +71,7 @@ class Where extends Command
             return self::FAILURE;
         }
 
-        if (isset($match['documentId'])) {
+        if (array_key_exists('documentId', $match)) {
             $document = $this->documentRepository->findOneBy(['documentNr' => $match['documentId']]);
             $documents = [$document];
         } else {

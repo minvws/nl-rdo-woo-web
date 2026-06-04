@@ -34,6 +34,8 @@ final class DepartmentFactory extends PersistentObjectFactory
             'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'fileInfo' => FileInfoFactory::new(),
+            'feedbackContent' => null,
+            'responsibilityContent' => null,
         ];
     }
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\History;
 
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -39,7 +38,7 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getId')->times(3)->andReturn(Uuid::v6());
         $dossier->expects('getPublicationDate')->andReturn(PlainDate::today());
-        $dossier->expects('getPreviewDate')->andReturn(new DateTimeImmutable());
+        $dossier->expects('getPreviewDate')->andReturn(PlainDate::today());
 
         $preUpdateArgs->expects('hasChangedField')->with('decisionDate')->andReturnTrue();
         $preUpdateArgs->expects('getOldValue')->times(2)->with('decisionDate')->andReturn('foo');

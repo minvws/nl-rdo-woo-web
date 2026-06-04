@@ -34,8 +34,8 @@ readonly class Extractor
             throw ExtractorException::forFailingToOpenArchive($file, $e);
         }
 
+        $tempDir = $this->filesystem->createTempDir();
         try {
-            $tempDir = $this->filesystem->createTempDir();
             if ($tempDir === false) {
                 throw ExtractorException::forFailingToCreateTempDir($file);
             }
@@ -48,7 +48,7 @@ readonly class Extractor
         } finally {
             $this->archive->close();
 
-            if (isset($tempDir) && $tempDir !== false) {
+            if ($tempDir !== false) {
                 $this->filesystem->deleteDirectory($tempDir);
             }
         }

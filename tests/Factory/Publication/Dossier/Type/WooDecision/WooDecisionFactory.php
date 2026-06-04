@@ -69,7 +69,7 @@ final class WooDecisionFactory extends PersistentObjectFactory
             'departments' => [DepartmentFactory::new()],
             'mainDocument' => WooDecisionMainDocumentFactory::new(),
             'status' => DossierStatus::SCHEDULED,
-            'previewDate' => self::faker()->optional()->dateTimeBetween('+1 week', '+2 weeks'),
+            'previewDate' => self::faker()->optional()->plainDateBetween('+1 week', '+2 weeks'),
             'publicationDate' => self::faker()->plainDateBetween('+1 week', '+2 weeks'),
         ]);
     }

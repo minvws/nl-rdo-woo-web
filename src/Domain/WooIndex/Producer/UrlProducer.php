@@ -44,8 +44,10 @@ final readonly class UrlProducer
      */
     private function doChunking(Generator $producer, int $chunkSize): Generator
     {
+        $chunkGen = null;
+
         while ($producer->valid()) {
-            if (isset($chunkGen) && $chunkGen->valid()) {
+            if ($chunkGen !== null && $chunkGen->valid()) {
                 throw UnconsumedPreviousChunkGeneratorException::create();
             }
 

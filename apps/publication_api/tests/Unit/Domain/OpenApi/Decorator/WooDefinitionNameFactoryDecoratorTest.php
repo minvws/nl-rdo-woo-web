@@ -7,8 +7,8 @@ namespace PublicationApi\Tests\Unit\Domain\OpenApi\Decorator;
 use ApiPlatform\JsonSchema\DefinitionNameFactoryInterface;
 use ApiPlatform\Metadata\Operation;
 use Mockery;
-use PublicationApi\Api\Publication\Dossier\WooDecision\WooDecisionRequestDto;
-use PublicationApi\Api\Publication\Dossier\WooDecision\WooDecisionResponseDto;
+use PublicationApi\Api\Dossier\WooDecision\WooDecisionRequestDto;
+use PublicationApi\Api\Dossier\WooDecision\WooDecisionResponseDto;
 use PublicationApi\Domain\OpenApi\Decorator\WooDefinitionNameFactoryDecorator;
 use Shared\Tests\Unit\UnitTestCase;
 

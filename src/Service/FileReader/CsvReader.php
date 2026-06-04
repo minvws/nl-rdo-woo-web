@@ -25,7 +25,7 @@ use function strval;
  */
 class CsvReader implements FileReaderInterface
 {
-    /** @var array<int,array<array-key,mixed>> */
+    /** @var array<int, array<array-key,mixed>> */
     protected array $rows = [];
 
     public function __construct(protected readonly string $filepath, protected readonly HeaderMap $mapping)
@@ -54,6 +54,7 @@ class CsvReader implements FileReaderInterface
         unset($this->rows[0]);
     }
 
+    /** @return Generator<int, array<array-key, mixed>> */
     public function getIterator(): Generator
     {
         foreach ($this->rows as $idx => $row) {

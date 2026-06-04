@@ -53,7 +53,7 @@ class InvestigationReport extends AbstractDossier implements EntityWithAttachmen
     private ?InvestigationReportMainDocument $document;
 
     /** @var Collection<array-key,InvestigationReportAttachment> */
-    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: InvestigationReportAttachment::class, cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'dossier', targetEntity: InvestigationReportAttachment::class, cascade: ['persist'], orphanRemoval: true)]
     #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
     private Collection $attachments;
 

@@ -12,11 +12,13 @@ use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Form\Dossier\RequestForAdvice\ContentFormType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Webmozart\Assert\Assert;
 
 class ContentStepController extends AbstractController
 {
@@ -134,6 +136,7 @@ class ContentStepController extends AbstractController
     {
         $errors = [];
         foreach ($form->get('advisoryBodies')->getErrors(true) as $error) {
+            Assert::isInstanceOf($error, FormError::class);
             $errors[] = $error->getMessage();
         }
 

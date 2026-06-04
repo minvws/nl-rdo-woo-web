@@ -32,7 +32,6 @@ return RectorConfig::configure()
         RestoreDefaultNullToNullableTypePropertyRector::class,
         StringClassNameToClassConstantRector::class => [
             __DIR__ . '/tests',
-            __DIR__ . '/src/class_aliases.php',
         ],
         DeprecatedAnnotationToDeprecatedAttributeRector::class,
         __DIR__ . '/utils/tests/PHPStan/**/data/*'

@@ -29,7 +29,7 @@ trait IntegrationTestTrait
     use Factories;
     use CarbonHelpers;
 
-    protected Generator $faker;
+    protected ?Generator $faker = null;
 
     abstract protected static function getApplicationId(): ApplicationId;
 
@@ -61,7 +61,7 @@ trait IntegrationTestTrait
 
     public function getFaker(): Generator
     {
-        if (! isset($this->faker)) {
+        if ($this->faker === null) {
             $container = $this->getContainer();
 
             $faker = $container->get(Generator::class);

@@ -8,6 +8,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 readonly class ApiUser implements UserInterface
 {
+    /**
+     * @param non-empty-string $commonName
+     */
     public function __construct(
         private string $commonName,
     ) {

@@ -12,6 +12,8 @@ use PublicationApi\Domain\OpenApi\Schema\Component\OpenApiResponsesComponentProv
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
+use function array_key_exists;
+
 #[AsDecorator(decorates: 'api_platform.openapi.factory')]
 final readonly class ResponsesComponentOpenApiFactoryDecorator implements OpenApiFactoryInterface
 {
@@ -53,7 +55,7 @@ final readonly class ResponsesComponentOpenApiFactoryDecorator implements OpenAp
             $providedResponses = $provider->getResponses();
 
             foreach ($providedResponses as $key => $response) {
-                if (isset($responses[$key])) {
+                if (array_key_exists($key, (array) $responses)) {
                     continue;
                 }
 

@@ -13,6 +13,7 @@ use Shared\Domain\Publication\Attachment\Repository\AttachmentRepositoryInterfac
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
+use function array_key_exists;
 use function strval;
 
 abstract readonly class AbstractAttachmentProvider implements ProviderInterface
@@ -33,7 +34,7 @@ abstract readonly class AbstractAttachmentProvider implements ProviderInterface
 
         Assert::allString($uriVariables);
         $dossierId = Uuid::fromString(strval($uriVariables['dossierId']));
-        $attachmentId = isset($uriVariables['attachmentId']) ? Uuid::fromString($uriVariables['attachmentId']) : null;
+        $attachmentId = array_key_exists('attachmentId', $uriVariables) ? Uuid::fromString($uriVariables['attachmentId']) : null;
 
         if ($operation instanceof CollectionOperationInterface) {
             return $this->getAttachmentRepository()

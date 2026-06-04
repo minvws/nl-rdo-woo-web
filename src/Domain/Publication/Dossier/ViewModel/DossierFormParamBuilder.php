@@ -7,8 +7,10 @@ namespace Shared\Domain\Publication\Dossier\ViewModel;
 use Doctrine\Common\Collections\Collection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 readonly class DossierFormParamBuilder
 {
@@ -64,6 +66,8 @@ readonly class DossierFormParamBuilder
     {
         $errors = [];
         foreach ($form->get('departments')->getErrors(true) as $error) {
+            Assert::isInstanceOf($error, FormError::class);
+
             $errors[] = $error->getMessage();
         }
 

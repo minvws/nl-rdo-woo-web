@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Domain\Publication\Dossier\Workflow\Guard;
 
-use DateTimeImmutable;
 use Psr\Log\NullLogger;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\Guard\DossierWorkflowGuard;
@@ -24,9 +23,9 @@ class DossierWorkflowGuardTest extends SharedWebTestCase
             ->scheduled()
             ->create([
                 'dateFrom' => PlainDate::today(),
-                'dateTo' => PlainDate::create(new DateTimeImmutable('+1 week')->format('Y-m-d')),
-                'previewDate' => new DateTimeImmutable('-1 week'),
-                'publicationDate' => PlainDate::create(new DateTimeImmutable('-1 week')->format('Y-m-d')),
+                'dateTo' => PlainDate::today()->addDays(7),
+                'previewDate' => PlainDate::today()->subDays(7),
+                'publicationDate' => PlainDate::today()->subDays(7),
             ]);
 
         $validator = self::fromContainer(ValidatorInterface::class);

@@ -1,0 +1,42 @@
+-
+    incomplete: true
+    immutable: false
+    downloadable: false
+    uploaded: false
+    name: INCOMPLETE
+    value: incomplete
+-
+    incomplete: false
+    immutable: false
+    downloadable: true
+    uploaded: true
+    name: UPLOADED
+    value: uploaded
+-
+    incomplete: false
+    immutable: true
+    downloadable: false
+    uploaded: false
+    name: VALIDATION_FAILED
+    value: validation_failed
+-
+    incomplete: false
+    immutable: false
+    downloadable: true
+    uploaded: false
+    name: VALIDATION_PASSED
+    value: validation_passed
+-
+    incomplete: false
+    immutable: true
+    downloadable: false
+    uploaded: false
+    name: STORED
+    value: stored
+-
+    incomplete: false
+    immutable: true
+    downloadable: false
+    uploaded: false
+    name: ABORTED
+    value: aborted

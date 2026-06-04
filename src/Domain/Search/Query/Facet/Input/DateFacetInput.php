@@ -11,6 +11,7 @@ use Shared\Service\Utils\CastTypes;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Webmozart\Assert\Assert;
 
+use function array_key_exists;
 use function strlen;
 use function trim;
 
@@ -27,7 +28,7 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
         $values = $bag->all($facet->getRequestParameter());
 
         $withoutDate = false;
-        if (isset($values[self::WITHOUT_DATE])) {
+        if (array_key_exists(self::WITHOUT_DATE, $values)) {
             $rawWithoutDate = $values[self::WITHOUT_DATE];
             Assert::nullOrScalar($rawWithoutDate);
 

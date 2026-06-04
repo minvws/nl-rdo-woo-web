@@ -7,17 +7,18 @@ on:
         description: Robot Framework test tag
         required: true
         type: string
-        default: testdossiers
+        default: test-acc
 
 env:
   CR_PAT: ${{ secrets.GITHUB_TOKEN }}
-  TEST_TAG: ${{ inputs.test_tag || 'testdossiers' }}
+  TEST_TAG: ${{ inputs.test_tag || 'test-acc' }}
   GITHUB_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }} # For gh cli too
 
 jobs:
-  e2e-tests:
-    name: Run E2E tests on Test
+  e2e-tests-app:
+    name: Run E2E tests on Test (app)
     runs-on: ubuntu-24.04
+    if: ${{ inputs.test_tag != 'api' }}
     steps:
       - uses: actions/checkout@v6
       - name: Setup Robot Framework test stack
@@ -30,10 +31,12 @@ jobs:
         run: |
           echo "${{ secrets.CLIENT_CERT_TEST }}" > certs/test/client-minvws-combined.pem
           echo "${{ secrets.CLIENT_KEY_TEST }}" > certs/test/client-minvws.key
-      - name: Create .env.rf.test
+          echo "${{ secrets.CA_BUNDLE_TEST }}" > certs/test/client-bundle.pem
+      - name: Create tenant env file
         shell: bash
         run: |
-          cat > tests/robot_framework/.env.rf.test << 'EOF'
+          mkdir -p tests/robot_framework/envs
+          cat > tests/robot_framework/envs/.env.rf.test.minvws << 'EOF'
           ENVIRONMENT=test
           HEADLESS=true
           URL_PUBLIC=${{ secrets.URL_PUBLIC_TEST }}
@@ -46,14 +49,83 @@ jobs:
           URL_API=${{ secrets.URL_API_TEST }}
           CLIENT_CERT=./certs/test/client-minvws-combined.pem
           CLIENT_KEY=./certs/test/client-minvws.key
+          CA_BUNDLE=./certs/test/client-bundle.pem
+          EOF
+          cat > tests/robot_framework/envs/.env.rf.test.minfin << 'EOF'
+          ENVIRONMENT=test
+          HEADLESS=true
+          URL_PUBLIC=${{ secrets.URL_PUBLIC_TEST }}
+          URL_ADMIN=${{ secrets.URL_ADMIN_TEST }}
+          HTACCESS_USERNAME=${{ secrets.USERNAME_WOO_TEST }}
+          HTACCESS_PASSWORD=${{ secrets.PASSWORD_WOO_TEST }}
+          ADMIN_EMAIL=${{ secrets.EMAIL_WOO_TEST_BALIE }}
+          ADMIN_PASSWORD=${{ secrets.PASSWORD_WOO_TEST_BALIE }}
+          ADMIN_SECRET=${{ secrets.SECRET_WOO_TEST_BALIE }}
+          URL_API=${{ secrets.URL_API_TEST }}
+          CLIENT_CERT=./certs/test/client-minfin-combined.pem
+          CLIENT_KEY=./certs/test/client-minfin.key
+          CA_BUNDLE=./certs/test/client-bundle.pem
           EOF
       - name: Run Robot Framework tests
-        run: task rf:test:run tag=${{ inputs.test_tag || 'ci' }}
+        run: task rf:test:run tag=${{ env.TEST_TAG }}
       - name: Upload test results
         uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
-          name: reports
+          name: robot-report-app
+          path: tests/robot_framework/results
+      - name: Publish test results
+        uses: minvws/action-robotframework-summary@v1.0.0
+        if: ${{ always() }}
+        with:
+          output_file: tests/robot_framework/results/output.xml
+          endpoints: ${{ secrets.URL_PUBLIC_TEST }}
+          username: ${{ secrets.USERNAME_WOO_TEST }}
+          password: ${{ secrets.PASSWORD_WOO_TEST }}
+
+  e2e-tests-api:
+    name: Run E2E tests on Test (API)
+    runs-on: ubuntu-24.04
+    if: ${{ inputs.test_tag == 'test-acc' || inputs.test_tag == 'api' }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Robot Framework test stack
+        uses: ./.github/actions/setup-rf
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          robot-only: true
+      - name: Create certs
+        shell: bash
+        run: |
+          echo "${{ secrets.CLIENT_CERT_TEST }}" > certs/test/client-minvws-combined.pem
+          echo "${{ secrets.CLIENT_KEY_TEST }}" > certs/test/client-minvws.key
+          echo "${{ secrets.CA_BUNDLE_TEST }}" > certs/test/client-bundle.pem
+      - name: Create tenant env file
+        shell: bash
+        run: |
+          mkdir -p tests/robot_framework/envs
+          cat > tests/robot_framework/envs/.env.rf.test.minvws << 'EOF'
+          ENVIRONMENT=test
+          HEADLESS=true
+          URL_PUBLIC=${{ secrets.URL_PUBLIC_TEST }}
+          URL_ADMIN=${{ secrets.URL_ADMIN_TEST }}
+          HTACCESS_USERNAME=${{ secrets.USERNAME_WOO_TEST }}
+          HTACCESS_PASSWORD=${{ secrets.PASSWORD_WOO_TEST }}
+          ADMIN_EMAIL=${{ secrets.EMAIL_WOO_TEST_BALIE }}
+          ADMIN_PASSWORD=${{ secrets.PASSWORD_WOO_TEST_BALIE }}
+          ADMIN_SECRET=${{ secrets.SECRET_WOO_TEST_BALIE }}
+          URL_API=${{ secrets.URL_API_TEST }}
+          CLIENT_CERT=./certs/test/client-minvws-combined.pem
+          CLIENT_KEY=./certs/test/client-minvws.key
+          CA_BUNDLE=./certs/test/client-bundle.pem
+          EOF
+      - name: Run Robot Framework tests
+        run: task rf:test:run:api
+      - name: Upload test results
+        uses: actions/upload-artifact@v7
+        if: ${{ always() }}
+        with:
+          name: robot-report-api
           path: tests/robot_framework/results
       - name: Publish test results
         uses: minvws/action-robotframework-summary@v1.0.0

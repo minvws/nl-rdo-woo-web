@@ -9,12 +9,19 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Form\Dossier\AbstractDossierStepType;
 use Shared\Form\Dossier\DossierFormBuilderTrait;
 use Shared\Form\YearMonthType;
+use Shared\Service\Security\Roles;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class DetailsType extends AbstractDossierStepType
 {
     use DossierFormBuilderTrait;
+
+    public function __construct(
+        private readonly Security $security,
+    ) {
+    }
 
     public function getDataClass(): string
     {
@@ -62,7 +69,7 @@ class DetailsType extends AbstractDossierStepType
             ]);
 
         $this->addInternalReferenceField($builder);
-        $this->addDossierNrField($builder);
+        $this->addDossierNrField($builder, $this->security->isGranted(Roles::ROLE_ORGANISATION_ADMIN));
         $this->addDocumentPrefixField($builder);
         $this->addSubmits($builder);
     }

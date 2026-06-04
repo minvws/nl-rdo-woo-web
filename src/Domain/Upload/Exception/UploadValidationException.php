@@ -15,9 +15,27 @@ class UploadValidationException extends RuntimeException
     public static function forInvalidMimetype(UploadEntity $uploadEntity, string $mimetype): self
     {
         return new self(sprintf(
-            'Mimetype %s not allowed for group %s',
+            'Mimetype %s not allowed for upload group %s',
             $mimetype,
             $uploadEntity->getUploadGroupId()->value,
+        ));
+    }
+
+    public static function forInvalidExtension(UploadEntity $uploadEntity, string $extension): self
+    {
+        return new self(sprintf(
+            'Extension %s not allowed for upload group %s',
+            $extension,
+            $uploadEntity->getUploadGroupId()->value,
+        ));
+    }
+
+    public static function forMismatchBetweenExtensionAndMimetype(?FileType $fileType, string $mimetype): self
+    {
+        return new self(sprintf(
+            'Expected a file of type %s, but got a file of mime-type %s',
+            $fileType?->getTypeName() ?? 'unknown',
+            $mimetype,
         ));
     }
 
@@ -30,7 +48,7 @@ class UploadValidationException extends RuntimeException
     {
         return new self(sprintf(
             'Mimetype cannot be determined for UploadEntity %s',
-            $uploadEntity->getId(),
+            $uploadEntity->getId()->toRfc4122(),
         ));
     }
 
@@ -40,7 +58,7 @@ class UploadValidationException extends RuntimeException
             'File size exceeds the allowed limit set for %s files (%d bytes). UploadEntity id: %s',
             $fileType->getTypeName(),
             $fileType->getMaxUploadSize(),
-            $uploadEntity->getId(),
+            $uploadEntity->getId()->toRfc4122(),
         ));
     }
 }

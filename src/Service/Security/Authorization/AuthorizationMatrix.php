@@ -12,6 +12,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 use function array_any;
+use function array_key_exists;
 use function count;
 
 class AuthorizationMatrix
@@ -64,7 +65,7 @@ class AuthorizationMatrix
 
                 // Check permissions
                 $permissions = $entry->getPermissions();
-                if (! isset($permissions[$permission]) || ! $permissions[$permission]) {
+                if (! array_key_exists($permission, $permissions) || $permissions[$permission] === false) {
                     continue;
                 }
 

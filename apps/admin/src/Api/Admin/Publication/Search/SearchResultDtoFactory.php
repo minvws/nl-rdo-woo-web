@@ -11,12 +11,13 @@ use Shared\Domain\Publication\Dossier\Type\DossierReference;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Query\SearchResultType;
-use Shared\Domain\Search\Result\Dossier\Advice\AdviceSearchResult;
+use Shared\Domain\Search\Result\Dossier\AbstractDossierTypeSearchResult;
 use Shared\Domain\Search\Result\Dossier\DossierSearchResultEntry;
 use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
 use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
@@ -69,13 +70,13 @@ readonly class SearchResultDtoFactory
 
     private function fromDossierSearchResult(DossierSearchResultEntry $entry): SearchResultDto
     {
-        /** @var AdviceSearchResult $dossier */
         $dossier = $entry->getDossier();
+        Assert::isInstanceOf($dossier, AbstractDossierTypeSearchResult::class);
 
         return new SearchResultDto(
             id: $dossier->id->toRfc4122(),
             type: SearchResultType::DOSSIER,
-            title: $dossier->title ?? $dossier->dossierNr,
+            title: $dossier->title,
             link: $this->urlGenerator->generate(
                 'app_admin_dossier',
                 ['prefix' => $dossier->documentPrefix, 'dossierId' => $dossier->dossierNr],

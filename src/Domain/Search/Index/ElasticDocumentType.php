@@ -155,7 +155,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
     }
 
     /**
-     * @return array<array-key, self>
+     * @return list<self>
      */
     public static function getMainTypes(): array
     {
@@ -173,7 +173,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
     }
 
     /**
-     * @return array<array-key, self>
+     * @return list<self>
      */
     public static function getSubTypes(): array
     {
@@ -193,7 +193,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
     }
 
     /**
-     * @return array<array-key, self>
+     * @return list<self>
      */
     public static function getMainDocumentTypes(): array
     {

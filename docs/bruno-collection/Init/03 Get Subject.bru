@@ -1,0 +1,30 @@
+meta {
+  name: Get Subject
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/organisation/:organisationId/subject
+  body: none
+  auth: inherit
+}
+
+params:path {
+  organisationId: {{organisationId}}
+}
+
+script:post-response {
+  const data = res.getBody();
+  
+  const subject = data.find(item => item.name === "E2E Test Subject");
+  
+  if (subject) {
+    bru.setEnvVar("subjectId", subject.id);
+  } else if (data.length > 0) {
+    console.warn('Set the first subject found instead of "E2E Test Subject"');
+    bru.setEnvVar("subjectId", data[0].id);
+  } else {
+    throw new Error("E2E Test Subject not found, variable could not be set");
+  }
+}

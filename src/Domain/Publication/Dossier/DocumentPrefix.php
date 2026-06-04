@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier;
 
 use Doctrine\ORM\Mapping as ORM;
-use RuntimeException;
 use Shared\Domain\Organisation\Organisation;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -33,14 +32,15 @@ class DocumentPrefix
     #[ORM\Column(options: ['default' => false])]
     private bool $archived = false;
 
+    public function __construct(
+        string $prefix,
+    ) {
+        $this->prefix = strtoupper($prefix);
+    }
+
     public function getId(): Uuid
     {
         return $this->id;
-    }
-
-    public function issetPrefix(): bool
-    {
-        return isset($this->prefix);
     }
 
     public function getPrefix(): string
@@ -50,10 +50,6 @@ class DocumentPrefix
 
     public function setPrefix(string $prefix): static
     {
-        if (isset($this->prefix)) {
-            throw new RuntimeException('The prefix can only be set on creation, never updated');
-        }
-
         $this->prefix = strtoupper($prefix);
 
         return $this;

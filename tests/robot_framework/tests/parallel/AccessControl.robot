@@ -274,7 +274,7 @@ Verify Permissions On Inquiries
     Link Inquiry To Decision  ZAAK-1  ${DOSSIER_REFERENCE}
     Open Inquiry  ZAAK-1
   END
-  Go To  %{URL_ADMIN}/admin/inquiry
+  Go To  ${URL_ADMIN}/admin/inquiry
   IF  not ${administration}
     Verify Page Error  403
   ELSE
@@ -324,7 +324,7 @@ Verify Permissions On Dossiers
         END
       END
     END
-    Go To  %{URL_ADMIN}/admin/dossiers
+    Go To  ${URL_ADMIN}/admin/dossiers
     IF  not ${administration}
       Verify Page Error  403
     ELSE
@@ -350,7 +350,7 @@ Verify Permissions On Documents
 Verify Permissions On Statistics
   [Arguments]  ${role}  ${read}
   Login Admin With Role  ${role}
-  Go To  %{URL_ADMIN}/stats
+  Go To  ${URL_ADMIN}/stats
   IF  not ${read}
     Verify Page Error  403
   ELSE
@@ -362,7 +362,7 @@ Verify Permissions On Statistics
 Verify Permissions On Elastic
   [Arguments]  ${role}  ${read}
   Login Admin With Role  ${role}
-  Go To  %{URL_ADMIN}/elastic
+  Go To  ${URL_ADMIN}/elastic
   IF  not ${read}
     Verify Page Error  403
   ELSE

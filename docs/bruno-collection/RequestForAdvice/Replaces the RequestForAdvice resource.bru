@@ -8,14 +8,14 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+  url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
   body: json
   auth: inherit
 }
 
 params:path {
   organisationId: {{organisationId}}
-  dossierExternalId: E:{{$randomBankAccountIban}}
+  dossierExternalId: {{requestForAdviceDossierExternalId}}
 }
 
 body:json {
@@ -30,38 +30,38 @@ body:json {
     },
     "subjectId": "{{subjectId}}",
     "summary": "{{$randomUUID}}",
-    "title": "{{$randomUUID}}",
+    "title": "Bruno {{$randomUUID}}",
     "attachments": [
       {
         "fileName": "{{$randomWords}}.pdf",
         "formalDate": "2026-02-01",
         "language": "NLD",
         "type": "c_0e425c23",
-        "externalId": "{{$randomUUID}}",
+        "externalId": "{{requestForAdviceAttachmentExternalId}}",
         "grounds": []
       }
     ],
     "dossierDate": "2025-01-01",
-    "dossierNumber": "{{$randomUUID}}",
+    "dossierNumber": "bruno-{{$randomUUID}}",
     "publicationDate": "2026-02-01",
     "link": "",
     "advisoryBodies": []
   }
 }
 
-script:post-response {
-  if (res.status === 200) {
-  }
-  if (res.status === 400) {
-  }
-  if (res.status === 404) {
-  }
-  if (res.status === 422) {
+script:pre-request {
+  if (bru.isSafeMode()) {
+    throw new Error("Enable develop mode to support the scripts");
   }
 
-  const data = res.getBody();
-  const dossierExternalId = data.externalId;
-  bru.setVar("dossierExternalId", dossierExternalId);
+  const crypto = require('crypto');
+
+  if (!bru.getEnvVar("requestForAdviceDossierExternalId")) {
+    bru.setEnvVar("requestForAdviceDossierExternalId", crypto.randomUUID());
+  }
+  if (!bru.getEnvVar("requestForAdviceAttachmentExternalId")) {
+    bru.setEnvVar("requestForAdviceAttachmentExternalId", crypto.randomUUID());
+  }
 }
 
 docs {
@@ -73,12 +73,12 @@ example {
   description: RequestForAdvice resource updated
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -178,12 +178,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -248,12 +248,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -318,12 +318,12 @@ example {
   description: Unauthorized
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -388,12 +388,12 @@ example {
   description: Forbidden
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -458,12 +458,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -528,12 +528,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -598,12 +598,12 @@ example {
   description: Method Not Allowed
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -668,12 +668,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -747,12 +747,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -826,12 +826,12 @@ example {
   description: Internal Server Error
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {

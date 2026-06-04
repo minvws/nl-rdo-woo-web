@@ -16,6 +16,7 @@ use Shared\Domain\Upload\Exception\UploadException;
 use Shared\Domain\Upload\Exception\UploadValidationException;
 use Shared\Domain\Upload\FileType\FileType;
 use Shared\Domain\Upload\FileType\MimeTypeHelper;
+use Shared\Domain\Upload\FileType\MimeTypeHelperResult;
 use Shared\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadEntityRepository;
@@ -137,7 +138,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
             ->with('pdf', $mimeType, $groupId)
-            ->andReturnTrue();
+            ->andReturn(MimeTypeHelperResult::VALID);
 
         $expectedExceptionMessage = UploadValidationException::forFilesizeExceeded($uploadEntity, FileType::PDF)
             ->getMessage();
@@ -181,7 +182,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
             ->with($filename, $contents)
             ->andReturn($mimeType = 'application/pdf');
 
-        $this->mimeTypeHelper->expects('isValidForUploadGroup')->with('pdf', $mimeType, $groupId)->andReturnTrue();
+        $this->mimeTypeHelper->expects('isValidForUploadGroup')->with('pdf', $mimeType, $groupId)->andReturn(MimeTypeHelperResult::VALID);
 
         $this->sevenZipFileStrategy->expects('supports')->with('pdf', $mimeType)->andReturnfalse();
 
@@ -224,7 +225,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
             ->with('zip', $mimeType = 'application/zip', $groupId)
-            ->andReturnTrue();
+            ->andReturn(MimeTypeHelperResult::VALID);
 
         $this->mimeTypeHelper
             ->expects('detectMimeType')
@@ -264,12 +265,92 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
         $this->mimeTypeHelper
             ->expects('detectMimeType')
             ->with($filename, $contents)
-            ->andReturn($mimeType = 'application/pdf');
+            ->andReturn($mimeType = 'application/vnd.ms-excel');
 
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
             ->with('pdf', $mimeType, $groupId)
-            ->andReturnFalse();
+            ->andReturn(MimeTypeHelperResult::INVALID_MIME_TYPE);
+
+        $this->uploadService
+            ->expects('failValidation')
+            ->with($uploadEntity, Mockery::type(UploadValidationException::class));
+
+        $command = new ValidateUploadCommand($uuid);
+
+        $this->handler->__invoke($command);
+    }
+
+    public function testInvalidExtensionFailsValidation(): void
+    {
+        $uuid = Uuid::v6();
+        $uploadId = 'foo-123';
+        $uploadEntity = Mockery::mock(UploadEntity::class);
+        $uploadEntity->expects('getSize')->andReturn(124);
+        $uploadEntity->expects('getUploadId')->times(2)->andReturn($uploadId);
+        $uploadEntity->expects('getFilename')->times(3)->andReturn($filename = 'foo.exe');
+        $uploadEntity->expects('getStatus')->andReturn(UploadEntityStatus::UPLOADED);
+        $uploadEntity->expects('getUploadGroupId')->times(2)->andReturn($groupId = UploadGroupId::WOO_DECISION_DOCUMENTS);
+
+        $this->clamAvFileScanner->expects('getFileSizeLimit')->andReturn(1024);
+
+        $this->uploadEntityRepository->expects('find')->with($uuid)->andReturn($uploadEntity);
+
+        $this->uploadService
+            ->expects('copyUploadToFilesystem')
+            ->with($uploadEntity, $this->workingCopyStorage, $uploadId, null);
+
+        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn($contents = 'file data content');
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($filename, $contents)
+            ->andReturn($mimeType = 'application/vnd.ms-excel');
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('exe', $mimeType, $groupId)
+            ->andReturn(MimeTypeHelperResult::INVALID_EXTENSION);
+
+        $this->uploadService
+            ->expects('failValidation')
+            ->with($uploadEntity, Mockery::type(UploadValidationException::class));
+
+        $command = new ValidateUploadCommand($uuid);
+
+        $this->handler->__invoke($command);
+    }
+
+    public function testMismatchBetweenExtensionAndMimeTypeFailsValidation(): void
+    {
+        $uuid = Uuid::v6();
+        $uploadId = 'foo-123';
+        $uploadEntity = Mockery::mock(UploadEntity::class);
+        $uploadEntity->expects('getSize')->andReturn(124);
+        $uploadEntity->expects('getUploadId')->times(2)->andReturn($uploadId);
+        $uploadEntity->expects('getFilename')->times(3)->andReturn($filename = 'foo.pdf');
+        $uploadEntity->expects('getStatus')->andReturn(UploadEntityStatus::UPLOADED);
+        $uploadEntity->expects('getUploadGroupId')->andReturn($groupId = UploadGroupId::WOO_DECISION_DOCUMENTS);
+
+        $this->clamAvFileScanner->expects('getFileSizeLimit')->andReturn(1024);
+
+        $this->uploadEntityRepository->expects('find')->with($uuid)->andReturn($uploadEntity);
+
+        $this->uploadService
+            ->expects('copyUploadToFilesystem')
+            ->with($uploadEntity, $this->workingCopyStorage, $uploadId, null);
+
+        $this->workingCopyStorage->expects('read')->with($uploadId)->andReturn($contents = 'file data content');
+
+        $this->mimeTypeHelper
+            ->expects('detectMimeType')
+            ->with($filename, $contents)
+            ->andReturn($mimeType = 'application/vnd.ms-excel');
+
+        $this->mimeTypeHelper
+            ->expects('isValidForUploadGroup')
+            ->with('pdf', $mimeType, $groupId)
+            ->andReturn(MimeTypeHelperResult::MISMATCH_BETWEEN_EXTENSION_AND_MIME_TYPE);
 
         $this->uploadService
             ->expects('failValidation')
@@ -310,7 +391,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
             ->with('pdf', $mimeType, $groupId)
-            ->andReturnTrue();
+            ->andReturn(MimeTypeHelperResult::VALID);
 
         $this->clamAvFileScanner->expects('scanResource')->with($uploadId, $data)->andReturn(FileScanResult::UNSAFE);
 
@@ -353,7 +434,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
         $this->mimeTypeHelper
             ->expects('isValidForUploadGroup')
             ->with('pdf', $mimeType, $groupId)
-            ->andReturnTrue();
+            ->andReturn(MimeTypeHelperResult::VALID);
 
         $this->clamAvFileScanner->expects('scanResource')->with($uploadId, $data)->andReturn(FileScanResult::SAFE);
 

@@ -11,6 +11,7 @@ use Shared\Domain\Department\Twig\Departments;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Webmozart\Assert\Assert;
 
 final class DepartmentsTest extends UnitTestCase
 {
@@ -37,7 +38,12 @@ final class DepartmentsTest extends UnitTestCase
             ->expects('get')
             ->with(
                 'DEPARTMENTS_HAS_ANY',
-                Mockery::on(fn (callable $callback): bool => $callback($this->item)),
+                Mockery::on(function (callable $callback): bool {
+                    $result = $callback($this->item);
+                    Assert::boolean($result);
+
+                    return $result;
+                }),
             )
             ->andReturn(true);
 

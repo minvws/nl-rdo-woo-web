@@ -14,6 +14,7 @@ use Shared\Service\Storage\StorageRootPathGenerator;
 use Shared\Tests\Factory\FileInfoFactory;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
+use function array_key_exists;
 use function sprintf;
 
 /**
@@ -63,7 +64,7 @@ final class WooDecisionMainDocumentFactory extends PersistentObjectFactory
                         $document->getFileInfo()->getName(),
                     ));
 
-                if (isset($attributes['overwrite_id'])) {
+                if (array_key_exists('overwrite_id', $attributes)) {
                     $this->entityManager->detach($document);
 
                     $reflection = new ReflectionClass($document);

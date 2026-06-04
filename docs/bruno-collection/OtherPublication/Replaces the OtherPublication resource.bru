@@ -8,14 +8,14 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+  url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
   body: json
   auth: inherit
 }
 
 params:path {
   organisationId: {{organisationId}}
-  dossierExternalId: E:{{$randomBankAccountIban}}
+  dossierExternalId: {{otherPublicationDossierExternalId}}
 }
 
 body:json {
@@ -30,36 +30,36 @@ body:json {
     },
     "subjectId": "{{subjectId}}",
     "summary": "{{$randomUUID}}",
-    "title": "{{$randomUUID}}",
+    "title": "Bruno {{$randomUUID}}",
     "attachments": [
       {
         "fileName": "{{$randomWords}}.pdf",
         "formalDate": "2026-02-01",
         "language": "NLD",
         "type": "c_d506b718",
-        "externalId": "{{$randomUUID}}",
+        "externalId": "{{otherPublicationAttachmentExternalId}}",
         "grounds": []
       }
     ],
     "dossierDate": "2025-01-01",
-    "dossierNumber": "{{$randomUUID}}",
+    "dossierNumber": "bruno-{{$randomUUID}}",
     "publicationDate": "2026-02-01"
   }
 }
 
-script:post-response {
-  if (res.status === 200) {
+script:pre-request {
+  if (bru.isSafeMode()) {
+    throw new Error("Enable develop mode to support the scripts");
   }
-  if (res.status === 400) {
+  
+  const crypto = require('crypto');
+  
+  if (!bru.getEnvVar("otherPublicationDossierExternalId")) {
+    bru.setEnvVar("otherPublicationDossierExternalId", crypto.randomUUID());
   }
-  if (res.status === 404) {
+  if (!bru.getEnvVar("otherPublicationAttachmentExternalId")) {
+    bru.setEnvVar("otherPublicationAttachmentExternalId", crypto.randomUUID());
   }
-  if (res.status === 422) {
-  }
-
-  const data = res.getBody();
-  const dossierExternalId = data.externalId;
-  bru.setVar("dossierExternalId", dossierExternalId);
 }
 
 docs {
@@ -71,12 +71,12 @@ example {
   description: OtherPublication resource updated
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -172,12 +172,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -240,12 +240,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -308,12 +308,12 @@ example {
   description: Unauthorized
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -376,12 +376,12 @@ example {
   description: Forbidden
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -444,12 +444,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -512,12 +512,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -580,12 +580,12 @@ example {
   description: Method Not Allowed
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -648,12 +648,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -725,12 +725,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -802,12 +802,12 @@ example {
   description: Internal Server Error
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/other-publication/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {

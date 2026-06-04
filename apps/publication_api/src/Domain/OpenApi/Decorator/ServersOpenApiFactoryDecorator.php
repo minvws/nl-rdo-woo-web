@@ -7,7 +7,7 @@ namespace PublicationApi\Domain\OpenApi\Decorator;
 use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\OpenApi\Model\Server;
 use ApiPlatform\OpenApi\OpenApi;
-use PublicationApi\Api\Publication\PublicationV1Api;
+use PublicationApi\Domain\OpenApi\PublicationV1Api;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Webmozart\Assert\Assert;

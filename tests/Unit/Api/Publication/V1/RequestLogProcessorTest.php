@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use Mockery;
 use Monolog\Level;
 use Monolog\LogRecord;
-use PublicationApi\Api\Publication\RequestLogProcessor;
+use PublicationApi\Domain\OpenApi\RequestLogProcessor;
 use Shared\Service\Security\ApiUser;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Unit\UnitTestCase;

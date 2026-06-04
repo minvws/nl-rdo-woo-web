@@ -9,6 +9,7 @@ Resource            TestData.resource
 
 
 *** Variables ***
+${ENVIRONMENT}          ${EMPTY}
 ${PRODUCTION_REPORT}    ${EMPTY}
 ${DOCUMENTS}            ${EMPTY}
 ${NUMBER_OF_DOCUMENTS}  ${EMPTY}
@@ -174,7 +175,7 @@ Fill Publication Date
   ${day} =  Convert Date  ${date}  result_format=%d
   ${month} =  Convert Date  ${date}  result_format=%m
   ${year} =  Convert Date  ${date}  result_format=%Y
-  IF  '%{ENVIRONMENT}' == 'local'
+  IF  '${ENVIRONMENT}' == 'local' or '${ENVIRONMENT}' == 'test' or '${ENVIRONMENT}' == 'acc'
     Type Text  id=publish_publication_date  ${day}${month}${year}
   ELSE
     Type Text  id=publish_publication_date  ${month}${day}${year}

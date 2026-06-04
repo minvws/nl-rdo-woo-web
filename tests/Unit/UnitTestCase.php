@@ -21,7 +21,7 @@ abstract class UnitTestCase extends BaseTestCase
     use MatchesSnapshots;
     use CarbonHelpers;
 
-    protected Generator $faker;
+    protected ?Generator $faker = null;
 
     public static function createFaker(): Generator
     {
@@ -30,7 +30,7 @@ abstract class UnitTestCase extends BaseTestCase
 
     public function getFaker(): Generator
     {
-        if (! isset($this->faker)) {
+        if ($this->faker === null) {
             $this->faker = $this->createFaker();
         }
 

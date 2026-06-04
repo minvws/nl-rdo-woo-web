@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Integration\Domain\Upload;
 
-use PublicationApi\Api\Publication\UploadStatus;
 use PublicationApi\Domain\Upload\MainDocumentUploadStatusService;
-use PublicationApi\Tests\Integration\Api\Publication\ApiPublicationV1TestCase;
+use PublicationApi\Domain\Upload\UploadStatus;
+use PublicationApi\Tests\Integration\Api\ApiPublicationV1TestCase;
 use Shared\Domain\Upload\Exception\UploadValidationException;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;

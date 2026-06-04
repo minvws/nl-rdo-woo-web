@@ -8,14 +8,14 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+  url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
   body: json
   auth: inherit
 }
 
 params:path {
   organisationId: {{organisationId}}
-  dossierExternalId: E:{{$randomBankAccountIban}}
+  dossierExternalId: {{complaintJudgementDossierExternalId}}
 }
 
 body:json {
@@ -30,26 +30,23 @@ body:json {
     },
     "subjectId": "{{subjectId}}",
     "summary": "{{$randomUUID}}",
-    "title": "{{$randomUUID}}",
+    "title": "Bruno {{$randomUUID}}",
     "dossierDate": "2025-01-01",
-    "dossierNumber": "{{$randomUUID}}",
+    "dossierNumber": "bruno-{{$randomUUID}}",
     "publicationDate": "2026-02-01"
   }
 }
 
-script:post-response {
-  if (res.status === 200) {
-  }
-  if (res.status === 400) {
-  }
-  if (res.status === 404) {
-  }
-  if (res.status === 422) {
+script:pre-request {
+  if (bru.isSafeMode()) {
+    throw new Error("Enable develop mode to support the scripts");
   }
 
-  const data = res.getBody();
-  const dossierExternalId = data.externalId;
-  bru.setVar("dossierExternalId", dossierExternalId);
+  const crypto = require('crypto');
+
+  if (!bru.getEnvVar("complaintJudgementDossierExternalId")) {
+    bru.setEnvVar("complaintJudgementDossierExternalId", crypto.randomUUID());
+  }
 }
 
 docs {
@@ -61,12 +58,12 @@ example {
   description: ComplaintJudgement resource updated
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -140,12 +137,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -198,12 +195,12 @@ example {
   description: Invalid input
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -256,12 +253,12 @@ example {
   description: Unauthorized
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -314,12 +311,12 @@ example {
   description: Forbidden
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -372,12 +369,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -430,12 +427,12 @@ example {
   description: Not found
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -488,12 +485,12 @@ example {
   description: Method Not Allowed
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -546,12 +543,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -613,12 +610,12 @@ example {
   description: An error occurred
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {
@@ -680,12 +677,12 @@ example {
   description: Internal Server Error
   
   request: {
-    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/:dossierExternalId
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId
     method: PUT
     mode: json
     params:path: {
       organisationId: {{organisationId}}
-      dossierExternalId: E:{{dossierExternalId}}
+      dossierExternalId: {{dossierExternalId}}
     }
   
     body:json: {

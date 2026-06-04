@@ -53,7 +53,7 @@ readonly class ClamAvFileScanner
         }
 
         $fileStats = fstat($handle);
-        if ($fileStats === false || ! isset($fileStats['size']) || $fileStats['size'] < 1) {
+        if ($fileStats === false || $fileStats['size'] < 1) {
             $this->logger->error('Could not determine stream size for antivirus validation');
 
             return FileScanResult::TECHNICAL_ERROR;
