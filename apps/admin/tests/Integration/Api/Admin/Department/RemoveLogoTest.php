@@ -40,8 +40,8 @@ final class RemoveLogoTest extends AdminApiTestCase
 
         $this->root = vfsStream::setup('root');
 
-        $this->departmentRepository = self::getContainer()->get(DepartmentRepository::class);
-        $this->doctrine = self::getContainer()->get(EntityManagerInterface::class);
+        $this->departmentRepository = self::fromContainer(DepartmentRepository::class);
+        $this->doctrine = self::fromContainer(EntityManagerInterface::class);
 
         $this->assetsPath = self::getContainer()->getParameter('assets_path');
     }

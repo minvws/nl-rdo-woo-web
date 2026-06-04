@@ -97,7 +97,7 @@ class OrganisationFormType extends AbstractType
     /**
      * This validates if all given prefixes in the collection are unique (not adding the same value twice).
      *
-     * @param DocumentPrefix[] $documentPrefixes
+     * @param iterable<DocumentPrefix> $documentPrefixes
      */
     public function validatePrefixes(iterable $documentPrefixes, ExecutionContextInterface $context): void
     {

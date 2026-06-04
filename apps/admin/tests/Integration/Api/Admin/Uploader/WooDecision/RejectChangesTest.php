@@ -28,9 +28,7 @@ final class RejectChangesTest extends AdminApiTestCase
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $this->documentFileSetRepository = self::getContainer()->get(DocumentFileSetRepository::class);
+        $this->documentFileSetRepository = self::fromContainer(DocumentFileSetRepository::class);
     }
 
     public function testRejectChanges(): void

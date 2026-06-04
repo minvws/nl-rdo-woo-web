@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Covenant\ViewModel;
 
-use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -15,6 +14,7 @@ use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFacto
 use Shared\Domain\Publication\Dossier\ViewModel\Department;
 use Shared\Domain\Publication\Dossier\ViewModel\Subject;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 
 final class CovenantViewFactoryTest extends UnitTestCase
 {
@@ -40,8 +40,8 @@ final class CovenantViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new DateTimeImmutable(),
-                mainDepartment: $expectedMainDepartment = $expectedMainDepartment,
+                publicationDate: $publicationDate = PlainDate::today(),
+                mainDepartment: $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::COVENANT,
                 subject: $expectedSubject = Mockery::mock(Subject::class),
@@ -73,8 +73,8 @@ final class CovenantViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedParties, $result->parties);
     }
 
-    private function getRandomDate(string $startDate = '-2 years'): DateTimeImmutable
+    private function getRandomDate(string $startDate = '-2 years'): PlainDate
     {
-        return DateTimeImmutable::createFromInterface($this->getFaker()->dateTimeBetween($startDate));
+        return $this->getFaker()->plainDate($startDate);
     }
 }

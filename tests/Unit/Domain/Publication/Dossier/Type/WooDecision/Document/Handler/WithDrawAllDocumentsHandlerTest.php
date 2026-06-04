@@ -58,7 +58,7 @@ class WithDrawAllDocumentsHandlerTest extends UnitTestCase
         $this->documentWithdrawService->expects('withDrawAllDocuments')->with($this->dossier, $reason, $explanation);
 
         $this->handler->__invoke(
-            new WithDrawAllDocumentsCommand($dossierId, $reason, $explanation)
+            new WithDrawAllDocumentsCommand($dossierId, $reason, $explanation),
         );
     }
 }

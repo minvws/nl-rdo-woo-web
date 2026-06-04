@@ -34,7 +34,7 @@ readonly class FileStorageChecker
     }
 
     /**
-     * @return PathSet[]
+     * @return array<array-key, PathSet>
      */
     private function getPathSets(): array
     {

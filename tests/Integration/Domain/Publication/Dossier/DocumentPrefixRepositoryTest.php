@@ -12,15 +12,6 @@ use Shared\Tests\Integration\SharedWebTestCase;
 
 class DocumentPrefixRepositoryTest extends SharedWebTestCase
 {
-    private DocumentPrefixRepository $documentPrefixRepository;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->documentPrefixRepository = self::getContainer()->get(DocumentPrefixRepository::class);
-    }
-
     public function testGetPaginated(): void
     {
         $organisation = OrganisationFactory::createOne();
@@ -34,9 +25,31 @@ class DocumentPrefixRepositoryTest extends SharedWebTestCase
             'organisation' => $otherOrganisation,
         ]);
 
-        $result = $this->documentPrefixRepository->getByOrganisation($organisation, 100, null);
+        $result = self::fromContainer(DocumentPrefixRepository::class)->getByOrganisation($organisation, 100, null);
 
         self::assertCount($documentPrefixCount, $result);
         self::assertContainsOnlyInstancesOf(DocumentPrefix::class, $result);
+    }
+
+    public function testGetAlphabeticallyFirstByOrganisation(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        DocumentPrefixFactory::createOne([
+            'organisation' => $organisation,
+            'prefix' => 'BBB',
+        ]);
+        DocumentPrefixFactory::createOne([
+            'organisation' => $organisation,
+            'prefix' => 'AAA',
+        ]);
+        DocumentPrefixFactory::createOne([
+            'organisation' => $organisation,
+            'prefix' => 'CCC',
+        ]);
+
+        $documentPrefixRepository = self::fromContainer(DocumentPrefixRepository::class);
+        $result = $documentPrefixRepository->getAlphabeticallyFirstByOrganisation($organisation);
+
+        self::assertEquals('AAA', $result?->getPrefix());
     }
 }

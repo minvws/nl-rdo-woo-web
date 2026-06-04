@@ -32,7 +32,7 @@ readonly class OnDemandZipGenerator
     {
         $type = $this->batchDownloadService->getType($scope);
 
-        /** @var Document[] $documents */
+        /** @var array<array-key, Document> $documents */
         $documents = $type->getDocumentsQuery($scope)->getQuery()->getResult();
         $baseName = $type->getFileBaseName($scope);
         $this->s3Client->registerStreamWrapperV2();

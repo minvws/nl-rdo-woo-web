@@ -57,7 +57,7 @@ readonly class ContentExtractService
                         $extractor->getContent(
                             $entity,
                             $fileReference,
-                        )
+                        ),
                     ),
                 );
             }
@@ -83,7 +83,7 @@ readonly class ContentExtractService
             [
                 'id' => $entity->getId(),
                 'class' => $entity::class,
-            ]
+            ],
         );
     }
 

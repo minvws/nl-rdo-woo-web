@@ -42,15 +42,19 @@ Create WooDecision
   ${response} =  Send Put Request WooDecision  ${external_id}  ${body}  ${expected_response_status}
   IF  '${expected_response_status}' == '200'
     IF  '${files}[mainDocument]' != 'None'
-      Upload Main Document  ${files}[mainDocument]  E:${response}[externalId]
+      Upload Main Document  woo-decision  ${files}[mainDocument]  E:${response}[externalId]
     END
     FOR  ${attachment}  IN  @{files}[attachments]
-      Upload Attachment  ${attachment}[file]  E:${response}[externalId]  E:${attachment}[externalId]
+      Upload Attachment Document
+      ...  woo-decision
+      ...  ${attachment}[file]
+      ...  E:${response}[externalId]
+      ...  E:${attachment}[externalId]
     END
     FOR  ${document}  IN  @{files}[documents]
-      Upload Document  ${document}[file]  E:${response}[externalId]  E:${document}[externalId]
+      Upload Document  woo-decision  ${document}[file]  E:${response}[externalId]  E:${document}[externalId]
     END
-    Publication Status Should Be  ${expected_publication_status}
+    Wait Until Keyword Succeeds  5x  2s  Publication Status Should Be  woo-decision  ${expected_publication_status}
   END
 
 Parse And Randomize Dossier Data
@@ -65,11 +69,12 @@ Parse And Randomize Dossier Data
   Set To Dictionary  ${body}  subjectId  ${subject_id}
   Parse Dates  ${body}
   Generate Unique Document IDs  ${body}
+  Set Random Grounds  ${body}  include_documents=${TRUE}
 
 Parse Dates
   [Arguments]  ${body}
-  Parse Text To Date  ${body}  dossierDateFrom
-  Parse Text To Date  ${body}  dossierDateTo
+  Parse Text To Date  ${body}  dateFrom
+  Parse Text To Date  ${body}  dateTo
   Parse Text To Date  ${body}  previewDate
   Parse Text To Date  ${body}  publicationDate
   Parse Text To Date  ${body}[mainDocument]  formalDate
@@ -88,10 +93,11 @@ Generate Unique Document IDs
   [Arguments]  ${body}
   IF  ${body}[documents]
     FOR  ${document}  IN  @{body}[documents]
-      ${document_nr} =  FakerLibrary.Random Int  min=100000  max=999999
-      ${document_nr} =  Convert To String  ${document_nr}
-      Set To Dictionary  ${document}  documentNr  ${document_nr}
-      Set To Dictionary  ${document}  documentId  ${document_nr}
+      ${document_id} =  FakerLibrary.Random Int  min=100000  max=999999
+      ${document_id} =  Convert To String  ${document_id}
+      IF  '${document}[documentId]' == '<ROBOT RANDOM INT>'
+        Set To Dictionary  ${document}  documentId  ${document_id}
+      END
     END
   END
 
@@ -99,7 +105,7 @@ Send Put Request WooDecision
   [Arguments]  ${external_id}  ${body}  ${expected_response_status}
   ${put_response} =  PUT On Session
   ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/${external_id}
+  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/${external_id}
   ...  json=${body}
   ...  expected_status=any
   Should Be True
@@ -107,44 +113,13 @@ Send Put Request WooDecision
   ...  msg=WooDecision PUT returned ${put_response.status_code} while expecting ${expected_response_status}
   RETURN  ${put_response.json()}
 
-Upload Main Document
-  [Arguments]  ${file_location}  ${dossier_id}
-  Upload File
-  ...  file_location=${file_location}
-  ...  dossier_type=woo-decision
-  ...  dossier_id=${dossier_id}
-  ...  document_type=main-document
-
-Upload Attachment
-  [Arguments]  ${file_location}  ${dossier_id}  ${attachment_id}
-  Upload File
-  ...  file_location=${file_location}
-  ...  dossier_type=woo-decision
-  ...  dossier_id=${dossier_id}
-  ...  document_type=attachment
-  ...  document_id=${attachment_id}
-
-Upload Document
-  [Arguments]  ${file_location}  ${dossier_id}  ${document_id}
-  Upload File
-  ...  file_location=${file_location}
-  ...  dossier_type=woo-decision
-  ...  dossier_id=${dossier_id}
-  ...  document_type=document
-  ...  document_id=${document_id}
-
-Publication Status Should Be
-  [Arguments]  ${expected_status}
-  ${get_response} =  GET On Session
-  ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/${EXTERNAL_ID}
-  Should Be Equal  ${get_response.json()}[status]  ${expected_status}
-
 Verify WooDecision On Public
+  [Documentation]    This is not unused, it's referenced from the YAML file.
   Suite Setup Generic
   Search On Public For  ${DOSSIER_REFERENCE}  1
 
 Verify WooDecision In Admin
+  [Documentation]    This is not unused, it's referenced from the YAML file.
   Suite Setup Generic
   Go To Admin
   Login Admin
@@ -152,8 +127,9 @@ Verify WooDecision In Admin
   Search For A Publication  ${DOSSIER_REFERENCE}
 
 Verify WooDecision Document Processing
+  [Documentation]    This is not unused, it's referenced from the YAML file.
   [Arguments]  ${expected_upload_status}
   ${get_response} =  GET On Session
   ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/${EXTERNAL_ID}
+  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/${EXTERNAL_ID}
   Should Be Equal  ${get_response.json()}[documents][0][uploadStatus]  ${expected_upload_status}

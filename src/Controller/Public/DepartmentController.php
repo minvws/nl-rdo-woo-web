@@ -59,7 +59,7 @@ class DepartmentController extends AbstractController
 
         if ($request->isMethod('POST')) {
             $searchParameters = $searchParameters->withQueryString(
-                $request->request->getString('q')
+                $request->request->getString('q'),
             );
 
             return new RedirectResponse($this->generateUrl(

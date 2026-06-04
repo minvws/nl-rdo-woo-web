@@ -14,35 +14,21 @@ use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUpdate
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUploadFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
-use Webmozart\Assert\Assert;
 
 final class DocumentFileSetRepositoryTest extends SharedWebTestCase
 {
-    private DocumentFileSetRepository $repository;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
-
-        $repository = self::getContainer()->get(DocumentFileSetRepository::class);
-        Assert::isInstanceOf($repository, DocumentFileSetRepository::class);
-
-        $this->repository = $repository;
-    }
-
     public function testSaveAndRemove(): void
     {
         $dossier = WooDecisionFactory::createOne();
         $documentFileSet = new DocumentFileSet($dossier);
+        $documentFileSetRepository = self::fromContainer(DocumentFileSetRepository::class);
 
-        $this->repository->save($documentFileSet, true);
-        $result = $this->repository->find($documentFileSet->getId());
+        $documentFileSetRepository->save($documentFileSet, true);
+        $result = $documentFileSetRepository->find($documentFileSet->getId());
         self::assertEquals($documentFileSet, $result);
 
-        $this->repository->remove($documentFileSet, true);
-        $result = $this->repository->find($documentFileSet->getId());
+        $documentFileSetRepository->remove($documentFileSet, true);
+        $result = $documentFileSetRepository->find($documentFileSet->getId());
         self::assertNull($result);
     }
 
@@ -50,39 +36,37 @@ final class DocumentFileSetRepositoryTest extends SharedWebTestCase
     {
         $dossierA = WooDecisionFactory::createOne();
         $dossierB = WooDecisionFactory::createOne();
+        $documentFileSetRepository = self::fromContainer(DocumentFileSetRepository::class);
 
         $documentFileSetA = new DocumentFileSet($dossierA);
-        $this->repository->save($documentFileSetA, true);
+        $documentFileSetRepository->save($documentFileSetA, true);
 
         $documentFileSetACompleted = new DocumentFileSet($dossierA);
         $documentFileSetACompleted->setStatus(DocumentFileSetStatus::COMPLETED);
-        $this->repository->save($documentFileSetACompleted, true);
+        $documentFileSetRepository->save($documentFileSetACompleted, true);
 
         $documentFileSetB = new DocumentFileSet($dossierB);
-        $this->repository->save($documentFileSetB, true);
+        $documentFileSetRepository->save($documentFileSetB, true);
 
-        self::assertEquals(
-            $documentFileSetA,
-            $this->repository->findUncompletedByDossier($dossierA),
-        );
+        self::assertEquals($documentFileSetA, $documentFileSetRepository->findUncompletedByDossier($dossierA));
     }
 
     public function testFindUncompletedByDossierReturnsNullWhenNoMatchIsFound(): void
     {
         $dossier = WooDecisionFactory::createOne();
+        $documentFileSetRepository = self::fromContainer(DocumentFileSetRepository::class);
 
         $documentFileSet = new DocumentFileSet($dossier);
         $documentFileSet->setStatus(DocumentFileSetStatus::COMPLETED);
-        $this->repository->save($documentFileSet, true);
+        $documentFileSetRepository->save($documentFileSet, true);
 
-        self::assertNull(
-            $this->repository->findUncompletedByDossier($dossier),
-        );
+        self::assertNull($documentFileSetRepository->findUncompletedByDossier($dossier));
     }
 
     public function testCountUploadsToProcess(): void
     {
         $documentFileSet = DocumentFileSetFactory::createOne();
+        $documentFileSetRepository = self::fromContainer(DocumentFileSetRepository::class);
 
         DocumentFileUploadFactory::createOne([
             'status' => DocumentFileUploadStatus::PROCESSED,
@@ -101,15 +85,13 @@ final class DocumentFileSetRepositoryTest extends SharedWebTestCase
             'documentFileSet' => $documentFileSet,
         ]);
 
-        self::assertEquals(
-            2,
-            $this->repository->countUploadsToProcess($documentFileSet),
-        );
+        self::assertEquals(2, $documentFileSetRepository->countUploadsToProcess($documentFileSet));
     }
 
     public function testCountUpdatesToProcess(): void
     {
         $documentFileSet = DocumentFileSetFactory::createOne();
+        $documentFileSetRepository = self::fromContainer(DocumentFileSetRepository::class);
 
         DocumentFileUpdateFactory::createOne([
             'status' => DocumentFileUpdateStatus::COMPLETED,
@@ -120,9 +102,6 @@ final class DocumentFileSetRepositoryTest extends SharedWebTestCase
             'documentFileSet' => $documentFileSet,
         ]);
 
-        self::assertEquals(
-            1,
-            $this->repository->countUpdatesToProcess($documentFileSet),
-        );
+        self::assertEquals(1, $documentFileSetRepository->countUpdatesToProcess($documentFileSet));
     }
 }

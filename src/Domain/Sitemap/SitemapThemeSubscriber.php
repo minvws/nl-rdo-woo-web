@@ -31,7 +31,7 @@ readonly class SitemapThemeSubscriber
                     ),
                     null,
                     UrlConcrete::CHANGEFREQ_MONTHLY,
-                    0.8
+                    0.8,
                 ),
                 'themes',
             );

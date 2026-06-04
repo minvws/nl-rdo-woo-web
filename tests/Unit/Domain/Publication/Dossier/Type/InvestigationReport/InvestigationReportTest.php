@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\InvestigationReport;
 
-use Carbon\CarbonImmutable;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
+use Shared\ValueObject\PlainDate;
 
 final class InvestigationReportTest extends TestCase
 {
@@ -34,7 +34,7 @@ final class InvestigationReportTest extends TestCase
     {
         $dossier = new InvestigationReport();
 
-        $date = new CarbonImmutable();
+        $date = PlainDate::today();
 
         $dossier->setDateFrom($date);
 

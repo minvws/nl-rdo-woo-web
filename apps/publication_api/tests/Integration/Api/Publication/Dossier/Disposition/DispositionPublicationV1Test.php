@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Integration\Api\Publication\Dossier\Disposition;
 
 use Carbon\CarbonImmutable;
-use DateTime;
-use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PublicationApi\Api\Publication\Dossier\Disposition\DispositionDto;
+use PublicationApi\Api\Publication\Dossier\Disposition\DispositionResponseDto;
 use PublicationApi\Api\Publication\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Publication\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Domain\Department\Department;
@@ -21,14 +19,16 @@ use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Disposition\DispositionAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Disposition\DispositionFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Disposition\DispositionMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\EntityExists;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\Type;
 
 use function array_merge;
@@ -45,7 +45,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $disposition = DispositionFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -64,7 +64,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $disposition = DispositionFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -83,9 +83,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'id' => (string) $disposition->getOrganisation()->getId(),
                 'name' => $disposition->getOrganisation()->getName(),
             ],
-            'prefix' => $disposition->getDocumentPrefix(),
             'dossierNumber' => $disposition->getDossierNr(),
-            'internalReference' => '',
             'title' => $disposition->getTitle(),
             'summary' => $disposition->getSummary(),
             'subject' => $disposition->getSubject()?->getName(),
@@ -93,14 +91,13 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
             ],
-            'publicationDate' => $disposition->getPublicationDate()?->format(DateTime::RFC3339),
+            'publicationDate' => $disposition->getPublicationDate()?->format('Y-m-d'),
             'status' => $disposition->getStatus()->value,
             'mainDocument' => [
                 'id' => (string) $dispositionMainDocument->getId(),
                 'type' => $dispositionMainDocument->getType()->value,
                 'language' => $dispositionMainDocument->getLanguage()->value,
-                'formalDate' => $dispositionMainDocument->getFormalDate()->format(DateTime::RFC3339),
-                'internalReference' => $dispositionMainDocument->getInternalReference(),
+                'formalDate' => $dispositionMainDocument->getFormalDate()->format('Y-m-d'),
                 'grounds' => $dispositionMainDocument->getGrounds(),
                 'fileName' => $dispositionMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
@@ -110,19 +107,18 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'id' => (string) $dispositionAttachment->getId(),
                     'type' => $dispositionAttachment->getType()->value,
                     'language' => $dispositionAttachment->getLanguage()->value,
-                    'formalDate' => $dispositionAttachment->getFormalDate()->format(DateTime::RFC3339),
-                    'internalReference' => $dispositionAttachment->getInternalReference(),
+                    'formalDate' => $dispositionAttachment->getFormalDate()->format('Y-m-d'),
                     'grounds' => $dispositionAttachment->getGrounds(),
                     'fileName' => $dispositionAttachment->getFileInfo()->getName(),
                     'externalId' => $dispositionAttachment->getExternalId()?->__toString(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                 ],
             ],
-            'dossierDate' => $disposition->getDateFrom()?->format(DateTime::RFC3339),
+            'dossierDate' => $disposition->getDateFrom()?->format('Y-m-d'),
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
-        self::assertMatchesResourceItemJsonSchema(DispositionDto::class);
+        self::assertMatchesResourceItemJsonSchema(DispositionResponseDto::class);
     }
 
     public function testGetFromIncorrectOrganisation(): void
@@ -152,13 +148,14 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Disposition::class, 0);
 
         $data = $this->createValidDispositionDataPayload($department, $subject, $this->getFaker()->numberBetween(1, 3));
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(DispositionDto::class);
+        self::assertMatchesResourceItemJsonSchema(DispositionResponseDto::class);
 
         self::assertDatabaseCount(Disposition::class, 1);
     }
@@ -167,13 +164,14 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Disposition::class, 0);
 
         $data = $this->createValidDispositionDataPayload($department, null, 1);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(DispositionDto::class);
+        self::assertMatchesResourceItemJsonSchema(DispositionResponseDto::class);
 
         self::assertDatabaseCount(Disposition::class, 1);
     }
@@ -201,13 +199,14 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Disposition::class, 0);
 
         $data = $this->createValidDispositionDataPayload($department, $subject, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(DispositionDto::class);
+        self::assertMatchesResourceItemJsonSchema(DispositionResponseDto::class);
 
         self::assertDatabaseCount(Disposition::class, 1);
     }
@@ -222,6 +221,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Disposition::class, 0);
 
@@ -239,27 +239,18 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         return [
             'dossierDate in the future' => [
                 [
-                    'dossierDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                    'dossierDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
-                ],
-            ],
-            'null internal reference' => [
-                [
-                    'internalReference' => null,
-                ],
-                [
-                    'code' => Type::INVALID_TYPE_ERROR,
-                    'propertyPath' => 'internalReference',
                 ],
             ],
             'invalid mainDocument language' => [
                 [
                     'mainDocument' => [
-                        'filename' => 'filename.pdf',
-                        'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                        'fileName' => 'filename.pdf',
+                        'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                         'type' => AttachmentType::ACCOUNTABILITY_REPORT,
                         'language' => 'invalid',
                     ],
@@ -274,9 +265,9 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'attachments' => [
                         [
                             'fileName' => 'filename.pdf',
-                            'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                             'type' => 'invalid',
-                            'language' => AttachmentLanguage::ENGLISH,
+                            'language' => AttachmentLanguage::ENG,
                         ],
                     ],
                 ],
@@ -320,7 +311,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $disposition = DispositionFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
             'organisation' => $organisation,
@@ -337,12 +328,11 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $data = $this->createValidDispositionDataPayload($department, null, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $disposition), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(DispositionDto::class);
+        self::assertMatchesResourceItemJsonSchema(DispositionResponseDto::class);
 
         self::assertDatabaseHas(Disposition::class, [
             'dossierNr' => $data['dossierNumber'],
-            'internalReference' => $data['internalReference'],
-            'documentPrefix' => $data['prefix'],
+            'documentPrefix' => $disposition->getDocumentPrefix(),
             'summary' => $data['summary'],
             'title' => $data['title'],
         ]);
@@ -353,8 +343,8 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $disposition = DispositionFactory::createOne([
-            'date_from' => DateTimeImmutable::createFromFormat('Y-m-d', '2022-01-01'),
-            'date_to' => DateTime::createFromFormat('Y-m-d', '2022-01-02'),
+            'date_from' => PlainDate::create('2022-01-01'),
+            'date_to' => PlainDate::create('2022-01-02'),
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
@@ -368,16 +358,14 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $data = [
             'title' => $disposition->getTitle(),
             'dossierNumber' => $disposition->getDossierNr(),
-            'internalReference' => $disposition->getInternalReference(),
-            'prefix' => $disposition->getDocumentPrefix(),
-            'dossierDate' => $disposition->getDateFrom()?->format(DateTime::RFC3339),
-            'publicationDate' => $disposition->getPublicationDate()?->format(DateTime::RFC3339),
+            'dossierDate' => $disposition->getDateFrom()?->format('Y-m-d'),
+            'publicationDate' => $disposition->getPublicationDate()?->format('Y-m-d'),
             'summary' => $disposition->getSummary(),
             'departmentId' => $department->getId(),
             'subjectId' => $disposition->getSubject()?->getId(),
             'mainDocument' => [
-                'filename' => $disposition->getMainDocument()?->getFileInfo()->getName(),
-                'formalDate' => $disposition->getMainDocument()?->getFormalDate()->format(DateTime::RFC3339),
+                'fileName' => $disposition->getMainDocument()?->getFileInfo()->getName(),
+                'formalDate' => $disposition->getMainDocument()?->getFormalDate()->format('Y-m-d'),
                 'type' => $disposition->getMainDocument()?->getType()->value,
                 'language' => $disposition->getMainDocument()?->getLanguage()->value,
             ],
@@ -399,7 +387,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $disposition = DispositionFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -432,10 +420,10 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         return [
             'dossierDate in the future' => [
                 [
-                    'dossierDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                    'dossierDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
                 ],
             ],
@@ -447,7 +435,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $disposition = DispositionFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
             'organisation' => $organisation,
@@ -480,16 +468,14 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         return [
             'title' => $this->getFaker()->sentence(),
             'dossierNumber' => $this->getFaker()->slug(2),
-            'internalReference' => $this->getFaker()->optional(default: '')->uuid(),
-            'prefix' => $this->getFaker()->slug(2),
-            'dossierDate' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format(DateTime::RFC3339),
-            'publicationDate' => $this->getFaker()->dateTimeBetween('-2 weeks', '-1 week')->format(DateTime::RFC3339),
+            'dossierDate' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format('Y-m-d'),
+            'publicationDate' => $this->getFaker()->plainDateBetween('-2 weeks', '-1 week')->format('Y-m-d'),
             'summary' => $this->getFaker()->sentence(),
             'departmentId' => $department->getId(),
             'subjectId' => $subject?->getId(),
             'mainDocument' => [
-                'filename' => $this->getFaker()->word(),
-                'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
+                'fileName' => $this->getFaker()->word(),
+                'formalDate' => $this->getFaker()->date(),
                 'type' => $this->getFaker()->randomElement(DispositionMainDocument::getAllowedTypes()),
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],

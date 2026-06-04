@@ -20,4 +20,3 @@ jobs:
     secrets: inherit
     with:
       test_tag: "limits"
-      runner: "ubuntu-latest-m"

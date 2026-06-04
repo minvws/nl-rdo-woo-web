@@ -84,7 +84,7 @@ class CleanSheetTest extends UnitTestCase
 
         $this->cacheClearCommand->expects('run');
 
-        $commandTester->execute(['--force' => 1]);
+        $commandTester->execute(['--force' => 1, '--index' => 'woopie']);
 
         self::assertEquals(0, $commandTester->getStatusCode());
     }

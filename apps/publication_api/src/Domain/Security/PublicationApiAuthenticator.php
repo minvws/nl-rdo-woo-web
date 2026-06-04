@@ -18,15 +18,21 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 
 use function explode;
 use function is_string;
+use function preg_match;
+use function trim;
 
 class PublicationApiAuthenticator extends AbstractAuthenticator
 {
     private const string SERVER_SSL_USERNAME_KEY = 'SSL_CLIENT_S_DN_CN';
+    private const string SERVER_SSL_CLIENT_VERIFY_KEY = 'SSL_CLIENT_VERIFY';
+    private const string SERVER_SSL_CLIENT_S_DN_KEY = 'SSL_CLIENT_S_DN';
 
     public function __construct(
         private readonly GlobDomainValidator $globDomainValidator,
         #[Autowire(param: 'publication_api_ssl_username_whitelist')]
         private readonly string $sslUserNameWhitelist,
+        #[Autowire(param: 'publication_api_ssl_organization_identifier')]
+        private readonly string $sslOrganizationIdentifier,
     ) {
     }
 
@@ -37,18 +43,11 @@ class PublicationApiAuthenticator extends AbstractAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        $sslUserName = $request->server->get(self::SERVER_SSL_USERNAME_KEY);
+        $this->checkVerified($request);
 
-        if (! is_string($sslUserName)) {
-            throw new AuthenticationException('Client Certificate Common Name is missing or invalid');
-        }
+        $this->checkOrganizationIdentifier($request);
 
-        $whitelist = explode(',', $this->sslUserNameWhitelist);
-        if (! $this->globDomainValidator->isValid($whitelist, $sslUserName)) {
-            throw new AuthenticationException(
-                'Client Certificate Common Name is not whitelisted. Please read the documentation or contact your system administrator.',
-            );
-        }
+        $sslUserName = $this->checkSslUsername($request);
 
         $userBadge = new UserBadge($sslUserName, static function () use ($sslUserName): ApiUser {
             return new ApiUser($sslUserName);
@@ -80,5 +79,49 @@ class PublicationApiAuthenticator extends AbstractAuthenticator
                 'Content-Type' => 'application/problem+json',
             ],
         );
+    }
+
+    private function extractOrganizationIdentifier(string $dn): ?string
+    {
+        return preg_match('/organizationIdentifier\s*=\s*([^,]+)/i', $dn, $matches)
+            ? trim($matches[1])
+            : null;
+    }
+
+    private function checkVerified(Request $request): void
+    {
+        $sslClientVerify = $request->server->get(self::SERVER_SSL_CLIENT_VERIFY_KEY);
+
+        if ($sslClientVerify !== 'SUCCESS') {
+            throw new AuthenticationException('Client Certificate is not verified or invalid');
+        }
+    }
+
+    private function checkOrganizationIdentifier(Request $request): void
+    {
+        $sslClientDn = $request->server->get(self::SERVER_SSL_CLIENT_S_DN_KEY);
+
+        $organizationIdentifier = is_string($sslClientDn) ? $this->extractOrganizationIdentifier($sslClientDn) : null;
+        if ($organizationIdentifier === null || $organizationIdentifier !== $this->sslOrganizationIdentifier) {
+            throw new AuthenticationException('Client Certificate Organization Identifier is missing or invalid');
+        }
+    }
+
+    private function checkSslUsername(Request $request): string
+    {
+        $sslUserName = $request->server->get(self::SERVER_SSL_USERNAME_KEY);
+
+        if (! is_string($sslUserName)) {
+            throw new AuthenticationException('Client Certificate Common Name is missing or invalid');
+        }
+
+        $whitelist = explode(',', $this->sslUserNameWhitelist);
+        if (! $this->globDomainValidator->isValid($whitelist, $sslUserName)) {
+            throw new AuthenticationException(
+                'Client Certificate Common Name is not whitelisted. Please read the documentation or contact your system administrator.',
+            );
+        }
+
+        return $sslUserName;
     }
 }

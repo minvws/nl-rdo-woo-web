@@ -10,10 +10,10 @@ use Erichard\ElasticQueryBuilder\Query\Query as ErichardQuery;
 final class Query extends ErichardQuery
 {
     /**
-     * @param array<QueryInterface> $must
-     * @param array<QueryInterface> $mustNot
-     * @param array<QueryInterface> $should
-     * @param array<QueryInterface> $filter
+     * @param array<array-key, QueryInterface> $must
+     * @param array<array-key, QueryInterface> $mustNot
+     * @param array<array-key, QueryInterface> $should
+     * @param array<array-key, QueryInterface> $filter
      */
     public static function matchAll(
         array $must = [],

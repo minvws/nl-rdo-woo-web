@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Integration\Api\Publication\Dossier\RequestForAdvice;
 
 use Carbon\CarbonImmutable;
-use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PublicationApi\Api\Publication\Dossier\RequestForAdvice\RequestForAdviceDto;
+use PublicationApi\Api\Publication\Dossier\RequestForAdvice\RequestForAdviceResponseDto;
 use PublicationApi\Api\Publication\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Publication\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Domain\Department\Department;
@@ -19,14 +18,15 @@ use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAtta
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\EntityExists;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\Type;
 
 use function array_merge;
@@ -43,7 +43,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $requestForAdvice = RequestForAdviceFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -64,7 +64,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $requestForAdvice = RequestForAdviceFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -85,9 +85,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                 'id' => (string) $requestForAdvice->getOrganisation()->getId(),
                 'name' => $requestForAdvice->getOrganisation()->getName(),
             ],
-            'prefix' => $requestForAdvice->getDocumentPrefix(),
             'dossierNumber' => $requestForAdvice->getDossierNr(),
-            'internalReference' => '',
             'title' => $requestForAdvice->getTitle(),
             'summary' => $requestForAdvice->getSummary(),
             'subject' => $requestForAdvice->getSubject()?->getName(),
@@ -95,14 +93,13 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
             ],
-            'publicationDate' => $requestForAdvice->getPublicationDate()?->format(DateTime::RFC3339),
+            'publicationDate' => $requestForAdvice->getPublicationDate()?->format('Y-m-d'),
             'status' => $requestForAdvice->getStatus()->value,
             'mainDocument' => [
                 'id' => (string) $requestForAdviceMainDocument->getId(),
                 'type' => $requestForAdviceMainDocument->getType()->value,
                 'language' => $requestForAdviceMainDocument->getLanguage()->value,
-                'formalDate' => $requestForAdviceMainDocument->getFormalDate()->format(DateTime::RFC3339),
-                'internalReference' => $requestForAdviceMainDocument->getInternalReference(),
+                'formalDate' => $requestForAdviceMainDocument->getFormalDate()->format('Y-m-d'),
                 'grounds' => $requestForAdviceMainDocument->getGrounds(),
                 'fileName' => $requestForAdviceMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
@@ -112,21 +109,20 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                     'id' => (string) $requestForAdviceAttachment->getId(),
                     'type' => $requestForAdviceAttachment->getType()->value,
                     'language' => $requestForAdviceAttachment->getLanguage()->value,
-                    'formalDate' => $requestForAdviceAttachment->getFormalDate()->format(DateTime::RFC3339),
-                    'internalReference' => $requestForAdviceAttachment->getInternalReference(),
+                    'formalDate' => $requestForAdviceAttachment->getFormalDate()->format('Y-m-d'),
                     'grounds' => $requestForAdviceAttachment->getGrounds(),
                     'fileName' => $requestForAdviceAttachment->getFileInfo()->getName(),
                     'externalId' => $requestForAdviceAttachment->getExternalId()?->__toString(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                 ],
             ],
-            'dossierDate' => $requestForAdvice->getDateFrom()?->format(DateTime::RFC3339),
+            'dossierDate' => $requestForAdvice->getDateFrom()?->format('Y-m-d'),
             'link' => $requestForAdvice->getLink(),
             'advisoryBodies' => $requestForAdvice->getAdvisoryBodies(),
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
-        self::assertMatchesResourceItemJsonSchema(RequestForAdviceDto::class);
+        self::assertMatchesResourceItemJsonSchema(RequestForAdviceResponseDto::class);
     }
 
     public function testGetFromIncorrectOrganisation(): void
@@ -156,13 +152,14 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(RequestForAdvice::class, 0);
 
         $data = $this->createValidRequestForAdviceDataPayload($department, $subject, $this->getFaker()->numberBetween(1, 3));
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(RequestForAdviceDto::class);
+        self::assertMatchesResourceItemJsonSchema(RequestForAdviceResponseDto::class);
 
         self::assertDatabaseCount(RequestForAdvice::class, 1);
     }
@@ -171,13 +168,14 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(RequestForAdvice::class, 0);
 
         $data = $this->createValidRequestForAdviceDataPayload($department, null, 1);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(RequestForAdviceDto::class);
+        self::assertMatchesResourceItemJsonSchema(RequestForAdviceResponseDto::class);
 
         self::assertDatabaseCount(RequestForAdvice::class, 1);
     }
@@ -205,13 +203,14 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(RequestForAdvice::class, 0);
 
         $data = $this->createValidRequestForAdviceDataPayload($department, $subject, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(RequestForAdviceDto::class);
+        self::assertMatchesResourceItemJsonSchema(RequestForAdviceResponseDto::class);
 
         self::assertDatabaseCount(RequestForAdvice::class, 1);
     }
@@ -226,6 +225,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(RequestForAdvice::class, 0);
 
@@ -243,27 +243,18 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         return [
             'dossierDate in the future' => [
                 [
-                    'dossierDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                    'dossierDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
-                ],
-            ],
-            'null internal reference' => [
-                [
-                    'internalReference' => null,
-                ],
-                [
-                    'code' => Type::INVALID_TYPE_ERROR,
-                    'propertyPath' => 'internalReference',
                 ],
             ],
             'invalid mainDocument language' => [
                 [
                     'mainDocument' => [
-                        'filename' => 'filename.pdf',
-                        'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                        'fileName' => 'filename.pdf',
+                        'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                         'type' => AttachmentType::REQUEST_FOR_ADVICE,
                         'language' => 'invalid',
                     ],
@@ -278,9 +269,9 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                     'attachments' => [
                         [
                             'fileName' => 'file.pdf',
-                            'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                             'type' => 'invalid',
-                            'language' => AttachmentLanguage::ENGLISH,
+                            'language' => AttachmentLanguage::ENG,
                         ],
                     ],
                 ],
@@ -324,7 +315,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $requestForAdvice = RequestForAdviceFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
@@ -341,12 +332,11 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $data = $this->createValidRequestForAdviceDataPayload($department, null, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $requestForAdvice), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(RequestForAdviceDto::class);
+        self::assertMatchesResourceItemJsonSchema(RequestForAdviceResponseDto::class);
 
         self::assertDatabaseHas(RequestForAdvice::class, [
             'dossierNr' => $data['dossierNumber'],
-            'internalReference' => $data['internalReference'],
-            'documentPrefix' => $data['prefix'],
+            'documentPrefix' => $requestForAdvice->getDocumentPrefix(),
             'summary' => $data['summary'],
             'title' => $data['title'],
             'link' => $data['link'],
@@ -363,7 +353,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $requestForAdvice = RequestForAdviceFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -396,10 +386,10 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         return [
             'dossierDate in the future' => [
                 [
-                    'dossierDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                    'dossierDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
                 ],
             ],
@@ -411,7 +401,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $requestForAdvice = RequestForAdviceFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
@@ -443,18 +433,16 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         return [
             'title' => $this->getFaker()->sentence(),
             'dossierNumber' => $this->getFaker()->slug(2),
-            'internalReference' => $this->getFaker()->optional(default: '')->uuid(),
-            'prefix' => $this->getFaker()->slug(2),
-            'dossierDate' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format(DateTime::RFC3339),
-            'publicationDate' => $this->getFaker()->dateTimeBetween('-2 weeks', '-1 week')->format(DateTime::RFC3339),
+            'dossierDate' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format('Y-m-d'),
+            'publicationDate' => $this->getFaker()->plainDateBetween('-2 weeks', '-1 week')->format('Y-m-d'),
             'summary' => $this->getFaker()->sentence(),
             'departmentId' => $department->getId(),
             'subjectId' => $subject?->getId(),
             'link' => $this->getFaker()->url(),
             'advisoryBodies' => $this->getFaker()->boolean() ? [] : [$this->getFaker()->words(3, true)],
             'mainDocument' => [
-                'filename' => $this->getFaker()->word(),
-                'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
+                'fileName' => $this->getFaker()->word(),
+                'formalDate' => $this->getFaker()->date(),
                 'type' => AttachmentType::REQUEST_FOR_ADVICE,
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],

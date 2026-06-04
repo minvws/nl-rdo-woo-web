@@ -37,8 +37,8 @@ class AndTermFilter implements FilterInterface
             $query->addFilter(
                 Query::term(
                     field: ($nestedPath ? $nestedPath->value . '.' : '') . $facet->getPath(),
-                    value: $value
-                )
+                    value: $value,
+                ),
             );
         }
     }

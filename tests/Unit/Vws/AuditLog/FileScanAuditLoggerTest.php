@@ -54,7 +54,7 @@ final class FileScanAuditLoggerTest extends UnitTestCase
                 self::assertEquals($reason, $event->getLogData()['failed_reason']);
 
                 return true;
-            }
+            },
         ));
 
         $this->fileScanLogger->onFileScanned(new FileScannedEvent(

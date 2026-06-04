@@ -30,7 +30,7 @@ readonly class OtherPublicationMapper
     /**
      * @param array<array-key,OtherPublication> $otherPublications
      *
-     * @return list<OtherPublicationDto>
+     * @return list<OtherPublicationResponseDto>
      */
     public function fromEntities(array $otherPublications): array
     {
@@ -40,7 +40,7 @@ readonly class OtherPublicationMapper
         ));
     }
 
-    public function fromEntity(OtherPublication $otherPublication): OtherPublicationDto
+    public function fromEntity(OtherPublication $otherPublication): OtherPublicationResponseDto
     {
         $mainDocument = $otherPublication->getMainDocument();
         Assert::notNull($mainDocument);
@@ -53,13 +53,11 @@ readonly class OtherPublicationMapper
         $department = $otherPublication->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
-        return new OtherPublicationDto(
+        return new OtherPublicationResponseDto(
             $otherPublication->getId(),
             $otherPublication->getExternalId(),
             OrganisationReferenceDto::fromEntity($otherPublication->getOrganisation()),
-            $otherPublication->getDocumentPrefix(),
             $otherPublication->getDossierNr(),
-            $otherPublication->getInternalReference(),
             $otherPublication->getTitle(),
             $otherPublication->getSummary(),
             $otherPublication->getSubject()?->getName(),
@@ -78,10 +76,12 @@ readonly class OtherPublicationMapper
         Department $department,
         ?Subject $subject,
         ExternalId $externalId,
+        string $documentPrefix,
     ): OtherPublication {
         $otherPublication = new OtherPublication();
         $otherPublication->setExternalId($externalId);
         $otherPublication->setStatus(DossierStatus::NEW);
+        $otherPublication->setDocumentPrefix($documentPrefix);
 
         self::update($otherPublication, $otherPublicationRequestDto, $organisation, $department, $subject);
 
@@ -97,9 +97,7 @@ readonly class OtherPublicationMapper
     ): OtherPublication {
         $otherPublication->setDateFrom($otherPublicationRequestDto->dossierDate);
         $otherPublication->setDepartments([$department]);
-        $otherPublication->setDocumentPrefix($otherPublicationRequestDto->prefix);
         $otherPublication->setDossierNr($otherPublicationRequestDto->dossierNumber);
-        $otherPublication->setInternalReference($otherPublicationRequestDto->internalReference);
         $otherPublication->setOrganisation($organisation);
         $otherPublication->setPublicationDate($otherPublicationRequestDto->publicationDate);
         $otherPublication->setSubject($subject);

@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\Guard\DossierWorkflowGuard;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\Marking;
@@ -22,13 +23,13 @@ class DossierWorkflowGuardTest extends SharedWebTestCase
         $wooDecision = WooDecisionFactory::new()
             ->scheduled()
             ->create([
-                'dateFrom' => new DateTimeImmutable(),
-                'dateTo' => new DateTimeImmutable('+1 week'),
+                'dateFrom' => PlainDate::today(),
+                'dateTo' => PlainDate::create(new DateTimeImmutable('+1 week')->format('Y-m-d')),
                 'previewDate' => new DateTimeImmutable('-1 week'),
-                'publicationDate' => new DateTimeImmutable('-1 week'),
+                'publicationDate' => PlainDate::create(new DateTimeImmutable('-1 week')->format('Y-m-d')),
             ]);
 
-        $validator = self::getContainer()->get(ValidatorInterface::class);
+        $validator = self::fromContainer(ValidatorInterface::class);
 
         $guardEvent = new GuardEvent($wooDecision, new Marking([]), new Transition(DossierStatusTransition::PUBLISH->value, [], []));
 
@@ -44,7 +45,7 @@ class DossierWorkflowGuardTest extends SharedWebTestCase
             ->concept()
             ->create();
 
-        $validator = self::getContainer()->get(ValidatorInterface::class);
+        $validator = self::fromContainer(ValidatorInterface::class);
 
         $guardEvent = new GuardEvent($wooDecision, new Marking([]), new Transition(DossierStatusTransition::PUBLISH->value, [], []));
 

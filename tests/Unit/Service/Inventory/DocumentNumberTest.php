@@ -30,7 +30,7 @@ class DocumentNumberTest extends UnitTestCase
 
         self::assertEquals(
             $expected,
-            strval($documentNumber)
+            strval($documentNumber),
         );
     }
 

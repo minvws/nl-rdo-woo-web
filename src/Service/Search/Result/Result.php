@@ -18,6 +18,8 @@ use Shared\Service\Search\Query\Sort\ViewModel\SortItems;
  */
 final class Result
 {
+    public const string DEFAULT_ROUTE_NAME = 'app_search';
+
     /**
      * Offset used for the search.
      */
@@ -58,7 +60,7 @@ final class Result
     /**
      * Actual search results (limited per page, so max 10).
      *
-     * @var ResultEntryInterface[]
+     * @var array<array-key, ResultEntryInterface>
      */
     private array $entries = [];
 
@@ -80,21 +82,21 @@ final class Result
     /**
      * Aggregations found.
      *
-     * @var Aggregation[]
+     * @var array<array-key, Aggregation>
      */
     private array $aggregations = [];
 
     /**
      * Suggestions found.
      *
-     * @var Suggestion[]
+     * @var array<array-key, Suggestion>
      */
     private array $suggestions = [];
 
     /**
      * Actual query used to search.
      *
-     * @var mixed[]
+     * @var array<array-key, mixed>
      */
     private array $query;
 
@@ -104,8 +106,13 @@ final class Result
     private int $resultCount;
 
     private SortItems $sortItems;
-
     private SearchParameters $searchParameters;
+    private string $routeName = self::DEFAULT_ROUTE_NAME;
+
+    /**
+     * @var array<string, mixed>
+     */
+    private array $routeParameters = [];
 
     public static function create(): self
     {
@@ -197,7 +204,7 @@ final class Result
     }
 
     /**
-     * @return ResultEntryInterface[]
+     * @return array<array-key, ResultEntryInterface>
      */
     public function getEntries(): array
     {
@@ -205,7 +212,7 @@ final class Result
     }
 
     /**
-     * @param ResultEntryInterface[] $entries
+     * @param array<array-key, ResultEntryInterface> $entries
      */
     public function setEntries(array $entries): self
     {
@@ -239,7 +246,7 @@ final class Result
     }
 
     /**
-     * @return Aggregation[]
+     * @return array<array-key, Aggregation>
      */
     public function getAggregations(): array
     {
@@ -258,7 +265,7 @@ final class Result
     }
 
     /**
-     * @param Aggregation[] $aggregations
+     * @param array<array-key, Aggregation> $aggregations
      */
     public function setAggregations(array $aggregations): self
     {
@@ -268,7 +275,7 @@ final class Result
     }
 
     /**
-     * @return Suggestion[]
+     * @return array<array-key, Suggestion>
      */
     public function getSuggestions(): array
     {
@@ -276,7 +283,7 @@ final class Result
     }
 
     /**
-     * @param Suggestion[] $suggestions
+     * @param array<array-key, Suggestion> $suggestions
      */
     public function setSuggestions(array $suggestions): self
     {
@@ -302,7 +309,7 @@ final class Result
     }
 
     /**
-     * @return mixed[]
+     * @return array<array-key, mixed>
      */
     public function getQuery(): array
     {
@@ -310,7 +317,7 @@ final class Result
     }
 
     /**
-     * @param mixed[] $query
+     * @param array<array-key, mixed> $query
      */
     public function setQuery(array $query): self
     {
@@ -372,6 +379,36 @@ final class Result
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getRouteName(): string
+    {
+        return $this->routeName;
+    }
+
+    public function setRouteName(string $routeName): self
+    {
+        $this->routeName = $routeName;
+
+        return $this;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getRouteParameters(): array
+    {
+        return $this->routeParameters;
+    }
+
+    /**
+     * @param array<string, mixed> $routeParameters
+     */
+    public function setRouteParameters(array $routeParameters): self
+    {
+        $this->routeParameters = $routeParameters;
 
         return $this;
     }

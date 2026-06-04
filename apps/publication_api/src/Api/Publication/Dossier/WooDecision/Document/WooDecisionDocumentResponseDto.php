@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\Dossier\WooDecision\Document;
 
-use DateTimeImmutable;
 use PublicationApi\Api\Publication\UploadStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\PlainDate;
 
 final readonly class WooDecisionDocumentResponseDto
 {
@@ -19,7 +19,7 @@ final readonly class WooDecisionDocumentResponseDto
      */
     public function __construct(
         public array $caseNumbers,
-        public ?DateTimeImmutable $date,
+        public ?PlainDate $date,
         public ?string $documentId,
         public string $documentNr,
         public ?ExternalId $externalId,
@@ -30,7 +30,6 @@ final readonly class WooDecisionDocumentResponseDto
         public bool $isWithdrawn,
         public ?Judgement $judgement,
         public array $links,
-        public ?string $period,
         public array $refersTo,
         public ?string $remark,
         public ?int $threadId,

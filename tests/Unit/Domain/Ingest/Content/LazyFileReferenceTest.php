@@ -19,7 +19,7 @@ class LazyFileReferenceTest extends UnitTestCase
     public function testLazyFileReferenceLoadsFileOnlyWhenNeededAndOnlyOnce(): void
     {
         $spy = Mockery::spy(
-            static fn (): string => '/foo/bar.txt'
+            static fn (): string => '/foo/bar.txt',
         );
 
         $reference = new LazyFileReference($spy);

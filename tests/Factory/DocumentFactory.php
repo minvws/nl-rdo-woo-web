@@ -49,7 +49,7 @@ final class DocumentFactory extends PersistentObjectFactory
             ]);
 
         return [
-            'documentDate' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'documentDate' => self::faker()->plainDate(),
             'familyId' => $documentId,
             'documentId' => $documentId,
             'externalId' => self::faker()->boolean() ? ExternalId::create(self::faker()->uuid()) : null,

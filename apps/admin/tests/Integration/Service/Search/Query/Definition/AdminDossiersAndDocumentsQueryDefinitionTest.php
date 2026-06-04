@@ -30,8 +30,7 @@ final class AdminDossiersAndDocumentsQueryDefinitionTest extends AdminWebTestCas
         $authorizationMatrix->expects('getActiveOrganisation')->andReturn($organisation);
         self::getContainer()->set(AuthorizationMatrix::class, $authorizationMatrix);
 
-        /** @var SearchParametersFactory $searchParametersFactory */
-        $searchParametersFactory = self::getContainer()->get(SearchParametersFactory::class);
+        $searchParametersFactory = self::fromContainer(SearchParametersFactory::class);
         $searchParameters = $searchParametersFactory->forAdminSearch(
             'foo',
             DossierType::WOO_DECISION,

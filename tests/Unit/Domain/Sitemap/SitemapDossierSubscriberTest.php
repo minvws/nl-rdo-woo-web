@@ -69,7 +69,7 @@ class SitemapDossierSubscriberTest extends UnitTestCase
                     self::assertEquals($updatedAt, $urlConcrete->getLastmod());
 
                     return true;
-                }
+                },
             ),
             'dossiers',
         );

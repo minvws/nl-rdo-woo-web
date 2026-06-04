@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Disposition\ViewModel;
 
-use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
@@ -15,6 +14,7 @@ use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFacto
 use Shared\Domain\Publication\Dossier\ViewModel\Department;
 use Shared\Domain\Publication\Dossier\ViewModel\Subject;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 
 final class DispositionViewFactoryTest extends UnitTestCase
 {
@@ -40,15 +40,15 @@ final class DispositionViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new DateTimeImmutable(),
-                mainDepartment: $expectedMainDepartment = $expectedMainDepartment,
+                publicationDate: $publicationDate = PlainDate::today(),
+                mainDepartment: $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::DISPOSITION,
                 subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
         $dossier = Mockery::mock(Disposition::class);
-        $dossier->expects('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable());
+        $dossier->expects('getDateFrom')->andReturn($expectedDate = PlainDate::today());
 
         $result = new DispositionViewFactory($this->commonDossierViewFactory)->make($dossier);
 

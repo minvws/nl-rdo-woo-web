@@ -57,7 +57,7 @@ class ElasticController extends AbstractController
 
         $form = $this->createForm(
             RolloverParametersType::class,
-            $this->rolloverService->getDefaultRolloverParameters()
+            $this->rolloverService->getDefaultRolloverParameters(),
         );
 
         $form->handleRequest($request);
@@ -101,7 +101,7 @@ class ElasticController extends AbstractController
             null,
             [
                 'action' => $this->generateUrl('app_admin_elastic_delete', ['indexName' => $index->name]),
-            ]
+            ],
         );
 
         return $this->render('admin/elastic/details.html.twig', [
@@ -136,7 +136,7 @@ class ElasticController extends AbstractController
 
             $this->addFlash(
                 'backend',
-                ['success' => $this->translator->trans('admin.elastic.index_deleted', ['index' => $indexName])]
+                ['success' => $this->translator->trans('admin.elastic.index_deleted', ['index' => $indexName])],
             );
         }
 

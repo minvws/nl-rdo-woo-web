@@ -26,7 +26,7 @@ class SortItemViewFactory
     }
 
     /**
-     * @return SortField[]
+     * @return array<array-key, SortField>
      */
     private function getAvailableSortFields(SearchParameters $searchParameters): array
     {

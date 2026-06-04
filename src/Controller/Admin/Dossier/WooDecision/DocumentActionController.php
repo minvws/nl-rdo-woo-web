@@ -43,7 +43,7 @@ class DocumentActionController extends AbstractController
         $breadcrumbs->addRouteItem(
             $dossier->getDossierNr(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );
         $breadcrumbs->addRouteItem(
             'Documenten',
@@ -53,7 +53,7 @@ class DocumentActionController extends AbstractController
         $breadcrumbs->addRouteItem(
             $document->getDocumentNr(),
             'app_admin_dossier_woodecision_document',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()],
         );
         $breadcrumbs->addItem('admin.dossiers.woo-decision.step.withdraw_document');
 
@@ -82,7 +82,7 @@ class DocumentActionController extends AbstractController
 
             $this->addFlash(
                 'backend',
-                ['success' => $this->translator->trans('admin.dossiers.action.withdraw_document_executing')]
+                ['success' => $this->translator->trans('admin.dossiers.action.withdraw_document_executing')],
             );
 
             return $this->redirectToRoute(
@@ -91,7 +91,7 @@ class DocumentActionController extends AbstractController
                     'prefix' => $dossier->getDocumentPrefix(),
                     'dossierId' => $dossier->getDossierNr(),
                     'documentId' => $document->getDocumentNr(),
-                ]
+                ],
             );
         }
 

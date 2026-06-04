@@ -12,11 +12,11 @@ use function array_keys;
 
 class LoggingHelper
 {
-    /** @var LoggingTypeInterface[] */
+    /** @var array<array-key, LoggingTypeInterface> */
     private array $loggers = [];
 
     /**
-     * @param iterable|LoggingTypeInterface[] $loggingTypes
+     * @param iterable<LoggingTypeInterface> $loggingTypes
      */
     public function __construct(
         #[AutowireIterator('woo_platform.logging.type')]

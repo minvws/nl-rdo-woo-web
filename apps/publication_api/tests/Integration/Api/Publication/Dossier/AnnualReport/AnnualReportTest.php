@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Integration\Api\Publication\Dossier\AnnualReport;
 
 use Carbon\CarbonImmutable;
-use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PublicationApi\Api\Publication\Dossier\AnnualReport\AnnualReportDto;
+use PublicationApi\Api\Publication\Dossier\AnnualReport\AnnualReportResponseDto;
 use PublicationApi\Api\Publication\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Publication\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Domain\Department\Department;
@@ -20,6 +19,7 @@ use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentFactory;
@@ -43,7 +43,7 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $annualReport = AnnualReportFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -62,7 +62,7 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $annualReport = AnnualReportFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -81,9 +81,7 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
                 'id' => (string) $annualReport->getOrganisation()->getId(),
                 'name' => $annualReport->getOrganisation()->getName(),
             ],
-            'prefix' => $annualReport->getDocumentPrefix(),
             'dossierNumber' => $annualReport->getDossierNr(),
-            'internalReference' => '',
             'title' => $annualReport->getTitle(),
             'summary' => $annualReport->getSummary(),
             'subject' => $annualReport->getSubject()?->getName(),
@@ -91,14 +89,13 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
             ],
-            'publicationDate' => $annualReport->getPublicationDate()?->format(DateTime::RFC3339),
+            'publicationDate' => $annualReport->getPublicationDate()?->format('Y-m-d'),
             'status' => $annualReport->getStatus()->value,
             'mainDocument' => [
                 'id' => (string) $annualReportMainDocument->getId(),
                 'type' => $annualReportMainDocument->getType()->value,
                 'language' => $annualReportMainDocument->getLanguage()->value,
-                'formalDate' => $annualReportMainDocument->getFormalDate()->format(DateTime::RFC3339),
-                'internalReference' => $annualReportMainDocument->getInternalReference(),
+                'formalDate' => $annualReportMainDocument->getFormalDate()->format('Y-m-d'),
                 'grounds' => $annualReportMainDocument->getGrounds(),
                 'fileName' => $annualReportMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
@@ -108,8 +105,7 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
                     'id' => (string) $annualReportAttachment->getId(),
                     'type' => $annualReportAttachment->getType()->value,
                     'language' => $annualReportAttachment->getLanguage()->value,
-                    'formalDate' => $annualReportAttachment->getFormalDate()->format(DateTime::RFC3339),
-                    'internalReference' => $annualReportAttachment->getInternalReference(),
+                    'formalDate' => $annualReportAttachment->getFormalDate()->format('Y-m-d'),
                     'grounds' => $annualReportAttachment->getGrounds(),
                     'fileName' => $annualReportAttachment->getFileInfo()->getName(),
                     'externalId' => $annualReportAttachment->getExternalId()?->__toString(),
@@ -120,7 +116,7 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
-        self::assertMatchesResourceItemJsonSchema(AnnualReportDto::class);
+        self::assertMatchesResourceItemJsonSchema(AnnualReportResponseDto::class);
     }
 
     public function testGetAnnualReportFromIncorrectOrganisation(): void
@@ -150,13 +146,14 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(AnnualReport::class, 0);
 
         $data = $this->createValidAnnualReportDataPayload($department, $subject, $this->getFaker()->numberBetween(1, 3));
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(AnnualReportDto::class);
+        self::assertMatchesResourceItemJsonSchema(AnnualReportResponseDto::class);
 
         self::assertDatabaseCount(AnnualReport::class, 1);
     }
@@ -165,13 +162,14 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(AnnualReport::class, 0);
 
         $data = $this->createValidAnnualReportDataPayload($department, null, 1);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(AnnualReportDto::class);
+        self::assertMatchesResourceItemJsonSchema(AnnualReportResponseDto::class);
 
         self::assertDatabaseCount(AnnualReport::class, 1);
     }
@@ -181,6 +179,7 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(AnnualReport::class, 0);
 
@@ -199,20 +198,21 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(AnnualReport::class, 0);
 
         $data = $this->createValidAnnualReportDataPayload($department, $subject, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(AnnualReportDto::class);
+        self::assertMatchesResourceItemJsonSchema(AnnualReportResponseDto::class);
 
         self::assertDatabaseCount(AnnualReport::class, 1);
     }
 
     /**
-     * @param array<string, array<mixed>> $dataOverrides
-     * @param array<string, array<mixed>> $violations
+     * @param array<string, array<array-key, mixed>> $dataOverrides
+     * @param array<string, array<array-key, mixed>> $violations
      */
     #[DataProvider('createAnnualReportValidationDataProvider')]
     public function testCreateAnnualReportWithValidationError(array $dataOverrides, array $violations): void
@@ -230,25 +230,16 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
     }
 
     /**
-     * @return array<string, array<mixed>>
+     * @return array<string, array<array-key, mixed>>
      */
     public static function createAnnualReportValidationDataProvider(): array
     {
         return [
-            'null internal reference' => [
-                [
-                    'internalReference' => null,
-                ],
-                [
-                    'code' => Type::INVALID_TYPE_ERROR,
-                    'propertyPath' => 'internalReference',
-                ],
-            ],
             'invalid mainDocument language' => [
                 [
                     'mainDocument' => [
-                        'filename' => 'filename.pdf',
-                        'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                        'fileName' => 'filename.pdf',
+                        'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                         'type' => AttachmentType::ACCOUNTABILITY_REPORT,
                         'language' => 'invalid',
                     ],
@@ -263,9 +254,9 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
                     'attachments' => [
                         [
                             'fileName' => 'file.pdf',
-                            'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                             'type' => 'invalid',
-                            'language' => AttachmentLanguage::ENGLISH,
+                            'language' => AttachmentLanguage::ENG,
                         ],
                     ],
                 ],
@@ -309,7 +300,7 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $annualReport = AnnualReportFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
@@ -326,20 +317,19 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
         $data = $this->createValidAnnualReportDataPayload($department, null, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $annualReport), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(AnnualReportDto::class);
+        self::assertMatchesResourceItemJsonSchema(AnnualReportResponseDto::class);
 
         self::assertDatabaseHas(AnnualReport::class, [
             'dossierNr' => $data['dossierNumber'],
-            'internalReference' => $data['internalReference'],
-            'documentPrefix' => $data['prefix'],
+            'documentPrefix' => $annualReport->getDocumentPrefix(),
             'summary' => $data['summary'],
             'title' => $data['title'],
         ]);
     }
 
     /**
-     * @param array<string, array<mixed>> $dataOverrides
-     * @param array<string, array<mixed>> $violations
+     * @param array<string, array<array-key, mixed>> $dataOverrides
+     * @param array<string, array<array-key, mixed>> $violations
      */
     #[DataProvider('updateAnnualReportValidationDataProvider')]
     public function testUpdateAnnualReportWithValidationErrors(array $dataOverrides, array $violations): void
@@ -347,7 +337,7 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $annualReport = AnnualReportFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -373,7 +363,7 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
     }
 
     /**
-     * @return array<string, array<mixed>>
+     * @return array<string, array<array-key, mixed>>
      */
     public static function updateAnnualReportValidationDataProvider(): array
     {
@@ -395,7 +385,7 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $annualReport = AnnualReportFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
@@ -427,16 +417,14 @@ final class AnnualReportTest extends ApiPublicationV1DossierTestCase
         return [
             'title' => $this->getFaker()->sentence(),
             'dossierNumber' => $this->getFaker()->slug(2),
-            'internalReference' => $this->getFaker()->optional(default: '')->uuid(),
-            'prefix' => $this->getFaker()->slug(2),
             'year' => $this->getFaker()->numberBetween(CarbonImmutable::now()->subYears(9)->year, CarbonImmutable::now()->year),
-            'publicationDate' => $this->getFaker()->dateTimeBetween('-2 weeks', '-1 week')->format(DateTime::RFC3339),
+            'publicationDate' => $this->getFaker()->plainDateBetween('-2 weeks', '-1 week')->format('Y-m-d'),
             'summary' => $this->getFaker()->sentence(),
             'departmentId' => $department->getId(),
             'subjectId' => $subject?->getId(),
             'mainDocument' => [
-                'filename' => $this->getFaker()->word(),
-                'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
+                'fileName' => $this->getFaker()->word(),
+                'formalDate' => $this->getFaker()->date('Y-m-d'),
                 'type' => $this->getFaker()->randomElement(AnnualReportMainDocument::getAllowedTypes()),
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],

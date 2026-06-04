@@ -16,7 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class DoctrineLogging implements LoggingTypeInterface
 {
     /**
-     * @var Middleware[]|null
+     * @var array<array-key, Middleware>|null
      */
     private ?array $middlewares = null;
 

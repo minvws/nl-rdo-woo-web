@@ -4,4 +4,10 @@
         {{ 'public.global.download' | trans }} ({{ document.entity.fileInfo.type | trans }}, {{ document.entity.fileInfo.size | size }})
     </twig:Public:DownloadFileButton>
 </div>
+{% else %}
+<div class="mt-10">
+    <twig:Public:Notification>
+        {{ 'public.global.not-ready' | trans }}
+    </twig:Public:Notification>
+</div>
 {% endif %}

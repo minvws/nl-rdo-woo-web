@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
 use Shared\Domain\Department\Department;
@@ -17,6 +16,7 @@ use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Index\Schema\ElasticObjectField;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 
 class DefaultDossierMapperTest extends UnitTestCase
@@ -33,11 +33,11 @@ class DefaultDossierMapperTest extends UnitTestCase
     public function testSupports(): void
     {
         self::assertTrue(
-            $this->mapper->supports(new WooDecision())
+            $this->mapper->supports(new WooDecision()),
         );
 
         self::assertTrue(
-            $this->mapper->supports(new Covenant())
+            $this->mapper->supports(new Covenant()),
         );
     }
 
@@ -66,9 +66,9 @@ class DefaultDossierMapperTest extends UnitTestCase
         $dossier->expects('getSummary')->andReturn('test-summary');
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
         $dossier->expects('getDocumentPrefix')->times(2)->andReturn('foo');
-        $dossier->expects('getDateFrom')->times(3)->andReturn(new DateTimeImmutable('2023-04-16 10:54:15'));
-        $dossier->expects('getDateTo')->times(3)->andReturn(new DateTimeImmutable('2025-04-16 10:54:15'));
-        $dossier->expects('getPublicationDate')->andReturn(new DateTimeImmutable('2024-04-16 11:30:22'));
+        $dossier->expects('getDateFrom')->times(3)->andReturn(PlainDate::create('2023-04-16'));
+        $dossier->expects('getDateTo')->times(3)->andReturn(PlainDate::create('2025-04-16'));
+        $dossier->expects('getPublicationDate')->andReturn(PlainDate::create('2024-04-16'));
         $dossier->expects('getSubject')->andReturn($subject);
         $dossier->expects('getDepartments')->andReturn(new ArrayCollection([
             $departmentA,
@@ -100,14 +100,14 @@ class DefaultDossierMapperTest extends UnitTestCase
                         'name' => 'B|Bar',
                     ],
                 ],
-                'date_from' => '2023-04-16T10:54:15+00:00',
-                'date_to' => '2025-04-16T10:54:15+00:00',
+                'date_from' => '2023-04-16T00:00:00+00:00',
+                'date_to' => '2025-04-16T00:00:00+00:00',
                 'date_range' => [
-                    'gte' => '2023-04-16T10:54:15+00:00',
-                    'lte' => '2025-04-16T10:54:15+00:00',
+                    'gte' => '2023-04-16T00:00:00+00:00',
+                    'lte' => '2025-04-16T00:00:00+00:00',
                 ],
                 'date_period' => 'April 2023 t/m april 2025',
-                'publication_date' => '2024-04-16T11:30:22+00:00',
+                'publication_date' => '2024-04-16T00:00:00+00:00',
                 ElasticObjectField::SUBJECT->value => [
                     ElasticField::ID->value => $subjectId,
                     ElasticField::NAME->value => $subjectName,
@@ -139,9 +139,9 @@ class DefaultDossierMapperTest extends UnitTestCase
         $dossier->expects('getSummary')->andReturn('test-summary');
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
         $dossier->expects('getDocumentPrefix')->times(2)->andReturn('foo');
-        $dossier->expects('getDateFrom')->times(3)->andReturn(new DateTimeImmutable('2023-04-16 10:54:15'));
-        $dossier->expects('getDateTo')->times(3)->andReturn(new DateTimeImmutable('2025-04-16 10:54:15'));
-        $dossier->expects('getPublicationDate')->andReturn(new DateTimeImmutable('2024-04-16 11:30:22'));
+        $dossier->expects('getDateFrom')->times(3)->andReturn(PlainDate::create('2023-04-16'));
+        $dossier->expects('getDateTo')->times(3)->andReturn(PlainDate::create('2025-04-16'));
+        $dossier->expects('getPublicationDate')->andReturn(PlainDate::create('2024-04-16'));
         $dossier->expects('getSubject')->andReturnNull();
         $dossier->expects('getDepartments')->andReturn(new ArrayCollection([
             $departmentA,
@@ -173,14 +173,14 @@ class DefaultDossierMapperTest extends UnitTestCase
                         'name' => 'B|Bar',
                     ],
                 ],
-                'date_from' => '2023-04-16T10:54:15+00:00',
-                'date_to' => '2025-04-16T10:54:15+00:00',
+                'date_from' => '2023-04-16T00:00:00+00:00',
+                'date_to' => '2025-04-16T00:00:00+00:00',
                 'date_range' => [
-                    'gte' => '2023-04-16T10:54:15+00:00',
-                    'lte' => '2025-04-16T10:54:15+00:00',
+                    'gte' => '2023-04-16T00:00:00+00:00',
+                    'lte' => '2025-04-16T00:00:00+00:00',
                 ],
                 'date_period' => 'April 2023 t/m april 2025',
-                'publication_date' => '2024-04-16T11:30:22+00:00',
+                'publication_date' => '2024-04-16T00:00:00+00:00',
                 'subject' => null,
                 'organisation_ids' => [$organisationId],
             ],

@@ -7,6 +7,7 @@ namespace PublicationApi\Api\Publication\Dossier\Advice;
 use PublicationApi\Api\Publication\Attachment\AttachmentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
+use Shared\Domain\Publication\FileInfo;
 
 class AdviceAttachmentMapper
 {
@@ -20,7 +21,11 @@ class AdviceAttachmentMapper
             $attachmentRequestDto->type,
             $attachmentRequestDto->language,
         );
-        $attachment->setInternalReference($attachmentRequestDto->internalReference);
+
+        $fileInfo = new FileInfo();
+        $fileInfo->setName($attachmentRequestDto->fileName);
+
+        $attachment->setFileInfo($fileInfo);
         $attachment->setGrounds($attachmentRequestDto->grounds);
         $attachment->setExternalId($attachmentRequestDto->externalId);
 

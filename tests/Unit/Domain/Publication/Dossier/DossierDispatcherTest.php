@@ -47,7 +47,7 @@ class DossierDispatcherTest extends UnitTestCase
                 self::assertEquals($dossier, $command->dossier);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchCreateDossierCommand($dossier);
@@ -62,7 +62,7 @@ class DossierDispatcherTest extends UnitTestCase
                 self::assertEquals($dossier, $command->dossier);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchUpdateDossierDetailsCommand($dossier);
@@ -77,7 +77,7 @@ class DossierDispatcherTest extends UnitTestCase
                 self::assertEquals($dossier, $command->dossier);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchUpdateDossierContentCommand($dossier);
@@ -92,7 +92,7 @@ class DossierDispatcherTest extends UnitTestCase
                 self::assertEquals($dossier, $command->dossier);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchUpdateDossierPublicationCommand($dossier);
@@ -119,7 +119,7 @@ class DossierDispatcherTest extends UnitTestCase
                 self::assertEquals($roles, $command->auditUserDetails->getRoles());
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchDeleteDossierCommand($id);

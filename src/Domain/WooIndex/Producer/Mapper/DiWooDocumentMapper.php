@@ -12,6 +12,7 @@ use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
 use Shared\Domain\WooIndex\Tooi\InformatieCategorie;
 use Shared\Domain\WooIndex\Tooi\Ministerie;
 use Shared\Domain\WooIndex\Tooi\SoortHandeling;
+use Webmozart\Assert\Assert;
 
 final readonly class DiWooDocumentMapper
 {
@@ -23,14 +24,19 @@ final readonly class DiWooDocumentMapper
 
     public function fromRawUrl(RawUrlDto $rawUrl): DiWooDocument
     {
+        $documentDate = CarbonImmutable::createFromFormat('Y-m-d', $rawUrl->documentDate->format('Y-m-d'));
+        Assert::isInstanceOf($documentDate, CarbonImmutable::class);
+
+        $documentDate = $documentDate->setTime(0, 0);
+
         return new DiWooDocument(
-            creatiedatum: CarbonImmutable::instance($rawUrl->documentDate),
+            creatiedatum: $documentDate,
             publisher: Ministerie::mnre1025,
             officieleTitel: $rawUrl->documentFileName,
             informatieCategorie: $this->mapDossierTypeToInformatieCategorie($rawUrl->dossierType),
             documentHandeling: new DocumentHandeling(
                 soortHandeling: SoortHandeling::c_641ecd76,
-                atTime: CarbonImmutable::instance($rawUrl->documentDate),
+                atTime: $documentDate,
             ),
             isPartOf: $this->isPartOfMapper->fromRawUrl($rawUrl),
             hasParts: $this->hasPartsMapper->fromRawUrl($rawUrl),

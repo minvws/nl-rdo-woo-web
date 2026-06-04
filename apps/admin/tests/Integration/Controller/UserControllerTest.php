@@ -43,7 +43,7 @@ final class UserControllerTest extends AdminWebTestCase
     }
 
     /**
-     * @param array<Roles> $userToEditRoles
+     * @param array<array-key, Roles> $userToEditRoles
      */
     #[DataProvider('modifyResponsCodeData')]
     public function testModifyResponseCode(string $loggedInUserRole, array $userToEditRoles, int $expectedResponseCode): void
@@ -69,7 +69,7 @@ final class UserControllerTest extends AdminWebTestCase
     }
 
     /**
-     * @return array<string,array{loggedInUserRole:Roles::ROLE_*, userToEditRoles:array<Roles::ROLE_*>, expectedResponseCode:int}>
+     * @return array<string, array{loggedInUserRole: Roles::ROLE_*, userToEditRoles: array<array-key, Roles::ROLE_*>, expectedResponseCode: int}>
      */
     public static function modifyResponsCodeData(): array
     {

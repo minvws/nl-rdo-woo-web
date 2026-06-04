@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\Dossier\AnnualReport;
 
-use Carbon\CarbonImmutable;
 use PublicationApi\Api\Publication\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Publication\Department\DepartmentReferenceDto;
 use PublicationApi\Api\Publication\MainDocument\MainDocumentResponseDtoFactory;
@@ -15,10 +14,12 @@ use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
+use function sprintf;
 
 readonly class AnnualReportMapper
 {
@@ -31,14 +32,14 @@ readonly class AnnualReportMapper
     /**
      * @param array<array-key,AnnualReport> $annualReports
      *
-     * @return list<AnnualReportDto>
+     * @return list<AnnualReportResponseDto>
      */
     public function fromEntities(array $annualReports): array
     {
         return array_values(array_map($this->fromEntity(...), $annualReports));
     }
 
-    public function fromEntity(AnnualReport $annualReport): AnnualReportDto
+    public function fromEntity(AnnualReport $annualReport): AnnualReportResponseDto
     {
         $mainDocument = $annualReport->getMainDocument();
         Assert::notNull($mainDocument);
@@ -51,13 +52,11 @@ readonly class AnnualReportMapper
         $department = $annualReport->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
-        return new AnnualReportDto(
+        return new AnnualReportResponseDto(
             $annualReport->getId(),
             $annualReport->getExternalId(),
             OrganisationReferenceDto::fromEntity($annualReport->getOrganisation()),
-            $annualReport->getDocumentPrefix(),
             $annualReport->getDossierNr(),
-            $annualReport->getInternalReference(),
             $annualReport->getTitle(),
             $annualReport->getSummary(),
             $annualReport->getSubject()?->getName(),
@@ -76,10 +75,12 @@ readonly class AnnualReportMapper
         Department $department,
         ?Subject $subject,
         ExternalId $externalId,
+        string $documentPrefix,
     ): AnnualReport {
         $annualReport = new AnnualReport();
         $annualReport->setExternalId($externalId);
         $annualReport->setStatus(DossierStatus::NEW);
+        $annualReport->setDocumentPrefix($documentPrefix);
 
         self::update($annualReport, $annualReportRequestDto, $organisation, $department, $subject);
 
@@ -93,15 +94,9 @@ readonly class AnnualReportMapper
         Department $department,
         ?Subject $subject,
     ): AnnualReport {
-        $dossierDate = CarbonImmutable::createFromFormat('Y', (string) $annualReportRequestDto->year);
-        Assert::isInstanceOf($dossierDate, CarbonImmutable::class);
-        $dossierDate->startOfYear();
-
-        $annualReport->setDateFrom($dossierDate);
+        $annualReport->setDateFrom(PlainDate::createFromFormat('Y-m-d', sprintf('%d-01-01', $annualReportRequestDto->year)));
         $annualReport->setDepartments([$department]);
-        $annualReport->setDocumentPrefix($annualReportRequestDto->prefix);
         $annualReport->setDossierNr($annualReportRequestDto->dossierNumber);
-        $annualReport->setInternalReference($annualReportRequestDto->internalReference);
         $annualReport->setOrganisation($organisation);
         $annualReport->setPublicationDate($annualReportRequestDto->publicationDate);
         $annualReport->setSubject($subject);

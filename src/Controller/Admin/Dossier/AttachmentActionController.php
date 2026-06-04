@@ -49,7 +49,7 @@ class AttachmentActionController extends AbstractController
         $breadcrumbs->addRouteItem(
             $dossier->getDossierNr(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );
 
         Assert::notNull($attachment->getFileInfo()->getName());

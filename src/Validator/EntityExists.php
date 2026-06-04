@@ -15,8 +15,8 @@ class EntityExists extends Constraint
 
     /**
      * @param class-string $entityClass
-     * @param array<mixed> $options
-     * @param array<string> $groups
+     * @param array<array-key, mixed> $options
+     * @param array<array-key, string> $groups
      */
     public function __construct(
         public string $entityClass,
@@ -27,7 +27,9 @@ class EntityExists extends Constraint
         ?array $groups = null,
         mixed $payload = null,
     ) {
-        parent::__construct($options, $groups, $payload);
+        unset($options);
+
+        parent::__construct(null, $groups, $payload);
     }
 
     #[Override]

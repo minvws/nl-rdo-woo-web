@@ -57,11 +57,11 @@ class CreateDossierHandlerTest extends UnitTestCase
                 self::assertEquals($annualReportUuid, $message->dossierId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->handler->__invoke(
-            new CreateDossierCommand($annualReport)
+            new CreateDossierCommand($annualReport),
         );
     }
 
@@ -77,7 +77,7 @@ class CreateDossierHandlerTest extends UnitTestCase
         $this->expectException(DossierWorkflowException::class);
 
         $this->handler->__invoke(
-            new CreateDossierCommand($annualReport)
+            new CreateDossierCommand($annualReport),
         );
     }
 }

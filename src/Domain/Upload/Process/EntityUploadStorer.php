@@ -15,6 +15,7 @@ use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Domain\Upload\UploadService;
 use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\ThumbnailStorageService;
 use Webmozart\Assert\Assert;
 
 use function pathinfo;
@@ -30,6 +31,7 @@ readonly class EntityUploadStorer
         private EntityStorageService $entityStorageService,
         private UploadEntityRepository $uploadEntityRepository,
         private AssetsNamer $assetsNamer,
+        private ThumbnailStorageService $thumbnailStorage,
     ) {
     }
 
@@ -37,6 +39,10 @@ readonly class EntityUploadStorer
         UploadEntity $uploadEntity,
         EntityWithFileInfo $targetEntity,
     ): void {
+        if ($targetEntity->getFileInfo()->isUploaded()) {
+            $this->thumbnailStorage->deleteAllThumbsForEntity($targetEntity);
+        }
+
         $filePath = $this->entityStorageService->generateEntityPath($targetEntity, $uploadEntity->getFilename());
 
         $this->doStore($this->documentStorage, $filePath, $uploadEntity, $targetEntity);
@@ -86,5 +92,6 @@ readonly class EntityUploadStorer
         $targetEntity->getFileInfo()->setSize($size);
         $targetEntity->getFileInfo()->setPath($filePath);
         $targetEntity->getFileInfo()->setUploaded(true);
+        $targetEntity->getFileInfo()->setPageCount(null);
     }
 }

@@ -50,7 +50,7 @@ class DossierUploadStatusTest extends UnitTestCase
                 $this->missingUpload,
                 $this->completedUpload,
             ]),
-            $this->dossierUploadStatus->getExpectedDocuments()
+            $this->dossierUploadStatus->getExpectedDocuments(),
         );
     }
 
@@ -70,7 +70,7 @@ class DossierUploadStatusTest extends UnitTestCase
             [
                 $this->completedUpload,
             ],
-            $this->dossierUploadStatus->getUploadedDocuments()->toArray()
+            $this->dossierUploadStatus->getUploadedDocuments()->toArray(),
         );
     }
 
@@ -88,7 +88,7 @@ class DossierUploadStatusTest extends UnitTestCase
 
         self::assertEquals(
             2,
-            $this->dossierUploadStatus->getExpectedUploadCount()
+            $this->dossierUploadStatus->getExpectedUploadCount(),
         );
     }
 
@@ -108,7 +108,7 @@ class DossierUploadStatusTest extends UnitTestCase
 
         self::assertEquals(
             1,
-            $this->dossierUploadStatus->getActualUploadCount()
+            $this->dossierUploadStatus->getActualUploadCount(),
         );
     }
 
@@ -127,7 +127,7 @@ class DossierUploadStatusTest extends UnitTestCase
         ]));
 
         self::assertFalse(
-            $this->dossierUploadStatus->isComplete()
+            $this->dossierUploadStatus->isComplete(),
         );
     }
 
@@ -143,7 +143,7 @@ class DossierUploadStatusTest extends UnitTestCase
         ]));
 
         self::assertTrue(
-            $this->dossierUploadStatus->isComplete()
+            $this->dossierUploadStatus->isComplete(),
         );
     }
 

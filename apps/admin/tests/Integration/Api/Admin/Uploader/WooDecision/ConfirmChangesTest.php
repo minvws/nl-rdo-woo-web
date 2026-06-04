@@ -30,7 +30,7 @@ final class ConfirmChangesTest extends AdminApiTestCase
 
         self::bootKernel();
 
-        $this->documentFileSetRepository = self::getContainer()->get(DocumentFileSetRepository::class);
+        $this->documentFileSetRepository = self::fromContainer(DocumentFileSetRepository::class);
     }
 
     public function testConfirmChanges(): void

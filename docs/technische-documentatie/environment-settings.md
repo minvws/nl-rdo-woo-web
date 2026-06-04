@@ -64,16 +64,18 @@ This is a list of DSNs for the different queues that are used by the application
 can also be configured to use the database, redis or any other
 storage system.
 
-| Variable                         | Description                            | Default value                                      |
-| -------------------------------- | -------------------------------------- | -------------------------------------------------- |
-| `MINVWS_HIGH_TRANSPORT_DSN`      | DSN for high priority work             | `amqp://guest:guest@localhost:5672/%2f/high`       |
-| `MINFIN_HIGH_TRANSPORT_DSN`      | DSN for high priority work             | `amqp://guest:guest@localhost:5672/%2f/high`       |
-| `MINVWS_INGESTOR_TRANSPORT_DSN`  | DSN for ingesting documents            | `amqp://guest:guest@localhost:5672/%2f/ingestor`   |
-| `MINFIN_INGESTOR_TRANSPORT_DSN`  | DSN for ingesting documents            | `amqp://guest:guest@localhost:5672/%2f/ingestor`   |
-| `MINVWS_ESUPDATER_TRANSPORT_DSN` | DSN for updates on the elastic search  | `amqp://guest:guest@localhost:5672/%2f/es_updates` |
-| `MINFIN_ESUPDATER_TRANSPORT_DSN` | DSN for updates on the elastic search  | `amqp://guest:guest@localhost:5672/%2f/es_updates` |
-| `MINVWS_GLOBAL_TRANSPORT_DSN`    | DSN for global household functionality | `amqp://guest:guest@localhost:5672/%2f/global`     |
-| `MINFIN_GLOBAL_TRANSPORT_DSN`    | DSN for global household functionality | `amqp://guest:guest@localhost:5672/%2f/global`     |
+| Variable                             | Description                            | Default value                                         |
+| ------------------------------------ | -------------------------------------- | ----------------------------------------------------- |
+| `MINVWS_HIGH_TRANSPORT_DSN`          | DSN for high priority work             | `amqp://guest:guest@localhost:5672/%2f/high`          |
+| `MINFIN_HIGH_TRANSPORT_DSN`          | DSN for high priority work             | `amqp://guest:guest@localhost:5672/%2f/high`          |
+| `MINVWS_INGESTOR_TRANSPORT_DSN`      | DSN for ingesting documents            | `amqp://guest:guest@localhost:5672/%2f/ingestor`      |
+| `MINFIN_INGESTOR_TRANSPORT_DSN`      | DSN for ingesting documents            | `amqp://guest:guest@localhost:5672/%2f/ingestor`      |
+| `MINVWS_ESUPDATER_TRANSPORT_DSN`     | DSN for updates on the elastic search  | `amqp://guest:guest@localhost:5672/%2f/es_updates`    |
+| `MINFIN_ESUPDATER_TRANSPORT_DSN`     | DSN for updates on the elastic search  | `amqp://guest:guest@localhost:5672/%2f/es_updates`    |
+| `MINVWS_GLOBAL_TRANSPORT_DSN`        | DSN for global household functionality | `amqp://guest:guest@localhost:5672/%2f/global`        |
+| `MINFIN_GLOBAL_TRANSPORT_DSN`        | DSN for global household functionality | `amqp://guest:guest@localhost:5672/%2f/global`        |
+| `MINVWS_API_DOCUMENTS_TRANSPORT_DSN` | DSN for API documents functionality    | `amqp://guest:guest@localhost:5672/%2f/api_documents` |
+| `MINFIN_API_DOCUMENTS_TRANSPORT_DSN` | DSN for API documents functionality    | `amqp://guest:guest@localhost:5672/%2f/api_documents` |
 
 These settings are in order of priority. So if there is a message in the high priority queue, it will be processed before any other messages.
 
@@ -81,48 +83,67 @@ These settings are in order of priority. So if there is a message in the high pr
 
 Settings to connect to the elastic search cluster. If user/pass/mtls settings are empty, no authentication will be used.
 
-| Variable                       | Description                              | Default value           |
-| ------------------------------ | ---------------------------------------- | ----------------------- |
-| `ELASTICSEARCH_HOST`           | Url to cluster                           | `http://127.0.0.1:9200` |
-| `ELASTICSEARCH_USER`           | Username for authentication (if any)     | `null`                  |
-| `ELASTICSEARCH_PASS`           | Password for authentication (if any)     | `null`                  |
-| `ELASTICSEARCH_MTLS_CERT_PATH` | Certificate path for mTLS authentication | `null`                  |
-| `ELASTICSEARCH_MTLS_KEY_PATH`  | Key path for mTLS authentication         | `null`                  |
-| `ELASTICSEARCH_MTLS_CA_PATH`   | CA path for mTLS authentication          | `null`                  |
+| Variable                              | Description                              | Default value           |
+| ------------------------------------- | ---------------------------------------- | ----------------------- |
+| `MINVWS_ELASTICSEARCH_HOST`           | Url to cluster                           | `http://127.0.0.1:9200` |
+| `MINVWS_ELASTICSEARCH_USER`           | Username for authentication (if any)     | `null`                  |
+| `MINVWS_ELASTICSEARCH_PASS`           | Password for authentication (if any)     | `null`                  |
+| `MINVWS_ELASTICSEARCH_MTLS_CERT_PATH` | Certificate path for mTLS authentication | `null`                  |
+| `MINVWS_ELASTICSEARCH_MTLS_KEY_PATH`  | Key path for mTLS authentication         | `null`                  |
+| `MINVWS_ELASTICSEARCH_MTLS_CA_PATH`   | CA path for mTLS authentication          | `null`                  |
+| `MINFIN_ELASTICSEARCH_HOST`           | Url to cluster                           | `http://127.0.0.1:9200` |
+| `MINFIN_ELASTICSEARCH_USER`           | Username for authentication (if any)     | `null`                  |
+| `MINFIN_ELASTICSEARCH_PASS`           | Password for authentication (if any)     | `null`                  |
+| `MINFIN_ELASTICSEARCH_MTLS_CERT_PATH` | Certificate path for mTLS authentication | `null`                  |
+| `MINFIN_ELASTICSEARCH_MTLS_KEY_PATH`  | Key path for mTLS authentication         | `null`                  |
+| `MINFIN_ELASTICSEARCH_MTLS_CA_PATH`   | CA path for mTLS authentication          | `null`                  |
 
 ### Redis settings
 
 Redis is used for storing cached information about documents. This is used for example for the document content, so that it doesn't have to be
 extracted when ingesting the same document multiple times. It will also store the sessions of the users.
 
-| Variable               | Description                              | Default value            |
-| ---------------------- | ---------------------------------------- | ------------------------ |
-| `REDIS_URL`            | URL to redis                             | `redis://localhost:6379` |
-| `REDIS_TLS_CAFILE`     | CA path for mTLS authentication          | `null`                   |
-| `REDIS_TLS_LOCAL_CERT` | Certificate path for mTLS authentication | `null`                   |
-| `REDIS_TLS_LOCAL_PK`   | Key path for mTLS authentication         | `null`                   |
+| Variable                      | Description                              | Default value            |
+| ----------------------------- | ---------------------------------------- | ------------------------ |
+| `MINVWS_REDIS_URL`            | URL to redis                             | `redis://localhost:6379` |
+| `MINVWS_REDIS_TLS_CAFILE`     | CA path for mTLS authentication          | `null`                   |
+| `MINVWS_REDIS_TLS_LOCAL_CERT` | Certificate path for mTLS authentication | `null`                   |
+| `MINVWS_REDIS_TLS_LOCAL_PK`   | Key path for mTLS authentication         | `null`                   |
+| `MINFIN_REDIS_URL`            | URL to redis                             | `redis://localhost:6379` |
+| `MINFIN_REDIS_TLS_CAFILE`     | CA path for mTLS authentication          | `null`                   |
+| `MINFIN_REDIS_TLS_LOCAL_CERT` | Certificate path for mTLS authentication | `null`                   |
+| `MINFIN_REDIS_TLS_LOCAL_PK`   | Key path for mTLS authentication         | `null`                   |
 
 ### Storage settings
 
 Storage settings defines how documents, pages and thumbnails are stored and retrieved. There are two options: local and aws, but it is also possible
 to create your own storage adapter since internally it will be using flysystem.
 
-| Variable                         | Description                                                           | Default value      |
-|----------------------------------|-----------------------------------------------------------------------|--------------------|
-| `STORAGE_DOCUMENT_ADAPTER`       | Which adapter to use for document storage (`aws` or `local`)          | `local`            |
-| `STORAGE_BATCH_ADAPTER`          | Which adapter to use for archive storage (`aws` or `local`)           | `local`            |
-| `STORAGE_WOO_INDEX_ADAPTER`      | Which adapter to use for WooIndex sitemaps storage (`aws` or `local`) | `local`            |
-| `STORAGE_UPLOAD_ADAPTER`         | Which adapter to use for upload storage (`aws` or `local`)            | `local`            |
-| `STORAGE_ASSETS_ADAPTER`         | Which adapter to use for assets storage (`aws` or `local`)            | `local`            |
-| `STORAGE_MINIO_REGION`           | The AWS/Minio region to use                                           | `eu-west-1`        |
-| `STORAGE_MINIO_ENDPOINT`         | The AWS/Minio endpoint                                                | ``                 |
-| `STORAGE_MINIO_ACCESS_KEY`       | The AWS/Minio access key                                              | ``                 |
-| `STORAGE_MINIO_SECRET_KEY`       | The AWS/Minio secret key                                              | ``                 |
-| `STORAGE_MINIO_DOCUMENT_BUCKET`  | Bucket for document storage                                           | `doc-bucket`       |
-| `STORAGE_MINIO_BATCH_BUCKET`     | Bucket for archive storage                                            | `batch-bucket`     |
-| `STORAGE_MINIO_WOO_INDEX_BUCKET` | Bucket for WooIndex sitemap storage                                   | `woo-index-bucket` |
-| `STORAGE_MINIO_UPLOAD_BUCKET`    | Bucket for temporary upload storage                                   | `upload-bucket`    |
-| `STORAGE_MINIO_ASSETS_BUCKET`    | Bucket for assets storage (like the department logo)                  | `assets-bucket`    |
+| Variable                                | Description                                                           | Default value      |
+|-----------------------------------------|-----------------------------------------------------------------------|--------------------|
+| `STORAGE_DOCUMENT_ADAPTER`              | Which adapter to use for document storage (`aws` or `local`)          | `local`            |
+| `STORAGE_BATCH_ADAPTER`                 | Which adapter to use for archive storage (`aws` or `local`)           | `local`            |
+| `STORAGE_WOO_INDEX_ADAPTER`             | Which adapter to use for WooIndex sitemaps storage (`aws` or `local`) | `local`            |
+| `STORAGE_UPLOAD_ADAPTER`                | Which adapter to use for upload storage (`aws` or `local`)            | `local`            |
+| `STORAGE_ASSETS_ADAPTER`                | Which adapter to use for assets storage (`aws` or `local`)            | `local`            |
+| `MINVWS_STORAGE_MINIO_REGION`           | The AWS/Minio region to use                                           | `eu-west-1`        |
+| `MINFIN_STORAGE_MINIO_REGION`           | The AWS/Minio region to use                                           | `eu-west-1`        |
+| `MINVWS_STORAGE_MINIO_ENDPOINT`         | The AWS/Minio endpoint                                                | ``                 |
+| `MINFIN_STORAGE_MINIO_ENDPOINT`         | The AWS/Minio endpoint                                                | ``                 |
+| `MINVWS_STORAGE_MINIO_ACCESS_KEY`       | The AWS/Minio access key                                              | ``                 |
+| `MINFIN_STORAGE_MINIO_ACCESS_KEY`       | The AWS/Minio access key                                              | ``                 |
+| `MINVWS_STORAGE_MINIO_SECRET_KEY`       | The AWS/Minio secret key                                              | ``                 |
+| `MINFIN_STORAGE_MINIO_SECRET_KEY`       | The AWS/Minio secret key                                              | ``                 |
+| `MINVWS_STORAGE_MINIO_DOCUMENT_BUCKET`  | Bucket for document storage                                           | `doc-bucket`       |
+| `MINFIN_STORAGE_MINIO_DOCUMENT_BUCKET`  | Bucket for document storage                                           | `doc-bucket`       |
+| `MINVWS_STORAGE_MINIO_BATCH_BUCKET`     | Bucket for archive storage                                            | `batch-bucket`     |
+| `MINFIN_STORAGE_MINIO_BATCH_BUCKET`     | Bucket for archive storage                                            | `batch-bucket`     |
+| `MINVWS_STORAGE_MINIO_WOO_INDEX_BUCKET` | Bucket for WooIndex sitemap storage                                   | `woo-index-bucket` |
+| `MINFIN_STORAGE_MINIO_WOO_INDEX_BUCKET` | Bucket for WooIndex sitemap storage                                   | `woo-index-bucket` |
+| `MINVWS_STORAGE_MINIO_UPLOAD_BUCKET`    | Bucket for temporary upload storage                                   | `upload-bucket`    |
+| `MINFIN_STORAGE_MINIO_UPLOAD_BUCKET`    | Bucket for temporary upload storage                                   | `upload-bucket`    |
+| `MINVWS_STORAGE_MINIO_ASSETS_BUCKET`    | Bucket for assets storage (like the department logo)                  | `assets-bucket`    |
+| `MINFIN_STORAGE_MINIO_ASSETS_BUCKET`    | Bucket for assets storage (like the department logo)                  | `assets-bucket`    |
 
 Note that we are using Minio as a S3 compatible storage system. This means that you can also use AWS S3 as a storage system.
 

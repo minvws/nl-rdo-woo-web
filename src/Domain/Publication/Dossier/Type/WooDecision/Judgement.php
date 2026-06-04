@@ -47,7 +47,7 @@ enum Judgement: string implements TranslatableInterface
     }
 
     /**
-     * @return Judgement[]
+     * @return array<array-key, Judgement>
      */
     public static function atLeastPartialPublicValues(): array
     {

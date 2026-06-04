@@ -1,5 +1,5 @@
 # https;?/taskfile.dev
-version: "3"
+version: "3.48.0"
 
 vars:
   CERTS_BASE_IMAGE_NAME: ghcr.io/minvws/nl-rdo-woo-web-private/certs/base

@@ -21,72 +21,72 @@ let tabsInitializeSpy: MockInstance;
 let toggleDialogInitializeSpy: MockInstance;
 let visibilityTogglerInitializeSpy: MockInstance;
 
+vi.mock('@utils', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@utils')>();
+  return {
+    ...original,
+    jsEnabled: vi.fn(),
+  };
+});
+
+vi.mock('@js/shared', () => ({
+  detailsComponents: () => ({
+    initialize: detailsComponentsInitializeSpy,
+  }),
+  tabs: () => ({
+    initialize: tabsInitializeSpy,
+  }),
+}));
+
+vi.mock('./admin/confirm-action', () => ({
+  confirmAction: () => ({
+    initialize: confirmActionInitializeSpy,
+  }),
+}));
+
+vi.mock('./clickable-row', () => ({
+  clickableRows: () => ({
+    initialize: clickableRowInitializeSpy,
+  }),
+}));
+
+vi.mock('./click-on-selector', () => ({
+  clickOnSelector: () => ({
+    initialize: clickOnSelectorInitializeSpy,
+  }),
+}));
+
+vi.mock('./copy-to-clipboard', () => ({
+  copyToClipboard: () => ({
+    initialize: copyToClipboardInitializeSpy,
+  }),
+}));
+
+vi.mock('./dialog', () => ({
+  toggleDialog: () => ({
+    initialize: toggleDialogInitializeSpy,
+  }),
+}));
+
+vi.mock('./print', () => ({
+  printPage: () => ({
+    initialize: printPageInitializeSpy,
+  }),
+}));
+
+vi.mock('./sort-tables', () => ({
+  sortTables: () => ({
+    initialize: sortTablesInitializeSpy,
+  }),
+}));
+
+vi.mock('./visibility-toggler', () => ({
+  visibilityToggler: () => ({
+    initialize: visibilityTogglerInitializeSpy,
+  }),
+}));
+
 describe('the main "init" function for the admin', () => {
-  vi.mock('@utils', async (importOriginal) => {
-    const original = await importOriginal<typeof import('@utils')>();
-    return {
-      ...original,
-      jsEnabled: vi.fn(),
-    };
-  });
-
-  vi.mock('@js/shared', () => ({
-    detailsComponents: () => ({
-      initialize: detailsComponentsInitializeSpy,
-    }),
-    tabs: () => ({
-      initialize: tabsInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./admin/confirm-action', () => ({
-    confirmAction: () => ({
-      initialize: confirmActionInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./clickable-row', () => ({
-    clickableRows: () => ({
-      initialize: clickableRowInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./click-on-selector', () => ({
-    clickOnSelector: () => ({
-      initialize: clickOnSelectorInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./copy-to-clipboard', () => ({
-    copyToClipboard: () => ({
-      initialize: copyToClipboardInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./dialog', () => ({
-    toggleDialog: () => ({
-      initialize: toggleDialogInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./print', () => ({
-    printPage: () => ({
-      initialize: printPageInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./sort-tables', () => ({
-    sortTables: () => ({
-      initialize: sortTablesInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./visibility-toggler', () => ({
-    visibilityToggler: () => ({
-      initialize: visibilityTogglerInitializeSpy,
-    }),
-  }));
-
   beforeEach(() => {
     clickableRowInitializeSpy = vi.fn();
     clickOnSelectorInitializeSpy = vi.fn();

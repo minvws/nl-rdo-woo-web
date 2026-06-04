@@ -8,7 +8,7 @@ use Mockery;
 use Shared\Command\Index\Create;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Shared\Domain\Search\Index\Rollover\MappingService;
-use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
+use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -30,7 +30,7 @@ class CreateTest extends UnitTestCase
         $mappingService = Mockery::mock(MappingService::class);
 
         $application = new Application();
-        $application->addCommand(new Create($elasticIndexManager, $mappingService, ElasticConfigOverride::default()));
+        $application->addCommand(new Create($elasticIndexManager, $mappingService, ElasticConfigFactory::default()));
 
         $command = $application->find(Create::COMMAND_NAME);
         $commandTester = new CommandTester($command);
@@ -60,7 +60,7 @@ class CreateTest extends UnitTestCase
             ->andReturn($latestMappingVersion);
 
         $application = new Application();
-        $application->addCommand(new Create($elasticIndexManager, $mappingService, ElasticConfigOverride::default()));
+        $application->addCommand(new Create($elasticIndexManager, $mappingService, ElasticConfigFactory::default()));
 
         $command = $application->find(Create::COMMAND_NAME);
         $commandTester = new CommandTester($command);

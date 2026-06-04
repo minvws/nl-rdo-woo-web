@@ -30,12 +30,12 @@ class DocumentController extends AbstractController
         $breadcrumbs->addRouteItem(
             $dossier->getTitle() ?? '',
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );
         $breadcrumbs->addRouteItem(
             'admin.dossiers.woo-decision.step.documents',
             'app_admin_dossier_woodecision_documents_edit',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );
         $breadcrumbs->addItem($document->getFileInfo()->getName() ?? '');
 

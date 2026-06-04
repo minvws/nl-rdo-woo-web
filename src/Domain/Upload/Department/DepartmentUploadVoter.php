@@ -37,7 +37,7 @@ final class DepartmentUploadVoter extends Voter
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         $department = $this->repository->find(
-            $subject->additionalParameters->getString('departmentId')
+            $subject->additionalParameters->getString('departmentId'),
         );
 
         if ($department === null) {

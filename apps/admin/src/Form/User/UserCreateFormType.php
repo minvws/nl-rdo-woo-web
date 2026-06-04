@@ -113,8 +113,8 @@ class UserCreateFormType extends AbstractType
     }
 
     /**
-     * @param array{role: string, description: string, help: string}[] $roleDetails
-     * @param array<string> $allowedRoles
+     * @param array<array-key, array{role: string, description: string, help: string}> $roleDetails
+     * @param array<array-key, string> $allowedRoles
      *
      * @return array<string, string>
      */
@@ -134,7 +134,7 @@ class UserCreateFormType extends AbstractType
     }
 
     /**
-     * @param array{role: string, description: string, help: string}[] $roleDetails
+     * @param array<array-key, array{role: string, description: string, help: string}> $roleDetails
      *
      * @return array<string, string>
      */

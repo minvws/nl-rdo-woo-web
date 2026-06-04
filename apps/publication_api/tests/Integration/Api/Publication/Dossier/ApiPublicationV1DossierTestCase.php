@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Integration\Api\Publication\Dossier;
 
-use DateTime;
 use PublicationApi\Tests\Integration\Api\Publication\ApiPublicationV1TestCase;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
@@ -36,7 +35,7 @@ abstract class ApiPublicationV1DossierTestCase extends ApiPublicationV1TestCase
     }
 
     /**
-     * @param array<AttachmentType> $attachmentTypes
+     * @param array<array-key, AttachmentType> $attachmentTypes
      *
      * @return list<array<string, mixed>>
      */
@@ -44,13 +43,19 @@ abstract class ApiPublicationV1DossierTestCase extends ApiPublicationV1TestCase
     {
         $attachments = [];
         for ($i = 0; $i < $attachmentCount; $i++) {
-            $attachments[] = [
+            $attachment = [
                 'fileName' => $this->getFaker()->word(),
-                'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
+                'formalDate' => $this->getFaker()->date(),
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
                 'type' => $this->getFaker()->randomElement($attachmentTypes),
                 'externalId' => $this->getFaker()->externalId()->__toString(),
             ];
+
+            if ($this->getFaker()->boolean()) {
+                $attachment['grounds'] = $this->getFaker()->groundsBetween(0, 3);
+            }
+
+            $attachments[] = $attachment;
         }
 
         return $attachments;

@@ -19,7 +19,7 @@ use Shared\Service\Search\Query\Definition\QueryDefinitionInterface;
 use Shared\Service\Search\Result\Result;
 use Shared\Service\Search\Result\ResultTransformer;
 use Shared\Service\Search\SearchService;
-use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
+use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -48,7 +48,7 @@ class SearchServiceTest extends UnitTestCase
             $this->objectHandler,
             $this->resultTransformer,
             $this->searchParametersFactory,
-            ElasticConfigOverride::default()
+            ElasticConfigFactory::default(),
         );
     }
 
@@ -61,32 +61,42 @@ class SearchServiceTest extends UnitTestCase
         );
 
         $queryDefinition = Mockery::mock(QueryDefinitionInterface::class);
-        $queryDefinition->expects('configure')->with(
-            Mockery::type(QueryBuilder::class),
-            $searchParameters,
-        );
+        $queryDefinition->expects('configure')
+            ->with(
+                Mockery::type(QueryBuilder::class),
+                $searchParameters,
+            );
 
         $elasticResponse = Mockery::mock(Elasticsearch::class);
-        $this->elasticClient->expects('search')->with(Mockery::on(
-            function (array $searchData): bool {
+        $this->elasticClient->expects('search')
+            ->with(Mockery::on(function (array $searchData): bool {
                 $this->assertMatchesJsonSnapshot($searchData);
 
                 return true;
-            }
-        ))->andReturn($elasticResponse);
+            }))
+            ->andReturn($elasticResponse);
 
         $result = Result::create();
-        $this->resultTransformer->expects('transform')->with(
-            ['body' => [], 'index' => 'woopie-read', 'from' => 2, 'size' => 1],
-            $searchParameters,
-            $elasticResponse,
-        )->andReturn($result);
+        $routename = 'foo';
+        $routeParameters = ['foo' => 'bar'];
+
+        $this->resultTransformer->expects('transform')
+            ->with(
+                ['body' => [], 'index' => 'woopie-read', 'from' => 2, 'size' => 1],
+                $searchParameters,
+                $elasticResponse,
+                $routename,
+                $routeParameters,
+            )
+            ->andReturn($result);
 
         self::assertSame(
             $result,
             $this->searchService->getResult(
                 $queryDefinition,
                 $searchParameters,
+                $routename,
+                $routeParameters,
             ),
         );
     }
@@ -99,42 +109,45 @@ class SearchServiceTest extends UnitTestCase
             offset: 2,
         );
 
-        $this->searchParametersFactory->expects('createDefault')->andReturn($searchParameters);
+        $this->searchParametersFactory->expects('createDefault')
+            ->andReturn($searchParameters);
 
         $queryDefinition = Mockery::mock(QueryDefinitionInterface::class);
-        $queryDefinition->expects('configure')->with(
-            Mockery::type(QueryBuilder::class),
-            $searchParameters,
-        );
+        $queryDefinition->expects('configure')
+            ->with(
+                Mockery::type(QueryBuilder::class),
+                $searchParameters,
+            );
 
         $elasticResponse = Mockery::mock(Elasticsearch::class);
-        $this->elasticClient->expects('search')->with(Mockery::on(
-            function (array $searchData): bool {
+        $this->elasticClient->expects('search')
+            ->with(Mockery::on(function (array $searchData): bool {
                 $this->assertMatchesJsonSnapshot($searchData);
 
                 return true;
-            }
-        ))->andReturn($elasticResponse);
+            }))
+            ->andReturn($elasticResponse);
 
         $result = Result::create();
-        $this->resultTransformer->expects('transform')->with(
-            ['body' => [], 'index' => 'woopie-read', 'from' => 2, 'size' => 1],
-            $searchParameters,
-            $elasticResponse,
-        )->andReturn($result);
+        $this->resultTransformer->expects('transform')
+            ->with(
+                ['body' => [], 'index' => 'woopie-read', 'from' => 2, 'size' => 1],
+                $searchParameters,
+                $elasticResponse,
+                'app_search',
+                [],
+            )
+            ->andReturn($result);
 
-        self::assertSame(
-            $result,
-            $this->searchService->getResult(
-                $queryDefinition,
-            ),
-        );
+        self::assertSame($result, $this->searchService->getResult($queryDefinition));
     }
 
     public function testIsIngested(): void
     {
         $document = Mockery::mock(Document::class);
-        $this->objectHandler->expects('isIngested')->with($document)->andReturnFalse();
+        $this->objectHandler->expects('isIngested')
+            ->with($document)
+            ->andReturnFalse();
 
         self::assertFalse($this->searchService->isIngested($document));
     }
@@ -142,7 +155,9 @@ class SearchServiceTest extends UnitTestCase
     public function testGetPageContent(): void
     {
         $document = Mockery::mock(Document::class);
-        $this->objectHandler->expects('getPageContent')->with($document, 123)->andReturn($expectedResult = 'foo bar');
+        $this->objectHandler->expects('getPageContent')
+            ->with($document, 123)
+            ->andReturn($expectedResult = 'foo bar');
 
         self::assertEquals(
             $expectedResult,

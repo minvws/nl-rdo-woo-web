@@ -16,7 +16,7 @@ use const PHP_EOL;
 class ContentExtractCollection implements IteratorAggregate
 {
     /**
-     * @var ContentExtract[]
+     * @var array<array-key, ContentExtract>
      */
     private array $extracts = [];
 

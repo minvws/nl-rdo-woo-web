@@ -121,7 +121,7 @@ readonly class StepActionHelper
         $breadcrumbs->addRouteItem(
             $dossier->getTitle() ?? '',
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );
 
         if ($item !== null) {

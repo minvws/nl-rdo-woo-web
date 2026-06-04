@@ -71,7 +71,7 @@ class DossierWorkflowManagerTest extends UnitTestCase
         $this->workflow->expects('can')->with($this->dossier, DossierStatusTransition::PUBLISH->value)->andReturnFalse();
 
         self::assertFalse(
-            $this->manager->isTransitionAllowed($this->dossier, DossierStatusTransition::PUBLISH)
+            $this->manager->isTransitionAllowed($this->dossier, DossierStatusTransition::PUBLISH),
         );
     }
 
@@ -93,7 +93,7 @@ class DossierWorkflowManagerTest extends UnitTestCase
                 $this->dossier,
                 DossierStatusTransition::PUBLISH,
                 Mockery::mock(TransitionException::class),
-            )
+            ),
         );
         $this->manager->applyTransition($this->dossier, DossierStatusTransition::PUBLISH);
     }
@@ -114,7 +114,7 @@ class DossierWorkflowManagerTest extends UnitTestCase
 
         $this->dossierService->expects('handleEntityUpdate')->with($this->dossier);
         $this->batchDownloadService->expects('refresh')->with(Mockery::on(
-            fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $this->dossier
+            fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $this->dossier,
         ));
 
         $this->historyService->expects('addDossierEntry')->with(

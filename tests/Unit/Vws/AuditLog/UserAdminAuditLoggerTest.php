@@ -53,7 +53,7 @@ class UserAdminAuditLoggerTest extends UnitTestCase
                 self::assertEquals($actor, $event->actor);
 
                 return true;
-            }
+            },
         ));
 
         $this->userAdminAuditLogger->onCreated(new UserCreatedEvent($user, $actor, $roles));
@@ -71,7 +71,7 @@ class UserAdminAuditLoggerTest extends UnitTestCase
                 self::assertEquals($actor, $event->actor);
 
                 return true;
-            }
+            },
         ));
 
         $this->userAdminAuditLogger->onReset(new UserResetEvent($user, $actor, true, true));
@@ -90,7 +90,7 @@ class UserAdminAuditLoggerTest extends UnitTestCase
                 self::assertEquals(['user_id' => 'foo123', 'enabled' => false], $event->data);
 
                 return true;
-            }
+            },
         ));
 
         $this->userAdminAuditLogger->onDisable(new UserDisableEvent($user, $actor));
@@ -109,7 +109,7 @@ class UserAdminAuditLoggerTest extends UnitTestCase
                 self::assertEquals(['user_id' => 'foo123', 'enabled' => true], $event->data);
 
                 return true;
-            }
+            },
         ));
 
         $this->userAdminAuditLogger->onEnable(new UserEnableEvent($user, $actor));
@@ -137,7 +137,7 @@ class UserAdminAuditLoggerTest extends UnitTestCase
                 $this->assertMatchesSnapshot($event->data);
 
                 return true;
-            }
+            },
         ));
 
         $this->userAdminAuditLogger->onUpdate(new UserUpdatedEvent($oldUser, $updatedUser, $actor));

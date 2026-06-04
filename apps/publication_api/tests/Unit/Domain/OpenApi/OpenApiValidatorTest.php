@@ -22,7 +22,7 @@ use PublicationApi\Domain\OpenApi\Exception\FormatMismatchException;
 use PublicationApi\Domain\OpenApi\Exception\KeywordMismatchException;
 use PublicationApi\Domain\OpenApi\Exception\SchemaMismatchException;
 use PublicationApi\Domain\OpenApi\Exception\SpecException;
-use PublicationApi\Domain\OpenApi\Exception\ValidatonException;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use PublicationApi\Domain\OpenApi\OpenApiSpecGenerator;
 use PublicationApi\Domain\OpenApi\OpenApiValidator;
 use Shared\Tests\Unit\UnitTestCase;
@@ -74,7 +74,7 @@ class OpenApiValidatorTest extends UnitTestCase
     }
 
     /**
-     * @param class-string<ValidatonException> $expectedOpenApiPublicationV1ValidatonException
+     * @param class-string<ValidationException> $expectedOpenApiPublicationV1ValidatonException
      */
     #[DataProvider('validatonExceptionDataProvider')]
     public function testValidateRequestThrowsCorrectFormatMismatchException(
@@ -176,7 +176,7 @@ class OpenApiValidatorTest extends UnitTestCase
     }
 
     /**
-     * @param class-string<ValidatonException> $expectedValidatonException
+     * @param class-string<ValidationException> $expectedValidatonException
      */
     #[DataProvider('validatonExceptionDataProvider')]
     public function testValidateResponseThrowsCorrectFormatMismatchException(
@@ -258,7 +258,19 @@ class OpenApiValidatorTest extends UnitTestCase
             ],
             'validation failed' => [
                 new ValidationFailed(),
-                ValidatonException::class,
+                ValidationException::class,
+            ],
+            'validation failed wrapping format mismatch' => [
+                new ValidationFailed('wrapped', 0, FormatMismatch::fromFormat('foo', 'bar', 'baz')),
+                FormatMismatchException::class,
+            ],
+            'validation failed wrapping keyword mismatch' => [
+                new ValidationFailed('wrapped', 0, KeywordMismatch::fromKeyword('foo', 'bar')),
+                KeywordMismatchException::class,
+            ],
+            'validation failed wrapping schema mismatch' => [
+                new ValidationFailed('wrapped', 0, new SchemaMismatch()),
+                SchemaMismatchException::class,
             ],
             'other exception' => [
                 new Exception(),

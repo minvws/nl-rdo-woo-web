@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\SubType\Mapper;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
 use Mockery\MockInterface;
@@ -19,6 +18,7 @@ use Shared\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
 use Shared\Domain\Search\Index\ElasticDocument;
 use Shared\Domain\Search\Index\SubType\Mapper\WooDecisionDocumentMapper;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Uid\Uuid;
 
@@ -41,14 +41,14 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
     public function testSupportsReturnsTrueForDocument(): void
     {
         self::assertTrue(
-            $this->mapper->supports(Mockery::mock(Document::class))
+            $this->mapper->supports(Mockery::mock(Document::class)),
         );
     }
 
     public function testSupportsReturnsFalseForAttachment(): void
     {
         self::assertFalse(
-            $this->mapper->supports(Mockery::mock(CovenantAttachment::class))
+            $this->mapper->supports(Mockery::mock(CovenantAttachment::class)),
         );
     }
 
@@ -92,7 +92,7 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
         $document->expects('getReferredBy')->andReturn(new ArrayCollection([$referredDocumentA, $referredDocumentB]));
         $document->expects('getDocumentNr')->andReturn('doc-123');
         $document->expects('getFileInfo')->times(2)->andReturn($fileInfo);
-        $document->expects('getDocumentDate')->andReturn(new DateTimeImmutable('2024-04-16 10:54:15'));
+        $document->expects('getDocumentDate')->andReturn(PlainDate::create('2024-04-16'));
         $document->expects('getFamilyId')->andReturn(789);
         $document->expects('getDocumentId')->andReturn('abc123');
         $document->expects('getThreadId')->andReturn(567);

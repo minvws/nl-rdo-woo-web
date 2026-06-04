@@ -80,7 +80,7 @@ class InitiateProductionReportUpdateHandlerTest extends UnitTestCase
         $this->dispatcher->expects('dispatchProductionReportProcessRunCommand')->with($newRun->getId());
 
         $this->handler->__invoke(
-            new InitiateProductionReportUpdateCommand($wooDecision, $upload)
+            new InitiateProductionReportUpdateCommand($wooDecision, $upload),
         );
     }
 
@@ -111,7 +111,7 @@ class InitiateProductionReportUpdateHandlerTest extends UnitTestCase
         $this->expectExceptionObject(ProductionReportUpdaterException::forUploadCannotBeStored());
 
         $this->handler->__invoke(
-            new InitiateProductionReportUpdateCommand($wooDecision, $upload)
+            new InitiateProductionReportUpdateCommand($wooDecision, $upload),
         );
     }
 
@@ -128,7 +128,7 @@ class InitiateProductionReportUpdateHandlerTest extends UnitTestCase
         $this->expectException(DossierWorkflowException::class);
 
         $this->handler->__invoke(
-            new InitiateProductionReportUpdateCommand($wooDecision, $upload)
+            new InitiateProductionReportUpdateCommand($wooDecision, $upload),
         );
     }
 
@@ -148,7 +148,7 @@ class InitiateProductionReportUpdateHandlerTest extends UnitTestCase
         $this->expectException(ProductionReportUpdaterException::class);
 
         $this->handler->__invoke(
-            new InitiateProductionReportUpdateCommand($wooDecision, $upload)
+            new InitiateProductionReportUpdateCommand($wooDecision, $upload),
         );
     }
 }

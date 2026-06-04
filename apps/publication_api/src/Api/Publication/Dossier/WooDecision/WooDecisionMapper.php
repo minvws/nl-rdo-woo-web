@@ -32,14 +32,14 @@ readonly class WooDecisionMapper
     /**
      * @param array<array-key,WooDecision> $wooDecisions
      *
-     * @return list<WooDecisionDto>
+     * @return list<WooDecisionResponseDto>
      */
     public function fromEntities(array $wooDecisions): array
     {
         return array_values(array_map(self::fromEntity(...), $wooDecisions));
     }
 
-    public function fromEntity(WooDecision $wooDecision): WooDecisionDto
+    public function fromEntity(WooDecision $wooDecision): WooDecisionResponseDto
     {
         $mainDocument = $wooDecision->getMainDocument();
         Assert::notNull($mainDocument);
@@ -52,13 +52,11 @@ readonly class WooDecisionMapper
         $department = $wooDecision->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
-        return new WooDecisionDto(
+        return new WooDecisionResponseDto(
             $wooDecision->getId(),
             $wooDecision->getExternalId(),
             OrganisationReferenceDto::fromEntity($wooDecision->getOrganisation()),
-            $wooDecision->getDocumentPrefix(),
             $wooDecision->getDossierNr(),
-            $wooDecision->getInternalReference(),
             $wooDecision->getTitle(),
             $wooDecision->getSummary(),
             $wooDecision->getSubject()?->getName(),
@@ -82,10 +80,12 @@ readonly class WooDecisionMapper
         Department $department,
         ?Subject $subject,
         ExternalId $externalId,
+        string $documentPrefix,
     ): WooDecision {
         $wooDecision = new WooDecision();
         $wooDecision->setExternalId($externalId);
         $wooDecision->setStatus(DossierStatus::NEW);
+        $wooDecision->setDocumentPrefix($documentPrefix);
 
         return self::update($wooDecision, $wooDecisionRequestDto, $organisation, $department, $subject);
     }
@@ -97,15 +97,13 @@ readonly class WooDecisionMapper
         Department $department,
         ?Subject $subject,
     ): WooDecision {
-        $wooDecision->setDateFrom($wooDecisionRequestDto->dossierDateFrom);
-        if ($wooDecisionRequestDto->dossierDateTo !== null) {
-            $wooDecision->setDateTo($wooDecisionRequestDto->dossierDateTo);
+        $wooDecision->setDateFrom($wooDecisionRequestDto->dateFrom);
+        if ($wooDecisionRequestDto->dateTo !== null) {
+            $wooDecision->setDateTo($wooDecisionRequestDto->dateTo);
         }
         $wooDecision->setDecision($wooDecisionRequestDto->decision);
         $wooDecision->setDepartments([$department]);
         $wooDecision->setDossierNr($wooDecisionRequestDto->dossierNumber);
-        $wooDecision->setDocumentPrefix($wooDecisionRequestDto->prefix);
-        $wooDecision->setInternalReference($wooDecisionRequestDto->internalReference);
         $wooDecision->setOrganisation($organisation);
         $wooDecision->setPreviewDate($wooDecisionRequestDto->previewDate);
         $wooDecision->setPublicationDate($wooDecisionRequestDto->publicationDate);

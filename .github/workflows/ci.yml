@@ -75,7 +75,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Linting Markdown
-        uses: DavidAnson/markdownlint-cli2-action@v22
+        uses: DavidAnson/markdownlint-cli2-action@v23
 
   reuse-compliance:
     name: Check REUSE compliance
@@ -100,7 +100,7 @@ jobs:
       - name: Linting JavaScript-files
         run: npm run eslint:json
       - name: Upload ESLint report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: eslint-report
           path: reports/eslint
@@ -119,7 +119,7 @@ jobs:
       - name: Front-end Unit tests using Vitest
         run: npm run test
       - name: Upload Vitest coverage report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: vitest-report
           path: reports/vitest
@@ -219,7 +219,7 @@ jobs:
           vendor/bin/phpstan analyse --memory-limit=-1 --error-format=json > reports/phpstan/phpstan.json
       - name: Upload PHPStan analysis report
         if: steps.phpstan-report.outcome == 'success'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: phpstan-report
           path: reports/phpstan
@@ -276,11 +276,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Install Task
-        uses: go-task/setup-task@v1
+        uses: go-task/setup-task@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Log in to the Container registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -289,8 +289,12 @@ jobs:
         run: task up
       - name: Run tests
         run: task app:test:ci
+      - name: Fix file paths in PHPUnit reports
+        run: |
+          sed -i 's|/var/www/html/||g' reports/phpunit/report-phpunit.xml
+          sed -i 's|/var/www/html/||g' reports/phpunit/coverage-phpunit.xml
       - name: Upload PHPUnit coverage report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: phpunit-report
           path: reports/phpunit
@@ -315,22 +319,22 @@ jobs:
           mkdir -p reports/phpunit
           mkdir -p reports/phpstan
       - name: Download Vitest coverage report
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: vitest-report
           path: reports/vitest
       - name: Download ESLint report
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: eslint-report
           path: reports/eslint
       - name: Download PHPUnit coverage report
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: phpunit-report
           path: reports/phpunit
       - name: Download PHPStan analysis report
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: phpstan-report
           path: reports/phpstan
@@ -338,6 +342,7 @@ jobs:
         uses: minvws/action-sonarqube@v1
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
+          project-base-dir: ${{ github.workspace }}
 
   e2e-tests:
     name: Test full suite

@@ -30,7 +30,7 @@ class PublicationStepController extends AbstractController
     #[Route(
         path: '/balie/dossier/request-for-advice/publish/concept/{prefix}/{dossierId}',
         name: 'app_admin_dossier_requestforadvice_publication_concept',
-        methods: ['GET', 'POST']
+        methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(

@@ -18,7 +18,7 @@
     <diwoo:documenthandelingen>
      <diwoo:documenthandeling>
       <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76">vaststelling</diwoo:soortHandeling>
-      <diwoo:atTime>2023-01-01T13:37:42+00:00</diwoo:atTime>
+      <diwoo:atTime>2023-01-01T00:00:00+00:00</diwoo:atTime>
      </diwoo:documenthandeling>
     </diwoo:documenthandelingen>
     <diwoo:isPartOf resource="http://public-minvws.local/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:isPartOf>
@@ -43,7 +43,7 @@
     <diwoo:documenthandelingen>
      <diwoo:documenthandeling>
       <diwoo:soortHandeling resource="https://identifier.overheid.nl/tooi/def/thes/kern/c_641ecd76">vaststelling</diwoo:soortHandeling>
-      <diwoo:atTime>2023-01-02T13:37:42+00:00</diwoo:atTime>
+      <diwoo:atTime>2023-01-02T00:00:00+00:00</diwoo:atTime>
      </diwoo:documenthandeling>
     </diwoo:documenthandelingen>
     <diwoo:isPartOf resource="http://public-minvws.local/dossier/PREF/my-woo-decision-1/file/download/main_document/1eefbf67-fd11-6700-b0e0-315d29be4a5c">file_name.pdf</diwoo:isPartOf>

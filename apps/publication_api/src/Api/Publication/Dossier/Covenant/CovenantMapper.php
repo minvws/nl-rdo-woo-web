@@ -30,7 +30,7 @@ readonly class CovenantMapper
     /**
      * @param array<array-key,Covenant> $covenants
      *
-     * @return list<CovenantDto>
+     * @return list<CovenantResponseDto>
      */
     public function fromEntities(array $covenants): array
     {
@@ -40,7 +40,7 @@ readonly class CovenantMapper
         ));
     }
 
-    public function fromEntity(Covenant $covenant): CovenantDto
+    public function fromEntity(Covenant $covenant): CovenantResponseDto
     {
         $mainDocument = $covenant->getMainDocument();
         Assert::notNull($mainDocument);
@@ -53,13 +53,11 @@ readonly class CovenantMapper
         $department = $covenant->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
-        return new CovenantDto(
+        return new CovenantResponseDto(
             $covenant->getId(),
             $covenant->getExternalId(),
             OrganisationReferenceDto::fromEntity($covenant->getOrganisation()),
-            $covenant->getDocumentPrefix(),
             $covenant->getDossierNr(),
-            $covenant->getInternalReference(),
             $covenant->getTitle(),
             $covenant->getSummary(),
             $covenant->getSubject()?->getName(),
@@ -81,10 +79,12 @@ readonly class CovenantMapper
         Department $department,
         ?Subject $subject,
         ExternalId $externalId,
+        string $documentPrefix,
     ): Covenant {
         $covenant = new Covenant();
         $covenant->setExternalId($externalId);
         $covenant->setStatus(DossierStatus::NEW);
+        $covenant->setDocumentPrefix($documentPrefix);
 
         self::update($covenant, $covenantRequestDto, $organisation, $department, $subject);
 
@@ -101,9 +101,7 @@ readonly class CovenantMapper
         $covenant->setDateFrom($covenantRequestDto->dateFrom);
         $covenant->setDateTo($covenantRequestDto->dateTo);
         $covenant->setDepartments([$department]);
-        $covenant->setDocumentPrefix($covenantRequestDto->prefix);
         $covenant->setDossierNr($covenantRequestDto->dossierNumber);
-        $covenant->setInternalReference($covenantRequestDto->internalReference);
         $covenant->setOrganisation($organisation);
         $covenant->setParties($covenantRequestDto->parties);
         $covenant->setPreviousVersionLink($covenantRequestDto->previousVersionLink);

@@ -14,16 +14,13 @@ use Shared\Tests\Integration\SharedWebTestCase;
 
 final class AbstractDossierRepositoryTest extends SharedWebTestCase
 {
-    /**
-     * @return AbstractDossierRepository<InvestigationReport>
-     */
-    private function getRepository(): AbstractDossierRepository
-    {
-        $managerRegistry = self::getContainer()->get(ManagerRegistry::class);
+    private AbstractDossierRepository $dossierRepository;
 
-        return new
-        /** @extends AbstractDossierRepository<InvestigationReport> */
-        class($managerRegistry) extends AbstractDossierRepository {
+    protected function setUp(): void
+    {
+        $managerRegistry = self::fromContainer(ManagerRegistry::class);
+
+        $this->dossierRepository = new class($managerRegistry) extends AbstractDossierRepository {
             public function __construct(ManagerRegistry $managerRegistry)
             {
                 parent::__construct($managerRegistry, InvestigationReport::class);
@@ -31,24 +28,15 @@ final class AbstractDossierRepositoryTest extends SharedWebTestCase
         };
     }
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
-    }
-
     public function testSave(): void
     {
         $organisation = OrganisationFactory::createOne();
 
-        /** @var InvestigationReport $dossier */
         $dossier = InvestigationReportFactory::new()->withoutPersisting()->create(['organisation' => $organisation]);
 
-        $repository = $this->getRepository();
-        $repository->save($dossier, true);
+        $this->dossierRepository->save($dossier, true);
 
-        $result = $this->getRepository()->findOneByDossierId($dossier->getId());
+        $result = $this->dossierRepository->findOneByDossierId($dossier->getId());
         self::assertEquals($dossier, $result);
     }
 
@@ -56,14 +44,12 @@ final class AbstractDossierRepositoryTest extends SharedWebTestCase
     {
         $dossier = InvestigationReportFactory::createOne();
 
-        $repository = $this->getRepository();
-
-        $result = $this->getRepository()->findOneByDossierId($dossier->getId());
+        $result = $this->dossierRepository->findOneByDossierId($dossier->getId());
         self::assertEquals($dossier->getId(), $result->getId());
 
-        $repository->remove($result, true);
+        $this->dossierRepository->remove($result, true);
 
         $this->expectException(NoResultException::class);
-        $this->getRepository()->findOneByDossierId($dossier->getId());
+        $this->dossierRepository->findOneByDossierId($dossier->getId());
     }
 }

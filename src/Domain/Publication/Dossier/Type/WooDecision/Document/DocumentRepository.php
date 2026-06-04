@@ -57,7 +57,7 @@ class DocumentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Document[]
+     * @return array<array-key, Document>
      */
     public function findByThreadId(WooDecision $dossier, int $threadId): array
     {
@@ -75,7 +75,7 @@ class DocumentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Document[]
+     * @return array<array-key, Document>
      */
     public function findByFamilyId(WooDecision $dossier, int $familyId): array
     {
@@ -210,7 +210,7 @@ class DocumentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Document[]
+     * @return array<array-key, Document>
      */
     public function findForDossierBySearchTerm(WooDecision $dossier, string $searchTerm, int $limit): array
     {
@@ -227,7 +227,7 @@ class DocumentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Document[]
+     * @return array<array-key, Document>
      */
     public function getAllDossierDocumentsWithDossiers(WooDecision $dossier): array
     {
@@ -238,7 +238,7 @@ class DocumentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Document[]
+     * @return array<array-key, Document>
      */
     public function getPublicInquiryDocumentsWithDossiers(Inquiry $inquiry): array
     {
@@ -255,11 +255,11 @@ class DocumentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getAllDocumentNumbersForDossier(WooDecision $dossier): array
     {
-        /** @var string[] $docNumbers */
+        /** @var array<array-key, string> $docNumbers */
         $docNumbers = $this->getDossierDocumentsQueryBuilder($dossier)
             ->select('doc.documentNr')
             ->getQuery()
@@ -322,7 +322,7 @@ class DocumentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Document[]
+     * @return array<array-key, Document>
      */
     public function getRevokedDocumentsInPublicDossiers(): array
     {

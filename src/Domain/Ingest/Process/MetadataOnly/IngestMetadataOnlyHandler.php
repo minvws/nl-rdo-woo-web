@@ -39,7 +39,7 @@ final readonly class IngestMetadataOnlyHandler
             $this->subTypeIndexer->index(
                 $entity,
                 $message->getForceRefresh() ? [] : null,
-                $message->getForceRefresh() ? [] : null
+                $message->getForceRefresh() ? [] : null,
             );
         } catch (Exception $e) {
             $this->logger->error('Failed to update ES document in IngestMetadataOnlyHandler', [

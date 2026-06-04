@@ -73,7 +73,7 @@ final class TikaServiceTest extends UnitTestCase
                         'X-Tika-OCRmaxFileSizeToOcr' => 0,
                     ],
                     'body' => $body,
-                ]
+                ],
             )
             ->andReturn($response);
 

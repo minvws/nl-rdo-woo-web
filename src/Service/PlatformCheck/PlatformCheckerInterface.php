@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 interface PlatformCheckerInterface
 {
     /**
-     * @return PlatformCheckResult[]
+     * @return array<array-key, PlatformCheckResult>
      */
     public function getResults(): array;
 }

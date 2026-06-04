@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\MainDocument;
 
-use ApiPlatform\Metadata\ApiProperty;
-use DateTimeImmutable;
 use PublicationApi\Api\Publication\UploadStatus;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 
 final readonly class MainDocumentResponseDto
@@ -18,15 +17,9 @@ final readonly class MainDocumentResponseDto
      */
     public function __construct(
         public Uuid $id,
-        #[ApiProperty(
-            openapiContext: [
-                'class' => 'AttachmentType',
-            ],
-        )]
         public AttachmentType $type,
         public AttachmentLanguage $language,
-        public DateTimeImmutable $formalDate,
-        public string $internalReference,
+        public PlainDate $formalDate,
         public array $grounds,
         public ?string $fileName,
         public UploadStatus $uploadStatus,

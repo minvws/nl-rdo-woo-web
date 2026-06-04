@@ -30,14 +30,14 @@ readonly class DispositionMapper
     /**
      * @param array<array-key,Disposition> $dispositions
      *
-     * @return list<DispositionDto>
+     * @return list<DispositionResponseDto>
      */
     public function fromEntities(array $dispositions): array
     {
         return array_values(array_map($this->fromEntity(...), $dispositions));
     }
 
-    public function fromEntity(Disposition $disposition): DispositionDto
+    public function fromEntity(Disposition $disposition): DispositionResponseDto
     {
         $mainDocument = $disposition->getMainDocument();
         Assert::notNull($mainDocument);
@@ -50,13 +50,11 @@ readonly class DispositionMapper
         $department = $disposition->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
-        return new DispositionDto(
+        return new DispositionResponseDto(
             $disposition->getId(),
             $disposition->getExternalId(),
             OrganisationReferenceDto::fromEntity($disposition->getOrganisation()),
-            $disposition->getDocumentPrefix(),
             $disposition->getDossierNr(),
-            $disposition->getInternalReference(),
             $disposition->getTitle(),
             $disposition->getSummary(),
             $disposition->getSubject()?->getName(),
@@ -75,10 +73,12 @@ readonly class DispositionMapper
         Department $department,
         ?Subject $subject,
         ExternalId $externalId,
+        string $documentPrefix,
     ): Disposition {
         $disposition = new Disposition();
         $disposition->setExternalId($externalId);
         $disposition->setStatus(DossierStatus::NEW);
+        $disposition->setDocumentPrefix($documentPrefix);
 
         self::update($disposition, $dispositionRequestDto, $organisation, $department, $subject);
 
@@ -94,9 +94,7 @@ readonly class DispositionMapper
     ): Disposition {
         $disposition->setDateFrom($dispositionRequestDto->dossierDate);
         $disposition->setDepartments([$department]);
-        $disposition->setDocumentPrefix($dispositionRequestDto->prefix);
         $disposition->setDossierNr($dispositionRequestDto->dossierNumber);
-        $disposition->setInternalReference($dispositionRequestDto->internalReference);
         $disposition->setOrganisation($organisation);
         $disposition->setPublicationDate($dispositionRequestDto->publicationDate);
         $disposition->setSubject($subject);

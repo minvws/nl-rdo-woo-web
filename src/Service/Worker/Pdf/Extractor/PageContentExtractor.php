@@ -33,7 +33,7 @@ readonly class PageContentExtractor
             ContentExtractOptions::create()
                 ->withAllExtractors()
                 ->withPageNumber($context->getPageNumber())
-                ->withLocalFile($context->getOptionalLocalPageDocument())
+                ->withLocalFile($context->getOptionalLocalPageDocument()),
         );
 
         $this->statsService->measure(

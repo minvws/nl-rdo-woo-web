@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry;
 
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Embedded;
 use Shared\Doctrine\TimestampableTrait;
@@ -31,14 +32,16 @@ class InquiryInventory implements EntityWithFileInfo
     #[Embedded(class: FileInfo::class, columnPrefix: 'file_')]
     private FileInfo $file;
 
-    public function getId(): Uuid
-    {
-        return $this->id;
-    }
-
     public function __construct()
     {
         $this->file = new FileInfo();
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
+    }
+
+    public function getId(): Uuid
+    {
+        return $this->id;
     }
 
     public function setInquiry(Inquiry $inquiry): self

@@ -4,35 +4,26 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication;
 
-use ApiPlatform\Validator\Exception\ValidationException;
+use Psr\Http\Message\StreamInterface;
+use PublicationApi\Domain\Upload\MainDocumentUploadStatusService;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\Command\UpdateMainDocumentCommand;
-use Shared\Domain\Upload\UploadEntity;
-use Shared\Domain\Upload\UploadEntityRepository;
-use Shared\Domain\Upload\UploadRequest;
+use Shared\Domain\Upload\StreamUpload;
 use Shared\Domain\Upload\UploadService;
+use Shared\Service\Storage\FileHashService;
 use Shared\Service\Uploader\UploadGroupId;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Validator\ConstraintViolationList;
-
-use function file_put_contents;
-use function sprintf;
-use function sys_get_temp_dir;
-use function unlink;
-
-use const UPLOAD_ERR_OK;
+use Webmozart\Assert\Assert;
 
 class MainDocumentUploadProcessor
 {
     use HandleTrait;
 
     public function __construct(
-        private readonly Filesystem $filesystem,
-        private readonly UploadEntityRepository $uploadEntityRepository,
+        private readonly MainDocumentUploadStatusService $mainDocumentUploadStatusService,
         private readonly UploadService $uploadService,
         MessageBusInterface $messageBus,
     ) {
@@ -40,51 +31,48 @@ class MainDocumentUploadProcessor
     }
 
     public function process(
-        Uuid $dossierId,
-        Uuid $mainDocumentId,
-        UploadGroupId $uploadGroupId,
-        string $content,
-        string $fileName,
+        AbstractDossier $dossier,
+        AbstractMainDocument $mainDocument,
+        StreamInterface $content,
     ): void {
-        $tempPath = $this->filesystem->tempnam(sys_get_temp_dir(), 'api_upload_', sprintf('_%s', $fileName));
-
-        $uploadedBytes = file_put_contents($tempPath, $content);
-        if ($uploadedBytes === 0 || $uploadedBytes === false) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('Could not write file content'));
+        if ($this->isAlreadyUploaded($mainDocument, $content)) {
+            return;
         }
 
-        try {
-            $uploadedFile = new UploadedFile($tempPath, $fileName, null, UPLOAD_ERR_OK, true);
+        $uploadId = Uuid::v6();
+        $fileName = $mainDocument->getFileInfo()->getName();
+        Assert::string($fileName);
 
-            $uploadEntityId = Uuid::v6()->toRfc4122();
+        $streamUpload = new StreamUpload(
+            fileName: $fileName,
+            stream: $content,
+            groupId: UploadGroupId::MAIN_DOCUMENTS,
+            additionalParameters: [
+                'dossierId' => $dossier->getId()->toRfc4122(),
+                'mainDocumentId' => $mainDocument->getId()->toRfc4122(),
+            ],
+            uploadId: $uploadId->toRfc4122(),
+        );
 
-            $context = new InputBag();
-            $context->set('dossierId', $dossierId->toRfc4122());
-            $context->set('mainDocumentId', $mainDocumentId->toRfc4122());
+        $this->uploadService->handleUpload($streamUpload);
 
-            $uploadEntity = new UploadEntity($uploadEntityId, $uploadGroupId, null, $context);
-            $this->uploadEntityRepository->save($uploadEntity, true);
+        $this->handle(new UpdateMainDocumentCommand(
+            dossierId: $dossier->getId(),
+            uploadFileReference: $uploadId->toRfc4122(),
+        ));
+    }
 
-            $additionalParameters = new InputBag();
-            $additionalParameters->set('dossierId', $dossierId->toRfc4122());
-
-            $chunkIndex = 1;
-            $chunkCount = 1;
-            $uploadRequest = new UploadRequest($chunkIndex, $chunkCount, $uploadEntityId, $uploadedFile, $uploadGroupId, $additionalParameters);
-
-            $this->uploadService->handleUploadRequest($uploadRequest, null);
-
-            $this->handle(new UpdateMainDocumentCommand(
-                dossierId: $dossierId,
-                formalDate: null,
-                internalReference: null,
-                type: null,
-                language: null,
-                grounds: null,
-                uploadFileReference: $uploadEntityId,
-            ));
-        } finally {
-            unlink($tempPath);
+    private function isAlreadyUploaded(AbstractMainDocument $mainDocument, StreamInterface $stream): bool
+    {
+        $mainDocumentHash = $mainDocument->getFileInfo()->getHash();
+        if ($mainDocumentHash === null) {
+            return false;
         }
+
+        if ($this->mainDocumentUploadStatusService->getUploadStatus($mainDocument) !== UploadStatus::PROCESSED) {
+            return false;
+        }
+
+        return $mainDocumentHash === FileHashService::calculatePsrStreamHash($stream);
     }
 }

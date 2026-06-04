@@ -17,7 +17,7 @@ class FileTypeTest extends SharedWebTestCase
     }
 
     /**
-     * @return array<string,array<string|FileType|null>>
+     * @return array<string, array<array-key, string|FileType|null>>
      */
     public static function fromMimeTypeDataProvider(): array
     {

@@ -55,7 +55,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
                     'dossierId' => $dossierNr,
                     'type' => $fileType->value,
                     'id' => $entityId,
-                ]
+                ],
             )
             ->andReturn($expectedUrl = 'my-url');
 
@@ -91,7 +91,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
                     'dossierId' => $dossierNr,
                     'type' => $fileType->value,
                     'id' => $entityId,
-                ]
+                ],
             )
             ->andReturn('my-url');
 
@@ -109,7 +109,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
                     'id' => $entityId,
                     'pageNr' => 2,
                     'hash' => $fileHash,
-                ]
+                ],
             )
             ->andReturn('thumb-url');
 

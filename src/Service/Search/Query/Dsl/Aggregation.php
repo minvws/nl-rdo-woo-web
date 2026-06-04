@@ -17,7 +17,7 @@ final class Aggregation extends ErichardAggregation
     }
 
     /**
-     * @param array<AbstractAggregation> $aggregations
+     * @param array<array-key, AbstractAggregation> $aggregations
      */
     public static function termsWithMinDocCount(
         string $name,

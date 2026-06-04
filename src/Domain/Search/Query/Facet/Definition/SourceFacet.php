@@ -75,7 +75,7 @@ readonly class SourceFacet implements FacetDefinitionInterface
     public function getDisplayValue(int|string $key, string $value): FacetDisplayValueInterface
     {
         return TranslatableFacetDisplayValue::fromTranslatable(
-            SourceType::create($value)
+            SourceType::create($value),
         );
     }
 

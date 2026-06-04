@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index;
 
-use DateTimeImmutable;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
@@ -36,6 +35,7 @@ use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\IndexException;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Spatie\Snapshots\MatchesSnapshots;
 use stdClass;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -77,18 +77,18 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'OtherPublicationMainDocument' => [
                 'entity' => new OtherPublicationMainDocument(
                     new OtherPublication(),
-                    new DateTimeImmutable(),
+                    PlainDate::today(),
                     AttachmentType::ADVICE,
-                    AttachmentLanguage::DUTCH,
+                    AttachmentLanguage::NLD,
                 ),
                 'expectedType' => ElasticDocumentType::OTHER_PUBLICATION_MAIN_DOCUMENT,
             ],
             'OtherPublicationAttachment' => [
                 'entity' => new OtherPublicationAttachment(
                     new OtherPublication(),
-                    new DateTimeImmutable(),
+                    PlainDate::today(),
                     AttachmentType::ADVICE,
-                    AttachmentLanguage::DUTCH,
+                    AttachmentLanguage::NLD,
                 ),
                 'expectedType' => ElasticDocumentType::ATTACHMENT,
             ],
@@ -99,18 +99,18 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'AdviceMainDocument' => [
                 'entity' => new AdviceMainDocument(
                     new Advice(),
-                    new DateTimeImmutable(),
+                    PlainDate::today(),
                     AttachmentType::ADVICE,
-                    AttachmentLanguage::DUTCH,
+                    AttachmentLanguage::NLD,
                 ),
                 'expectedType' => ElasticDocumentType::ADVICE_MAIN_DOCUMENT,
             ],
             'AdviceAttachment' => [
                 'entity' => new AdviceAttachment(
                     new Advice(),
-                    new DateTimeImmutable(),
+                    PlainDate::today(),
                     AttachmentType::ADVICE,
-                    AttachmentLanguage::DUTCH,
+                    AttachmentLanguage::NLD,
                 ),
                 'expectedType' => ElasticDocumentType::ATTACHMENT,
             ],
@@ -121,18 +121,18 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'RequestForAdviceMainDocument' => [
                 'entity' => new RequestForAdviceMainDocument(
                     new RequestForAdvice(),
-                    new DateTimeImmutable(),
+                    PlainDate::today(),
                     AttachmentType::ADVICE,
-                    AttachmentLanguage::DUTCH,
+                    AttachmentLanguage::NLD,
                 ),
                 'expectedType' => ElasticDocumentType::REQUEST_FOR_ADVICE_MAIN_DOCUMENT,
             ],
             'RequestForAdviceAttachment' => [
                 'entity' => new RequestForAdviceAttachment(
                     new RequestForAdvice(),
-                    new DateTimeImmutable(),
+                    PlainDate::today(),
                     AttachmentType::ADVICE,
-                    AttachmentLanguage::DUTCH,
+                    AttachmentLanguage::NLD,
                 ),
                 'expectedType' => ElasticDocumentType::ATTACHMENT,
             ],

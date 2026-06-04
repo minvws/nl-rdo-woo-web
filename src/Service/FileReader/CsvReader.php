@@ -10,6 +10,7 @@ use Generator;
 use RuntimeException;
 use Shared\Exception\FileReaderException;
 use Shared\Service\Inventory\InventoryDataHelper;
+use Webmozart\Assert\Assert;
 
 use function array_filter;
 use function count;
@@ -73,12 +74,18 @@ class CsvReader implements FileReaderInterface
 
     public function getString(int $rowIndex, string $columnName): string
     {
-        return strval($this->getCell($rowIndex, $columnName));
+        $cell = $this->getCell($rowIndex, $columnName);
+        Assert::nullOrScalar($cell);
+
+        return strval($cell);
     }
 
     public function getInt(int $rowIndex, string $columnName): int
     {
-        return intval($this->getCell($rowIndex, $columnName));
+        $cell = $this->getCell($rowIndex, $columnName);
+        Assert::nullOrScalar($cell);
+
+        return intval($cell);
     }
 
     public function getDateTime(int $rowIndex, string $columnName): DateTimeImmutable
@@ -113,21 +120,25 @@ class CsvReader implements FileReaderInterface
 
     public function getOptionalString(int $rowIndex, string $columnName): ?string
     {
-        $value = $this->getCell($rowIndex, $columnName);
-        if ($value === null) {
+        $cell = $this->getCell($rowIndex, $columnName);
+        Assert::nullOrScalar($cell);
+
+        if ($cell === null) {
             return null;
         }
 
-        return strval($value);
+        return strval($cell);
     }
 
     public function getOptionalInt(int $rowIndex, string $columnName): ?int
     {
-        $value = $this->getCell($rowIndex, $columnName);
-        if ($value === null || $value === '') {
+        $cell = $this->getCell($rowIndex, $columnName);
+        Assert::nullOrScalar($cell);
+
+        if ($cell === null || $cell === '') {
             return null;
         }
 
-        return intval($value);
+        return intval($cell);
     }
 }

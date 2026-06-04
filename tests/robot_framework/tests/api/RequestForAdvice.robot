@@ -16,7 +16,6 @@ Test Tags           api  request-for-advice
 ${ORGANISATION_ID}  ${EMPTY}
 ${EXTERNAL_ID}      ${EMPTY}
 ${BODY}             ${EMPTY}
-${TODAY}            ${EMPTY}
 
 
 *** Test Cases ***
@@ -41,10 +40,8 @@ We Create Test Data For Request For Advice
   # Build body
   ${department_id} =  Get Department ID
   ${subject_id} =  Get Subject ID
-  ${prefix_id} =  Get Prefix
-  VAR  ${dossier_date} =  ${TODAY}
+  VAR  ${dossier_date} =  ${CURRENT_DATE}
   ${dossier_number} =  Generate Dossier Reference Number
-  ${internal_reference} =  FakerLibrary.Sentence
   ${summary} =  Fakerlibrary.Text  200
   ${title} =  Catenate  Robot API ${dossier_number}
   VAR  ${link} =  http://www.rijksoverheid.nl
@@ -55,10 +52,8 @@ We Create Test Data For Request For Advice
   ...  departmentId=${department_id}
   ...  dossierDate=${dossier_date}
   ...  dossierNumber=${dossier_number}
-  ...  internalReference=${internal_reference}
   ...  link=${link}
   ...  mainDocument=${main_document}
-  ...  prefix=${prefix_id}
   ...  publicationDate=${publication_date}
   ...  subjectId=${subject_id}
   ...  summary=${summary}
@@ -69,11 +64,11 @@ We Create Test Data For Request For Advice
 We Create An Request For Advice
   PUT On Session
   ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/request-for-advice/${EXTERNAL_ID}
+  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/request-for-advice/${EXTERNAL_ID}
   ...  json=${BODY}
 
 We Can Find It
   ${get_response} =  GET On Session
   ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/request-for-advice/${EXTERNAL_ID}
+  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/request-for-advice/${EXTERNAL_ID}
   VAR  ${RESPONSE} =  ${get_response.json()}  scope=TEST

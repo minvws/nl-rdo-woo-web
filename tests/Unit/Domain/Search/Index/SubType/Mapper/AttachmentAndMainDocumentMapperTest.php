@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\SubType\Mapper;
 
-use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
@@ -16,6 +15,7 @@ use Shared\Domain\Search\Index\ElasticDocument;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\SubType\Mapper\AttachmentAndMainDocumentMapper;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 
 class AttachmentAndMainDocumentMapperTest extends UnitTestCase
@@ -52,10 +52,10 @@ class AttachmentAndMainDocumentMapperTest extends UnitTestCase
         $attachment->expects('getDossier')->times(4)->andReturn($dossier);
         $attachment->expects('getFileInfo')->andReturn($fileInfo);
         $attachment->expects('getGrounds')->andReturn(['x', 'y']);
-        $attachment->expects('getFormalDate')->andReturn(new DateTimeImmutable('2024-06-18 19:31:12'));
+        $attachment->expects('getFormalDate')->andReturn(PlainDate::create('2024-06-18'));
 
         $this->dossierIndexer->expects('map')->with($dossier)->andReturn(
-            new ElasticDocument('foo-123', ElasticDocumentType::COVENANT, null, ['mapped-dossier-data' => 'dummy'])
+            new ElasticDocument('foo-123', ElasticDocumentType::COVENANT, null, ['mapped-dossier-data' => 'dummy']),
         );
 
         $doc = $this->mapper->map($attachment, ['foo'], [1 => 'bar']);

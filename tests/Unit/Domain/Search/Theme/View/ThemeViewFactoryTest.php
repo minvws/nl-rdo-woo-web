@@ -21,7 +21,7 @@ class ThemeViewFactoryTest extends UnitTestCase
         $factory = new ThemeViewFactory();
 
         $this->assertMatchesObjectSnapshot(
-            $factory->make($theme)
+            $factory->make($theme),
         );
     }
 }

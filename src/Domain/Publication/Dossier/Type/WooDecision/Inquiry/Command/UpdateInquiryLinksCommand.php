@@ -11,11 +11,11 @@ class UpdateInquiryLinksCommand
     public function __construct(
         private readonly Uuid $organisationId,
         private readonly string $caseNr,
-        /** @var Uuid[] */
+        /** @var array<Uuid> */
         private readonly array $docIdsToAdd,
-        /** @var Uuid[] */
+        /** @var array<Uuid> */
         private readonly array $docIdsToDelete,
-        /** @var Uuid[] */
+        /** @var array<Uuid> */
         private readonly array $dossierIdsToAdd,
     ) {
     }
@@ -31,7 +31,7 @@ class UpdateInquiryLinksCommand
     }
 
     /**
-     * @return Uuid[]
+     * @return array<array-key, Uuid>
      */
     public function getDocIdsToAdd(): array
     {
@@ -39,7 +39,7 @@ class UpdateInquiryLinksCommand
     }
 
     /**
-     * @return Uuid[]
+     * @return array<array-key, Uuid>
      */
     public function getDocIdsToDelete(): array
     {
@@ -47,7 +47,7 @@ class UpdateInquiryLinksCommand
     }
 
     /**
-     * @return Uuid[]
+     * @return array<array-key, Uuid>
      */
     public function getDossierIdsToAdd(): array
     {

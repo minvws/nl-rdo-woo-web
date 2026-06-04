@@ -88,6 +88,14 @@ readonly class DocumentFileService
         $this->dispatcher->dispatchProcessDocumentFileSetUploadsCommand($documentFileSet);
     }
 
+    public function startSaveProcessingUploads(WooDecision $wooDecision): void
+    {
+        $documentFileSet = $this->getDocumentFileSet($wooDecision);
+        if ($this->canProcess($documentFileSet)) {
+            $this->startProcessingUploads($wooDecision);
+        }
+    }
+
     public function hasUploads(DocumentFileSet $documentFileSet): bool
     {
         return $this->documentFileSetRepository->countUploadsToProcess($documentFileSet) > 0;

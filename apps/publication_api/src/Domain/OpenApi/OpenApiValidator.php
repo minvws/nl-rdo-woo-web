@@ -15,7 +15,7 @@ use PublicationApi\Domain\OpenApi\Exception\FormatMismatchException;
 use PublicationApi\Domain\OpenApi\Exception\KeywordMismatchException;
 use PublicationApi\Domain\OpenApi\Exception\SchemaMismatchException;
 use PublicationApi\Domain\OpenApi\Exception\SpecException;
-use PublicationApi\Domain\OpenApi\Exception\ValidatonException;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +38,7 @@ class OpenApiValidator
      * @throws KeywordMismatchException
      * @throws SchemaMismatchException
      * @throws SpecException
-     * @throws ValidatonException
+     * @throws ValidationException
      */
     public function validateRequest(Request $request, string $path, string $method): void
     {
@@ -59,7 +59,7 @@ class OpenApiValidator
      * @throws KeywordMismatchException
      * @throws SchemaMismatchException
      * @throws SpecException
-     * @throws ValidatonException
+     * @throws ValidationException
      */
     public function validateResponse(Response $response, string $path, string $method): void
     {
@@ -79,7 +79,7 @@ class OpenApiValidator
      * @throws FormatMismatchException
      * @throws KeywordMismatchException
      * @throws SchemaMismatchException
-     * @throws ValidatonException
+     * @throws ValidationException
      */
     private function validate(callable $validationCallback): void
     {
@@ -92,7 +92,17 @@ class OpenApiValidator
         } catch (SchemaMismatch $schemaMismatch) {
             throw SchemaMismatchException::fromSchemaMismatch($schemaMismatch);
         } catch (TypeErrorException | ValidationFailed $exception) {
-            throw ValidatonException::fromThrowable($exception);
+            $previous = $exception->getPrevious();
+            if ($previous instanceof FormatMismatch) {
+                throw FormatMismatchException::fromFormatMismatch($previous);
+            }
+            if ($previous instanceof KeywordMismatch) {
+                throw KeywordMismatchException::fromKeywordMismatch($previous);
+            }
+            if ($previous instanceof SchemaMismatch) {
+                throw SchemaMismatchException::fromSchemaMismatch($previous);
+            }
+            throw ValidationException::fromThrowable($exception);
         }
     }
 

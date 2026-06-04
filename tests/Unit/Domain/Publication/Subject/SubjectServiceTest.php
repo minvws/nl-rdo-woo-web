@@ -69,7 +69,7 @@ class SubjectServiceTest extends UnitTestCase
         $this->repository->expects('save')->with($subject, true);
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static fn (SubjectUpdatedEvent $message) => $message->getUuid() === $subjectId
+            static fn (SubjectUpdatedEvent $message) => $message->getUuid() === $subjectId,
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->subjectService->save($subject);

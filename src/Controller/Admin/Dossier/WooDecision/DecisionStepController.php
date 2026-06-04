@@ -69,9 +69,9 @@ class DecisionStepController extends AbstractController
                 ->withDepartments()
                 ->with('attachments', $this->attachmentViewFactory->makeCollection(
                     $dossier,
-                    ApplicationMode::ADMIN
+                    ApplicationMode::ADMIN,
                 ))
-                ->getParams()
+                ->getParams(),
         );
     }
 
@@ -122,9 +122,9 @@ class DecisionStepController extends AbstractController
                 ->withDepartments()
                 ->with('attachments', $this->attachmentViewFactory->makeCollection(
                     $dossier,
-                    ApplicationMode::ADMIN
+                    ApplicationMode::ADMIN,
                 ))
-                ->getParams()
+                ->getParams(),
         );
     }
 }

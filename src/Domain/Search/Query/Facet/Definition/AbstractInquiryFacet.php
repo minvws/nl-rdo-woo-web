@@ -87,7 +87,7 @@ abstract readonly class AbstractInquiryFacet implements FacetDefinitionInterface
         $requestedInquiries = $queryParams->all()[$this->getRequestParameter()];
         $requestedInquiries = is_array($requestedInquiries) ? array_values($requestedInquiries) : [$requestedInquiries];
 
-        /** @var string[] $validatedInquiries */
+        /** @var array<array-key, string> $validatedInquiries */
         $validatedInquiries = array_intersect($requestedInquiries, $validInquiries);
         $validatedInquiries = array_values($validatedInquiries);
 

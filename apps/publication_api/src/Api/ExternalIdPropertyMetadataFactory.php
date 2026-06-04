@@ -8,6 +8,8 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use Shared\ValueObject\ExternalId;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
+use Symfony\Component\TypeInfo\Type\NullableType;
+use Symfony\Component\TypeInfo\Type\ObjectType;
 
 #[AsDecorator(decorates: 'api_platform.metadata.property.metadata_factory')]
 final readonly class ExternalIdPropertyMetadataFactory implements PropertyMetadataFactoryInterface
@@ -21,24 +23,27 @@ final readonly class ExternalIdPropertyMetadataFactory implements PropertyMetada
     {
         $propertyMetadata = $this->decorated->create($resourceClass, $property, $options);
 
-        $types = $propertyMetadata->getBuiltinTypes() ?? [];
-        foreach ($types as $type) {
-            if ($type->getClassName() === ExternalId::class) {
-                $schema = ['type' => 'string', 'format' => 'external-id'];
-
-                if ($type->isNullable()) {
-                    $schema = [
-                        'anyOf' => [
-                            $schema,
-                            ['type' => 'null'],
-                        ],
-                    ];
-                }
-
-                return $propertyMetadata->withSchema($schema);
-            }
+        $nativeType = $propertyMetadata->getNativeType();
+        if ($nativeType === null) {
+            return $propertyMetadata;
         }
 
-        return $propertyMetadata;
+        $nullable = $nativeType instanceof NullableType;
+        $unwrapped = $nullable ? $nativeType->getWrappedType() : $nativeType;
+
+        if (! $unwrapped instanceof ObjectType || $unwrapped->getClassName() !== ExternalId::class) {
+            return $propertyMetadata;
+        }
+
+        $schema = [
+            'type' => 'string',
+            'format' => 'external-id',
+        ];
+
+        if ($nullable) {
+            $schema = ['anyOf' => [$schema, ['type' => 'null']]];
+        }
+
+        return $propertyMetadata->withSchema($schema);
     }
 }

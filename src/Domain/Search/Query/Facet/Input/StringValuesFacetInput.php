@@ -14,7 +14,7 @@ use function array_values;
 use function count;
 use function in_array;
 
-final readonly class StringValuesFacetInput extends FacetInput implements StringValuesFacetInputInterface
+readonly class StringValuesFacetInput extends FacetInput implements StringValuesFacetInputInterface
 {
     public static function fromParameterBag(FacetDefinitionInterface $facet, ParameterBag $bag): self
     {
@@ -68,7 +68,7 @@ final readonly class StringValuesFacetInput extends FacetInput implements String
                 array_filter(
                     $this->values,
                     static fn (string $item) => $item !== $value,
-                )
+                ),
             ),
         );
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\Advice;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,6 +17,8 @@ use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -45,8 +46,8 @@ class Advice extends AbstractDossier implements EntityWithAttachments, EntityWit
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    #[Assert\LessThanOrEqual(
-        value: 'today',
+    #[PlainDateBeforeOrEqual(
+        date: 'today',
         message: 'date_must_not_be_in_future',
         groups: [
             DossierValidationGroup::DETAILS->value,
@@ -54,7 +55,7 @@ class Advice extends AbstractDossier implements EntityWithAttachments, EntityWit
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    protected ?DateTimeImmutable $dateFrom = null;
+    protected ?PlainDate $dateFrom = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AdviceMainDocument::class, cascade: ['persist', 'remove'])]
     #[Assert\NotBlank(groups: [
@@ -91,7 +92,7 @@ class Advice extends AbstractDossier implements EntityWithAttachments, EntityWit
     }
 
     #[Override]
-    public function setDateFrom(?DateTimeImmutable $dateFrom): static
+    public function setDateFrom(?PlainDate $dateFrom): static
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateFrom;

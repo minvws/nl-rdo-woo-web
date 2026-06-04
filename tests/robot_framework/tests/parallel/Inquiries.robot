@@ -249,7 +249,7 @@ Publish The Concept Dossier
   [Arguments]  ${dossier_reference}
   Go To Admin
   Search For A Publication  ${dossier_reference}
-  Click  //*[@data-e2e-name="edit-link"]
+  Click Documents Edit
   Click Continue To Publish
   Publish Dossier And Return To Admin Home
 

@@ -26,7 +26,7 @@ final readonly class DepartmentProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|DepartmentDto|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|DepartmentResponseDto|null
     {
         if ($operation instanceof CollectionOperationInterface) {
             return $this->provideCollection($context);
@@ -51,7 +51,7 @@ final readonly class DepartmentProvider implements ProviderInterface
         return new ArrayPaginator(DepartmentMapper::fromEntities($departments), 0, count($departments));
     }
 
-    private function provideSingle(Uuid $departmentId): ?DepartmentDto
+    private function provideSingle(Uuid $departmentId): ?DepartmentResponseDto
     {
         $department = $this->departmentRepository->find($departmentId);
         if ($department === null) {

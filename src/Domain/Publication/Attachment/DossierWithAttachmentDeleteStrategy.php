@@ -26,7 +26,7 @@ readonly class DossierWithAttachmentDeleteStrategy implements DossierDeleteStrat
 
         foreach ($dossier->getAttachments() as $attachment) {
             $this->messageBus->dispatch(
-                new DeleteAttachmentCommand($dossier->getId(), $attachment->getId())
+                new DeleteAttachmentCommand($dossier->getId(), $attachment->getId()),
             );
         }
     }
@@ -39,7 +39,7 @@ readonly class DossierWithAttachmentDeleteStrategy implements DossierDeleteStrat
 
         foreach ($dossier->getAttachments() as $attachment) {
             $this->messageBus->dispatch(
-                new DeleteAttachmentWithOverrideCommand($dossier->getId(), $attachment->getId())
+                new DeleteAttachmentWithOverrideCommand($dossier->getId(), $attachment->getId()),
             );
         }
     }

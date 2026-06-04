@@ -6,9 +6,7 @@ namespace Admin\Api\Admin\Attachment;
 
 use Admin\Api\Admin\Dossier\DossierReferenceDto;
 use ApiPlatform\Metadata\ApiProperty;
-use DateTimeImmutable;
-use Symfony\Component\Serializer\Attribute\Context;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Shared\ValueObject\PlainDate;
 
 abstract readonly class AbstractAttachmentDto
 {
@@ -20,18 +18,7 @@ abstract readonly class AbstractAttachmentDto
         public string $id,
         public DossierReferenceDto $dossier,
         public string $name,
-        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-        #[ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'format' => 'date',
-            ],
-            jsonSchemaContext: [
-                'type' => 'string',
-                'format' => 'date',
-            ]
-        )]
-        public DateTimeImmutable $formalDate,
+        public PlainDate $formalDate,
         public string $type,
         public string $mimeType,
         public int $size,
@@ -45,7 +32,7 @@ abstract readonly class AbstractAttachmentDto
             jsonSchemaContext: [
                 'type' => 'array',
                 'items' => ['type' => 'string'],
-            ]
+            ],
         )]
         public array $grounds,
         public string $withdrawUrl,

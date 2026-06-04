@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication;
 
-use DateTimeImmutable;
+use Carbon\CarbonImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\FileCacheKeyBasedOnClassAndIdTrait;
+use Shared\Doctrine\PlainDateType;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Service\Uploader\UploadGroupId;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -36,9 +39,9 @@ trait AttachmentAndMainDocumentEntityTrait
     #[Assert\Valid()]
     protected FileInfo $fileInfo;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    #[Assert\LessThanOrEqual(value: 'now')]
-    protected DateTimeImmutable $formalDate;
+    #[ORM\Column(type: PlainDateType::NAME)]
+    #[PlainDateBeforeOrEqual(date: 'today')]
+    protected PlainDate $formalDate;
 
     #[ORM\Column(length: 255, enumType: AttachmentType::class)]
     #[Assert\Choice(callback: 'getAllowedTypes')]
@@ -66,15 +69,17 @@ trait AttachmentAndMainDocumentEntityTrait
     public function __construct()
     {
         $this->id = Uuid::v6();
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
         $this->fileInfo = new FileInfo();
     }
 
-    public function getFormalDate(): DateTimeImmutable
+    public function getFormalDate(): PlainDate
     {
         return $this->formalDate;
     }
 
-    public function setFormalDate(DateTimeImmutable $formalDate): void
+    public function setFormalDate(PlainDate $formalDate): void
     {
         $this->formalDate = $formalDate;
     }
@@ -90,7 +95,7 @@ trait AttachmentAndMainDocumentEntityTrait
     }
 
     /**
-     * @return AttachmentType[]
+     * @return array<array-key, AttachmentType>
      */
     public static function getAllowedTypes(): array
     {

@@ -77,7 +77,7 @@ class DetailsStepController extends AbstractController
         $breadcrumbs->addRouteItem(
             $dossier->getTitle() ?? '',
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );
         $breadcrumbs->addItem('admin.dossiers.covenant.step.details');
 
@@ -152,7 +152,7 @@ class DetailsStepController extends AbstractController
                     self::STEP_NAME->value,
                     DossierValidationGroup::DETAILS->value,
                 ],
-            ]
+            ],
         );
     }
 }

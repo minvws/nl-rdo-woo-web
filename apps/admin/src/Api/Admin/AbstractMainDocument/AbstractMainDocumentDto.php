@@ -6,10 +6,9 @@ namespace Admin\Api\Admin\AbstractMainDocument;
 
 use Admin\Api\Admin\Dossier\DossierReferenceDto;
 use ApiPlatform\Metadata\ApiProperty;
-use DateTimeImmutable;
+use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
-use Symfony\Component\Serializer\Attribute\Context;
-use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
@@ -22,23 +21,12 @@ abstract readonly class AbstractMainDocumentDto
         public DossierReferenceDto $dossier,
         public Uuid $id,
         public string $name,
-        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-        #[ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'format' => 'date',
-            ],
-            jsonSchemaContext: [
-                'type' => 'string',
-                'format' => 'date',
-            ]
-        )]
-        public DateTimeImmutable $formalDate,
+        public PlainDate $formalDate,
         public string $type,
         public string $mimeType,
         public int $size,
         public string $internalReference,
-        public string $language,
+        public AttachmentLanguage $language,
         #[ApiProperty(
             openapiContext: [
                 'type' => 'array',
@@ -47,7 +35,7 @@ abstract readonly class AbstractMainDocumentDto
             jsonSchemaContext: [
                 'type' => 'array',
                 'items' => ['type' => 'string'],
-            ]
+            ],
         )]
         public array $grounds,
     ) {
@@ -67,8 +55,8 @@ abstract readonly class AbstractMainDocumentDto
             $mimeType,
             $entity->getFileInfo()->getSize(),
             $entity->getInternalReference(),
-            $entity->getLanguage()->value,
-            $entity->getGrounds()
+            $entity->getLanguage(),
+            $entity->getGrounds(),
         );
     }
 }

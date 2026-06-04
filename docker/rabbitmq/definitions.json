@@ -1,7 +1,7 @@
 {
   "vhosts": [
-    { "name": "/minvws" },
-    { "name": "/minfin" }
+    { "name": "minvws" },
+    { "name": "minfin" }
   ],
   "users": [
     {
@@ -18,14 +18,14 @@
   "permissions": [
     {
       "user": "minvws",
-      "vhost": "/minvws",
+      "vhost": "minvws",
       "configure": ".*",
       "write": ".*",
       "read": ".*"
     },
     {
       "user": "minfin",
-      "vhost": "/minfin",
+      "vhost": "minfin",
       "configure": ".*",
       "write": ".*",
       "read": ".*"

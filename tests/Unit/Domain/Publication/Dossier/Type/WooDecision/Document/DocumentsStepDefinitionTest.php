@@ -85,7 +85,7 @@ class DocumentsStepDefinitionTest extends UnitTestCase
     }
 
     /**
-     * @return array<array{DossierStatus,bool}>
+     * @return array<array-key, array{DossierStatus, bool}>
      */
     public static function dossierStatusData(): array
     {

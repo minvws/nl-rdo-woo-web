@@ -77,7 +77,7 @@ class BatchDownloadServiceTest extends UnitTestCase
                 self::assertEquals($dossier, $batch->getDossier());
 
                 return true;
-            }
+            },
         );
         $this->batchRepository->expects('save')->with($batchValidator);
 
@@ -203,7 +203,7 @@ class BatchDownloadServiceTest extends UnitTestCase
                 self::assertEquals($dossier, $batch->getDossier());
 
                 return true;
-            }
+            },
         );
         $this->batchRepository->expects('save')->with($batchValidator);
 

@@ -13,19 +13,6 @@ use Shared\Tests\Integration\SharedWebTestCase;
 
 final class CovenantRepositoryTest extends SharedWebTestCase
 {
-    private function getRepository(): CovenantRepository
-    {
-        /** @var CovenantRepository */
-        return self::getContainer()->get(CovenantRepository::class);
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
-    }
-
     public function testGetSearchResultViewModel(): void
     {
         $covenant = CovenantFactory::createOne();
@@ -33,11 +20,12 @@ final class CovenantRepositoryTest extends SharedWebTestCase
             'dossier' => $covenant,
         ]);
 
-        $result = $this->getRepository()->getSearchResultViewModel(
-            $covenant->getDocumentPrefix(),
-            $covenant->getDossierNr(),
-            ApplicationMode::PUBLIC,
-        );
+        $result = self::fromContainer(CovenantRepository::class)
+            ->getSearchResultViewModel(
+                $covenant->getDocumentPrefix(),
+                $covenant->getDossierNr(),
+                ApplicationMode::PUBLIC,
+            );
 
         self::assertInstanceOf(CovenantSearchResult::class, $result);
         self::assertEquals(3, $result->documentCount); // 2 attachments + 1 main document = 3

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\AnnualReport\ViewModel;
 
-use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
@@ -15,6 +14,7 @@ use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFacto
 use Shared\Domain\Publication\Dossier\ViewModel\Department;
 use Shared\Domain\Publication\Dossier\ViewModel\Subject;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 
 final class AnnualReportViewFactoryTest extends UnitTestCase
 {
@@ -40,15 +40,15 @@ final class AnnualReportViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new DateTimeImmutable(),
-                mainDepartment: $expectedMainDepartment = $expectedMainDepartment,
+                publicationDate: $publicationDate = PlainDate::today(),
+                mainDepartment: $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::ANNUAL_REPORT,
                 subject: $expectedSubject = Mockery::mock(Subject::class),
             ));
 
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->expects('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable('2023-05-27 10:56:03'));
+        $dossier->expects('getDateFrom')->andReturn(PlainDate::create('2023-05-27'));
 
         $result = new AnnualReportViewFactory($this->commonDossierViewFactory)->make($dossier);
 

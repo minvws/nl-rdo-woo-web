@@ -6,58 +6,39 @@ namespace PublicationApi\Api\Publication\Dossier\Disposition;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Publication\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Publication\Dossier\AbstractDossierProcessor;
+use PublicationApi\Api\Publication\Dossier\DossierSupportService;
 use Shared\Domain\Department\Department;
-use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Organisation\OrganisationRepository;
-use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionRepository;
 use Shared\Domain\Publication\Subject\Subject;
-use Shared\Domain\Publication\Subject\SubjectRepository;
-use Shared\Service\AttachmentService;
-use Shared\Service\DossierService;
-use Shared\Service\MainDocumentService;
 use Shared\ValueObject\ExternalId;
-use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-final class DispositionProcessor extends AbstractDossierProcessor
+/**
+ * @implements ProcessorInterface<DispositionRequestDto,?DispositionResponseDto>
+ */
+final readonly class DispositionProcessor implements ProcessorInterface
 {
     public function __construct(
-        AttachmentService $attachmentService,
-        DepartmentRepository $departmentRepository,
-        DossierDispatcher $dossierDispatcher,
-        DossierService $dossierService,
-        MainDocumentService $mainDocumentService,
-        OrganisationRepository $organisationRepository,
-        SubjectRepository $subjectRepository,
-        private readonly DispositionRepository $dispositionRepository,
-        private readonly Security $security,
-        private readonly DispositionMapper $dispositionMapper,
+        private DossierSupportService $dossierSupportService,
+        private DispositionRepository $dispositionRepository,
+        private DispositionMapper $dispositionMapper,
+        private DocumentPrefixDeterminer $documentPrefixDeterminer,
     ) {
-        parent::__construct(
-            $attachmentService,
-            $departmentRepository,
-            $dossierDispatcher,
-            $dossierService,
-            $mainDocumentService,
-            $organisationRepository,
-            $subjectRepository,
-            $this->security,
-        );
     }
 
     /**
      * @param array<array-key, mixed> $uriVariables
      */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?DispositionDto
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?DispositionResponseDto
     {
         unset($context);
 
@@ -67,17 +48,18 @@ final class DispositionProcessor extends AbstractDossierProcessor
 
         Assert::isInstanceOf($data, DispositionRequestDto::class);
 
-        $dispositionExternalId = $uriVariables['dispositionExternalId'];
+        $dispositionExternalId = $uriVariables['dossierExternalId'];
         Assert::string($dispositionExternalId);
         $dispositionExternalId = ExternalId::create($dispositionExternalId);
 
-        $organisation = $this->getOrganisation($uriVariables);
-        $subject = $this->getSubject($data, $organisation);
-        $department = $this->getDepartment($organisation, $data->departmentId);
+        $organisation = $this->dossierSupportService->getOrganisation($uriVariables);
+        $subject = $this->dossierSupportService->getSubject($data, $organisation);
+        $department = $this->dossierSupportService->getDepartment($organisation, $data->departmentId);
         $disposition = $this->dispositionRepository->findByOrganisationAndExternalId($organisation, $dispositionExternalId);
 
         if ($disposition === null) {
-            $disposition = $this->create($organisation, $department, $subject, $data, $dispositionExternalId);
+            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $disposition = $this->create($organisation, $department, $subject, $data, $dispositionExternalId, $documentPrefix);
 
             return $this->dispositionMapper->fromEntity($disposition);
         }
@@ -93,19 +75,27 @@ final class DispositionProcessor extends AbstractDossierProcessor
         ?Subject $subject,
         DispositionRequestDto $dispositionRequestDto,
         ExternalId $dispositionExternalId,
+        string $documentPrefix,
     ): Disposition {
-        $disposition = DispositionMapper::create($dispositionRequestDto, $organisation, $department, $subject, $dispositionExternalId);
+        $disposition = DispositionMapper::create(
+            $dispositionRequestDto,
+            $organisation,
+            $department,
+            $subject,
+            $dispositionExternalId,
+            $documentPrefix,
+        );
         $mainDocument = DispositionMainDocumentMapper::create($disposition, $dispositionRequestDto->mainDocument);
         $attachments = $this->getAttachments($disposition, $dispositionRequestDto->attachments);
 
-        $this->validateMainDocument($mainDocument);
-        $this->validateAttachments($attachments);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateAttachments($attachments);
 
         $disposition->setMainDocument($mainDocument);
-        $this->addAttachments($disposition, $attachments);
+        $this->dossierSupportService->addAttachments($disposition, $attachments);
 
-        $this->validateDossier($disposition);
-        $this->dispatchCreateDossierCommand($disposition);
+        $this->dossierSupportService->validateDossier($disposition);
+        $this->dossierSupportService->dispatchCreateDossierCommand($disposition);
 
         return $disposition;
     }
@@ -121,15 +111,15 @@ final class DispositionProcessor extends AbstractDossierProcessor
         $mainDocument = DispositionMainDocumentMapper::update($disposition, $dispositionRequestDto->mainDocument);
         $attachments = $this->getAttachments($disposition, $dispositionRequestDto->attachments);
 
-        $this->validateMainDocument($mainDocument);
-        $this->validateAttachments($attachments);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateAttachments($attachments);
 
         $disposition->setMainDocument($mainDocument);
-        $this->removeDossierAttachments($disposition);
-        $this->addAttachments($disposition, $attachments);
+        $this->dossierSupportService->removeDossierAttachments($disposition);
+        $this->dossierSupportService->addAttachments($disposition, $attachments);
 
-        $this->validateDossier($disposition);
-        $this->dispatchUpdateDossierCommand($disposition);
+        $this->dossierSupportService->validateDossier($disposition);
+        $this->dossierSupportService->dispatchUpdateDossierCommand($disposition);
     }
 
     /**

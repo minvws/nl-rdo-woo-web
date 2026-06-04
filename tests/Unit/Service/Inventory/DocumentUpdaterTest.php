@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inventory;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
 use Mockery\MockInterface;
@@ -23,6 +22,7 @@ use Shared\Service\Inventory\DocumentUpdater;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 
 class DocumentUpdaterTest extends UnitTestCase
@@ -139,14 +139,14 @@ class DocumentUpdaterTest extends UnitTestCase
         $this->repository
             ->expects('findByDocumentNumber')
             ->with(Mockery::on(
-                static fn (DocumentNumber $documentNumber): bool => $documentNumber->getValue() === 'PREFIX-matter-123'
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->getValue() === 'PREFIX-matter-123',
             ))
             ->andReturn($newReferredDoc);
 
         $this->repository
             ->expects('findByDocumentNumber')
             ->with(Mockery::on(
-                static fn (DocumentNumber $documentNumber): bool => $documentNumber->getValue() === 'PREFIX-matter-456'
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->getValue() === 'PREFIX-matter-456',
             ))
             ->andReturn($oldReferredDoc);
 
@@ -182,7 +182,7 @@ class DocumentUpdaterTest extends UnitTestCase
     private function getDocumentMetadata(Judgement $judgement): DocumentMetadata
     {
         return new DocumentMetadata(
-            date: new DateTimeImmutable('2023-09-28 10:11:12'),
+            date: PlainDate::create('2023-09-28'),
             filename: 'file.doc',
             familyId: 1,
             sourceType: SourceType::EMAIL,

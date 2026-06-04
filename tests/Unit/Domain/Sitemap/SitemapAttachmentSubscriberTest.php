@@ -74,7 +74,7 @@ class SitemapAttachmentSubscriberTest extends UnitTestCase
                     self::assertEquals($updatedAt, $urlConcrete->getLastmod());
 
                     return true;
-                }
+                },
             ),
             'attachments',
         );

@@ -16,8 +16,8 @@ use Override;
 class TermsAggregationWithMinDocCount extends TermsAggregation
 {
     /**
-     * @param string[]|string|null $include
-     * @param string[]|string|null $exclude
+     * @param array<array-key, string>|string|null $include
+     * @param array<array-key, string>|string|null $exclude
      */
     public function __construct(
         string $name,
@@ -38,7 +38,7 @@ class TermsAggregationWithMinDocCount extends TermsAggregation
             $orderValue,
             $include,
             $exclude,
-            $size
+            $size,
         );
     }
 

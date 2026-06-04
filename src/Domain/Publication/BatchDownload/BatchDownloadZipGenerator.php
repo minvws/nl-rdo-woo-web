@@ -36,7 +36,7 @@ readonly class BatchDownloadZipGenerator
             return $this->fail($batch);
         }
 
-        /** @var Document[] $documents */
+        /** @var array<array-key, Document> $documents */
         $documents = $type->getDocumentsQuery($scope)->getQuery()->getResult();
         if ($documents === []) {
             return $this->fail($batch);

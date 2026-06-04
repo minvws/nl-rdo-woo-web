@@ -37,12 +37,15 @@ readonly class ResultTransformer
     }
 
     /**
-     * @param array<string,mixed> $query
+     * @param array<string, mixed> $query
+     * @param array<string, mixed> $routeParameters
      */
     public function transform(
         array $query,
         SearchParameters $searchParameters,
         ?Elasticsearch $response,
+        string $routeName,
+        array $routeParameters,
     ): Result {
         if (! $response) {
             $this->logger->error('ElasticSearch did not return a response', [
@@ -69,13 +72,15 @@ readonly class ResultTransformer
             $pagination = $this->paginator->paginate(
                 target: $result,
                 page: $searchParameters->limit > 0 ? ($searchParameters->offset / $searchParameters->limit + 1) : 1,
-                limit: $searchParameters->limit
+                limit: $searchParameters->limit,
             );
             $result->setPagination($pagination);
         }
 
         $result->setSortItems($this->sortItemViewFactory->make($searchParameters));
         $result->setSearchParameters($searchParameters);
+        $result->setRouteName($routeName);
+        $result->setRouteParameters($routeParameters);
 
         return $result;
     }
@@ -130,14 +135,14 @@ readonly class ResultTransformer
             $entries[] = $this->resultFactory->map($hit, $searchParameters->mode);
         }
 
-        /** @var ResultEntryInterface[] $entries */
+        /** @var array<array-key, ResultEntryInterface> $entries */
         $result->setEntries(array_filter($entries));
 
         return $result;
     }
 
     /**
-     * @return Suggestion[]
+     * @return array<array-key, Suggestion>
      */
     protected function transformSuggestions(TypeArray $response): array
     {
@@ -156,7 +161,7 @@ readonly class ResultTransformer
                     $entries[] = new SuggestionEntry(
                         $option->getString('[text]'),
                         $option->getFloat('[score]'),
-                        $option->getInt('[freq]')
+                        $option->getInt('[freq]'),
                     );
                 }
                 $ret[] = new Suggestion($name, $entries);
@@ -167,7 +172,7 @@ readonly class ResultTransformer
     }
 
     /**
-     * @return Aggregation[]
+     * @return array<array-key, Aggregation>
      */
     protected function transformAggregations(SearchParameters $searchParameters, TypeArray $response): array
     {

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\AnnualReport;
 
-use Carbon\CarbonImmutable;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -19,6 +17,7 @@ use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -64,7 +63,7 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    protected ?DateTimeImmutable $dateFrom = null;
+    protected ?PlainDate $dateFrom = null;
 
     #[Assert\Length(min: 1, max: 1000, groups: [
         DossierValidationGroup::DECISION->value,
@@ -83,12 +82,14 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
     }
 
     #[Override]
-    public function setDateFrom(?DateTimeImmutable $dateFrom): static
+    public function setDateFrom(?PlainDate $dateFrom): static
     {
-        $carbonDate = new CarbonImmutable($dateFrom);
+        if ($dateFrom === null) {
+            $dateFrom = PlainDate::today();
+        }
 
-        $this->dateFrom = $carbonDate->firstOfYear();
-        $this->dateTo = $carbonDate->lastOfYear();
+        $this->dateFrom = $dateFrom->firstOfYear();
+        $this->dateTo = $dateFrom->lastOfYear();
 
         return $this;
     }

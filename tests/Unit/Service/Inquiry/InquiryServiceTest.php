@@ -64,7 +64,7 @@ class InquiryServiceTest extends UnitTestCase
             $this->historyService,
             $this->searchDispatcher,
             $this->wooDecisionDispatcher,
-            $this->ingestDispatcher
+            $this->ingestDispatcher,
         );
 
         parent::setUp();
@@ -137,7 +137,7 @@ class InquiryServiceTest extends UnitTestCase
                 $idProperty->setValue($inquiry, $inquiryId);
 
                 return true;
-            }
+            },
         ));
 
         $dossierRepo = Mockery::mock(WooDecisionRepository::class);

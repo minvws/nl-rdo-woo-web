@@ -65,7 +65,7 @@ class AttachmentUploadStatusServiceTest extends ApiPublicationV1TestCase
         self::assertEquals(UploadStatus::PROCESSING_FAILED, $uploadStatus);
     }
 
-    public function testGetUploadStatusWhenFileUploadedButNotProcessedFoo(): void
+    public function testGetUploadStatusWhenFileUploadedButNotProcessed(): void
     {
         $wooDecisionAttachment = WooDecisionAttachmentFactory::createOne([
             'fileInfo' => FileInfoFactory::new([

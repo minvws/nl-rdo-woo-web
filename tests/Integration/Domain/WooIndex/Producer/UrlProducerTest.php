@@ -24,9 +24,7 @@ final class UrlProducerTest extends SharedWebTestCase
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $this->urlProducer = self::getContainer()->get(UrlProducer::class);
+        $this->urlProducer = self::fromContainer(UrlProducer::class);
     }
 
     #[WithStory(WooIndexWooDecisionStory::class)]

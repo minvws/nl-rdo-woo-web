@@ -36,7 +36,7 @@ class DossierWizardStatusTest extends UnitTestCase
                 StepName::DETAILS->value => $this->detailsStep,
                 StepName::CONTENT->value => $this->contentStep,
                 StepName::PUBLICATION->value => $this->publicationStep,
-            ]
+            ],
         );
     }
 

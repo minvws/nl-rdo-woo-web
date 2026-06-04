@@ -15,7 +15,7 @@ final class MarkdownConverterTest extends SharedWebTestCase
     {
         parent::setUp();
 
-        $this->markdownConverter = self::getContainer()->get(MarkdownConverter::class);
+        $this->markdownConverter = self::fromContainer(MarkdownConverter::class);
     }
 
     public function testCustomStrongRenderer(): void
@@ -39,7 +39,7 @@ final class MarkdownConverterTest extends SharedWebTestCase
         $this->assertStringContainsString('<h2>Level 1 heading turned into level 2</h2>', $output);
     }
 
-    public function testFoobar(): void
+    public function testExampleMarkdownRenderer(): void
     {
         $output = $this->markdownConverter->convert($this->getExampleMarkdownInput())->getContent();
 

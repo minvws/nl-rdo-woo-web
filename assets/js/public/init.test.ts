@@ -17,46 +17,46 @@ let mainNavInitializeSpy: MockInstance;
 let searchResultsInitializeSpy: MockInstance;
 let tabsInitializeSpy: MockInstance;
 
+vi.mock('@utils', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@utils')>();
+  return {
+    ...original,
+    jsEnabled: vi.fn(),
+  };
+});
+
+vi.mock('@js/shared', () => ({
+  detailsComponents: () => ({
+    initialize: detailsComponentsInitializeSpy,
+  }),
+  tabs: () => ({ initialize: tabsInitializeSpy }),
+}));
+
+vi.mock('./auto-submit-form', () => ({
+  autoSubmitForm: () => ({
+    initialize: autoSubmitFormInitializeSpy,
+  }),
+}));
+
+vi.mock('./collapsibles', () => ({
+  collapsibles: () => ({
+    initialize: collapsiblesInitializeSpy,
+  }),
+}));
+
+vi.mock('./main-nav', () => ({
+  mainNav: () => ({
+    initialize: mainNavInitializeSpy,
+  }),
+}));
+
+vi.mock('./search-results', () => ({
+  searchResults: () => ({
+    initialize: searchResultsInitializeSpy,
+  }),
+}));
+
 describe('the main "init" function for the admin', () => {
-  vi.mock('@utils', async (importOriginal) => {
-    const original = await importOriginal<typeof import('@utils')>();
-    return {
-      ...original,
-      jsEnabled: vi.fn(),
-    };
-  });
-
-  vi.mock('@js/shared', () => ({
-    detailsComponents: () => ({
-      initialize: detailsComponentsInitializeSpy,
-    }),
-    tabs: () => ({ initialize: tabsInitializeSpy }),
-  }));
-
-  vi.mock('./auto-submit-form', () => ({
-    autoSubmitForm: () => ({
-      initialize: autoSubmitFormInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./collapsibles', () => ({
-    collapsibles: () => ({
-      initialize: collapsiblesInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./main-nav', () => ({
-    mainNav: () => ({
-      initialize: mainNavInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./search-results', () => ({
-    searchResults: () => ({
-      initialize: searchResultsInitializeSpy,
-    }),
-  }));
-
   beforeEach(() => {
     autoSubmitFormInitializeSpy = vi.fn();
     collapsiblesInitializeSpy = vi.fn();

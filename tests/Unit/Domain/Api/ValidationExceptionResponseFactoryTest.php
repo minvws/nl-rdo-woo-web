@@ -13,7 +13,7 @@ use PublicationApi\Api\Publication\PublicationV1Api;
 use PublicationApi\Domain\OpenApi\Exception\FormatMismatchException;
 use PublicationApi\Domain\OpenApi\Exception\KeywordMismatchException;
 use PublicationApi\Domain\OpenApi\Exception\SchemaMismatchException;
-use PublicationApi\Domain\OpenApi\Exception\ValidatonException;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use PublicationApi\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,7 +29,7 @@ class ValidationExceptionResponseFactoryTest extends UnitTestCase
         $message = 'message';
 
         $openApiValidationExceptionResponseFactory = new OpenApiValidationExceptionResponseFactory();
-        $response = $openApiValidationExceptionResponseFactory->buildJsonResponse(new ValidatonException($message, 1, new Exception()));
+        $response = $openApiValidationExceptionResponseFactory->buildJsonResponse(new ValidationException($message, 1, new Exception()));
 
         $expectedResponseData = [
             'title' => sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
@@ -81,6 +81,29 @@ class ValidationExceptionResponseFactoryTest extends UnitTestCase
             'detail' => $message,
             'instance' => 'response',
             'field' => $compoundIndex,
+        ];
+
+        $this->assertJsonResponse($expectedResponseData, $response);
+    }
+
+    public function testBuildJsonResponseFromSchemaMismatchExceptionWithBreadcrumbButNullCompound(): void
+    {
+        $message = 'message';
+
+        $schemaMismatch = new SchemaMismatch($message);
+        $schemaMismatch->withBreadCrumb(new BreadCrumb(null));
+
+        $openApiValidationExceptionResponseFactory = new OpenApiValidationExceptionResponseFactory();
+        $response = $openApiValidationExceptionResponseFactory->buildJsonResponse(
+            SchemaMismatchException::fromSchemaMismatch($schemaMismatch),
+        );
+
+        $expectedResponseData = [
+            'title' => sprintf('Invalid %s API request', PublicationV1Api::API_NAME),
+            'status' => JsonResponse::HTTP_BAD_REQUEST,
+            'detail' => $message,
+            'instance' => 'response',
+            'field' => '',
         ];
 
         $this->assertJsonResponse($expectedResponseData, $response);

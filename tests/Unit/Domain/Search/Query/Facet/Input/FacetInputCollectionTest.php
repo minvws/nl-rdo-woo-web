@@ -100,7 +100,7 @@ final class FacetInputCollectionTest extends UnitTestCase
 
         self::assertNotSame(
             $collection,
-            $result
+            $result,
         );
 
         self::assertEquals(

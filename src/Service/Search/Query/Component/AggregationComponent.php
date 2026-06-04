@@ -118,7 +118,7 @@ readonly class AggregationComponent
             Aggregation::filter(
                 name: 'facet-filter-' . $facet->getFacetKey()->value,
                 query: $filterQuery,
-            )->setAggregations([$aggregation])
+            )->setAggregations([$aggregation]),
         );
     }
 }

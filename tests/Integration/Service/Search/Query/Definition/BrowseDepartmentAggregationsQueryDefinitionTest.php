@@ -22,8 +22,7 @@ final class BrowseDepartmentAggregationsQueryDefinitionTest extends SharedWebTes
         $department->expects('getShortTag')->andReturn('foo');
         $department->expects('getName')->andReturn('bar');
 
-        /** @var SearchParametersFactory $searchParametersFactory */
-        $searchParametersFactory = self::getContainer()->get(SearchParametersFactory::class);
+        $searchParametersFactory = self::fromContainer(SearchParametersFactory::class);
         $searchParameters = $searchParametersFactory->createForDepartment($department);
 
         $this->matchDefinitionToSnapshot(BrowseDepartmentAggregationsQueryDefinition::class, $searchParameters);

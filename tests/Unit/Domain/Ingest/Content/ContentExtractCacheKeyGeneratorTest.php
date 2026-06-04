@@ -39,7 +39,7 @@ class ContentExtractCacheKeyGeneratorTest extends UnitTestCase
 
         self::assertEquals(
             'tika-entitykey-55ae5de9-55f4-3420-b50b-5cde6e07fc5a-0-FooBar',
-            $cacheKey
+            $cacheKey,
         );
     }
 
@@ -60,7 +60,7 @@ class ContentExtractCacheKeyGeneratorTest extends UnitTestCase
 
         self::assertEquals(
             'tika-entitykey-55ae5de9-55f4-3420-b50b-5cde6e07fc5a-123-FooBar',
-            $cacheKey
+            $cacheKey,
         );
     }
 

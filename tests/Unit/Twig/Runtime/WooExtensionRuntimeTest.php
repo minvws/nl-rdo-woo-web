@@ -56,7 +56,7 @@ class WooExtensionRuntimeTest extends MockeryTestCase
 
         self::assertEquals(
             $expectedQuery,
-            urldecode($this->runtime->queryStringWithoutParam($paramToRemove, $valueToRemove))
+            urldecode($this->runtime->queryStringWithoutParam($paramToRemove, $valueToRemove)),
         );
     }
 

@@ -43,7 +43,7 @@ readonly class SitemapAttachmentSubscriber
                     ),
                     $attachment->getUpdatedAt(),
                     UrlConcrete::CHANGEFREQ_MONTHLY,
-                    0.8
+                    0.8,
                 ),
                 'attachments',
             );

@@ -1,5 +1,5 @@
 # https://taskfile.dev
-version: "3"
+version: "3.48.0"
 
 vars:
   MINIO_ALIAS: local
@@ -16,15 +16,25 @@ tasks:
     cmds:
       - task: dc:shell
         vars: { SUB_CMD: "admin mc ready local" }
-      - for: { var: MINIO_BUCKETS }
+      - for:
+          matrix:
+            TENANT: { ref: .TENANTS }
+            BUCKET: { ref: .MINIO_BUCKETS }
         task: dc:shell
-        vars: { SUB_CMD: "admin mc mb {{.MINIO_ALIAS}}/{{.ITEM}} --ignore-existing" }
+        vars: { SUB_CMD: "admin mc mb {{.MINIO_ALIAS}}/{{.ITEM.TENANT}}-{{.ITEM.BUCKET}} --ignore-existing" }
+    requires:
+      vars: [TENANTS, MINIO_BUCKETS]
 
   minio:clear-buckets:
     desc: Clear the default buckets
     cmds:
-      - echo "Clearing Minio buckets ({{.MINIO_BUCKETS | join ", "}})... "
-      - for: { var: MINIO_BUCKETS }
+      - echo "Clearing Minio buckets... "
+      - for:
+          matrix:
+            TENANT: { ref: .TENANTS }
+            BUCKET: { ref: .MINIO_BUCKETS }
         task: dc:shell
-        vars: { SUB_CMD: "admin mc rm {{.MINIO_ALIAS}}/{{.ITEM}} --recursive --force" }
+        vars: { SUB_CMD: "admin mc rm {{.MINIO_ALIAS}}/{{.ITEM.TENANT}}-{{.ITEM.BUCKET}} --recursive --force" }
       - echo "Done clearing Minio buckets."
+    requires:
+      vars: [TENANTS, MINIO_BUCKETS]

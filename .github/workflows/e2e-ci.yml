@@ -4,29 +4,22 @@ on:
   workflow_dispatch:
     inputs:
       test_tag:
-        description: "Robot Framework test tag"
+        description: Robot Framework test tag
         required: true
         type: string
-        default: "ci"
-      runner:
-        description: "Github Runner tag"
-        type: choice
-        default: "ubuntu-24.04"
-        options:
-          - ubuntu-24.04
-          - ubuntu-latest-m
+        default: ci
   workflow_call:
     inputs:
       test_tag:
-        description: "Robot Framework test tag"
+        description: Robot Framework test tag
         required: true
         type: string
       runner:
-        description: "Github Runner tag"
+        description: Github Runner tag
         type: string
 
   schedule:
-    - cron: "0 0 * * *" # Every day at midnight UTC
+    - cron: 0 0 * * *
 
 env:
   CR_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -36,8 +29,8 @@ env:
 
 jobs:
   e2e-tests-app:
-    name: "Run E2E tests on app"
-    runs-on: ${{ inputs.runner || 'ubuntu-latest-m' }}
+    name: Run E2E tests on app
+    runs-on: ubuntu-latest-m
     if: ${{ inputs.test_tag != 'api' }}
     timeout-minutes: 60
     steps:
@@ -47,20 +40,14 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Robot Framework tests
-        working-directory: tests/robot_framework
-        env:
-          ENVIRONMENT: ci
-          URL_PUBLIC: http://localhost:8000
-          URL_ADMIN: http://localhost:8001/balie
-          HEADLESS: true
         run: |
           if [ '${{ env.TEST_TAG }}' == 'ci' ]; then
-            uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include init --include ci --ordering order.txt --name 'E2E Tests' ./tests
+            task rf:docker:run:ci
           else
-            uv run pabot --processes 1 --artifactsinsubfolders --outputdir results --include init --include ${{ env.TEST_TAG }} --ordering order.txt --name 'E2E Tests' ./tests
+            task rf:docker:run tag=${{ inputs.test_tag || 'ci' }}
           fi
       - name: Upload test results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
           name: robot-report-app
@@ -72,7 +59,7 @@ jobs:
           output_file: tests/robot_framework/results/output.xml
 
   e2e-tests-api:
-    name: "Run E2E tests on API"
+    name: Run E2E tests on API
     runs-on: ubuntu-latest-m
     if: ${{ inputs.test_tag == 'ci' || inputs.test_tag == 'api' }}
     timeout-minutes: 60
@@ -83,15 +70,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Robot Framework tests
-        working-directory: tests/robot_framework
-        env:
-          ENVIRONMENT: ci
-          URL_PUBLIC: http://localhost:8000
-          URL_ADMIN: http://localhost:8001/balie
-          HEADLESS: true
-        run: uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include init --include api --exclude failing --ordering order.txt --name 'E2E Tests' ./tests
+        run: |
+          task rf:docker:run:api
       - name: Upload test results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
           name: robot-report-api

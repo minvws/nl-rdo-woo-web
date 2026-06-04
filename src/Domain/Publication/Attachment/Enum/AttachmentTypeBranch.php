@@ -22,7 +22,7 @@ use function is_null;
  *   attachmentTypes: array<int, array<string, string>>
  * }
  */
-final readonly class AttachmentTypeBranch
+readonly class AttachmentTypeBranch
 {
     /**
      * @param array<int,AttachmentType> $attachmentTypes
@@ -72,7 +72,7 @@ final readonly class AttachmentTypeBranch
         if ($this->hasAttachmentTypes()) {
             $attachmentTypes = array_values(array_filter(
                 $this->attachmentTypes,
-                static fn (AttachmentType $attachmentType): bool => in_array($attachmentType, $allowedTypes, true)
+                static fn (AttachmentType $attachmentType): bool => in_array($attachmentType, $allowedTypes, true),
             ));
         }
 
@@ -101,7 +101,7 @@ final readonly class AttachmentTypeBranch
             'attachmentTypes' => $this->hasAttachmentTypes()
                 ? array_map(
                     static fn (AttachmentType $attachmentType): array => $attachmentType->toArray($translator),
-                    $this->attachmentTypes
+                    $this->attachmentTypes,
                 )
                 : [],
         ];

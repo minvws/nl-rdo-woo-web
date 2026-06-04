@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\ViewModel;
 
-use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierReference;
+use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
 readonly class RecentDossier
 {
     public function __construct(
         public DossierReference $reference,
-        public DateTimeImmutable $publicationDate,
+        public PlainDate $publicationDate,
     ) {
     }
 

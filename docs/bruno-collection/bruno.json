@@ -21,14 +21,14 @@
       {
         "domain": "{{process.env.DOMAIN_TEST}}",
         "type": "cert",
-        "certFilePath": "../../certs/test/client-minvws.pem",
+        "certFilePath": "../../certs/test/client-minvws-combined.pem",
         "keyFilePath": "../../certs/test/client-minvws.key",
         "passphrase": ""
       },
       {
         "domain": "{{process.env.DOMAIN_ACC}}",
         "type": "cert",
-        "certFilePath": "../../certs/acc/client-minvws.pem",
+        "certFilePath": "../../certs/acc/client-minvws-combined.pem",
         "keyFilePath": "../../certs/acc/client-minvws.key",
         "passphrase": ""
       }

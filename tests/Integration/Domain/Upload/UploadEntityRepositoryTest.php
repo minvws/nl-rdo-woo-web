@@ -42,8 +42,7 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
             'createdAt' => CarbonImmutable::now()->subDay()->toDateTime(),
         ]);
 
-        /** @var UploadEntityRepository $uploadEntityRepository */
-        $uploadEntityRepository = self::getContainer()->get(UploadEntityRepository::class);
+        $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
         $result = $uploadEntityRepository->findLatestByContextData($key, $value);
 
         self::assertInstanceOf(UploadEntity::class, $result);
@@ -55,12 +54,11 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
         $value = $this->getFaker()->word();
 
         UploadEntityFactory::createOne([
-            'context' => new InputBag([$this->getFaker()->word() => $value]),
+            'context' => new InputBag([$this->getFaker()->unique()->word() => $value]),
         ]);
 
-        /** @var UploadEntityRepository $uploadEntityRepository */
-        $uploadEntityRepository = self::getContainer()->get(UploadEntityRepository::class);
-        $result = $uploadEntityRepository->findLatestByContextData($this->getFaker()->word(), $value);
+        $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
+        $result = $uploadEntityRepository->findLatestByContextData($this->getFaker()->unique()->word(), $value);
 
         self::assertNull($result);
     }
@@ -70,12 +68,11 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
         $key = $this->getFaker()->word();
 
         UploadEntityFactory::createOne([
-            'context' => new InputBag([$key => $this->getFaker()->word()]),
+            'context' => new InputBag([$key => $this->getFaker()->unique()->word()]),
         ]);
 
-        /** @var UploadEntityRepository $uploadEntityRepository */
-        $uploadEntityRepository = self::getContainer()->get(UploadEntityRepository::class);
-        $result = $uploadEntityRepository->findLatestByContextData($key, $this->getFaker()->word());
+        $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
+        $result = $uploadEntityRepository->findLatestByContextData($key, $this->getFaker()->unique()->word());
 
         self::assertNull($result);
     }
@@ -86,8 +83,7 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
             'context' => new InputBag([$this->getFaker()->unique()->word() => $this->getFaker()->word()]),
         ]);
 
-        /** @var UploadEntityRepository $uploadEntityRepository */
-        $uploadEntityRepository = self::getContainer()->get(UploadEntityRepository::class);
+        $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
         $result = $uploadEntityRepository->findLatestByContextData($this->getFaker()->unique()->word(), $this->getFaker()->word());
 
         self::assertNull($result);
@@ -95,8 +91,7 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
 
     public function testFindLatestByContextDataWhenTableEmpty(): void
     {
-        /** @var UploadEntityRepository $uploadEntityRepository */
-        $uploadEntityRepository = self::getContainer()->get(UploadEntityRepository::class);
+        $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
         $result = $uploadEntityRepository->findLatestByContextData($this->getFaker()->word(), $this->getFaker()->word());
 
         self::assertNull($result);

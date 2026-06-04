@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment;
 
-use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
@@ -20,6 +19,7 @@ use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -46,9 +46,9 @@ class AttachmentDispatcherTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $dossier,
-            new DateTimeImmutable(),
+            PlainDate::today(),
             AttachmentType::ADVICE,
-            AttachmentLanguage::DUTCH,
+            AttachmentLanguage::NLD,
         );
 
         $fileInfo = Mockery::mock(FileInfo::class);
@@ -67,7 +67,7 @@ class AttachmentDispatcherTest extends UnitTestCase
                 self::assertEquals('123 bytes', $event->fileSize);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchAttachmentUpdatedEvent($attachment);
@@ -80,9 +80,9 @@ class AttachmentDispatcherTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $dossier,
-            new DateTimeImmutable(),
+            PlainDate::today(),
             AttachmentType::ADVICE,
-            AttachmentLanguage::DUTCH,
+            AttachmentLanguage::NLD,
         );
 
         $fileInfo = Mockery::mock(FileInfo::class);
@@ -101,7 +101,7 @@ class AttachmentDispatcherTest extends UnitTestCase
                 self::assertEquals('123 bytes', $event->fileSize);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchAttachmentCreatedEvent($attachment);
@@ -115,9 +115,9 @@ class AttachmentDispatcherTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $dossier,
-            new DateTimeImmutable(),
+            PlainDate::today(),
             AttachmentType::ADVICE,
-            AttachmentLanguage::DUTCH,
+            AttachmentLanguage::NLD,
         );
 
         $fileInfo = new FileInfo();
@@ -135,7 +135,7 @@ class AttachmentDispatcherTest extends UnitTestCase
                 self::assertEquals($attachment->getWithdrawExplanation(), $event->explanation);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchAttachmentWithdrawnEvent($attachment);
@@ -148,9 +148,9 @@ class AttachmentDispatcherTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $dossier,
-            new DateTimeImmutable(),
+            PlainDate::today(),
             AttachmentType::ADVICE,
-            AttachmentLanguage::DUTCH,
+            AttachmentLanguage::NLD,
         );
 
         $reason = AttachmentWithdrawReason::INCOMPLETE;
@@ -164,7 +164,7 @@ class AttachmentDispatcherTest extends UnitTestCase
                 self::assertEquals($explanation, $event->explanation);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchWithdrawAttachmentCommand(

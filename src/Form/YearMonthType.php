@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Form;
 
-use Carbon\Carbon;
-use Carbon\CarbonImmutable;
-use Carbon\CarbonPeriod;
-use DateTimeInterface;
+use DateTimeImmutable;
 use Override;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
-use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeImmutableToDateTimeTransformer;
-use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
+use Shared\ValueObject\PlainDate;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -20,31 +17,33 @@ use Webmozart\Assert\Assert;
 use function array_key_exists;
 use function array_reverse;
 use function datefmt_format_object;
+use function is_string;
 use function strval;
 
 class YearMonthType extends ChoiceType
 {
-    public const MODE_FROM = 'first day of';
-    public const MODE_TO = 'last day of';
+    public const string MODE_FROM = 'first day of';
+    public const string MODE_TO = 'last day of';
 
-    public const MIN_YEARS = 'min_years';
-    public const PLUS_YEARS = 'plus_years';
-    public const DAY_MODE = 'day_mode';
-    public const REVERSE = 'reverse';
-    public const DOSSIER = 'dossier';
+    public const string MIN_YEARS = 'min_years';
+    public const string PLUS_YEARS = 'plus_years';
+    public const string DAY_MODE = 'day_mode';
+    public const string REVERSE = 'reverse';
+    public const string DOSSIER = 'dossier';
 
     #[Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $options['choices'] = $this->getChoices(...$this->getChoicesArgsFromOptions($options));
 
-        $builder->addModelTransformer(
-            new DateTimeToStringTransformer(null, null, DateTimeInterface::ATOM)
-        );
-
-        $builder->addModelTransformer(
-            new DateTimeImmutableToDateTimeTransformer()
-        );
+        $builder->addModelTransformer(new CallbackTransformer(
+            function (?PlainDate $date): string {
+                return $date ? $date->toString() : '';
+            },
+            function (?string $value): ?PlainDate {
+                return is_string($value) ? PlainDate::create($value) : null;
+            },
+        ));
 
         parent::buildForm($builder, $options);
     }
@@ -52,31 +51,28 @@ class YearMonthType extends ChoiceType
     /**
      * @return array<int, array<string, string>>
      */
-    public function getChoices(string $mode, Carbon $minDate, int $plusYears, bool $reverse): array
+    public function getChoices(string $mode, PlainDate $minDate, int $plusYears, bool $reverse, ?PlainDate $now = null): array
     {
+        $now ??= PlainDate::today();
         $options = [];
 
-        $period = CarbonPeriod::create(
-            $minDate->addMonth()->startOfMonth(),
-            '1 month',
-            Carbon::now()->subMonth()->startOfMonth()->addYears($plusYears),
-        );
+        $current = $minDate->addMonths(1)->firstOfMonth();
+        $end = $now->subMonths(1)->firstOfMonth()->addYears($plusYears);
 
-        /** @var CarbonImmutable $date */
-        foreach ($period->getIterator() as $date) {
-            Assert::notNull($date);
-
-            $year = (int) $date->format('Y');
+        while (! $current->isAfter($end)) {
+            $year = (int) $current->format('Y');
             if (! array_key_exists($year, $options)) {
                 $options[$year] = [];
             }
 
             $date = $mode === self::MODE_TO
-                ? $date->lastOfMonth()
-                : $date->firstOfMonth();
+                ? $current->lastOfMonth()
+                : $current->firstOfMonth();
 
-            $description = strval(datefmt_format_object($date, 'MMMM y'));
-            $options[$year][$description] = $date->format(DateTimeInterface::ATOM);
+            $description = strval(datefmt_format_object(new DateTimeImmutable($date->toString()), 'MMMM y'));
+            $options[$year][$description] = $date->format(PlainDate::DEFAULT_STRING_FORMAT);
+
+            $current = $current->addMonths(1);
         }
 
         if ($reverse) {
@@ -115,27 +111,25 @@ class YearMonthType extends ChoiceType
     /**
      * @param array<array-key,mixed> $options
      *
-     * @return array{mode:string,minDate:Carbon,plusYears:int,reverse:bool}
+     * @return array{mode:string,minDate:PlainDate,plusYears:int,reverse:bool}
      */
     private function getChoicesArgsFromOptions(array $options): array
     {
-        /** @var int $minYears */
         $minYears = $options[self::MIN_YEARS];
+        Assert::integer($minYears);
 
         $choiceOptions = [
             'mode' => $options[self::DAY_MODE],
-            'minDate' => Carbon::now()->subYears($minYears),
+            'minDate' => PlainDate::today()->subYears($minYears),
             'plusYears' => $options[self::PLUS_YEARS],
             'reverse' => $options[self::REVERSE],
         ];
 
-        if (isset($options['dossier']) && $options['dossier'] instanceof AbstractDossier && $options['dossier']->hasCreatedAt()) {
-            $createdAt = Carbon::createFromImmutable($options['dossier']->getCreatedAt());
-            $choiceOptions['minDate'] = $createdAt->modify('- ' . $minYears . ' years');
+        if (isset($options['dossier']) && $options['dossier'] instanceof AbstractDossier) {
+            $choiceOptions['minDate'] = PlainDate::create($options['dossier']->getCreatedAt()->format('Y-m-d'))->subYears($minYears);
         }
 
         Assert::string($choiceOptions['mode']);
-        Assert::isInstanceOf($choiceOptions['minDate'], Carbon::class);
         Assert::integer($choiceOptions['plusYears']);
         Assert::boolean($choiceOptions['reverse']);
 

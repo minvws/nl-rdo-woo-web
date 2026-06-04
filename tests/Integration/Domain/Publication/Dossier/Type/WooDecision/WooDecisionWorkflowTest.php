@@ -12,19 +12,6 @@ use Shared\Tests\Integration\SharedWebTestCase;
 
 final class WooDecisionWorkflowTest extends SharedWebTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
-    }
-
-    private function getWorkflow(): DossierWorkflowManager
-    {
-        /** @var DossierWorkflowManager */
-        return self::getContainer()->get(DossierWorkflowManager::class);
-    }
-
     public function testUpdateMainDocumentIsAllowedForWooDecisionWithPreviewStatus(): void
     {
         $wooDecision = WooDecisionFactory::createOne([
@@ -32,7 +19,7 @@ final class WooDecisionWorkflowTest extends SharedWebTestCase
         ]);
 
         $this->assertTrue(
-            $this->getWorkflow()->isTransitionAllowed($wooDecision, DossierStatusTransition::UPDATE_MAIN_DOCUMENT),
+            self::fromContainer(DossierWorkflowManager::class)->isTransitionAllowed($wooDecision, DossierStatusTransition::UPDATE_MAIN_DOCUMENT),
         );
     }
 }

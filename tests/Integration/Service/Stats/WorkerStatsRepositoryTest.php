@@ -11,15 +11,13 @@ use Shared\Tests\Integration\SharedWebTestCase;
 
 final class WorkerStatsRepositoryTest extends SharedWebTestCase
 {
-    private WorkerStatsRepository $repository;
+    private WorkerStatsRepository $workerStatsRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $this->repository = self::getContainer()->get(WorkerStatsRepository::class);
+        $this->workerStatsRepository = self::fromContainer(WorkerStatsRepository::class);
     }
 
     public function testRemoveOldEntries(): void
@@ -40,14 +38,14 @@ final class WorkerStatsRepositoryTest extends SharedWebTestCase
             'createdAt' => CarbonImmutable::now()->subWeeks(2),
         ]);
 
-        $result = $this->repository->findAll();
+        $result = $this->workerStatsRepository->findAll();
         $this->assertCount(4, $result);
 
-        $this->repository->removeOldEntries(
+        $this->workerStatsRepository->removeOldEntries(
             CarbonImmutable::now()->subWeek(),
         );
 
-        $result = $this->repository->findAll();
+        $result = $this->workerStatsRepository->findAll();
         $this->assertCount(2, $result);
     }
 }

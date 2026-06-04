@@ -33,7 +33,7 @@ class OrganisationRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Organisation[]
+     * @return array<array-key, Organisation>
      */
     public function getAllSortedByName(): array
     {

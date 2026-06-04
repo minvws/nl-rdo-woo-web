@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Domain\Publication\Attachment;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
@@ -19,19 +20,19 @@ use function iterator_to_array;
 
 final class AttachmentRepositoryTest extends SharedWebTestCase
 {
-    private AttachmentRepository $repository;
+    private AttachmentRepository $attachmentRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->repository = self::getContainer()->get(AttachmentRepository::class);
+        $this->attachmentRepository = self::fromContainer(AttachmentRepository::class);
     }
 
     #[WithStory(WooIndexAnnualReportStory::class)]
     public function testGetPublishedAttachmentsIterable(): void
     {
-        $iterable = $this->repository->getPublishedAttachmentsIterable();
+        $iterable = $this->attachmentRepository->getPublishedAttachmentsIterable();
 
         /** @var list<AbstractAttachment> $allAttachments */
         $allAttachments = iterator_to_array($iterable, false);
@@ -57,7 +58,7 @@ final class AttachmentRepositoryTest extends SharedWebTestCase
             'dossier' => $wooDecision,
         ]);
 
-        $this->assertFalse($this->repository->hasIncompleteAttachmentsForDossier($wooDecision->getId()));
+        $this->assertFalse($this->attachmentRepository->hasIncompleteAttachmentsForDossier($wooDecision->getId()));
     }
 
     public function testHasIncompleteAttachmentsForDossierEmptyLanguage(): void
@@ -74,12 +75,12 @@ final class AttachmentRepositoryTest extends SharedWebTestCase
             [
                 'language' => '',
                 'id' => $attachment->getId()->toRfc4122(),
-            ]
+            ],
         );
 
-        self::getContainer()->get('doctrine.orm.default_entity_manager')->clear();
+        self::fromContainer(EntityManagerInterface::class)->clear();
 
-        $this->assertTrue($this->repository->hasIncompleteAttachmentsForDossier($wooDecision->getId()));
+        $this->assertTrue($this->attachmentRepository->hasIncompleteAttachmentsForDossier($wooDecision->getId()));
     }
 
     public function testHasIncompleteAttachmentsForDossier(): void
@@ -94,6 +95,6 @@ final class AttachmentRepositoryTest extends SharedWebTestCase
             'dossier' => $wooDecision,
         ]);
 
-        $this->assertTrue($this->repository->hasIncompleteAttachmentsForDossier($wooDecision->getId()));
+        $this->assertTrue($this->attachmentRepository->hasIncompleteAttachmentsForDossier($wooDecision->getId()));
     }
 }

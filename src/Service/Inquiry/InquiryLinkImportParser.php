@@ -29,7 +29,7 @@ class InquiryLinkImportParser
     }
 
     /**
-     * @return Generator<string,array<string>>
+     * @return Generator<string, array<array-key, string>>
      */
     public function parse(UploadedFile $uploadedFile, DocumentPrefix $prefix): Generator
     {
@@ -42,7 +42,7 @@ class InquiryLinkImportParser
             $matter = $reader->getString($rowIdx, self::COLUMN_MATTER);
             $caseNrs = InventoryDataHelper::separateValues(
                 $reader->getString($rowIdx, self::COLUMN_CASE_NR),
-                [',', ';']
+                [',', ';'],
             );
 
             $documentNr = sprintf('%s-%s-%s', $prefix->getPrefix(), $matter, $documentId);

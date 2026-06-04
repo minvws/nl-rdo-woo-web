@@ -8,6 +8,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 
 use function is_string;
@@ -26,7 +27,7 @@ final class RawUrlDto
         DossierFileType|string $source,
         public readonly Uuid $id,
         public readonly DateTimeInterface $documentUpdatedAt,
-        public readonly DateTimeInterface $documentDate,
+        public readonly PlainDate $documentDate,
         public readonly string $documentFileName,
         public readonly Uuid $dossierId,
         public readonly string $documentPrefix,

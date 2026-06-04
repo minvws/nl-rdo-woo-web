@@ -39,7 +39,7 @@ class BatchDownloadDispatcherTest extends UnitTestCase
                 self::assertEquals($dossierId, $event->uuid);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchGenerateBatchDownloadCommand($batch);

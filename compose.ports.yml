@@ -17,6 +17,10 @@ services:
     ports:
       - ${DOCKER_ELASTICSEARCH_PORT:-9200}:9200
 
+  elasticvue:
+    ports:
+      - ${DOCKER_ELASTICVUE_PORT:-9400}:8080
+
   redis:
     ports:
       - ${DOCKER_REDIS_PORT:-6379}:6379
@@ -33,8 +37,3 @@ services:
   clamav:
     ports:
       - ${DOCKER_CLAMAV_PORT:-3310}:3310
-
-  minio:
-    ports:
-      - ${DOCKER_MINIO_PORT:-9000}:9000
-      - ${DOCKER_MINIO_CONSOLE_PORT:-9001}:9001

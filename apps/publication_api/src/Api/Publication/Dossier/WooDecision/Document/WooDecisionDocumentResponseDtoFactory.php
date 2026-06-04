@@ -45,7 +45,6 @@ readonly class WooDecisionDocumentResponseDtoFactory
             $document->isWithdrawn(),
             $document->getJudgement(),
             $document->getLinks(),
-            $document->getPeriod(),
             $this->wooDecisionRelatedDocumentResponseDtoFactory->fromEntities($document->getRefersTo()->toArray()),
             $document->getRemark(),
             $document->getThreadId(),

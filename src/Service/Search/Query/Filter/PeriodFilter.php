@@ -92,7 +92,7 @@ class PeriodFilter implements FilterInterface
                                 values: ElasticDocumentType::getSubTypeValues(),
                             ),
                             $this->getDocumentDateQuery($input),
-                        ]
+                        ],
                     ),
                     Query::bool(
                         filter: [
@@ -101,10 +101,10 @@ class PeriodFilter implements FilterInterface
                                 values: ElasticDocumentType::getMainTypeValues(),
                             ),
                             $this->getDossierDateQuery($input),
-                        ]
+                        ],
                     ),
                 ],
-            )->setParams(['minimum_should_match' => 1])
+            )->setParams(['minimum_should_match' => 1]),
         );
     }
 

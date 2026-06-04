@@ -31,7 +31,7 @@ readonly class TypeAggregationStrategy implements AggregationStrategyInterface
                     name: 'publication',
                     field: ElasticField::SUBLEVEL_TYPE->value,
                 ),
-            ]
+            ],
         );
     }
 

@@ -62,7 +62,7 @@ class HistoryServiceTest extends UnitTestCase
 
         $service = new HistoryService(
             Mockery::mock(EntityManagerInterface::class),
-            $translator
+            $translator,
         );
 
         // Single key translation

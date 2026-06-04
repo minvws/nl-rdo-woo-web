@@ -63,7 +63,7 @@ class DossierController extends AbstractController
             [
                 'defaultSortFieldName' => 'dos.createdAt',
                 'defaultSortDirection' => 'desc',
-            ]
+            ],
         );
 
         return $this->render('admin/dossier/index.html.twig', [
@@ -102,14 +102,14 @@ class DossierController extends AbstractController
                 'dossier' => $dossier,
                 'workflowStatus' => $this->wizardStatusFactory->getWizardStatus($dossier),
                 'publicDossierUrl' => $this->dossierPathHelper->getAbsoluteDetailsPath($dossier),
-            ]
+            ],
         );
     }
 
     #[Route(
         path: '/balie/dossier/overview/{prefix}/{dossierId}/publication-confirmation',
         name: 'app_admin_dossier_publication_confirmation',
-        methods: ['GET']
+        methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function publicationConfirmation(

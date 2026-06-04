@@ -11,10 +11,10 @@ Resource            ../resources/TestData.resource
 
 
 *** Variables ***
-${BASE_URL}         ${EMPTY}
 ${ORGANISATION_ID}  ${EMPTY}
 ${CURRENT_DATE}     ${EMPTY}
 ${RESPONSE}         ${EMPTY}
+${EXTERNAL_ID}      ${EMPTY}
 
 
 *** Keywords ***
@@ -22,63 +22,59 @@ Suite Setup API
   Create Session
   Retrieve Organisation ID
   Set DateTime Variables
-  Set Current Date RFC 3339 As Today
 
 Create Session
-  IF  '%{ENVIRONMENT}' == 'docker'
-    VAR  ${BASE_URL} =  https://publication-api-minvws.local  scope=global
-    VAR  ${client_cert} =  ./certs/generated/client-minvws.pem
-    VAR  ${client_key} =  ./certs/generated/private/client-minvws.key
-    VAR  ${ca_bundle} =  ./certs/generated/client-bundle.pem
+  VAR  @{client_certs} =  %{CLIENT_CERT}  %{CLIENT_KEY}
+  IF  '%{ENVIRONMENT}' == 'local'
+    Set Environment Variable  REQUESTS_CA_BUNDLE  %{CA_BUNDLE}
+    Create Client Cert Session
+    ...  url=%{URL_API}
+    ...  alias=publication_api
+    ...  client_certs=@{client_certs}
+    ...  verify=%{CA_BUNDLE}
+    ...  debug=1
+  ELSE IF  '%{ENVIRONMENT}' == 'test' or '%{ENVIRONMENT}' == 'acc'
+    Create Client Cert Session
+    ...  url=%{URL_API}
+    ...  alias=publication_api
+    ...  client_certs=@{client_certs}
+    ...  verify=True
+    ...  debug=1
   ELSE
-    VAR  ${BASE_URL} =  https://localhost:8443  scope=global
-    VAR  ${client_cert} =  ../../certs/dev/client-minvws.pem
-    VAR  ${client_key} =  ../../certs/dev/client-minvws.key
-    VAR  ${ca_bundle} =  ../../certs/dev/client-bundle.pem
+    Fatal Error  Env var ENVIRONMENT returned unsupported value '%{ENVIRONMENT}'.
   END
-  VAR  @{client_certs} =  ${client_cert}  ${client_key}
-  Set Environment Variable  REQUESTS_CA_BUNDLE  ${ca_bundle}
-  Create Client Cert Session
-  ...  url=${BASE_URL}
-  ...  alias=publication_api
-  ...  client_certs=@{client_certs}
-  ...  verify=${ca_bundle}
-  ...  debug=1
 
 Retrieve Organisation ID
-  ${response} =  GET On Session  alias=publication_api  url=${BASE_URL}/api/publication/v1/organisation
+  ${response} =  GET On Session  alias=publication_api  url=%{URL_API}/api/publication/v1/organisation
   ${organisation} =  Get Object From Json By Attribute  ${response.json()}  name  E2E Test Organisation
   VAR  ${ORGANISATION_ID} =  ${organisation}[id]  scope=suite
 
-Set Current Date RFC 3339 As Today
-  ${today_rfc} =  Convert Date To RFC 3339  ${CURRENT_DATE}
-  VAR  ${TODAY} =  ${today_rfc}  scope=suite
-
-Convert Date To RFC 3339
-  [Arguments]  ${date}
-  ${formatted_date} =  Convert Date  ${date}  result_format=%Y-%m-%dT%H:%M:%S.%fZ
-  # Only take first 3 millisecs.
-  ${rfc_date} =  Evaluate  "${formatted_date[:-7]}${formatted_date[-7:-4]}Z"
-  RETURN  ${rfc_date}
-
 Get Department ID
-  ${response} =  GET On Session  alias=publication_api  url=${BASE_URL}/api/publication/v1/department
+  ${response} =  GET On Session  alias=publication_api  url=%{URL_API}/api/publication/v1/department
   ${department} =  Get Object From Json By Attribute  ${response.json()}  name  E2E Test Department 1
   RETURN  ${department}[id]
+
+Get Random Department ID
+  ${department_ids} =  Get Random Department IDs  1
+  RETURN  ${department_ids}[0]
+
+Get Random Department IDs
+  [Arguments]  ${count}=1
+  ${response} =  GET On Session  alias=publication_api  url=%{URL_API}/api/publication/v1/department
+  ${departments} =  Set Variable  ${response.json()}
+  @{random_departments} =  FakerLibrary.Random Elements  ${departments}  ${count}  unique=True
+  @{department_ids} =  Create List
+  FOR  ${department}  IN  @{random_departments}
+    Append To List  ${department_ids}  ${department}[id]
+  END
+  RETURN  @{department_ids}
 
 Get Subject ID
   ${response} =  GET On Session
   ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/subject
+  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/subject
   ${subject} =  Get Object From Json By Attribute  ${response.json()}  name  E2E Test Subject
   RETURN  ${subject}[id]
-
-Get Prefix
-  ${response} =  GET On Session
-  ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/prefix
-  ${prefix} =  Get Object From Json By Attribute  ${response.json()}  prefix  E2E-A
-  RETURN  ${prefix}[prefix]
 
 Get Object From Json By Attribute
   [Arguments]  ${json}  ${attribute_name}  ${attribute_value}
@@ -88,70 +84,6 @@ Get Object From Json By Attribute
     END
   END
   Fatal Error  No Object found with ${attribute_name} '${attribute_value}'
-
-Get Random Attachment Type
-  VAR  @{attachment_types} =
-  ...  c_002fc258
-  ...  c_03c52ba0
-  ...  c_056a75e1
-  ...  c_0670bae1
-  ...  c_06a67c95
-  ...  c_0e425c23
-  ...  c_1cf18f83
-  ...  c_2977c34f
-  ...  c_2ab17960
-  ...  c_2aedadff
-  ...  c_2c0438f4
-  ...  c_30e8b503
-  ...  c_386e74cb
-  ...  c_38ba44de
-  ...  c_3d782f30
-  ...  c_3eb5572a
-  ...  c_42e406dd
-  ...  c_45be34e9
-  ...  c_4efe1293
-  ...  c_4f50ca9c
-  ...  c_566a4430
-  ...  c_5824891d
-  ...  c_5b1055aa
-  ...  c_61e3099a
-  ...  c_6d494ab6
-  ...  c_6f49bf34
-  ...  c_7652d853
-  ...  c_7eba29ad
-  ...  c_8b92eab4
-  ...  c_9376c730
-  ...  c_97f44ea5
-  ...  c_99d3e284
-  ...  c_9ecc0007
-  ...  c_a17ef403
-  ...  c_a1dae55d
-  ...  c_a40458df
-  ...  c_a55b7649
-  ...  c_a6f44748
-  ...  c_acb44d77
-  ...  c_aebfec50
-  ...  c_bf0f9c95
-  ...  c_c1956ef0
-  ...  c_c2f56984
-  ...  c_cccba364
-  ...  c_d4a4792f
-  ...  c_d506b718
-  ...  c_d943ca24
-  ...  c_dad2a6ed
-  ...  c_de27ae7a
-  ...  c_df2cb56e
-  ...  c_dfa0ff1f
-  ...  c_ef935990
-  ...  c_f1652921
-  ...  c_f7dc55d9
-  ...  c_f90465b3
-  ...  c_fbaa7e4b
-  ...  overig
-  ...  ww_a2azo7q
-  ...  ww_jc6woe9
-  ${random_attachment_type} =  FakerLibrary.Random Element  ${attachment_types}
-  RETURN  ${random_attachment_type}
 
 Upload File
   [Arguments]  ${file_location}  ${dossier_type}  ${dossier_id}  ${document_type}  ${document_id}=${EMPTY}
@@ -164,29 +96,54 @@ Upload File
   END
   ${put_response} =  PUT On Session
   ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/${dossier_type}/${dossier_id}/uploads/${document_type}${document_id_snippet}
+  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/${dossier_type}/${dossier_id}/uploads/${document_type}${document_id_snippet}
   ...  data=${binary_file}
   ...  headers=${headers}
   RETURN  ${put_response}
 
 Get Date Minus
   [Arguments]  ${offset}  ${base_date}=${CURRENT_DATE}
-  ${date} =  Subtract Time From Date  ${base_date}  ${offset}
-  ${date_iso} =  Convert Date To RFC 3339  ${date}
-  RETURN  ${date_iso}
+  ${date} =  Subtract Time From Date  ${base_date}  ${offset}  %Y-%m-%d
+  RETURN  ${date}
 
 Get Date Plus
   [Arguments]  ${offset}  ${base_date}=${CURRENT_DATE}
-  ${date} =  Add Time To Date  ${base_date}  ${offset}
-  ${date_iso} =  Convert Date To RFC 3339  ${date}
-  RETURN  ${date_iso}
+  ${date} =  Add Time To Date  ${base_date}  ${offset}  %Y-%m-%d
+  RETURN  ${date}
 
-Get Random Ground
+Get Random Grounds
   VAR  @{grounds} =
-  ...  ground1
-  ...  ground2
-  ${random_ground} =  FakerLibrary.Random Element  ${grounds}
-  RETURN  ${random_ground}
+  ...  5.1.1a
+  ...  5.1.1b
+  ...  5.1.1c
+  ...  5.1.1d
+  ...  5.1.1e
+  ...  5.1.2a
+  ...  5.1.2b
+  ...  5.1.2c
+  ...  5.1.2d
+  ...  5.1.2e
+  ...  5.1.2f
+  ...  5.1.2g
+  ...  5.1.2h
+  ...  5.1.2i
+  ...  5.1.5
+  ...  5.2
+  ...  5.4
+  ...  10.1a
+  ...  10.1b
+  ...  10.1c
+  ...  10.1d
+  ...  10.2a
+  ...  10.2b
+  ...  10.2c
+  ...  10.2d
+  ...  10.2e
+  ...  10.2g
+  ...  11.1
+  ${count} =  FakerLibrary.Random Int  0  5
+  @{random_grounds} =  FakerLibrary.Random Elements  ${grounds}  ${count}  unique=True
+  RETURN  @{random_grounds}
 
 Generate External ID
   ${id} =  FakerLibrary.Isbn 10
@@ -196,14 +153,13 @@ Generate External ID
 Generate Main Document
   [Arguments]  ${file_location}=${TEST_DATA_ROOT}/dummy.txt  ${type}=${EMPTY}
   ${filename} =  Fetch From Right  ${file_location}  /
-  ${internal_reference} =  FakerLibrary.Sentence
   ${formal_date} =  Get Date Minus  1 day
-  VAR  ${language} =  Dutch
+  ${grounds} =  Get Random Grounds
+  VAR  ${language} =  NLD
   VAR  &{main_document} =
-  ...  filename=${filename}
+  ...  fileName=${filename}
   ...  formalDate=${formal_date}
-  ...  grounds=@{EMPTY}
-  ...  internalReference=${internal_reference}
+  ...  grounds=${grounds}
   ...  language=${language}
   IF  '${type}' != '${EMPTY}'
     Set To Dictionary  ${main_document}  type  ${type}
@@ -214,16 +170,15 @@ Generate Attachment
   [Arguments]  ${allowed_types}
   ${file_name} =  FakerLibrary.Sentence
   ${file_name} =  Catenate  ${file_name}txt
-  ${internal_reference} =  FakerLibrary.Sentence
   ${type} =  FakerLibrary.Random Element  ${allowed_types}
   ${formal_date} =  Get Date Minus  1 day
+  ${grounds} =  Get Random Grounds
   ${external_id} =  FakerLibrary.Uuid 4
-  VAR  ${language} =  Dutch
+  VAR  ${language} =  NLD
   VAR  &{main_document} =
   ...  fileName=${file_name}
   ...  formalDate=${formal_date}
-  ...  grounds=@{EMPTY}
-  ...  internalReference=${internal_reference}
+  ...  grounds=${grounds}
   ...  language=${language}
   ...  type=${type}
   ...  externalId=${external_id}
@@ -250,6 +205,56 @@ Parse Text To Date
   [Arguments]  ${dict}  ${field}
   ${match} =  Get Regexp Matches  ${dict}[${field}]  <ROBOT DATE (?P<offset>[+-]+[0-9]+)>  offset
   IF  ${match}
-    ${date} =  Get Current Date  result_format=%Y-%m-%dT00:00:00.000Z  increment=${match[0]} days
+    ${date} =  Get Current Date  result_format=%Y-%m-%d  increment=${match[0]} days
     Set To Dictionary  ${dict}  ${field}  ${date}
   END
+
+Set Random Grounds
+  [Arguments]  ${body}  ${include_documents}=${FALSE}
+  ${random_grounds} =  Get Random Grounds
+  Set To Dictionary  ${body}[mainDocument]  grounds  ${random_grounds}
+  IF  ${include_documents}
+    ${documents} =  Get From Dictionary  ${body}  documents  default=[]
+    FOR  ${document}  IN  @{documents}
+      ${random_grounds} =  Get Random Grounds
+      Set To Dictionary  ${document}  grounds  ${random_grounds}
+    END
+  END
+  ${attachments} =  Get From Dictionary  ${body}  attachments  default=[]
+  FOR  ${attachment}  IN  @{attachments}
+    ${random_grounds} =  Get Random Grounds
+    Set To Dictionary  ${attachment}  grounds  ${random_grounds}
+  END
+
+Upload Main Document
+  [Arguments]  ${dossier_type}  ${file_location}  ${dossier_id}
+  Upload File
+  ...  file_location=${file_location}
+  ...  dossier_type=${dossier_type}
+  ...  dossier_id=${dossier_id}
+  ...  document_type=main-document
+
+Upload Attachment Document
+  [Arguments]  ${dossier_type}  ${file_location}  ${dossier_id}  ${attachment_id}
+  Upload File
+  ...  file_location=${file_location}
+  ...  dossier_type=${dossier_type}
+  ...  dossier_id=${dossier_id}
+  ...  document_type=attachment
+  ...  document_id=${attachment_id}
+
+Upload Document
+  [Arguments]  ${dossier_type}  ${file_location}  ${dossier_id}  ${document_id}
+  Upload File
+  ...  file_location=${file_location}
+  ...  dossier_type=${dossier_type}
+  ...  dossier_id=${dossier_id}
+  ...  document_type=document
+  ...  document_id=${document_id}
+
+Publication Status Should Be
+  [Arguments]  ${dossier_type}  ${expected_status}
+  ${get_response} =  GET On Session
+  ...  alias=publication_api
+  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/${dossier_type}/${EXTERNAL_ID}
+  Should Be Equal  ${get_response.json()}[status]  ${expected_status}

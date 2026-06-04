@@ -86,7 +86,7 @@ final class InvestigationReportMainDocumentApiTest extends AdminApiTestCase
             'formalDate' => CarbonImmutable::yesterday()->format('Y-m-d'),
             'internalReference' => 'foo bar',
             'type' => AttachmentType::EVALUATION_REPORT->value,
-            'language' => AttachmentLanguage::DUTCH->value,
+            'language' => AttachmentLanguage::NLD->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $upload->getUploadId(),
         ];
@@ -212,7 +212,7 @@ final class InvestigationReportMainDocumentApiTest extends AdminApiTestCase
             'formalDate' => CarbonImmutable::yesterday()->format('Y-m-d'),
             'internalReference' => 'foo bar',
             'type' => AttachmentType::COVENANT->value,
-            'language' => AttachmentLanguage::DUTCH->value,
+            'language' => AttachmentLanguage::NLD->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => Uuid::v6(),
         ];

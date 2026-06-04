@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory;
 
-use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\SourceType;
 use Shared\Service\Inquiry\CaseNumbers;
+use Shared\ValueObject\PlainDate;
 
 readonly class DocumentMetadata
 {
     public function __construct(
-        private ?DateTimeImmutable $date,
+        private ?PlainDate $date,
         private string $filename,
         private ?int $familyId,
         private SourceType $sourceType,
-        /** @var string[] */
+        /** @var array<string> */
         private array $grounds,
         private string $id,
         private Judgement $judgement,
@@ -24,16 +24,16 @@ readonly class DocumentMetadata
         private ?int $threadId,
         private CaseNumbers $caseNumbers,
         private bool $suspended,
-        /** @var string[] */
+        /** @var array<string> */
         private array $links,
         private ?string $remark,
         private string $matter,
-        /** @var string[] */
+        /** @var array<string> */
         private array $refersTo,
     ) {
     }
 
-    public function getDate(): ?DateTimeImmutable
+    public function getDate(): ?PlainDate
     {
         return $this->date;
     }
@@ -59,7 +59,7 @@ readonly class DocumentMetadata
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getGrounds(): array
     {
@@ -97,7 +97,7 @@ readonly class DocumentMetadata
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getLinks(): array
     {
@@ -115,7 +115,7 @@ readonly class DocumentMetadata
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getRefersTo(): array
     {

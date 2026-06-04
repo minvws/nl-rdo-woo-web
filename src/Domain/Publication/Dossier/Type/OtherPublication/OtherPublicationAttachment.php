@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\OtherPublication;
 
-use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
 #[ORM\Entity(repositoryClass: OtherPublicationAttachmentRepository::class)]
@@ -17,7 +17,7 @@ class OtherPublicationAttachment extends AbstractAttachment
 {
     public function __construct(
         AbstractDossier $dossier,
-        DateTimeImmutable $formalDate,
+        PlainDate $formalDate,
         AttachmentType $type,
         AttachmentLanguage $language,
     ) {

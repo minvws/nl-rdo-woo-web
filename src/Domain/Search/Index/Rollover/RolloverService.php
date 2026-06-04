@@ -22,7 +22,7 @@ readonly class RolloverService
     }
 
     /**
-     * @param ElasticIndexDetails[] $indices
+     * @param array<array-key, ElasticIndexDetails> $indices
      */
     public function getDetailsFromIndices(array $indices): ?RolloverDetails
     {
@@ -54,15 +54,15 @@ readonly class RolloverService
         $this->messageBus->dispatch(
             new SetElasticAliasCommand(
                 indexName: $indexName,
-                aliasName: $this->elasticConfig->readIndex
-            )
+                aliasName: $this->elasticConfig->readIndex,
+            ),
         );
 
         $this->messageBus->dispatch(
             new SetElasticAliasCommand(
                 indexName: $indexName,
                 aliasName: $this->elasticConfig->writeIndex,
-            )
+            ),
         );
     }
 
@@ -72,7 +72,7 @@ readonly class RolloverService
             new InitiateElasticRolloverCommand(
                 mappingVersion: $rollover->getMappingVersion(),
                 indexName: $this->elasticConfig->indexPrefix . date('Ymd-His'),
-            )
+            ),
         );
     }
 

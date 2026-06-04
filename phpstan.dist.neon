@@ -13,17 +13,20 @@ parameters:
         - public/
         - src/
         - tests/
-        - apps
+        - apps/
+        - utils/
     excludePaths:
         - src/Domain/Publication/Dossier/Type/**/*Workflow.php
         - config/packages/workflow.php
+        - utils/tests/**/data/*
     level: max
     symfony:
         containerXmlPath: var/cache/minvws/shared/dev/Shared_KernelMinvwsSharedDevDebugContainer.xml
     faker:
         providerClasses:
             - Shared\Tests\Faker\GroundsFakerProvider
-            - Shared\Tests\Faker\ValueObjectFakerProvider
+            - Shared\Tests\Faker\DateTimeFakerProvider
+            - Shared\Tests\Faker\UuidFakerProvider
     ignoreErrors:
         - identifier: missingType.generics
 
@@ -31,6 +34,10 @@ services:
     errorFormatter.junit:
         class: PHPStan\Command\ErrorFormatter\JUnitErrorFormatter
     -
-        class: Woo\Stan\Rules\DontUseShouldReceiveRule
+        class: Utils\PHPStan\Rules\DontUseShouldReceiveRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: Utils\PHPStan\Rules\RequireExplicitArrayKeyTypeRule
         tags:
             - phpstan.rules.rule

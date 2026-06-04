@@ -54,7 +54,7 @@ class RunProgress
     public function getPercentage(): int
     {
         return intval(round(
-            ($this->currentCount / $this->totalCount) * 100
+            ($this->currentCount / $this->totalCount) * 100,
         ));
     }
 

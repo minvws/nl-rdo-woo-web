@@ -67,11 +67,11 @@ class DepartmentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getNames(): array
     {
-        /** @var string[] $names */
+        /** @var array<array-key, string> $names */
         $names = $this->createQueryBuilder('d')
             ->select('d.name')
             ->getQuery()
@@ -115,7 +115,7 @@ class DepartmentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Department[]
+     * @return array<array-key, Department>
      */
     public function getOrganisationDepartmentsSortedByName(Organisation $organisation): array
     {

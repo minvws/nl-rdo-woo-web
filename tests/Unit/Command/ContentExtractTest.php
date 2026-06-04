@@ -38,7 +38,7 @@ class ContentExtractTest extends UnitTestCase
             new ContentExtractCommand(
                 $this->entityManager,
                 $this->contentExtractService,
-            )
+            ),
         );
 
         $this->command = $application->find('woopie:dev:extract-content');

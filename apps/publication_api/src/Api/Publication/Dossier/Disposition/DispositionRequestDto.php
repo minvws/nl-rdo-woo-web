@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Publication\Dossier\Disposition;
 
-use DateTimeImmutable;
 use PublicationApi\Api\Publication\Attachment\AttachmentRequestDto;
 use PublicationApi\Api\Publication\Dossier\AbstractDossierRequestDto;
 use PublicationApi\Api\Publication\MainDocument\MainDocumentRequestDto;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,9 +18,7 @@ class DispositionRequestDto extends AbstractDossierRequestDto
      */
     public function __construct(
         public Uuid $departmentId,
-        public string $internalReference,
         public MainDocumentRequestDto $mainDocument,
-        public string $prefix,
         public ?Uuid $subjectId,
         public string $summary,
         public string $title,
@@ -28,15 +26,13 @@ class DispositionRequestDto extends AbstractDossierRequestDto
             new Assert\Type(AttachmentRequestDto::class),
         ])]
         public array $attachments,
-        public DateTimeImmutable $dossierDate,
+        public PlainDate $dossierDate,
         public string $dossierNumber,
-        public DateTimeImmutable $publicationDate,
+        public PlainDate $publicationDate,
     ) {
         parent::__construct(
             $departmentId,
             $dossierNumber,
-            $internalReference,
-            $prefix,
             $subjectId,
             $summary,
             $title,

@@ -1,0 +1,866 @@
+meta {
+  name: Replaces the InvestigationReport resource.
+  type: http
+  seq: 3
+  tags: [
+    InvestigationReport
+  ]
+}
+
+put {
+  url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  organisationId: {{organisationId}}
+  dossierExternalId: E:{{$randomBankAccountIban}}
+}
+
+body:json {
+  {
+    "departmentId": "{{departmentId}}",
+    "mainDocument": {
+      "fileName": "{{$randomWords}}.pdf",
+      "formalDate": "2026-02-01",
+      "language": "NLD",
+      "type": "c_6f49bf34",
+      "grounds": []
+    },
+    "subjectId": "{{subjectId}}",
+    "summary": "{{$randomUUID}}",
+    "title": "{{$randomUUID}}",
+    "attachments": [
+      {
+        "fileName": "{{$randomWords}}.pdf",
+        "formalDate": "2026-02-01",
+        "language": "NLD",
+        "type": "c_d506b718",
+        "externalId": "{{$randomUUID}}",
+        "grounds": []
+      }
+    ],
+    "dossierDate": "2025-01-01",
+    "dossierNumber": "{{$randomUUID}}",
+    "publicationDate": "2026-02-01"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+  }
+  if (res.status === 400) {
+  }
+  if (res.status === 404) {
+  }
+  if (res.status === 422) {
+  }
+
+  const data = res.getBody();
+  const dossierExternalId = data.externalId;
+  bru.setVar("dossierExternalId", dossierExternalId);
+}
+
+docs {
+  Replaces the InvestigationReport resource.
+}
+
+example {
+  name: 200 Response
+  description: InvestigationReport resource updated
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId: E:{{dossierExternalId}}
+    }
+  
+    body:json: {
+      {
+        "departmentId": "",
+        "mainDocument": {
+          "fileName": "",
+          "formalDate": "",
+          "language": "NLD",
+          "type": "c_d506b718",
+          "grounds": []
+        },
+        "subjectId": "",
+        "summary": "",
+        "title": "",
+        "attachments": [
+          {
+            "fileName": "",
+            "formalDate": "",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "",
+            "grounds": []
+          }
+        ],
+        "dossierDate": "",
+        "dossierNumber": "",
+        "publicationDate": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "id": "",
+          "externalId": "",
+          "organisation": {
+            "id": "",
+            "name": ""
+          },
+          "dossierNumber": "",
+          "title": "",
+          "summary": "",
+          "subject": "",
+          "department": {
+            "id": "",
+            "name": ""
+          },
+          "publicationDate": "2025-12-21",
+          "status": "new",
+          "mainDocument": {
+            "id": "",
+            "type": "c_d506b718",
+            "language": "NLD",
+            "formalDate": "",
+            "grounds": [],
+            "fileName": "",
+            "uploadStatus": "no_upload_required"
+          },
+          "attachments": [
+            {
+              "id": "",
+              "type": "c_d506b718",
+              "language": "NLD",
+              "formalDate": "",
+              "grounds": [],
+              "fileName": "",
+              "externalId": "",
+              "uploadStatus": "no_upload_required"
+            }
+          ],
+          "dossierDate": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 Response
+  description: Invalid input
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId: E:{{dossierExternalId}}
+    }
+  
+    body:json: {
+      {
+        "departmentId": "",
+        "mainDocument": {
+          "fileName": "",
+          "formalDate": "",
+          "language": "NLD",
+          "type": "c_d506b718",
+          "grounds": []
+        },
+        "subjectId": "",
+        "summary": "",
+        "title": "",
+        "attachments": [
+          {
+            "fileName": "",
+            "formalDate": "",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "",
+            "grounds": []
+          }
+        ],
+        "dossierDate": "",
+        "dossierNumber": "",
+        "publicationDate": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 400
+      text: Bad Request
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "title": "",
+          "detail": "",
+          "status": "",
+          "instance": "",
+          "type": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 Response
+  description: Invalid input
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId: E:{{dossierExternalId}}
+    }
+  
+    body:json: {
+      {
+        "departmentId": "",
+        "mainDocument": {
+          "fileName": "",
+          "formalDate": "",
+          "language": "NLD",
+          "type": "c_d506b718",
+          "grounds": []
+        },
+        "subjectId": "",
+        "summary": "",
+        "title": "",
+        "attachments": [
+          {
+            "fileName": "",
+            "formalDate": "",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "",
+            "grounds": []
+          }
+        ],
+        "dossierDate": "",
+        "dossierNumber": "",
+        "publicationDate": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 400
+      text: Bad Request
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "title": "",
+          "detail": "",
+          "status": "",
+          "instance": "",
+          "type": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 401 Response
+  description: Unauthorized
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId: E:{{dossierExternalId}}
+    }
+  
+    body:json: {
+      {
+        "departmentId": "",
+        "mainDocument": {
+          "fileName": "",
+          "formalDate": "",
+          "language": "NLD",
+          "type": "c_d506b718",
+          "grounds": []
+        },
+        "subjectId": "",
+        "summary": "",
+        "title": "",
+        "attachments": [
+          {
+            "fileName": "",
+            "formalDate": "",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "",
+            "grounds": []
+          }
+        ],
+        "dossierDate": "",
+        "dossierNumber": "",
+        "publicationDate": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 401
+      text: Unauthorized
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 403 Response
+  description: Forbidden
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId: E:{{dossierExternalId}}
+    }
+  
+    body:json: {
+      {
+        "departmentId": "",
+        "mainDocument": {
+          "fileName": "",
+          "formalDate": "",
+          "language": "NLD",
+          "type": "c_d506b718",
+          "grounds": []
+        },
+        "subjectId": "",
+        "summary": "",
+        "title": "",
+        "attachments": [
+          {
+            "fileName": "",
+            "formalDate": "",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "",
+            "grounds": []
+          }
+        ],
+        "dossierDate": "",
+        "dossierNumber": "",
+        "publicationDate": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 403
+      text: Forbidden
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Not found
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId: E:{{dossierExternalId}}
+    }
+  
+    body:json: {
+      {
+        "departmentId": "",
+        "mainDocument": {
+          "fileName": "",
+          "formalDate": "",
+          "language": "NLD",
+          "type": "c_d506b718",
+          "grounds": []
+        },
+        "subjectId": "",
+        "summary": "",
+        "title": "",
+        "attachments": [
+          {
+            "fileName": "",
+            "formalDate": "",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "",
+            "grounds": []
+          }
+        ],
+        "dossierDate": "",
+        "dossierNumber": "",
+        "publicationDate": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 404
+      text: Not Found
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "title": "",
+          "detail": "",
+          "status": "",
+          "instance": "",
+          "type": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Not found
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId: E:{{dossierExternalId}}
+    }
+  
+    body:json: {
+      {
+        "departmentId": "",
+        "mainDocument": {
+          "fileName": "",
+          "formalDate": "",
+          "language": "NLD",
+          "type": "c_d506b718",
+          "grounds": []
+        },
+        "subjectId": "",
+        "summary": "",
+        "title": "",
+        "attachments": [
+          {
+            "fileName": "",
+            "formalDate": "",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "",
+            "grounds": []
+          }
+        ],
+        "dossierDate": "",
+        "dossierNumber": "",
+        "publicationDate": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 404
+      text: Not Found
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "title": "",
+          "detail": "",
+          "status": "",
+          "instance": "",
+          "type": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 405 Response
+  description: Method Not Allowed
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId: E:{{dossierExternalId}}
+    }
+  
+    body:json: {
+      {
+        "departmentId": "",
+        "mainDocument": {
+          "fileName": "",
+          "formalDate": "",
+          "language": "NLD",
+          "type": "c_d506b718",
+          "grounds": []
+        },
+        "subjectId": "",
+        "summary": "",
+        "title": "",
+        "attachments": [
+          {
+            "fileName": "",
+            "formalDate": "",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "",
+            "grounds": []
+          }
+        ],
+        "dossierDate": "",
+        "dossierNumber": "",
+        "publicationDate": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 405
+      text: Method Not Allowed
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 422 Response
+  description: An error occurred
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId: E:{{dossierExternalId}}
+    }
+  
+    body:json: {
+      {
+        "departmentId": "",
+        "mainDocument": {
+          "fileName": "",
+          "formalDate": "",
+          "language": "NLD",
+          "type": "c_d506b718",
+          "grounds": []
+        },
+        "subjectId": "",
+        "summary": "",
+        "title": "",
+        "attachments": [
+          {
+            "fileName": "",
+            "formalDate": "",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "",
+            "grounds": []
+          }
+        ],
+        "dossierDate": "",
+        "dossierNumber": "",
+        "publicationDate": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 422
+      text: Unprocessable Entity
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "status": 0,
+          "violations": [
+            {
+              "propertyPath": "",
+              "message": "",
+              "code": "",
+              "hint": "",
+              "payload": {}
+            }
+          ],
+          "detail": "",
+          "type": "",
+          "title": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 422 Response
+  description: An error occurred
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId: E:{{dossierExternalId}}
+    }
+  
+    body:json: {
+      {
+        "departmentId": "",
+        "mainDocument": {
+          "fileName": "",
+          "formalDate": "",
+          "language": "NLD",
+          "type": "c_d506b718",
+          "grounds": []
+        },
+        "subjectId": "",
+        "summary": "",
+        "title": "",
+        "attachments": [
+          {
+            "fileName": "",
+            "formalDate": "",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "",
+            "grounds": []
+          }
+        ],
+        "dossierDate": "",
+        "dossierNumber": "",
+        "publicationDate": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 422
+      text: Unprocessable Entity
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "status": 0,
+          "violations": [
+            {
+              "propertyPath": "",
+              "message": "",
+              "code": "",
+              "hint": "",
+              "payload": {}
+            }
+          ],
+          "detail": "",
+          "type": "",
+          "title": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 500 Response
+  description: Internal Server Error
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/dossiers/investigation-report/:dossierExternalId
+    method: PUT
+    mode: json
+    params:path: {
+      organisationId: {{organisationId}}
+      dossierExternalId: E:{{dossierExternalId}}
+    }
+  
+    body:json: {
+      {
+        "departmentId": "",
+        "mainDocument": {
+          "fileName": "",
+          "formalDate": "",
+          "language": "NLD",
+          "type": "c_d506b718",
+          "grounds": []
+        },
+        "subjectId": "",
+        "summary": "",
+        "title": "",
+        "attachments": [
+          {
+            "fileName": "",
+            "formalDate": "",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "",
+            "grounds": []
+          }
+        ],
+        "dossierDate": "",
+        "dossierNumber": "",
+        "publicationDate": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 500
+      text: Internal Server Error
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}

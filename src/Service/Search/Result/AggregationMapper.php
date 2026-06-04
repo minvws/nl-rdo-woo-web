@@ -52,7 +52,7 @@ readonly class AggregationMapper
                 $facet->getDisplayValue($bucketKey, $value),
                 $searchParameters->withFacetInput(
                     $facetKey,
-                    $this->facetInputFactory->createStringFacetInputForValue($facetKey, $value)
+                    $this->facetInputFactory->createStringFacetInputForValue($facetKey, $value),
                 ),
                 $searchParameters,
             );
@@ -92,7 +92,7 @@ readonly class AggregationMapper
                     $facet->getDisplayValue($bucketKey, $combinedKey),
                     $searchParameters->withFacetInput(
                         FacetKey::TYPE,
-                        $this->facetInputFactory->createStringFacetInputForValue(FacetKey::TYPE, $key)
+                        $this->facetInputFactory->createStringFacetInputForValue(FacetKey::TYPE, $key),
                     ),
                     $searchParameters,
                 );
@@ -107,7 +107,7 @@ readonly class AggregationMapper
                     $facet->getDisplayValue($subBucketKey, $combinedKey),
                     $searchParameters->withFacetInput(
                         FacetKey::TYPE,
-                        $this->facetInputFactory->createStringFacetInputForValue(FacetKey::TYPE, $subKey)
+                        $this->facetInputFactory->createStringFacetInputForValue(FacetKey::TYPE, $subKey),
                     ),
                     $searchParameters,
                 );
@@ -119,7 +119,7 @@ readonly class AggregationMapper
                 displayValue: $facet->getDisplayValue($bucketKey, $key),
                 parameters: $searchParameters->withFacetInput(
                     FacetKey::TYPE,
-                    $this->facetInputFactory->createStringFacetInputForValue(FacetKey::TYPE, ...$allKeys)
+                    $this->facetInputFactory->createStringFacetInputForValue(FacetKey::TYPE, ...$allKeys),
                 ),
                 parametersWithout: $searchParameters,
                 subEntries: $subEntries,

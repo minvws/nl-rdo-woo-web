@@ -131,7 +131,7 @@ class DocumentComparatorTest extends UnitTestCase
         $metadata->expects('getRefersTo')->andReturn([]);
 
         self::assertFalse(
-            $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata)
+            $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata),
         );
     }
 
@@ -153,7 +153,7 @@ class DocumentComparatorTest extends UnitTestCase
         $this->repository->expects('findByDocumentNumber')->andReturn($referredDocument);
 
         self::assertTrue(
-            $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata)
+            $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata),
         );
     }
 
@@ -176,7 +176,7 @@ class DocumentComparatorTest extends UnitTestCase
         $this->repository->expects('findByDocumentNumber')->andReturnNull();
 
         self::assertTrue(
-            $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata)
+            $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata),
         );
     }
 }

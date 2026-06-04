@@ -10,11 +10,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Override;
+use Shared\Doctrine\PlainDateType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\PlainDate;
 
 use function array_values;
 
@@ -37,8 +39,8 @@ class Document extends AbstractPublicationItem
     #[ORM\Column(length: 255, nullable: false, index: true)]
     private string $documentNr;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, index: true)]
-    private ?DateTimeImmutable $documentDate = null;
+    #[ORM\Column(type: PlainDateType::NAME, nullable: true, index: true)]
+    private ?PlainDate $documentDate = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $familyId = null;
@@ -52,7 +54,7 @@ class Document extends AbstractPublicationItem
     #[ORM\Column(length: 255, nullable: true, enumType: Judgement::class)]
     private ?Judgement $judgement = null;
 
-    /** @var array<string> */
+    /** @var array<array-key, string> */
     #[ORM\Column(type: Types::JSON, nullable: false)]
     private array $grounds = [];
 
@@ -78,7 +80,7 @@ class Document extends AbstractPublicationItem
     #[ORM\ManyToMany(targetEntity: Inquiry::class, mappedBy: 'documents')]
     private Collection $inquiries;
 
-    /** @var array<string> */
+    /** @var array<array-key, string> */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private array $links = [];
 
@@ -131,12 +133,12 @@ class Document extends AbstractPublicationItem
         return $this;
     }
 
-    public function getDocumentDate(): ?DateTimeImmutable
+    public function getDocumentDate(): ?PlainDate
     {
         return $this->documentDate;
     }
 
-    public function setDocumentDate(?DateTimeImmutable $documentDate): self
+    public function setDocumentDate(?PlainDate $documentDate): self
     {
         $this->documentDate = $documentDate;
 

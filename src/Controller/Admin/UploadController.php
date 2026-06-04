@@ -36,7 +36,7 @@ final class UploadController extends AbstractController
             throw UploadException::forNotAllowed();
         }
 
-        $result = $this->uploadService->handleUploadRequest($uploadRequest, $user);
+        $result = $this->uploadService->handleUpload($uploadRequest, $user);
 
         return $result->toJsonResponse();
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Content\Page;
 
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\TimestampableTrait;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -32,6 +33,8 @@ class ContentPage
 
     public function __construct(string $slug, string $title, string $content)
     {
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
         $this->slug = $slug;
         $this->title = $title;
         $this->content = $content;

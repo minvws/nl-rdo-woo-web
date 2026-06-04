@@ -50,7 +50,7 @@ class ContentStepController extends AbstractController
         $breadcrumbs->addRouteItem(
             $dossier->getTitle() ?? '',
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );
         $breadcrumbs->addItem('admin.dossiers.advice.step.content');
 
@@ -78,7 +78,7 @@ class ContentStepController extends AbstractController
                 ->withDepartments()
                 ->with('requestForAdviceTypes', $this->getRequestForAdviceTypes())
                 ->with('attachmentTypes', $this->getAttachmentTypes())
-                ->getParams()
+                ->getParams(),
         );
     }
 
@@ -124,7 +124,7 @@ class ContentStepController extends AbstractController
                 ->withDepartments()
                 ->with('requestForAdviceTypes', $this->getRequestForAdviceTypes())
                 ->with('attachmentTypes', $this->getAttachmentTypes())
-                ->getParams()
+                ->getParams(),
         );
     }
 
@@ -133,7 +133,7 @@ class ContentStepController extends AbstractController
         return $this->createForm(
             ContentFormType::class,
             $dossier,
-            ['validation_groups' => [self::STEP_NAME->value]]
+            ['validation_groups' => [self::STEP_NAME->value]],
         );
     }
 

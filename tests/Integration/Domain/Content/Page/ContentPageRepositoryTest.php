@@ -10,24 +10,22 @@ use Shared\Tests\Integration\SharedWebTestCase;
 
 class ContentPageRepositoryTest extends SharedWebTestCase
 {
-    private ContentPageRepository $repository;
+    private ContentPageRepository $contentPageRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $this->repository = self::getContainer()->get(ContentPageRepository::class);
+        $this->contentPageRepository = self::fromContainer(ContentPageRepository::class);
     }
 
     public function testSave(): void
     {
         $contentPage = ContentPageFactory::createOne(['slug' => 'foo']);
 
-        $this->repository->save($contentPage, true);
+        $this->contentPageRepository->save($contentPage, true);
 
-        $result = $this->repository->find('foo');
+        $result = $this->contentPageRepository->find('foo');
         self::assertEquals($contentPage, $result);
     }
 
@@ -41,7 +39,7 @@ class ContentPageRepositoryTest extends SharedWebTestCase
             ['slug' => 'E'],
         ]);
 
-        $result = $this->repository->findAllSortedBySlug();
+        $result = $this->contentPageRepository->findAllSortedBySlug();
         self::assertCount(5, $result);
 
         self::assertEquals('A', $result[0]->getSlug());

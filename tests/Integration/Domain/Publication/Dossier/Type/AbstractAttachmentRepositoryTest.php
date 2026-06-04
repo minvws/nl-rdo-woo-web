@@ -15,28 +15,18 @@ use Symfony\Component\Uid\Uuid;
 
 final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
 {
-    /**
-     * @return AbstractAttachmentRepository<CovenantAttachment>
-     */
-    private function getRepository(): AbstractAttachmentRepository
-    {
-        $managerRegistry = self::getContainer()->get(ManagerRegistry::class);
+    private AbstractAttachmentRepository $attachmentRepository;
 
-        return new
-        /** @extends AbstractAttachmentRepository<CovenantAttachment> */
-        class($managerRegistry) extends AbstractAttachmentRepository {
+    protected function setUp(): void
+    {
+        $managerRegistry = self::fromContainer(ManagerRegistry::class);
+
+        $this->attachmentRepository = new class($managerRegistry) extends AbstractAttachmentRepository {
             public function __construct(ManagerRegistry $managerRegistry)
             {
                 parent::__construct($managerRegistry, CovenantAttachment::class);
             }
         };
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
     }
 
     public function testSave(): void
@@ -49,9 +39,9 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
                 'dossier' => $covenant,
             ]);
 
-        $this->getRepository()->save($covenantAttachment, true);
+        $this->attachmentRepository->save($covenantAttachment, true);
 
-        $result = $this->getRepository()->findOneForDossier($covenant->getId(), $covenantAttachment->getId());
+        $result = $this->attachmentRepository->findOneForDossier($covenant->getId(), $covenantAttachment->getId());
         self::assertEquals($covenantAttachment, $result);
     }
 
@@ -63,9 +53,7 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
             'dossier' => $covenant,
         ]);
 
-        $repository = $this->getRepository();
-
-        $result = $repository->findForDossierByPrefixAndNr(
+        $result = $this->attachmentRepository->findForDossierByPrefixAndNr(
             $covenant->getDocumentPrefix(),
             $covenant->getDossierNr(),
             $covenantAttachment->getId()->toRfc4122(),
@@ -77,9 +65,7 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
 
     public function testFindForDossierByPrefixAndNrMismatch(): void
     {
-        $repository = $this->getRepository();
-
-        $result = $repository->findForDossierByPrefixAndNr(
+        $result = $this->attachmentRepository->findForDossierByPrefixAndNr(
             'a non-existing document prefix',
             'a non-existing dossier number',
             $this->getFaker()->uuid(),
@@ -95,18 +81,16 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
             'dossier' => $dossier,
         ]);
 
-        $repository = $this->getRepository();
-
-        $result = $this->getRepository()->findForDossierByPrefixAndNr(
+        $result = $this->attachmentRepository->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
             $attachment->getId()->toRfc4122(),
         );
         self::assertNotNull($result);
 
-        $repository->remove($result, true);
+        $this->attachmentRepository->remove($result, true);
 
-        $result = $this->getRepository()->findForDossierByPrefixAndNr(
+        $result = $this->attachmentRepository->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
             $attachment->getId()->toRfc4122(),
@@ -121,7 +105,7 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
             'dossier' => $dossier,
         ]);
 
-        $result = $this->getRepository()->findOneOrNullForDossier(
+        $result = $this->attachmentRepository->findOneOrNullForDossier(
             $dossier->getId(),
             $attachment->getId(),
         );
@@ -130,10 +114,10 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
         self::assertEquals($attachment->getId(), $result->getId());
 
         self::assertNull(
-            $this->getRepository()->findOneOrNullForDossier(
+            $this->attachmentRepository->findOneOrNullForDossier(
                 $dossier->getId(),
                 Uuid::v6(),
-            )
+            ),
         );
     }
 
@@ -144,10 +128,10 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
             'dossier' => $dossier,
         ]);
 
-        $result = $this->getRepository()->findForDossierByPrefixAndNr(
+        $result = $this->attachmentRepository->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             'MISMATCH',
-            $attachment->getId()->toRfc4122()
+            $attachment->getId()->toRfc4122(),
         );
 
         self::assertNull($result);
@@ -169,7 +153,7 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
             uploadFileReference: 'uploadFileReference',
         );
 
-        $result = $this->getRepository()->create($covenant, $createAttachmentCommand);
+        $result = $this->attachmentRepository->create($covenant, $createAttachmentCommand);
 
         self::assertEquals($covenant, $result->getDossier());
         self::assertEquals($createAttachmentCommand->formalDate, $result->getFormalDate());

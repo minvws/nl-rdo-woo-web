@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\ComplaintJudgement;
 
-use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Override;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -12,6 +11,8 @@ use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -44,8 +45,8 @@ class ComplaintJudgement extends AbstractDossier implements EntityWithMainDocume
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    #[Assert\LessThanOrEqual(
-        value: 'today',
+    #[PlainDateBeforeOrEqual(
+        date: 'today',
         message: 'date_must_not_be_in_future',
         groups: [
             DossierValidationGroup::DETAILS->value,
@@ -53,7 +54,7 @@ class ComplaintJudgement extends AbstractDossier implements EntityWithMainDocume
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    protected ?DateTimeImmutable $dateFrom = null;
+    protected ?PlainDate $dateFrom = null;
 
     public function __construct()
     {
@@ -63,7 +64,7 @@ class ComplaintJudgement extends AbstractDossier implements EntityWithMainDocume
     }
 
     #[Override]
-    public function setDateFrom(?DateTimeImmutable $dateFrom): static
+    public function setDateFrom(?PlainDate $dateFrom): static
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateFrom;

@@ -1,8 +1,9 @@
 results
 libraries/__pycache__
 files/generated
+secrets
 .venv
 .pabotsuitenames
-.otp_secret
 .robocop_cache
-.temp_password
+.env.rf.test
+.env.rf.acc

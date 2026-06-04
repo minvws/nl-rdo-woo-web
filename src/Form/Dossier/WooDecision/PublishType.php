@@ -7,6 +7,9 @@ namespace Shared\Form\Dossier\WooDecision;
 use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Form\PlainDateType;
+use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -37,36 +40,34 @@ class PublishType extends AbstractType
                     new NotBlank(),
                     new GreaterThanOrEqual(
                         new DateTimeImmutable('today midnight'),
-                        message: 'preview_date_must_be_today_or_future'
+                        message: 'preview_date_must_be_today_or_future',
                     ),
                 ],
             ]);
-            $builder->add('publication_date', DateType::class, [
+            $builder->add('publication_date', PlainDateType::class, [
                 'label' => 'admin.decision.publication_date',
                 'help' => 'admin.decision.publication_date_help',
                 'required' => true,
                 'widget' => 'single_text',
-                'input' => 'datetime_immutable',
-                'data' => $dossier->getPublicationDate() ?? new DateTimeImmutable(),
+                'data' => $dossier->getPublicationDate() ?? PlainDate::today(),
                 'constraints' => [
                     new NotBlank(),
-                    new GreaterThanOrEqual(
-                        propertyPath: 'parent.all[preview_date].data',
+                    new PlainDateAfterOrEqual(
                         message: 'publication_date_must_be_today_or_past_preview_date',
+                        propertyPath: 'parent.all[preview_date].data',
                     ),
                 ],
             ]);
         } else {
-            $builder->add('publication_date', DateType::class, [
+            $builder->add('publication_date', PlainDateType::class, [
                 'label' => 'Datum openbare publicatie',
                 'required' => true,
                 'widget' => 'single_text',
-                'input' => 'datetime_immutable',
                 'constraints' => [
                     new NotBlank(),
-                    new GreaterThanOrEqual(
-                        new DateTimeImmutable('today midnight'),
-                        message: 'publication_date_must_be_today_or_future'
+                    new PlainDateAfterOrEqual(
+                        date: 'today',
+                        message: 'publication_date_must_be_today_or_future',
                     ),
                 ],
             ]);

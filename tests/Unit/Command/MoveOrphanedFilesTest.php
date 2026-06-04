@@ -60,7 +60,7 @@ class MoveOrphanedFilesTest extends UnitTestCase
                 new PathSet($this->getFaker()->word(), FileStorageType::DOCUMENT, [
                     $this->getFaker()->word() => $this->getFaker()->word(),
                 ]),
-            ]
+            ],
         );
 
         $fileStorageChecker = Mockery::mock(FileStorageChecker::class);

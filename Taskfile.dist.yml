@@ -1,5 +1,5 @@
 # https://taskfile.dev
-version: "3"
+version: "3.48.0"
 
 includes:
   docs:
@@ -26,11 +26,11 @@ vars:
     sh: pwd
   ORBSTACK_ENABLED:
     sh: echo ${ORBSTACK_ENABLED:-$(test "$(docker context show)" = "orbstack" && echo 1 || echo 0)}
-  ORBSTACK_MINVWS_PUBLIC_URL: http://public-minvws.local
-  ORBSTACK_MINFIN_PUBLIC_URL: http://public-minfin.local
-  ORBSTACK_MINVWS_ADMIN_URL: http://admin-minvws.local/balie
-  ORBSTACK_MINFIN_ADMIN_URL: http://admin-minfin.local/balie
-  ORBSTACK_HTTP_HOST_TO_TENANT_MAPPING: >-
+  DOCKER_MINVWS_PUBLIC_URL: http://public-minvws.local
+  DOCKER_MINFIN_PUBLIC_URL: http://public-minfin.local
+  DOCKER_MINVWS_ADMIN_URL: http://admin-minvws.local/balie
+  DOCKER_MINFIN_ADMIN_URL: http://admin-minfin.local/balie
+  DOCKER_HTTP_HOST_TO_TENANT_MAPPING: >-
     public-minvws.local=minvws,
     admin-minvws.local=minvws,
     publication-api-minvws.local=minvws,
@@ -155,7 +155,7 @@ tasks:
       - task: dc:run
         vars: { SUB_CMD: "admin bash -c 'curl -X GET \"elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=30s\"'" }
       - task: dc:run
-        vars: { SUB_CMD: "admin bin/console --tenant=minvws woopie:index:create woopie_{{.ITEM}} latest --read --write" }
+        vars: { SUB_CMD: "admin bin/console --tenant={{.ITEM}} woopie:index:create woopie-{{.ITEM}} latest --read --write" }
         for: { var: TENANTS }
       - task: npm:install
       - task: npm:build
@@ -250,12 +250,17 @@ tasks:
     cmds:
       - cp .env.development .env.local
       - cmd: |
-          if [ "{{.ORBSTACK_ENABLED }}" = "1" ]; then
-            sed -i '' 's#^\(MINVWS_PUBLIC_BASE_URL=\).*#\1{{.ORBSTACK_MINVWS_PUBLIC_URL}}#' .env.local
-            sed -i '' 's#^\(MINFIN_PUBLIC_BASE_URL=\).*#\1{{.ORBSTACK_MINFIN_PUBLIC_URL}}#' .env.local
-            sed -i '' 's#^\(HTTP_HOST_TO_TENANT_MAPPING=\).*#\1"{{.ORBSTACK_HTTP_HOST_TO_TENANT_MAPPING}}"#' .env.local
-          fi
+          sed -i '' 's#^\(MINVWS_PUBLIC_BASE_URL=\).*#\1{{.DOCKER_MINVWS_PUBLIC_URL}}#' .env.local
+          sed -i '' 's#^\(MINFIN_PUBLIC_BASE_URL=\).*#\1{{.DOCKER_MINFIN_PUBLIC_URL}}#' .env.local
+          sed -i '' 's#^\(HTTP_HOST_TO_TENANT_MAPPING=\).*#\1"{{.DOCKER_HTTP_HOST_TO_TENANT_MAPPING}}"#' .env.local
+        if: test "{{.ORBSTACK_ENABLED }}" = "1"
         platforms: [darwin]
+      - cmd: |
+          sed -i 's#^\(MINVWS_PUBLIC_BASE_URL=\).*#\1{{.DOCKER_MINVWS_PUBLIC_URL}}#' .env.local
+          sed -i 's#^\(MINFIN_PUBLIC_BASE_URL=\).*#\1{{.DOCKER_MINFIN_PUBLIC_URL}}#' .env.local
+          sed -i 's#^\(HTTP_HOST_TO_TENANT_MAPPING=\).*#\1"{{.DOCKER_HTTP_HOST_TO_TENANT_MAPPING}}"#' .env.local
+        if: test "$GITHUB_ACTIONS" = "true"
+        platforms: [linux]
     sources:
       - .env.development
     generates:
@@ -504,27 +509,37 @@ tasks:
 
   worker:start:
     desc: Start the worker
+    vars:
+      TENANT: '{{.TENANT | default "minvws"}}'
     cmds:
       - task: dc
-        vars: { SUB_CMD: "up -d worker" }
+        vars: { SUB_CMD: "up -d worker_{{.TENANT}}" }
 
   worker:restart:
     desc: Restart the worker
+    vars:
+      TENANT: '{{.TENANT | default "minvws"}}'
     cmds:
       - task: worker:stop
+        vars: { TENANT: '{{.TENANT}}'}
       - task: worker:start
+        vars: { TENANT: '{{.TENANT}}'}
 
   worker:stop:
     desc: Stop the worker
+    vars:
+      TENANT: '{{.TENANT | default "minvws"}}'
     cmds:
       - task: dc
-        vars: { SUB_CMD: "stop worker" }
+        vars: { SUB_CMD: "stop worker_{{.TENANT}}" }
 
   worker:logs:
     desc: Display last 30 lines of worker logs and follow the rest
+    vars:
+      TENANT: '{{.TENANT | default "minvws"}}'
     cmds:
       - task: dc
-        vars: { SUB_CMD: "logs worker --tail 30 --follow" }
+        vars: { SUB_CMD: "logs worker_{{.TENANT}} --tail 30 --follow" }
 
   app:generate-sitemap:
     desc: Generate the sitemap in one command

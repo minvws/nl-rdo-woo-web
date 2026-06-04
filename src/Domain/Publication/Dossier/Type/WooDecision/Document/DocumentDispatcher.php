@@ -50,7 +50,7 @@ readonly class DocumentDispatcher
         bool $bulkAction,
     ): void {
         $this->messageBus->dispatch(
-            new DocumentWithDrawnEvent($document, $reason, $explanation, $bulkAction)
+            new DocumentWithDrawnEvent($document, $reason, $explanation, $bulkAction),
         );
     }
 
@@ -60,14 +60,14 @@ readonly class DocumentDispatcher
         string $explanation,
     ): void {
         $this->messageBus->dispatch(
-            new AllDocumentsWithDrawnEvent($wooDecision, $reason, $explanation)
+            new AllDocumentsWithDrawnEvent($wooDecision, $reason, $explanation),
         );
     }
 
     public function dispatchDocumentRepublishedEvent(Document $document): void
     {
         $this->messageBus->dispatch(
-            new DocumentRepublishedEvent($document)
+            new DocumentRepublishedEvent($document),
         );
     }
 }

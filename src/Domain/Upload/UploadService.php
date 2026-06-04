@@ -29,20 +29,22 @@ readonly class UploadService
     ) {
     }
 
-    public function handleUploadRequest(UploadRequest $uploadRequest, ?User $user): UploadResultInterface
+    public function handleUpload(UploadRequest|StreamUpload $upload, ?User $user = null): UploadResultInterface
     {
         $uploadEntity = $this->uploadEntityRepository->findOrCreate(
-            $uploadRequest->uploadId,
-            $uploadRequest->groupId,
+            $upload->uploadId,
+            $upload->groupId,
             $user,
-            $uploadRequest->additionalParameters,
+            $upload->additionalParameters,
         );
 
         if (! $uploadEntity->getStatus()->isIncomplete()) {
             throw UploadException::forCannotUpload($uploadEntity);
         }
 
-        $result = $this->uploadHandler->handleUpload($uploadEntity, $uploadRequest);
+        $result = $upload instanceof UploadRequest
+            ? $this->uploadHandler->handleUpload($uploadEntity, $upload)
+            : $this->uploadHandler->handleStreamUpload($uploadEntity, $upload);
 
         if ($result instanceof UploadCompletedResult) {
             $uploadEntity->finishUploading($result->filename, $result->size);

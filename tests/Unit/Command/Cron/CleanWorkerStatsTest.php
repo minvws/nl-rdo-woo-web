@@ -23,7 +23,7 @@ class CleanWorkerStatsTest extends UnitTestCase
             ->with(Mockery::on(
                 static function (CarbonImmutable $argument): bool {
                     return $argument == CarbonImmutable::create('-1 week');
-                }
+                },
             ));
 
         $command = new CleanWorkerStats($repo);

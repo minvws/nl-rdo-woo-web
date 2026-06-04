@@ -20,7 +20,6 @@ class InvestigationReportAttachmentMapper
             $attachmentRequestDto->type,
             $attachmentRequestDto->language,
         );
-        $attachment->setInternalReference($attachmentRequestDto->internalReference);
         $attachment->setGrounds($attachmentRequestDto->grounds);
         $attachment->setExternalId($attachmentRequestDto->externalId);
 

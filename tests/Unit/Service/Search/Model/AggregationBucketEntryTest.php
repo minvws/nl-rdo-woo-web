@@ -23,7 +23,7 @@ class AggregationBucketEntryTest extends TestCase
             $value = UntranslatedStringFacetDisplayValue::fromString('bar'),
             $searchParams = Mockery::mock(SearchParameters::class),
             $searchParamsWithout = Mockery::mock(SearchParameters::class),
-            $subEntries = [$subEntry]
+            $subEntries = [$subEntry],
         );
 
         self::assertEquals($key, $entry->getKey());

@@ -15,7 +15,7 @@ use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticDocument;
 use Shared\Service\Elastic\ElasticClientInterface;
 use Shared\Service\Elastic\ElasticService;
-use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
+use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
 
 class ElasticServiceTest extends UnitTestCase
@@ -29,7 +29,7 @@ class ElasticServiceTest extends UnitTestCase
     {
         $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
         $this->logger = Mockery::mock(LoggerInterface::class);
-        $this->elasticConfig = ElasticConfigOverride::default();
+        $this->elasticConfig = ElasticConfigFactory::default();
 
         $this->elasticService = new ElasticService(
             $this->elasticClient,

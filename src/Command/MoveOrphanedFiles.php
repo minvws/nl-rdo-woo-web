@@ -50,7 +50,7 @@ class MoveOrphanedFiles extends Command
         $output->writeln(sprintf(
             '%s orphaned files found, total size %s',
             $orphanedPaths->totalCount,
-            Utils::size($orphanedPaths->totalSize)
+            Utils::size($orphanedPaths->totalSize),
         ));
 
         $helper = $this->getHelper('question');

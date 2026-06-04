@@ -80,9 +80,9 @@ class EnrichedPsrLogger implements LoggerInterface
     }
 
     /**
-     * @param mixed[] $context
+     * @param array<array-key, mixed> $context
      *
-     * @return mixed[]
+     * @return array<array-key, mixed>
      */
     protected function enriched(array $context): array
     {

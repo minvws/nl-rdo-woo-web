@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Integration\Api\Publication\Subject;
 
-use PublicationApi\Api\Publication\Subject\SubjectDto;
+use PublicationApi\Api\Publication\Subject\SubjectResponse;
 use PublicationApi\EventSubscriber\ApiVersionHeaderSubscriber;
 use PublicationApi\Tests\Integration\Api\Publication\ApiPublicationV1TestCase;
 use Shared\Tests\Factory\OrganisationFactory;
@@ -40,7 +40,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
-        self::assertMatchesResourceItemJsonSchema(SubjectDto::class);
+        self::assertMatchesResourceItemJsonSchema(SubjectResponse::class);
 
         $apiVersion = self::getContainer()->getParameter('api_platform.version');
 
@@ -87,7 +87,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 sprintf('/api/publication/v1/organisation/%s/subject/invalid', $organisation->getId()),
             );
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-        self::assertMatchesResourceItemJsonSchema(SubjectDto::class);
+        self::assertMatchesResourceItemJsonSchema(SubjectResponse::class);
     }
 
     public function testGetWithInvalidOrganisationParameter(): void
@@ -100,7 +100,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 sprintf('/api/publication/v1/organisation/invalid/subject/%s', $subject->getId()),
             );
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-        self::assertMatchesResourceItemJsonSchema(SubjectDto::class);
+        self::assertMatchesResourceItemJsonSchema(SubjectResponse::class);
     }
 
     public function testGetWithOtherOrganisation(): void
@@ -113,7 +113,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 sprintf('/api/publication/v1/organisation/%s/subject/%s', $subject->getOrganisation()->getId(), $subject->getId()),
             );
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertMatchesResourceItemJsonSchema(SubjectDto::class);
+        self::assertMatchesResourceItemJsonSchema(SubjectResponse::class);
     }
 
     public function testGetCollection(): void
@@ -129,7 +129,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 sprintf('/api/publication/v1/organisation/%s/subject', $organisation->getId()),
             );
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(SubjectDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(SubjectResponse::class);
         self::assertCount($subjectCount, $response->toArray());
     }
 
@@ -146,7 +146,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(SubjectDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(SubjectResponse::class);
         self::assertCount(5, $response->toArray());
     }
 
@@ -171,7 +171,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(SubjectDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(SubjectResponse::class);
         self::assertCount(2, $response->toArray());
     }
 
@@ -187,7 +187,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(SubjectDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(SubjectResponse::class);
         self::assertCount(1, $response->toArray());
     }
 
@@ -215,7 +215,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 ],
             );
         self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
-        self::assertMatchesResourceItemJsonSchema(SubjectDto::class);
+        self::assertMatchesResourceItemJsonSchema(SubjectResponse::class);
 
         $response = self::createPublicationApiClient()
             ->request(
@@ -274,7 +274,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 ],
             );
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertMatchesResourceItemJsonSchema(SubjectDto::class);
+        self::assertMatchesResourceItemJsonSchema(SubjectResponse::class);
 
         $response = self::createPublicationApiClient()
             ->request(
@@ -306,6 +306,6 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 ],
             );
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertMatchesResourceItemJsonSchema(SubjectDto::class);
+        self::assertMatchesResourceItemJsonSchema(SubjectResponse::class);
     }
 }

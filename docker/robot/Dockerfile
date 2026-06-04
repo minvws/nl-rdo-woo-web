@@ -7,6 +7,7 @@ USER root
 RUN apt-get update \
     && apt-get install --assume-yes --no-install-recommends \
         docker-cli \
+        locales \
     # Cleanup
     && rm -rf /var/www/* \
     && apt-get autoremove --assume-yes \
@@ -15,17 +16,12 @@ RUN apt-get update \
     && rm -rf /tmp/* \
     && rm -rf /var/lib/apt/lists/*
 
-# Install fixuid
-ARG TARGETARCH
-ENV FIXUID_VERSION=0.6.0
-RUN curl -fsSLo /tmp/fixuid.tar.gz "https://github.com/boxboat/fixuid/releases/download/v$FIXUID_VERSION/fixuid-${FIXUID_VERSION}-linux-${TARGETARCH}.tar.gz" \
-    && tar -xf /tmp/fixuid.tar.gz -C /usr/local/bin fixuid \
-    && rm /tmp/fixuid.tar.gz \
-    && chmod 4755 /usr/local/bin/fixuid
-
-# Configure fixuid
-RUN mkdir -p /etc/fixuid && \
-    printf "user: pwuser\ngroup: pwuser\n" > /etc/fixuid/config.yml
+# Set locale to NL
+RUN sed -i -e 's/# nl_NL.UTF-8 UTF-8/nl_NL.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
+ENV LANG=nl_NL.UTF-8ß
+ENV LANGUAGE=nl_NL:nl
+ENV LC_ALL=nl_NL.UTF-8
 
 COPY docker/robot/files/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
@@ -44,10 +40,20 @@ COPY ./tests/robot_framework/pyproject.toml .
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/home/pwuser/.local/bin:/home/pwuser/.venv/bin:${PATH}"
 
+# Configure uv
 RUN uv venv --clear \
     && uv sync \
     && uv run rfbrowser init
 
-# Make fixuid run first
+
+# Make home dir traversable/readable for any runtime UID.
+USER root
+# Base image has pwuser=1001, but compose user may set host UID (e.g. 1000).
+RUN chmod o+x /home/pwuser \
+    && chmod -R o+rX /home/pwuser/.local /home/pwuser/.venv \
+    && chmod -R o+rwX /home/pwuser/.cache
+
+USER pwuser
+
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["bash"]

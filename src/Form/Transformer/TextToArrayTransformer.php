@@ -29,7 +29,7 @@ class TextToArrayTransformer implements DataTransformerInterface
     }
 
     /**
-     * @return string[]|null
+     * @return array<array-key, string>|null
      */
     public function transform(mixed $value): ?array
     {
@@ -41,7 +41,7 @@ class TextToArrayTransformer implements DataTransformerInterface
     }
 
     /**
-     * @param string[]|null $value
+     * @param array<array-key, string>|null $value
      */
     public function reverseTransform(mixed $value): string
     {

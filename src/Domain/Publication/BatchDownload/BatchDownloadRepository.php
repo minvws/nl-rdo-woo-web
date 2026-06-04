@@ -35,7 +35,7 @@ class BatchDownloadRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array<BatchDownload>
+     * @return array<array-key, BatchDownload>
      */
     public function findExpiredBatchDownloads(): array
     {
@@ -75,11 +75,11 @@ class BatchDownloadRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return BatchDownload[]
+     * @return array<array-key, BatchDownload>
      */
     public function getAllForScope(BatchDownloadScope $scope): array
     {
-        /** @var BatchDownload[] */
+        /** @var array<BatchDownload> */
         return $this->getBaseScopeQuery($scope)->getQuery()->getResult();
     }
 

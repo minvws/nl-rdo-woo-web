@@ -12,7 +12,7 @@ use Traversable;
 class SortItems implements IteratorAggregate
 {
     /**
-     * @var SortItem[]
+     * @var array<array-key, SortItem>
      */
     private readonly array $sortItems;
 

@@ -6,39 +6,25 @@ namespace Shared\Tests\Unit\Domain\Upload\WooDecision;
 
 use Mockery;
 use Mockery\MockInterface;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Domain\Upload\Event\UploadValidatedEvent;
-use Shared\Domain\Upload\Process\EntityUploadStorer;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\WooDecision\DocumentUploadHandler;
+use Shared\Domain\Upload\WooDecision\ProcessUploadedDocumentAction;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Unit\UnitTestCase;
-use Symfony\Component\Uid\Uuid;
 
 class DocumentUploadHandlerTest extends UnitTestCase
 {
-    private WooDecisionRepository&MockInterface $wooDecisionRepository;
-    private EntityUploadStorer&MockInterface $uploadStorer;
-    private DocumentFileService&MockInterface $documentFileService;
+    private ProcessUploadedDocumentAction&MockInterface $processUploadedDocumentAction;
     private DocumentUploadHandler $handler;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->wooDecisionRepository = Mockery::mock(WooDecisionRepository::class);
-        $this->uploadStorer = Mockery::mock(EntityUploadStorer::class);
-        $this->documentFileService = Mockery::mock(DocumentFileService::class);
+        $this->processUploadedDocumentAction = Mockery::mock(ProcessUploadedDocumentAction::class);
 
-        $this->handler = new DocumentUploadHandler(
-            $this->wooDecisionRepository,
-            $this->documentFileService,
-            $this->uploadStorer,
-        );
+        $this->handler = new DocumentUploadHandler($this->processUploadedDocumentAction);
     }
 
     public function testSkipsUploadsForOtherGroup(): void
@@ -51,30 +37,10 @@ class DocumentUploadHandlerTest extends UnitTestCase
 
     public function testHandleUploadSuccessfully(): void
     {
-        $dossierId = Uuid::v6();
-
         $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->expects('getUploadGroupId')->andReturn(UploadGroupId::WOO_DECISION_DOCUMENTS);
-        $uploadEntity->expects('getContext->getString')->with('dossierId')->andReturn($dossierId->toRfc4122());
-        $uploadEntity->expects('getFilename')->andReturn($filename = 'foo.bar');
 
-        $wooDecision = Mockery::mock(WooDecision::class);
-
-        $this->wooDecisionRepository->expects('findOneByDossierId')->with(Mockery::on(
-            static function (Uuid $id) use ($dossierId) {
-                return $dossierId->toRfc4122() === $id->toRfc4122();
-            }
-        ))->andReturn($wooDecision);
-
-        $documentFileSet = Mockery::mock(DocumentFileSet::class);
-        $this->documentFileService->expects('getDocumentFileSet')->with($wooDecision)->andReturn($documentFileSet);
-
-        $documentFileUpload = Mockery::mock(DocumentFileUpload::class);
-        $this->documentFileService->expects('createNewUpload')->with($documentFileSet, $filename)->andReturn($documentFileUpload);
-
-        $this->uploadStorer->expects('storeUploadForEntity')->with($uploadEntity, $documentFileUpload);
-
-        $this->documentFileService->expects('finishUpload')->with($documentFileSet, $documentFileUpload);
+        $this->processUploadedDocumentAction->expects('execute')->with($uploadEntity)->andReturnNull();
 
         $this->handler->onUploadValidated(new UploadValidatedEvent($uploadEntity));
     }

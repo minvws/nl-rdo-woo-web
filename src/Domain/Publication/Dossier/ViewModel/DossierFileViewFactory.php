@@ -41,7 +41,7 @@ readonly class DossierFileViewFactory
             );
         }
 
-        /** @var Page[] $pages */
+        /** @var array<array-key, Page> $pages */
         $pages = [];
 
         /** @var int $pageNr */

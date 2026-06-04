@@ -30,7 +30,7 @@ readonly class DossierUploadStatus
     public function getActualUploadCount(): int
     {
         return $this->dossier->getDocuments()->filter(
-            static fn (Document $doc): bool => $doc->shouldBeUploaded() && $doc->isUploaded()
+            static fn (Document $doc): bool => $doc->shouldBeUploaded() && $doc->isUploaded(),
         )->count();
     }
 
@@ -45,7 +45,7 @@ readonly class DossierUploadStatus
     public function getUploadedDocuments(): ReadableCollection
     {
         return $this->dossier->getDocuments()->filter(
-            static fn (Document $doc): bool => $doc->isUploaded()
+            static fn (Document $doc): bool => $doc->isUploaded(),
         );
     }
 
@@ -55,7 +55,7 @@ readonly class DossierUploadStatus
     public function getExpectedDocuments(): ReadableCollection
     {
         return $this->dossier->getDocuments()->filter(
-            static fn (Document $doc): bool => $doc->shouldBeUploaded()
+            static fn (Document $doc): bool => $doc->shouldBeUploaded(),
         );
     }
 
@@ -65,12 +65,12 @@ readonly class DossierUploadStatus
     public function getMissingDocuments(): ReadableCollection
     {
         return $this->dossier->getDocuments()->filter(
-            static fn (Document $doc): bool => $doc->shouldBeUploaded() && ! $doc->isUploaded()
+            static fn (Document $doc): bool => $doc->shouldBeUploaded() && ! $doc->isUploaded(),
         );
     }
 
     /**
-     * @param string[] $uploadedFilenames
+     * @param array<array-key, string> $uploadedFilenames
      */
     public function getDocumentsToUpload(array $uploadedFilenames): ReadableCollection
     {
@@ -81,7 +81,7 @@ readonly class DossierUploadStatus
 
         return $this->getMissingDocuments()->filter(
             static fn (Document $doc): bool => $doc->getDocumentId() !== null
-                && ! array_key_exists($doc->getDocumentId(), $docIdsToIgnore)
+                && ! array_key_exists($doc->getDocumentId(), $docIdsToIgnore),
         );
     }
 

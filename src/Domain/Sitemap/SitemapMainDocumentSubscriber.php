@@ -42,7 +42,7 @@ readonly class SitemapMainDocumentSubscriber
                     ),
                     $mainDocument->getUpdatedAt(),
                     UrlConcrete::CHANGEFREQ_MONTHLY,
-                    0.8
+                    0.8,
                 ),
                 'main_documents',
             );

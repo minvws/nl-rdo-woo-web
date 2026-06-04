@@ -16,7 +16,7 @@ use Shared\Domain\Search\Index\Rollover\RolloverCounter;
 use Shared\Domain\Search\Index\Rollover\RolloverParameters;
 use Shared\Domain\Search\Index\Rollover\RolloverService;
 use Shared\Domain\Search\Index\Rollover\SetElasticAliasCommand;
-use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
+use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
@@ -35,7 +35,7 @@ class RolloverServiceTest extends UnitTestCase
         $this->messageBus = Mockery::mock(MessageBusInterface::class);
         $this->mappingService = Mockery::mock(MappingService::class);
         $this->counter = Mockery::mock(RolloverCounter::class);
-        $this->elasticConfig = ElasticConfigOverride::default();
+        $this->elasticConfig = ElasticConfigFactory::default();
 
         $this->rolloverService = new RolloverService(
             $this->messageBus,
@@ -70,7 +70,7 @@ class RolloverServiceTest extends UnitTestCase
         );
 
         self::assertNull(
-            $this->rolloverService->getDetailsFromIndices([$indexA, $indexB])
+            $this->rolloverService->getDetailsFromIndices([$indexA, $indexB]),
         );
     }
 
@@ -101,7 +101,7 @@ class RolloverServiceTest extends UnitTestCase
         ]);
 
         $this->assertMatchesObjectSnapshot(
-            $this->rolloverService->getDetailsFromIndices([$indexA, $indexB])
+            $this->rolloverService->getDetailsFromIndices([$indexA, $indexB]),
         );
     }
 
@@ -134,7 +134,7 @@ class RolloverServiceTest extends UnitTestCase
                 self::assertEquals($this->elasticConfig->readIndex, $message->aliasName);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
@@ -143,7 +143,7 @@ class RolloverServiceTest extends UnitTestCase
                 self::assertEquals($this->elasticConfig->writeIndex, $message->aliasName);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->rolloverService->makeLive($name);
@@ -158,7 +158,7 @@ class RolloverServiceTest extends UnitTestCase
                 self::assertEquals($params->getMappingVersion(), $message->mappingVersion);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->rolloverService->initiateRollover($params);

@@ -76,13 +76,13 @@ abstract class AbstractMainDocumentProcessor implements ProcessorInterface
         $mainDocument = $this->handle(
             new CreateMainDocumentCommand(
                 dossierId: $dossierId,
-                formalDate: $data->getFormalDateInstance(),
+                formalDate: $data->formalDate,
                 internalReference: $data->internalReference,
                 type: $data->type,
                 language: $data->language,
                 grounds: $data->grounds,
                 uploadFileReference: $data->uploadUuid,
-            )
+            ),
         );
 
         return $this->fromEntityToDto($mainDocument);
@@ -94,13 +94,13 @@ abstract class AbstractMainDocumentProcessor implements ProcessorInterface
         $mainDocument = $this->handle(
             new UpdateMainDocumentCommand(
                 dossierId: $dossierId,
-                formalDate: $data->getFormalDateInstance(),
+                formalDate: $data->formalDate,
                 internalReference: $data->internalReference,
                 type: $data->type,
                 language: $data->language,
                 grounds: $data->grounds,
                 uploadFileReference: $data->uploadUuid,
-            )
+            ),
         );
 
         return $this->fromEntityToDto($mainDocument);
@@ -111,7 +111,7 @@ abstract class AbstractMainDocumentProcessor implements ProcessorInterface
         $this->handle(
             new DeleteMainDocumentCommand(
                 dossierId: $dossierId,
-            )
+            ),
         );
 
         return null;

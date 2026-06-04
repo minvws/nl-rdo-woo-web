@@ -15,7 +15,7 @@ class InventoryReaderException extends FileReaderException
             'publication.dossier.error.missing_document_number',
             [
                 '{rownumber}' => strval($rowIndex),
-            ]
+            ],
         );
     }
 
@@ -26,7 +26,7 @@ class InventoryReaderException extends FileReaderException
             'publication.dossier.error.invalid_document_number',
             [
                 '{rownumber}' => strval($rowIndex),
-            ]
+            ],
         );
     }
 
@@ -39,7 +39,7 @@ class InventoryReaderException extends FileReaderException
                 '{rownumber}' => strval($rowIndex),
                 '{min}' => strval($min),
                 '{max}' => strval($max),
-            ]
+            ],
         );
     }
 
@@ -52,7 +52,7 @@ class InventoryReaderException extends FileReaderException
                 '{rownumber}' => strval($rowIndex),
                 '{min}' => strval($mix),
                 '{max}' => strval($max),
-            ]
+            ],
         );
     }
 
@@ -64,7 +64,7 @@ class InventoryReaderException extends FileReaderException
             [
                 '{rownumber}' => strval($rowIndex),
                 '{max}' => strval($max),
-            ]
+            ],
         );
     }
 
@@ -75,7 +75,7 @@ class InventoryReaderException extends FileReaderException
             'publication.dossier.error.invalid_family_id',
             [
                 '{rownumber}' => strval($rowIndex),
-            ]
+            ],
         );
     }
 
@@ -86,7 +86,7 @@ class InventoryReaderException extends FileReaderException
             'publication.dossier.error.invalid_thread_id',
             [
                 '{rownumber}' => strval($rowIndex),
-            ]
+            ],
         );
     }
 
@@ -97,7 +97,7 @@ class InventoryReaderException extends FileReaderException
             'publication.dossier.error.link_too_long',
             [
                 '{rownumber}' => strval($rowIdx),
-            ]
+            ],
         );
     }
 
@@ -108,7 +108,7 @@ class InventoryReaderException extends FileReaderException
             'publication.dossier.error.file_name_too_long',
             [
                 '{rownumber}' => strval($rowIdx),
-            ]
+            ],
         );
     }
 
@@ -119,7 +119,7 @@ class InventoryReaderException extends FileReaderException
             'publication.dossier.error.casenumbers_invalid',
             [
                 '{rownumber}' => strval($rowIdx),
-            ]
+            ],
         );
     }
 }

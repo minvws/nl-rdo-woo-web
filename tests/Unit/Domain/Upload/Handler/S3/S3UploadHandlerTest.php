@@ -12,10 +12,12 @@ use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Override;
+use Psr\Http\Message\StreamInterface;
 use Shared\Domain\Upload\Handler\S3\S3UploadHandler;
 use Shared\Domain\Upload\Handler\S3\S3UploadHelper;
 use Shared\Domain\Upload\Result\PartialUploadResult;
 use Shared\Domain\Upload\Result\UploadCompletedResult;
+use Shared\Domain\Upload\StreamUpload;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadRequest;
 use Shared\Service\Uploader\UploadGroupId;
@@ -74,6 +76,29 @@ class S3UploadHandlerTest extends MockeryTestCase
         $this->s3uploadHelper->expects('uploadFile')->with($request);
 
         $result = $this->handler->handleUpload($uploadEntity, $request);
+
+        self::assertInstanceOf(UploadCompletedResult::class, $result);
+        $this->assertMatchesSnapshot($result->toJsonResponse()->getContent());
+    }
+
+    public function testHandleStreamUpload(): void
+    {
+        $uploadEntity = Mockery::mock(UploadEntity::class);
+
+        $stream = Mockery::mock(StreamInterface::class);
+        $stream->expects('getSize')->andReturn(123);
+
+        $streamUpload = new StreamUpload(
+            fileName: 'foobar.pdf',
+            stream: $stream,
+            groupId: UploadGroupId::WOO_DECISION_DOCUMENTS,
+            additionalParameters: [],
+            uploadId: 'foo-bar-123',
+        );
+
+        $this->s3uploadHelper->expects('uploadStream')->with($streamUpload);
+
+        $result = $this->handler->handleStreamUpload($uploadEntity, $streamUpload);
 
         self::assertInstanceOf(UploadCompletedResult::class, $result);
         $this->assertMatchesSnapshot($result->toJsonResponse()->getContent());

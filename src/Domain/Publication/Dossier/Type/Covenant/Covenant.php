@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\Covenant;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -15,10 +14,12 @@ use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use Shared\Domain\Publication\Dossier\Validator\DateFromConstraint;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
+use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use function array_values;
@@ -41,11 +42,14 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
     use HasMainDocument;
 
     #[ORM\Column(length: 2048)]
-    #[Assert\Url(groups: [
-        DossierValidationGroup::CONTENT->value,
-        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
-        DossierValidationGroup::WORKFLOW_PUBLISH->value,
-    ])]
+    #[Assert\Url(
+        requireTld: true,
+        groups: [
+            DossierValidationGroup::CONTENT->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
+    )]
     #[Assert\Length(min: 0, max: 2048, groups: [
         DossierValidationGroup::CONTENT->value,
         DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
@@ -104,13 +108,6 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
     ])]
     protected string $summary = '';
 
-    #[DateFromConstraint(
-        groups: [
-            DossierValidationGroup::DETAILS->value,
-            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
-            DossierValidationGroup::WORKFLOW_PUBLISH->value,
-        ],
-    )]
     #[Assert\NotNull(
         message: 'date_mandatory',
         groups: [
@@ -119,8 +116,18 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    #[Assert\LessThanOrEqual(
-        value: 'today',
+    #[PlainDateAfterOrEqual(
+        date: '- 10 years',
+        message: 'date_max_10_year_old',
+        propertyPath: 'createdAt',
+        groups: [
+            DossierValidationGroup::DETAILS->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
+    )]
+    #[PlainDateBeforeOrEqual(
+        date: 'today',
         message: 'date_must_not_be_in_future',
         groups: [
             DossierValidationGroup::DETAILS->value,
@@ -128,7 +135,7 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    protected ?DateTimeImmutable $dateFrom = null;
+    protected ?PlainDate $dateFrom = null;
 
     public function __construct()
     {

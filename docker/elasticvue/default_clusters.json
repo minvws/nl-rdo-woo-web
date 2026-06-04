@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Local cluster using Orbstack",
+        "uri": "https://elasticsearch-woo.local"
+    },
+    {
+        "name": "Local cluster using port",
+        "uri": "http://localhost:9200"
+    }
+]

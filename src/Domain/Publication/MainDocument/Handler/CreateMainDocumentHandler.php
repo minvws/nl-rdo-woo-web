@@ -68,7 +68,7 @@ readonly class CreateMainDocumentHandler
         $documentRepository->save($mainDocument, true);
 
         $this->messageBus->dispatch(
-            MainDocumentCreatedEvent::forDocument($mainDocument)
+            MainDocumentCreatedEvent::forDocument($mainDocument),
         );
 
         return $mainDocument;

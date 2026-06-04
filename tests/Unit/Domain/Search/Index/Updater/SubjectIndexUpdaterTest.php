@@ -9,7 +9,7 @@ use Mockery\MockInterface;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Search\Index\Updater\SubjectIndexUpdater;
 use Shared\Service\Elastic\ElasticClientInterface;
-use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
+use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -24,7 +24,7 @@ class SubjectIndexUpdaterTest extends UnitTestCase
 
         $this->indexUpdater = new SubjectIndexUpdater(
             $this->elasticClient,
-            ElasticConfigOverride::default(),
+            ElasticConfigFactory::default(),
         );
 
         parent::setUp();
@@ -38,7 +38,7 @@ class SubjectIndexUpdaterTest extends UnitTestCase
 
         $this->elasticClient->expects('updateByQuery')->with(Mockery::on(
             static fn (array $input) => $input['body']['query']['bool']['should'][0]['match']['subject.id'] === $subjectId
-                && $input['body']['script']['params']['subject']['name'] === 'Foo Bar'
+                && $input['body']['script']['params']['subject']['name'] === 'Foo Bar',
         ));
 
         $this->indexUpdater->update($subject);

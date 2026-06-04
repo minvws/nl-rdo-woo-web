@@ -15,24 +15,9 @@ use Shared\Tests\Factory\InquiryFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
-use Webmozart\Assert\Assert;
 
 final class InquiryRepositoryTest extends SharedWebTestCase
 {
-    private InquiryRepository $repository;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
-
-        $repository = self::getContainer()->get(InquiryRepository::class);
-        Assert::isInstanceOf($repository, InquiryRepository::class);
-
-        $this->repository = $repository;
-    }
-
     public function testGetDocumentsForBatchDownload(): void
     {
         $wooDecisionA = WooDecisionFactory::createOne();
@@ -85,7 +70,7 @@ final class InquiryRepositoryTest extends SharedWebTestCase
             'documents' => [$docA, $docB, $docC, $docD, $docE],
         ]);
 
-        $result = $this->repository
+        $result = self::fromContainer(InquiryRepository::class)
             ->getDocumentsForBatchDownload($inquiry, $wooDecisionA)
             ->getQuery()
             ->getResult();
@@ -127,7 +112,7 @@ final class InquiryRepositoryTest extends SharedWebTestCase
             ],
         ]);
 
-        $result = $this->repository->countDocumentsByJudgement($inquiry);
+        $result = self::fromContainer(InquiryRepository::class)->countDocumentsByJudgement($inquiry);
 
         self::assertEquals(5, $result['total']);
         self::assertEquals(3, $result['public']);
@@ -145,14 +130,13 @@ final class InquiryRepositoryTest extends SharedWebTestCase
         $conceptWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::CONCEPT]);
         $previewWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PREVIEW]);
         $publishedWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED]);
-        $otherWooDecision = WooDecisionFactory::createOne();
 
         $inquiry = InquiryFactory::createOne([
             'dossiers' => [$conceptWooDecision, $publishedWooDecision, $previewWooDecision],
         ]);
 
         // Only $previewWooDecision and $publishedWooDecision should be counted
-        $this->assertEquals(2, $this->repository->countPubliclyAvailableDossiers($inquiry));
+        $this->assertEquals(2, self::fromContainer(InquiryRepository::class)->countPubliclyAvailableDossiers($inquiry));
     }
 
     public function testGetDossiersForInquiryQueryBuilder(): void
@@ -160,21 +144,18 @@ final class InquiryRepositoryTest extends SharedWebTestCase
         $conceptWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::CONCEPT]);
         $previewWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PREVIEW]);
         $publishedWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED]);
-        $otherWooDecision = WooDecisionFactory::createOne();
 
-        $docInConcept = DocumentFactory::createone(['dossiers' => [$conceptWooDecision]]);
         $docInPreviewAndInquiryA = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
         $docInPreviewAndInquiryB = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
-        $docInPreviewWithoutInquiry = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
         $docInPublishedAndInquiry = DocumentFactory::createone(['dossiers' => [$publishedWooDecision]]);
-        $docInOther = DocumentFactory::createone(['dossiers' => [$otherWooDecision]]);
 
         $inquiry = InquiryFactory::createOne([
             'dossiers' => [$conceptWooDecision, $publishedWooDecision, $previewWooDecision],
             'documents' => [$docInPreviewAndInquiryA, $docInPreviewAndInquiryB, $docInPublishedAndInquiry],
         ]);
 
-        $result = $this->repository->getDossiersForInquiryQueryBuilder($inquiry)
+        $result = self::fromContainer(InquiryRepository::class)
+            ->getDossiersForInquiryQueryBuilder($inquiry)
             ->getQuery()
             ->getResult();
 
@@ -184,14 +165,14 @@ final class InquiryRepositoryTest extends SharedWebTestCase
                 0 => $publishedWooDecision,
                 'docCount' => 1,
             ],
-            $result
+            $result,
         );
         $this->assertContainsEquals(
             [
                 0 => $previewWooDecision,
                 'docCount' => 2,
             ],
-            $result
+            $result,
         );
     }
 
@@ -214,8 +195,9 @@ final class InquiryRepositoryTest extends SharedWebTestCase
             'documents' => [$docInPreviewAndInquiryA, $docInPreviewAndInquiryB, $docInPublishedAndInquiry],
         ]);
 
-        /** @var array<array{inquiry: Inquiry, documentCount: int, dossierCount: int}> $result */
-        $result = $this->repository->getQueryWithDocCountAndDossierCount($inquiry->getOrganisation())
+        /** @var array<array-key, array{inquiry: Inquiry, documentCount: int, dossierCount: int}> $result */
+        $result = self::fromContainer(InquiryRepository::class)
+            ->getQueryWithDocCountAndDossierCount($inquiry->getOrganisation())
             ->getResult();
 
         $this->assertCount(1, $result);

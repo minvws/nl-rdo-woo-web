@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication;
 
-use Carbon\CarbonImmutable;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Tests\Factory\OrganisationFactory;
@@ -20,7 +19,7 @@ final class OtherPublicationFactory extends PersistentObjectFactory
      */
     protected function defaults(): array
     {
-        $publicationDate = CarbonImmutable::createFromMutable(self::faker()->dateTimeBetween('01-01-2010', '01-01-2023'));
+        $publicationDate = self::faker()->plainDateBetween('01-01-2010', '01-01-2023');
 
         return [
             'dossierNr' => self::faker()->bothify('DOSSIER-####-#####'),

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\RequestForAdvice;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -19,6 +18,8 @@ use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use function array_values;
@@ -59,11 +60,14 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     private Collection $attachments;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Url(groups: [
-        DossierValidationGroup::CONTENT->value,
-        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
-        DossierValidationGroup::WORKFLOW_PUBLISH->value,
-    ])]
+    #[Assert\Url(
+        requireTld: true,
+        groups: [
+            DossierValidationGroup::CONTENT->value,
+            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+        ],
+    )]
     private string $link = '';
 
     /** @var list<string> */
@@ -98,8 +102,8 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    #[Assert\LessThanOrEqual(
-        value: 'today',
+    #[PlainDateBeforeOrEqual(
+        date: 'today',
         message: 'date_must_not_be_in_future',
         groups: [
             DossierValidationGroup::DETAILS->value,
@@ -107,7 +111,7 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    protected ?DateTimeImmutable $dateFrom = null;
+    protected ?PlainDate $dateFrom = null;
 
     #[Assert\Length(min: 1, max: 1000, groups: [
         DossierValidationGroup::DECISION->value,
@@ -126,7 +130,7 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     }
 
     #[Override]
-    public function setDateFrom(?DateTimeImmutable $dateFrom): static
+    public function setDateFrom(?PlainDate $dateFrom): static
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateFrom;

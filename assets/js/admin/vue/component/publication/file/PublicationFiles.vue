@@ -54,7 +54,7 @@ const createEmptyPublicationFile = (): PublicationFile => ({
   internalReference: '',
   grounds: [],
   name: '',
-  language: 'Dutch',
+  language: 'NLD',
   mimeType: '',
   size: 0,
   type: '',

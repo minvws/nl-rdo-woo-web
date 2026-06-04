@@ -55,7 +55,7 @@ class TwoFactorAuditLoggerTest extends UnitTestCase
                 $this->assertEquals($user, $event->getActor());
 
                 return true;
-            }
+            },
         ));
 
         $this->twoFactorLogger->onSuccess($event);
@@ -78,7 +78,7 @@ class TwoFactorAuditLoggerTest extends UnitTestCase
                 $this->assertEquals($user, $event->getActor());
 
                 return true;
-            }
+            },
         ));
 
         $this->twoFactorLogger->onFailure($event);

@@ -88,7 +88,7 @@ class OrganisationSwitcherTest extends UnitTestCase
         $this->session->expects('get')->with('organisation')->andReturn($uuid->toRfc4122());
 
         $this->organisationRepository->expects('find')->with(Mockery::on(
-            static fn (Uuid $queryUuid) => $queryUuid->toRfc4122() === $uuid->toRfc4122()
+            static fn (Uuid $queryUuid) => $queryUuid->toRfc4122() === $uuid->toRfc4122(),
         ))->andReturn($organisation);
 
         self::assertEquals(
@@ -113,7 +113,7 @@ class OrganisationSwitcherTest extends UnitTestCase
         $this->session->expects('get')->with('organisation')->andReturn($uuid->toRfc4122());
 
         $this->organisationRepository->expects('find')->with(Mockery::on(
-            static fn (Uuid $queryUuid) => $queryUuid->toRfc4122() === $uuid->toRfc4122()
+            static fn (Uuid $queryUuid) => $queryUuid->toRfc4122() === $uuid->toRfc4122(),
         ))->andReturnNull();
 
         self::assertEquals(
@@ -136,7 +136,7 @@ class OrganisationSwitcherTest extends UnitTestCase
         $this->organisationRepository->expects('getAllSortedByName')->andReturn([]);
 
         $this->organisationRepository->expects('find')->with(Mockery::on(
-            static fn (Uuid $queryUuid) => $queryUuid->toRfc4122() === $uuid->toRfc4122()
+            static fn (Uuid $queryUuid) => $queryUuid->toRfc4122() === $uuid->toRfc4122(),
         ))->andReturnNull();
 
         $this->expectException(RuntimeException::class);

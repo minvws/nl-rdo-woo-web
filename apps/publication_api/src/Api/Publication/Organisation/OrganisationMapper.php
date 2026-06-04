@@ -14,16 +14,16 @@ class OrganisationMapper
     /**
      * @param array<array-key,Organisation> $organisations
      *
-     * @return array<array-key,OrganisationDto>
+     * @return array<array-key,OrganisationResponseDto>
      */
     public static function fromEntities(array $organisations): array
     {
         return array_values(array_map(self::fromEntity(...), $organisations));
     }
 
-    public static function fromEntity(Organisation $organisation): OrganisationDto
+    public static function fromEntity(Organisation $organisation): OrganisationResponseDto
     {
-        return new OrganisationDto(
+        return new OrganisationResponseDto(
             $organisation->getId(),
             $organisation->getName(),
         );

@@ -35,7 +35,7 @@ class WooDecisionChoiceLoader implements ChoiceLoaderInterface
         }
 
         $entities = $this->wooDecisionRepository->findAllForOrganisation(
-            $this->authorizationMatrix->getActiveOrganisation()
+            $this->authorizationMatrix->getActiveOrganisation(),
         );
 
         $choices = [];

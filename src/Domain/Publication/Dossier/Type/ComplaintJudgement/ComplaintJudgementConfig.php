@@ -48,7 +48,7 @@ readonly class ComplaintJudgementConfig implements DossierTypeConfigInterface
     }
 
     /**
-     * @return StepDefinitionInterface[]
+     * @return array<array-key, StepDefinitionInterface>
      */
     public function getSteps(): array
     {

@@ -1,7 +1,3 @@
 #!/bin/sh
-if [ "$FIXUID_DEBUG" = "1" ]; then
-  fixuid
-else
-  fixuid >/dev/null 2>&1
-fi
+export PATH="/home/pwuser/.local/bin:/home/pwuser/.venv/bin:${PATH}"
 exec "$@"

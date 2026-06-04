@@ -16,7 +16,7 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Webmozart\Assert\Assert;
 
 /**
- * @implements ProcessorInterface<SubjectCreateDto|SubjectUpdateDto,?SubjectDto>
+ * @implements ProcessorInterface<SubjectCreateDto|SubjectUpdateDto,?SubjectResponse>
  */
 final readonly class SubjectProcessor implements ProcessorInterface
 {
@@ -26,7 +26,7 @@ final readonly class SubjectProcessor implements ProcessorInterface
     ) {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?SubjectDto
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?SubjectResponse
     {
         unset($context);
 

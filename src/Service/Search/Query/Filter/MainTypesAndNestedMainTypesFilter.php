@@ -51,7 +51,7 @@ readonly class MainTypesAndNestedMainTypesFilter implements FilterInterface
                                 path: ElasticNestedField::DOSSIERS->value,
                                 query: $nestedDossierQuery,
                             ),
-                        ]
+                        ],
                     ),
                     Query::bool(
                         filter: [
@@ -60,10 +60,10 @@ readonly class MainTypesAndNestedMainTypesFilter implements FilterInterface
                                 values: ElasticDocumentType::getMainTypeValues(),
                             ),
                             $dossierQuery,
-                        ]
+                        ],
                     ),
                 ],
-            )->setParams(['minimum_should_match' => 1])
+            )->setParams(['minimum_should_match' => 1]),
         );
     }
 }

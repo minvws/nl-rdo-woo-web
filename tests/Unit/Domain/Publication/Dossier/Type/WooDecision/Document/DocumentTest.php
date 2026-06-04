@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use DateTimeImmutable;
 use Mockery;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -14,6 +13,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 
 final class DocumentTest extends UnitTestCase
 {
@@ -41,7 +41,7 @@ final class DocumentTest extends UnitTestCase
     {
         $document = new Document();
 
-        $document->setDocumentDate($date = new DateTimeImmutable());
+        $document->setDocumentDate($date = PlainDate::today());
         self::assertEquals($date, $document->getDocumentDate());
     }
 

@@ -11,7 +11,7 @@ use function array_merge;
 readonly class ElasticDocument
 {
     /**
-     * @param array<array-key, mixed> $fields
+     * @param array<string, mixed> $fields
      */
     public function __construct(
         private string $id,
@@ -27,7 +27,7 @@ readonly class ElasticDocument
     }
 
     /**
-     * @return array<array-key, mixed>
+     * @return array<string, mixed>
      */
     public function getFields(): array
     {
@@ -35,7 +35,7 @@ readonly class ElasticDocument
     }
 
     /**
-     * @return array<array-key, mixed>
+     * @return array<string, mixed>
      */
     public function getDocumentValues(): array
     {

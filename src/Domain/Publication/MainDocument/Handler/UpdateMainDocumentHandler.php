@@ -43,11 +43,11 @@ readonly class UpdateMainDocumentHandler
         $dossier = $this->dossierRepository->findOneByDossierId($dossierId);
         Assert::isInstanceOf($dossier, EntityWithMainDocument::class);
 
-        /** @var EntityRepository<MainDocumentRepositoryInterface> $documentRepository */
-        $documentRepository = $this->entityManager->getRepository($dossier->getMainDocumentEntityClass());
-        Assert::isInstanceOf($documentRepository, MainDocumentRepositoryInterface::class);
+        /** @var EntityRepository<MainDocumentRepositoryInterface> $mainDocumentRepository */
+        $mainDocumentRepository = $this->entityManager->getRepository($dossier->getMainDocumentEntityClass());
+        Assert::isInstanceOf($mainDocumentRepository, MainDocumentRepositoryInterface::class);
 
-        $mainDocument = $documentRepository->findOneByDossierId($dossier->getId());
+        $mainDocument = $mainDocumentRepository->findOneByDossierId($dossier->getId());
         if ($mainDocument === null) {
             throw new MainDocumentNotFoundException();
         }
@@ -63,7 +63,7 @@ readonly class UpdateMainDocumentHandler
 
         $this->mapUpload($command, $mainDocument);
 
-        $documentRepository->save($mainDocument, true);
+        $mainDocumentRepository->save($mainDocument, true);
 
         $this->messageBus->dispatch(
             MainDocumentUpdatedEvent::forDocument($mainDocument),
@@ -100,7 +100,7 @@ readonly class UpdateMainDocumentHandler
         if ($command->uploadFileReference !== null) {
             $this->uploadStorer->storeUploadForEntityWithSourceTypeAndName(
                 $mainDocument,
-                $command->uploadFileReference
+                $command->uploadFileReference,
             );
         }
     }

@@ -1,60 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
-			count: 1
-			path: apps/admin/src/Form/User/RoleType.php
-
-		-
-			message: '#^Parameter \#2 \$array of function array_map expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: apps/admin/src/Form/User/RoleType.php
-
-		-
-			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: apps/admin/src/Form/User/RoleType.php
-
-		-
-			message: '''
-				#^Call to method getClassName\(\) of deprecated class Symfony\\Component\\PropertyInfo\\Type\:
-				since Symfony 7\.3, use "Symfony\\Component\\TypeInfo\\Type" class from "symfony/type\-info" instead$#
-			'''
-			identifier: method.deprecatedClass
-			count: 1
-			path: apps/publication_api/src/Api/ExternalIdPropertyMetadataFactory.php
-
-		-
-			message: '''
-				#^Call to method isNullable\(\) of deprecated class Symfony\\Component\\PropertyInfo\\Type\:
-				since Symfony 7\.3, use "Symfony\\Component\\TypeInfo\\Type" class from "symfony/type\-info" instead$#
-			'''
-			identifier: method.deprecatedClass
-			count: 1
-			path: apps/publication_api/src/Api/ExternalIdPropertyMetadataFactory.php
-
-		-
-			message: '#^Cannot call method getProjectDir\(\) on Symfony\\Component\\HttpKernel\\KernelInterface\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: apps/publication_api/tests/Integration/Api/Publication/Dossier/Uploads/Attachment/WooDecisionUploadAttachmentTest.php
-
-		-
-			message: '#^Cannot call method getProjectDir\(\) on Symfony\\Component\\HttpKernel\\KernelInterface\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: apps/publication_api/tests/Integration/Api/Publication/Dossier/Uploads/Document/WooDecisionUploadDocumentTest.php
-
-		-
-			message: '#^Cannot call method getProjectDir\(\) on Symfony\\Component\\HttpKernel\\KernelInterface\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: apps/publication_api/tests/Integration/Api/Publication/Dossier/Uploads/MainDocument/WooDecisionUploadMainDocumentTest.php
-
-		-
 			message: '''
 				#^Call to deprecated method getParamName\(\) of enum Shared\\Service\\Search\\Model\\FacetKey\:
 				use FacetDefinition\:\:\$requestParameter instead, see WOO\-6328$#
@@ -73,36 +19,6 @@ parameters:
 			path: src/Controller/Public/Dossier/WooDecision/InquiryController.php
 
 		-
-			message: '#^Parameter \#3 \$response of method Shared\\DataCollector\\ElasticCollector\:\:addCall\(\) expects Elastic\\Elasticsearch\\Response\\Elasticsearch, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/DataCollector/CollectorClient.php
-
-		-
-			message: '#^Cannot access an offset on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: src/DataCollector/ElasticCollector.php
-
-		-
-			message: '#^Method Shared\\DataCollector\\ElasticCollector\:\:getCalls\(\) should return array\<mixed\> but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: src/DataCollector/ElasticCollector.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Doctrine/EncryptedArray.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Doctrine/EncryptedString.php
-
-		-
 			message: '''
 				#^Call to deprecated method getParamName\(\) of enum Shared\\Service\\Search\\Model\\FacetKey\:
 				use FacetDefinition\:\:\$requestParameter instead, see WOO\-6328$#
@@ -110,12 +26,6 @@ parameters:
 			identifier: method.deprecated
 			count: 1
 			path: src/Domain/Publication/Dossier/Type/WooDecision/ViewModel/WooDecisionViewFactory.php
-
-		-
-			message: '#^Method Shared\\Domain\\Publication\\Dossier\\ViewModel\\DossierTypeViewFactory\:\:makeCollection\(\) should return list\<Shared\\Domain\\Publication\\Dossier\\ViewModel\\DossierType\> but returns list\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Domain/Publication/Dossier/ViewModel/DossierTypeViewFactory.php
 
 		-
 			message: '''
@@ -134,12 +44,6 @@ parameters:
 			identifier: method.deprecated
 			count: 1
 			path: src/Domain/Publication/Dossier/Workflow/DossierWorkflowManager.php
-
-		-
-			message: '#^Parameter \#2 \$dossierDoc of method Shared\\Domain\\Search\\Index\\Updater\\NestedDossierIndexUpdater\:\:update\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Domain/Search/Index/Dossier/DossierIndexer.php
 
 		-
 			message: '#^Cannot access offset ''_meta'' on mixed\.$#'
@@ -166,7 +70,7 @@ parameters:
 			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
 
 		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|GMP\|int\|resource\|string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Domain/Search/Index/ElasticIndex/ElasticIndexManager.php
@@ -202,6 +106,12 @@ parameters:
 			path: src/Domain/Search/Index/Rollover/RolloverCounter.php
 
 		-
+			message: '#^Parameter \#1 \$array of function array_intersect expects an array of values castable to string, list\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Search/Query/Facet/Definition/AbstractInquiryFacet.php
+
+		-
 			message: '''
 				#^Call to deprecated method getParamName\(\) of enum Shared\\Service\\Search\\Model\\FacetKey\:
 				use FacetDefinition\:\:\$requestParameter instead, see WOO\-6328$#
@@ -226,7 +136,7 @@ parameters:
 			path: src/Domain/WooIndex/Producer/UrlProducer.php
 
 		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|GMP\|int\|resource\|string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/EventSubscriber/LocaleListener.php
@@ -242,72 +152,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Form/ChoiceTypeWithHelp.php
-
-		-
-			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Service/FileReader/CsvReader.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Service/FileReader/CsvReader.php
-
-		-
-			message: '#^Parameter \#1 \$headers of method Shared\\Service\\FileReader\\CsvReaderFactory\:\:resolveHeaderMapping\(\) expects array\<string\>, list\<string\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Service/FileReader/CsvReaderFactory.php
-
-		-
-			message: '#^Parameter \#1 \$headers of method Shared\\Service\\FileReader\\ExcelCsvReaderFactory\:\:resolveHeaderMapping\(\) expects array\<string\>, list\<string\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Service/FileReader/ExcelCsvReaderFactory.php
-
-		-
-			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Service/FileReader/ExcelReader.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Service/FileReader/ExcelReader.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Service/FileReader/ExcelReaderFactory.php
-
-		-
-			message: '#^Cannot use \+\+ on mixed\.$#'
-			identifier: postInc.type
-			count: 1
-			path: src/Service/Inventory/InventoryChangeset.php
-
-		-
-			message: '#^Method Shared\\Service\\Inventory\\InventoryChangeset\:\:getCounts\(\) should return array\<string, int\> but returns array\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Service/Inventory/InventoryChangeset.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 3
-			path: src/Service/Inventory/InventoryDataHelper.php
-
-		-
-			message: '#^Parameter \#1 \$value of function intval expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Service/Inventory/Reader/InventoryReader.php
 
 		-
 			message: '#^Parameter \$values of static method Erichard\\ElasticQueryBuilder\\Query\\Query\:\:terms\(\) expects array\<int, bool\|float\|int\|string\>, array\<string\> given\.$#'
@@ -400,64 +244,10 @@ parameters:
 			path: src/Service/Security/ApiUser.php
 
 		-
-			message: '#^Property Shared\\Service\\Security\\Authorization\\Entry\:\:\$filters \(array\<string, bool\>\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Service/Security/Authorization/Entry.php
-
-		-
-			message: '#^Property Shared\\Service\\Security\\Authorization\\Entry\:\:\$permissions \(array\<string, bool\>\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Service/Security/Authorization/Entry.php
-
-		-
-			message: '#^Property Shared\\Service\\Security\\Authorization\\Entry\:\:\$prefix \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Service/Security/Authorization/Entry.php
-
-		-
-			message: '#^Property Shared\\Service\\Security\\Authorization\\Entry\:\:\$roles \(array\<string\>\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Service/Security/Authorization/Entry.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Service/Security/OrganisationSwitcher.php
-
-		-
-			message: '#^Method Shared\\Service\\Security\\User\:\:getUserIdentifier\(\) should return non\-empty\-string but returns string\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Service/Security/User.php
-
-		-
-			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			message: '#^Parameter \#1 \$value of function strval expects bool\|float\|GMP\|int\|resource\|string\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Twig/Runtime/CspExtensionRuntime.php
-
-		-
-			message: '#^Method Shared\\Tests\\Faker\\GroundsFakerProvider\:\:ground\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Faker/GroundsFakerProvider.php
-
-		-
-			message: '#^Method Shared\\Tests\\Faker\\GroundsFakerProvider\:\:grounds\(\) should return list\<string\> but returns list\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Faker/GroundsFakerProvider.php
-
-		-
-			message: '#^Method Shared\\Tests\\Faker\\GroundsFakerProvider\:\:groundsBetween\(\) should return list\<string\> but returns list\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Faker/GroundsFakerProvider.php
 
 		-
 			message: '#^Anonymous function should return bool but returns mixed\.$#'
@@ -470,90 +260,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/Domain/Ingest/Content/LazyFileReferenceTest.php
-
-		-
-			message: '#^Cannot call method andReturnTrue\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Unit/Domain/Ingest/Process/Pdf/IngestPdfHandlerTest.php
-
-		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Unit/Domain/Publication/Attachment/Enum/AttachmentTypeBranchTest.php
-
-		-
-			message: '#^Cannot call method with\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Unit/Domain/Publication/Attachment/Enum/AttachmentTypeBranchTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\ExpectsHigherOrderMessage\:\:andReturn\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: tests/Unit/Domain/Publication/Attachment/ViewModel/AttachmentViewFactoryTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\ExpectsHigherOrderMessage\:\:andReturnNull\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Publication/Attachment/ViewModel/AttachmentViewFactoryTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\ExpectsHigherOrderMessage\:\:times\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Unit/Domain/Publication/Attachment/ViewModel/AttachmentViewFactoryTest.php
-
-		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/Domain/Publication/Attachment/ViewModel/AttachmentViewFactoryTest.php
-
-		-
-			message: '#^Cannot call method andReturnFalse\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Unit/Domain/Publication/Attachment/ViewModel/AttachmentViewFactoryTest.php
-
-		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Unit/Domain/Publication/Dossier/Workflow/Guard/DossierWorkflowGuardTest.php
-
-		-
-			message: '#^Cannot call method times\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/Domain/Publication/Dossier/Workflow/Guard/DossierWorkflowGuardTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\ExpectsHigherOrderMessage\:\:andReturn\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: tests/Unit/Domain/Publication/MainDocument/ViewModel/MainDocumentViewFactoryTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\ExpectsHigherOrderMessage\:\:times\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Publication/MainDocument/ViewModel/MainDocumentViewFactoryTest.php
-
-		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/Domain/Publication/MainDocument/ViewModel/MainDocumentViewFactoryTest.php
-
-		-
-			message: '#^Parameter \#2 \$mainDocument of method Shared\\Domain\\Publication\\MainDocument\\ViewModel\\MainDocumentViewFactory\:\:make\(\) expects Shared\\Domain\\Publication\\MainDocument\\AbstractMainDocument, Mockery\\MockInterface given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Unit/Domain/Publication/MainDocument/ViewModel/MainDocumentViewFactoryTest.php
 
 		-
 			message: '#^Cannot access offset ''bool'' on mixed\.$#'
@@ -775,24 +481,6 @@ parameters:
 			path: tests/Unit/Domain/Search/Query/SearchParametersFactoryTest.php
 
 		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Unit/Domain/Search/Query/SearchParametersTest.php
-
-		-
-			message: '#^Cannot call method andReturnFalse\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Unit/Domain/Search/Query/SearchParametersTest.php
-
-		-
-			message: '#^Cannot call method andReturnTrue\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Unit/Domain/Search/Query/SearchParametersTest.php
-
-		-
 			message: '#^Parameter \#1 \$rowIndex of method Shared\\Service\\FileReader\\CsvReader\:\:getDateTime\(\) expects int, int\|string\|null given\.$#'
 			identifier: argument.type
 			count: 2
@@ -827,21 +515,3 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/Service/FileReader/CsvReaderTest.php
-
-		-
-			message: '#^Cannot call method getRowIndex\(\) on PhpOffice\\PhpSpreadsheet\\Worksheet\\Row\|false\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/Service/FileReader/ExcelReaderTest.php
-
-		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Unit/Service/PaginatorFactoryTest.php
-
-		-
-			message: '#^Cannot call method with\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Unit/Service/PaginatorFactoryTest.php

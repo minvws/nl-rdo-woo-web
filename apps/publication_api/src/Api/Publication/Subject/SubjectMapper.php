@@ -16,16 +16,16 @@ class SubjectMapper
     /**
      * @param array<array-key,Subject> $subjects
      *
-     * @return array<array-key,SubjectDto>
+     * @return array<array-key,SubjectResponse>
      */
     public static function fromEntities(array $subjects): array
     {
         return array_values(array_map(self::fromEntity(...), $subjects));
     }
 
-    public static function fromEntity(Subject $subject): SubjectDto
+    public static function fromEntity(Subject $subject): SubjectResponse
     {
-        return new SubjectDto(
+        return new SubjectResponse(
             $subject->getId(),
             OrganisationReferenceDto::fromEntity($subject->getOrganisation()),
             $subject->getName(),

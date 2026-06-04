@@ -28,17 +28,17 @@ readonly class ComplaintJudgementMapper
     /**
      * @param array<array-key,ComplaintJudgement> $complaintJudgements
      *
-     * @return list<ComplaintJudgementDto>
+     * @return list<ComplaintJudgementResponseDto>
      */
     public function fromEntities(array $complaintJudgements): array
     {
         return array_values(array_map(
             $this->fromEntity(...),
-            $complaintJudgements
+            $complaintJudgements,
         ));
     }
 
-    public function fromEntity(ComplaintJudgement $complaintJudgement): ComplaintJudgementDto
+    public function fromEntity(ComplaintJudgement $complaintJudgement): ComplaintJudgementResponseDto
     {
         $mainDocument = $complaintJudgement->getMainDocument();
         Assert::notNull($mainDocument);
@@ -51,13 +51,11 @@ readonly class ComplaintJudgementMapper
         $department = $complaintJudgement->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
-        return new ComplaintJudgementDto(
+        return new ComplaintJudgementResponseDto(
             $complaintJudgement->getId(),
             $complaintJudgement->getExternalId(),
             OrganisationReferenceDto::fromEntity($complaintJudgement->getOrganisation()),
-            $complaintJudgement->getDocumentPrefix(),
             $complaintJudgement->getDossierNr(),
-            $complaintJudgement->getInternalReference(),
             $complaintJudgement->getTitle(),
             $complaintJudgement->getSummary(),
             $complaintJudgement->getSubject()?->getName(),
@@ -75,10 +73,12 @@ readonly class ComplaintJudgementMapper
         Department $department,
         ?Subject $subject,
         ExternalId $externalId,
+        string $documentPrefix,
     ): ComplaintJudgement {
         $complaintJudgement = new ComplaintJudgement();
         $complaintJudgement->setExternalId($externalId);
         $complaintJudgement->setStatus(DossierStatus::NEW);
+        $complaintJudgement->setDocumentPrefix($documentPrefix);
 
         self::update($complaintJudgement, $complaintJudgementRequestDto, $organisation, $department, $subject);
 
@@ -94,13 +94,11 @@ readonly class ComplaintJudgementMapper
     ): ComplaintJudgement {
         $complaintJudgement->setDateFrom($complaintJudgementRequestDto->dossierDate);
         $complaintJudgement->setDepartments([$department]);
-        $complaintJudgement->setDocumentPrefix($complaintJudgementRequestDto->prefix);
         $complaintJudgement->setDossierNr($complaintJudgementRequestDto->dossierNumber);
         $complaintJudgement->setOrganisation($organisation);
         $complaintJudgement->setPublicationDate($complaintJudgementRequestDto->publicationDate);
         $complaintJudgement->setTitle($complaintJudgementRequestDto->title);
         $complaintJudgement->setSummary($complaintJudgementRequestDto->summary);
-        $complaintJudgement->setInternalReference($complaintJudgementRequestDto->internalReference);
         $complaintJudgement->setSubject($subject);
 
         return $complaintJudgement;

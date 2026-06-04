@@ -25,7 +25,7 @@ readonly class SubTypeIndexer
     }
 
     /**
-     * @param string[] $metadata
+     * @param ?array<array-key, string> $metadata
      * @param array<int, mixed>|null $pages
      */
     public function index(object $entity, ?array $metadata = null, ?array $pages = null): void
@@ -33,7 +33,7 @@ readonly class SubTypeIndexer
         $mapper = $this->getMapper($entity);
 
         $this->elasticService->updateDocument(
-            $mapper->map($entity, $metadata, $pages)
+            $mapper->map($entity, $metadata, $pages),
         );
     }
 
@@ -49,7 +49,7 @@ readonly class SubTypeIndexer
         $this->pageIndexUpdater->update(
             ElasticDocumentId::forObject($entity),
             $pageNr,
-            $content
+            $content,
         );
     }
 

@@ -60,7 +60,7 @@ class OrganisationAuditLoggerTest extends UnitTestCase
                 $this->assertMatchesSnapshot($event->data);
 
                 return true;
-            }
+            },
         ));
 
         $this->organisationAuditLogger->onCreated(new OrganisationCreatedEvent($actor, $organisation));
@@ -79,7 +79,7 @@ class OrganisationAuditLoggerTest extends UnitTestCase
                 $this->assertMatchesSnapshot($event->data);
 
                 return true;
-            }
+            },
         ));
 
         $changes = [

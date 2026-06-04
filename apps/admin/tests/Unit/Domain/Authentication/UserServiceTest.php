@@ -90,7 +90,7 @@ class UserServiceTest extends UnitTestCase
                 self::assertEquals($actor, $event->actor);
 
                 return true;
-            }
+            },
         ));
 
         $this->service->updateRoles($actor, $oldUser, $updatedUser, $roles);
@@ -110,7 +110,7 @@ class UserServiceTest extends UnitTestCase
                 self::assertEquals($actor, $event->actor);
 
                 return true;
-            }
+            },
         ));
 
         $this->service->disable($user, $actor);
@@ -130,7 +130,7 @@ class UserServiceTest extends UnitTestCase
                 self::assertEquals($actor, $event->actor);
 
                 return true;
-            }
+            },
         ));
 
         $this->service->enable($user, $actor);
@@ -183,7 +183,7 @@ class UserServiceTest extends UnitTestCase
                     self::assertFalse($event->resetTwoFactorAuth);
 
                     return true;
-                }
+                },
             ));
 
         $this->service->resetPassword($user);
@@ -242,7 +242,7 @@ class UserServiceTest extends UnitTestCase
                     self::assertTrue($event->resetTwoFactorAuth);
 
                     return true;
-                }
+                },
             ));
 
         $this->service->resetTwoFactorAuth($user);

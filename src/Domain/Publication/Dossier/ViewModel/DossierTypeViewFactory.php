@@ -7,6 +7,7 @@ namespace Shared\Domain\Publication\Dossier\ViewModel;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webmozart\Assert\Assert;
 
 use function array_reduce;
 use function array_values;
@@ -49,6 +50,7 @@ final readonly class DossierTypeViewFactory
             },
             [],
         );
+        Assert::allIsInstanceOf($result, DossierType::class);
 
         uksort($result, fn (string $a, string $b): int => $a <=> $b);
 

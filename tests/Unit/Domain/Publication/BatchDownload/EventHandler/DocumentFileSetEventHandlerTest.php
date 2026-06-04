@@ -46,7 +46,7 @@ class DocumentFileSetEventHandlerTest extends UnitTestCase
         $this->repository->expects('findOne')->with($dossierId)->andReturn($dossier);
 
         $this->batchDownloadService->expects('refresh')->with(Mockery::on(
-            static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier
+            static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier,
         ));
 
         $this->handler->handleDocumentFileSetProcessed($event);

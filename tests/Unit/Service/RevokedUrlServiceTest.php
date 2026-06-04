@@ -68,7 +68,7 @@ class RevokedUrlServiceTest extends UnitTestCase
                 'prefix' => $docPrefix,
                 'dossierId' => $dossierNr,
                 'documentId' => $docNrA,
-            ]
+            ],
         )->andReturn('link_A');
 
         $this->router->expects('generate')->with(
@@ -76,7 +76,7 @@ class RevokedUrlServiceTest extends UnitTestCase
             [
                 'dossierId' => $dossierNr,
                 'documentId' => $docNrA,
-            ]
+            ],
         )->andReturn('link_B');
 
         $this->router->expects('generate')->with(
@@ -85,7 +85,7 @@ class RevokedUrlServiceTest extends UnitTestCase
                 'prefix' => $docPrefix,
                 'dossierId' => $dossierNr,
                 'documentId' => $docNrB,
-            ]
+            ],
         )->andReturn('link_C');
 
         $this->router->expects('generate')->with(
@@ -93,7 +93,7 @@ class RevokedUrlServiceTest extends UnitTestCase
             [
                 'dossierId' => $dossierNr,
                 'documentId' => $docNrB,
-            ]
+            ],
         )->andReturn('link_D');
 
         $this->documentRepository->expects('getRevokedDocumentsInPublicDossiers')->andReturn([

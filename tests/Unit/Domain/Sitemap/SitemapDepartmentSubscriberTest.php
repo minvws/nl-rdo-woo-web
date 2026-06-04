@@ -53,7 +53,7 @@ class SitemapDepartmentSubscriberTest extends UnitTestCase
                     self::assertEquals($departmentOverviewUrl, $urlConcrete->getLoc());
 
                     return true;
-                }
+                },
             ),
             'departments',
         );
@@ -72,7 +72,7 @@ class SitemapDepartmentSubscriberTest extends UnitTestCase
                     self::assertEquals($departmentDetailUrl, $urlConcrete->getLoc());
 
                     return true;
-                }
+                },
             ),
             'departments',
         );

@@ -99,7 +99,7 @@ services:
     environment:
       APP_ID: PUBLICATION_API
 
-  worker:
+  worker_minvws:
     depends_on:
       - rabbitmq
     image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.10.1}
@@ -120,7 +120,31 @@ services:
       [
         "bash",
         "-c",
-        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor php -d memory_limit=-1 bin/console --tenant=minvws messenger:consume --memory-limit=1G -vv high esupdater ingestor global",
+        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor php -d memory_limit=-1 bin/console --tenant=minvws messenger:consume --memory-limit=1G -vv high esupdater ingestor global api_documents",
+      ]
+
+  worker_minfin:
+    depends_on:
+      - rabbitmq
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.10.1}
+    user: ${FIXUID:-1000}:${FIXGID:-1000}
+    labels:
+      com.symfony.server.service-ignore: true
+    volumes:
+      - ./:/var/www/html
+      - ./docker/php/files/usr/local/etc/php/conf.d/zzz-custom.ini:/usr/local/etc/php/conf.d/zzz-custom.ini
+      - ./docker/php/files/usr/local/etc/php/conf.d/090-xdebug.ini:/usr/local/etc/php/conf.d/090-xdebug.ini
+    networks:
+      - woopie
+    environment:
+      APP_ID: WORKER
+    stop_signal: SIGINT
+    restart: unless-stopped
+    command:
+      [
+        "bash",
+        "-c",
+        "wait-for-it rabbitmq:5672 --timeout=0 --strict -- symfony run --watch=config,src,templates,vendor php -d memory_limit=-1 bin/console --tenant=minfin messenger:consume --memory-limit=1G -vv high esupdater ingestor global api_documents",
       ]
 
   tika:
@@ -133,7 +157,7 @@ services:
       - woopie
 
   elasticsearch:
-    image: elasticsearch:7.17.26
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.29
     labels:
       com.symfony.server.service-ignore: true
       dev.orbstack.domains: elasticsearch-woo.local
@@ -142,15 +166,24 @@ services:
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
       - xpack.security.enabled=false
       - http.cors.enabled=true
-      - http.cors.allow-origin=/https:\/\/app.elasticvue.com/
-      # - http.cors.allow-headers: X-Requested-With,Content-Type,Content-Length,Authorization
+      - http.cors.allow-origin=/localhost:9200|https:\/\/elasticvue-woo\.local/
     volumes:
       - es_data:/usr/share/elasticsearch/data
     networks:
       - woopie
 
+  elasticvue:
+    image: cars10/elasticvue:1.13.0
+    labels:
+      com.symfony.server.service-ignore: true
+      dev.orbstack.domains: elasticvue-woo.local
+    networks:
+      - woopie
+    volumes:
+      - ./docker/elasticvue/default_clusters.json:/usr/share/nginx/html/api/default_clusters.json
+
   redis:
-    image: redis:5
+    image: ghcr.io/minvws/keydb:6.3.4-multi
     labels:
       com.symfony.server.service-ignore: true
       dev.orbstack.domains: redis-woo.local
@@ -169,7 +202,7 @@ services:
       - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
 
   postgres:
-    image: postgres:14.10-bookworm
+    image: postgres:15.14-bookworm
     labels:
       com.symfony.server.service-ignore: true
       dev.orbstack.domains: postgres-woo.local
@@ -193,14 +226,16 @@ services:
       - woopie
 
   minio:
-    image: minio/minio:RELEASE.2025-02-28T09-55-16Z
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: minio-woo.local
     environment:
       MINIO_ROOT_USER: root
       MINIO_ROOT_PASSWORD: password
       MC_QUIET: 1
+    ports:
+      - ${DOCKER_MINIO_PORT:-9000}:9000
+      - ${DOCKER_MINIO_CONSOLE_PORT:-9001}:9001
     volumes:
       - minio_data:/data
     networks:
@@ -243,26 +278,17 @@ services:
       - ./docker/certs/scripts:/usr/src/scripts
 
   robot:
-    profiles: [build-only]
+    profiles: [run-only]
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/robot:0.3.0
     user: ${FIXUID:-1000}:${FIXGID:-1000}
-    build:
-      context: .
-      dockerfile: docker/robot/Dockerfile
     networks:
       - woopie
-    environment:
-      ENVIRONMENT: docker
-      URL_PUBLIC: http://public-minvws.local
-      URL_ADMIN: http://admin-minvws.local/balie
-      HEADLESS: true
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - ./tests/robot_framework/tests:/home/pwuser/tests
       - ./tests/robot_framework/resources:/home/pwuser/resources
       - ./tests/robot_framework/libraries:/home/pwuser/libraries
       - ./tests/robot_framework/files:/home/pwuser/files
       - ./tests/robot_framework/results:/home/pwuser/results
-      - ./tests/robot_framework/.otp_secret:/home/pwuser/.otp_secret
-      - ./tests/robot_framework/.temp_password:/home/pwuser/.temp_password
+      - ./tests/robot_framework/secrets:/home/pwuser/secrets
       - ./tests/robot_framework/order.txt:/home/pwuser/order.txt
-      - ./docker/certs/generated:/home/pwuser/certs/generated
+      - ./certs:/home/pwuser/certs

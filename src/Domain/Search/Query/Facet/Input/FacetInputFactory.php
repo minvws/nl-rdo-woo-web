@@ -42,7 +42,7 @@ readonly class FacetInputFactory
         return $facet->getInput(
             new ParameterBag([
                 $facet->getRequestParameter() => $values,
-            ])
+            ]),
         );
     }
 

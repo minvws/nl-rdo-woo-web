@@ -75,7 +75,7 @@ class InquiryChangesetTest extends UnitTestCase
                     'add_dossiers' => [$dossierId],
                 ],
             ],
-            $this->changeset->getChanges()
+            $this->changeset->getChanges(),
         );
     }
 }

@@ -20,7 +20,7 @@ readonly class DossierSearchResultBaseMapper
     use HighlightMapperTrait;
 
     /**
-     * @param string[] $highlightPaths
+     * @param array<array-key, string> $highlightPaths
      */
     public function map(
         TypeArray $hit,

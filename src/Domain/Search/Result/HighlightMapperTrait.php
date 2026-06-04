@@ -11,9 +11,9 @@ use function array_merge;
 trait HighlightMapperTrait
 {
     /**
-     * @param string[] $paths
+     * @param array<array-key, string> $paths
      *
-     * @return string[]
+     * @return array<array-key, string>
      */
     protected function getHighlightData(TypeArray $hit, array $paths): array
     {
@@ -24,7 +24,7 @@ trait HighlightMapperTrait
             }
         }
 
-        /** @var string[] $highlightData */
+        /** @var array<string> $highlightData */
         return $highlightData;
     }
 }

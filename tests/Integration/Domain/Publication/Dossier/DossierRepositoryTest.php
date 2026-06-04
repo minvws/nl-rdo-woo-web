@@ -27,7 +27,7 @@ final class DossierRepositoryTest extends SharedWebTestCase
 
         self::bootKernel();
 
-        $this->repository = self::getContainer()->get(DossierRepository::class);
+        $this->repository = self::fromContainer(DossierRepository::class);
     }
 
     public function testRemove(): void

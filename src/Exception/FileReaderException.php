@@ -13,7 +13,7 @@ use function strval;
 class FileReaderException extends TranslatableException
 {
     /**
-     * @param string[] $missingHeaders
+     * @param array<array-key, string> $missingHeaders
      */
     public static function forMissingHeaders(array $missingHeaders): self
     {
@@ -24,7 +24,7 @@ class FileReaderException extends TranslatableException
             'publication.dossier.error.missing_inventory_header',
             [
                 '{headername}' => $missing,
-            ]
+            ],
         );
     }
 
@@ -39,7 +39,7 @@ class FileReaderException extends TranslatableException
             'publication.dossier.error.processing_inventory_row',
             [
                 '{rowIndex}' => strval($rowIndex),
-            ]
+            ],
         );
     }
 
@@ -66,7 +66,7 @@ class FileReaderException extends TranslatableException
             'date {date} cannot be parsed',
             [
                 '{date}' => $date,
-            ]
+            ],
         );
     }
 }

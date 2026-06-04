@@ -7,68 +7,47 @@ namespace PublicationApi\Api\Publication\Dossier\WooDecision\Uploads\Document;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
-use PublicationApi\Api\Publication\UploadProcessor;
+use PublicationApi\Api\Publication\Uploads\Document\UploadDocumentHandler;
+use PublicationApi\Api\Publication\Uploads\Document\UploadDocumentRequestInterface;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\Validator\ConstraintViolationList;
-use Webmozart\Assert\Assert;
 
 readonly class WooDecisionUploadDocumentProcessor implements ProcessorInterface
 {
     public function __construct(
         private DocumentRepository $documentRepository,
         private OrganisationRepository $organisationRepository,
-        private UploadProcessor $uploadProcessor,
+        private UploadDocumentHandler $uploadDocumentHandler,
         private WooDecisionRepository $wooDecisionRepository,
     ) {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): null
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): void
     {
-        if (! $data instanceof WooDecisionUploadDocument) {
+        if (! $data instanceof UploadDocumentRequestInterface) {
             throw new ValidationException(ConstraintViolationList::createFromMessage('Invalid document request'));
         }
 
-        if ($data->content === '') {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('No file content provided'));
+        $organisation = $this->organisationRepository->find($data->getOrganisationId());
+        if (! $organisation instanceof Organisation) {
+            throw new ValidationException(ConstraintViolationList::createFromMessage('No organisation found'));
         }
 
-        $organisation = $this->organisationRepository->find($data->organisationId);
-        Assert::isInstanceOf($organisation, Organisation::class);
-
-        $wooDecision = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $data->dossierExternalId);
-        if (! $wooDecision instanceof WooDecision) {
+        $dossier = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $data->getDossierExternalId());
+        if (! $dossier instanceof WooDecision) {
             throw new ValidationException(ConstraintViolationList::createFromMessage('No dossier found for this organisation'));
         }
 
-        $document = $this->documentRepository->findByDossierAndExternalId($wooDecision, $data->documentExternalId);
+        $document = $this->documentRepository->findByDossierAndExternalId($dossier, $data->getDocumentExternalId());
         if (! $document instanceof Document) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('No document found'));
+            throw new ValidationException(ConstraintViolationList::createFromMessage('No document found for this dossier and organisation'));
         }
 
-        if ($document->getJudgement() === Judgement::NOT_PUBLIC) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('Document is not public'));
-        }
-
-        if ($document->isSuspended()) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('Document is suspended'));
-        }
-
-        if ($document->isWithdrawn()) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('Document is withdrawn'));
-        }
-
-        $fileName = $document->getFileInfo()->getName();
-        Assert::notNull($fileName);
-
-        $this->uploadProcessor->process($wooDecision->getId(), $document->getId(), UploadGroupId::WOO_DECISION_DOCUMENTS, $data->content, $fileName);
-
-        return null;
+        $this->uploadDocumentHandler->handle($dossier, $document, $data->getContent());
     }
 }

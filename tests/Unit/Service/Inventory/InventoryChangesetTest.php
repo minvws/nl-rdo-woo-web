@@ -42,7 +42,7 @@ class InventoryChangesetTest extends UnitTestCase
                 InventoryChangeset::DELETED => 0,
                 InventoryChangeset::UNCHANGED => 0,
             ],
-            $changeset->getCounts()
+            $changeset->getCounts(),
         );
         self::assertEquals(
             [$documentNumber->getValue() => InventoryChangeset::ADDED],
@@ -65,7 +65,7 @@ class InventoryChangesetTest extends UnitTestCase
                 InventoryChangeset::DELETED => 0,
                 InventoryChangeset::UNCHANGED => 0,
             ],
-            $changeset->getCounts()
+            $changeset->getCounts(),
         );
         self::assertEquals(
             [$documentNumber->getValue() => InventoryChangeset::UPDATED],

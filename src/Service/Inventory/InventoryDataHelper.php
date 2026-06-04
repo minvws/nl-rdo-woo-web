@@ -15,7 +15,6 @@ use function array_map;
 use function implode;
 use function in_array;
 use function is_array;
-use function is_bool;
 use function preg_quote;
 use function preg_split;
 use function strtolower;
@@ -27,12 +26,8 @@ class InventoryDataHelper
     /**
      * Returns true when the given value resembles a value that can be considered to be true.
      */
-    public static function isTrue(mixed $value): bool
+    public static function isTrue(?string $value): bool
     {
-        if (is_bool($value)) {
-            return $value;
-        }
-
         return in_array(strtolower(strval($value)), ['true', 'ja', 'yes', '1', 'y', 'j']);
     }
 
@@ -64,17 +59,17 @@ class InventoryDataHelper
     /**
      * Splits a string by separators, trims all values and removes any empty values.
      *
-     * @param non-empty-string|array<non-empty-string> $separators
+     * @param non-empty-string|array<array-key, non-empty-string> $separators
      *
-     * @return string[]
+     * @return array<array-key, string>
      */
-    public static function separateValues(mixed $value, string|array $separators = ';'): array
+    public static function separateValues(?string $value, string|array $separators = ';'): array
     {
         if ($value === null) {
             return [];
         }
 
-        $value = trim(strval($value));
+        $value = trim($value);
         if ($value === '') {
             return [];
         }
@@ -85,7 +80,7 @@ class InventoryDataHelper
 
         $separators = array_map(
             static fn (string $separator) => preg_quote($separator, '/'),
-            $separators
+            $separators,
         );
 
         $values = preg_split('/(' . implode('|', $separators) . ')/', $value, -1);
@@ -96,15 +91,15 @@ class InventoryDataHelper
         return array_filter($values);
     }
 
-    public static function judgement(mixed $value): Judgement
+    public static function judgement(string $value): Judgement
     {
-        return Judgement::fromString(strval($value));
+        return Judgement::fromString($value);
     }
 
     /**
      * Splits a string by separator and normalizes values.
      *
-     * @return string[]
+     * @return array<array-key, string>
      */
     public static function getGrounds(string $input): array
     {

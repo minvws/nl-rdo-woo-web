@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\ViewModel;
 
-use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\DossierType as DossierTypeEnum;
+use Shared\ValueObject\PlainDate;
 
 final readonly class CommonDossierProperties
 {
@@ -16,7 +16,7 @@ final readonly class CommonDossierProperties
         public bool $isPreview,
         public string $title,
         public string $pageTitle,
-        public DateTimeImmutable $publicationDate,
+        public PlainDate $publicationDate,
         public Department $mainDepartment,
         public string $summary,
         public DossierTypeEnum $type,

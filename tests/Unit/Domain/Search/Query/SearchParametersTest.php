@@ -89,7 +89,7 @@ class SearchParametersTest extends UnitTestCase
         );
 
         $this->assertMatchesObjectSnapshot(
-            $parameters->getQueryParameters()
+            $parameters->getQueryParameters(),
         );
     }
 
@@ -106,7 +106,7 @@ class SearchParametersTest extends UnitTestCase
         );
 
         $this->assertMatchesObjectSnapshot(
-            $parameters->withSort(SortField::PUBLICATION_DATE, SortOrder::ASC)
+            $parameters->withSort(SortField::PUBLICATION_DATE, SortOrder::ASC),
         );
     }
 
@@ -116,7 +116,7 @@ class SearchParametersTest extends UnitTestCase
             new DateFacet(),
             new ParameterBag([
                 'dt' => ['from' => '2021-01-15'],
-            ])
+            ]),
         );
 
         $parameters = new SearchParameters(
@@ -127,7 +127,7 @@ class SearchParametersTest extends UnitTestCase
         );
 
         $this->assertMatchesObjectSnapshot(
-            $parameters->includeWithoutDate()
+            $parameters->includeWithoutDate(),
         );
     }
 
@@ -205,7 +205,7 @@ class SearchParametersTest extends UnitTestCase
                     'from' => '2021-01-15',
                     'to' => '2024-01-15',
                 ],
-            ])
+            ]),
         );
 
         $parameters = new SearchParameters(
@@ -231,7 +231,7 @@ class SearchParametersTest extends UnitTestCase
                     'from' => '2021-01-15',
                     'to' => '2024-01-15',
                 ],
-            ])
+            ]),
         );
 
         $parameters = new SearchParameters(

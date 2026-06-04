@@ -9,6 +9,7 @@ use Shared\Domain\Upload\Handler\UploadHandlerInterface;
 use Shared\Domain\Upload\Result\PartialUploadResult;
 use Shared\Domain\Upload\Result\UploadCompletedResult;
 use Shared\Domain\Upload\Result\UploadResultInterface;
+use Shared\Domain\Upload\StreamUpload;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadRequest;
 use Shared\ValueObject\ExternalId;
@@ -32,6 +33,13 @@ readonly class S3UploadHandler implements UploadHandlerInterface
         return $this->handleSinglePartUpload($request);
     }
 
+    public function handleStreamUpload(UploadEntity $uploadEntity, StreamUpload $streamUpload): UploadResultInterface
+    {
+        $this->s3UploadHelper->uploadStream($streamUpload);
+
+        return UploadCompletedResult::createFromStreamUpload($streamUpload);
+    }
+
     private function handleMultipartUpload(UploadEntity $uploadEntity, UploadRequest $request): UploadResultInterface
     {
         if ($request->chunkIndex === 0) {
@@ -52,7 +60,7 @@ readonly class S3UploadHandler implements UploadHandlerInterface
 
         $size = $this->s3UploadHelper->completeMultipartUpload($request, $s3UploadId);
 
-        return UploadCompletedResult::create($request, $size);
+        return UploadCompletedResult::createFromUploadRequest($request, $size);
     }
 
     private function handleSinglePartUpload(UploadRequest $request): UploadResultInterface
@@ -62,7 +70,7 @@ readonly class S3UploadHandler implements UploadHandlerInterface
         $size = filesize($request->uploadedFile->getRealPath());
         Assert::integer($size);
 
-        return UploadCompletedResult::create(
+        return UploadCompletedResult::createFromUploadRequest(
             $request,
             $size,
         );

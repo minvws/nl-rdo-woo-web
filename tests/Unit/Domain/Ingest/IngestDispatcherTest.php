@@ -51,7 +51,7 @@ class IngestDispatcherTest extends UnitTestCase
                 self::assertEquals($dossierId, $command->uuid);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchIngestDossierCommand($dossier);
@@ -85,7 +85,7 @@ class IngestDispatcherTest extends UnitTestCase
                 self::assertEquals($dossierAId, $command->uuid);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
@@ -93,7 +93,7 @@ class IngestDispatcherTest extends UnitTestCase
                 self::assertEquals($dossierBId, $command->uuid);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchIngestDossierCommandForAllDossiers();
@@ -114,7 +114,7 @@ class IngestDispatcherTest extends UnitTestCase
                     self::assertEquals($refresh, $command->getForceRefresh());
 
                     return true;
-                }
+                },
             ))
             ->andReturns(new Envelope(new stdClass()));
 
@@ -136,7 +136,7 @@ class IngestDispatcherTest extends UnitTestCase
                     self::assertEquals($refresh, $command->getForceRefresh());
 
                     return true;
-                }
+                },
             ))
             ->andReturns(new Envelope(new stdClass()));
 
@@ -158,7 +158,7 @@ class IngestDispatcherTest extends UnitTestCase
                     self::assertEquals($refresh, $command->getForceRefresh());
 
                     return true;
-                }
+                },
             ))
             ->andReturns(new Envelope(new stdClass()));
 
@@ -180,7 +180,7 @@ class IngestDispatcherTest extends UnitTestCase
                     self::assertEquals($page, $command->getPageNr());
 
                     return true;
-                }
+                },
             ))
             ->andReturns(new Envelope(new stdClass()));
 
@@ -202,7 +202,7 @@ class IngestDispatcherTest extends UnitTestCase
                     self::assertEquals($refresh, $command->getForceRefresh());
 
                     return true;
-                }
+                },
             ))
             ->andReturns(new Envelope(new stdClass()));
 

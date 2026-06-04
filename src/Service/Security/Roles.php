@@ -12,7 +12,7 @@ class Roles
     public const string ROLE_VIEW_ACCESS = 'ROLE_VIEW_ACCESS';
 
     // This is the role hierarchy. It is used to determine which roles a user can assign to other users.
-    /** @var array<string, string[]> */
+    /** @var array<string, array<array-key, string>> */
     protected static array $roleHierarchy = [
         self::ROLE_SUPER_ADMIN => [
             self::ROLE_SUPER_ADMIN,
@@ -27,7 +27,7 @@ class Roles
         ],
     ];
 
-    /** @var array|array{role: string, description: string, help: string}[] */
+    /** @var array<array-key, array{role: string, description: string, help: string}> */
     protected static array $roleInfo = [
         [
             'role' => self::ROLE_SUPER_ADMIN,
@@ -54,7 +54,7 @@ class Roles
     /**
      * Returns a list of all role details that can be used in the administration system.
      *
-     * @return array{role: string, description: string, help: string}[]
+     * @return array<array-key, array{role: string, description: string, help: string}>
      */
     public static function roleDetails(): array
     {
@@ -62,7 +62,7 @@ class Roles
     }
 
     /**
-     * @return array|string[]
+     * @return array<array-key, string>
      */
     public static function getRoleHierarchy(string $role): array
     {

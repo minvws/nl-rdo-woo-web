@@ -27,7 +27,7 @@ class RolloverDetailsTest extends UnitTestCase
             $counts = [
                 new MainTypeCount(ElasticDocumentType::COVENANT, 10, 20),
                 new MainTypeCount(ElasticDocumentType::WOO_DECISION, 5, 5),
-            ]
+            ],
         );
 
         self::assertEquals($indexDetails, $details->index);

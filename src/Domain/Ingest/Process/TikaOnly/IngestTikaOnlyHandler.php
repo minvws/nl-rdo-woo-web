@@ -57,7 +57,7 @@ final readonly class IngestTikaOnlyHandler
                         'page_nr' => 0,
                         'content' => $extracts,
                     ],
-                ]
+                ],
             );
         } catch (Exception $e) {
             $this->logger->error('Failed to index tika content as page', [

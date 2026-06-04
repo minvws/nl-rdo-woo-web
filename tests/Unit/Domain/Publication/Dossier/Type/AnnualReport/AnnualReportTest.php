@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\AnnualReport;
 
-use Carbon\CarbonImmutable;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\ValueObject\PlainDate;
 
 final class AnnualReportTest extends TestCase
 {
@@ -34,7 +34,7 @@ final class AnnualReportTest extends TestCase
     {
         $annualReport = new AnnualReport();
 
-        $date = new CarbonImmutable();
+        $date = PlainDate::today();
 
         $annualReport->setDateFrom($date);
 

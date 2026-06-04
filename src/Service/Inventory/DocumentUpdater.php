@@ -121,7 +121,7 @@ readonly class DocumentUpdater
     }
 
     /**
-     * @param string[] $refersTo
+     * @param array<array-key, string> $refersTo
      */
     public function updateDocumentReferralsByDocumentNumber(WooDecision $dossier, Document $document, array $refersTo): void
     {
@@ -152,11 +152,11 @@ readonly class DocumentUpdater
     }
 
     /**
-     * @param ExternalId[] $refersTo
+     * @param array<array-key, ExternalId> $refersTo
      */
     public function updateDocumentReferralsByDocumentExternalId(Document $document, array $refersTo): void
     {
-        /** @var ExternalId[] $currentReferrals */
+        /** @var array<array-key, ExternalId> $currentReferrals */
         $currentReferrals = $document->getRefersTo()
             ->map(static function (Document $document): ?ExternalId {
                 if ($document->getExternalId() === null) {

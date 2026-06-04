@@ -16,14 +16,16 @@ use function is_array;
 use function json_decode;
 
 /**
- * @template T of AbstractDossier
+ * @template TDossier of AbstractDossier
  *
- * @extends ServiceEntityRepository<T>
+ * @extends ServiceEntityRepository<TDossier>
+ *
+ * @implements DossierRepositoryWithExternalId<TDossier>
  */
-abstract class AbstractDossierRepository extends ServiceEntityRepository
+abstract class AbstractDossierRepository extends ServiceEntityRepository implements DossierRepositoryWithExternalId
 {
     /**
-     * @param T $entity
+     * @param TDossier $entity
      */
     public function save(AbstractDossier $entity, bool $flush = false): void
     {
@@ -35,7 +37,7 @@ abstract class AbstractDossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param T $entity
+     * @param TDossier $entity
      */
     public function remove(AbstractDossier $entity, bool $flush = false): void
     {
@@ -47,7 +49,7 @@ abstract class AbstractDossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return T
+     * @return TDossier
      */
     public function findOneByDossierId(Uuid $dossierId): AbstractDossier
     {
@@ -55,12 +57,12 @@ abstract class AbstractDossierRepository extends ServiceEntityRepository
             ->where('d.id = :dossierId')
             ->setParameter('dossierId', $dossierId);
 
-        /** @var T */
+        /** @var TDossier */
         return $qb->getQuery()->getSingleResult();
     }
 
     /**
-     * @return list<T>
+     * @return list<TDossier>
      */
     public function getByOrganisationAndContainsExternalId(Organisation $organisation, int $itemsPerPage, ?string $cursor): array
     {
@@ -79,7 +81,7 @@ abstract class AbstractDossierRepository extends ServiceEntityRepository
             }
         }
 
-        /** @var list<T> */
+        /** @var list<TDossier> */
         return $queryBuilder
             ->orderBy('dossier.id', 'ASC')
             ->setMaxResults($itemsPerPage + 1)
@@ -88,11 +90,11 @@ abstract class AbstractDossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return ?T
+     * @return ?TDossier
      */
     public function findByOrganisationAndExternalId(Organisation $organisation, ExternalId $externalId): ?AbstractDossier
     {
-        /** @var ?T */
+        /** @var ?TDossier */
         return $this->createQueryBuilder('dossier')
             ->where('dossier.organisation = :organisation')
             ->setParameter('organisation', $organisation)

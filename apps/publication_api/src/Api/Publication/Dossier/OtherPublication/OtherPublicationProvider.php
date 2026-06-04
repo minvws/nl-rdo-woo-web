@@ -29,8 +29,11 @@ final readonly class OtherPublicationProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|OtherPublicationDto|null
-    {
+    public function provide(
+        Operation $operation,
+        array $uriVariables = [],
+        array $context = [],
+    ): ArrayPaginator|OtherPublicationResponseDto|null {
         $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
         if ($organisation === null) {
             return null;
@@ -40,7 +43,7 @@ final readonly class OtherPublicationProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, ExternalId::create($uriVariables['otherPublicationExternalId']));
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dossierExternalId']));
     }
 
     /**
@@ -57,7 +60,7 @@ final readonly class OtherPublicationProvider implements ProviderInterface
         return new ArrayPaginator($this->otherPublicationMapper->fromEntities($otherPublications), 0, count($otherPublications));
     }
 
-    private function provideSingle(Organisation $organisation, ExternalId $otherPublicationExternalId): ?OtherPublicationDto
+    private function provideSingle(Organisation $organisation, ExternalId $otherPublicationExternalId): ?OtherPublicationResponseDto
     {
         $otherPublication = $this->otherPublicationRepository->findByOrganisationAndExternalId($organisation, $otherPublicationExternalId);
         if ($otherPublication === null) {

@@ -25,7 +25,7 @@ readonly class TranslatableFormErrorMapper
             $this->translator->trans(
                 'publication.dossier.error.date_header',
                 ['date' => $run->getEndedAt()?->setTimezone(new DateTimeZone('Europe/Amsterdam'))->format('Y-m-d H:i')],
-            )
+            ),
         ));
         $this->mapGenericErrorsToForm($run->getGenericErrors(), $form);
         $this->mapRowErrorsToForm($run->getRowErrors(), $form);
@@ -50,7 +50,7 @@ readonly class TranslatableFormErrorMapper
                     [
                         '{error}' => $translatedError,
                         '{line_number}' => $lineNumber,
-                    ]
+                    ],
                 );
 
                 $form->addError(new FormError($errorMessage));

@@ -78,7 +78,7 @@ readonly class UpdateAttachmentHandler
         if ($command->uploadFileReference !== null) {
             $this->uploadStorer->storeUploadForEntityWithSourceTypeAndName(
                 $entity,
-                $command->uploadFileReference
+                $command->uploadFileReference,
             );
         }
     }

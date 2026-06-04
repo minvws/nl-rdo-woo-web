@@ -7,7 +7,7 @@ namespace Shared\Tests\Unit\Domain\Publication\Dossier\Validator;
 use Mockery;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use Shared\Domain\Publication\Dossier\Validator\DateFromConstraint;
+use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteDocuments;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteDocumentsValidator;
 use Shared\Tests\Unit\UnitTestCase;
@@ -61,7 +61,7 @@ class NoIncompleteDocumentsValidatorTest extends UnitTestCase
         $noIncompleteDocumentsValidator = new NoIncompleteDocumentsValidator($repository);
 
         self::expectException(UnexpectedTypeException::class);
-        $noIncompleteDocumentsValidator->validate('foo', new DateFromConstraint());
+        $noIncompleteDocumentsValidator->validate('foo', new NoIncompleteAttachments());
     }
 
     public function testValidateIfInvalidValue(): void

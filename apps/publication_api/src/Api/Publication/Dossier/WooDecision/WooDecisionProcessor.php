@@ -6,21 +6,18 @@ namespace PublicationApi\Api\Publication\Dossier\WooDecision;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Override;
 use PublicationApi\Api\Publication\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Publication\Dossier\AbstractDossierProcessor;
+use PublicationApi\Api\Publication\Dossier\DossierSupportService;
 use PublicationApi\Api\Publication\Dossier\WooDecision\Document\WooDecisionDocumentMapper;
 use PublicationApi\Api\Publication\Dossier\WooDecision\Document\WooDecisionDocumentRequestDto;
 use PublicationApi\Domain\Inquiry\InquiryService;
 use Shared\Domain\Department\Department;
-use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Organisation\OrganisationRepository;
-use Shared\Domain\Publication\Dossier\AbstractDossier;
-use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
@@ -28,17 +25,13 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Domain\Publication\Subject\Subject;
-use Shared\Domain\Publication\Subject\SubjectRepository;
-use Shared\Service\AttachmentService;
 use Shared\Service\DocumentService;
-use Shared\Service\DossierService;
 use Shared\Service\Inquiry\CaseNumbers;
 use Shared\Service\Inquiry\DocumentCaseNumbers;
 use Shared\Service\Inquiry\InquiryChangeset;
 use Shared\Service\Inventory\DocumentUpdater;
-use Shared\Service\MainDocumentService;
+use Shared\Service\Inventory\InventoryUpdater;
 use Shared\ValueObject\ExternalId;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Webmozart\Assert\Assert;
@@ -49,41 +42,29 @@ use function array_map;
 use function array_merge;
 use function array_values;
 
-final class WooDecisionProcessor extends AbstractDossierProcessor
+/**
+ * @implements ProcessorInterface<WooDecisionRequestDto,?WooDecisionResponseDto>
+ */
+final readonly class WooDecisionProcessor implements ProcessorInterface
 {
     public function __construct(
-        AttachmentService $attachmentService,
-        private readonly DocumentRepository $documentRepository,
-        private readonly DocumentService $documentService,
-        private readonly DocumentUpdater $documentUpdater,
-        DepartmentRepository $departmentRepository,
-        DossierService $dossierService,
-        MainDocumentService $mainDocumentService,
-        OrganisationRepository $organisationRepository,
-        SubjectRepository $subjectRepository,
-        private readonly DossierDispatcher $dossierDispatcher,
-        private readonly WooDecisionDispatcher $wooDecisionDispatcher,
-        private readonly WooDecisionRepository $wooDecisionRepository,
-        private readonly InquiryService $inquiryService,
-        private readonly Security $security,
-        private readonly WooDecisionMapper $wooDecisionMapper,
+        private DossierSupportService $dossierSupportService,
+        private DocumentRepository $documentRepository,
+        private DocumentService $documentService,
+        private DocumentUpdater $documentUpdater,
+        private WooDecisionDispatcher $wooDecisionDispatcher,
+        private WooDecisionRepository $wooDecisionRepository,
+        private InquiryService $inquiryService,
+        private WooDecisionMapper $wooDecisionMapper,
+        private DocumentPrefixDeterminer $documentPrefixDeterminer,
+        private InventoryUpdater $inventoryUpdater,
     ) {
-        parent::__construct(
-            $attachmentService,
-            $departmentRepository,
-            $dossierDispatcher,
-            $dossierService,
-            $mainDocumentService,
-            $organisationRepository,
-            $subjectRepository,
-            $this->security,
-        );
     }
 
     /**
      * @param array<array-key, mixed> $uriVariables
      */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?WooDecisionDto
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?WooDecisionResponseDto
     {
         unset($context);
 
@@ -93,17 +74,18 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
 
         Assert::isInstanceOf($data, WooDecisionRequestDto::class);
 
-        $wooDecisionExternalId = $uriVariables['wooDecisionExternalId'];
-        Assert::string($wooDecisionExternalId);
-        $wooDecisionExternalId = ExternalId::create($wooDecisionExternalId);
+        $dossierExternalId = $uriVariables['dossierExternalId'];
+        Assert::string($dossierExternalId);
+        $dossierExternalId = ExternalId::create($dossierExternalId);
 
-        $organisation = $this->getOrganisation($uriVariables);
-        $subject = $this->getSubject($data, $organisation);
-        $department = $this->getDepartment($organisation, $data->departmentId);
-        $wooDecision = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $wooDecisionExternalId);
+        $organisation = $this->dossierSupportService->getOrganisation($uriVariables);
+        $subject = $this->dossierSupportService->getSubject($data, $organisation);
+        $department = $this->dossierSupportService->getDepartment($organisation, $data->departmentId);
+        $wooDecision = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
 
         if ($wooDecision === null) {
-            $wooDecision = $this->create($organisation, $department, $subject, $data, $wooDecisionExternalId);
+            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $wooDecision = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
 
             return $this->wooDecisionMapper->fromEntity($wooDecision);
         }
@@ -118,28 +100,30 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         WooDecisionRequestDto $wooDecisionRequestDto,
-        ExternalId $wooDecisionExternalId,
+        ExternalId $dossierExternalId,
+        string $documentPrefix,
     ): WooDecision {
-        $wooDecision = WooDecisionMapper::create($wooDecisionRequestDto, $organisation, $department, $subject, $wooDecisionExternalId);
+        $wooDecision = WooDecisionMapper::create($wooDecisionRequestDto, $organisation, $department, $subject, $dossierExternalId, $documentPrefix);
         $mainDocument = WooDecisionMainDocumentRequestMapper::create($wooDecision, $wooDecisionRequestDto->mainDocument);
         $attachments = $this->getAttachments($wooDecision, $wooDecisionRequestDto->attachments);
         $documents = $this->getDocuments($wooDecision, $wooDecisionRequestDto->documents);
 
-        $this->validateMainDocument($mainDocument);
-        $this->validateAttachments($attachments);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateAttachments($attachments);
         $this->validateDocuments($documents);
 
         $wooDecision->setMainDocument($mainDocument);
-        $this->addAttachments($wooDecision, $attachments);
+        $this->dossierSupportService->addAttachments($wooDecision, $attachments);
         $this->addDossierDocuments($wooDecision, $documents);
 
-        $this->validateDossier($wooDecision);
+        $this->dossierSupportService->validateDossier($wooDecision);
         $this->wooDecisionRepository->save($wooDecision, true);
 
         $this->handleInquiries($wooDecision, $wooDecisionRequestDto->documents);
 
-        $this->dispatchCreateDossierCommand($wooDecision);
+        $this->dossierSupportService->dispatchCreateDossierCommand($wooDecision);
         $this->updateDocumentRefersTo($wooDecisionRequestDto->documents);
+        $this->inventoryUpdater->updateWooDecisionInventories($wooDecision);
 
         return $wooDecision;
     }
@@ -156,20 +140,20 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
         $attachments = $this->getAttachments($wooDecision, $wooDecisionRequestDto->attachments);
         $documents = $this->getDocuments($wooDecision, $wooDecisionRequestDto->documents);
 
-        $this->validateMainDocument($mainDocument);
-        $this->validateAttachments($attachments);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateAttachments($attachments);
         $this->validateDocuments($documents);
 
         $wooDecision->setMainDocument($mainDocument);
-        $this->removeDossierAttachments($wooDecision);
-        $this->addAttachments($wooDecision, $attachments);
+        $this->dossierSupportService->removeDossierAttachments($wooDecision);
+        $this->dossierSupportService->addAttachments($wooDecision, $attachments);
 
         $previousDocumentCaseNumbers = $this->getDocumentCaseNumbers($wooDecision);
 
         $this->removeDossierDocuments($wooDecision);
         $this->addDossierDocuments($wooDecision, $documents);
 
-        $this->validateDossier($wooDecision);
+        $this->dossierSupportService->validateDossier($wooDecision);
         $this->wooDecisionRepository->save($wooDecision, true);
 
         $this->handleInquiries(
@@ -179,8 +163,9 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
         );
 
         $this->wooDecisionDispatcher->dispatchUpdateDecisionCommand($wooDecision);
-        $this->dispatchUpdateDossierCommand($wooDecision);
+        $this->dossierSupportService->dispatchUpdateDossierDetailsCommand($wooDecision);
         $this->updateDocumentRefersTo($wooDecisionRequestDto->documents);
+        $this->inventoryUpdater->updateWooDecisionInventories($wooDecision);
     }
 
     /**
@@ -204,9 +189,9 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
         try {
             $this->documentService->validateDocuments($documents);
         } catch (ValidationFailedException $validationFailedException) {
-            $violations = $this->prefixViolationsPropertyPath(
+            $violations = $this->dossierSupportService->prefixViolationsPropertyPath(
                 $validationFailedException->getViolations(),
-                'documents.'
+                'documents.',
             );
             throw new ValidationException($violations, previous: $validationFailedException);
         }
@@ -245,12 +230,6 @@ final class WooDecisionProcessor extends AbstractDossierProcessor
         foreach ($documents as $document) {
             $wooDecision->addDocument($document);
         }
-    }
-
-    #[Override]
-    protected function dispatchUpdateDossierCommand(AbstractDossier $dossier): void
-    {
-        $this->dossierDispatcher->dispatchUpdateDossierDetailsCommand($dossier);
     }
 
     /**

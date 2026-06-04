@@ -26,6 +26,7 @@ export default defineConfig({
       reportsDirectory: './reports/vitest',
       reporter: ['text', 'lcov'],
       include: ['assets/js/**'],
+      exclude: ['**/*.json'],
     },
     setupFiles: ['./vitest.setup.ts'],
   },

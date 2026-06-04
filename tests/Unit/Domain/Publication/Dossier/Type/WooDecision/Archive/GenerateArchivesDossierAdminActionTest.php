@@ -54,7 +54,7 @@ final class GenerateArchivesDossierAdminActionTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
 
         $this->batchDownloadService->expects('refresh')->with(Mockery::on(
-            static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier
+            static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier,
         ));
 
         $this->action->execute($dossier);

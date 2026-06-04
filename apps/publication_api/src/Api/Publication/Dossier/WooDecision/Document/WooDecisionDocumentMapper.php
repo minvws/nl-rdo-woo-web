@@ -37,6 +37,7 @@ class WooDecisionDocumentMapper
     ): Document {
         $fileInfo = $document->getFileInfo();
         $fileInfo->setName($wooDecisionDocumentRequestDto->fileName);
+        $fileInfo->setSourceType($wooDecisionDocumentRequestDto->sourceType);
 
         $document->setFileInfo($fileInfo);
         $document->setDocumentDate($wooDecisionDocumentRequestDto->date);
@@ -46,7 +47,6 @@ class WooDecisionDocumentMapper
         $document->setGrounds($wooDecisionDocumentRequestDto->grounds);
         $document->setJudgement($wooDecisionDocumentRequestDto->judgement);
         $document->setLinks($wooDecisionDocumentRequestDto->links);
-        $document->setPeriod($wooDecisionDocumentRequestDto->period);
         $document->setSuspended($wooDecisionDocumentRequestDto->isSuspended);
         $document->setRemark($wooDecisionDocumentRequestDto->remark);
         $document->setThreadId($wooDecisionDocumentRequestDto->threadId);

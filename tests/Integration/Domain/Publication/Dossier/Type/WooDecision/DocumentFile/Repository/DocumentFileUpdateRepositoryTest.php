@@ -9,42 +9,24 @@ use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileSetFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUpdateFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
-use Webmozart\Assert\Assert;
 
 final class DocumentFileUpdateRepositoryTest extends SharedWebTestCase
 {
-    private DocumentFileUpdateRepository $repository;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
-
-        $repository = self::getContainer()->get(DocumentFileUpdateRepository::class);
-        Assert::isInstanceOf($repository, DocumentFileUpdateRepository::class);
-
-        $this->repository = $repository;
-    }
-
     public function testHasUpdateForFileSetAndDocument(): void
     {
         $documentFileSet = DocumentFileSetFactory::createOne();
         $document = DocumentFactory::createOne();
+        $documentFileUpdateRepository = self::fromContainer(DocumentFileUpdateRepository::class);
 
-        self::assertFalse(
-            $this->repository->hasUpdateForFileSetAndDocument($documentFileSet, $document),
-        );
+        self::assertFalse($documentFileUpdateRepository->hasUpdateForFileSetAndDocument($documentFileSet, $document));
 
         $documentFileUpdate = DocumentFileUpdateFactory::createOne([
             'documentFileSet' => $documentFileSet,
             'document' => $document,
         ]);
 
-        $this->repository->save($documentFileUpdate, true);
+        $documentFileUpdateRepository->save($documentFileUpdate, true);
 
-        self::assertTrue(
-            $this->repository->hasUpdateForFileSetAndDocument($documentFileSet, $document),
-        );
+        self::assertTrue($documentFileUpdateRepository->hasUpdateForFileSetAndDocument($documentFileSet, $document));
     }
 }

@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use RuntimeException;
+use Shared\Doctrine\PlainDateType;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
@@ -29,6 +30,8 @@ use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteDocuments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use function in_array;
@@ -101,7 +104,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
         DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
         DossierValidationGroup::WORKFLOW_PUBLISH->value,
     ])]
-    #[Assert\LessThanOrEqual('today', groups: [
+    #[Assert\LessThan('tomorrow', groups: [
         DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
     ])]
     private ?DateTimeImmutable $previewDate = null;
@@ -118,20 +121,20 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     ])]
     private ?DecisionType $decision = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: PlainDateType::NAME, nullable: true)]
     #[Assert\NotBlank(groups: [
         DossierValidationGroup::DECISION->value,
         DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
         DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
         DossierValidationGroup::WORKFLOW_PUBLISH->value,
     ])]
-    #[Assert\LessThanOrEqual(value: 'today', message: 'date_must_not_be_in_future', groups: [
+    #[PlainDateBeforeOrEqual('today', message: 'date_must_not_be_in_future', groups: [
         DossierValidationGroup::DECISION->value,
         DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
         DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
         DossierValidationGroup::WORKFLOW_PUBLISH->value,
     ])]
-    private ?DateTimeImmutable $decisionDate = null;
+    private ?PlainDate $decisionDate = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: WooDecisionMainDocument::class, cascade: ['remove', 'persist'])]
     #[Assert\NotBlank(groups: [
@@ -221,7 +224,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     }
 
     /**
-     * @param DecisionType[] $decisionTypes
+     * @param array<array-key, DecisionType> $decisionTypes
      */
     private function isDecisionOneOfTypes(array $decisionTypes): bool
     {
@@ -288,12 +291,12 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
         return $this;
     }
 
-    public function getDecisionDate(): ?DateTimeImmutable
+    public function getDecisionDate(): ?PlainDate
     {
         return $this->decisionDate;
     }
 
-    public function setDecisionDate(?DateTimeImmutable $decisionDate): static
+    public function setDecisionDate(?PlainDate $decisionDate): static
     {
         $this->decisionDate = $decisionDate;
 
@@ -376,7 +379,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
                 unset($key);
 
                 return $document->isWithdrawn() || $document->isSuspended();
-            }
+            },
         );
     }
 }

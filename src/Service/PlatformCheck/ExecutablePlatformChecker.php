@@ -20,9 +20,9 @@ readonly class ExecutablePlatformChecker implements PlatformCheckerInterface
     ];
 
     /**
-     * @param string[] $executables
+     * @param array<array-key, string> $executables
      *
-     * @return PlatformCheckResult[]
+     * @return array<array-key, PlatformCheckResult>
      */
     public function getResults(array $executables = self::REQUIRED_EXECUTABLES): array
     {

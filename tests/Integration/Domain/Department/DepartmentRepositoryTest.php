@@ -22,9 +22,7 @@ final class DepartmentRepositoryTest extends SharedWebTestCase
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $this->repository = self::getContainer()->get(DepartmentRepository::class);
+        $this->repository = self::fromContainer(DepartmentRepository::class);
     }
 
     public function testFindPublicDepartmentBySlug(): void
@@ -160,7 +158,7 @@ final class DepartmentRepositoryTest extends SharedWebTestCase
     }
 
     /**
-     * @return Department[]
+     * @return array<array-key, Department>
      */
     private function createDepartments(): array
     {

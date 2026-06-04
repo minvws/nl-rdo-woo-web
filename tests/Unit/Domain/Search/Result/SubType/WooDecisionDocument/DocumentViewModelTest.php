@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Result\SubType\WooDecisionDocument;
 
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
+use Shared\ValueObject\PlainDate;
 
 class DocumentViewModelTest extends TestCase
 {
@@ -23,7 +23,7 @@ class DocumentViewModelTest extends TestCase
             $fileSize = 456,
             $pageCount = 12,
             $judgement = Judgement::PUBLIC,
-            $date = new DateTimeImmutable(),
+            $date = PlainDate::today(),
         );
 
         self::assertEquals($documentId, $viewmodel->documentId);

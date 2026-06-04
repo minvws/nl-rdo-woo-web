@@ -20,9 +20,7 @@ final class AbstractDossierTest extends SharedWebTestCase
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $this->validator = self::getContainer()->get(ValidatorInterface::class);
+        $this->validator = self::fromContainer(ValidatorInterface::class);
     }
 
     public function testSetAndGetExternalId(): void

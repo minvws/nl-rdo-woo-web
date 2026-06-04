@@ -31,7 +31,7 @@ interface DossierTypeConfigInterface
     public function getSubEntityClasses(): array;
 
     /**
-     * @return StepDefinitionInterface[]
+     * @return array<array-key, StepDefinitionInterface>
      */
     public function getSteps(): array;
 

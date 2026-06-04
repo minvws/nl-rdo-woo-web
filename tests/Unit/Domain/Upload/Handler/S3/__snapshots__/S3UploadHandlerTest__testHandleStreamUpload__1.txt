@@ -1,0 +1,1 @@
+{"data":{"uploadUuid":"foo-bar-123","originalName":"foobar.pdf","groupId":"woo-decision-documents","mimeType":"application\/octet-stream","size":123}}

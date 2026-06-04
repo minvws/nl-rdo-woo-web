@@ -15,7 +15,7 @@ class InquiryLinkImportException extends TranslatableException
             'public.global.no_doc_number',
             [
                 '{documentNr}' => $documentNr,
-            ]
+            ],
         );
     }
 
@@ -28,7 +28,7 @@ class InquiryLinkImportException extends TranslatableException
     }
 
     /**
-     * @param string[] $caseNumberValues
+     * @param array<array-key, string> $caseNumberValues
      */
     public static function forInvalidCaseNumber(int $rowNumber, array $caseNumberValues): self
     {

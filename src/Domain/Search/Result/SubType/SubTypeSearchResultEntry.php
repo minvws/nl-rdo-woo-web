@@ -12,9 +12,9 @@ class SubTypeSearchResultEntry implements ResultEntryInterface
 {
     public function __construct(
         private readonly SubTypeViewModelInterface $viewModel,
-        /** @var DossierReference[] */
+        /** @var array<DossierReference> */
         private readonly array $dossiers,
-        /** @var string[] */
+        /** @var array<string> */
         private readonly array $highlights,
         private readonly ElasticDocumentType $type,
     ) {
@@ -31,7 +31,7 @@ class SubTypeSearchResultEntry implements ResultEntryInterface
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getHighlights(): array
     {
@@ -39,7 +39,7 @@ class SubTypeSearchResultEntry implements ResultEntryInterface
     }
 
     /**
-     * @return DossierReference[]
+     * @return array<array-key, DossierReference>
      */
     public function getDossiers(): array
     {

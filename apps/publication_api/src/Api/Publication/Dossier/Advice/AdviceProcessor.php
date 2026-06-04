@@ -6,25 +6,19 @@ namespace PublicationApi\Api\Publication\Dossier\Advice;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException;
 use PublicationApi\Api\Publication\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Publication\Dossier\AbstractDossierProcessor;
+use PublicationApi\Api\Publication\Dossier\DossierSupportService;
 use Shared\Domain\Department\Department;
-use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
-use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceRepository;
 use Shared\Domain\Publication\Subject\Subject;
-use Shared\Domain\Publication\Subject\SubjectRepository;
-use Shared\Service\AttachmentService;
-use Shared\Service\DossierService;
-use Shared\Service\MainDocumentService;
 use Shared\ValueObject\ExternalId;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Webmozart\Assert\Assert;
 
@@ -34,36 +28,23 @@ use function array_values;
 use function count;
 use function sprintf;
 
-final class AdviceProcessor extends AbstractDossierProcessor
+/**
+ * @implements ProcessorInterface<AdviceRequestDto,?AdviceResponseDto>
+ */
+final readonly class AdviceProcessor implements ProcessorInterface
 {
     public function __construct(
-        AttachmentService $attachmentService,
-        DepartmentRepository $departmentRepository,
-        DossierDispatcher $dossierDispatcher,
-        DossierService $dossierService,
-        MainDocumentService $mainDocumentService,
-        OrganisationRepository $organisationRepository,
-        SubjectRepository $subjectRepository,
-        private readonly AdviceRepository $adviceRepository,
-        private readonly Security $security,
-        private readonly AdviceMapper $adviceMapper,
+        private DossierSupportService $dossierSupportService,
+        private AdviceRepository $adviceRepository,
+        private AdviceMapper $adviceMapper,
+        private DocumentPrefixDeterminer $documentPrefixDeterminer,
     ) {
-        parent::__construct(
-            $attachmentService,
-            $departmentRepository,
-            $dossierDispatcher,
-            $dossierService,
-            $mainDocumentService,
-            $organisationRepository,
-            $subjectRepository,
-            $this->security,
-        );
     }
 
     /**
      * @param array<array-key, mixed> $uriVariables
      */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?AdviceDto
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?AdviceResponseDto
     {
         unset($context);
 
@@ -73,17 +54,18 @@ final class AdviceProcessor extends AbstractDossierProcessor
 
         Assert::isInstanceOf($data, AdviceRequestDto::class);
 
-        $adviceExternalId = $uriVariables['adviceExternalId'];
-        Assert::string($adviceExternalId);
-        $adviceExternalId = ExternalId::create($adviceExternalId);
+        $dossierExternalId = $uriVariables['dossierExternalId'];
+        Assert::string($dossierExternalId);
+        $dossierExternalId = ExternalId::create($dossierExternalId);
 
-        $organisation = $this->getOrganisation($uriVariables);
-        $subject = $this->getSubject($data, $organisation);
-        $department = $this->getDepartment($organisation, $data->departmentId);
-        $advice = $this->adviceRepository->findByOrganisationAndExternalId($organisation, $adviceExternalId);
+        $organisation = $this->dossierSupportService->getOrganisation($uriVariables);
+        $subject = $this->dossierSupportService->getSubject($data, $organisation);
+        $department = $this->dossierSupportService->getDepartment($organisation, $data->departmentId);
+        $advice = $this->adviceRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
 
         if ($advice === null) {
-            $advice = $this->create($organisation, $department, $subject, $data, $adviceExternalId);
+            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $advice = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
 
             return $this->adviceMapper->fromEntity($advice);
         }
@@ -98,26 +80,28 @@ final class AdviceProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         AdviceRequestDto $adviceRequestDto,
-        ExternalId $adviceExternalId,
+        ExternalId $dossierExternalId,
+        string $documentPrefix,
     ): Advice {
         $advice = AdviceMapper::create(
             $adviceRequestDto,
             $organisation,
             $department,
             $subject,
-            $adviceExternalId
+            $dossierExternalId,
+            $documentPrefix,
         );
         $mainDocument = AdviceMainDocumentMapper::create($advice, $adviceRequestDto->mainDocument);
         $attachments = $this->getAttachments($advice, $adviceRequestDto->attachments);
 
-        $this->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
         $this->validateAdviceAttachments($attachments);
 
         $advice->setMainDocument($mainDocument);
-        $this->addAttachments($advice, $attachments);
+        $this->dossierSupportService->addAttachments($advice, $attachments);
 
-        $this->validateDossier($advice);
-        $this->dispatchCreateDossierCommand($advice);
+        $this->dossierSupportService->validateDossier($advice);
+        $this->dossierSupportService->dispatchCreateDossierCommand($advice);
 
         return $advice;
     }
@@ -133,15 +117,15 @@ final class AdviceProcessor extends AbstractDossierProcessor
         $mainDocument = AdviceMainDocumentMapper::update($advice, $adviceRequestDto->mainDocument);
         $attachments = $this->getAttachments($advice, $adviceRequestDto->attachments);
 
-        $this->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
         $this->validateAdviceAttachments($attachments);
 
         $advice->setMainDocument($mainDocument);
-        $this->removeDossierAttachments($advice);
-        $this->addAttachments($advice, $attachments);
+        $this->dossierSupportService->removeDossierAttachments($advice);
+        $this->dossierSupportService->addAttachments($advice, $attachments);
 
-        $this->validateDossier($advice);
-        $this->dispatchUpdateDossierCommand($advice);
+        $this->dossierSupportService->validateDossier($advice);
+        $this->dossierSupportService->dispatchUpdateDossierCommand($advice);
     }
 
     /**
@@ -160,7 +144,7 @@ final class AdviceProcessor extends AbstractDossierProcessor
     /**
      * @param list<AdviceAttachment> $attachments
      */
-    protected function validateAdviceAttachments(array $attachments): void
+    private function validateAdviceAttachments(array $attachments): void
     {
         $attachmentType = AttachmentType::REQUEST_FOR_ADVICE;
         if ($this->hasMoreThanOneAttachmentOfType($attachments, $attachmentType)) {
@@ -170,7 +154,7 @@ final class AdviceProcessor extends AbstractDossierProcessor
             )));
         }
 
-        $this->validateAttachments($attachments);
+        $this->dossierSupportService->validateAttachments($attachments);
     }
 
     /**

@@ -30,7 +30,7 @@ readonly class TwoFactorAuditLogger
             new UserLoginTwoFactorFailedEvent()
                 ->asExecute()
                 ->withActor($user)
-                ->withSource('woo')
+                ->withSource('woo'),
         );
     }
 

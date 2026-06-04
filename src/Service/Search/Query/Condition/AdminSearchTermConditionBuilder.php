@@ -40,7 +40,7 @@ class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
             Query::simpleQueryString(
                 fields: [ElasticField::INQUIRY_CASE_NRS->value],
                 query: $searchParameters->query,
-            )
+            ),
         );
 
         return $query;
@@ -55,7 +55,7 @@ class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
                     ElasticPath::dossiersInquiryCaseNrs()->value,
                 ],
                 query: $searchParameters->query,
-            )
+            ),
         );
     }
 }

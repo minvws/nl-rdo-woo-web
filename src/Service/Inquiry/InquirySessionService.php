@@ -43,11 +43,11 @@ class InquirySessionService
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getInquiries(): array
     {
-        /** @var string[] $ret */
+        /** @var array<array-key, string> $ret */
         $ret = $this->requestStack->getSession()->get(self::INQUIRY_KEY, []);
 
         return is_array($ret) ? $ret : [];

@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\History\History;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 use function is_array;
 use function is_string;
@@ -21,13 +22,13 @@ use function substr;
 
 class HistoryService
 {
-    public const TYPE_DOSSIER = 'dossier';
-    public const TYPE_DOCUMENT = 'document';
-    public const TYPE_INQUIRY = 'inquiry';
+    public const string TYPE_DOSSIER = 'dossier';
+    public const string TYPE_DOCUMENT = 'document';
+    public const string TYPE_INQUIRY = 'inquiry';
 
-    public const MODE_PUBLIC = 'public';
-    public const MODE_PRIVATE = 'private';
-    public const MODE_BOTH = 'both';
+    public const string MODE_PUBLIC = 'public';
+    public const string MODE_PRIVATE = 'private';
+    public const string MODE_BOTH = 'both';
 
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
@@ -36,7 +37,7 @@ class HistoryService
     }
 
     /**
-     * @param mixed[] $context
+     * @param array<array-key, mixed> $context
      */
     public function addDossierEntry(
         Uuid $dossierId,
@@ -48,7 +49,7 @@ class HistoryService
     }
 
     /**
-     * @param mixed[] $context
+     * @param array<array-key, mixed> $context
      */
     public function addDocumentEntry(Document $document, string $key, array $context, string $mode = self::MODE_BOTH, bool $flush = true): void
     {
@@ -56,7 +57,7 @@ class HistoryService
     }
 
     /**
-     * @param mixed[] $context
+     * @param array<array-key, mixed> $context
      */
     public function addInquiryEntry(Inquiry $inquiry, string $key, array $context, string $mode = self::MODE_BOTH): void
     {
@@ -64,7 +65,7 @@ class HistoryService
     }
 
     /**
-     * @param mixed[] $context
+     * @param array<array-key, mixed> $context
      */
     protected function addEntry(string $type, Uuid $identifier, string $key, array $context, string $mode, bool $flush): void
     {
@@ -83,7 +84,7 @@ class HistoryService
     }
 
     /**
-     * @return array|History[]
+     * @return array<array-key, History>
      */
     public function getHistory(string $type, string $identifier, string $mode, ?int $max = null): array
     {
@@ -91,7 +92,7 @@ class HistoryService
             $type,
             $identifier,
             $mode,
-            $max
+            $max,
         );
     }
 
@@ -111,6 +112,8 @@ class HistoryService
                     $values[$k] = $this->translator->trans(substr($value, 1, -1));
                 }
             }
+
+            Assert::allScalar($values);
 
             $context['{' . $ctxKey . '}'] = join(',', $values);
         }

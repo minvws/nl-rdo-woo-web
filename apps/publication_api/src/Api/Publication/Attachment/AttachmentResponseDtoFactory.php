@@ -34,7 +34,6 @@ readonly class AttachmentResponseDtoFactory
             $attachment->getType(),
             $attachment->getLanguage(),
             $attachment->getFormalDate(),
-            $attachment->getInternalReference(),
             $attachment->getGrounds(),
             $attachment->getFileInfo()->getName(),
             $attachment->getExternalId(),

@@ -12,9 +12,9 @@ use function array_map;
 class EnumHelper
 {
     /**
-     * @param array<BackedEnum> $backedEnums
+     * @param array<array-key, BackedEnum> $backedEnums
      *
-     * @return array<string>
+     * @return array<array-key, string>
      */
     public static function getStringValues(array $backedEnums): array
     {

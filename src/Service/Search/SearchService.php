@@ -30,9 +30,14 @@ readonly class SearchService
     ) {
     }
 
+    /**
+     * @param array<string, mixed> $routeParameters
+     */
     public function getResult(
         QueryDefinitionInterface $queryDefinition,
         ?SearchParameters $searchParameters = null,
+        string $routeName = Result::DEFAULT_ROUTE_NAME,
+        array $routeParameters = [],
     ): Result {
         if ($searchParameters === null) {
             $searchParameters = $this->searchParametersFactory->createDefault();
@@ -61,7 +66,7 @@ readonly class SearchService
                 ->setQuery($query);
         }
 
-        return $this->resultTransformer->transform($query, $searchParameters, $response);
+        return $this->resultTransformer->transform($query, $searchParameters, $response, $routeName, $routeParameters);
     }
 
     public function isIngested(Document $document): bool

@@ -69,7 +69,7 @@ readonly class CaseNumbers implements IteratorAggregate
     {
         return new self(
             $document->getInquiries()->map(
-                fn (Inquiry $inquiry) => $inquiry->getCasenr()
+                fn (Inquiry $inquiry) => $inquiry->getCasenr(),
             )->toArray(),
         );
     }
@@ -78,7 +78,7 @@ readonly class CaseNumbers implements IteratorAggregate
     {
         return new self(
             $wooDecision->getInquiries()->map(
-                fn (Inquiry $inquiry) => $inquiry->getCasenr()
+                fn (Inquiry $inquiry) => $inquiry->getCasenr(),
             )->toArray(),
         );
     }

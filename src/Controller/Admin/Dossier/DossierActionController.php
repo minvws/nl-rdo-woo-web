@@ -99,12 +99,12 @@ class DossierActionController extends AbstractController
 
             $this->addFlash(
                 'backend',
-                ['success' => $this->translator->trans('admin.dossiers.action.withdraw_all_executing')]
+                ['success' => $this->translator->trans('admin.dossiers.action.withdraw_all_executing')],
             );
 
             return $this->redirectToRoute(
                 'app_admin_dossier_woodecision_documents_edit',
-                ['prefix' => $wooDecision->getDocumentPrefix(), 'dossierId' => $wooDecision->getDossierNr()]
+                ['prefix' => $wooDecision->getDocumentPrefix(), 'dossierId' => $wooDecision->getDossierNr()],
             );
         }
 

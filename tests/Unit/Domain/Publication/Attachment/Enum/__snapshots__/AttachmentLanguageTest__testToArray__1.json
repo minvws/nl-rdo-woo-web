@@ -1,12 +1,137 @@
 [
     {
         "type": "AttachmentLanguage",
-        "value": "Dutch",
-        "label": "dutch"
+        "value": "NLD",
+        "label": "nld"
     },
     {
         "type": "AttachmentLanguage",
-        "value": "English",
-        "label": "english"
+        "value": "BUL",
+        "label": "bul"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "DAN",
+        "label": "dan"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "DEU",
+        "label": "deu"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "ENG",
+        "label": "eng"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "EST",
+        "label": "est"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "FIN",
+        "label": "fin"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "FRA",
+        "label": "fra"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "FRY",
+        "label": "fry"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "ELL",
+        "label": "ell"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "HUN",
+        "label": "hun"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "GLE",
+        "label": "gle"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "ITA",
+        "label": "ita"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "HRV",
+        "label": "hrv"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "LAV",
+        "label": "lav"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "LIT",
+        "label": "lit"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "MLT",
+        "label": "mlt"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "PAP-AW",
+        "label": "pap_aw"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "PAP-CW",
+        "label": "pap_cw"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "POL",
+        "label": "pol"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "POR",
+        "label": "por"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "RON",
+        "label": "ron"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "SLV",
+        "label": "slv"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "SLK",
+        "label": "slk"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "SPA",
+        "label": "spa"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "CES",
+        "label": "ces"
+    },
+    {
+        "type": "AttachmentLanguage",
+        "value": "SWE",
+        "label": "swe"
     }
 ]

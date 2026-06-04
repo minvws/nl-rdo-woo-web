@@ -16,7 +16,7 @@ final class AttachmentLanguageFactoryTest extends UnitTestCase
     public function testMakeAsArray(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->expects('trans')->times(2)->andReturnArg(0);
+        $translator->allows('trans')->andReturnArg(0);
 
         $factory = new AttachmentLanguageFactory($translator);
         $result = $factory->makeAsArray();

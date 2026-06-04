@@ -84,7 +84,7 @@ final class RequestForAdviceMainDocumentTest extends AdminApiTestCase
             'formalDate' => CarbonImmutable::yesterday()->format('Y-m-d'),
             'internalReference' => 'foo bar',
             'type' => AttachmentType::REQUEST_FOR_ADVICE->value,
-            'language' => AttachmentLanguage::DUTCH->value,
+            'language' => AttachmentLanguage::NLD->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $upload->getUploadId(),
         ];

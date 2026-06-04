@@ -99,7 +99,7 @@ readonly class RolloverCounter
                                 ElasticNestedField::PAGES->value,
                                 ElasticNestedField::PAGES->value,
                             ),
-                        ]
+                        ],
                     ),
                 ],
             ),

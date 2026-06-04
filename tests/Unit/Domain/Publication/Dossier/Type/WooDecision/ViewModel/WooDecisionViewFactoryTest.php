@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
 use Mockery\MockInterface;
@@ -26,6 +25,7 @@ use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use Shared\Tests\Story\DepartmentEnum;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Routing\RouterInterface;
 
 final class WooDecisionViewFactoryTest extends UnitTestCase
@@ -111,7 +111,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new DateTimeImmutable(),
+                publicationDate: $publicationDate = PlainDate::today(),
                 mainDepartment: $expectedMainDepartment = new Department(
                     name: DepartmentEnum::VWS->value,
                     feedbackContent: null,
@@ -179,7 +179,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new DateTimeImmutable(),
+                publicationDate: $publicationDate = PlainDate::today(),
                 mainDepartment: $expectedMainDepartment = new Department(
                     name: DepartmentEnum::JV->value,
                     feedbackContent: null,
@@ -250,8 +250,8 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertEquals($expectedDocumentSearchUrl, $result->documentSearchUrl);
     }
 
-    private function getRandomDate(): DateTimeImmutable
+    private function getRandomDate(): PlainDate
     {
-        return DateTimeImmutable::createFromInterface($this->getFaker()->dateTimeBetween('-2 years'));
+        return $this->getFaker()->plainDate('-2 years');
     }
 }

@@ -58,7 +58,7 @@ final readonly class WooDecisionViewFactory
                 'app_search',
                 [
                     FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
-                ]
+                ],
             ),
         );
     }

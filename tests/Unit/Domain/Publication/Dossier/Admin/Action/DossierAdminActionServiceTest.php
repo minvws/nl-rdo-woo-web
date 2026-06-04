@@ -41,7 +41,7 @@ class DossierAdminActionServiceTest extends UnitTestCase
 
         self::assertEquals(
             [DossierAdminAction::INGEST],
-            $this->actionService->getAvailableAdminActions($dossier)
+            $this->actionService->getAvailableAdminActions($dossier),
         );
     }
 
@@ -83,11 +83,11 @@ class DossierAdminActionServiceTest extends UnitTestCase
         $this->actionB->expects('needsConfirmation')->andReturnFalse();
 
         self::assertTrue(
-            $this->actionService->needsConfirmation(DossierAdminAction::GENERATE_ARCHIVES)
+            $this->actionService->needsConfirmation(DossierAdminAction::GENERATE_ARCHIVES),
         );
 
         self::assertFalse(
-            $this->actionService->needsConfirmation(DossierAdminAction::INGEST)
+            $this->actionService->needsConfirmation(DossierAdminAction::INGEST),
         );
     }
 }

@@ -52,7 +52,7 @@ readonly class DocumentService
             document: $document,
             key: 'document_removed',
             context: [],
-            flush: false
+            flush: false,
         );
 
         if ($flush) {

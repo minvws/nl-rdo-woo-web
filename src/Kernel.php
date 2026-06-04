@@ -206,7 +206,7 @@ class Kernel extends BaseKernel
     /**
      * Returns the kernel parameters.
      *
-     * @return array<string,array<mixed>|bool|string|int|float|UnitEnum|null>
+     * @return array<string, array<array-key, mixed>|bool|string|int|float|UnitEnum|null>
      */
     #[Override]
     protected function getKernelParameters(): array

@@ -61,7 +61,7 @@ final class DossierWithAttachmentsDeleteStrategyTest extends UnitTestCase
                 self::assertEquals($dossierId, $message->dossierId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
@@ -70,7 +70,7 @@ final class DossierWithAttachmentsDeleteStrategyTest extends UnitTestCase
                 self::assertEquals($dossierId, $message->dossierId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->strategy->delete($dossier);
@@ -97,7 +97,7 @@ final class DossierWithAttachmentsDeleteStrategyTest extends UnitTestCase
                 self::assertEquals($dossierId, $message->dossierId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
@@ -106,7 +106,7 @@ final class DossierWithAttachmentsDeleteStrategyTest extends UnitTestCase
                 self::assertEquals($dossierId, $message->dossierId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->strategy->deleteWithOverride($dossier);

@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Form\Dossier;
 
-use DateTimeImmutable;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\Form\PlainDateType;
+use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
+use Shared\ValueObject\PlainDate;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Webmozart\Assert\Assert;
 
@@ -194,18 +194,17 @@ trait DossierFormBuilderTrait
     {
         $dossier = $this->getDossier($builder);
 
-        $builder->add('publication_date', DateType::class, [
+        $builder->add('publication_date', PlainDateType::class, [
             'label' => 'admin.dossiers.' . $dossier->getType()->value . '.form.publication.publication_date_label',
             'help' => 'admin.dossiers.' . $dossier->getType()->value . '.form.publication.publication_date_help',
             'required' => true,
             'widget' => 'single_text',
-            'input' => 'datetime_immutable',
-            'data' => $dossier->getPublicationDate() ?? new DateTimeImmutable(),
+            'data' => $dossier->getPublicationDate() ?? PlainDate::today(),
             'constraints' => [
                 new NotBlank(),
-                new GreaterThanOrEqual(
-                    new DateTimeImmutable('today midnight'),
-                    message: 'publication_date_must_be_today_or_future'
+                new PlainDateAfterOrEqual(
+                    'today',
+                    message: 'publication_date_must_be_today_or_future',
                 ),
             ],
         ]);
@@ -215,12 +214,11 @@ trait DossierFormBuilderTrait
     {
         $dossier = $this->getDossier($builder);
 
-        $builder->add('date', DateType::class, [
+        $builder->add('date', PlainDateType::class, [
             'required' => true,
             'label' => 'admin.dossiers.' . $dossier->getType()->value . '.form.details.date_label',
-            'widget' => 'single_text',
-            'input' => 'datetime_immutable',
             'property_path' => 'dateFrom',
+            'widget' => 'single_text',
         ]);
     }
 

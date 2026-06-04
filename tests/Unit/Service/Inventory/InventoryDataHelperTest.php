@@ -15,17 +15,21 @@ use function array_values;
 class InventoryDataHelperTest extends TestCase
 {
     /**
-     * @param non-empty-string|array<non-empty-string> $separators
-     * @param array<string> $expectedResult
+     * @param non-empty-string|array<array-key, non-empty-string> $separators
+     * @param array<array-key, string> $expectedResult
      */
     #[DataProvider('separateValuesProvider')]
-    public function testSeparateValues(mixed $input, string|array $separators, array $expectedResult): void
+    public function testSeparateValues(?string $input, string|array $separators, array $expectedResult): void
     {
         self::assertEquals($expectedResult, array_values(InventoryDataHelper::separateValues($input, $separators)));
     }
 
     /**
-     * @return array<string, array{input:string|null, separators:non-empty-string|non-empty-string[], expectedResult:string[]}>
+     * @return array<string, array{
+     *      input: string|null,
+     *      separators: non-empty-string|array<array-key, non-empty-string>,
+     *      expectedResult: array<array-key, string>
+     *  }>
      */
     public static function separateValuesProvider(): array
     {
@@ -135,7 +139,7 @@ class InventoryDataHelperTest extends TestCase
     }
 
     /**
-     * @param array<array-key, array{input:string, expectedResult:string[]}> $expectedResult
+     * @param array<array-key, array{input: string, expectedResult: array<array-key, string>}> $expectedResult
      */
     #[DataProvider('getGroundsProvider')]
     public function testGetGrounds(string $input, array $expectedResult): void
@@ -144,7 +148,7 @@ class InventoryDataHelperTest extends TestCase
     }
 
     /**
-     * @return array<array-key, array{input:string, expectedResult:string[]}>
+     * @return array<array-key, array{input: string, expectedResult: array<array-key, string>}>
      */
     public static function getGroundsProvider(): array
     {

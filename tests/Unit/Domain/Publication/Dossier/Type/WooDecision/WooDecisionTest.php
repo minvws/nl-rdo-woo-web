@@ -18,6 +18,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Producti
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 
 use function array_map;
 use function in_array;
@@ -107,7 +108,7 @@ final class WooDecisionTest extends UnitTestCase
     }
 
     /**
-     * @return array<array{DecisionType,bool}>
+     * @return array<array-key, array{DecisionType, bool}>
      */
     public static function decisionTypeDataForRequiredInventory(): array
     {
@@ -123,7 +124,7 @@ final class WooDecisionTest extends UnitTestCase
     }
 
     /**
-     * @return array<array{DecisionType,bool}>
+     * @return array<array-key, array{DecisionType, bool}>
      */
     public static function decisionTypeDataForOptionalInventory(): array
     {
@@ -139,7 +140,7 @@ final class WooDecisionTest extends UnitTestCase
     }
 
     /**
-     * @return array<array{DecisionType,bool}>
+     * @return array<array-key, array{DecisionType, bool}>
      */
     public static function decisionTypeDataForCanProvideInventory(): array
     {
@@ -149,9 +150,9 @@ final class WooDecisionTest extends UnitTestCase
     }
 
     /**
-     * @param DecisionType[] $decisionTypes
+     * @param array<array-key, DecisionType> $decisionTypes
      *
-     * @return array<array{DecisionType,bool}>
+     * @return array<array-key, array{DecisionType, bool}>
      */
     public static function mapDecisionTypesToTrue(array $decisionTypes): array
     {
@@ -227,7 +228,7 @@ final class WooDecisionTest extends UnitTestCase
 
     public function testSetAndGetDecisionDate(): void
     {
-        $decisionDate = new DateTimeImmutable();
+        $decisionDate = PlainDate::today();
 
         $this->wooDecision->setDecisionDate($decisionDate);
         self::assertEquals($decisionDate, $this->wooDecision->getDecisionDate());

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\Disposition\ViewModel;
 
-use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
 use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesAccessors;
+use Shared\ValueObject\PlainDate;
 
 final readonly class Disposition
 {
@@ -14,7 +14,7 @@ final readonly class Disposition
 
     public function __construct(
         private CommonDossierProperties $commonDossier,
-        public DateTimeImmutable $date,
+        public PlainDate $date,
     ) {
     }
 }

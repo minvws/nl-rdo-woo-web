@@ -25,7 +25,7 @@ abstract readonly class AbstractAttachmentProvider implements ProviderInterface
      * @param array<array-key,string> $uriVariables
      * @param array<array-key,mixed> $context
      *
-     * @return array<array-key,AbstractAttachmentDto>|AbstractAttachmentDto|object[]|null
+     * @return array<array-key, AbstractAttachmentDto>|AbstractAttachmentDto|array<array-key, object>|null
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array|AbstractAttachmentDto|null
     {

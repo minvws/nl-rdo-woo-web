@@ -14,12 +14,12 @@ use function array_key_exists;
 class DossierTypeManager
 {
     /**
-     * @var DossierTypeConfigInterface[]
+     * @var array<array-key, DossierTypeConfigInterface>
      */
     private array $configs;
 
     /**
-     * @param DossierTypeConfigInterface[] $configs
+     * @param iterable<DossierTypeConfigInterface> $configs
      */
     public function __construct(
         private readonly AuthorizationCheckerInterface $authorizationChecker,
@@ -52,7 +52,7 @@ class DossierTypeManager
     }
 
     /**
-     * @return DossierTypeConfigInterface[]
+     * @return array<array-key, DossierTypeConfigInterface>
      */
     public function getAvailableConfigs(): array
     {
@@ -84,7 +84,7 @@ class DossierTypeManager
     }
 
     /**
-     * @return DossierTypeConfigInterface[]
+     * @return array<array-key, DossierTypeConfigInterface>
      */
     public function getAllConfigs(): array
     {

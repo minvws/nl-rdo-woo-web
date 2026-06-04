@@ -18,8 +18,8 @@ ${CURRENT_DATE}     ${EMPTY}
 
 *** Keywords ***
 Fill Out Basic Details
-  [Arguments]  ${date_from}=2021-12-01T00:00:00+00:00
-  ...  ${date_to}=2023-01-31T00:00:00+00:00
+  [Arguments]  ${date_from}=2021-12-01
+  ...  ${date_to}=2023-01-31
   ...  ${type}=${EMPTY}
   ...  ${prefix}=E2E-A
   Generate Dossier Reference Number

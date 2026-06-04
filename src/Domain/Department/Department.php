@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Department;
 
+use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -77,6 +78,8 @@ class Department implements EntityWithFileInfo
 
     public function __construct()
     {
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
         $this->organisations = new ArrayCollection();
         $this->fileInfo = new FileInfo();
     }

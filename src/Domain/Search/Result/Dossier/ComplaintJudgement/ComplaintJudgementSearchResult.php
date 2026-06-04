@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Result\Dossier\ComplaintJudgement;
 
-use DateTimeImmutable;
 use Shared\Domain\Search\Result\Dossier\AbstractDossierTypeSearchResult;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 
 readonly class ComplaintJudgementSearchResult extends AbstractDossierTypeSearchResult
@@ -16,10 +16,10 @@ readonly class ComplaintJudgementSearchResult extends AbstractDossierTypeSearchR
         string $documentPrefix,
         public string $title,
         public ?string $summary,
-        public ?DateTimeImmutable $publicationDate,
+        public ?PlainDate $publicationDate,
         // This count is actually the attachment count + 1 (for the main document)
         public int $documentCount,
-        public ?DateTimeImmutable $date,
+        public ?PlainDate $date,
     ) {
         parent::__construct($id, $dossierNr, $documentPrefix);
     }

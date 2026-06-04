@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\WooIndex;
 
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\TimestampableTrait;
 use Symfony\Component\Uid\Uuid;
@@ -24,6 +25,8 @@ class WooIndexSitemap
     public function __construct()
     {
         $this->id = Uuid::v6();
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
     }
 
     public function getId(): Uuid

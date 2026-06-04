@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\MainDocument\ViewModel;
 
-use DateTimeImmutable;
 use Mockery;
 use Mockery\Matcher\Closure;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -24,14 +24,17 @@ use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use Shared\Domain\Publication\SourceType;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\UuidV6;
+use Webmozart\Assert\Assert;
 
 use function sprintf;
 
 final class MainDocumentViewFactoryTest extends UnitTestCase
 {
     /**
+     * @param class-string<AbstractMainDocument> $mainDocumentClass
      * @param list<string> $expectedDownloadParameterKeys
      * @param list<string> $expectedDetailsParameterKeys
      */
@@ -75,11 +78,14 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
             ->andReturn($expectedDetailsUrl = 'http://details.test');
 
         $mainDocument = Mockery::mock($mainDocumentClass);
+        Assert::isInstanceOf($mainDocument, AbstractMainDocument::class);
+        Assert::isInstanceOf($mainDocument, MockInterface::class);
+
         $mainDocument->expects('getId')->times(2)->andReturn($uuid);
-        $mainDocument->expects('getFormalDate')->andReturn(new DateTimeImmutable($expectedFormalDate = '2021-05-10'));
+        $mainDocument->expects('getFormalDate')->andReturn(PlainDate::create($expectedFormalDate = '2021-05-10'));
         $mainDocument->expects('getFileInfo')->times(5)->andReturn($fileInfo);
         $mainDocument->expects('getType')->andReturn(AttachmentType::ADVICE);
-        $mainDocument->expects('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
+        $mainDocument->expects('getLanguage')->andReturn(AttachmentLanguage::NLD);
         $mainDocument->expects('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
         $mainDocument->expects('getGrounds')->andReturn($expectedGrounds = ['bar', 'foo']);
 
@@ -99,7 +105,7 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedSourceType, $result->sourceType);
         $this->assertSame($expectedSize, $result->size);
         $this->assertSame($expectedInternalReference, $result->internalReference);
-        $this->assertSame(AttachmentLanguage::DUTCH, $result->language);
+        $this->assertSame(AttachmentLanguage::NLD, $result->language);
         $this->assertSame($expectedGrounds, $result->grounds);
         $this->assertSame($expectedDownloadUrl, $result->downloadUrl);
         $this->assertSame($expectedDetailsUrl, $result->detailsUrl);

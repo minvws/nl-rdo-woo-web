@@ -65,7 +65,7 @@ class DossierAdministrationController extends AbstractController
 
             $this->addFlash(
                 'backend',
-                ['success' => $this->translator->trans('admin.dossiers.action.action_is_executed')]
+                ['success' => $this->translator->trans('admin.dossiers.action.action_is_executed')],
             );
         }
 

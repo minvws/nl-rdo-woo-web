@@ -8,14 +8,14 @@ use PublicationApi\Api\Publication\PublicationV1Api;
 use PublicationApi\Domain\OpenApi\Exception\FormatMismatchException;
 use PublicationApi\Domain\OpenApi\Exception\KeywordMismatchException;
 use PublicationApi\Domain\OpenApi\Exception\SchemaMismatchException;
-use PublicationApi\Domain\OpenApi\Exception\ValidatonException;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use function sprintf;
 
 class OpenApiValidationExceptionResponseFactory
 {
-    public function buildJsonResponse(ValidatonException $exception): JsonResponse
+    public function buildJsonResponse(ValidationException $exception): JsonResponse
     {
         $statusCode = JsonResponse::HTTP_BAD_REQUEST;
         $data = [

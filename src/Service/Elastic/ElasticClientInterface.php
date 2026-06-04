@@ -16,7 +16,7 @@ use Http\Promise\Promise;
 interface ElasticClientInterface
 {
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function search(array $params = []): Elasticsearch|Promise;
 
@@ -25,72 +25,72 @@ interface ElasticClientInterface
     public function indices(): Indices;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function count(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function update(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function exists(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function updateByQuery(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function get(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function create(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function close(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function putSettings(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function putMapping(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function open(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function delete(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function deleteAlias(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function putAlias(array $params = []): Elasticsearch|Promise;
 
     /**
-     * @param mixed[] $params
+     * @param array<array-key, mixed> $params
      */
     public function updateAliases(array $params = []): Elasticsearch|Promise;
 }

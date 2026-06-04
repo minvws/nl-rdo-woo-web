@@ -159,7 +159,7 @@ class EntityStorageServiceTest extends UnitTestCase
                 self::assertEquals($entityId, $message->entityId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $result = $this->getStorageService()->storeEntity($splFileInfo, $entity);
@@ -322,7 +322,7 @@ class EntityStorageServiceTest extends UnitTestCase
                 self::assertEquals($entityId, $message->entityId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $result = $service->deleteAllFilesForEntity($entity);

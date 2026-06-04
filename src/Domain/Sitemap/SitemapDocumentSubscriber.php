@@ -44,7 +44,7 @@ readonly class SitemapDocumentSubscriber
                         ], UrlGeneratorInterface::ABSOLUTE_URL),
                         $document->getUpdatedAt(),
                         UrlConcrete::CHANGEFREQ_MONTHLY,
-                        0.8
+                        0.8,
                     ),
                     'documents',
                 );

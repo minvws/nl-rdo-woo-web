@@ -48,7 +48,7 @@ final class DossierPathHelperTest extends UnitTestCase
             [
                 'prefix' => 'doc-prefix',
                 'dossierId' => 'dos-nr',
-            ]
+            ],
         )->andReturn('foo-bar');
 
         self::assertEquals(
@@ -69,7 +69,7 @@ final class DossierPathHelperTest extends UnitTestCase
             [
                 'prefix' => 'dos-prefix',
                 'dossierId' => 'dos-nr',
-            ]
+            ],
         )->andReturn('foo-bar');
 
         self::assertEquals(
@@ -92,7 +92,7 @@ final class DossierPathHelperTest extends UnitTestCase
             [
                 'prefix' => 'doc-prefix',
                 'dossierId' => 'dos-nr',
-            ]
+            ],
         )->andReturn('/foo-bar');
 
         self::assertEquals(
@@ -113,7 +113,7 @@ final class DossierPathHelperTest extends UnitTestCase
             [
                 'prefix' => 'dos-prefix',
                 'dossierId' => 'dos-nr',
-            ]
+            ],
         )->andReturn('foo-bar');
 
         self::assertEquals(
@@ -134,7 +134,7 @@ final class DossierPathHelperTest extends UnitTestCase
             [
                 'prefix' => 'dos-prefix',
                 'dossierId' => 'dos-nr',
-            ]
+            ],
         )->andReturn('foo-bar');
 
         self::assertEquals(
@@ -155,7 +155,7 @@ final class DossierPathHelperTest extends UnitTestCase
             [
                 'prefix' => 'dos-prefix',
                 'dossierId' => 'dos-nr',
-            ]
+            ],
         )->andReturn('foo-bar');
 
         self::assertEquals(

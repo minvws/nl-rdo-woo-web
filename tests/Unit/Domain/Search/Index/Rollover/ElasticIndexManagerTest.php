@@ -12,7 +12,7 @@ use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Shared\Domain\Search\Index\Rollover\MappingService;
 use Shared\Service\Elastic\ElasticClientInterface;
-use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
+use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
 
 class ElasticIndexManagerTest extends UnitTestCase
@@ -24,7 +24,7 @@ class ElasticIndexManagerTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->elasticConfig = ElasticConfigOverride::default();
+        $this->elasticConfig = ElasticConfigFactory::default();
         $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
         $this->mappingService = Mockery::mock(MappingService::class);
 
@@ -214,7 +214,7 @@ class ElasticIndexManagerTest extends UnitTestCase
         $this->elasticClient->expects('indices->getMapping')->andReturn($mappingResponse);
 
         $this->assertMatchesObjectSnapshot(
-            $this->indexManager->find('indexB')
+            $this->indexManager->find('indexB'),
         );
     }
 

@@ -67,7 +67,7 @@ class InventorySanitizerTest extends UnitTestCase
                 self::assertEquals('foo-bar.csv', $fileInfo->getName());
 
                 return true;
-            }
+            },
         ));
 
         $this->dataProvider->expects('getDocuments')->andReturn(new ArrayCollection([$document]));

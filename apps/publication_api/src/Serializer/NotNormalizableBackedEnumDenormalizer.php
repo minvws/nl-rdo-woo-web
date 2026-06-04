@@ -43,7 +43,7 @@ readonly class NotNormalizableBackedEnumDenormalizer implements DenormalizerInte
     }
 
     /**
-     * @param array<mixed> $context
+     * @param array<array-key, mixed> $context
      */
     public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
@@ -59,7 +59,7 @@ readonly class NotNormalizableBackedEnumDenormalizer implements DenormalizerInte
     }
 
     /**
-     * @param array<mixed> $context
+     * @param array<array-key, mixed> $context
      */
     private function getPathFromContext(array $context): ?string
     {

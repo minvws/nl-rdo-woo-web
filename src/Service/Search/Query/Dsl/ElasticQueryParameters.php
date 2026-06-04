@@ -103,7 +103,7 @@ class ElasticQueryParameters
                     'missing' => '_last',
                     'order' => $this->searchParameters->sortOrder->value,
                 ],
-            ]]
+            ]],
         );
 
         return $this;

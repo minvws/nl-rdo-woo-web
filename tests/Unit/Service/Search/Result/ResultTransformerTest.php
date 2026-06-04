@@ -82,15 +82,22 @@ class ResultTransformerTest extends UnitTestCase
         $sortItems = Mockery::mock(SortItems::class);
         $this->sortItemViewFactory->expects('make')->with($searchParameters)->andReturn($sortItems);
 
+        $routeName = 'foo';
+        $routeParameters = ['foo' => 'bar'];
+
         $result = $this->transformer->transform(
             [],
             $searchParameters,
             $response,
+            $routeName,
+            $routeParameters,
         );
 
         self::assertEquals(16, $result->getResultCount());
         self::assertEquals(6, $result->getDossierCount());
         self::assertSame($sortItems, $result->getSortItems());
         self::assertSame($searchParameters, $result->getSearchParameters());
+        self::assertSame($routeName, $result->getRouteName());
+        self::assertSame($routeParameters, $result->getRouteParameters());
     }
 }

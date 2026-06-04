@@ -10,7 +10,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use PublicationApi\Api\Publication\PublicationV1Api;
-use PublicationApi\Domain\OpenApi\Exception\ValidatonException;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use PublicationApi\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
 use PublicationApi\Domain\OpenApi\OpenApiValidator;
 use PublicationApi\EventSubscriber\PublicationV1ApiRequestResponseValidatorSubscriber;
@@ -166,7 +166,7 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
         $requestEvent = new RequestEvent(Mockery::mock(KernelInterface::class), $request, 1);
 
         $expectedPath = sprintf('%s%s%s', PublicationV1Api::API_PREFIX, $expectedRoutePrefix, $expectedUriTemplate);
-        $validatonException = new ValidatonException('foo', 0, new Exception());
+        $validatonException = new ValidationException('foo', 0, new Exception());
         $this->openApiValidator
             ->expects('validateRequest')
             ->with($request, $expectedPath, $expectedMethod)
@@ -294,7 +294,7 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
 
         $response = Mockery::mock(Response::class);
 
-        $validatonException = new ValidatonException('foo', 0, new Exception());
+        $validatonException = new ValidationException('foo', 0, new Exception());
 
         $expectedPath = sprintf('%s%s%s', PublicationV1Api::API_PREFIX, $expectedRoutePrefix, $expectedUriTemplate);
         $this->openApiValidator
@@ -406,7 +406,7 @@ final class PublicationV1ApiRequestResponseValidatorSubscriberTest extends UnitT
         $response = Mockery::mock(Response::class);
 
         $exceptionMessage = 'foo';
-        $validatonException = new ValidatonException($exceptionMessage, 0, new Exception());
+        $validatonException = new ValidationException($exceptionMessage, 0, new Exception());
 
         $expectedPath = sprintf('%s%s%s', PublicationV1Api::API_PREFIX, $expectedRoutePrefix, $expectedUriTemplate);
         $this->openApiValidator

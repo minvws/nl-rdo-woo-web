@@ -30,7 +30,7 @@ readonly class InvestigationReportMapper
     /**
      * @param array<array-key,InvestigationReport> $investigationReports
      *
-     * @return list<InvestigationReportDto>
+     * @return list<InvestigationReportResponseDto>
      */
     public function fromEntities(array $investigationReports): array
     {
@@ -40,7 +40,7 @@ readonly class InvestigationReportMapper
         ));
     }
 
-    public function fromEntity(InvestigationReport $investigationReport): InvestigationReportDto
+    public function fromEntity(InvestigationReport $investigationReport): InvestigationReportResponseDto
     {
         $mainDocument = $investigationReport->getMainDocument();
         Assert::notNull($mainDocument);
@@ -53,13 +53,11 @@ readonly class InvestigationReportMapper
         $department = $investigationReport->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
-        return new InvestigationReportDto(
+        return new InvestigationReportResponseDto(
             $investigationReport->getId(),
             $investigationReport->getExternalId(),
             OrganisationReferenceDto::fromEntity($investigationReport->getOrganisation()),
-            $investigationReport->getDocumentPrefix(),
             $investigationReport->getDossierNr(),
-            $investigationReport->getInternalReference(),
             $investigationReport->getTitle(),
             $investigationReport->getSummary(),
             $investigationReport->getSubject()?->getName(),
@@ -78,10 +76,12 @@ readonly class InvestigationReportMapper
         Department $department,
         ?Subject $subject,
         ExternalId $externalId,
+        string $documentPrefix,
     ): InvestigationReport {
         $investigationReport = new InvestigationReport();
         $investigationReport->setExternalId($externalId);
         $investigationReport->setStatus(DossierStatus::NEW);
+        $investigationReport->setDocumentPrefix($documentPrefix);
 
         self::update($investigationReport, $investigationReportRequestDto, $organisation, $department, $subject);
 
@@ -97,9 +97,7 @@ readonly class InvestigationReportMapper
     ): InvestigationReport {
         $investigationReport->setDateFrom($investigationReportRequestDto->dossierDate);
         $investigationReport->setDepartments([$department]);
-        $investigationReport->setDocumentPrefix($investigationReportRequestDto->prefix);
         $investigationReport->setDossierNr($investigationReportRequestDto->dossierNumber);
-        $investigationReport->setInternalReference($investigationReportRequestDto->internalReference);
         $investigationReport->setOrganisation($organisation);
         $investigationReport->setPublicationDate($investigationReportRequestDto->publicationDate);
         $investigationReport->setSubject($subject);

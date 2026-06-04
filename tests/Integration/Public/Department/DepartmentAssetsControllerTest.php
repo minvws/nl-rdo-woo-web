@@ -38,7 +38,7 @@ final class DepartmentAssetsControllerTest extends SharedWebTestCase
         $this->client = self::createClient();
 
         $this->assetsPath = self::getContainer()->getParameter('assets_path');
-        $this->doctrine = self::getContainer()->get(EntityManagerInterface::class);
+        $this->doctrine = self::fromContainer(EntityManagerInterface::class);
     }
 
     public function testDepartmentLogoDownload(): void

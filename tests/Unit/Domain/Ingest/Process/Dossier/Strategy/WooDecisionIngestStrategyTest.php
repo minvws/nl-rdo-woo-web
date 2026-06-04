@@ -46,11 +46,11 @@ class WooDecisionIngestStrategyTest extends UnitTestCase
         $this->defaultIngestStrategy->expects('ingest')->with($dossier, false);
 
         $this->ingestService->expects('ingest')->with($docA, Mockery::on(
-            static fn (IngestProcessOptions $options) => $options->forceRefresh() === false
+            static fn (IngestProcessOptions $options) => $options->forceRefresh() === false,
         ));
 
         $this->ingestService->expects('ingest')->with($docB, Mockery::on(
-            static fn (IngestProcessOptions $options) => $options->forceRefresh() === false
+            static fn (IngestProcessOptions $options) => $options->forceRefresh() === false,
         ));
 
         $this->ingester->ingest($dossier, false);

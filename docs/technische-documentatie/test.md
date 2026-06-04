@@ -6,8 +6,7 @@
   - [Running the tests in a local virtual environment](#running-the-tests-in-a-local-virtual-environment)
     - [Step 1: Install Python](#step-1-install-python)
     - [Step 2: Install Robot Framework](#step-2-install-robot-framework)
-    - [Step 3: Initialize the application](#step-3-initialize-the-application)
-    - [Step 4: Run tests locally](#step-4-run-tests-locally)
+    - [Step 3: Run tests locally](#step-3-run-tests-locally)
       - [Test and Acceptance tests](#test-and-acceptance-tests)
   - [Dependency management](#dependency-management)
 
@@ -15,25 +14,34 @@
 
 Robot framework is used for the Woo Project to execute E2E tests and mainly uses the [Browser library](https://robotframework-browser.org) and several other libraries.
 
+All tests are run under a user called Robot Admin, which has 'super admin' rights, username `email@example.org` and password `IkLoopNooitVastVandaag`.
+The creation of this user is handled by the following command:
+
+```bash
+task rf:init
+```
+
+If you ever need an OTP code to login manually, use either of the following command:
+
+```shell
+task rf:local:otp
+task rf:docker:otp
+```
+
 ## Running the tests in docker
 
 Make sure Woo is running locally. Read the [development_install](development_install.md) instructions first.
-Then run the following commands:
+Then you can use the following commands:
 
 ```bash
-task rf:docker:init
-```
-
-Then run specific tags using the this commands:
-
-```bash
+# Specific tags
 task rf:docker:run tag=testdossiers
-```
 
-Or run the CI set for the web app:
-
-```bash
+# Run the CI set, which covers the web UI
 task rf:docker:run:ci
+
+# Run the API set
+task rf:docker:run:api
 ```
 
 ## Running the tests in a local virtual environment
@@ -56,23 +64,7 @@ Execute the following commands. This command will automatically install the Robo
 task rf:local:venv
 ```
 
-### Step 3: Initialize the application
-
-To run CI tests locally you need to create a user with 'super admin'-rights, username `email@example.org` and password `IkLoopNooitVastVandaag`.
-
-Then create the aforementioned admin user by either following the instructions in [development_install](development_install.md) or running the following command. Note that this is still headful, it does not user Docker.
-
-```shell
-task rf:local:init
-```
-
-If you ever need an OTP code to login manually, use the following command:
-
-```shell
-task rf:otp
-```
-
-### Step 4: Run tests locally
+### Step 3: Run tests locally
 
 To execute any other testsuite locally without Docker, provide the testsuite's tag as parameter to the command mentioned above. The testsuite's tag can be found at the top of each `.robot` file, as can be seen here: [https://github.com/minvws/nl-rdo-woo-web-private/blob/13d615779580699d743ff24a1f7ff45ae2eb9111/tests/robot_framework/tests/02__TestDossiers.robot#L26](https://github.com/minvws/nl-rdo-woo-web-private/blob/13d615779580699d743ff24a1f7ff45ae2eb9111/tests/robot_framework/tests/02__TestDossiers.robot#L26)
 
@@ -84,30 +76,43 @@ task rf:local:run tag=testdossiers
 
 #### Test and Acceptance tests
 
-TST and ACC requires basic authentication to access it. To run this tests locally You need to have the following environment variables set locally. You only need to do this once. Ask a teammember for the values.
+Running the test towards the Test and Acceptance environments requires the following files:
 
-```shell
-export USERNAME_WOO_TEST=
-export PASSWORD_WOO_TEST=
-export EMAIL_WOO_TEST_BALIE=
-export PASSWORD_WOO_TEST_BALIE=
-export SECRET_WOO_TEST_BALIE=
-export USERNAME_WOO_STAGING=
-export PASSWORD_WOO_STAGING=
-export EMAIL_WOO_STAGING_BALIE=
-export PASSWORD_WOO_STAGING_BALIE=
-export SECRET_WOO_STAGING_BALIE=
+```bash
+/tests/robot_framework/.env.rf.test
+/tests/robot_framework/.env.rf.acc
 ```
 
-To execute the TST tests use the following command:
+They should contain the following values:
+
+```bash
+ENVIRONMENT=acc
+
+HEADLESS=true
+
+URL_PUBLIC=
+URL_ADMIN=
+
+HTACCESS_USERNAME=
+HTACCESS_PASSWORD=
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
+ADMIN_SECRET=
+
+URL_API=
+
+CLIENT_CERT=
+CLIENT_KEY=
+CA_BUNDLE=
+
+```
+
+Secrets can be collected through team members.
+
+To run the tests towards either environment, use the following commands:
 
 ```shell
 task rf:test:run tag=testdossiers
-```
-
-To execute the ACC tests use the following command:
-
-```shell
 task rf:acc:run tag=testdossiers
 ```
 

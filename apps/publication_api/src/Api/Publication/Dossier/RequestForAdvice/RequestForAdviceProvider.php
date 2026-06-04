@@ -29,8 +29,11 @@ final readonly class RequestForAdviceProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|RequestForAdviceDto|null
-    {
+    public function provide(
+        Operation $operation,
+        array $uriVariables = [],
+        array $context = [],
+    ): ArrayPaginator|RequestForAdviceResponseDto|null {
         $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
         if ($organisation === null) {
             return null;
@@ -40,7 +43,7 @@ final readonly class RequestForAdviceProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, ExternalId::create($uriVariables['requestForAdviceExternalId']));
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dossierExternalId']));
     }
 
     /**
@@ -57,7 +60,7 @@ final readonly class RequestForAdviceProvider implements ProviderInterface
         return new ArrayPaginator($this->requestForAdviceMapper->fromEntities($requestForAdvices), 0, count($requestForAdvices));
     }
 
-    private function provideSingle(Organisation $organisation, ExternalId $requestForAdviceExternalId): ?RequestForAdviceDto
+    private function provideSingle(Organisation $organisation, ExternalId $requestForAdviceExternalId): ?RequestForAdviceResponseDto
     {
         $requestForAdvice = $this->requestForAdviceRepository->findByOrganisationAndExternalId($organisation, $requestForAdviceExternalId);
         if ($requestForAdvice === null) {

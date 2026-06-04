@@ -14,6 +14,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Service\Encryption\EncryptionServiceInterface;
 use Throwable;
+use Webmozart\Assert\Assert;
 
 use function json_decode;
 use function json_encode;
@@ -72,6 +73,7 @@ class EncryptedArray extends TextType
         }
 
         try {
+            Assert::scalar($value);
             $value = $this->getEncryptionService()->decrypt(strval($value));
 
             return json_decode(strval($value), true);

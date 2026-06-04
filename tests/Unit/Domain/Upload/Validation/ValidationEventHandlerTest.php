@@ -29,7 +29,7 @@ class ValidationEventHandlerTest extends UnitTestCase
                 self::assertEquals($uuid, $command->uuid);
 
                 return true;
-            }
+            },
         ));
 
         $handler = new ValidationEventHandler($messageBus);

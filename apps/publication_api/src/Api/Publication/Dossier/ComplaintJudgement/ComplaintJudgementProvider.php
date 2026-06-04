@@ -30,8 +30,11 @@ final readonly class ComplaintJudgementProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|ComplaintJudgementDto|null
-    {
+    public function provide(
+        Operation $operation,
+        array $uriVariables = [],
+        array $context = [],
+    ): ArrayPaginator|ComplaintJudgementResponseDto|null {
         $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
         if (! $organisation instanceof Organisation) {
             return null;
@@ -41,7 +44,7 @@ final readonly class ComplaintJudgementProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, ExternalId::create($uriVariables['complaintJudgementExternalId']));
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dossierExternalId']));
     }
 
     /**
@@ -58,9 +61,9 @@ final readonly class ComplaintJudgementProvider implements ProviderInterface
         return new ArrayPaginator($this->complaintJudgementMapper->fromEntities($complaintJudgements), 0, count($complaintJudgements));
     }
 
-    private function provideSingle(Organisation $organisation, ExternalId $complaintJudgementExternalId): ?ComplaintJudgementDto
+    private function provideSingle(Organisation $organisation, ExternalId $dossierExternalId): ?ComplaintJudgementResponseDto
     {
-        $complaintJudgement = $this->complaintJudgementRepository->findByOrganisationAndExternalId($organisation, $complaintJudgementExternalId);
+        $complaintJudgement = $this->complaintJudgementRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
         if (! $complaintJudgement instanceof ComplaintJudgement) {
             return null;
         }

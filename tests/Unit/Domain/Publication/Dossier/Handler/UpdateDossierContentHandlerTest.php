@@ -57,11 +57,11 @@ class UpdateDossierContentHandlerTest extends UnitTestCase
                 self::assertEquals($covenantUuid, $message->dossierId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->handler->__invoke(
-            new UpdateDossierContentCommand($covenant)
+            new UpdateDossierContentCommand($covenant),
         );
     }
 
@@ -77,7 +77,7 @@ class UpdateDossierContentHandlerTest extends UnitTestCase
         $this->expectException(DossierWorkflowException::class);
 
         $this->handler->__invoke(
-            new UpdateDossierContentCommand($covenant)
+            new UpdateDossierContentCommand($covenant),
         );
     }
 }

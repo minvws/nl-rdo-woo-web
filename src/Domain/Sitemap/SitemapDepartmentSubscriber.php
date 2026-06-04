@@ -29,7 +29,7 @@ readonly class SitemapDepartmentSubscriber
                 ),
                 null,
                 UrlConcrete::CHANGEFREQ_MONTHLY,
-                0.8
+                0.8,
             ),
             'departments',
         );
@@ -46,7 +46,7 @@ readonly class SitemapDepartmentSubscriber
                     ),
                     null,
                     UrlConcrete::CHANGEFREQ_MONTHLY,
-                    0.8
+                    0.8,
                 ),
                 'departments',
             );

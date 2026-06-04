@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdraw
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand;
+use Shared\Domain\Upload\WooDecision\ProcessUploadedDocumentsCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -75,6 +76,13 @@ readonly class WooDecisionDispatcher
                 $docIdsToDelete,
                 $dossierIdsToAdd,
             ),
+        );
+    }
+
+    public function dispatchProcessUploadedDocumentsCommand(Uuid $wooDecisionId, Uuid $uploadEntityId): void
+    {
+        $this->messageBus->dispatch(
+            new ProcessUploadedDocumentsCommand($wooDecisionId, $uploadEntityId),
         );
     }
 }

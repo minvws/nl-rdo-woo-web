@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Integration\Api\Publication\Dossier\WooDecision;
 
 use Carbon\CarbonImmutable;
-use DateTime;
-use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PublicationApi\Api\Publication\Dossier\WooDecision\WooDecisionDto;
+use PublicationApi\Api\Publication\Dossier\WooDecision\WooDecisionResponseDto;
 use PublicationApi\Api\Publication\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Publication\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
@@ -28,16 +27,19 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\EntityExists;
+use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
-use Symfony\Component\Validator\Constraints\LessThanOrEqual;
+use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Constraints\Unique;
 
@@ -148,9 +150,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'id' => (string) $wooDecision->getOrganisation()->getId(),
                 'name' => $wooDecision->getOrganisation()->getName(),
             ],
-            'prefix' => $wooDecision->getDocumentPrefix(),
             'dossierNumber' => $wooDecision->getDossierNr(),
-            'internalReference' => '',
             'title' => $wooDecision->getTitle(),
             'summary' => $wooDecision->getSummary(),
             'subject' => $wooDecision->getSubject()?->getName(),
@@ -158,14 +158,13 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
             ],
-            'publicationDate' => $wooDecision->getPublicationDate()?->format(DateTime::RFC3339),
+            'publicationDate' => $wooDecision->getPublicationDate()?->format('Y-m-d'),
             'status' => $wooDecision->getStatus()->value,
             'mainDocument' => [
                 'id' => (string) $wooDecisionMainDocument->getId(),
                 'type' => $wooDecisionMainDocument->getType()->value,
                 'language' => $wooDecisionMainDocument->getLanguage()->value,
-                'formalDate' => $wooDecisionMainDocument->getFormalDate()->format(DateTime::RFC3339),
-                'internalReference' => $wooDecisionMainDocument->getInternalReference(),
+                'formalDate' => $wooDecisionMainDocument->getFormalDate()->format('Y-m-d'),
                 'grounds' => $wooDecisionMainDocument->getGrounds(),
                 'fileName' => $wooDecisionMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
@@ -175,23 +174,22 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'id' => (string) $wooDecisionAttachment->getId(),
                     'type' => $wooDecisionAttachment->getType()->value,
                     'language' => $wooDecisionAttachment->getLanguage()->value,
-                    'formalDate' => $wooDecisionAttachment->getFormalDate()->format(DateTime::RFC3339),
-                    'internalReference' => $wooDecisionAttachment->getInternalReference(),
+                    'formalDate' => $wooDecisionAttachment->getFormalDate()->format('Y-m-d'),
                     'grounds' => $wooDecisionAttachment->getGrounds(),
                     'fileName' => $wooDecisionAttachment->getFileInfo()->getName(),
                     'externalId' => $wooDecisionAttachment->getExternalId()?->__toString(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                 ],
             ],
-            'dossierDateFrom' => $wooDecision->getDateFrom()?->format(DateTime::RFC3339),
-            'dossierDateTo' => $wooDecision->getDateTo()?->format(DateTime::RFC3339),
+            'dateFrom' => $wooDecision->getDateFrom()?->format('Y-m-d'),
+            'dateTo' => $wooDecision->getDateTo()?->format('Y-m-d'),
             'decision' => $wooDecision->getDecision()?->value,
             'reason' => $wooDecision->getPublicationReason()?->value,
-            'previewDate' => $wooDecision->getPreviewDate()?->format(DateTime::RFC3339),
+            'previewDate' => $wooDecision->getPreviewDate()?->format('Y-m-d'),
             'documents' => [
                 [
                     'caseNumbers' => [],
-                    'date' => $wooDecisionDocument1->getDocumentDate()?->format(DateTime::RFC3339),
+                    'date' => $wooDecisionDocument1->getDocumentDate()?->format('Y-m-d'),
                     'documentId' => $wooDecisionDocument1->getDocumentId(),
                     'documentNr' => $wooDecisionDocument1->getDocumentNr(),
                     'externalId' => $wooDecisionDocument1->getExternalId()?->__toString(),
@@ -202,7 +200,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'isWithdrawn' => $wooDecisionDocument1->isWithdrawn(),
                     'judgement' => $wooDecisionDocument1->getJudgement()?->value,
                     'links' => $wooDecisionDocument1->getLinks(),
-                    'period' => $wooDecisionDocument1->getPeriod(),
                     'refersTo' => [],
                     'remark' => $wooDecisionDocument1->getRemark(),
                     'threadId' => $wooDecisionDocument1->getThreadId(),
@@ -210,7 +207,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 ],
                 [
                     'caseNumbers' => [],
-                    'date' => $wooDecisionDocument2->getDocumentDate()?->format(DateTime::RFC3339),
+                    'date' => $wooDecisionDocument2->getDocumentDate()?->format('Y-m-d'),
                     'documentId' => $wooDecisionDocument2->getDocumentId(),
                     'documentNr' => $wooDecisionDocument2->getDocumentNr(),
                     'externalId' => $wooDecisionDocument2->getExternalId()?->__toString(),
@@ -221,7 +218,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'isWithdrawn' => $wooDecisionDocument2->isWithdrawn(),
                     'judgement' => $wooDecisionDocument2->getJudgement()?->value,
                     'links' => $wooDecisionDocument2->getLinks(),
-                    'period' => $wooDecisionDocument2->getPeriod(),
                     'refersTo' => [
                         [
                             'documentId' => $wooDecisionDocument1->getDocumentId(),
@@ -236,7 +232,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         ];
 
         self::assertEquals($expectedResponse, $response->toArray());
-        self::assertMatchesResourceItemJsonSchema(WooDecisionDto::class);
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
     }
 
     public function testGetFromIncorrectOrganisation(): void
@@ -268,15 +264,38 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(WooDecision::class, 0);
 
         $data = $this->createValidWooDecisionDataPayload($department, $subject);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(WooDecisionDto::class);
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
 
         self::assertDatabaseCount(WooDecision::class, 1);
+    }
+
+    public function testCreateWooDecisionWithPrefixShouldIgnorePostData(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $documentPrefix = DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+
+        self::assertDatabaseCount(WooDecision::class, 0);
+
+        $data = $this->createValidWooDecisionDataPayload($department, $subject);
+        $data['prefix'] = 'ignored';
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
+
+        self::assertDatabaseCount(WooDecision::class, 1);
+        self::assertDatabaseHas(WooDecision::class, [
+            'documentPrefix' => $documentPrefix->getPrefix(),
+        ]);
     }
 
     public function testCreateWooDecisionWithRelatedDocuments(): void
@@ -284,6 +303,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $putData = $this->createValidWooDecisionDataPayload($department, $subject, 0, 0);
 
@@ -307,7 +327,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             ['json' => $putData],
         );
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(WooDecisionDto::class);
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
 
         $document1 = self::getEntity(Document::class, ['externalId' => ExternalId::create($documentExternalId1)]);
         self::assertInstanceOf(Document::class, $document1);
@@ -325,12 +345,13 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         self::assertDatabaseCount(WooDecision::class, 0);
 
         $data = $this->createValidWooDecisionDataPayload($department);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(WooDecisionDto::class);
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
         self::assertDatabaseCount(WooDecision::class, 1);
     }
 
@@ -363,12 +384,13 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         self::assertDatabaseCount(WooDecision::class, 0);
 
         $data = $this->createValidWooDecisionDataPayload($department, $subject);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(WooDecisionDto::class);
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
         self::assertDatabaseCount(WooDecision::class, 1);
     }
 
@@ -382,6 +404,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         self::assertDatabaseCount(WooDecision::class, 0);
 
         $data = array_merge($this->createValidWooDecisionDataPayload($department, $subject, 1, 1), $dataOverrides);
@@ -397,29 +420,20 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
     public static function createWooDecisionValidationDataProvider(): array
     {
         return [
-            'dossierDateTo foo far in the future' => [
+            'dateTo foo far in the future' => [
                 [
-                    'dossierDateTo' => CarbonImmutable::now()->addYears(10)->format(DateTime::RFC3339),
+                    'dateTo' => CarbonImmutable::now()->addYears(10)->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateTo',
-                ],
-            ],
-            'null internal reference' => [
-                [
-                    'internalReference' => null,
-                ],
-                [
-                    'code' => Type::INVALID_TYPE_ERROR,
-                    'propertyPath' => 'internalReference',
                 ],
             ],
             'invalid mainDocument language' => [
                 [
                     'mainDocument' => [
-                        'filename' => 'file.pdf',
-                        'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                        'fileName' => 'file.pdf',
+                        'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                         'type' => AttachmentType::ACCOUNTABILITY_REPORT,
                         'language' => 'invalid',
                     ],
@@ -434,9 +448,9 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'attachments' => [
                         [
                             'fileName' => 'file.pdf',
-                            'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                             'type' => 'invalid',
-                            'language' => AttachmentLanguage::ENGLISH,
+                            'language' => AttachmentLanguage::ENG,
                             'externalId' => 'externalId',
                         ],
                     ],
@@ -451,8 +465,8 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'attachments' => [
                         [
                             'fileName' => 'file.pdf',
-                            'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
-                            'language' => AttachmentLanguage::ENGLISH,
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
+                            'language' => AttachmentLanguage::ENG,
                             'externalId' => 'externalId',
                         ],
                     ],
@@ -467,8 +481,8 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'attachments' => [
                         [
                             'fileName' => 'file.pdf',
-                            'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
-                            'language' => AttachmentLanguage::ENGLISH,
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
+                            'language' => AttachmentLanguage::ENG,
                             'type' => AttachmentType::ACCOUNTABILITY_REPORT,
                         ],
                     ],
@@ -483,15 +497,15 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'attachments' => [
                         [
                             'fileName' => 'file1.pdf',
-                            'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
-                            'language' => AttachmentLanguage::ENGLISH,
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
+                            'language' => AttachmentLanguage::ENG,
                             'type' => AttachmentType::ACCOUNTABILITY_REPORT,
                             'externalId' => 'externalId',
                         ],
                         [
                             'fileName' => 'file2.pdf',
-                            'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
-                            'language' => AttachmentLanguage::ENGLISH,
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
+                            'language' => AttachmentLanguage::ENG,
                             'type' => AttachmentType::ACCOUNTABILITY_REPORT,
                             'externalId' => 'externalId',
                         ],
@@ -529,6 +543,120 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'propertyPath' => 'departmentId',
                 ],
             ],
+            'document grounds not an array' => [
+                [
+                    'documents' => [
+                        [
+                            'caseNumbers' => [],
+                            'date' => '2025-09-17',
+                            'documentId' => '7d54bd0f-96be-309c-a541-290efacef319',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'quos',
+                            'grounds' => 'string-instead-of-array',
+                            'isSuspended' => true,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [],
+                            'remark' => 'Consequatur perferendis facere omnis.',
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => 341,
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'propertyPath' => 'documents[0].grounds',
+                ],
+            ],
+            'document grounds contains only invalid value' => [
+                [
+                    'documents' => [
+                        [
+                            'caseNumbers' => [],
+                            'date' => '2025-09-17',
+                            'documentId' => '7d54bd0f-96be-309c-a541-290efacef319',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'quos',
+                            'grounds' => ['invalid'],
+                            'isSuspended' => true,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [],
+                            'remark' => 'Consequatur perferendis facere omnis.',
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => 341,
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Choice::NO_SUCH_CHOICE_ERROR,
+                    'propertyPath' => 'documents[0].grounds[0]',
+                ],
+            ],
+            'document grounds contains both valid & invalid values' => [
+                [
+                    'documents' => [
+                        [
+                            'caseNumbers' => [],
+                            'date' => '2025-09-17',
+                            'documentId' => '7d54bd0f-96be-309c-a541-290efacef319',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'quos',
+                            'grounds' => [Citation::GROUND_WOO_511A, Citation::GROUND_WOB_102B, 'invalid'],
+                            'isSuspended' => true,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [],
+                            'remark' => 'Consequatur perferendis facere omnis.',
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => 341,
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Choice::NO_SUCH_CHOICE_ERROR,
+                    'propertyPath' => 'documents[0].grounds[2]',
+                ],
+            ],
+            'mainDocument grounds contains both valid & invalid values' => [
+                [
+                    'mainDocument' => [
+                        'fileName' => 'qux',
+                        'formalDate' => '2024-11-04',
+                        'type' => AttachmentType::JUDGEMENT_ON_WOB_WOO_REQUEST->value,
+                        'language' => AttachmentLanguage::NLD->value,
+                        'grounds' => [Citation::GROUND_WOO_511A, Citation::GROUND_WOB_102B, 'invalid'],
+                    ],
+                ],
+                [
+                    'code' => Choice::NO_SUCH_CHOICE_ERROR,
+                    'propertyPath' => 'mainDocument.grounds[2]',
+                ],
+            ],
+            'attachment grounds contains both valid & invalid values' => [
+                [
+                    'attachments' => [
+                        [
+                            'externalId' => 'foo',
+                            'fileName' => 'baz',
+                            'formalDate' => '2024-11-04',
+                            'type' => AttachmentType::AGENDA->value,
+                            'language' => AttachmentLanguage::NLD->value,
+                            'grounds' => [Citation::GROUND_WOO_511A, Citation::GROUND_WOB_102B, 'invalid'],
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Choice::NO_SUCH_CHOICE_ERROR,
+                    'propertyPath' => 'attachments[0].grounds[2]',
+                ],
+            ],
         ];
     }
 
@@ -560,14 +688,13 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $data = $this->createValidWooDecisionDataPayload($department);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecision), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(WooDecisionDto::class);
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
 
         self::assertDatabaseHas(
             WooDecision::class,
             [
                 'dossierNr' => $data['dossierNumber'],
-                'internalReference' => $data['internalReference'],
-                'documentPrefix' => $data['prefix'],
+                'documentPrefix' => $wooDecision->getDocumentPrefix(),
                 'summary' => $data['summary'],
                 'title' => $data['title'],
             ],
@@ -623,23 +750,23 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
     public static function updateWooDecisionValidationDataProvider(): array
     {
         return [
-            'dossierDateFrom must be before dossierDateTo' => [
+            'dateFrom must be before dateTo' => [
                 [
-                    'dossierDateFrom' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
-                    'dossierDateTo' => CarbonImmutable::now()->subDay()->format(DateTime::RFC3339),
+                    'dateFrom' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
+                    'dateTo' => CarbonImmutable::now()->subDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => GreaterThanOrEqual::TOO_LOW_ERROR,
+                    'code' => PlainDateAfterOrEqual::PLAIN_DATE_AFTER_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateTo',
                 ],
             ],
-            'dossierDateTo must not be too far in the future' => [
+            'dateTo must not be too far in the future' => [
                 [
-                    'dossierDateFrom' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
-                    'dossierDateTo' => CarbonImmutable::now()->addYears(10)->format(DateTime::RFC3339),
+                    'dateFrom' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
+                    'dateTo' => CarbonImmutable::now()->addYears(10)->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateTo',
                 ],
             ],
@@ -733,8 +860,8 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
-            'dateFrom' => DateTimeImmutable::createFromFormat('Y-m-d', '2022-01-01'),
-            'dateTo' => DateTime::createFromFormat('Y-m-d', '2022-01-02'),
+            'dateFrom' => PlainDate::create('2022-01-01'),
+            'dateTo' => PlainDate::create('2022-01-02'),
             'previewDate' => null,
             'publicationDate' => null,
             'status' => DossierStatus::CONCEPT,
@@ -759,27 +886,25 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $data = [
             'title' => $wooDecision->getTitle(),
             'dossierNumber' => $wooDecision->getDossierNr(),
-            'internalReference' => $wooDecision->getInternalReference(),
-            'prefix' => $wooDecision->getDocumentPrefix(),
-            'dossierDateFrom' => $wooDecision->getDateFrom()?->format(DateTime::RFC3339),
-            'dossierDateTo' => $wooDecision->getDateFrom()?->format(DateTime::RFC3339),
+            'dateFrom' => $wooDecision->getDateFrom()?->format('Y-m-d'),
+            'dateTo' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'decision' => $wooDecision->getDecision()?->value,
             'reason' => $wooDecision->getPublicationReason(),
-            'previewDate' => $this->getFaker()->dateTime()->format(DateTime::RFC3339),
-            'publicationDate' => $this->getFaker()->dateTime()->format(DateTime::RFC3339),
+            'previewDate' => $this->getFaker()->dateTime()->format('Y-m-d'),
+            'publicationDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
             'summary' => $wooDecision->getSummary(),
             'departmentId' => $department->getId(),
             'subjectId' => $wooDecision->getSubject()?->getId(),
             'mainDocument' => [
-                'filename' => $mainDocument->getFileInfo()->getName(),
-                'formalDate' => $mainDocument->getFormalDate()->format(DateTime::RFC3339),
-                'type' => $mainDocument->getFileInfo()->getType(),
+                'fileName' => $mainDocument->getFileInfo()->getName(),
+                'formalDate' => $mainDocument->getFormalDate()->format('Y-m-d'),
+                'type' => $mainDocument->getType()->value,
                 'language' => $mainDocument->getLanguage()->value,
             ],
             'attachments' => [
                 [
                     'fileName' => $attachment->getFileInfo()->getName(),
-                    'formalDate' => $attachment->getFormalDate()->format(DateTime::RFC3339),
+                    'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment->getLanguage(),
                     'type' => $attachment->getType(),
                     'externalId' => $attachment->getExternalId()?->__toString(),
@@ -808,23 +933,21 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         ?int $attachmentCount = null,
         ?int $documentCount = null,
     ): array {
-        return [
+        $payload = [
             'title' => $this->getFaker()->sentence(),
             'dossierNumber' => $this->getFaker()->slug(2),
-            'internalReference' => $this->getFaker()->optional(default: '')->uuid(),
-            'prefix' => $this->getFaker()->slug(2),
-            'dossierDateFrom' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format(DateTime::RFC3339),
-            'dossierDateTo' => $this->getFaker()->dateTimeBetween('-1 week', 'now')->format(DateTime::RFC3339),
+            'dateFrom' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format('Y-m-d'),
+            'dateTo' => $this->getFaker()->dateTimeBetween('-1 week', 'now')->format('Y-m-d'),
             'decision' => $this->getFaker()->randomElement(DecisionType::cases()),
             'reason' => $this->getFaker()->randomElement(PublicationReason::cases()),
-            'previewDate' => $this->getFaker()->dateTimeBetween('1 week', '2 weeks')->format(DateTime::RFC3339),
-            'publicationDate' => $this->getFaker()->dateTimeBetween('2 weeks', '3 weeks')->format(DateTime::RFC3339),
+            'previewDate' => $this->getFaker()->dateTimeBetween('1 week', '2 weeks')->format('Y-m-d'),
+            'publicationDate' => $this->getFaker()->plainDateBetween('2 weeks', '3 weeks')->format('Y-m-d'),
             'summary' => $this->getFaker()->sentence(),
             'departmentId' => $department->getId(),
             'subjectId' => $subject?->getId(),
             'mainDocument' => [
-                'filename' => $this->getFaker()->word(),
-                'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
+                'fileName' => $this->getFaker()->word(),
+                'formalDate' => $this->getFaker()->date(),
                 'type' => $this->getFaker()->randomElement(WooDecisionMainDocument::getAllowedTypes()),
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],
@@ -834,6 +957,12 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             ),
             'documents' => $this->createDocuments($documentCount ?? $this->getFaker()->numberBetween(0, 3)),
         ];
+
+        if ($this->getFaker()->boolean()) {
+            $payload['mainDocument']['grounds'] = $this->getFaker()->groundsBetween(0, 3);
+        }
+
+        return $payload;
     }
 
     /**
@@ -856,17 +985,16 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
     {
         return [
             'caseNumbers' => [],
-            'date' => $this->getFaker()->date(DateTime::RFC3339),
+            'date' => $this->getFaker()->date(),
             'documentId' => $this->getFaker()->uuid(),
             'externalId' => $this->getFaker()->externalId()->__toString(),
             'familyId' => $this->getFaker()->numberBetween(1, 1000),
             'fileName' => $this->getFaker()->word(),
-            'grounds' => [$this->getFaker()->word()],
+            'grounds' => $this->getFaker()->groundsBetween(0, 3),
             'isSuspended' => $this->getFaker()->boolean(),
             'judgement' => $this->getFaker()->randomElement(Judgement::cases()),
             'links' => [],
             'matter' => $this->getFaker()->slug(1),
-            'period' => null,
             'refersTo' => [],
             'remark' => $this->getFaker()->sentence(),
             'sourceType' => $this->getFaker()->randomElement(SourceType::cases()),

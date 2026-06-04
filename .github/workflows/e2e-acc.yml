@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       test_tag:
-        description: "Robot Framework test tag"
+        description: Robot Framework test tag
         required: true
         type: string
-        default: "testdossiers"
+        default: testdossiers
 
 env:
   CR_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -16,46 +16,41 @@ env:
 
 jobs:
   e2e-robot-tests:
-    name: "Run E2E tests on Acceptance"
+    name: Run E2E tests on Acceptance
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
-      - name: Install Task
-        uses: go-task/setup-task@v1
+      - name: Setup Robot Framework test stack
+        uses: ./.github/actions/setup-rf
         with:
-          repo-token: ${{ env.GITHUB_TOKEN }}
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-          cache-dependency-glob: tests/robot_framework/uv.lock
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version-file: tests/robot_framework/pyproject.toml
-      - name: Prepare OS for tests
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          robot-only: true
+      - name: Create certs
+        shell: bash
         run: |
-          sudo apt-get install --reinstall libpq-dev
-          sudo npx playwright install-deps
-      - name: Create virtual environment
+          echo "${{ secrets.CLIENT_CERT_TEST }}" > certs/acc/client-minvws-combined.pem
+          echo "${{ secrets.CLIENT_KEY_TEST }}" > certs/acc/client-minvws.key
+      - name: Create .env.rf.acc
+        shell: bash
         run: |
-          task rf:local:venv
+          cat > tests/robot_framework/.env.rf.acc << 'EOF'
+          ENVIRONMENT=acc
+          HEADLESS=true
+          URL_PUBLIC=${{ secrets.URL_PUBLIC_STAGING }}
+          URL_ADMIN=${{ secrets.URL_ADMIN_STAGING }}
+          HTACCESS_USERNAME=${{ secrets.USERNAME_WOO_STAGING }}
+          HTACCESS_PASSWORD=${{ secrets.PASSWORD_WOO_STAGING }}
+          ADMIN_EMAIL=${{ secrets.EMAIL_WOO_STAGING_BALIE }}
+          ADMIN_PASSWORD=${{ secrets.PASSWORD_WOO_STAGING_BALIE }}
+          ADMIN_SECRET=${{ secrets.SECRET_WOO_STAGING_BALIE }}
+          URL_API=${{ secrets.URL_API_STAGING }}
+          CLIENT_CERT=./certs/acc/client-minvws-combined.pem
+          CLIENT_KEY=./certs/acc/client-minvws.key
+          EOF
       - name: Run Robot Framework tests
-        working-directory: tests/robot_framework
-        env:
-          ENVIRONMENT: acc
-          URL_PUBLIC: https://web.acc.woo.rdobeheer.nl
-          URL_ADMIN: https://balie.acc.woo.rdobeheer.nl/balie
-          HEADLESS: true
-          USERNAME_WOO_STAGING: ${{ secrets.USERNAME_WOO_STAGING }}
-          PASSWORD_WOO_STAGING: ${{ secrets.PASSWORD_WOO_STAGING }}
-          EMAIL_WOO_STAGING_BALIE: ${{ secrets.EMAIL_WOO_STAGING_BALIE }}
-          PASSWORD_WOO_STAGING_BALIE: ${{ secrets.PASSWORD_WOO_STAGING_BALIE }}
-          SECRET_WOO_STAGING_BALIE: ${{ secrets.SECRET_WOO_STAGING_BALIE }}
-        run: |
-          uv run robot --outputdir results --xunit outputxunit.xml --include ${{ env.TEST_TAG }} --name 'E2E Tests' ./tests
+        run: task rf:acc:run tag=${{ inputs.test_tag || 'ci' }}
       - name: Upload test results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
           name: reports
@@ -64,7 +59,7 @@ jobs:
         uses: minvws/action-robotframework-summary@v1.0.0
         if: ${{ always() }}
         with:
-          output_file: "tests/robot_framework/results/output.xml"
-          endpoints: "https://web.acc.woo.rdobeheer.nl"
-          username: "${{ secrets.USERNAME_WOO_STAGING }}"
-          password: "${{ secrets.PASSWORD_WOO_STAGING }}"
+          output_file: tests/robot_framework/results/output.xml
+          endpoints: ${{ secrets.URL_PUBLIC_STAGING }}
+          username: ${{ secrets.USERNAME_WOO_STAGING }}
+          password: ${{ secrets.PASSWORD_WOO_STAGING }}

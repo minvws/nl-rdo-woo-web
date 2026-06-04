@@ -9,7 +9,6 @@ use Faker\Provider\Base;
 use Shared\Domain\Publication\Citation;
 use Webmozart\Assert\Assert;
 
-use function array_keys;
 use function array_unique;
 use function array_values;
 
@@ -29,7 +28,10 @@ final class GroundsFakerProvider extends Base
 
     public function ground(): string
     {
-        return static::randomElement(self::$grounds);
+        $ground = static::randomElement(self::$grounds);
+        Assert::string($ground);
+
+        return $ground;
     }
 
     /**
@@ -37,7 +39,10 @@ final class GroundsFakerProvider extends Base
      */
     public function grounds(int $count = 1): array
     {
-        return array_values(static::randomElements(self::$grounds, $count));
+        $grounds = array_values(static::randomElements(self::$grounds, $count));
+        Assert::allString($grounds);
+
+        return $grounds;
     }
 
     /**
@@ -48,7 +53,10 @@ final class GroundsFakerProvider extends Base
         Assert::natural($min, 'The minimum number of grounds must be non-negative number');
         Assert::positiveInteger($max, 'The maximum number of grounds must be a positive integer');
 
-        return array_values(static::randomElements(self::$grounds, static::numberBetween($min, $max)));
+        $grounds = array_values(static::randomElements(self::$grounds, static::numberBetween($min, $max)));
+        Assert::allString($grounds);
+
+        return $grounds;
     }
 
     private function updateGrounds(): void
@@ -57,9 +65,6 @@ final class GroundsFakerProvider extends Base
             return;
         }
 
-        self::$grounds = array_values(array_unique([
-            ...array_keys(Citation::$wooCitations),
-            ...array_keys(Citation::$wobCitations),
-        ]));
+        self::$grounds = array_values(array_unique(Citation::ALL_GROUND_KEYS));
     }
 }

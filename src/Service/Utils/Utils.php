@@ -26,7 +26,7 @@ class Utils
     public static function getFileSize(EntityWithFileInfo $entity): string
     {
         return self::size(
-            $entity->getFileInfo()->getSize()
+            $entity->getFileInfo()->getSize(),
         );
     }
 

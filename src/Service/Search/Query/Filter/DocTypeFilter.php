@@ -73,7 +73,7 @@ class DocTypeFilter implements FilterInterface
         $query->addFilter(
             Query::bool(
                 should: $subFilters,
-            )->setParams(['minimum_should_match' => 1])
+            )->setParams(['minimum_should_match' => 1]),
         );
     }
 

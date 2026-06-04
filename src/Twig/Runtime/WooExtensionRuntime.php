@@ -16,6 +16,7 @@ use Shared\Service\DateRangeConverter;
 use Shared\Service\HistoryService;
 use Shared\Service\Search\Query\Component\HighlightComponent;
 use Shared\Service\Security\OrganisationSwitcher;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -51,7 +52,7 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     /**
      * Returns a textual representation of a date range (ie: 01-02-2011 - 01-03-2011 => februari - maart 2011).
      */
-    public function period(?DateTimeImmutable $from, ?DateTimeImmutable $to): string
+    public function period(DateTimeImmutable|PlainDate|null $from, DateTimeImmutable|PlainDate|null $to): string
     {
         return DateRangeConverter::convertToString($from, $to);
     }
@@ -119,7 +120,7 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     }
 
     /**
-     * @return History[]|array
+     * @return array<array-key, History>
      */
     public function getFrontendHistory(string $type, string $identifier): array
     {
@@ -127,7 +128,7 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     }
 
     /**
-     * @return History[]|array
+     * @return array<array-key, History>
      */
     public function getBackendHistory(string $type, string $identifier): array
     {

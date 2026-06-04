@@ -110,7 +110,7 @@ class InventoryRunProcessorTest extends UnitTestCase
             ->with(
                 // @phpcs:ignore Generic.Files.LineLength.TooLong
                 'ProductionReportProcessRun failed. See the ProductionReportProcessRun table for more details on the failure including the exception.',
-                Mockery::any()
+                Mockery::any(),
             );
         $this->inventoryComparator->expects('determineChangeset')->andThrows(new RuntimeException('oops'));
 

@@ -13,15 +13,13 @@ use Shared\Tests\Integration\SharedWebTestCase;
 
 final class UserRepositoryTest extends SharedWebTestCase
 {
-    private UserRepository $repository;
+    private UserRepository $userRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $this->repository = self::getContainer()->get(UserRepository::class);
+        $this->userRepository = self::fromContainer(UserRepository::class);
     }
 
     public function testFindActiveUsersForOrganisationQuery(): void
@@ -64,7 +62,7 @@ final class UserRepositoryTest extends SharedWebTestCase
             ->create(['organisation' => $organisationTwo]);
 
         /** @var list<User> $result */
-        $result = $this->repository
+        $result = $this->userRepository
             ->findActiveUsersForOrganisationQuery($organisationOne)
             ->getResult();
 
@@ -115,7 +113,7 @@ final class UserRepositoryTest extends SharedWebTestCase
             ->create(['organisation' => $organisationTwo]);
 
         /** @var list<User> $result */
-        $result = $this->repository
+        $result = $this->userRepository
             ->findDeactivatedUsersForOrganisationQuery($organisationOne)
             ->getResult();
 
@@ -146,7 +144,7 @@ final class UserRepositoryTest extends SharedWebTestCase
             ->create();
 
         /** @var list<User> $result */
-        $result = $this->repository
+        $result = $this->userRepository
             ->findActiveAdminsQuery()
             ->getResult();
 
@@ -177,7 +175,7 @@ final class UserRepositoryTest extends SharedWebTestCase
             ->create();
 
         /** @var list<User> $result */
-        $result = $this->repository
+        $result = $this->userRepository
             ->findDeactivatedAdminsQuery()
             ->getResult();
 

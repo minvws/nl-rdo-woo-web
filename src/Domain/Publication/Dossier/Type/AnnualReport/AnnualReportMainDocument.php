@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\AnnualReport;
 
-use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Override;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\ValueObject\PlainDate;
 
 /**
  * @extends AbstractMainDocument<AnnualReport>
@@ -20,7 +20,7 @@ class AnnualReportMainDocument extends AbstractMainDocument
 {
     public function __construct(
         AnnualReport $dossier,
-        DateTimeImmutable $formalDate,
+        PlainDate $formalDate,
         AttachmentType $type,
         AttachmentLanguage $language,
     ) {

@@ -19,7 +19,7 @@ class AuthorizationMatrix
     public const string AUTH_MATRIX_ATTRIB = 'auth_matrix';
 
     /**
-     * @param Entry[] $entries
+     * @param array<array-key, Entry> $entries
      */
     public function __construct(
         private readonly Security $security,
@@ -31,7 +31,7 @@ class AuthorizationMatrix
     }
 
     /**
-     * @return Entry[]
+     * @return array<array-key, Entry>
      */
     public function getAuthorizedMatches(string $prefix, string $permission): array
     {
@@ -44,7 +44,7 @@ class AuthorizationMatrix
     }
 
     /**
-     * @return Entry[]
+     * @return array<array-key, Entry>
      */
     protected function findMatches(string $prefix, string $permission): array
     {

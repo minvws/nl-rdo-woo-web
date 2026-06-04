@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment;
 
-use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
 #[ORM\Entity(repositoryClass: WooDecisionAttachmentRepository::class)]
@@ -18,7 +18,7 @@ class WooDecisionAttachment extends AbstractAttachment
 {
     public function __construct(
         AbstractDossier $dossier,
-        DateTimeImmutable $formalDate,
+        PlainDate $formalDate,
         AttachmentType $type,
         AttachmentLanguage $language,
     ) {

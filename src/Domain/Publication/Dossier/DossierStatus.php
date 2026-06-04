@@ -42,7 +42,7 @@ enum DossierStatus: string implements TranslatableInterface
     /**
      * @codeCoverageIgnore
      *
-     * @return self[]
+     * @return array<array-key, self>
      */
     public static function filterCases(): array
     {
@@ -55,7 +55,7 @@ enum DossierStatus: string implements TranslatableInterface
     }
 
     /**
-     * @return self[]
+     * @return array<array-key, self>
      */
     public static function conceptCases(): array
     {
@@ -66,7 +66,7 @@ enum DossierStatus: string implements TranslatableInterface
     }
 
     /**
-     * @return self[]
+     * @return array<array-key, self>
      */
     public static function nonConceptCases(): array
     {

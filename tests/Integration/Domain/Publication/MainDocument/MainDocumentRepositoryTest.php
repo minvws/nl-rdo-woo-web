@@ -19,21 +19,13 @@ use function iterator_to_array;
 
 final class MainDocumentRepositoryTest extends SharedWebTestCase
 {
-    private MainDocumentRepository $repository;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->repository = self::getContainer()->get(MainDocumentRepository::class);
-    }
-
     #[WithStory(WooIndexWooDecisionStory::class)]
     #[WithStory(WooIndexAnnualReportStory::class)]
     #[WithStory(WooIndexCovenantStory::class)]
     public function testGetPublishedMainDocumentsIterable(): void
     {
-        $iterable = $this->repository->getPublishedMainDocumentsIterable();
+        $mainDocumentRepository = self::fromContainer(MainDocumentRepository::class);
+        $iterable = $mainDocumentRepository->getPublishedMainDocumentsIterable();
 
         /** @var list<AbstractMainDocument> $allMainDocuments */
         $allMainDocuments = iterator_to_array($iterable, false);

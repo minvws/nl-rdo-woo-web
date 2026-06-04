@@ -22,7 +22,7 @@ enum DossierValidationGroup: string
     case WORKFLOW_SCHEDULE_PUBLISH = 'workflow_schedule_publish';
 
     /**
-     * @return array<self>
+     * @return array<array-key, self>
      */
     public static function getValidationGroupsForStepName(StepName $stepName): array
     {
@@ -36,7 +36,7 @@ enum DossierValidationGroup: string
     }
 
     /**
-     * @return array<self>
+     * @return array<array-key, self>
      */
     public static function getForWorkflowTransitions(DossierStatusTransition $dossierStatusTransition): array
     {

@@ -106,7 +106,7 @@ final class DepartmentFileServiceTest extends UnitTestCase
             ->andReturn(Uuid::fromString('1f0535b7-189d-60fc-9b87-cf947e5e653e'));
 
         self::expectExceptionObject(
-            DepartmentAssetNotFound::noLogoFound($this->department)
+            DepartmentAssetNotFound::noLogoFound($this->department),
         );
 
         $this->departmentFileService->getLogoAsStream($this->department);
@@ -132,7 +132,7 @@ final class DepartmentFileServiceTest extends UnitTestCase
             ->andReturn(Uuid::fromString('1f0535b7-189d-60fc-9b87-cf947e5e653e'));
 
         self::expectExceptionObject(
-            DepartmentAssetNotFound::noLogoFound($this->department)
+            DepartmentAssetNotFound::noLogoFound($this->department),
         );
 
         $this->departmentFileService->getLogoAsStream($this->department);

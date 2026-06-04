@@ -28,7 +28,7 @@ class SortItemViewFactoryTest extends UnitTestCase
         );
 
         $this->assertMatchesObjectSnapshot(
-            $this->sortItems->make($searchParameters)
+            $this->sortItems->make($searchParameters),
         );
     }
 
@@ -40,7 +40,7 @@ class SortItemViewFactoryTest extends UnitTestCase
         );
 
         $this->assertMatchesObjectSnapshot(
-            $this->sortItems->make($searchParameters)
+            $this->sortItems->make($searchParameters),
         );
     }
 }

@@ -13,9 +13,6 @@ final class ConfigFactoryTest extends SharedWebTestCase
 {
     public function testItCanBeInitialized(): void
     {
-        self::assertInstanceOf(
-            SearchParametersFactory::class,
-            self::getContainer()->get(SearchParametersFactory::class)
-        );
+        self::assertInstanceOf(SearchParametersFactory::class, self::fromContainer(SearchParametersFactory::class));
     }
 }

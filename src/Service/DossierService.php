@@ -61,7 +61,7 @@ readonly class DossierService
     }
 
     /**
-     * @param array<DossierValidationGroup> $validationGroups
+     * @param array<array-key, DossierValidationGroup> $validationGroups
      *
      * @throws ValidationFailedException
      */

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Factory\Publication\Dossier\Type\WooDecision;
 
-use Carbon\CarbonImmutable;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\ValueObject\PlainDate;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
@@ -23,10 +23,10 @@ final class WooDecisionFactory extends PersistentObjectFactory
      */
     protected function defaults(): array
     {
-        $dateOne = CarbonImmutable::createFromMutable(self::faker()->dateTimeBetween('01-01-2010', '01-01-2023'));
+        $dateOne = PlainDate::create(self::faker()->dateTimeBetween('01-01-2010', '01-01-2023')->format('Y-m-d'));
         $dateOne = $dateOne->firstOfMonth();
 
-        $dateTwo = CarbonImmutable::createFromMutable(self::faker()->dateTimeBetween('01-01-2010', '01-01-2023'));
+        $dateTwo = PlainDate::create(self::faker()->dateTimeBetween('01-01-2010', '01-01-2023')->format('Y-m-d'));
         $dateTwo = $dateTwo->firstOfMonth();
 
         if ($dateTwo->isBefore($dateOne)) {
@@ -70,7 +70,7 @@ final class WooDecisionFactory extends PersistentObjectFactory
             'mainDocument' => WooDecisionMainDocumentFactory::new(),
             'status' => DossierStatus::SCHEDULED,
             'previewDate' => self::faker()->optional()->dateTimeBetween('+1 week', '+2 weeks'),
-            'publicationDate' => self::faker()->dateTimeBetween('+1 week', '+2 weeks'),
+            'publicationDate' => self::faker()->plainDateBetween('+1 week', '+2 weeks'),
         ]);
     }
 

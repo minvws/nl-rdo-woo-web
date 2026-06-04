@@ -6,7 +6,6 @@ namespace Shared\Tests\Unit\Api\Admin\Attachment;
 
 use Admin\Api\Admin\Attachment\AttachmentDtoFactory;
 use Admin\Api\Admin\WooDecisionAttachment\WooDecisionAttachmentDto;
-use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
@@ -14,6 +13,7 @@ use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -43,11 +43,11 @@ final class AttachmentDtoFactoryTest extends UnitTestCase
         $attachment->expects('getId')->times(2)->andReturn($attachmentId = Uuid::fromString('00000000-0000-0000-0000-000000000002'));
         $attachment->expects('getFileInfo->getName')->andReturn('foo.pdf');
         $attachment->expects('getFileInfo->getMimeType')->andReturn('application/pdf');
-        $attachment->expects('getFormalDate')->andReturn(new DateTimeImmutable('2024-01-14 09:10:13'));
+        $attachment->expects('getFormalDate')->andReturn(PlainDate::create('2024-01-14'));
         $attachment->expects('getType')->andReturn(AttachmentType::ANNUAL_REPORT);
         $attachment->expects('getFileInfo->getSize')->andReturn(123);
         $attachment->expects('getInternalReference')->andReturn('internal ref X');
-        $attachment->expects('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
+        $attachment->expects('getLanguage')->andReturn(AttachmentLanguage::NLD);
         $attachment->expects('getGrounds')->andReturn(['ground A', 'ground B']);
 
         $this->urlGenerator->expects('generate')

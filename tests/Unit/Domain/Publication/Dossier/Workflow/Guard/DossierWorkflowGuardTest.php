@@ -16,6 +16,8 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Event\GuardEvent;
+use Symfony\Component\Workflow\Marking;
+use Symfony\Component\Workflow\Transition;
 
 class DossierWorkflowGuardTest extends UnitTestCase
 {
@@ -68,15 +70,12 @@ class DossierWorkflowGuardTest extends UnitTestCase
             ->with($wooDecision, null, [DossierValidationGroup::WORKFLOW_PUBLISH->value, Constraint::DEFAULT_GROUP])
             ->andReturn($constraintViolationList);
 
-        $event = Mockery::mock(GuardEvent::class);
-        $event->expects('getSubject')
-            ->andReturn($wooDecision);
-        $event->expects('getTransition->getName')
-            ->times(2)
-            ->andReturn(DossierStatusTransition::PUBLISH->value);
+        $event = new GuardEvent($wooDecision, new Marking([]), new Transition(DossierStatusTransition::PUBLISH->value, [], []));
 
         $dossierWorkflowGuard = new DossierWorkflowGuard(new NullLogger(), $validator);
         $dossierWorkflowGuard->guardDossier($event);
+
+        self::assertFalse($event->isBlocked());
     }
 
     public function testGuardDossierWithErrors(): void
@@ -101,15 +100,11 @@ class DossierWorkflowGuardTest extends UnitTestCase
             ->with($wooDecision, null, [DossierValidationGroup::WORKFLOW_PUBLISH->value, Constraint::DEFAULT_GROUP])
             ->andReturn($constraintViolationList);
 
-        $event = Mockery::mock(GuardEvent::class);
-        $event->expects('getSubject')
-            ->andReturn($wooDecision);
-        $event->expects('getTransition->getName')
-            ->times(2)
-            ->andReturn(DossierStatusTransition::PUBLISH->value);
-        $event->expects('setBlocked');
+        $event = new GuardEvent($wooDecision, new Marking([]), new Transition(DossierStatusTransition::PUBLISH->value, [], []));
 
         $dossierWorkflowGuard = new DossierWorkflowGuard(new NullLogger(), $validator);
         $dossierWorkflowGuard->guardDossier($event);
+
+        self::assertTrue($event->isBlocked());
     }
 }

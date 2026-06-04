@@ -51,7 +51,7 @@ final class TikaExtractorTest extends UnitTestCase
                         self::assertEquals($id->toRfc4122(), $context->id);
 
                         return true;
-                    }
+                    },
                 ),
             )
             ->andReturn(['X-TIKA:content' => '   foo bar  ']);

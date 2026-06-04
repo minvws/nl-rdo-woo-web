@@ -7,6 +7,21 @@ parameters:
     trusted_hosts: '%env(MINFIN_TRUSTED_HOSTS)%'
     database_encryption_key: '%env(MINFIN_DATABASE_ENCRYPTION_KEY)%'
 
+    # Elasticsearch
+    elasticsearch.host: '%env(MINFIN_ELASTICSEARCH_HOST)%'
+    elasticsearch.user: '%env(MINFIN_ELASTICSEARCH_USER)%'
+    elasticsearch.pass: '%env(MINFIN_ELASTICSEARCH_PASS)%'
+    elasticsearch.mtls.cert_path: '%env(MINFIN_ELASTICSEARCH_MTLS_CERT_PATH)%'
+    elasticsearch.mtls.key_path: '%env(MINFIN_ELASTICSEARCH_MTLS_KEY_PATH)%'
+    elasticsearch.mtls.ca_path: '%env(MINFIN_ELASTICSEARCH_MTLS_CA_PATH)%'
+
+    # ElasticSearch indexes
+    elasticsearch.index.prefix.default: 'minfin-'
+    elasticsearch.index.prefix: '%env(default:elasticsearch.index.prefix.default:MINFIN_ELASTICSEARCH_INDEX_PREFIX)%'
+    elasticsearch.index.read: '%elasticsearch.index.prefix%read'
+    elasticsearch.index.write: '%elasticsearch.index.prefix%write'
+    elasticsearch.index.worker_stats: '%elasticsearch.index.prefix%worker-stats'
+
     # RabbitMQ
     rabbitmq_url: '%env(MINFIN_RABBITMQ_URL)%'
     rabbitmq_stats_url: '%env(MINFIN_RABBITMQ_STATS_URL)%'
@@ -15,6 +30,26 @@ parameters:
     ingestor_transport_dsn: '%env(MINFIN_INGESTOR_TRANSPORT_DSN)%'
     esupdater_transport_dsn: '%env(MINFIN_ESUPDATER_TRANSPORT_DSN)%'
     global_transport_dsn: '%env(MINFIN_GLOBAL_TRANSPORT_DSN)%'
+    api_documents_transport_dsn: '%env(MINFIN_API_DOCUMENTS_TRANSPORT_DSN)%'
+
+    # Minio
+    storage.minio.region: '%env(MINFIN_STORAGE_MINIO_REGION)%'
+    storage.minio.endpoint: '%env(MINFIN_STORAGE_MINIO_ENDPOINT)%'
+    storage.minio.access_key: '%env(MINFIN_STORAGE_MINIO_ACCESS_KEY)%'
+    storage.minio.secret_key: '%env(MINFIN_STORAGE_MINIO_SECRET_KEY)%'
+
+    storage.minio.bucket.upload: '%env(MINFIN_STORAGE_MINIO_UPLOAD_BUCKET)%'
+    storage.minio.bucket.document: '%env(MINFIN_STORAGE_MINIO_DOCUMENT_BUCKET)%'
+    storage.minio.bucket.batch: '%env(MINFIN_STORAGE_MINIO_BATCH_BUCKET)%'
+    storage.minio.bucket.woo_index: '%env(MINFIN_STORAGE_MINIO_WOO_INDEX_BUCKET)%'
+    storage.minio.bucket.assets: '%env(MINFIN_STORAGE_MINIO_ASSETS_BUCKET)%'
+
+    # Redis
+    redis.url: '%env(MINFIN_REDIS_URL)%'
+    redis.tls.cafile: '%env(MINFIN_REDIS_TLS_CAFILE)%'
+    redis.tls.local_cert: '%env(MINFIN_REDIS_TLS_LOCAL_CERT)%'
+    redis.tls.local_pk: '%env(MINFIN_REDIS_TLS_LOCAL_PK)%'
 
     # Application publication_api specific configs:
     publication_api_ssl_username_whitelist: '%env(string:MINFIN_PUBLICATION_API_SSL_USERNAME_WHITELIST)%'
+    publication_api_ssl_organization_identifier: '%env(string:MINFIN_PUBLICATION_API_SSL_ORGANIZATION_IDENTIFIER)%'

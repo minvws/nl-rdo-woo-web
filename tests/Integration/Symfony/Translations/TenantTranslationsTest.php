@@ -12,7 +12,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 final class TenantTranslationsTest extends SharedWebTestCase
 {
     #[DataProvider('tenantTranslationIntroLabelOgaDataProvider')]
-    public function testFoo(TenantId $tenantId, string $expectedResult): void
+    public function testIntroLabelTranslation(TenantId $tenantId, string $expectedResult): void
     {
         self::bootKernel(['tenantId' => $tenantId]);
 

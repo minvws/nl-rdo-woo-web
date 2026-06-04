@@ -4,11 +4,17 @@ use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
 $finder = (new PhpCsFixer\Finder())
     ->in([
-        __DIR__ . '/apps',
         __DIR__ . '/src',
+        __DIR__ . '/apps',
+        __DIR__ . '/tenants',
+        __DIR__ . '/utils',
         __DIR__ . '/tests',
     ])
-    ->exclude(['var', 'node_modules'])
+    ->exclude([
+        'var',
+        'node_modules',
+        'utils/tests/**/data/*',
+    ])
     ->append([
         __DIR__ . '/phparkitect.php',
         __DIR__ . '/bin/console',

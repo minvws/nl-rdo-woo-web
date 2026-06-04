@@ -30,7 +30,7 @@ readonly class RequestForAdviceMapper
     /**
      * @param array<array-key,RequestForAdvice> $requestForAdvices
      *
-     * @return list<RequestForAdviceDto>
+     * @return list<RequestForAdviceResponseDto>
      */
     public function fromEntities(array $requestForAdvices): array
     {
@@ -40,7 +40,7 @@ readonly class RequestForAdviceMapper
         ));
     }
 
-    public function fromEntity(RequestForAdvice $requestForAdvice): RequestForAdviceDto
+    public function fromEntity(RequestForAdvice $requestForAdvice): RequestForAdviceResponseDto
     {
         $mainDocument = $requestForAdvice->getMainDocument();
         Assert::notNull($mainDocument);
@@ -53,13 +53,11 @@ readonly class RequestForAdviceMapper
         $department = $requestForAdvice->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
-        return new RequestForAdviceDto(
+        return new RequestForAdviceResponseDto(
             $requestForAdvice->getId(),
             $requestForAdvice->getExternalId(),
             OrganisationReferenceDto::fromEntity($requestForAdvice->getOrganisation()),
-            $requestForAdvice->getDocumentPrefix(),
             $requestForAdvice->getDossierNr(),
-            $requestForAdvice->getInternalReference(),
             $requestForAdvice->getTitle(),
             $requestForAdvice->getSummary(),
             $requestForAdvice->getSubject()?->getName(),
@@ -80,10 +78,12 @@ readonly class RequestForAdviceMapper
         Department $department,
         ?Subject $subject,
         ExternalId $externalId,
+        string $documentPrefix,
     ): RequestForAdvice {
         $requestForAdvice = new RequestForAdvice();
         $requestForAdvice->setExternalId($externalId);
         $requestForAdvice->setStatus(DossierStatus::NEW);
+        $requestForAdvice->setDocumentPrefix($documentPrefix);
 
         self::update($requestForAdvice, $requestForAdviceRequestDto, $organisation, $department, $subject);
 
@@ -99,9 +99,7 @@ readonly class RequestForAdviceMapper
     ): RequestForAdvice {
         $requestForAdvice->setDateFrom($requestForAdviceRequestDto->dossierDate);
         $requestForAdvice->setDepartments([$department]);
-        $requestForAdvice->setDocumentPrefix($requestForAdviceRequestDto->prefix);
         $requestForAdvice->setDossierNr($requestForAdviceRequestDto->dossierNumber);
-        $requestForAdvice->setInternalReference($requestForAdviceRequestDto->internalReference);
         $requestForAdvice->setOrganisation($organisation);
         $requestForAdvice->setPublicationDate($requestForAdviceRequestDto->publicationDate);
         $requestForAdvice->setSubject($subject);

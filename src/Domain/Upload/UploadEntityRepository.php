@@ -53,7 +53,7 @@ class UploadEntityRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return UploadEntity[]
+     * @return array<array-key, UploadEntity>
      */
     public function findUploadsForCleanup(CarbonImmutable $maxUpdatedAt): array
     {

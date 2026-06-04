@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
@@ -17,6 +16,7 @@ use Shared\Domain\Publication\Dossier\ViewModel\Department;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use Shared\Tests\Story\DepartmentEnum;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
 final class WooDecisionTest extends UnitTestCase
@@ -74,7 +74,7 @@ final class WooDecisionTest extends UnitTestCase
                 isPreview: true,
                 title: 'title',
                 pageTitle: 'pageTitle',
-                publicationDate: new DateTimeImmutable(),
+                publicationDate: PlainDate::today(),
                 mainDepartment: $mainDepartment,
                 summary: 'summary',
                 type: DossierType::WOO_DECISION,
@@ -86,10 +86,10 @@ final class WooDecisionTest extends UnitTestCase
             isInventoryOptional: false,
             canProvideInventory: true,
             decision: DecisionType::PUBLIC,
-            decisionDate: new DateTimeImmutable(),
+            decisionDate: PlainDate::today(),
             mainDocument: $mainDocument,
-            dateFrom: new DateTimeImmutable(),
-            dateTo: new DateTimeImmutable(),
+            dateFrom: PlainDate::today(),
+            dateTo: PlainDate::today(),
             publicationReason: PublicationReason::WOO_REQUEST,
             documentSearchUrl: '/foo/bar',
         );

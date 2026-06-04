@@ -63,7 +63,7 @@ final class ExternalIdNormalizer implements NormalizerInterface, DenormalizerInt
     }
 
     /**
-     * @param array<mixed> $context
+     * @param array<array-key, mixed> $context
      */
     public function getDeserializationPath(array $context): ?string
     {

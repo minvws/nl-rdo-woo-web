@@ -149,7 +149,7 @@ final class ClamAvFileScannerTest extends UnitTestCase
                 self::assertEquals($reason, $event->reason);
 
                 return true;
-            }
+            },
         ));
 
         self::assertEquals(
@@ -181,7 +181,7 @@ final class ClamAvFileScannerTest extends UnitTestCase
                 self::assertEquals('', $event->reason);
 
                 return true;
-            }
+            },
         ));
 
         self::assertEquals(

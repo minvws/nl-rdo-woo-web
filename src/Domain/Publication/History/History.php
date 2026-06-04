@@ -31,7 +31,7 @@ class History
     #[ORM\Column(length: 255)]
     private string $contextKey;
 
-    /** @var mixed[] */
+    /** @var array<array-key, mixed> */
     #[ORM\Column]
     private array $context = [];
 
@@ -92,7 +92,7 @@ class History
     }
 
     /**
-     * @return mixed[]
+     * @return array<array-key, mixed>
      */
     public function getContext(): array
     {
@@ -100,7 +100,7 @@ class History
     }
 
     /**
-     * @param mixed[] $context
+     * @param array<array-key, mixed> $context
      *
      * @return $this
      */

@@ -28,11 +28,11 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
         }
 
         $query->addShould(
-            $this->createDocumentQuery($searchParameters)
+            $this->createDocumentQuery($searchParameters),
         );
 
         $query->addShould(
-            $this->createMainTypesQuery($searchParameters)
+            $this->createMainTypesQuery($searchParameters),
         );
 
         $query->setParams(['minimum_should_match' => 1]);
@@ -115,7 +115,7 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
                         ->setDefaultOperator($searchParameters->operator->value)
                         ->setBoost(2),
                 ],
-            )->setParams(['minimum_should_match' => 1])
+            )->setParams(['minimum_should_match' => 1]),
         );
     }
 

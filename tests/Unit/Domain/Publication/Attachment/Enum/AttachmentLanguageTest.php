@@ -19,7 +19,7 @@ final class AttachmentLanguageTest extends UnitUnitTestCase
 {
     public function testAttachmentLanguageIsTranslatable(): void
     {
-        $this->assertInstanceOf(TranslatableInterface::class, AttachmentLanguage::DUTCH, 'AttachmentLanguage should be translatable');
+        $this->assertInstanceOf(TranslatableInterface::class, AttachmentLanguage::NLD, 'AttachmentLanguage should be translatable');
     }
 
     public function testCasesAllHAveUniqueValues(): void
@@ -32,7 +32,7 @@ final class AttachmentLanguageTest extends UnitUnitTestCase
     public function testToArray(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->expects('trans')->times(2)->andReturnArg(0);
+        $translator->expects('trans')->times(count(AttachmentLanguage::cases()))->andReturnArg(0);
 
         $result = [];
         foreach (AttachmentLanguage::cases() as $case) {
@@ -68,14 +68,14 @@ final class AttachmentLanguageTest extends UnitUnitTestCase
     public static function transDataProvider(): array
     {
         return [
-            'case DUTCH' => [
-                'attachmentLanguage' => AttachmentLanguage::DUTCH,
-                'expectedKey' => 'dutch',
+            'case NLD' => [
+                'attachmentLanguage' => AttachmentLanguage::NLD,
+                'expectedKey' => 'nld',
                 'locale' => null,
             ],
-            'case ENGLISH' => [
-                'attachmentLanguage' => AttachmentLanguage::ENGLISH,
-                'expectedKey' => 'english',
+            'case ENG' => [
+                'attachmentLanguage' => AttachmentLanguage::ENG,
+                'expectedKey' => 'eng',
                 'locale' => 'nl',
             ],
         ];

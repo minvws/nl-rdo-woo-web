@@ -33,7 +33,7 @@ abstract readonly class AbstractMainDocumentProvider implements ProviderInterfac
      * @param array<array-key, string> $uriVariables
      * @param array<array-key, mixed> $context
      *
-     * @return array<array-key,AbstractMainDocumentDto>|AbstractMainDocumentDto|object[]|null
+     * @return array<array-key, AbstractMainDocumentDto>|AbstractMainDocumentDto|array<array-key, object>|null
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array|AbstractMainDocumentDto|null
     {

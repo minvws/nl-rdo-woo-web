@@ -1,21 +1,52 @@
 # https://taskfile.dev
-version: "3"
+version: "3.48.0"
 
 vars:
-  URL_PUBLIC: '{{eq .ORBSTACK_ENABLED "1" | ternary .ORBSTACK_MINVWS_PUBLIC_URL "http://localhost:8000"}}'
-  URL_ADMIN: '{{eq .ORBSTACK_ENABLED "1" | ternary .ORBSTACK_MINVWS_ADMIN_URL "http://localhost:8001/balie"}}'
   ROBOT_PARAMS: --outputdir results  --name 'E2E Tests' ./tests
 
 env:
   VIRTUAL_ENV: ""
-  URL_PUBLIC: '{{.URL_PUBLIC}}'
-  URL_ADMIN: '{{.URL_ADMIN}}'
 
 tasks:
   dependency:upgrade:
     desc: Upgrade all RF dependencies
     cmds:
      - uv lock --upgrade
+
+  init:
+    aliases: [temp:init]
+    desc: Loads E2E fixtures and create a super-admin user
+    cmds:
+      - task: fixtures:load:e2e
+      - cmd: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          EMAIL="email@example.org"
+          CMD="docker compose run --rm admin bin/console --no-interaction --tenant=minvws"
+
+          # Capture output safely: grep failure won't trigger exit
+          CREATE_OUTPUT="$($CMD woopie:user:create "$EMAIL" "Robot Admin" --super-admin 2>&1 || true)"
+          CREATE_OUTPUT_CLEAN="$(grep -v 'qrencode not found' <<< "$CREATE_OUTPUT" || true)"
+
+          # Extract TEMP_PASSWORD and OTP_SECRET
+          TEMP_PASSWORD="$(sed -n 's/^Password[[:space:]]*:[[:space:]]*\(.*\)$/\1/p' <<< "$CREATE_OUTPUT_CLEAN")"
+          OTP_SECRET="$(sed -n 's/^TOTP Token[[:space:]]*:[[:space:]]*\(.*\)$/\1/p' <<< "$CREATE_OUTPUT_CLEAN")"
+
+          if [[ -z "$TEMP_PASSWORD" || -z "$OTP_SECRET" ]]; then
+              echo "ERROR: Failed to parse password or OTP secret from output:"
+              echo "$CREATE_OUTPUT"
+              exit 1
+          fi
+
+          mkdir -p secrets
+          printf "%s" "$OTP_SECRET" > secrets/.otp_secret
+          printf "%s" "$TEMP_PASSWORD" > secrets/.temp_password
+          echo "User $EMAIL created successfully, secrets saved."
+        silent: true
+      - task: docker:run
+        vars:
+          tag: first-login
 
   local:venv:
     desc: Create virtual environment
@@ -24,56 +55,17 @@ tasks:
       - uv sync
       - uv run rfbrowser init
 
-  temp:init:
-    desc: Temporary version that runs init without local uv or docker, see https://github.com/minvws/nl-rdo-woo-web-private/issues/6171
-    cmds:
-      - task: fixtures:load:e2e
-      - rm -rf .temp_password
-      - cmd: |
-          set -euo pipefail
-
-          # Run command and capture output (stdout+stderr)
-          OUTPUT="$(docker exec nl-rdo-woo-web-private-admin-1 bin/console --tenant=minvws woopie:user:create email@example.org "Robot Admin" --super-admin 2>&1 | grep -v 'qrencode not found')"
-
-          # Extract password (after "Password" and colon, ignore extra spaces)
-          TEMP_PASSWORD="$(printf '%s\n' "$OUTPUT" | sed -n 's/^Password[[:space:]]*:[[:space:]]*\(.*\)$/\1/p')"
-
-          # Extract OTP secret (after "TOTP Token" and colon, ignore extra spaces)
-          OTP_SECRET="$(printf '%s\n' "$OUTPUT" | sed -n 's/^TOTP Token[[:space:]]*:[[:space:]]*\(.*\)$/\1/p')"
-
-          # Fail if parsing failed
-          if [[ -z "${TEMP_PASSWORD}" || -z "${OTP_SECRET}" ]]; then
-            echo "Failed to parse password or OTP secret from output:" >&2
-            echo "$OUTPUT" >&2
-            exit 1
-          fi
-
-          printf "%s" "$OTP_SECRET" > .otp_secret
-          echo "$TEMP_PASSWORD" > .temp_password
-        silent: true
-      - task: docker:run
-        vars:
-          tag: first-login
-      - rm -rf .temp_password
-
-  local:init:
-    desc: Initiates the local instance for the E2E tests.
-    cmds:
-      - task: fixtures:load:e2e
-      - task: local:run
-        vars:
-          tag: init
-
   local:otp:
     desc: Returns an OTP code from the secret in .otp_secret
     cmds:
-      - uv run python -c "import pyotp; print(pyotp.TOTP(open('.otp_secret').read().strip()).now())"
+      - uv run python -c "import pyotp; print(pyotp.TOTP(open('secrets/.otp_secret').read().strip()).now())"
 
   local:run:
     aliases: [run-local]
     desc: Run Robot tests with browser on local
+    dotenv:
+      - .env.rf.local
     env:
-      ENVIRONMENT: local
       HEADLESS: false
     cmds:
       - task: :up
@@ -84,9 +76,8 @@ tasks:
   local:run:api:
     aliases: [run-api]
     desc: Run all API Robot tests
-    env:
-      ENVIRONMENT: local
-      HEADLESS: true
+    dotenv:
+      - .env.rf.local
     cmds:
       - task: :up
       - task: clear-results
@@ -95,8 +86,9 @@ tasks:
 
   local:run:mobile:
     desc: Run Robot tests with browser on Docker
+    dotenv:
+      - .env.rf.local
     env:
-      ENVIRONMENT: local
       HEADLESS: false
       DEVICE: iPhone 14
     cmds:
@@ -104,40 +96,12 @@ tasks:
         env:
           tag: {{.tag}}
 
-  docker:build:
-    desc:
-    cmds:
-      - task: :dc
-        vars: { SUB_CMD: "build robot" }
-
-  docker:init:
-    desc: Initiates the docker app for the E2E tests.
-    summary: |
-      After running this you can login as and admin using the following credentials:
-
-        E-mailadres:
-        email@example.org
-
-        Wachtwoord:
-        IkLoopNooitVastVandaag
-
-        Run the following command to get the OTP code:
-        task rf:docker:otp
-    cmds:
-      - cmd: |
-          echo "TEMP TASK BROKEN: don't use this yet" >&2
-          exit 1
-      - task: fixtures:load:e2e
-      - touch .otp_secret
-      - task: run-docker
-        vars:
-          tag: init
-
   docker:otp:
+    aliases: [otp]
     desc: Returns an OTP code from the secret in .otp_secret
     cmds:
       - task: :dc
-        vars: { SUB_CMD: "run --rm robot uv run python -c 'import pyotp; print(pyotp.TOTP(open(\".otp_secret\").read().strip()).now())'" }
+        vars: { SUB_CMD: "run --rm robot uv run python -c 'import pyotp; print(pyotp.TOTP(open(\"secrets/.otp_secret\").read().strip()).now())'" }
 
   docker:run:
     aliases: [run-docker]
@@ -149,9 +113,8 @@ tasks:
       - task: :dc
         vars:
           SUB_CMD: >
-            run --rm robot
-            /bin/bash -c "export PATH=/home/pwuser/.local/bin:/home/pwuser/.venv/bin:\$PATH &&
-                          uv run robot --include '{{.tag | default "single"}}' --exclude '{{.exclude | default ""}}' {{.ROBOT_PARAMS}}"
+            run --env-from-file ./tests/robot_framework/.env.rf.local --rm robot
+            /bin/bash -c "uv run robot --include '{{.tag | default "single"}}' --exclude '{{.exclude | default ""}}' {{.ROBOT_PARAMS}}"
 
   docker:run:ci:
     aliases: [run-ci]
@@ -165,9 +128,8 @@ tasks:
       - task: :dc
         vars:
           SUB_CMD: >
-            run --rm robot
-            /bin/bash -c "export PATH=/home/pwuser/.local/bin:/home/pwuser/.venv/bin:\$PATH &&
-                          uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include ci --exclude init --exclude sitemap --ordering order.txt {{.ROBOT_PARAMS}}"
+            run --env-from-file ./tests/robot_framework/.env.rf.local --rm robot
+            /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include ci --exclude init --exclude sitemap --ordering order.txt {{.ROBOT_PARAMS}}"
 
   docker:run:api:
     aliases: [run-api]
@@ -181,9 +143,8 @@ tasks:
       - task: :dc
         vars:
           SUB_CMD: >
-            run --rm robot
-            /bin/bash -c "export PATH=/home/pwuser/.local/bin:/home/pwuser/.venv/bin:\$PATH &&
-                          uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --exclude failing {{.ROBOT_PARAMS}}"
+            run --env-from-file ./tests/robot_framework/.env.rf.local --rm robot
+            /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --exclude failing {{.ROBOT_PARAMS}}"
 
   docker:shell:
     cmds:
@@ -192,26 +153,22 @@ tasks:
           SUB_CMD: "run --rm robot /bin/bash"
 
   test:run:
-    aliases: [run-test]
     desc: Run Robot tests with browser on TEST
-    env:
-      ENVIRONMENT: test
-      URL_PUBLIC: https://web.test.woo.rdobeheer.nl
-      URL_ADMIN: https://balie.test.woo.rdobeheer.nl/balie
-      HEADLESS: false
     cmds:
-      - uv run robot --include '{{.tag | default "testdossiers"}}' {{.ROBOT_PARAMS}}
+      - task: :dc
+        vars:
+          SUB_CMD: >
+            run --env-from-file ./tests/robot_framework/.env.rf.test --rm robot
+            /bin/bash -c "uv run robot --include '{{.tag | default "testdossiers"}}' {{.ROBOT_PARAMS}}"
 
   acc:run:
-    aliases: [run-acc]
     desc: Run Robot tests with browser on ACC
-    env:
-      ENVIRONMENT: acc
-      URL_PUBLIC: https://web.acc.woo.irealisatie.nl
-      URL_ADMIN: https://balie.acc.woo.irealisatie.nl/balie
-      HEADLESS: false
     cmds:
-      - uv run robot --include '{{.tag | default "testdossiers"}}' {{.ROBOT_PARAMS}}
+      - task: :dc
+        vars:
+          SUB_CMD: >
+            run --env-from-file ./tests/robot_framework/.env.rf.acc --rm robot
+            /bin/bash -c "uv run robot --include '{{.tag | default "testdossiers"}}' {{.ROBOT_PARAMS}}"
 
   lint:
     desc: Run Robocop linter
@@ -227,7 +184,7 @@ tasks:
     desc: Run for Robot customized cleansheet
     cmds:
       - task: :dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant=minvws woopie:dev:clean-sheet --force {{.CLI_ARGS}}" }
+        vars: { SUB_CMD: "admin bin/console --tenant=minvws woopie:dev:clean-sheet --index woopie-minvws --force {{.CLI_ARGS}}" }
       - task: :minio:clear-buckets
 
   fixtures:load:vws:

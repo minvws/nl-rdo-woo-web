@@ -3,3 +3,7 @@ framework:
         # override routing to move ValidateUploadCommand to routed sync
         routing:
             Shared\Domain\Upload\Command\ValidateUploadCommand: sync
+            Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUploadsCommand: sync
+            Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileSetUpdatesCommand: sync
+            Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUploadCommand: sync
+            Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Command\ProcessDocumentFileUpdateCommand: sync

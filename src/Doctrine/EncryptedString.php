@@ -13,6 +13,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Service\Encryption\EncryptionServiceInterface;
 use Throwable;
+use Webmozart\Assert\Assert;
 
 use function strval;
 
@@ -39,6 +40,8 @@ class EncryptedString extends TextType
         }
 
         try {
+            Assert::scalar($value);
+
             return $this->getEncryptionService()->encrypt(strval($value));
         } catch (Throwable $e) {
             $this->getLogger()->error('cannot convert to database value', [
@@ -59,6 +62,8 @@ class EncryptedString extends TextType
         }
 
         try {
+            Assert::scalar($value);
+
             return $this->getEncryptionService()->decrypt(strval($value));
         } catch (Throwable $e) {
             $this->getLogger()->error('cannot convert to php value', [

@@ -13,40 +13,76 @@ use Shared\EventSubscriber\DossierChangedCollection;
 use Shared\EventSubscriber\DossierChangedCollectionPublisher;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class DossierChangedCollectionPublisherTest extends UnitTestCase
 {
     public function testGetSubscribedEvents(): void
     {
-        $expectedSubscribedEvents = [
-            KernelEvents::TERMINATE => ['handleDossierChangedCollection', EventPriorities::PRE_RESPOND],
-        ];
-        $subscribedEvents = DossierChangedCollectionPublisher::getSubscribedEvents();
-
-        self::assertEquals($expectedSubscribedEvents, $subscribedEvents);
+        self::assertEquals(
+            [
+                KernelEvents::TERMINATE => ['processDossierChangedCollection', EventPriorities::PRE_RESPOND],
+                WorkerMessageHandledEvent::class => 'processDossierChangedCollection',
+            ],
+            DossierChangedCollectionPublisher::getSubscribedEvents(),
+        );
     }
 
-    public function testHandleDossierChangedCollection(): void
+    public function testProcessesAndMarksEachDossierAsProcessed(): void
     {
         $wooDecision = new WooDecision();
+        $collection = new DossierChangedCollection();
+        $collection->addDossierId($wooDecision->getId());
 
         $dossierRepository = Mockery::mock(DossierRepository::class);
         $dossierRepository->expects('findOneByDossierId')
+            ->once()
             ->with($wooDecision->getId())
             ->andReturn($wooDecision);
 
         $messageBus = Mockery::mock(MessageBusInterface::class);
         $messageBus->expects('dispatch')
-            ->with(Mockery::on(static function (UpdateDossierPublicationCommand $updateDossierPublicationCommand) use ($wooDecision): bool {
-                return $updateDossierPublicationCommand->dossier === $wooDecision;
-            }));
+            ->once()
+            ->with(Mockery::on(
+                static fn (UpdateDossierPublicationCommand $command): bool => $command->dossier === $wooDecision,
+            ));
 
-        $dossierChangedCollectionPublisher = new DossierChangedCollectionPublisher(
-            new DossierChangedCollection([$wooDecision->getId()]),
+        $publisher = new DossierChangedCollectionPublisher($collection, $dossierRepository, $messageBus);
+        $publisher->processDossierChangedCollection();
+    }
+
+    public function testDoesNothingWhenCollectionIsEmpty(): void
+    {
+        $dossierRepository = Mockery::mock(DossierRepository::class);
+        $dossierRepository->expects('findOneByDossierId')->never();
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
+        $publisher = new DossierChangedCollectionPublisher(
+            new DossierChangedCollection(),
             $dossierRepository,
             $messageBus,
         );
-        $dossierChangedCollectionPublisher->handleDossierChangedCollection();
+        $publisher->processDossierChangedCollection();
+    }
+
+    public function testSecondCallDoesNotReprocessAfterClaim(): void
+    {
+        $wooDecision = new WooDecision();
+        $collection = new DossierChangedCollection();
+        $collection->addDossierId($wooDecision->getId());
+
+        $dossierRepository = Mockery::mock(DossierRepository::class);
+        $dossierRepository->expects('findOneByDossierId')->once()->andReturn($wooDecision);
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->once();
+
+        $publisher = new DossierChangedCollectionPublisher($collection, $dossierRepository, $messageBus);
+
+        $publisher->processDossierChangedCollection();
+        $publisher->processDossierChangedCollection();
     }
 }

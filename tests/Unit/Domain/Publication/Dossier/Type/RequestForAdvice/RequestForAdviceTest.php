@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\RequestForAdvice;
 
-use Carbon\CarbonImmutable;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
+use Shared\ValueObject\PlainDate;
 
 class RequestForAdviceTest extends TestCase
 {
@@ -24,7 +24,7 @@ class RequestForAdviceTest extends TestCase
     {
         $dossier = new RequestForAdvice();
 
-        $date = new CarbonImmutable();
+        $date = PlainDate::today();
 
         $dossier->setDateFrom($date);
 

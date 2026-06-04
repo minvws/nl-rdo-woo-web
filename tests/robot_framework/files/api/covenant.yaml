@@ -1,0 +1,135 @@
+baseline:
+  skip: false
+  tags: []
+  request:
+    body:
+      departmentId: <ROBOT SELECT>
+      dateFrom: <ROBOT DATE -7>
+      dateTo: <ROBOT DATE -2>
+      dossierNumber: <ROBOT RANDOMIZE>
+      mainDocument:
+        fileName: dummy.txt
+        formalDate: <ROBOT DATE -7>
+        grounds: []
+        language: NLD
+        type: c_38ba44de
+      parties:
+        - <ROBOT RANDOM DEPARTMENT ID>
+        - <ROBOT RANDOM DEPARTMENT ID>
+      previousVersionLink: https://example.com
+      publicationDate: <ROBOT DATE -1>
+      subjectId: <ROBOT SELECT>
+      summary: |
+        Officer factor language reveal Mrs color space. Always conference themselves study over.
+        Seem happen civil begin that out. Occur either couple parent appear operation hair simple.
+      title: <ROBOT RANDOMIZE>
+      attachments:
+        - externalId: <PYTHON GUID>
+          fileName: kranten artikel.txt
+          formalDate: <ROBOT DATE -12>
+          grounds: []
+          language: NLD
+          type: c_c2f56984
+    files:
+      mainDocument: files/dummy.txt
+      attachments:
+        - externalId: <PYTHON GUID>
+          file: files/dummy.txt
+    expected_response_status: 200
+    expected_publication_status: published
+
+testcases:
+- title: Happy flow
+  tags: [failing]
+  steps:
+    - name: Create dossier
+      request: {}
+
+- title: Create without attachments
+  tags: [failing]
+  steps:
+    - name: Create dossier
+      request:
+        body:
+          attachments: []
+        files:
+          attachments: []
+
+- title: Create without uploading main document
+  tags: [failing]
+  steps:
+    - name: Create dossier
+      request:
+        files:
+          mainDocument:
+        expected_publication_status: concept
+
+- title: Create without attachments and without main document
+  steps:
+    - name: Create dossier
+      request:
+        body:
+          attachments: []
+        files:
+          attachments: []
+          mainDocument:
+        expected_publication_status: concept
+
+- title: Create with 3 parties
+  tags: [failing]
+  steps:
+    - name: Create dossier
+      request:
+        body:
+          parties:
+            - Party 1
+            - Party 2
+            - <ROBOT RANDOM DEPARTMENT ID>
+
+- title: Create with max parties (10)
+  tags: [failing]
+  steps:
+    - name: Create dossier
+      request:
+        body:
+          parties:
+            - Party 1
+            - Party 2
+            - Party 3
+            - Party 4
+            - Party 5
+            - Party 6
+            - Party 7
+            - Party 8
+            - Party 9
+            - Party 10
+
+- title: Create with too few parties (should fail)
+  tags: [failing]
+  steps:
+    - name: Create dossier
+      request:
+        body:
+          parties:
+            - <ROBOT RANDOM DEPARTMENT ID>
+        expected_response_status: 422
+
+- title: Create with too many parties (should fail)
+  tags: [failing]
+  steps:
+    - name: Create dossier
+      request:
+        body:
+          parties:
+            - Party 1
+            - Party 2
+            - Party 3
+            - Party 4
+            - Party 5
+            - Party 6
+            - Party 7
+            - Party 8
+            - Party 9
+            - Party 10
+            - Party 11
+        expected_response_status: 422

@@ -7,7 +7,7 @@ namespace PublicationApi\EventSubscriber;
 use ApiPlatform\Metadata\HttpOperation;
 use Psr\Log\LoggerInterface;
 use PublicationApi\Api\Publication\PublicationV1Api;
-use PublicationApi\Domain\OpenApi\Exception\ValidatonException;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use PublicationApi\Domain\OpenApi\OpenApiValidationExceptionResponseFactory;
 use PublicationApi\Domain\OpenApi\OpenApiValidator;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -50,7 +50,7 @@ final readonly class PublicationV1ApiRequestResponseValidatorSubscriber
 
         try {
             $this->openApiValidator->validateRequest($request, $this->getAbsolutePath($request), $request->getMethod());
-        } catch (ValidatonException $exception) {
+        } catch (ValidationException $exception) {
             $event->setResponse($this->openApiValidationExceptionResponseFactory->buildJsonResponse($exception));
         }
     }
@@ -77,7 +77,7 @@ final readonly class PublicationV1ApiRequestResponseValidatorSubscriber
 
         try {
             $this->openApiValidator->validateResponse($event->getResponse(), $this->getAbsolutePath($request), $request->getMethod());
-        } catch (ValidatonException $exception) {
+        } catch (ValidationException $exception) {
             $event->setResponse($this->openApiValidationExceptionResponseFactory->buildJsonResponse($exception));
         }
     }
@@ -100,7 +100,7 @@ final readonly class PublicationV1ApiRequestResponseValidatorSubscriber
 
         try {
             $this->openApiValidator->validateResponse($event->getResponse(), $this->getAbsolutePath($request), $request->getMethod());
-        } catch (ValidatonException $e) {
+        } catch (ValidationException $e) {
             $this->logger->error('Response validation failed', [
                 'exception_class' => $e::class,
                 'exception_message' => $e->getMessage(),

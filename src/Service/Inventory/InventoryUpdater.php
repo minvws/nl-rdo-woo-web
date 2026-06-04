@@ -14,6 +14,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentReposito
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUpdateEvent;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Search\SearchDispatcher;
 use Shared\Exception\ProductionReportUpdaterException;
 use Shared\Service\Inquiry\DocumentCaseNumbers;
@@ -37,6 +38,7 @@ readonly class InventoryUpdater
         private SearchDispatcher $searchDispatcher,
         private ProductionReportDispatcher $dispatcher,
         private BatchDownloadService $batchDownloadService,
+        private WooDecisionDispatcher $wooDecisionDispatcher,
     ) {
     }
 
@@ -101,7 +103,7 @@ readonly class InventoryUpdater
 
             if ($documentChangeStatus === InventoryChangeset::UPDATED && $document instanceof Document) {
                 $this->messageBus->dispatch(
-                    new DocumentUpdateEvent($dossier, $documentMetadata, $document)
+                    new DocumentUpdateEvent($dossier, $documentMetadata, $document),
                 );
 
                 $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
@@ -154,7 +156,7 @@ readonly class InventoryUpdater
 
     public function sendMessagesForChangeset(InventoryChangeset $changeset, WooDecision $dossier, RunProgress $runProgress): void
     {
-        $this->dispatcher->dispatchGenerateInventoryCommand($dossier->getId());
+        $this->updateWooDecisionInventories($dossier);
 
         $this->batchDownloadService->refresh(
             BatchDownloadScope::forWooDecision($dossier),
@@ -185,13 +187,22 @@ readonly class InventoryUpdater
         }
     }
 
+    public function updateWooDecisionInventories(WooDecision $dossier): void
+    {
+        $this->dispatcher->dispatchGenerateInventoryCommand($dossier->getId());
+
+        foreach ($dossier->getInquiries() as $inquiry) {
+            $this->wooDecisionDispatcher->dispatchGenerateInquiryInventoryCommand($inquiry->getId());
+        }
+    }
+
     private function getDocument(string $documentNr): ?Document
     {
         return $this->documentRepository->findOneByDocumentNrCaseInsensitive($documentNr);
     }
 
     /**
-     * @param array<string, string[]> $docReferralUpdates
+     * @param array<string, array<array-key, string>> $docReferralUpdates
      */
     private function applyDocumentReferralUpdates(WooDecision $dossier, array $docReferralUpdates): void
     {

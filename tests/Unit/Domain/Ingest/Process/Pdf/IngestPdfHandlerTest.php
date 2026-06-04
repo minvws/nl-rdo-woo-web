@@ -60,11 +60,8 @@ final class IngestPdfHandlerTest extends UnitTestCase
         $entity = Mockery::mock(Document::class);
         $entity->expects('getFileInfo')->times(4)->andReturn($fileInfo);
 
-        $message = new IngestPdfCommand(
-            $id = Uuid::v6(),
-            $entityClass = $entity::class,
-            false,
-        );
+        $entityClass = $entity::class;
+        $message = new IngestPdfCommand(Uuid::v6(), $entityClass, false);
 
         $this->doctrine->expects('getRepository')->with($entityClass)->andReturn($this->repository);
         $this->doctrine->expects('persist')->with($entity);
@@ -74,9 +71,8 @@ final class IngestPdfHandlerTest extends UnitTestCase
 
         $this->extractor->expects('extract')->with($entity);
 
-        $pdftkPageCountResult = Mockery::mock(PdftkPageCountResult::class);
-        $pdftkPageCountResult->expects('isSuccessful')->andReturnTrue();
-        $pdftkPageCountResult->numberOfPages = $pageCount = 2;
+        $pageCount = 2;
+        $pdftkPageCountResult = new PdftkPageCountResult(0, [], null, 'source', $pageCount);
 
         $this->extractor->expects('getOutPut')->with()->andReturn($pdftkPageCountResult);
 

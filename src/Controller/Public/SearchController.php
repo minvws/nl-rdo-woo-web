@@ -72,7 +72,7 @@ class SearchController extends AbstractController
             // Redirect to GET request, so we have the q in the query string.
             return $this->redirect($this->generateUrl(
                 'app_search',
-                array_merge($request->query->all(), ['q' => $q, 'page' => null])
+                array_merge($request->query->all(), ['q' => $q, 'page' => null]),
             ));
         }
 

@@ -40,7 +40,7 @@ readonly class WooDecisionMapper implements ElasticDossierMapperInterface
         $fields[ElasticField::DECISION->value] = $dossier->getDecision();
 
         $fields[ElasticField::INQUIRY_IDS->value] = $dossier->getInquiries()->map(
-            fn (Inquiry $inquiry) => $inquiry->getId()
+            fn (Inquiry $inquiry) => $inquiry->getId(),
         )->toArray();
 
         $fields[ElasticField::INQUIRY_CASE_NRS->value] = CaseNumbers::forWooDecision($dossier)->values;

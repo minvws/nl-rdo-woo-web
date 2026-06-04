@@ -129,7 +129,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
                 $this->assertFalse($event->failed);
 
                 return true;
-            }
+            },
         ));
 
         $this->handler->__invoke($command);
@@ -177,7 +177,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
                 $this->assertFalse($event->failed);
 
                 return true;
-            }
+            },
         ));
 
         $this->handler->__invoke($command);
@@ -224,7 +224,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
                 $this->assertTrue($event->failed);
 
                 return true;
-            }
+            },
         ));
 
         $this->expectExceptionObject($exception);

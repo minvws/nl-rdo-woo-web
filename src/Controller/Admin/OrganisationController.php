@@ -134,7 +134,7 @@ class OrganisationController extends AbstractController
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     private function getDepartmentsErrors(FormInterface $form): array
     {
@@ -171,7 +171,7 @@ class OrganisationController extends AbstractController
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     private function getPrefixErrors(FormInterface $form): array
     {

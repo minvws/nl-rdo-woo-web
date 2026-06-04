@@ -17,7 +17,7 @@ readonly class DossierWizardStatus
         private AbstractDossier $dossier,
         private StepName $currentStep,
         private ?StepName $attachmentStepName,
-        /** @var StepStatus[] $steps */
+        /** @var array<StepStatus> $steps */
         private array $steps,
     ) {
     }
@@ -161,7 +161,7 @@ readonly class DossierWizardStatus
     }
 
     /**
-     * @return StepStatus[]
+     * @return array<array-key, StepStatus>
      */
     public function getSteps(): array
     {

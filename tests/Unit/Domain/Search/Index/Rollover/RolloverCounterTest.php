@@ -85,7 +85,7 @@ class RolloverCounterTest extends UnitTestCase
         ]);
 
         $this->assertMatchesJsonSnapshot(
-            $this->rolloverCounter->getEntityCounts($indexDetails)
+            $this->rolloverCounter->getEntityCounts($indexDetails),
         );
     }
 

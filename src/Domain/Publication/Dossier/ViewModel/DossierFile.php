@@ -7,7 +7,7 @@ namespace Shared\Domain\Publication\Dossier\ViewModel;
 readonly class DossierFile
 {
     /**
-     * @var Page[]
+     * @var array<array-key, Page>
      */
     public array $pages;
 

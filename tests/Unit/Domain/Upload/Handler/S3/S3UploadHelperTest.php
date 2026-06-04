@@ -13,7 +13,9 @@ use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Override;
+use Psr\Http\Message\StreamInterface;
 use Shared\Domain\Upload\Handler\S3\S3UploadHelper;
+use Shared\Domain\Upload\StreamUpload;
 use Shared\Domain\Upload\UploadRequest;
 use Shared\Service\Uploader\UploadGroupId;
 use Spatie\Snapshots\MatchesSnapshots;
@@ -203,6 +205,25 @@ class S3UploadHelperTest extends MockeryTestCase
         ]);
 
         $this->helper->uploadFile($request);
+    }
+
+    public function testUploadStream(): void
+    {
+        $streamUpload = new StreamUpload(
+            fileName : 'foo.pdf',
+            stream: $stream = Mockery::mock(StreamInterface::class),
+            groupId: UploadGroupId::WOO_DECISION_DOCUMENTS,
+            additionalParameters: $params = new InputBag(),
+            uploadId: $uploadId = 'foo-bar-123',
+        );
+
+        $this->s3Client->expects('putObject')->with([
+            'Bucket' => $this->bucket,
+            'Key' => $uploadId,
+            'Body' => $stream,
+        ]);
+
+        $this->helper->uploadStream($streamUpload);
     }
 
     public function testReadStreamWithoutLimit(): void

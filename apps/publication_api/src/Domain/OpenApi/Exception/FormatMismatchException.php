@@ -6,7 +6,7 @@ namespace PublicationApi\Domain\OpenApi\Exception;
 
 use League\OpenAPIValidation\Schema\Exception\FormatMismatch;
 
-class FormatMismatchException extends ValidatonException
+class FormatMismatchException extends ValidationException
 {
     private ?string $format = null;
 

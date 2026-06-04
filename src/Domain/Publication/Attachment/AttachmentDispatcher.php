@@ -52,7 +52,7 @@ readonly class AttachmentDispatcher
                 $dossier->getId(),
                 $attachment->getId(),
                 $reason,
-                $explanation
+                $explanation,
             ),
         );
     }

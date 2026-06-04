@@ -30,7 +30,7 @@ class AppExtensionRuntime implements RuntimeExtensionInterface
     }
 
     /**
-     * @return array<string, string>|mixed[]
+     * @return array<string, string>|array<array-key, mixed>
      */
     public function appVersion(): array
     {

@@ -18,22 +18,17 @@ use Zenstruck\Foundry\Attribute\WithStory;
 final class WooIndexGenerateCommandTest extends SharedWebTestCase
 {
     private FilesystemOperator $wooIndexStorage;
-
     private WooIndexSitemapRepository $wooIndexSitemapRepository;
-
     private WooIndexNamer $wooIndexNamer;
-
     private Application $application;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        self::bootKernel();
-
         $this->wooIndexStorage = self::getContainer()->get('woo_index.storage');
-        $this->wooIndexSitemapRepository = self::getContainer()->get(WooIndexSitemapRepository::class);
-        $this->wooIndexNamer = self::getContainer()->get(WooIndexNamer::class);
+        $this->wooIndexSitemapRepository = self::fromContainer(WooIndexSitemapRepository::class);
+        $this->wooIndexNamer = self::fromContainer(WooIndexNamer::class);
 
         Assert::isInstanceOf(self::$kernel, KernelInterface::class);
 
@@ -44,8 +39,6 @@ final class WooIndexGenerateCommandTest extends SharedWebTestCase
     #[WithStory(WooIndexWooDecisionStory::class)]
     public function testExecute(): void
     {
-        $this->setTestNow('2025-01-01 00:00:00.123456');
-
         $command = $this->application->find('woo-index:generate');
         $commandTester = new CommandTester($command);
         $commandTester->execute([], ['interactive' => false]);
@@ -75,8 +68,6 @@ final class WooIndexGenerateCommandTest extends SharedWebTestCase
     #[WithStory(WooIndexWooDecisionStory::class)]
     public function testExecuteWithCleanup(): void
     {
-        $this->setTestNow('2025-01-01 00:00:00.123456');
-
         $command = $this->application->find('woo-index:generate');
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--cleanup' => true], ['interactive' => false]);

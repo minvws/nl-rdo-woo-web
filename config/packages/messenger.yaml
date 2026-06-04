@@ -48,6 +48,14 @@ framework:
                     max_retries: 3
                     multiplier: 2
 
+            api_documents:
+                dsn: '%api_documents_transport_dsn%'
+                options:
+                    auto_setup: true
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+
         routing:
             Shared\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand: high
             Shared\Domain\Search\Index\Rollover\SetElasticAliasCommand: high
@@ -85,3 +93,5 @@ framework:
             Shared\Domain\Publication\Subject\Event\SubjectUpdatedEvent: esupdater
 
             Shared\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand: global
+
+            Shared\Domain\Upload\WooDecision\ProcessUploadedDocumentsCommand: api_documents

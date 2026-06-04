@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision\Document;
 
-use Carbon\CarbonImmutable;
 use Doctrine\ORM\QueryBuilder;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -19,8 +18,8 @@ use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory
 use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
-use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 use function array_map;
@@ -30,18 +29,13 @@ use function Zenstruck\Foundry\Persistence\save;
 
 final class DocumentRepositoryTest extends SharedWebTestCase
 {
-    private DocumentRepository $repository;
+    private DocumentRepository $documentRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $repository = self::getContainer()->get(DocumentRepository::class);
-        Assert::isInstanceOf($repository, DocumentRepository::class);
-
-        $this->repository = $repository;
+        $this->documentRepository = self::fromContainer(DocumentRepository::class);
     }
 
     public function testSaveAndRemove(): void
@@ -49,13 +43,13 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $document = new Document();
         $document->setDocumentNr('abc123');
 
-        $this->repository->save($document, true);
-        $result = $this->repository->find($document->getId());
+        $this->documentRepository->save($document, true);
+        $result = $this->documentRepository->find($document->getId());
         self::assertEquals($document, $result);
 
-        $this->repository->remove($document, true);
+        $this->documentRepository->remove($document, true);
         self::assertNull(
-            $this->repository->find($document->getId())
+            $this->documentRepository->find($document->getId()),
         );
     }
 
@@ -88,21 +82,21 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'familyId' => 123,
         ]);
 
-        $result = $this->repository->findByFamilyId(
+        $result = $this->documentRepository->findByFamilyId(
             $dossierA,
             123,
         );
         self::assertCount(1, $result);
         self::assertEquals($documentNrA, $result[0]->getDocumentNr());
 
-        $result = $this->repository->findByFamilyId(
+        $result = $this->documentRepository->findByFamilyId(
             $dossierA,
             456,
         );
         self::assertCount(1, $result);
         self::assertEquals($documentNrB, $result[0]->getDocumentNr());
 
-        $result = $this->repository->findByFamilyId(
+        $result = $this->documentRepository->findByFamilyId(
             $dossierC,
             123,
         );
@@ -138,21 +132,21 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'threadId' => 123,
         ]);
 
-        $result = $this->repository->findByThreadId(
+        $result = $this->documentRepository->findByThreadId(
             $dossierA,
             123,
         );
         self::assertCount(1, $result);
         self::assertEquals($documentNrA, $result[0]->getDocumentNr());
 
-        $result = $this->repository->findByThreadId(
+        $result = $this->documentRepository->findByThreadId(
             $dossierA,
             456,
         );
         self::assertCount(1, $result);
         self::assertEquals($documentNrB, $result[0]->getDocumentNr());
 
-        $result = $this->repository->findByThreadId(
+        $result = $this->documentRepository->findByThreadId(
             $dossierC,
             123,
         );
@@ -174,7 +168,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             ]),
         ]);
 
-        self::assertEquals(200, $this->repository->pagecount());
+        self::assertEquals(200, $this->documentRepository->pagecount());
     }
 
     public function testGetRelatedDocumentsByThread(): void
@@ -208,7 +202,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         /**
          * @var QueryBuilder $queryBuilder
          */
-        $queryBuilder = $this->repository->getRelatedDocumentsByThread(
+        $queryBuilder = $this->documentRepository->getRelatedDocumentsByThread(
             $dossierA,
             $documentA,
         );
@@ -253,7 +247,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         /**
          * @var QueryBuilder $queryBuilder
          */
-        $queryBuilder = $this->repository->getRelatedDocumentsByFamily(
+        $queryBuilder = $this->documentRepository->getRelatedDocumentsByFamily(
             $dossierA,
             $documentA,
         );
@@ -304,7 +298,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         /**
          * @var array<array-key, Document> $result
          */
-        $result = $this->repository->getRevokedDocumentsInPublicDossiers();
+        $result = $this->documentRepository->getRevokedDocumentsInPublicDossiers();
 
         self::assertCount(2, $result);
         self::assertEquals($documentNrA, $result[0]->getDocumentNr());
@@ -321,7 +315,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'dossiers' => [$dossier],
         ]);
 
-        $result = $this->repository->getDocumentSearchEntry($documentNr);
+        $result = $this->documentRepository->getDocumentSearchEntry($documentNr);
 
         self::assertNotNull($result);
         self::assertEquals($documentNr, $result->documentNr);
@@ -333,7 +327,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'documentNr' => $documentNr = 'FOO-123',
         ]);
 
-        $result = $this->repository->findByDocumentNr($documentNr);
+        $result = $this->documentRepository->findByDocumentNr($documentNr);
         self::assertNotNull($result);
         self::assertEquals($documentNr, $result[0]->getDocumentNr());
     }
@@ -354,7 +348,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'dossiers' => [$dossier],
         ]);
 
-        $result = $this->repository->getAllDocumentNumbersForDossier($dossier);
+        $result = $this->documentRepository->getAllDocumentNumbersForDossier($dossier);
 
         self::assertEqualsCanonicalizing([$documentNrA, $documentNrB], $result);
     }
@@ -374,7 +368,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'documentNr' => 'FOO-456',
         ]);
 
-        $result = $this->repository->getAllDossierDocumentsWithDossiers($dossier);
+        $result = $this->documentRepository->getAllDossierDocumentsWithDossiers($dossier);
 
         self::assertCount(1, $result);
         self::assertEquals($documentNr, $result[0]->getDocumentNr());
@@ -391,7 +385,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'dossiers' => [$dossier],
         ]);
 
-        $result = $this->repository->findOneByDossierAndDocumentId($dossier, $documentId);
+        $result = $this->documentRepository->findOneByDossierAndDocumentId($dossier, $documentId);
 
         self::assertNotNull($result);
         self::assertEquals($documentId, $result->getDocumentId());
@@ -408,7 +402,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'dossiers' => [$dossier],
         ]);
 
-        $result = $this->repository->findOneByDossierAndId($dossier, $document->getId());
+        $result = $this->documentRepository->findOneByDossierAndId($dossier, $document->getId());
 
         self::assertSame($document, $result);
     }
@@ -424,7 +418,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'dossiers' => [$dossier],
         ]);
 
-        $result = $this->repository->findOneByDossierNrAndDocumentNr(
+        $result = $this->documentRepository->findOneByDossierNrAndDocumentNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
             $documentNr,
@@ -445,19 +439,19 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         DocumentFactory::createOne([
             'documentNr' => $documentNrA,
             'dossiers' => [$dossier],
-            'documentDate' => CarbonImmutable::now(),
+            'documentDate' => PlainDate::today(),
         ]);
 
         DocumentFactory::createOne([
             'documentNr' => $documentNrB,
             'dossiers' => [$dossier],
-            'documentDate' => CarbonImmutable::now()->addDay(),
+            'documentDate' => PlainDate::today()->addDays(1),
         ]);
 
         /**
          * @var list<Document> $result
          */
-        $result = $this->repository->getDossierDocumentsForPaginationQuery($dossier)->getResult();
+        $result = $this->documentRepository->getDossierDocumentsForPaginationQuery($dossier)->getResult();
 
         self::assertCount(2, $result);
         self::assertEquals($documentNrA, $result[0]->getDocumentNr());
@@ -467,7 +461,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
     #[WithStory(WooIndexWooDecisionStory::class)]
     public function testGetPublishedDocumentsIterable(): void
     {
-        $iterable = $this->repository->getPublishedDocumentsIterable();
+        $iterable = $this->documentRepository->getPublishedDocumentsIterable();
 
         /** @var list<Document> $allDocuments */
         $allDocuments = iterator_to_array($iterable, false);
@@ -495,7 +489,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'documentNr' => $documentNr = 'FOO-xx-123',
         ]);
 
-        $result = $this->repository->findOneByDocumentNrCaseInsensitive(strtoupper($documentNr));
+        $result = $this->documentRepository->findOneByDocumentNrCaseInsensitive(strtoupper($documentNr));
 
         self::assertNotNull($result);
         self::assertEquals($documentNr, $result->getDocumentNr());
@@ -512,7 +506,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'documents' => [$document],
         ]);
 
-        $documentCaseNrs = $this->repository->getDocumentCaseNrs(strtoupper($documentNr));
+        $documentCaseNrs = $this->documentRepository->getDocumentCaseNrs(strtoupper($documentNr));
 
         self::assertFalse($documentCaseNrs->isDocumentNotFound());
         self::assertEquals($document->getId(), $documentCaseNrs->documentId);
@@ -558,7 +552,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             ],
             array_map(
                 static fn (Document $document): Uuid => $document->getId(),
-                $this->repository->getPublicInquiryDocumentsWithDossiers($inquiry),
+                $this->documentRepository->getPublicInquiryDocumentsWithDossiers($inquiry),
             ),
         );
     }
@@ -573,7 +567,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'externalId' => $externalId,
         ]);
 
-        $result = $this->repository->findByDossierAndExternalId($dossier, $externalId);
+        $result = $this->documentRepository->findByDossierAndExternalId($dossier, $externalId);
 
         self::assertEquals($externalId, $result?->getExternalId());
     }
@@ -587,7 +581,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'externalId' => $externalId,
         ]);
 
-        $result = $this->repository->findByDossierAndExternalId($dossier, $externalId);
+        $result = $this->documentRepository->findByDossierAndExternalId($dossier, $externalId);
 
         self::assertNull($result);
     }
@@ -610,7 +604,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
 
-        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertFalse($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsTrueForMissingDocumentNr(): void
@@ -624,7 +618,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
         ]);
 
-        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertTrue($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsTrueForWhitespaceDocumentNr(): void
@@ -638,7 +632,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
         ]);
 
-        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertTrue($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsTrueForMissingJudgement(): void
@@ -651,9 +645,9 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $document->setFileInfo(FileInfoFactory::createOne(['uploaded' => true]));
         $document->addDossier($dossier);
 
-        $this->repository->save($document, true);
+        $this->documentRepository->save($document, true);
 
-        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertTrue($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsTrueForPublicDocumentWithoutFile(): void
@@ -667,7 +661,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
 
-        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertTrue($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsTrueForPartialPublicDocumentWithoutFile(): void
@@ -681,7 +675,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
 
-        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertTrue($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsFalseForWithdrawnDocumentWithoutFile(): void
@@ -696,7 +690,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
                 'judgement' => Judgement::PUBLIC,
             ]);
 
-        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertFalse($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsFalseForSuspendedDocumentWithoutFile(): void
@@ -711,7 +705,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
 
-        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertFalse($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsFalseForAlreadyPublicDocumentWithoutFile(): void
@@ -725,7 +719,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
 
-        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertFalse($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsFalseForNotPublicDocumentWithoutFile(): void
@@ -739,7 +733,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
 
-        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertFalse($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsTrueForIncompleteReferredDocument(): void
@@ -761,9 +755,9 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         ]);
 
         $mainDocument->addRefersTo($referredDocument);
-        $this->repository->save($mainDocument, true);
+        $this->documentRepository->save($mainDocument, true);
 
-        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertTrue($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsTrueForMultipleLevelsOfReferrals(): void
@@ -792,12 +786,12 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         ]);
 
         $middleDocument->addRefersTo($deepReferredDocument);
-        $this->repository->save($middleDocument, true);
+        $this->documentRepository->save($middleDocument, true);
 
         $mainDocument->addRefersTo($middleDocument);
-        $this->repository->save($mainDocument, true);
+        $this->documentRepository->save($mainDocument, true);
 
-        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertTrue($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsFalseWhenReferredDocumentIsComplete(): void
@@ -819,9 +813,9 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         ]);
 
         $mainDocument->addRefersTo($referredDocument);
-        $this->repository->save($mainDocument, true);
+        $this->documentRepository->save($mainDocument, true);
 
-        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertFalse($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsTrueForMultipleIncompleteDocuments(): void
@@ -842,7 +836,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
 
-        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertTrue($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsFalseForDifferentDossier(): void
@@ -857,7 +851,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
         ]);
 
-        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossierA->getId()));
+        self::assertFalse($this->documentRepository->hasIncompleteDocumentsForDossier($dossierA->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsTrueWhenReferredDocumentHasMissingJudgement(): void
@@ -869,7 +863,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $referredDocument->setDocumentNr('DOC-REFERRED');
         $referredDocument->setFileInfo(FileInfoFactory::createOne(['uploaded' => true]));
         $referredDocument->addDossier($dossier);
-        $this->repository->save($referredDocument, true);
+        $this->documentRepository->save($referredDocument, true);
 
         $mainDocument = DocumentFactory::createOne([
             'dossiers' => [$dossier],
@@ -879,9 +873,9 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         ]);
 
         $mainDocument->addRefersTo($referredDocument);
-        $this->repository->save($mainDocument, true);
+        $this->documentRepository->save($mainDocument, true);
 
-        self::assertTrue($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertTrue($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsReturnsFalseForComplexScenarioWithAllComplete(): void
@@ -921,9 +915,9 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $mainDocument->addRefersTo($referred1);
         $mainDocument->addRefersTo($referred2);
         $mainDocument->addRefersTo($referred3);
-        $this->repository->save($mainDocument, true);
+        $this->documentRepository->save($mainDocument, true);
 
-        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertFalse($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 
     public function testHasIncompleteDocumentsHandlesCircularReferrals(): void
@@ -947,9 +941,9 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         // Create circular reference
         $doc1->addRefersTo($doc2);
         $doc2->addRefersTo($doc1);
-        $this->repository->save($doc1, true);
-        $this->repository->save($doc2, true);
+        $this->documentRepository->save($doc1, true);
+        $this->documentRepository->save($doc2, true);
 
-        self::assertFalse($this->repository->hasIncompleteDocumentsForDossier($dossier->getId()));
+        self::assertFalse($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
     }
 }

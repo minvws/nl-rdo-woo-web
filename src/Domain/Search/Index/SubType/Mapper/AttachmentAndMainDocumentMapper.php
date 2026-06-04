@@ -29,7 +29,7 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
     }
 
     /**
-     * @param string[] $metadata
+     * @param ?array<array-key, string> $metadata
      * @param array<int, mixed>|null $pages
      */
     public function map(object $entity, ?array $metadata = null, ?array $pages = null): ElasticDocument

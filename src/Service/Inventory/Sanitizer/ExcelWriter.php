@@ -32,7 +32,7 @@ class ExcelWriter implements InventoryWriterInterface
     }
 
     /**
-     * @param array<string>|string ...$cells
+     * @param array<array-key, string>|string ...$cells
      */
     public function addRow(mixed ...$cells): void
     {

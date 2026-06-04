@@ -40,7 +40,7 @@ class UpdateDecisionHandlerTest extends UnitTestCase
             $this->dossierWorkflowManager,
             $this->dossierService,
             $this->messageBus,
-            $this->wooDecisionDispatcher
+            $this->wooDecisionDispatcher,
         );
 
         parent::setUp();
@@ -64,11 +64,11 @@ class UpdateDecisionHandlerTest extends UnitTestCase
                 self::assertEquals($wooDecisionUuid, $message->dossierId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->handler->__invoke(
-            new UpdateDecisionCommand($wooDecision)
+            new UpdateDecisionCommand($wooDecision),
         );
     }
 
@@ -84,7 +84,7 @@ class UpdateDecisionHandlerTest extends UnitTestCase
         $this->expectException(DossierWorkflowException::class);
 
         $this->handler->__invoke(
-            new UpdateDecisionCommand($wooDecision)
+            new UpdateDecisionCommand($wooDecision),
         );
     }
 }

@@ -49,7 +49,7 @@ class DossierFileController extends AbstractController
         name: 'app_dossier_file_thumbnail',
         requirements: ['pageNr' => '\d+'],
         defaults: ['hash' => ''],
-        methods: ['GET']
+        methods: ['GET'],
     )]
     public function thumbnail(
         #[ValueResolver('dossierWithAccessCheck')] AbstractDossier $dossier,

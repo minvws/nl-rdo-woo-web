@@ -8,7 +8,7 @@ indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true
 
-[*.md]
+[*.{md,bru}]
 trim_trailing_whitespace = false
 
 [*.{yml,yaml}]
@@ -17,5 +17,5 @@ indent_size = 2
 [{,apps/**/,tenants/**/}config/**/*.{yml,yaml}]
 indent_size = 4
 
-[*.{mjs,js,ts,vue}]
+[*.{mjs,js,ts,vue,bru}]
 indent_size = 2

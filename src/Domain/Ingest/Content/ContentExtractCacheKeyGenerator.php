@@ -31,7 +31,7 @@ class ContentExtractCacheKeyGenerator
                 $entity->getId()->toRfc4122(),
                 $options->getPageNumber() ?? 0,
                 $hash,
-            ]
+            ],
         );
     }
 }

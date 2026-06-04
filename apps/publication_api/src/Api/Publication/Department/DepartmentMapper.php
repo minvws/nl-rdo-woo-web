@@ -14,16 +14,16 @@ class DepartmentMapper
     /**
      * @param array<array-key,Department> $departments
      *
-     * @return array<array-key,DepartmentDto>
+     * @return array<array-key,DepartmentResponseDto>
      */
     public static function fromEntities(array $departments): array
     {
         return array_values(array_map(self::fromEntity(...), $departments));
     }
 
-    public static function fromEntity(Department $department): DepartmentDto
+    public static function fromEntity(Department $department): DepartmentResponseDto
     {
-        return new DepartmentDto(
+        return new DepartmentResponseDto(
             $department->getId(),
             $department->getName(),
         );

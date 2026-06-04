@@ -102,7 +102,7 @@ class UserController extends AbstractController
 
         $userForm->handleRequest($request);
         if ($userForm->isSubmitted() && $userForm->isValid()) {
-            /** @var array{name: string, email: string, roles: string[], organisation: Organisation} $data */
+            /** @var array{name: string, email: string, roles: array<array-key, string>, organisation: Organisation} $data */
             $data = $userForm->getData();
             ['plainPassword' => $plainPassword, 'user' => $user] = $this->userService->createUser(
                 name: $data['name'],
@@ -119,7 +119,7 @@ class UserController extends AbstractController
                 [
                     'user_id' => $user->getId(),
                     'plainTextPassword' => $plainPassword,
-                ]
+                ],
             );
 
             return $this->render('admin/user/created.html.twig', [
@@ -223,7 +223,7 @@ class UserController extends AbstractController
         /** @var User $loggedInUser */
         $loggedInUser = $this->getUser();
 
-        /** @var string[] $roles */
+        /** @var array<array-key, string> $roles */
         $roles = $form->get('roles')->getData();
 
         $this->userService->updateRoles($loggedInUser, $unchangedUser, $user, $roles);
@@ -265,7 +265,7 @@ class UserController extends AbstractController
         $userName = $user->getName();
         $this->addFlash(
             'backend',
-            ['success' => $this->translator->trans('admin.user.user_activated', ['{name}' => $userName])]
+            ['success' => $this->translator->trans('admin.user.user_activated', ['{name}' => $userName])],
         );
 
         return $this->redirectToRoute('app_admin_users');
@@ -288,7 +288,7 @@ class UserController extends AbstractController
             [
                 'user_id' => $user->getId(),
                 'plainTextPassword' => $password,
-            ]
+            ],
         );
 
         return $this->render('admin/user/created.html.twig', [
@@ -314,7 +314,7 @@ class UserController extends AbstractController
             [
                 'user_id' => $user->getId(),
                 'plainTextPassword' => '',
-            ]
+            ],
         );
 
         return $this->render('admin/user/created.html.twig', [

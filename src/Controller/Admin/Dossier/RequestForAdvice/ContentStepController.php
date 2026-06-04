@@ -42,7 +42,7 @@ class ContentStepController extends AbstractController
         $breadcrumbs->addRouteItem(
             $dossier->getTitle() ?? '',
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );
         $breadcrumbs->addItem('admin.dossiers.request-for-advice.step.content');
 
@@ -69,7 +69,7 @@ class ContentStepController extends AbstractController
                 ->withBreadCrumbs($breadcrumbs)
                 ->withDepartments()
                 ->with('advisoryBodiesErrors', $this->getAdvisoryBodiesErrors($form))
-                ->getParams()
+                ->getParams(),
         );
     }
 
@@ -114,7 +114,7 @@ class ContentStepController extends AbstractController
                 ->withBreadCrumbs($breadcrumbs)
                 ->withDepartments()
                 ->with('advisoryBodiesErrors', $this->getAdvisoryBodiesErrors($form))
-                ->getParams()
+                ->getParams(),
         );
     }
 
@@ -123,12 +123,12 @@ class ContentStepController extends AbstractController
         return $this->createForm(
             ContentFormType::class,
             $dossier,
-            ['validation_groups' => [self::STEP_NAME->value]]
+            ['validation_groups' => [self::STEP_NAME->value]],
         );
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     private function getAdvisoryBodiesErrors(FormInterface $form): array
     {

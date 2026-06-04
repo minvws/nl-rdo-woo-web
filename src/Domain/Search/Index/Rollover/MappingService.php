@@ -23,7 +23,7 @@ readonly class MappingService
     }
 
     /**
-     * @return mixed[]
+     * @return array<array-key, mixed>
      */
     public function getMapping(int $version): array
     {
@@ -31,7 +31,7 @@ readonly class MappingService
     }
 
     /**
-     * @return mixed[]
+     * @return array<array-key, mixed>
      */
     public function getSettings(): array
     {
@@ -56,7 +56,7 @@ readonly class MappingService
     }
 
     /**
-     * @return mixed[]
+     * @return array<array-key, mixed>
      */
     private function readJson(string $filename): array
     {
@@ -79,7 +79,7 @@ readonly class MappingService
     }
 
     /**
-     * @return int[]
+     * @return array<array-key, int>
      */
     private function getMappingVersions(): array
     {

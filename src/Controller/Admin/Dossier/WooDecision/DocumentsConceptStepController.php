@@ -109,7 +109,7 @@ class DocumentsConceptStepController extends AbstractController
 
         return $this->redirectToRoute(
             'app_admin_dossier_woodecision_documents_concept',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );
     }
 

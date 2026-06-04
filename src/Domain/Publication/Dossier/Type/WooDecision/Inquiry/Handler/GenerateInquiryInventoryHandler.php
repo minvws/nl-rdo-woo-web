@@ -34,7 +34,7 @@ readonly class GenerateInquiryInventoryHandler
         }
 
         $this->inventorySanitizer->generateSanitizedInventory(
-            $this->dataProviderFactory->forInquiry($inquiry)
+            $this->dataProviderFactory->forInquiry($inquiry),
         );
     }
 }

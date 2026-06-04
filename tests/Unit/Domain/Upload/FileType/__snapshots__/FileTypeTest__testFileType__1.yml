@@ -51,7 +51,7 @@
     maxUploadSize: 1073741824
     extensions: [wmv, avi, mp4, mov, m4a, mpg, asf]
     typeName: Video
-    mimeTypes: [audio/x-ms-wmv, video/x-ms-wmv, video/avi, video/divx, video/msvideo, video/vnd.avi, video/vnd.divx, video/x-avi, video/x-msvideo, video/mp4, application/mp4, video/mp4v-es, video/x-m4v, video/quicktime, audio/mp4, audio/m4a, audio/x-m4a, video/mpeg, video/mpeg-system, video/x-mpeg, video/x-mpeg-system, video/x-mpeg2, application/vnd.ms-asf, video/x-ms-asf, video/x-ms-asf-plugin, video/x-ms-wm]
+    mimeTypes: [audio/x-ms-wmv, video/x-ms-wmv, video/avi, video/divx, video/msvideo, video/vnd.avi, video/vnd.divx, video/x-avi, video/x-msvideo, application/mp4, video/mp4, video/mp4v-es, video/x-m4v, video/quicktime, audio/mp4, audio/m4a, audio/x-m4a, video/mpeg, video/mpeg-system, video/x-mpeg, video/x-mpeg-system, video/x-mpeg2, application/vnd.ms-asf, video/x-ms-asf, video/x-ms-asf-plugin, video/x-ms-wm]
     name: VIDEO
     value: video
 -

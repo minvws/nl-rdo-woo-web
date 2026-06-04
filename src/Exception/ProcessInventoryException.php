@@ -29,7 +29,7 @@ class ProcessInventoryException extends TranslatableException
             'publication.dossier.error.missing_document',
             [
                 '{documentNumber}' => $documentNr,
-            ]
+            ],
         );
     }
 
@@ -69,7 +69,7 @@ class ProcessInventoryException extends TranslatableException
             'publication.dossier.error.referred_document_does_not_exist',
             [
                 '{documentNumber}' => $documentNr,
-            ]
+            ],
         );
     }
 
@@ -80,7 +80,7 @@ class ProcessInventoryException extends TranslatableException
             'publication.dossier.error.document_not_unique',
             [
                 '{documentNumber}' => $documentNr,
-            ]
+            ],
         );
     }
 

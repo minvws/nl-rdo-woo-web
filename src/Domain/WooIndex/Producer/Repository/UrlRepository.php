@@ -17,6 +17,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 
 use function sprintf;
@@ -25,7 +26,7 @@ use function sprintf;
  * @phpstan-type SqlRawDocument array{
  *  id: Uuid,
  *  updatedAt: DateTimeInterface,
- *  documentDate: ?DateTimeInterface,
+ *  documentDate: ?PlainDate,
  *  documentFileName: string,
  * }
  */
@@ -68,46 +69,7 @@ final readonly class UrlRepository
             ->toIterable();
 
         foreach ($wooDecisions as $wooDecisionDto) {
-            yield from $this->doGetPublishedDocuments($wooDecisionDto);
-        }
-    }
-
-    /**
-     * @return iterable<array-key,RawUrlDto>
-     */
-    private function doGetPublishedDocuments(WooDecisionDto $dto): iterable
-    {
-        /** @var iterable<array-key,SqlRawDocument> */
-        $documents = $this->_em
-            ->createQueryBuilder()
-            ->select('doc.id')
-            ->addSelect('doc.updatedAt')
-            ->addSelect('doc.documentDate')
-            ->addSelect('doc.fileInfo.name AS documentFileName')
-            ->from(Document::class, 'doc')
-            ->where(':dossierId MEMBER OF doc.dossiers')
-            ->andWhere('doc.judgement in (:judgements)')
-            ->andWhere('doc.fileInfo.uploaded = true')
-            ->orderBy('doc.updatedAt', 'ASC')
-            ->addOrderBy('doc.id', 'ASC')
-            ->setParameter('dossierId', $dto->id)
-            ->setParameter('judgements', [Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC])
-            ->getQuery()
-            ->toIterable();
-
-        foreach ($documents as $document) {
-            yield new RawUrlDto(
-                source: DossierFileType::DOCUMENT,
-                id: $document['id'],
-                documentUpdatedAt: $document['updatedAt'],
-                documentDate: $document['documentDate'] ?? $dto->publicationDate,
-                documentFileName: $document['documentFileName'],
-                dossierId: $dto->id,
-                documentPrefix: $dto->documentPrefix,
-                dossierNr: $dto->dossierNr,
-                dossierType: DossierType::WOO_DECISION,
-                mainDocumentReference: $dto->mainDocumentReference,
-            );
+            yield from $this->getPublishedDocumentsForWooDecision($wooDecisionDto);
         }
     }
 
@@ -302,6 +264,47 @@ final readonly class UrlRepository
 
         if ($result !== null) {
             $dto->mainDocumentReference = $result;
+        }
+    }
+
+    /**
+     * @return iterable<array-key,RawUrlDto>
+     */
+    private function getPublishedDocumentsForWooDecision(WooDecisionDto $dto): iterable
+    {
+        /** @var iterable<array-key,SqlRawDocument> $documents */
+        $documents = $this->_em
+            ->createQueryBuilder()
+            ->select('doc.id')
+            ->addSelect('doc.updatedAt')
+            ->addSelect('doc.documentDate')
+            ->addSelect('doc.fileInfo.name AS documentFileName')
+            ->from(Document::class, 'doc')
+            ->where(':dossierId MEMBER OF doc.dossiers')
+            ->andWhere('doc.judgement in (:judgements)')
+            ->andWhere('doc.fileInfo.uploaded = true')
+            ->orderBy('doc.updatedAt', 'ASC')
+            ->addOrderBy('doc.id', 'ASC')
+            ->setParameter('dossierId', $dto->id)
+            ->setParameter('judgements', [Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC])
+            ->getQuery()
+            ->toIterable();
+
+        foreach ($documents as $document) {
+            $documentDate = $document['documentDate'] ? PlainDate::create($document['documentDate']->format('Y-m-d')) : $dto->publicationDate;
+
+            yield new RawUrlDto(
+                source: DossierFileType::DOCUMENT,
+                id: $document['id'],
+                documentUpdatedAt: $document['updatedAt'],
+                documentDate: $documentDate,
+                documentFileName: $document['documentFileName'],
+                dossierId: $dto->id,
+                documentPrefix: $dto->documentPrefix,
+                dossierNr: $dto->dossierNr,
+                dossierType: DossierType::WOO_DECISION,
+                mainDocumentReference: $dto->mainDocumentReference,
+            );
         }
     }
 }

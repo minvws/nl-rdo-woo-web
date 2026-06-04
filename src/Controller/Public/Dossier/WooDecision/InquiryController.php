@@ -153,7 +153,7 @@ class InquiryController extends AbstractController
                 'token' => $inquiry->getToken(),
                 'prefix' => $dossier->getDocumentPrefix(),
                 'dossierId' => $dossier->getDossierNr(),
-            ]
+            ],
         );
 
         $searchUrl = $this->generateUrl(

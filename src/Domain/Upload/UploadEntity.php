@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Upload;
 
+use Carbon\CarbonImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\ExternalIdType;
@@ -53,7 +54,7 @@ class UploadEntity
     private ?string $filename = null;
 
     /**
-     * @var string[]|null
+     * @var array<array-key, string>|null
      */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $error = null;
@@ -67,6 +68,8 @@ class UploadEntity
     public function __construct(string $uploadId, UploadGroupId $uploadGroupId, ?User $user, InputBag $context)
     {
         $this->id = Uuid::v6();
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
         $this->uploadId = $uploadId;
         $this->uploadGroupId = $uploadGroupId;
         $this->status = UploadEntityStatus::INCOMPLETE;
@@ -175,7 +178,7 @@ class UploadEntity
     }
 
     /**
-     * @return string[]|null
+     * @return array<array-key, string>|null
      */
     public function getError(): ?array
     {

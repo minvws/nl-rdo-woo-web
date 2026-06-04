@@ -37,7 +37,7 @@ class DossierTypeManagerTest extends UnitTestCase
 
         self::assertSame(
             $this->configCovenant,
-            $manager->getConfig(DossierType::COVENANT)
+            $manager->getConfig(DossierType::COVENANT),
         );
     }
 
@@ -55,7 +55,7 @@ class DossierTypeManagerTest extends UnitTestCase
 
         self::assertSame(
             $this->configCovenant,
-            $manager->getConfigWithAccessCheck(DossierType::COVENANT)
+            $manager->getConfigWithAccessCheck(DossierType::COVENANT),
         );
     }
 

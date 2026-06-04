@@ -57,7 +57,7 @@ class SitemapThemeSubscriberTest extends UnitTestCase
                     self::assertEquals($themeUrl, $urlConcrete->getLoc());
 
                     return true;
-                }
+                },
             ),
             'themes',
         );

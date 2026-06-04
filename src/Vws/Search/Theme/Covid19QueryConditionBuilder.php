@@ -48,7 +48,7 @@ readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInte
                                     value: ElasticDocumentType::WOO_DECISION->value,
                                 ),
                             ),
-                        ]
+                        ],
                     ),
                     Query::bool(
                         filter: [
@@ -56,10 +56,10 @@ readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInte
                                 field: ElasticField::TYPE->value,
                                 value: ElasticDocumentType::WOO_DECISION->value,
                             ),
-                        ]
+                        ],
                     ),
                 ],
-            )->setParams(['minimum_should_match' => 1])
+            )->setParams(['minimum_should_match' => 1]),
         );
     }
 
@@ -79,7 +79,7 @@ readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInte
                                     values: $subjectIds,
                                 ),
                             ),
-                        ]
+                        ],
                     ),
                     Query::bool(
                         filter: [
@@ -87,10 +87,10 @@ readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInte
                                 field: ElasticPath::subjectId()->value,
                                 values: $subjectIds,
                             ),
-                        ]
+                        ],
                     ),
                 ],
-            )->setParams(['minimum_should_match' => 1])
+            )->setParams(['minimum_should_match' => 1]),
         );
     }
 
@@ -111,9 +111,9 @@ readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInte
                 static fn (Subject $subject): bool => in_array(
                     $subject->getName(),
                     Covid19Subject::values(),
-                )
+                ),
             )->map(
-                static fn (mixed $subject) => $subject->getId()->toRfc4122()
+                static fn (mixed $subject) => $subject->getId()->toRfc4122(),
             )->toArray();
     }
 }

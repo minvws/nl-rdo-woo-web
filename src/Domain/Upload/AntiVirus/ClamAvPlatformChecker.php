@@ -16,7 +16,7 @@ readonly class ClamAvPlatformChecker implements PlatformCheckerInterface
     }
 
     /**
-     * @return PlatformCheckResult[]
+     * @return array<array-key, PlatformCheckResult>
      */
     public function getResults(): array
     {

@@ -37,7 +37,7 @@ readonly class DownloadResponseHelper
         }
 
         $filename = $this->filenameGenerator->getFileName($entity);
-        $contentDisposition = $entity->getFileInfo()->getType() === 'pdf' ? 'inline' : 'attachment';
+        $contentDisposition = $entity->getFileInfo()->getMimetype() === 'application/pdf' ? 'inline' : 'attachment';
 
         $response = new StreamedResponse();
         $response->headers->set('Content-Type', $entity->getFileInfo()->getMimetype());

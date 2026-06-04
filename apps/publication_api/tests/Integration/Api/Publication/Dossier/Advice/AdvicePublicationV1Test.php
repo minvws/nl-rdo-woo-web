@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Integration\Api\Publication\Dossier\Advice;
 
 use Carbon\CarbonImmutable;
-use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PublicationApi\Api\Publication\Dossier\Advice\AdviceDto;
+use PublicationApi\Api\Publication\Dossier\Advice\AdviceResponseDto;
 use PublicationApi\Api\Publication\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Publication\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Domain\Department\Department;
@@ -20,14 +19,15 @@ use Shared\Domain\Publication\Dossier\Type\Advice\AdviceMainDocument;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Advice\AdviceAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Advice\AdviceFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Advice\AdviceMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\EntityExists;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\Type;
 
 use function array_merge;
@@ -44,7 +44,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $advice = AdviceFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -63,7 +63,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $advice = AdviceFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -82,9 +82,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
                 'id' => (string) $advice->getOrganisation()->getId(),
                 'name' => $advice->getOrganisation()->getName(),
             ],
-            'prefix' => $advice->getDocumentPrefix(),
             'dossierNumber' => $advice->getDossierNr(),
-            'internalReference' => '',
             'title' => $advice->getTitle(),
             'summary' => $advice->getSummary(),
             'subject' => $advice->getSubject()?->getName(),
@@ -92,14 +90,13 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
             ],
-            'publicationDate' => $advice->getPublicationDate()?->format(DateTime::RFC3339),
+            'publicationDate' => $advice->getPublicationDate()?->format('Y-m-d'),
             'status' => $advice->getStatus()->value,
             'mainDocument' => [
                 'id' => (string) $adviceMainDocument->getId(),
                 'type' => $adviceMainDocument->getType()->value,
                 'language' => $adviceMainDocument->getLanguage()->value,
-                'formalDate' => $adviceMainDocument->getFormalDate()->format(DateTime::RFC3339),
-                'internalReference' => $adviceMainDocument->getInternalReference(),
+                'formalDate' => $adviceMainDocument->getFormalDate()->format('Y-m-d'),
                 'grounds' => $adviceMainDocument->getGrounds(),
                 'fileName' => $adviceMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
@@ -109,19 +106,18 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
                     'id' => (string) $adviceAttachment->getId(),
                     'type' => $adviceAttachment->getType()->value,
                     'language' => $adviceAttachment->getLanguage()->value,
-                    'formalDate' => $adviceAttachment->getFormalDate()->format(DateTime::RFC3339),
-                    'internalReference' => $adviceAttachment->getInternalReference(),
+                    'formalDate' => $adviceAttachment->getFormalDate()->format('Y-m-d'),
                     'grounds' => $adviceAttachment->getGrounds(),
                     'fileName' => $adviceAttachment->getFileInfo()->getName(),
                     'externalId' => $adviceAttachment->getExternalId()?->__toString(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                 ],
             ],
-            'dossierDate' => $advice->getDateFrom()?->format(DateTime::RFC3339),
+            'dossierDate' => $advice->getDateFrom()?->format('Y-m-d'),
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
-        self::assertMatchesResourceItemJsonSchema(AdviceDto::class);
+        self::assertMatchesResourceItemJsonSchema(AdviceResponseDto::class);
     }
 
     public function testGetFromIncorrectOrganisation(): void
@@ -151,13 +147,14 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Advice::class, 0);
 
         $data = $this->createValidAdviceDataPayload($department, $subject, $this->getFaker()->numberBetween(1, 3));
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(AdviceDto::class);
+        self::assertMatchesResourceItemJsonSchema(AdviceResponseDto::class);
 
         self::assertDatabaseCount(Advice::class, 1);
     }
@@ -166,13 +163,14 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Advice::class, 0);
 
         $data = $this->createValidAdviceDataPayload($department, null, 1);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(AdviceDto::class);
+        self::assertMatchesResourceItemJsonSchema(AdviceResponseDto::class);
 
         self::assertDatabaseCount(Advice::class, 1);
     }
@@ -200,13 +198,14 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Advice::class, 0);
 
         $data = $this->createValidAdviceDataPayload($department, $subject, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(AdviceDto::class);
+        self::assertMatchesResourceItemJsonSchema(AdviceResponseDto::class);
 
         self::assertDatabaseCount(Advice::class, 1);
     }
@@ -216,6 +215,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Advice::class, 0);
 
@@ -241,6 +241,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Advice::class, 0);
 
@@ -258,27 +259,18 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         return [
             'dossierDate in the future' => [
                 [
-                    'dossierDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                    'dossierDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
-                ],
-            ],
-            'null internal reference' => [
-                [
-                    'internalReference' => null,
-                ],
-                [
-                    'code' => Type::INVALID_TYPE_ERROR,
-                    'propertyPath' => 'internalReference',
                 ],
             ],
             'invalid mainDocument language' => [
                 [
                     'mainDocument' => [
-                        'filename' => 'filename.pdf',
-                        'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                        'fileName' => 'filename.pdf',
+                        'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                         'type' => AttachmentType::ACCOUNTABILITY_REPORT,
                         'language' => 'invalid',
                     ],
@@ -292,9 +284,9 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
                 [
                     'attachments' => [
                         [
-                            'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                             'type' => 'invalid',
-                            'language' => AttachmentLanguage::ENGLISH,
+                            'language' => AttachmentLanguage::ENG,
                             'fileName' => 'fileName.pdf',
                             'externalId' => 'externalId',
                         ],
@@ -340,7 +332,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $advice = AdviceFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
@@ -357,12 +349,11 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $data = $this->createValidAdviceDataPayload($department, null, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $advice), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(AdviceDto::class);
+        self::assertMatchesResourceItemJsonSchema(AdviceResponseDto::class);
 
         self::assertDatabaseHas(Advice::class, [
             'dossierNr' => $data['dossierNumber'],
-            'internalReference' => $data['internalReference'],
-            'documentPrefix' => $data['prefix'],
+            'documentPrefix' => $advice->getDocumentPrefix(),
             'summary' => $data['summary'],
             'title' => $data['title'],
         ]);
@@ -378,7 +369,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $advice = AdviceFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -411,10 +402,10 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         return [
             'dossierDate in the future' => [
                 [
-                    'dossierDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                    'dossierDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
                 ],
             ],
@@ -426,7 +417,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $advice = AdviceFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
@@ -458,16 +449,14 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         return [
             'title' => $this->getFaker()->sentence(),
             'dossierNumber' => $this->getFaker()->slug(2),
-            'internalReference' => $this->getFaker()->optional(default: '')->uuid(),
-            'prefix' => $this->getFaker()->slug(2),
-            'dossierDate' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format(DateTime::RFC3339),
-            'publicationDate' => $this->getFaker()->dateTimeBetween('-2 weeks', '-1 week')->format(DateTime::RFC3339),
+            'dossierDate' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format('Y-m-d'),
+            'publicationDate' => $this->getFaker()->plainDateBetween('-2 weeks', '-1 week')->format('Y-m-d'),
             'summary' => $this->getFaker()->sentence(),
             'departmentId' => $department->getId(),
             'subjectId' => $subject?->getId(),
             'mainDocument' => [
-                'filename' => $this->getFaker()->word(),
-                'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
+                'fileName' => $this->getFaker()->word(),
+                'formalDate' => $this->getFaker()->date(),
                 'type' => $this->getFaker()->randomElement(AdviceMainDocument::getAllowedTypes()),
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],

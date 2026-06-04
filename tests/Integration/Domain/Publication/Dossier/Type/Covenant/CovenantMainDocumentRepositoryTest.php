@@ -12,19 +12,6 @@ use Shared\Tests\Integration\SharedWebTestCase;
 
 final class CovenantMainDocumentRepositoryTest extends SharedWebTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
-    }
-
-    private function getRepository(): CovenantMainDocumentRepository
-    {
-        /** @var CovenantMainDocumentRepository */
-        return self::getContainer()->get(CovenantMainDocumentRepository::class);
-    }
-
     public function testCreate(): void
     {
         $dossier = CovenantFactory::createOne();
@@ -41,7 +28,8 @@ final class CovenantMainDocumentRepositoryTest extends SharedWebTestCase
             uploadFileReference: 'uploadFileReference',
         );
 
-        $result = $this->getRepository()->create($dossier, $createMainDocumentCommand);
+        $result = self::fromContainer(CovenantMainDocumentRepository::class)
+            ->create($dossier, $createMainDocumentCommand);
 
         self::assertEquals($dossier, $result->getDossier());
         self::assertEquals($createMainDocumentCommand->formalDate, $result->getFormalDate());

@@ -32,7 +32,7 @@ class SecurityHeaderSubscriber
     /** @var list<string> */
     private const array DEV_CSPS = ['http://localhost:8001'];
 
-    /** @var array|string[] */
+    /** @var array<array-key, string> */
     protected array $fields = [
         'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains; preload',
         'X-Content-Type-Options' => 'nosniff',

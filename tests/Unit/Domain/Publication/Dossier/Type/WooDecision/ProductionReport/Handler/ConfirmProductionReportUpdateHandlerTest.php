@@ -66,7 +66,7 @@ class ConfirmProductionReportUpdateHandlerTest extends UnitTestCase
         $this->dispatcher->expects('dispatchProductionReportProcessRunCommand')->with($processRunId);
 
         $this->handler->__invoke(
-            new ConfirmProductionReportUpdateCommand($wooDecision)
+            new ConfirmProductionReportUpdateCommand($wooDecision),
         );
     }
 
@@ -80,7 +80,7 @@ class ConfirmProductionReportUpdateHandlerTest extends UnitTestCase
         $this->expectException(ProductionReportUpdaterException::class);
 
         $this->handler->__invoke(
-            new ConfirmProductionReportUpdateCommand($wooDecision)
+            new ConfirmProductionReportUpdateCommand($wooDecision),
         );
     }
 
@@ -96,7 +96,7 @@ class ConfirmProductionReportUpdateHandlerTest extends UnitTestCase
         $this->expectException(DossierWorkflowException::class);
 
         $this->handler->__invoke(
-            new ConfirmProductionReportUpdateCommand($wooDecision)
+            new ConfirmProductionReportUpdateCommand($wooDecision),
         );
     }
 }

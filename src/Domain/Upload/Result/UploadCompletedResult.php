@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Upload\Result;
 
+use Shared\Domain\Upload\StreamUpload;
 use Shared\Domain\Upload\UploadRequest;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Webmozart\Assert\Assert;
 
 readonly class UploadCompletedResult implements UploadResultInterface
 {
@@ -21,7 +23,7 @@ readonly class UploadCompletedResult implements UploadResultInterface
     ) {
     }
 
-    public static function create(UploadRequest $request, int $size): self
+    public static function createFromUploadRequest(UploadRequest $request, int $size): self
     {
         return new self(
             $request->uploadId,
@@ -30,6 +32,21 @@ readonly class UploadCompletedResult implements UploadResultInterface
             $request->getMimeType(),
             $size,
             $request->additionalParameters,
+        );
+    }
+
+    public static function createFromStreamUpload(StreamUpload $streamUpload): self
+    {
+        $size = $streamUpload->stream->getSize();
+        Assert::notNull($size, 'Stream size must be known for stream uploads');
+
+        return new self(
+            $streamUpload->uploadId,
+            $streamUpload->fileName,
+            $streamUpload->groupId,
+            'application/octet-stream',
+            $size,
+            $streamUpload->additionalParameters,
         );
     }
 

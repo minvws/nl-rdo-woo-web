@@ -15,7 +15,7 @@ use Shared\Domain\Publication\Dossier\DocumentPrefixRepository;
 use Webmozart\Assert\Assert;
 
 /**
- * @implements ProcessorInterface<PrefixCreateDto,?PrefixDto>
+ * @implements ProcessorInterface<PrefixCreateDto,?PrefixResponseDto>
  */
 final readonly class PrefixProcessor implements ProcessorInterface
 {
@@ -25,7 +25,7 @@ final readonly class PrefixProcessor implements ProcessorInterface
     ) {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?PrefixDto
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?PrefixResponseDto
     {
         unset($context);
 

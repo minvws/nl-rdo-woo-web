@@ -53,7 +53,7 @@ abstract class UnitTestCase extends BaseTestCase
         static::fail(
             "Snapshot \"$snapshotFileName\" does not exist.\n" .
             "You can automatically create it by running \"composer update-test-snapshots\".\n" .
-            'Make sure to inspect the created snapshot afterwards to ensure its correctness!'
+            'Make sure to inspect the created snapshot afterwards to ensure its correctness!',
         );
     }
 }

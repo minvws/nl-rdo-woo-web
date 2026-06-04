@@ -80,7 +80,7 @@ class NormalizeDocumentGrounds extends Command
     }
 
     /**
-     * @param array<string, string[]> $mapping
+     * @param array<string, array<array-key, string>> $mapping
      */
     private function normalizeGrounds(OutputInterface $output, array $mapping, Document $document): void
     {
@@ -113,7 +113,7 @@ class NormalizeDocumentGrounds extends Command
     }
 
     /**
-     * @return array<string, string[]>
+     * @return array<string, array<array-key, string>>
      */
     private function loadMapping(string $filename): array
     {

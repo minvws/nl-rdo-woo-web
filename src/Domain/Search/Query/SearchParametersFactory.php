@@ -65,7 +65,7 @@ readonly class SearchParametersFactory
             query: $query,
             searchType: SearchType::fromParameterBag($request->query),
             sortField: SortField::fromValue($request->query->getString('sort')),
-            sortOrder: SortOrder::fromValue($request->query->getString('sortorder'))
+            sortOrder: SortOrder::fromValue($request->query->getString('sortorder')),
         );
     }
 
@@ -89,7 +89,7 @@ readonly class SearchParametersFactory
         $facetInputs = $this->facetInputFactory->create();
         $facetInputs = $facetInputs->withFacetInput(
             $facetKey,
-            $this->facetInputFactory->createFacetInput($facetKey, $params)
+            $this->facetInputFactory->createFacetInput($facetKey, $params),
         );
 
         return new SearchParameters($facetInputs);
@@ -109,7 +109,7 @@ readonly class SearchParametersFactory
                 new StringValuesFacetInput(
                     new PrefixedDossierNrFacet(),
                     [$dossierNr],
-                )
+                ),
             );
         }
 
@@ -119,7 +119,7 @@ readonly class SearchParametersFactory
                 new StringValuesFacetInput(
                     new TypeFacet(),
                     [ElasticDocumentType::fromDossierType($dossierType)->value],
-                )
+                ),
             );
         }
 

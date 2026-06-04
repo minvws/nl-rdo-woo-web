@@ -105,8 +105,8 @@ class AttachmentRepository extends ServiceEntityRepository
             ->andWhere(
                 $qb->expr()->orX(
                     'a.fileInfo.uploaded = false',
-                    'a.language = :emptyString'
-                )
+                    'a.language = :emptyString',
+                ),
             )
             ->setParameter('dossierId', $dossierId)
             ->setParameter('emptyString', '')

@@ -114,7 +114,7 @@ class DocumentsEditStepController extends AbstractController
         if ($this->stepHelper->isFormCancelled($form)) {
             return $this->redirectToRoute(
                 'app_admin_dossier_woodecision_documents_edit',
-                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
             );
         }
 
@@ -138,7 +138,7 @@ class DocumentsEditStepController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_admin_dossier_woodecision_documents_edit',
-                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+                ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
             );
         }
 
@@ -153,7 +153,7 @@ class DocumentsEditStepController extends AbstractController
         $breadcrumbs->addRouteItem(
             'admin.dossiers.woo-decision.step.documents',
             'app_admin_dossier_woodecision_documents_edit',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()]
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );
         $breadcrumbs->addItem('admin.dossiers.woo-decision.step.replace_inventory');
 

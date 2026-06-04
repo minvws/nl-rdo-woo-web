@@ -6,12 +6,15 @@ namespace Shared\Domain\Upload\Handler;
 
 use League\Flysystem\FilesystemOperator;
 use Shared\Domain\Upload\Result\UploadResultInterface;
+use Shared\Domain\Upload\StreamUpload;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadRequest;
 
 interface UploadHandlerInterface
 {
     public function handleUpload(UploadEntity $uploadEntity, UploadRequest $request): UploadResultInterface;
+
+    public function handleStreamUpload(UploadEntity $uploadEntity, StreamUpload $streamUpload): UploadResultInterface;
 
     public function moveUploadedFileToStorage(
         UploadEntity $uploadEntity,

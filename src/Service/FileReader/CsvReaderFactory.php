@@ -6,6 +6,7 @@ namespace Shared\Service\FileReader;
 
 use PhpOffice\PhpSpreadsheet\Exception;
 use RuntimeException;
+use Webmozart\Assert\Assert;
 
 use function fclose;
 use function fgetcsv;
@@ -20,7 +21,7 @@ class CsvReaderFactory implements ReaderFactoryInterface
 {
     use HeaderMappingTrait;
 
-    /** @var string[] */
+    /** @var array<array-key, string> */
     protected $supportedMimeTypes = [
         'text/csv',
         'text/plain',
@@ -49,6 +50,7 @@ class CsvReaderFactory implements ReaderFactoryInterface
         if ($headers === false) {
             $headers = [];
         }
+        Assert::allString($headers);
 
         $mapping = $this->resolveHeaderMapping($headers, $columnMappings);
 

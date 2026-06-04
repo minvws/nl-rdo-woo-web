@@ -10,6 +10,6 @@ interface ResultEntryInterface
 {
     public function getType(): ElasticDocumentType;
 
-    /** @return string[] */
+    /** @return array<array-key, string> */
     public function getHighlights(): array;
 }

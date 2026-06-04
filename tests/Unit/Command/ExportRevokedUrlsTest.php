@@ -29,7 +29,7 @@ class ExportRevokedUrlsTest extends UnitTestCase
         $application->addCommand(
             new ExportRevokedUrls(
                 $this->revokedUrlService,
-            )
+            ),
         );
 
         $this->command = $application->find('woo:export-revoked-urls');

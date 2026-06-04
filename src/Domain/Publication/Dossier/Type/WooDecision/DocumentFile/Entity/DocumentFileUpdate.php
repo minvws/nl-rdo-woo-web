@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity;
 
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -42,6 +43,8 @@ class DocumentFileUpdate implements EntityWithFileInfo
         private Document $document,
     ) {
         $this->id = Uuid::v6();
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
         $this->type = DocumentFileUpdateType::forDocument($this->document);
         $this->status = DocumentFileUpdateStatus::PENDING;
         $this->fileInfo = new FileInfo();

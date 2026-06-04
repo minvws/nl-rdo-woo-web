@@ -45,7 +45,7 @@ class DocumentFileDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->documentFileSetId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchProcessDocumentFileSetUploadsCommand($documentFileSet);
@@ -61,7 +61,7 @@ class DocumentFileDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->id);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchProcessDocumentFileUploadCommand($documentFileUpload);
@@ -77,7 +77,7 @@ class DocumentFileDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->documentFileSetId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchProcessDocumentFileSetUpdatesCommand($documentFileSet);
@@ -93,7 +93,7 @@ class DocumentFileDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->id);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchProcessDocumentFileUpdateCommand($documentFileUpdate);
@@ -109,7 +109,7 @@ class DocumentFileDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->dossierId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchDocumentFileSetProcessedEvent($documentFileSet);

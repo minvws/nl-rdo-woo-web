@@ -15,8 +15,6 @@ abstract class AbstractDossierRequestDto
         #[EntityExists(Department::class, 'department')]
         public Uuid $departmentId,
         public string $dossierNumber,
-        public string $internalReference,
-        public string $prefix,
         #[EntityExists(Subject::class, 'subject')]
         public ?Uuid $subjectId,
         public string $summary,

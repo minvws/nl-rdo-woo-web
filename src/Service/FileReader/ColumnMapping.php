@@ -18,7 +18,7 @@ class ColumnMapping
     public function __construct(
         private readonly string $name,
         private readonly bool $required,
-        /** @var string[] */
+        /** @var array<string> */
         private readonly array $columnNames,
     ) {
     }
@@ -34,7 +34,7 @@ class ColumnMapping
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getColumnNames(): array
     {

@@ -11,10 +11,10 @@ use Shared\Domain\Publication\Dossier\Type\DossierType;
 
 class DossierFilterParameters
 {
-    /** @var DossierStatus[] */
+    /** @var array<array-key, DossierStatus> */
     public array $statuses = [];
 
-    /** @var DossierType[] */
+    /** @var array<array-key, DossierType> */
     public array $types = [];
 
     /** @var ArrayCollection<Department>|null */

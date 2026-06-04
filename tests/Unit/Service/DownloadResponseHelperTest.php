@@ -80,8 +80,7 @@ class DownloadResponseHelperTest extends UnitTestCase
     {
         $entity = Mockery::mock(Document::class);
         $entity->expects('getFileInfo->isUploaded')->times(2)->andReturnTrue();
-        $entity->expects('getFileInfo->getType')->andReturn($type);
-        $entity->expects('getFileInfo->getMimeType')->andReturn($mimetype);
+        $entity->expects('getFileInfo->getMimeType')->twice()->andReturn($mimetype);
         $entity->expects('getFileInfo->getSize')->andReturn(456);
         $entity->expects('getUpdatedAt->format')->andReturn('Wed, 27 Nov 2024 11:56:18 GMT');
 

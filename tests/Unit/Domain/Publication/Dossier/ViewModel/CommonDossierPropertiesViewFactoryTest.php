@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
 use Mockery\MockInterface;
@@ -64,11 +63,7 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
         $dossier->expects('getDocumentPrefix')->andReturn($expectedDocumentPrefix = 'my document prefix');
         $dossier->expects('getStatus')->times(2)->andReturn($expectedStatus = DossierStatus::PUBLISHED);
         $dossier->expects('getTitle')->andReturn($expectedTitle = 'my title');
-        $dossier->expects('getPublicationDate')->andReturn(
-            $expectedPublicationDate = DateTimeImmutable::createFromInterface(
-                $this->getFaker()->dateTimeBetween('-2 years')
-            )
-        );
+        $dossier->expects('getPublicationDate')->andReturn($expectedPublicationDate = $this->getFaker()->plainDateBetween('-2 years'));
         $dossier->expects('getDepartments')->andReturn($departments);
         $dossier->expects('getSummary')->andReturn($expectedSummary = 'my summary');
         $dossier->expects('getType')->andReturn($expectedType = DossierType::COVENANT);
@@ -118,11 +113,7 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
         $dossier->expects('getDocumentPrefix')->andReturn($expectedDocumentPrefix = 'my document prefix');
         $dossier->expects('getStatus')->times(2)->andReturn($expectedStatus = DossierStatus::PREVIEW);
         $dossier->expects('getTitle')->andReturn($expectedTitle = 'my title');
-        $dossier->expects('getPublicationDate')->andReturn(
-            $expectedPublicationDate = DateTimeImmutable::createFromInterface(
-                $this->getFaker()->dateTimeBetween('-2 years')
-            )
-        );
+        $dossier->expects('getPublicationDate')->andReturn($expectedPublicationDate = $this->getFaker()->plainDateBetween('-2 years'));
         $dossier->expects('getDepartments')->andReturn($departments);
         $dossier->expects('getSummary')->andReturn($expectedSummary = 'my summary');
         $dossier->expects('getType')->andReturn($expectedType = DossierType::COVENANT);

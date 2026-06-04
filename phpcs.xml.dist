@@ -12,12 +12,18 @@
 
     <file>src/</file>
     <file>apps/</file>
+    <file>tenants/</file>
+    <file>utils/</file>
     <file>tests/</file>
     <file>phparkitect.php</file>
     <file>bin/console</file>
     <file>public/index.php</file>
+    <exclude-pattern>utils/tests/**/data/*</exclude-pattern>
 
     <rule ref="vendor/slevomat/coding-standard/SlevomatCodingStandard/Sniffs/TypeHints/DeclareStrictTypesSniff.php" />
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall"/>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInClosureUse"/>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
     <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly">
         <properties>
             <property name="searchAnnotations" value="true"/>
@@ -45,7 +51,9 @@
         <properties>
           <property name="spacesCountAroundEqualsSign" value="0" />
         </properties>
-      </rule>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.DisallowArrayTypeHintSyntax" />
 
     <rule ref="Generic.Files.LineLength">
         <properties>

@@ -31,7 +31,7 @@ class DossierUploadRequestValidator
     public function isValidUploadRequest(UploadRequest $subject): bool
     {
         $dossier = $this->repository->find(
-            $subject->additionalParameters->getString('dossierId')
+            $subject->additionalParameters->getString('dossierId'),
         );
 
         if ($dossier === null) {

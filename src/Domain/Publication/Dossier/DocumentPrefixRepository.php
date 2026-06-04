@@ -9,6 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Repository\PaginationQueryBuilder;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 /**
  * @extends ServiceEntityRepository<DocumentPrefix>
@@ -41,7 +42,7 @@ class DocumentPrefixRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array<DocumentPrefix>
+     * @return array<array-key, DocumentPrefix>
      */
     public function findAllForOrganisation(Organisation $organisation): array
     {
@@ -78,5 +79,20 @@ class DocumentPrefixRepository extends ServiceEntityRepository
             ->setParameter('organisation', $organisation)
             ->getQuery()
             ->getResult();
+    }
+
+    public function getAlphabeticallyFirstByOrganisation(Organisation $organisation): ?DocumentPrefix
+    {
+        $documentPrefix = $this->createQueryBuilder('document_prefix')
+            ->where('document_prefix.organisation = :organisation')
+            ->setParameter('organisation', $organisation)
+            ->orderBy('document_prefix.prefix')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        Assert::nullOrIsInstanceOf($documentPrefix, DocumentPrefix::class);
+
+        return $documentPrefix;
     }
 }

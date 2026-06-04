@@ -23,7 +23,7 @@ readonly class BackedEnumNormalizer implements NormalizerInterface
     }
 
     /**
-     * @return true[]
+     * @return array<array-key, true>
      */
     public function getSupportedTypes(?string $format): array
     {

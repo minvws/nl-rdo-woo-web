@@ -16,6 +16,7 @@ enum UploadGroupId: string
     case MAIN_DOCUMENTS = 'main-documents';
     case ATTACHMENTS = 'attachments';
     case WOO_DECISION_DOCUMENTS = 'woo-decision-documents';
+    case API_WOO_DECISION_DOCUMENTS = 'api-woo-decision-documents';
     case DEPARTMENT = 'department';
 
     public function isDepartment(): bool
@@ -36,6 +37,15 @@ enum UploadGroupId: string
                 FileType::PPT,
                 FileType::TXT,
                 FileType::ZIP,
+                FileType::AUDIO,
+                FileType::VIDEO,
+            ],
+            self::API_WOO_DECISION_DOCUMENTS => [
+                FileType::PDF,
+                FileType::XLS,
+                FileType::DOC,
+                FileType::PPT,
+                FileType::TXT,
                 FileType::AUDIO,
                 FileType::VIDEO,
             ],

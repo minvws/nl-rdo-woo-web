@@ -7,7 +7,7 @@ namespace Shared\Service\Search\Model;
 class Suggestion
 {
     /**
-     * @param SuggestionEntry[] $entries
+     * @param array<array-key, SuggestionEntry> $entries
      */
     public function __construct(protected string $name, protected array $entries)
     {
@@ -19,7 +19,7 @@ class Suggestion
     }
 
     /**
-     * @return SuggestionEntry[]
+     * @return array<array-key, SuggestionEntry>
      */
     public function getEntries(): array
     {

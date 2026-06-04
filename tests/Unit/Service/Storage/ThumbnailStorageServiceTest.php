@@ -153,7 +153,6 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
     public function testDeleteAllThumbsForEntity(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->expects('hasPages')->andReturnTrue();
         $fileInfo
             ->expects('isPaginatable')
             ->andReturnTrue();
@@ -163,7 +162,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->expects('getFileInfo')
-            ->times(3)
+            ->times(2)
             ->andReturn($fileInfo);
 
         $service = $this->getStorageService();
@@ -201,7 +200,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
     public function testDeleteAllThumbsForEntitySkipsWhenEntityHasNoPages(): void
     {
         $fileInfo = Mockery::mock(FileInfo::class);
-        $fileInfo->expects('hasPages')->andReturnFalse();
+        $fileInfo->expects('isPaginatable')->andReturnFalse();
         $fileInfo->shouldNotReceive('getPageCount');
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
@@ -209,6 +208,32 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
 
         $service = $this->getStorageService();
         $service->shouldNotReceive('generateThumbPath');
+
+        $service->deleteAllThumbsForEntity($entity);
+    }
+
+    public function testDeleteAllThumbsForEntityDeletesUpToThumbnailLimitWhenPageCountIsNull(): void
+    {
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('isPaginatable')->andReturnTrue();
+        $fileInfo->expects('getPageCount')->andReturnNull();
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->times(2)->andReturn($fileInfo);
+
+        $service = $this->getStorageService();
+
+        // Should delete thumbnails up to thumbnailLimit (13 in this case)
+        for ($pageNr = 1; $pageNr <= $this->thumbnailLimit; $pageNr++) {
+            $service
+                ->expects('generateThumbPath')
+                ->with($entity, $pageNr)
+                ->andReturn(sprintf('remote-path/%d', $pageNr));
+            $this->remoteFilesystem
+                ->expects('delete')
+                ->with(sprintf('remote-path/%d', $pageNr))
+                ->andReturnTrue();
+        }
 
         $service->deleteAllThumbsForEntity($entity);
     }

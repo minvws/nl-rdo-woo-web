@@ -11,28 +11,16 @@ use Shared\Tests\Integration\SharedWebTestCase;
 
 final class RequestForAdviceRepositoryTest extends SharedWebTestCase
 {
-    private function getRepository(): RequestForAdviceRepository
-    {
-        /** @var RequestForAdviceRepository */
-        return self::getContainer()->get(RequestForAdviceRepository::class);
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
-    }
-
     public function testGetSearchResultViewModel(): void
     {
         $dossier = RequestForAdviceFactory::createOne();
 
-        $result = $this->getRepository()->getSearchResultViewModel(
-            $dossier->getDocumentPrefix(),
-            $dossier->getDossierNr(),
-            ApplicationMode::PUBLIC,
-        );
+        $result = self::fromContainer(RequestForAdviceRepository::class)
+            ->getSearchResultViewModel(
+                $dossier->getDocumentPrefix(),
+                $dossier->getDossierNr(),
+                ApplicationMode::PUBLIC,
+            );
 
         self::assertNotNull($result);
         self::assertEquals($dossier->getDossierNr(), $result->dossierNr);

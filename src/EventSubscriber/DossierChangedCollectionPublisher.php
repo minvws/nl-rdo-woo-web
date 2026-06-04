@@ -9,6 +9,7 @@ use Shared\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 final readonly class DossierChangedCollectionPublisher implements EventSubscriberInterface
@@ -23,16 +24,21 @@ final readonly class DossierChangedCollectionPublisher implements EventSubscribe
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::TERMINATE => ['handleDossierChangedCollection', EventPriorities::PRE_RESPOND],
+            KernelEvents::TERMINATE => ['processDossierChangedCollection', EventPriorities::PRE_RESPOND],
+            WorkerMessageHandledEvent::class => 'processDossierChangedCollection',
         ];
     }
 
-    public function handleDossierChangedCollection(): void
+    public function processDossierChangedCollection(): void
     {
-        foreach ($this->dossierChangedCollection as $dossierId) {
+        foreach ($this->dossierChangedCollection->claim() as $dossierId) {
             $dossier = $this->dossierRepository->findOneByDossierId($dossierId);
 
             $this->messageBus->dispatch(new UpdateDossierPublicationCommand($dossier));
+
+            $this->dossierChangedCollection->removeDossierIdFromCollection($dossierId);
         }
+
+        $this->dossierChangedCollection->reset();
     }
 }

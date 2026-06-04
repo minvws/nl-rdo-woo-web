@@ -3,6 +3,7 @@ parameters:
     has_feature_publication_v1_api: '%env(bool:HAS_FEATURE_PUBLICATION_V1_API)%'
 
 imports:
+    - { resource: services/api_servers.yaml }
     - { resource: services/default_autowire.yaml }
     - { resource: services/openapi_validator.yaml }
 

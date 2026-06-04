@@ -21,13 +21,11 @@ use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFac
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Shared\Tests\Factory\UploadEntityFactory;
 use Shared\Tests\Factory\UserFactory;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\LessThanOrEqual;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
 
 use function sprintf;
@@ -145,7 +143,7 @@ final class CovenantAttachmentTest extends AdminApiTestCase
                         'uploadUuid' => $upload->getUploadId(),
                         'type' => AttachmentType::RECOGNITION_DECISION->value,
                         'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
-                        'language' => AttachmentLanguage::DUTCH->value,
+                        'language' => AttachmentLanguage::NLD->value,
                     ],
                 ],
             );
@@ -219,18 +217,6 @@ final class CovenantAttachmentTest extends AdminApiTestCase
                 'expectedViolations' => [
                     [
                         'propertyPath' => 'formalDate',
-                        'code' => Date::INVALID_FORMAT_ERROR,
-                    ],
-                    [
-                        'propertyPath' => 'type',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
-                    [
-                        'propertyPath' => 'language',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
-                    [
-                        'propertyPath' => 'grounds[0]',
                         'code' => Type::INVALID_TYPE_ERROR,
                     ],
                 ],
@@ -243,15 +229,7 @@ final class CovenantAttachmentTest extends AdminApiTestCase
                 'expectedViolations' => [
                     [
                         'propertyPath' => 'formalDate',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
-                    [
-                        'propertyPath' => 'uploadUuid',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
-                    [
-                        'propertyPath' => 'type',
-                        'code' => NotBlank::IS_BLANK_ERROR,
+                        'code' => Type::INVALID_TYPE_ERROR,
                     ],
                 ],
             ],
@@ -263,23 +241,7 @@ final class CovenantAttachmentTest extends AdminApiTestCase
                 'expectedViolations' => [
                     [
                         'propertyPath' => 'formalDate',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
-                    [
-                        'propertyPath' => 'formalDate',
-                        'code' => Date::INVALID_FORMAT_ERROR,
-                    ],
-                    [
-                        'propertyPath' => 'uploadUuid',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
-                    [
-                        'propertyPath' => 'type',
-                        'code' => NotBlank::IS_BLANK_ERROR,
-                    ],
-                    [
-                        'propertyPath' => 'language',
-                        'code' => NotBlank::IS_BLANK_ERROR,
+                        'code' => Type::INVALID_TYPE_ERROR,
                     ],
                 ],
             ],
@@ -289,12 +251,12 @@ final class CovenantAttachmentTest extends AdminApiTestCase
                     'type' => AttachmentType::RECOGNITION_DECISION->value,
                     'formalDate' => CarbonImmutable::now()->addYear()->format('Y-m-d'),
                     'internalReference' => str_repeat('a', 256),
-                    'language' => AttachmentLanguage::DUTCH->value,
+                    'language' => AttachmentLanguage::NLD->value,
                 ],
                 'expectedViolations' => [
                     [
                         'propertyPath' => 'formalDate',
-                        'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                        'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     ],
                     [
                         'propertyPath' => 'internalReference',
@@ -444,7 +406,7 @@ final class CovenantAttachmentTest extends AdminApiTestCase
                 'expectedViolations' => [
                     [
                         'propertyPath' => 'formalDate',
-                        'code' => NotBlank::IS_BLANK_ERROR,
+                        'code' => Type::INVALID_TYPE_ERROR,
                     ],
                 ],
             ],
@@ -455,7 +417,7 @@ final class CovenantAttachmentTest extends AdminApiTestCase
                 'expectedViolations' => [
                     [
                         'propertyPath' => 'formalDate',
-                        'code' => NotBlank::IS_BLANK_ERROR,
+                        'code' => Type::INVALID_TYPE_ERROR,
                     ],
                 ],
             ],
@@ -466,7 +428,7 @@ final class CovenantAttachmentTest extends AdminApiTestCase
                 'expectedViolations' => [
                     [
                         'propertyPath' => 'formalDate',
-                        'code' => Date::INVALID_FORMAT_ERROR,
+                        'code' => Type::INVALID_TYPE_ERROR,
                     ],
                 ],
             ],
@@ -511,7 +473,7 @@ final class CovenantAttachmentTest extends AdminApiTestCase
                 'expectedViolations' => [
                     [
                         'propertyPath' => 'formalDate',
-                        'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                        'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     ],
                     [
                         'propertyPath' => 'internalReference',

@@ -18,7 +18,7 @@ class AuthorizationEntryRequestStore
     }
 
     /**
-     * @return Entry[]
+     * @return array<array-key, Entry>
      */
     public function getEntries(): array
     {
@@ -31,7 +31,7 @@ class AuthorizationEntryRequestStore
             throw new RuntimeException('No auth matrix attrib available in the request');
         }
 
-        /** @var Entry[] */
+        /** @var array<Entry> */
         return $request->attributes->get(self::REQUEST_ATTRIBUTE);
     }
 

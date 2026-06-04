@@ -11,7 +11,7 @@ interface InventoryWriterInterface
     public function addHeaders(string ...$headers): void;
 
     /**
-     * @param array<string>|string ...$cells
+     * @param array<array-key, string>|string ...$cells
      */
     public function addRow(mixed ...$cells): void;
 

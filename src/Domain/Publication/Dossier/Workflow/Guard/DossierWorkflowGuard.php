@@ -35,7 +35,7 @@ final readonly class DossierWorkflowGuard implements EventSubscriberInterface
     }
 
     /**
-     * @return array<string, array<string>>
+     * @return array<string, array<array-key, string>>
      */
     public static function getSubscribedEvents(): array
     {
@@ -79,7 +79,7 @@ final readonly class DossierWorkflowGuard implements EventSubscriberInterface
     }
 
     /**
-     * @return array<string>
+     * @return array<array-key, string>
      */
     private static function getSubscribedWorkflows(): array
     {
@@ -97,7 +97,7 @@ final readonly class DossierWorkflowGuard implements EventSubscriberInterface
     }
 
     /**
-     * @return array<DossierStatusTransition>
+     * @return array<array-key, DossierStatusTransition>
      */
     private static function getSubscribedTransitions(): array
     {
@@ -109,7 +109,7 @@ final readonly class DossierWorkflowGuard implements EventSubscriberInterface
     }
 
     /**
-     * @return array<string>
+     * @return array<array-key, string>
      */
     private function getValidationGroupsFromEvent(GuardEvent $event): array
     {

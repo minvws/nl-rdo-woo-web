@@ -10,31 +10,25 @@ use Shared\Domain\WooIndex\Producer\Repository\UrlRepository;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Story\WooIndexAnnualReportStory;
 use Shared\Tests\Story\WooIndexWooDecisionStory;
-use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 use function iterator_to_array;
 
 final class UrlRepositoryTest extends SharedWebTestCase
 {
-    private UrlRepository $repository;
+    private UrlRepository $urlRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $repository = self::getContainer()->get(UrlRepository::class);
-        Assert::isInstanceOf($repository, UrlRepository::class);
-
-        $this->repository = $repository;
+        $this->urlRepository = self::fromContainer(UrlRepository::class);
     }
 
     #[WithStory(WooIndexWooDecisionStory::class)]
     public function testGetPublishedDocuments(): void
     {
-        $results = $this->repository->getPublishedDocuments();
+        $results = $this->urlRepository->getPublishedDocuments();
 
         $resultAsArray = iterator_to_array($results, false);
 
@@ -48,7 +42,7 @@ final class UrlRepositoryTest extends SharedWebTestCase
     #[WithStory(WooIndexAnnualReportStory::class)]
     public function testGetPublishedAttachments(): void
     {
-        $results = $this->repository->getPublishedAttachments();
+        $results = $this->urlRepository->getPublishedAttachments();
 
         $resultAsArray = iterator_to_array($results, false);
 
@@ -62,7 +56,7 @@ final class UrlRepositoryTest extends SharedWebTestCase
     #[WithStory(WooIndexWooDecisionStory::class)]
     public function testGetPublishedMainDocuments(): void
     {
-        $results = $this->repository->getPublishedMainDocuments();
+        $results = $this->urlRepository->getPublishedMainDocuments();
 
         $resultAsArray = iterator_to_array($results, false);
 

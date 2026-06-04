@@ -58,7 +58,7 @@ readonly class UploadCleaner
                     }
 
                     return CarbonImmutable::createFromTimestamp($attributes->lastModified()) < $maxFileDate;
-                }
+                },
             );
 
         foreach ($files as $file) {

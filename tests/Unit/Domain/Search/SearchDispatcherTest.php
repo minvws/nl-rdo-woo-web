@@ -40,7 +40,7 @@ class SearchDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->id);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchDeleteElasticDocumentCommand($id);
@@ -55,7 +55,7 @@ class SearchDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->uuid);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchIndexAttachmentCommand($id);
@@ -70,7 +70,7 @@ class SearchDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->uuid);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchIndexMainDocumentCommand($id);
@@ -87,7 +87,7 @@ class SearchDispatcherTest extends UnitTestCase
                 self::assertEquals($refresh, $command->getRefresh());
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchIndexDossierCommand($id, $refresh);

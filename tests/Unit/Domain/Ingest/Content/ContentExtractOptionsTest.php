@@ -48,13 +48,13 @@ class ContentExtractOptionsTest extends UnitTestCase
         $extractor->expects('getKey')->andReturn(ContentExtractorKey::TIKA);
 
         self::assertTrue(
-            $options->isExtractorEnabled($extractor)
+            $options->isExtractorEnabled($extractor),
         );
 
         $extractor->expects('getKey')->andReturn(ContentExtractorKey::TESSERACT);
 
         self::assertFalse(
-            $options->isExtractorEnabled($extractor)
+            $options->isExtractorEnabled($extractor),
         );
     }
 

@@ -2,12 +2,15 @@ id: 00000000-0000-0000-0000-000000000002
 dossier:
     id: 00000000-0000-0000-0000-000000000001
 name: foo.pdf
-formalDate: '2024-01-14T09:10:13+00:00'
+formalDate:
+    today: false
+    past: true
+    future: false
 type: c_3d782f30
 mimeType: application/pdf
 size: 123
 internalReference: 'internal ref X'
-language: Dutch
+language: NLD
 grounds:
     - 'ground A'
     - 'ground B'

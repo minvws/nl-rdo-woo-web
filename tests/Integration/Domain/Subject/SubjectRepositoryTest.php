@@ -11,19 +11,6 @@ use Shared\Tests\Integration\SharedWebTestCase;
 
 class SubjectRepositoryTest extends SharedWebTestCase
 {
-    private function getRepository(): SubjectRepository
-    {
-        /** @var SubjectRepository */
-        return self::getContainer()->get(SubjectRepository::class);
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
-    }
-
     public function testSaveAndRemove(): void
     {
         $organisation = OrganisationFactory::createOne();
@@ -32,24 +19,20 @@ class SubjectRepositoryTest extends SharedWebTestCase
         $subject->setName('foo');
         $subject->setOrganisation($organisation);
 
-        $repository = $this->getRepository();
-        self::assertNull(
-            $this->getRepository()->find($subject->getId())
-        );
+        $subjectRepository = self::fromContainer(SubjectRepository::class);
+        self::assertNull($subjectRepository->find($subject->getId()));
 
-        $repository->save($subject, true);
-        $result = $this->getRepository()->find($subject->getId());
+        $subjectRepository->save($subject, true);
+        $result = $subjectRepository->find($subject->getId());
         self::assertEquals($subject, $result);
 
-        $repository->remove($subject, true);
-        self::assertNull(
-            $this->getRepository()->find($subject->getId())
-        );
+        $subjectRepository->remove($subject, true);
+        self::assertNull($subjectRepository->find($subject->getId()));
     }
 
     public function testGetQueryForOrganisationDoesNotReturnSubjectFromOtherOrganisation(): void
     {
-        $repository = $this->getRepository();
+        $subjectRepository = self::fromContainer(SubjectRepository::class);
 
         $organisationA = OrganisationFactory::createOne();
         $organisationB = OrganisationFactory::createOne();
@@ -57,14 +40,14 @@ class SubjectRepositoryTest extends SharedWebTestCase
         $subjectA = new Subject();
         $subjectA->setName('foo');
         $subjectA->setOrganisation($organisationA);
-        $repository->save($subjectA, true);
+        $subjectRepository->save($subjectA, true);
 
         $subjectB = new Subject();
         $subjectB->setName('bar');
         $subjectB->setOrganisation($organisationB);
-        $repository->save($subjectB, true);
+        $subjectRepository->save($subjectB, true);
 
-        $query = $repository->getQueryForOrganisation($organisationA);
+        $query = $subjectRepository->getQueryForOrganisation($organisationA);
         $result = $query->getResult();
 
         self::assertEquals([$subjectA], $result);

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\Covenant\ViewModel;
 
-use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
 use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesAccessors;
+use Shared\ValueObject\PlainDate;
 
 final readonly class Covenant
 {
@@ -17,8 +17,8 @@ final readonly class Covenant
      */
     public function __construct(
         private CommonDossierProperties $commonDossier,
-        public ?DateTimeImmutable $dateFrom,
-        public ?DateTimeImmutable $dateTo,
+        public ?PlainDate $dateFrom,
+        public ?PlainDate $dateTo,
         public string $previousVersionLink,
         public array $parties,
     ) {

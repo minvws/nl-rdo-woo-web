@@ -14,8 +14,7 @@ final class ExtractorTest extends SharedWebTestCase
 {
     public function testGetFilesWithSevenZipArchiveGivenAZipFile(): void
     {
-        /** @var Extractor $extractor */
-        $extractor = self::getContainer()->get('extractor.7z');
+        $extractor = self::fromContainer(Extractor::class);
 
         $file = new SplFileInfo(__DIR__ . '/fixtures/Archive.zip');
         $result = $extractor->getFiles($file);
@@ -38,8 +37,7 @@ final class ExtractorTest extends SharedWebTestCase
 
     public function testGetFilesWithSevenZipArchiveGivenA7ZipFile(): void
     {
-        /** @var Extractor $extractor */
-        $extractor = self::getContainer()->get('extractor.7z');
+        $extractor = self::fromContainer(Extractor::class);
 
         $file = new SplFileInfo(__DIR__ . '/fixtures/Archive.7z');
         $result = $extractor->getFiles($file);

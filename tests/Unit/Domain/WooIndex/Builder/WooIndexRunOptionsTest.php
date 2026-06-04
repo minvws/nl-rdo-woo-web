@@ -15,7 +15,7 @@ final class WooIndexRunOptionsTest extends UnitTestCase
         $this->expectExceptionObject(InvalidChunkSizeException::create());
 
         new WooIndexRunOptions(
-            chunkSize: WooIndexRunOptions::MAX_CHUNK_SIZE + 1
+            chunkSize: WooIndexRunOptions::MAX_CHUNK_SIZE + 1,
         );
     }
 }

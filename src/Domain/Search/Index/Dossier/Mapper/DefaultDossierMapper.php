@@ -55,7 +55,7 @@ readonly class DefaultDossierMapper implements ElasticDossierMapperInterface
     }
 
     /**
-     * @return array<array{name: string, id: Uuid}>
+     * @return array<array-key, array{name: string, id: Uuid}>
      */
     private function mapDepartments(AbstractDossier $dossier): array
     {
@@ -63,7 +63,7 @@ readonly class DefaultDossierMapper implements ElasticDossierMapperInterface
             fn (Department $department) => [
                 ElasticField::NAME->value => DepartmentFieldMapper::fromDepartment($department)->getIndexValue(),
                 ElasticField::ID->value => $department->getId(),
-            ]
+            ],
         )->toArray();
     }
 

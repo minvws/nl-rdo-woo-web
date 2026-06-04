@@ -38,7 +38,7 @@ final class DossierFormParamBuilderTest extends UnitTestCase
 
         $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->expects('getOrganisation->getDepartments')->andReturn(
-            new ArrayCollection([$fooDepartment, $barDepartment])
+            new ArrayCollection([$fooDepartment, $barDepartment]),
         );
 
         $form = Mockery::mock(FormInterface::class);
@@ -50,8 +50,8 @@ final class DossierFormParamBuilderTest extends UnitTestCase
                 $form,
                 [
                     new FormError('oops'),
-                ]
-            )
+                ],
+            ),
         );
 
         $this->assertMatchesJsonSnapshot(
@@ -71,7 +71,7 @@ final class DossierFormParamBuilderTest extends UnitTestCase
 
         $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->expects('getOrganisation->getDepartments')->andReturn(
-            new ArrayCollection([$fooDepartment, $barDepartment])
+            new ArrayCollection([$fooDepartment, $barDepartment]),
         );
 
         $form = Mockery::mock(FormInterface::class);
@@ -81,8 +81,8 @@ final class DossierFormParamBuilderTest extends UnitTestCase
                 $form,
                 [
                     new FormError('oops'),
-                ]
-            )
+                ],
+            ),
         );
 
         $this->assertMatchesJsonSnapshot(

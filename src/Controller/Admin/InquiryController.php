@@ -52,7 +52,7 @@ class InquiryController extends AbstractController
         $pagination = $this->paginator->paginate(
             $this->repository->getQueryWithDocCountAndDossierCount($this->authorizationMatrix->getActiveOrganisation()),
             $request->query->getInt('page', 1),
-            self::MAX_ITEMS_PER_PAGE
+            self::MAX_ITEMS_PER_PAGE,
         );
 
         return $this->render('admin/dossier/woo-decision/inquiry/index.html.twig', [
@@ -95,7 +95,7 @@ class InquiryController extends AbstractController
                 $result = $this->inquiryImporter->import(
                     $this->authorizationMatrix->getActiveOrganisation(),
                     $uploadedFile,
-                    $prefix
+                    $prefix,
                 );
             }
         }

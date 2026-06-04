@@ -9,6 +9,11 @@ use Symfony\Bundle\FrameworkBundle\DataCollector\AbstractDataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
+use Webmozart\Assert\Assert;
+
+use function array_key_exists;
+use function is_array;
+use function key_exists;
 
 /**
  * A data collector for elasticsearch calls so we can display them in the debug profiler toolbar.
@@ -27,15 +32,25 @@ class ElasticCollector extends AbstractDataCollector
     }
 
     /**
-     * @return mixed[]
+     * @return array<array-key, mixed>
      */
     public function getCalls(): array
     {
-        return $this->data['calls'] ?? [];
+        if (! is_array($this->data)) {
+            return [];
+        }
+
+        if (! array_key_exists('calls', $this->data)) {
+            return [];
+        }
+
+        Assert::isArray($this->data['calls']);
+
+        return $this->data['calls'];
     }
 
     /**
-     * @param mixed[] $arguments
+     * @param array<array-key, mixed> $arguments
      */
     public function addCall(string $name, array $arguments, Elasticsearch $response, string $type = 'array'): void
     {
@@ -48,6 +63,14 @@ class ElasticCollector extends AbstractDataCollector
             'string' => $response->asString(),
             default => $response->asArray(),
         };
+
+        Assert::isArray($this->data);
+
+        if (! key_exists('calls', $this->data)) {
+            $this->data['calls'] = [];
+        }
+
+        Assert::isArray($this->data['calls']);
 
         $this->data['calls'][] = [
             'name' => $name,

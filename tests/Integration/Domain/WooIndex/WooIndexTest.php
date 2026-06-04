@@ -44,22 +44,19 @@ final class WooIndexTest extends SharedWebTestCase
         self::getContainer()->set(StreamHelper::class, $this->streamHelper);
 
         $this->wooIndexStorage = self::getContainer()->get('woo_index.storage');
+        $this->wooIndexNamer = self::fromContainer(WooIndexNamer::class);
 
-        $this->wooIndexNamer = self::getContainer()->get(WooIndexNamer::class);
-
-        /** @var SitemapIndexBuilder $sitemapIndexBuilder */
-        $sitemapIndexBuilder = self::getContainer()->get(SitemapIndexBuilder::class);
+        $sitemapIndexBuilder = self::fromContainer(SitemapIndexBuilder::class);
         $sitemapIndexBuilder->setXMLWriterConfigurator(function (DiWooXMLWriter $writer) {
             $writer->setIndent(true);
         });
 
-        /** @var SitemapBuilder $sitemapIndexBuilder */
-        $sitemapBuilder = self::getContainer()->get(SitemapBuilder::class);
+        $sitemapBuilder = self::fromContainer(SitemapBuilder::class);
         $sitemapBuilder->setXMLWriterConfigurator(function (DiWooXMLWriter $writer) {
             $writer->setIndent(true);
         });
 
-        $this->wooIndex = self::getContainer()->get(WooIndex::class);
+        $this->wooIndex = self::fromContainer(WooIndex::class);
     }
 
     #[WithStory(DepartmentStory::class)]
@@ -68,8 +65,6 @@ final class WooIndexTest extends SharedWebTestCase
     #[WithStory(WooIndexCovenantStory::class)]
     public function testCreate(): void
     {
-        $this->setTestNow('2025-01-01 00:00:00');
-
         $wooIndexSitemap = $this->getWooIndexSitemap(Uuid::fromRfc4122('1efe8c60-9d44-6c08-8984-db09e5d32982'));
         $subPath = $this->wooIndexNamer->getStorageSubpath($wooIndexSitemap);
         $options = new WooIndexRunOptions(chunkSize: 2);
@@ -92,8 +87,6 @@ final class WooIndexTest extends SharedWebTestCase
     #[WithStory(WooIndexWooDecisionStory::class)]
     public function testCreateWithOneSitemapReachingFileSize(): void
     {
-        $this->setTestNow('2025-01-01 00:00:00');
-
         // On the 7th iteration we will reach the file size limit, the rest will return 0 bytes
         $this->streamHelper
             ->expects('size')

@@ -43,7 +43,7 @@ class SearchTypeTest extends UnitTestCase
         $request = new Request(['type' => 'dossier']);
 
         self::assertTrue(
-            SearchType::fromParameterBag($request->query)->isDossier()
+            SearchType::fromParameterBag($request->query)->isDossier(),
         );
     }
 
@@ -52,7 +52,7 @@ class SearchTypeTest extends UnitTestCase
         $request = new Request(['type' => 'foo']);
 
         self::assertTrue(
-            SearchType::fromParameterBag($request->query)->isAll()
+            SearchType::fromParameterBag($request->query)->isAll(),
         );
     }
 }

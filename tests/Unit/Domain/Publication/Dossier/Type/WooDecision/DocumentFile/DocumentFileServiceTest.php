@@ -172,6 +172,22 @@ class DocumentFileServiceTest extends UnitTestCase
         $this->service->startProcessingUploads($this->wooDecision);
     }
 
+    public function testStartSaveProcessingUploadsDoesNotThrowsExceptionForInvalidStatus(): void
+    {
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
+
+        $this->documentFileSetRepository
+            ->expects('findUncompletedByDossier')
+            ->with($this->wooDecision)
+            ->andReturn($documentFileSet);
+
+        $documentFileSet
+            ->expects('getStatus')
+            ->andReturn(DocumentFileSetStatus::PROCESSING_UPLOADS);
+
+        $this->service->startSaveProcessingUploads($this->wooDecision);
+    }
+
     public function testStartProcessingUploadsThrowsExceptionWhenNoUploadsAvailable(): void
     {
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
@@ -221,6 +237,35 @@ class DocumentFileServiceTest extends UnitTestCase
         $this->dispatcher->expects('dispatchProcessDocumentFileSetUploadsCommand')->with($documentFileSet);
 
         $this->service->startProcessingUploads($this->wooDecision);
+    }
+
+    public function testStartSaveProcessingUploadsSuccessfully(): void
+    {
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
+        $documentFileSet
+            ->expects('getStatus')
+            ->twice()
+            ->andReturn(DocumentFileSetStatus::OPEN_FOR_UPLOADS);
+
+        $this->documentFileSetRepository
+            ->expects('findUncompletedByDossier')
+            ->twice()
+            ->with($this->wooDecision)
+            ->andReturn($documentFileSet);
+
+        $this->documentFileSetRepository
+            ->expects('updateStatusTransactionally')
+            ->with($documentFileSet, DocumentFileSetStatus::PROCESSING_UPLOADS);
+
+        $this->documentFileSetRepository
+            ->expects('countUploadsToProcess')
+            ->twice()
+            ->with($documentFileSet)
+            ->andReturn(1);
+
+        $this->dispatcher->expects('dispatchProcessDocumentFileSetUploadsCommand')->with($documentFileSet);
+
+        $this->service->startSaveProcessingUploads($this->wooDecision);
     }
 
     public function testStartProcessingUploadsThrowsExceptionWhenStatusCannotBeUpdated(): void

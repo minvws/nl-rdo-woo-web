@@ -92,7 +92,7 @@ class RemoveInventoryAndDocumentsHandlerTest extends UnitTestCase
         $this->inventoryService->expects('removeInventories')->with($dossier)->andReturnTrue();
         $this->documentService->expects('removeDocumentFromDossier')->with($dossier, $document);
         $this->batchDownloadService->expects('refresh')->with(Mockery::on(
-            static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier
+            static fn (BatchDownloadScope $scope): bool => $scope->wooDecision === $dossier,
         ));
         $this->dossierService->expects('validateCompletion')->with($dossier);
 

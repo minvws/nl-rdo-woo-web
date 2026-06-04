@@ -6,12 +6,13 @@ namespace Shared\Tests\Unit\Service\FileReader;
 
 use DateTimeImmutable;
 use Mockery;
-use Mockery\MockInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use Shared\Exception\FileReaderException;
 use Shared\Service\FileReader\ExcelReader;
 use Shared\Service\FileReader\HeaderMap;
 use Shared\Tests\Unit\UnitTestCase;
+use Webmozart\Assert\Assert;
 
 use function end;
 use function iterator_to_array;
@@ -21,28 +22,20 @@ use const DIRECTORY_SEPARATOR;
 
 class ExcelReaderTest extends UnitTestCase
 {
-    private ExcelReader $excelReader;
-    private HeaderMap&MockInterface $headerMap;
-
-    protected function setUp(): void
-    {
-        $this->headerMap = Mockery::mock(HeaderMap::class);
-
-        // The worksheet is unfortunately very hard to mock accurately
-        $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
-        $this->excelReader = new ExcelReader(
-            $worksheet->getSheet(0),
-            $this->headerMap,
-        );
-    }
-
     public function testIteratorSkipsFirstRowAndEmptyRows(): void
     {
-        $this->headerMap->expects('getCellCoordinate')->times(2)->with('id')->andReturn('B');
+        $headerMap = Mockery::mock(HeaderMap::class);
+        $headerMap->expects('getCellCoordinate')->times(2)->with('id')->andReturn('B');
+
+        $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
+        $excelReader = new ExcelReader(
+            $worksheet->getSheet(0),
+            $headerMap,
+        );
 
         $ids = [];
-        foreach ($this->excelReader as $row) {
-            $ids[] = $this->excelReader->getInt($row->getRowIndex(), 'id');
+        foreach ($excelReader as $row) {
+            $ids[] = $excelReader->getInt($row->getRowIndex(), 'id');
         }
 
         self::assertEquals(
@@ -53,11 +46,18 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetOptionalStringReturnsNullForNonExistingColumn(): void
     {
-        $this->headerMap->expects('has')->times(2)->with('foobar')->andReturnFalse();
+        $headerMap = Mockery::mock(HeaderMap::class);
+        $headerMap->expects('has')->times(2)->with('foobar')->andReturnFalse();
+
+        $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
+        $excelReader = new ExcelReader(
+            $worksheet->getSheet(0),
+            $headerMap,
+        );
 
         $values = [];
-        foreach ($this->excelReader as $row) {
-            $values[] = $this->excelReader->getOptionalString($row->getRowIndex(), 'foobar');
+        foreach ($excelReader as $row) {
+            $values[] = $excelReader->getOptionalString($row->getRowIndex(), 'foobar');
         }
 
         self::assertEquals(
@@ -68,12 +68,19 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetOptionalIntReturnsValueForExistingColumnWhenFilled(): void
     {
-        $this->headerMap->expects('has')->times(2)->with('family')->andReturnTrue();
-        $this->headerMap->expects('getCellCoordinate')->times(2)->with('family')->andReturn('A');
+        $headerMap = Mockery::mock(HeaderMap::class);
+        $headerMap->expects('has')->times(2)->with('family')->andReturnTrue();
+        $headerMap->expects('getCellCoordinate')->times(2)->with('family')->andReturn('A');
+
+        $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
+        $excelReader = new ExcelReader(
+            $worksheet->getSheet(0),
+            $headerMap,
+        );
 
         $familyIds = [];
-        foreach ($this->excelReader as $row) {
-            $familyIds[] = $this->excelReader->getOptionalInt($row->getRowIndex(), 'family');
+        foreach ($excelReader as $row) {
+            $familyIds[] = $excelReader->getOptionalInt($row->getRowIndex(), 'family');
         }
 
         self::assertEquals(
@@ -84,11 +91,18 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetOptionalIntReturnsNullForNonExistingColumn(): void
     {
-        $this->headerMap->expects('has')->times(2)->with('foobar')->andReturnFalse();
+        $headerMap = Mockery::mock(HeaderMap::class);
+        $headerMap->expects('has')->times(2)->with('foobar')->andReturnFalse();
+
+        $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
+        $excelReader = new ExcelReader(
+            $worksheet->getSheet(0),
+            $headerMap,
+        );
 
         $values = [];
-        foreach ($this->excelReader as $row) {
-            $values[] = $this->excelReader->getOptionalInt($row->getRowIndex(), 'foobar');
+        foreach ($excelReader as $row) {
+            $values[] = $excelReader->getOptionalInt($row->getRowIndex(), 'foobar');
         }
 
         self::assertEquals(
@@ -99,40 +113,65 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetDateTimeReturnsValueForExistingColumnWhenFilledAndThrowsExceptionForMissingValue(): void
     {
-        $this->headerMap->expects('getCellCoordinate')->times(2)->with('date')->andReturn('F');
+        $headerMap = Mockery::mock(HeaderMap::class);
+        $headerMap->expects('getCellCoordinate')->times(2)->with('date')->andReturn('F');
 
-        $rows = iterator_to_array($this->excelReader, false);
+        $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
+        $excelReader = new ExcelReader(
+            $worksheet->getSheet(0),
+            $headerMap,
+        );
+
+        $rows = iterator_to_array($excelReader, false);
 
         // First row has a valid date
+        $first = reset($rows);
+        Assert::isInstanceOf($first, Row::class);
         self::assertEquals(
             new DateTimeImmutable('2022-10-09 13:34'),
-            $this->excelReader->getDateTime(reset($rows)->getRowIndex(), 'date'),
+            $excelReader->getDateTime($first->getRowIndex(), 'date'),
         );
 
         // Last row has an empty value in date column
+        $last = end($rows);
+        Assert::isInstanceOf($last, Row::class);
         $this->expectException(FileReaderException::class);
-        $this->excelReader->getDateTime(end($rows)->getRowIndex(), 'date');
+        $excelReader->getDateTime($last->getRowIndex(), 'date');
     }
 
     public function testGetDateTimeThrowsExceptionForInvalidDate(): void
     {
-        $this->headerMap->expects('getCellCoordinate')->with('subject')->andReturn('I');
+        $headerMap = Mockery::mock(HeaderMap::class);
+        $headerMap->expects('getCellCoordinate')->with('subject')->andReturn('I');
+
+        $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
+        $excelReader = new ExcelReader(
+            $worksheet->getSheet(0),
+            $headerMap,
+        );
 
         $this->expectException(FileReaderException::class);
 
-        foreach ($this->excelReader as $row) {
-            $this->excelReader->getDateTime($row->getRowIndex(), 'subject'); // This field cannot be parsed as a date
+        foreach ($excelReader as $row) {
+            $excelReader->getDateTime($row->getRowIndex(), 'subject'); // This field cannot be parsed as a date
         }
     }
 
     public function testGetOptionalDateTimeReturnsValueForExistingColumnWhenFilled(): void
     {
-        $this->headerMap->expects('has')->times(2)->with('date')->andReturnTrue();
-        $this->headerMap->expects('getCellCoordinate')->times(2)->with('date')->andReturn('F');
+        $headerMap = Mockery::mock(HeaderMap::class);
+        $headerMap->expects('has')->times(2)->with('date')->andReturnTrue();
+        $headerMap->expects('getCellCoordinate')->times(2)->with('date')->andReturn('F');
+
+        $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
+        $excelReader = new ExcelReader(
+            $worksheet->getSheet(0),
+            $headerMap,
+        );
 
         $dates = [];
-        foreach ($this->excelReader as $row) {
-            $dates[] = $this->excelReader->getOptionalDateTime($row->getRowIndex(), 'date');
+        foreach ($excelReader as $row) {
+            $dates[] = $excelReader->getOptionalDateTime($row->getRowIndex(), 'date');
         }
 
         self::assertEquals(
@@ -143,16 +182,49 @@ class ExcelReaderTest extends UnitTestCase
 
     public function testGetOptionalDateTimeReturnsNullForNonExistingColumn(): void
     {
-        $this->headerMap->expects('has')->times(2)->with('non-existent-column')->andReturnFalse();
+        $headerMap = Mockery::mock(HeaderMap::class);
+        $headerMap->expects('has')->times(2)->with('non-existent-column')->andReturnFalse();
+
+        $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
+        $excelReader = new ExcelReader(
+            $worksheet->getSheet(0),
+            $headerMap,
+        );
 
         $dates = [];
-        foreach ($this->excelReader as $row) {
-            $dates[] = $this->excelReader->getOptionalDateTime($row->getRowIndex(), 'non-existent-column');
+        foreach ($excelReader as $row) {
+            $dates[] = $excelReader->getOptionalDateTime($row->getRowIndex(), 'non-existent-column');
         }
 
         self::assertEquals(
             [null, null],
             $dates,
         );
+    }
+
+    public function testGetOptionalDateTimeThrowsExceptionOnInvalidFormat(): void
+    {
+        $headerMap = Mockery::mock(HeaderMap::class);
+        $headerMap->expects('has')->with('date')->andReturnTrue();
+        $headerMap->expects('getCellCoordinate')->with('date')->andReturn('B');
+
+        $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
+        $excelReader = new ExcelReader(
+            $worksheet->getSheet(0),
+            $headerMap,
+        );
+
+        self::expectException(FileReaderException::class);
+        $excelReader->getOptionalDateTime(1, 'date');
+    }
+
+    public function testGetCount(): void
+    {
+        $headerMap = Mockery::mock(HeaderMap::class);
+
+        $worksheet = IOFactory::load(__DIR__ . DIRECTORY_SEPARATOR . 'inventory-with-empty-row.xlsx');
+        $excelReader = new ExcelReader($worksheet->getSheet(0), $headerMap);
+
+        self::assertEquals(11, $excelReader->getCount());
     }
 }

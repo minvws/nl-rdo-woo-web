@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\Handler;
 
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery;
 use Mockery\MockInterface;
@@ -20,6 +19,7 @@ use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachmentRepository
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Upload\Process\EntityUploadStorer;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -62,10 +62,10 @@ class CreateAttachmentHandlerTest extends UnitTestCase
 
         $command = new CreateAttachmentCommand(
             $dossierUuid,
-            formalDate: new DateTimeImmutable(),
+            formalDate: PlainDate::today(),
             internalReference: $internalReference = 'foo',
             type: AttachmentType::ADVICE,
-            language: AttachmentLanguage::DUTCH,
+            language: AttachmentLanguage::NLD,
             grounds: $grounds = ['foo', 'bar'],
             uploadFileReference: 'bar',
         );

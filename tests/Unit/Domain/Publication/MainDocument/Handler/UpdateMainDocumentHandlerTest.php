@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\MainDocument\Handler;
 
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery;
 use Mockery\MockInterface;
@@ -23,6 +22,7 @@ use Shared\Domain\Publication\MainDocument\Handler\UpdateMainDocumentHandler;
 use Shared\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 use Shared\Domain\Upload\Process\EntityUploadStorer;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -68,10 +68,10 @@ class UpdateMainDocumentHandlerTest extends UnitTestCase
     {
         $uploadFileReference = 'file-' . Uuid::v6();
 
-        $formalDate = new DateTimeImmutable();
+        $formalDate = PlainDate::today();
         $internalReference = 'foo bar';
         $attachmentType = AttachmentType::ANNUAL_PLAN;
-        $language = AttachmentLanguage::DUTCH;
+        $language = AttachmentLanguage::NLD;
         $grounds = ['foo', 'bar'];
 
         $dossierUuid = Uuid::v6();
@@ -126,7 +126,7 @@ class UpdateMainDocumentHandlerTest extends UnitTestCase
                 $language,
                 $grounds,
                 $uploadFileReference,
-            )
+            ),
         );
     }
 
@@ -134,10 +134,10 @@ class UpdateMainDocumentHandlerTest extends UnitTestCase
     {
         $uploadFileReference = 'file-' . Uuid::v6();
 
-        $formalDate = new DateTimeImmutable();
+        $formalDate = PlainDate::today();
         $internalReference = 'foo bar';
         $attachmentType = AttachmentType::ANNUAL_REPORT;
-        $language = AttachmentLanguage::DUTCH;
+        $language = AttachmentLanguage::NLD;
         $grounds = ['foo', 'bar'];
 
         $dossierUuid = Uuid::v6();
@@ -165,16 +165,16 @@ class UpdateMainDocumentHandlerTest extends UnitTestCase
                 $language,
                 $grounds,
                 $uploadFileReference,
-            )
+            ),
         );
     }
 
     public function testExceptionIsThrownWhenValidationFails(): void
     {
-        $formalDate = new DateTimeImmutable();
+        $formalDate = PlainDate::today();
         $internalReference = 'foo bar';
         $attachmentType = AttachmentType::ANNUAL_REPORT;
-        $language = AttachmentLanguage::DUTCH;
+        $language = AttachmentLanguage::NLD;
         $grounds = ['foo', 'bar'];
 
         $annualReportDocument = Mockery::mock(AnnualReportMainDocument::class);
@@ -215,7 +215,7 @@ class UpdateMainDocumentHandlerTest extends UnitTestCase
                 $language,
                 $grounds,
                 null,
-            )
+            ),
         );
     }
 }

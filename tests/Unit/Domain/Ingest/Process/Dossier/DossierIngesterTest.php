@@ -26,7 +26,7 @@ class DossierIngesterTest extends UnitTestCase
 
         $this->ingester = new DossierIngester(
             $this->defaultIngester,
-            $this->wooDecisionIngester
+            $this->wooDecisionIngester,
         );
     }
 

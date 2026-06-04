@@ -13,7 +13,7 @@ use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
 use Shared\Domain\Search\Index\Rollover\InitiateElasticRolloverCommand;
 use Shared\Domain\Search\Index\Rollover\InitiateElasticRolloverHandler;
-use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
+use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
 
 class InitiateElasticRolloverHandlerTest extends UnitTestCase
@@ -29,7 +29,7 @@ class InitiateElasticRolloverHandlerTest extends UnitTestCase
         $this->elasticIndexManager = Mockery::mock(ElasticIndexManager::class);
         $this->logger = Mockery::mock(LoggerInterface::class);
         $this->ingestDispatcher = Mockery::mock(IngestDispatcher::class);
-        $this->elasticConfig = ElasticConfigOverride::default();
+        $this->elasticConfig = ElasticConfigFactory::default();
 
         $this->handler = new InitiateElasticRolloverHandler(
             $this->elasticIndexManager,

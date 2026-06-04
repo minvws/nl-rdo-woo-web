@@ -29,7 +29,7 @@ final readonly class CovenantProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|CovenantDto|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|CovenantResponseDto|null
     {
         $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
         if ($organisation === null) {
@@ -40,7 +40,7 @@ final readonly class CovenantProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, ExternalId::create($uriVariables['covenantExternalId']));
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dossierExternalId']));
     }
 
     /**
@@ -57,7 +57,7 @@ final readonly class CovenantProvider implements ProviderInterface
         return new ArrayPaginator($this->covenantMapper->fromEntities($covenants), 0, count($covenants));
     }
 
-    private function provideSingle(Organisation $organisation, ExternalId $covenantExternalId): ?CovenantDto
+    private function provideSingle(Organisation $organisation, ExternalId $covenantExternalId): ?CovenantResponseDto
     {
         $covenant = $this->covenantRepository->findByOrganisationAndExternalId($organisation, $covenantExternalId);
         if ($covenant === null) {

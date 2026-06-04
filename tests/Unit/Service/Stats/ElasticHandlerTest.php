@@ -9,6 +9,7 @@ use DateTimeInterface;
 use Mockery;
 use Shared\Service\Elastic\ElasticClientInterface;
 use Shared\Service\Stats\Handler\ElasticHandler;
+use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -48,7 +49,7 @@ final class ElasticHandlerTest extends UnitTestCase
                 return true;
             }));
 
-        $doctrineHandler = new ElasticHandler($elasticClient);
+        $doctrineHandler = new ElasticHandler($elasticClient, ElasticConfigFactory::default());
         $doctrineHandler->store($dateTime, $hostname, $section, $duration);
     }
 }

@@ -47,7 +47,7 @@ class InquiryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Inquiry[]
+     * @return array<array-key, Inquiry>
      */
     public function findByDossier(WooDecision $dossier): array
     {
@@ -68,7 +68,7 @@ class InquiryRepository extends ServiceEntityRepository
                 ->from(Inquiry::class, 'inq_sub_doc')
                 ->join('inq_sub_doc.documents', 'doc_sub')
                 ->where('inq_sub_doc.id = inq.id')
-                ->getDQL()
+                ->getDQL(),
         );
 
         $dossierCountDQL = sprintf(
@@ -78,7 +78,7 @@ class InquiryRepository extends ServiceEntityRepository
                 ->from(Inquiry::class, 'inq_sub_dos')
                 ->join('inq_sub_dos.dossiers', 'dos_sub')
                 ->where('inq_sub_dos.id = inq.id')
-                ->getDQL()
+                ->getDQL(),
         );
 
         return $this->createQueryBuilder('inq')

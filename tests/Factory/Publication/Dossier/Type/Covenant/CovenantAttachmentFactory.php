@@ -38,7 +38,7 @@ final class CovenantAttachmentFactory extends PersistentObjectFactory
             'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'dossier' => CovenantFactory::new(),
             'fileInfo' => FileInfoFactory::new(),
-            'formalDate' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()->setTime(0, 0)),
+            'formalDate' => self::faker()->plainDate(),
             'type' => self::faker()->randomElement(CovenantAttachment::getAllowedTypes()),
             'internalReference' => self::faker()->optional(default: '')->words(asText: true),
             'language' => self::faker()->randomElement(AttachmentLanguage::cases()),

@@ -46,7 +46,7 @@ class DocumentDispatcherTest extends UnitTestCase
                 self::assertEquals($documentId, $command->getDocumentId());
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchRemoveDocumentCommand(
@@ -76,7 +76,7 @@ class DocumentDispatcherTest extends UnitTestCase
                 self::assertEquals($explanation, $command->explanation);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchWithdrawDocumentCommand(
@@ -101,7 +101,7 @@ class DocumentDispatcherTest extends UnitTestCase
                 self::assertTrue($event->isBulkAction());
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchDocumentWithdrawnEvent(
@@ -125,7 +125,7 @@ class DocumentDispatcherTest extends UnitTestCase
                 self::assertEquals($explanation, $event->explanation);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchAllDocumentsWithdrawnEvent(
@@ -144,7 +144,7 @@ class DocumentDispatcherTest extends UnitTestCase
                 self::assertEquals($document, $event->document);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchDocumentRepublishedEvent(

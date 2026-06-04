@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity;
 
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUploadError;
@@ -38,6 +39,8 @@ class DocumentFileUpload implements EntityWithFileInfo
         private DocumentFileSet $documentFileSet,
     ) {
         $this->id = Uuid::v6();
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
         $this->status = DocumentFileUploadStatus::PENDING;
         $this->fileInfo = new FileInfo();
     }

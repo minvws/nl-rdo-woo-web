@@ -167,4 +167,22 @@ class CsvReaderTest extends UnitTestCase
             $dates,
         );
     }
+
+    public function testGetOptionalDateTimeThrowsExceptionOnInvalidFormat(): void
+    {
+        $this->headerMap->expects('has')
+            ->with('date')
+            ->andReturnTrue();
+        $this->headerMap->expects('getCellCoordinate')
+            ->with('date')
+            ->andReturn(4);
+
+        self::expectException(FileReaderException::class);
+        $this->csvReader->getOptionalDateTime(1, 'date');
+    }
+
+    public function testGetCount(): void
+    {
+        self::assertEquals(2, $this->csvReader->getCount());
+    }
 }

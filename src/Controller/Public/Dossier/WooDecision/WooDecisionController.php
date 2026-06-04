@@ -140,7 +140,7 @@ class WooDecisionController extends AbstractController
                     'prefix' => $dossier->getDocumentPrefix(),
                     'dossierId' => $dossier->getDossierNr(),
                     'batchId' => $batch->getId(),
-                ]
+                ],
             ),
         ]);
     }

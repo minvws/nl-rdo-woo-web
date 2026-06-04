@@ -29,7 +29,7 @@ final readonly class WooDecisionProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|WooDecisionDto|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|WooDecisionResponseDto|null
     {
         $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
         if ($organisation === null) {
@@ -40,7 +40,7 @@ final readonly class WooDecisionProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, ExternalId::create($uriVariables['wooDecisionExternalId']));
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dossierExternalId']));
     }
 
     /**
@@ -57,9 +57,9 @@ final readonly class WooDecisionProvider implements ProviderInterface
         return new ArrayPaginator($this->wooDecisionMapper->fromEntities($wooDecisions), 0, count($wooDecisions));
     }
 
-    private function provideSingle(Organisation $organisation, ExternalId $wooDecisionExternalId): ?WooDecisionDto
+    private function provideSingle(Organisation $organisation, ExternalId $dossierExternalId): ?WooDecisionResponseDto
     {
-        $wooDecision = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $wooDecisionExternalId);
+        $wooDecision = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
         if ($wooDecision === null) {
             return null;
         }

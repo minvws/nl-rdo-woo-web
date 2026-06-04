@@ -59,7 +59,7 @@ class MimeTypeHelperTest extends UnitTestCase
     }
 
     /**
-     * @return array<array{fileExtension: string, mimeType: string}>
+     * @return array<array-key, array{fileExtension: string, mimeType: string}>
      */
     public static function validMimeTypeExtensionDataProvider(): array
     {

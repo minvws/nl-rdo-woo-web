@@ -73,8 +73,34 @@ wob_woo_request: Wob-/Woo-verzoek
 
 other: overig
 
-dutch: Nederlands
-english: Engels
+# Talen (TOOI) - vervangt de oude 'dutch' en 'english' sleutels
+nld: Nederlands
+bul: Bulgaars
+dan: Deens
+deu: Duits
+eng: Engels
+est: Estisch
+fin: Fins
+fra: Frans
+fry: Fries
+ell: Grieks
+hun: Hongaars
+gle: Iers
+ita: Italiaans
+hrv: Kroatisch
+lav: Lets
+lit: Litouws
+mlt: Maltees
+pap_aw: Papiamento
+pap_cw: Papiamentu
+pol: Pools
+por: Portugees
+ron: Roemeens
+slv: Sloveens
+slk: Slowaaks
+spa: Spaans
+ces: Tsjechisch
+swe: Zweeds
 
 branch.advice_document: "adviesdocument"
 branch.policy_document: "beleidsdocument"

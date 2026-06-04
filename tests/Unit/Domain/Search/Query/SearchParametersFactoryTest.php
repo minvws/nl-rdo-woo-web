@@ -48,7 +48,7 @@ class SearchParametersFactoryTest extends UnitTestCase
 
         $this->facetInputFactory->expects('create')->andReturn($facetInputCollection);
         $this->facetInputFactory->expects('createFacetInput')->with(FacetKey::DEPARTMENT, Mockery::on(
-            static fn (ParameterBag $params) => $params->get(FacetKey::DEPARTMENT->getParamName()) === [0 => 'F|Foo']
+            static fn (ParameterBag $params) => $params->get(FacetKey::DEPARTMENT->getParamName()) === [0 => 'F|Foo'],
         ))->andReturn($newFacetInput);
 
         $newFacetInputCollection = Mockery::mock(FacetInputCollection::class);

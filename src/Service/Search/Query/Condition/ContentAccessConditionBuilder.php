@@ -55,14 +55,14 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
                 $query->addFilter(
                     Query::bool(
                         should: $this->getFiltersForAllTypes($searchParameters),
-                    )->setParams(['minimum_should_match' => 1])
+                    )->setParams(['minimum_should_match' => 1]),
                 );
                 break;
         }
     }
 
     /**
-     * @param ElasticDocumentType[] $subTypes
+     * @param array<array-key, ElasticDocumentType> $subTypes
      */
     private function createSubTypesQuery(
         StringValuesFacetInput $inquiryDossierFacetInput,
@@ -89,7 +89,7 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
                     Query::terms(
                         field: ElasticField::INQUIRY_IDS->value,
                         values: $inquiryDocumentFacetInput->getStringValues(),
-                    )
+                    ),
                 );
             }
 
@@ -101,7 +101,7 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
                             field: ElasticPath::dossiersInquiryIds()->value,
                             values: $inquiryDossierFacetInput->getStringValues(),
                         ),
-                    )
+                    ),
                 );
             }
         } else {
@@ -116,15 +116,15 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
                 query: Query::terms(
                     field: ElasticPath::dossiersStatus()->value,
                     values: $statuses,
-                )
-            )
+                ),
+            ),
         );
 
         return $query;
     }
 
     /**
-     * @param ElasticDocumentType[] $types
+     * @param array<array-key, ElasticDocumentType> $types
      */
     private function createTypesQuery(StringValuesFacetInput $inquiryDossierFacetInput, array $types): BoolQuery
     {
@@ -158,14 +158,14 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
             Query::terms(
                 field: ElasticField::STATUS->value,
                 values: $statuses,
-            )
+            ),
         );
 
         return $query;
     }
 
     /**
-     * @return BoolQuery[]
+     * @return array<array-key, BoolQuery>
      */
     private function getFiltersForAllTypes(SearchParameters $searchParameters): array
     {
@@ -182,9 +182,9 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
     }
 
     /**
-     * @param ElasticDocumentType[] $types
+     * @param array<array-key, ElasticDocumentType> $types
      *
-     * @return string[]
+     * @return array<array-key, string>
      */
     private function getTypeTerms(array $types): array
     {

@@ -104,7 +104,7 @@ readonly class UserService
     }
 
     /**
-     * @param array<string> $roles
+     * @param array<array-key, string> $roles
      *
      * @return array{plainPassword: string, user: User}
      *
@@ -185,7 +185,7 @@ readonly class UserService
      * This will update the roles of the target user. However, it will mask roles that
      * the current user (actor) is not allowed to modify.
      *
-     * @param string[] $roles
+     * @param array<array-key, string> $roles
      */
     public function updateRoles(LoggableUser $actor, User $oldUser, User $target, array $roles): void
     {

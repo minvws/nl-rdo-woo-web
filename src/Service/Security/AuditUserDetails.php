@@ -9,7 +9,7 @@ use MinVWS\AuditLogger\Contracts\LoggableUser;
 readonly class AuditUserDetails implements LoggableUser
 {
     /**
-     * @param string[] $roles
+     * @param array<array-key, string> $roles
      */
     public function __construct(
         public string $id,

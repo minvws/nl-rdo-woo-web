@@ -45,7 +45,7 @@ class ContentPageServiceTest extends UnitTestCase
                 Mockery::on(
                     static function (ContentPage $entity) use ($type): bool {
                         return $entity->getSlug() === $type->getSlug() && $entity->getTitle() === $type->getDefaultTitle();
-                    }
+                    },
                 ),
                 true,
             );

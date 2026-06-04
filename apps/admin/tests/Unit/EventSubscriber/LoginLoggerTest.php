@@ -72,7 +72,7 @@ class LoginLoggerTest extends UnitTestCase
         $event->expects('setResponse')->with(Mockery::on(
             static function (RedirectResponse $response) use ($url): bool {
                 return $response->getTargetUrl() === $url;
-            }
+            },
         ));
 
         $this->subscriber->onAuthenticationSuccess($event);

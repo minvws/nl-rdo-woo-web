@@ -24,9 +24,7 @@ class BatchDownloadRepositoryTest extends SharedWebTestCase
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $this->repository = self::getContainer()->get(BatchDownloadRepository::class);
+        $this->repository = self::fromContainer(BatchDownloadRepository::class);
     }
 
     public function testSaveAndRemove(): void
@@ -40,18 +38,14 @@ class BatchDownloadRepositoryTest extends SharedWebTestCase
 
         $id = $download->getId();
 
-        self::assertNull(
-            $this->repository->find($id)
-        );
+        self::assertNull($this->repository->find($id));
 
         $this->repository->save($download);
         $result = $this->repository->find($id);
         self::assertEquals($download, $result);
 
         $this->repository->remove($download);
-        self::assertNull(
-            $this->repository->find($id)
-        );
+        self::assertNull($this->repository->find($id));
     }
 
     public function testFindExpiredArchives(): void
@@ -79,7 +73,7 @@ class BatchDownloadRepositoryTest extends SharedWebTestCase
         $dossierB = WooDecisionFactory::createOne();
 
         $dossierScope = BatchDownloadScope::forWooDecision($dossierA);
-        $pendingDownload = BatchDownloadFactory::createOne([
+        BatchDownloadFactory::createOne([
             'scope' => $dossierScope,
         ]);
 

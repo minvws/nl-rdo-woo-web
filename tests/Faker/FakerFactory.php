@@ -12,8 +12,9 @@ class FakerFactory
 {
     /** @var list<class-string<Base>> */
     protected static array $providers = [
+        DateTimeFakerProvider::class,
         GroundsFakerProvider::class,
-        ValueObjectFakerProvider::class,
+        UuidFakerProvider::class,
     ];
 
     public static function addProviders(Generator $faker): Generator

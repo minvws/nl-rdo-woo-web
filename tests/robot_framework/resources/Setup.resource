@@ -17,7 +17,7 @@ Resource            Public.resource
 
 
 *** Variables ***
-${OTP_SECRET_PATH}          .otp_secret
+${OTP_SECRET_PATH}          secrets/.otp_secret
 ${ADMIN_CONTAINER_NAME}     nl-rdo-woo-web-private-admin-1
 
 
@@ -25,16 +25,13 @@ ${ADMIN_CONTAINER_NAME}     nl-rdo-woo-web-private-admin-1
 Suite Setup Generic
   [Documentation]  Opens a new browser and sets environment specific credential variables.
   Set DateTime Variables
-  IF  '%{ENVIRONMENT}' == 'local' or '%{ENVIRONMENT}' == 'ci' or '%{ENVIRONMENT}' == 'docker'
+  IF  '%{ENVIRONMENT}' == 'local'
     Open Browser And BaseUrl
     ${admin_otp_secret} =  Get OTP Secret
     Set Credential Variables  ${TST_BALIE_USER}  ${TST_BALIE_PASSWORD}  ${admin_otp_secret}
-  ELSE IF  '%{ENVIRONMENT}' == 'test'
-    Open Browser And BaseUrl  http_username=%{USERNAME_WOO_TEST}  http_password=%{PASSWORD_WOO_TEST}
-    Set Credential Variables  %{EMAIL_WOO_TEST_BALIE}  %{PASSWORD_WOO_TEST_BALIE}  %{SECRET_WOO_TEST_BALIE}
-  ELSE IF  '%{ENVIRONMENT}' == 'acc'
-    Open Browser And BaseUrl  http_username=%{USERNAME_WOO_STAGING}  http_password=%{PASSWORD_WOO_STAGING}
-    Set Credential Variables  %{EMAIL_WOO_STAGING_BALIE}  %{PASSWORD_WOO_STAGING_BALIE}  %{SECRET_WOO_STAGING_BALIE}
+  ELSE IF  '%{ENVIRONMENT}' == 'test' or '%{ENVIRONMENT}' == 'acc'
+    Open Browser And BaseUrl  http_username=%{HTACCESS_USERNAME}  http_password=%{HTACCESS_PASSWORD}
+    Set Credential Variables  %{ADMIN_EMAIL}  %{ADMIN_PASSWORD}  %{ADMIN_SECRET}
   ELSE
     Fatal Error  Env var ENVIRONMENT returned unsupported value '%{ENVIRONMENT}'.
   END
@@ -85,29 +82,6 @@ Open Browser And BaseUrl
   END
   New Page
   Go To Public
-
-Create Woo Admin User
-  [Documentation]  Creates a super admin user using the CLI, that can be used for all robot tests. Returns the temporary password.
-  VAR  ${make_user_command} =
-  ...  docker exec ${ADMIN_CONTAINER_NAME} bin/console --tenant=minvws woopie:user:create "${TST_BALIE_USER}" "Robot Admin" --super-admin
-  Run Process  ${make_user_command}  shell=True  alias=create_admin
-  ${stdout}  ${stderr} =  Get Process Result  create_admin  stdout=True  stderr=True
-  Should Be Empty  ${stderr}  Error creating admin user: ${stdout}
-  ${password}  ${otp_secret} =  Get Password And OTP Secret From Console Output  ${stdout}
-  VAR  ${TST_BALIE_OTP_SECRET} =  ${otp_secret}  scope=global
-  RETURN  ${password}
-
-Get Password And OTP Secret From Console Output
-  [Arguments]  ${console_output}
-  ${regel_password} =  Get Line  ${console_output}  1
-  ${password} =  Get Substring  ${regel_password}  13
-  ${otp_line} =  Get Line  ${console_output}  3
-  ${otp_secret} =  Get Substring  ${otp_line}  13
-  RETURN  ${password}  ${otp_secret}
-
-Store OTP Secret
-  [Arguments]  ${otp_secret}
-  Create File  ${OTP_SECRET_PATH}  ${otp_secret}
 
 Get OTP Secret
   ${otp_secret} =  Get File  ${OTP_SECRET_PATH}

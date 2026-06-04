@@ -43,7 +43,7 @@ flysystem:
             directory_visibility: 'public'
             options:
                 client: 'Aws\S3\S3Client'
-                bucket: '%env(STORAGE_MINIO_DOCUMENT_BUCKET)%'
+                bucket: '%storage.minio.bucket.document%'
 
         batch.storage.aws:
             adapter: 'aws'
@@ -51,7 +51,7 @@ flysystem:
             directory_visibility: 'public'
             options:
                 client: 'Aws\S3\S3Client'
-                bucket: '%env(STORAGE_MINIO_BATCH_BUCKET)%'
+                bucket: '%storage.minio.bucket.batch%'
 
         woo_index.storage.aws:
             adapter: 'aws'
@@ -59,7 +59,7 @@ flysystem:
             directory_visibility: 'public'
             options:
                 client: 'Aws\S3\S3Client'
-                bucket: '%env(STORAGE_MINIO_WOO_INDEX_BUCKET)%'
+                bucket: '%storage.minio.bucket.woo_index%'
 
         upload.storage.aws:
             adapter: 'aws'
@@ -67,7 +67,7 @@ flysystem:
             directory_visibility: 'public'
             options:
                 client: 'Aws\S3\S3Client'
-                bucket: '%env(STORAGE_MINIO_UPLOAD_BUCKET)%'
+                bucket: '%storage.minio.bucket.upload%'
 
         assets.storage.aws:
             adapter: 'aws'
@@ -75,7 +75,7 @@ flysystem:
             directory_visibility: 'public'
             options:
                 client: 'Aws\S3\S3Client'
-                bucket: '%env(STORAGE_MINIO_ASSETS_BUCKET)%'
+                bucket: '%storage.minio.bucket.assets%'
 
         #
         # Local storage definitions

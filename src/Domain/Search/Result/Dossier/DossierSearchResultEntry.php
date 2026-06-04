@@ -12,7 +12,7 @@ class DossierSearchResultEntry implements ResultEntryInterface
     public function __construct(
         private readonly ElasticDocumentType $type,
         private readonly DossierTypeSearchResultInterface $dossier,
-        /** @var string[] */
+        /** @var array<string> */
         private readonly array $highlights,
     ) {
     }
@@ -28,7 +28,7 @@ class DossierSearchResultEntry implements ResultEntryInterface
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getHighlights(): array
     {

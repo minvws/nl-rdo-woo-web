@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier;
 
-use Carbon\Carbon;
-use Carbon\CarbonImmutable;
-use DateTimeImmutable;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\ValueObject\PlainDate;
 
 final class AbstractDossierTest extends TestCase
 {
@@ -58,18 +56,26 @@ final class AbstractDossierTest extends TestCase
         self::assertCount(0, $covenant->getDepartments());
     }
 
-    public function testHasFuturePublicationDateReturnsTrueForToday(): void
+    public function testHasFuturePublicationDateReturnsFalseIfNull(): void
     {
         $covenant = new Covenant();
-        $covenant->setPublicationDate(new DateTimeImmutable());
+        $covenant->setPublicationDate(null);
 
-        self::assertTrue($covenant->hasFuturePublicationDate());
+        self::assertFalse($covenant->hasFuturePublicationDate());
+    }
+
+    public function testHasFuturePublicationDateReturnsFalseForToday(): void
+    {
+        $covenant = new Covenant();
+        $covenant->setPublicationDate(PlainDate::today());
+
+        self::assertFalse($covenant->hasFuturePublicationDate());
     }
 
     public function testHasFuturePublicationDateReturnsFalseForYesterday(): void
     {
         $covenant = new Covenant();
-        $covenant->setPublicationDate(new DateTimeImmutable('-1 day'));
+        $covenant->setPublicationDate(PlainDate::today()->subDays(1));
 
         self::assertFalse($covenant->hasFuturePublicationDate());
     }
@@ -77,25 +83,42 @@ final class AbstractDossierTest extends TestCase
     public function testHasFuturePublicationDateReturnsTrueForTomorrow(): void
     {
         $covenant = new Covenant();
-        $covenant->setPublicationDate(new DateTimeImmutable('+1 day'));
+        $covenant->setPublicationDate(PlainDate::today()->addDays(1));
 
         self::assertTrue($covenant->hasFuturePublicationDate());
     }
 
-    public function testSetStatusToPublishedUpdatesPublicationDateOnlyOnce(): void
+    public function testSetStatusToPublishedSetsPublicationDate(): void
     {
-        CarbonImmutable::setTestNow('2024-04-30 09:42:11');
-        $testDate = CarbonImmutable::now();
-
         $covenant = new Covenant();
         $covenant->setStatus(DossierStatus::PUBLISHED);
         $publicationDate = $covenant->getPublicationDate();
 
-        self::assertEquals($testDate, $publicationDate);
+        self::assertEquals(PlainDate::today(), $publicationDate);
+    }
 
-        // This new testdate should not be applied when setting the status to 'published' a second time
-        Carbon::setTestNow('2024-05-21 19:23:45');
+    public function testSetStatusToPublishedOverwritesExistingPublicationDate(): void
+    {
+        $covenant = new Covenant();
+        $covenant->setPublicationDate(PlainDate::create('2000-01-01'));
         $covenant->setStatus(DossierStatus::PUBLISHED);
-        self::assertEquals($testDate, $covenant->getPublicationDate());
+        $publicationDate = $covenant->getPublicationDate();
+
+        self::assertEquals(PlainDate::today(), $publicationDate);
+    }
+
+    public function testSetStatusToPublishedOverwritesExistingPublicationDateOnlyOnce(): void
+    {
+        $covenant = new Covenant();
+        // this sets the publicationDate to today()
+        $covenant->setStatus(DossierStatus::PUBLISHED);
+
+        // now set a custom publicationDate and set status to published again
+        $covenant->setPublicationDate(PlainDate::create('2000-01-01'));
+        $covenant->setStatus(DossierStatus::PUBLISHED);
+
+        $publicationDate = $covenant->getPublicationDate();
+
+        self::assertEquals(PlainDate::create('2000-01-01'), $publicationDate);
     }
 }

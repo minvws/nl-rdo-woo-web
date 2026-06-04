@@ -61,11 +61,11 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
                 self::assertEquals($dossierId, $message->dossierId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->handler->__invoke(
-            new UpdateDossierPublicationCommand($dossier)
+            new UpdateDossierPublicationCommand($dossier),
         );
     }
 
@@ -89,11 +89,11 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
                 self::assertEquals($dossierId, $message->dossierId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->handler->__invoke(
-            new UpdateDossierPublicationCommand($dossier)
+            new UpdateDossierPublicationCommand($dossier),
         );
     }
 
@@ -118,11 +118,11 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
                 self::assertEquals($dossierId, $message->dossierId);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->handler->__invoke(
-            new UpdateDossierPublicationCommand($dossier)
+            new UpdateDossierPublicationCommand($dossier),
         );
     }
 
@@ -139,7 +139,7 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
         $this->dossierPublisher->expects('canSchedulePublication')->with($dossier)->andReturnFalse();
 
         $this->handler->__invoke(
-            new UpdateDossierPublicationCommand($dossier)
+            new UpdateDossierPublicationCommand($dossier),
         );
     }
 }

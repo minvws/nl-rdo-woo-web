@@ -6,7 +6,6 @@ namespace Shared\Tests\Integration;
 
 use UnexpectedValueException;
 
-use function get_class;
 use function sprintf;
 
 trait ContainerTestTrait
@@ -23,7 +22,7 @@ trait ContainerTestTrait
         $instance = self::getContainer()->get($class);
 
         if (! $instance instanceof $class) {
-            throw new UnexpectedValueException(sprintf('Expected %s, got ', $class) . get_class($instance));
+            throw new UnexpectedValueException(sprintf('Expected %s, got ', $class) . $instance::class);
         }
 
         return $instance;

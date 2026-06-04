@@ -29,7 +29,7 @@ final readonly class AnnualReportProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|AnnualReportDto|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|AnnualReportResponseDto|null
     {
         $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
         if ($organisation === null) {
@@ -40,7 +40,7 @@ final readonly class AnnualReportProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, ExternalId::create($uriVariables['annualReportExternalId']));
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dossierExternalId']));
     }
 
     /**
@@ -57,9 +57,9 @@ final readonly class AnnualReportProvider implements ProviderInterface
         return new ArrayPaginator($this->annualReportMapper->fromEntities($annualReport), 0, count($annualReport));
     }
 
-    private function provideSingle(Organisation $organisation, ExternalId $annualReportExternalId): ?AnnualReportDto
+    private function provideSingle(Organisation $organisation, ExternalId $dossierExternalId): ?AnnualReportResponseDto
     {
-        $annualReport = $this->annualReportRepository->findByOrganisationAndExternalId($organisation, $annualReportExternalId);
+        $annualReport = $this->annualReportRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
         if ($annualReport === null) {
             return null;
         }

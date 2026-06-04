@@ -16,18 +16,14 @@ use function iterator_to_array;
 final class UrlMapperTest extends SharedWebTestCase
 {
     private UrlRepository $urlRepository;
-
     private UrlMapper $urlMapper;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $this->urlRepository = self::getContainer()->get(UrlRepository::class);
-
-        $this->urlMapper = self::getContainer()->get(UrlMapper::class);
+        $this->urlRepository = self::fromContainer(UrlRepository::class);
+        $this->urlMapper = self::fromContainer(UrlMapper::class);
     }
 
     #[WithStory(WooIndexWooDecisionStory::class)]

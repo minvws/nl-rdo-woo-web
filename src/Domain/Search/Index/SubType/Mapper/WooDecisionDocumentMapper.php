@@ -29,7 +29,7 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
     }
 
     /**
-     * @param string[] $metadata
+     * @param ?array<array-key, string> $metadata
      * @param array<int, mixed>|null $pages
      */
     public function map(object $entity, ?array $metadata = null, ?array $pages = null): ElasticDocument
@@ -47,11 +47,11 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
         }
 
         $inquiryIds = $entity->getInquiries()->map(
-            fn (Inquiry $inquiry) => $inquiry->getId()
+            fn (Inquiry $inquiry) => $inquiry->getId(),
         )->toArray();
 
         $referredDocumentNrs = $entity->getReferredBy()->map(
-            fn (Document $document) => $document->getDocumentNr()
+            fn (Document $document) => $document->getDocumentNr(),
         )->toArray();
 
         $file = $entity->getFileInfo();

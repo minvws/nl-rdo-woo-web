@@ -162,7 +162,7 @@ class AuthorizationMatrixTest extends UnitTestCase
     }
 
     /**
-     * @return Entry[]
+     * @return array<array-key, Entry>
      */
     protected function getEntries(): array
     {
@@ -209,7 +209,7 @@ class AuthorizationMatrixTest extends UnitTestCase
     }
 
     /**
-     * @param string[] $roles
+     * @param array<array-key, string> $roles
      */
     private function setupRoles(array $roles): void
     {

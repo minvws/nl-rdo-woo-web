@@ -86,14 +86,14 @@ class InquiryLinkImporterTest extends UnitTestCase
             ->expects('getDocumentCaseNrs')
             ->with($documentNrA)
             ->andReturn(
-                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), CaseNumbers::empty())
+                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), CaseNumbers::empty()),
             );
 
         $this->documentRepository
             ->expects('getDocumentCaseNrs')
             ->with($documentNrB)
             ->andReturn(
-                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), CaseNumbers::empty())
+                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), CaseNumbers::empty()),
             );
 
         $this->inquiryService->expects('applyChangesetAsync')->with(Mockery::on(
@@ -101,7 +101,7 @@ class InquiryLinkImporterTest extends UnitTestCase
                 $this->assertMatchesJsonSnapshot($changeset->getChanges());
 
                 return true;
-            }
+            },
         ));
 
         $result = $this->importer->import($organisation, $upload, $prefix);
@@ -134,14 +134,14 @@ class InquiryLinkImporterTest extends UnitTestCase
             ->expects('getDocumentCaseNrs')
             ->with($documentNrA)
             ->andReturn(
-                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), CaseNumbers::empty())
+                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), CaseNumbers::empty()),
             );
 
         $this->documentRepository
             ->expects('getDocumentCaseNrs')
             ->with($documentNrB)
             ->andReturn(
-                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), CaseNumbers::empty())
+                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), CaseNumbers::empty()),
             );
 
         $this->inquiryService->expects('applyChangesetAsync')->with(Mockery::on(
@@ -149,7 +149,7 @@ class InquiryLinkImporterTest extends UnitTestCase
                 $this->assertMatchesJsonSnapshot($changeset->getChanges());
 
                 return true;
-            }
+            },
         ));
 
         $result = $this->importer->import($organisation, $upload, $prefix);

@@ -23,7 +23,7 @@ readonly class InventoryDocumentMapper
     }
 
     /**
-     * @return array<int, array<string>|string>
+     * @return array<int, array<array-key, string>|string>
      */
     public function map(Document $document): array
     {
@@ -54,7 +54,7 @@ readonly class InventoryDocumentMapper
     }
 
     /**
-     * @return array<string>
+     * @return array<array-key, string>
      */
     private function getRelatedDocumentIds(Document $document): array
     {
@@ -79,7 +79,7 @@ readonly class InventoryDocumentMapper
     }
 
     /**
-     * @return array<string>
+     * @return array<array-key, string>
      */
     private function getRelatedDocumentUrls(Document $document): array
     {

@@ -6,58 +6,39 @@ namespace PublicationApi\Api\Publication\Dossier\RequestForAdvice;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Publication\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Publication\Dossier\AbstractDossierProcessor;
+use PublicationApi\Api\Publication\Dossier\DossierSupportService;
 use Shared\Domain\Department\Department;
-use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Organisation\OrganisationRepository;
-use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceRepository;
 use Shared\Domain\Publication\Subject\Subject;
-use Shared\Domain\Publication\Subject\SubjectRepository;
-use Shared\Service\AttachmentService;
-use Shared\Service\DossierService;
-use Shared\Service\MainDocumentService;
 use Shared\ValueObject\ExternalId;
-use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-final class RequestForAdviceProcessor extends AbstractDossierProcessor
+/**
+ * @implements ProcessorInterface<RequestForAdviceRequestDto,?RequestForAdviceResponseDto>
+ */
+final readonly class RequestForAdviceProcessor implements ProcessorInterface
 {
     public function __construct(
-        AttachmentService $attachmentService,
-        DepartmentRepository $departmentRepository,
-        DossierDispatcher $dossierDispatcher,
-        DossierService $dossierService,
-        MainDocumentService $mainDocumentService,
-        OrganisationRepository $organisationRepository,
-        SubjectRepository $subjectRepository,
-        private readonly RequestForAdviceRepository $requestForAdviceRepository,
-        private readonly Security $security,
-        private readonly RequestForAdviceMapper $requestForAdviceMapper,
+        private DossierSupportService $dossierSupportService,
+        private RequestForAdviceRepository $requestForAdviceRepository,
+        private RequestForAdviceMapper $requestForAdviceMapper,
+        private DocumentPrefixDeterminer $documentPrefixDeterminer,
     ) {
-        parent::__construct(
-            $attachmentService,
-            $departmentRepository,
-            $dossierDispatcher,
-            $dossierService,
-            $mainDocumentService,
-            $organisationRepository,
-            $subjectRepository,
-            $this->security,
-        );
     }
 
     /**
      * @param array<array-key, mixed> $uriVariables
      */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?RequestForAdviceDto
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?RequestForAdviceResponseDto
     {
         unset($context);
 
@@ -67,17 +48,18 @@ final class RequestForAdviceProcessor extends AbstractDossierProcessor
 
         Assert::isInstanceOf($data, RequestForAdviceRequestDto::class);
 
-        $requestForAdviceExternalId = $uriVariables['requestForAdviceExternalId'];
+        $requestForAdviceExternalId = $uriVariables['dossierExternalId'];
         Assert::string($requestForAdviceExternalId);
         $requestForAdviceExternalId = ExternalId::create($requestForAdviceExternalId);
 
-        $organisation = $this->getOrganisation($uriVariables);
-        $subject = $this->getSubject($data, $organisation);
-        $department = $this->getDepartment($organisation, $data->departmentId);
+        $organisation = $this->dossierSupportService->getOrganisation($uriVariables);
+        $subject = $this->dossierSupportService->getSubject($data, $organisation);
+        $department = $this->dossierSupportService->getDepartment($organisation, $data->departmentId);
         $requestForAdvice = $this->requestForAdviceRepository->findByOrganisationAndExternalId($organisation, $requestForAdviceExternalId);
 
         if ($requestForAdvice === null) {
-            $requestForAdvice = $this->create($organisation, $department, $subject, $data, $requestForAdviceExternalId);
+            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $requestForAdvice = $this->create($organisation, $department, $subject, $data, $requestForAdviceExternalId, $documentPrefix);
 
             return $this->requestForAdviceMapper->fromEntity($requestForAdvice);
         }
@@ -93,25 +75,27 @@ final class RequestForAdviceProcessor extends AbstractDossierProcessor
         ?Subject $subject,
         RequestForAdviceRequestDto $requestForAdviceRequestDto,
         ExternalId $requestForAdviceExternalId,
+        string $documentPrefix,
     ): RequestForAdvice {
         $requestForAdvice = RequestForAdviceMapper::create(
             $requestForAdviceRequestDto,
             $organisation,
             $department,
             $subject,
-            $requestForAdviceExternalId
+            $requestForAdviceExternalId,
+            $documentPrefix,
         );
         $mainDocument = RequestForAdviceMainDocumentMapper::create($requestForAdvice, $requestForAdviceRequestDto->mainDocument);
         $attachments = $this->getAttachments($requestForAdvice, $requestForAdviceRequestDto->attachments);
 
-        $this->validateMainDocument($mainDocument);
-        $this->validateAttachments($attachments);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateAttachments($attachments);
 
         $requestForAdvice->setMainDocument($mainDocument);
-        $this->addAttachments($requestForAdvice, $attachments);
+        $this->dossierSupportService->addAttachments($requestForAdvice, $attachments);
 
-        $this->validateDossier($requestForAdvice);
-        $this->dispatchCreateDossierCommand($requestForAdvice);
+        $this->dossierSupportService->validateDossier($requestForAdvice);
+        $this->dossierSupportService->dispatchCreateDossierCommand($requestForAdvice);
 
         return $requestForAdvice;
     }
@@ -127,15 +111,15 @@ final class RequestForAdviceProcessor extends AbstractDossierProcessor
         $mainDocument = RequestForAdviceMainDocumentMapper::update($requestForAdvice, $requestForAdviceRequestDto->mainDocument);
         $attachments = $this->getAttachments($requestForAdvice, $requestForAdviceRequestDto->attachments);
 
-        $this->validateMainDocument($mainDocument);
-        $this->validateAttachments($attachments);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateAttachments($attachments);
 
         $requestForAdvice->setMainDocument($mainDocument);
-        $this->removeDossierAttachments($requestForAdvice);
-        $this->addAttachments($requestForAdvice, $attachments);
+        $this->dossierSupportService->removeDossierAttachments($requestForAdvice);
+        $this->dossierSupportService->addAttachments($requestForAdvice, $attachments);
 
-        $this->validateDossier($requestForAdvice);
-        $this->dispatchUpdateDossierCommand($requestForAdvice);
+        $this->dossierSupportService->validateDossier($requestForAdvice);
+        $this->dossierSupportService->dispatchUpdateDossierCommand($requestForAdvice);
     }
 
     /**

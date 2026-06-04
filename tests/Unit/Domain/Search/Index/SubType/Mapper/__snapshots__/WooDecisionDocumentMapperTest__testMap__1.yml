@@ -6,7 +6,7 @@ fields:
     file_size: 1234
     file_type: pdf
     source_type: { email: false, name: DOC, value: doc }
-    date: '2024-04-16T10:54:15+00:00'
+    date: '2024-04-16T00:00:00+00:00'
     filename: foo.bar
     family_id: 789
     document_id: abc123
@@ -29,7 +29,7 @@ documentValues:
     file_size: 1234
     file_type: pdf
     source_type: { email: false, name: DOC, value: doc }
-    date: '2024-04-16T10:54:15+00:00'
+    date: '2024-04-16T00:00:00+00:00'
     filename: foo.bar
     family_id: 789
     document_id: abc123

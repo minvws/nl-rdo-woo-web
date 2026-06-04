@@ -65,7 +65,7 @@ class OrganisationServiceTest extends UnitTestCase
                 self::assertEquals($organisation, $event->organisation);
 
                 return true;
-            }
+            },
         ));
 
         $this->organisationService->create($organisation);
@@ -96,7 +96,7 @@ class OrganisationServiceTest extends UnitTestCase
                 self::assertEquals([], $event->changes);
 
                 return true;
-            }
+            },
         ));
 
         $this->organisationService->update($organisation);

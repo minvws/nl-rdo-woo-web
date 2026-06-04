@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Integration\Api\Publication\Dossier\WooDecision;
 
-use DateTime;
-use PublicationApi\Api\Publication\Dossier\WooDecision\WooDecisionDto;
+use PublicationApi\Api\Publication\Dossier\WooDecision\WooDecisionResponseDto;
 use PublicationApi\Tests\Integration\Api\Publication\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
@@ -24,6 +23,7 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\InquiryFactory;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
@@ -51,6 +51,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(WooDecision::class, 0);
 
@@ -65,7 +66,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         $data = $this->createValidWooDecisionDataPayload($department, $subject, $documents);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(WooDecisionDto::class);
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
 
         self::assertDatabaseCount(WooDecision::class, 1);
         self::assertDatabaseCount(Inquiry::class, 6);
@@ -174,7 +175,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         $data = $this->createValidWooDecisionDataPayload($department, $subject, $documents);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecision), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(WooDecisionDto::class);
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
 
         self::assertDatabaseCount(WooDecision::class, 1);
         self::assertDatabaseCount(Inquiry::class, 3);
@@ -294,7 +295,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         $data = $this->createValidWooDecisionDataPayload($department, $subject, $documents);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecisionB), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(WooDecisionDto::class);
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
 
         self::assertDatabaseCount(WooDecision::class, 2);
         self::assertDatabaseCount(Inquiry::class, 2);
@@ -408,7 +409,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
 
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecisionB), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(WooDecisionDto::class);
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
 
         self::assertDatabaseCount(WooDecision::class, 2);
         self::assertDatabaseCount(Inquiry::class, 2);
@@ -479,6 +480,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(WooDecision::class, 0);
 
@@ -490,7 +492,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         $data = $this->createValidWooDecisionDataPayload($department, $subject, $documents);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(WooDecisionDto::class);
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResponseDto::class);
 
         self::assertDatabaseCount(WooDecision::class, 1);
         self::assertDatabaseCount(Inquiry::class, 3);
@@ -548,20 +550,18 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         return [
             'title' => $this->getFaker()->sentence(),
             'dossierNumber' => $this->getFaker()->slug(2),
-            'internalReference' => $this->getFaker()->optional(default: '')->uuid(),
-            'prefix' => $this->getFaker()->slug(2),
-            'dossierDateFrom' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format(DateTime::RFC3339),
-            'dossierDateTo' => $this->getFaker()->dateTimeBetween('-1 week', 'now')->format(DateTime::RFC3339),
+            'dateFrom' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format('Y-m-d'),
+            'dateTo' => $this->getFaker()->dateTimeBetween('-1 week', 'now')->format('Y-m-d'),
             'decision' => $this->getFaker()->randomElement(DecisionType::cases()),
             'reason' => $this->getFaker()->randomElement(PublicationReason::cases()),
-            'previewDate' => $this->getFaker()->dateTimeBetween('1 week', '2 weeks')->format(DateTime::RFC3339),
-            'publicationDate' => $this->getFaker()->dateTimeBetween('2 weeks', '3 weeks')->format(DateTime::RFC3339),
+            'previewDate' => $this->getFaker()->dateTimeBetween('1 week', '2 weeks')->format('Y-m-d'),
+            'publicationDate' => $this->getFaker()->plainDateBetween('2 weeks', '3 weeks')->format('Y-m-d'),
             'summary' => $this->getFaker()->sentence(),
             'departmentId' => $department->getId(),
             'subjectId' => $subject?->getId(),
             'mainDocument' => [
-                'filename' => $this->getFaker()->word(),
-                'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
+                'fileName' => $this->getFaker()->word(),
+                'formalDate' => $this->getFaker()->date(),
                 'type' => $this->getFaker()->randomElement(WooDecisionMainDocument::getAllowedTypes()),
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],
@@ -586,17 +586,16 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
 
             $documents[] = [
                 'caseNumbers' => $caseNumbers,
-                'date' => $this->getFaker()->date(DateTime::RFC3339),
+                'date' => $this->getFaker()->date(),
                 'documentId' => $this->getFaker()->word(),
                 'externalId' => sprintf('%s-%d', $externalIdPrefix, $i),
                 'familyId' => $this->getFaker()->numberBetween(1, 1000),
                 'fileName' => $this->getFaker()->word(),
-                'grounds' => [$this->getFaker()->word()],
+                'grounds' => $this->getFaker()->groundsBetween(0, 3),
                 'isSuspended' => $this->getFaker()->boolean(),
                 'judgement' => $this->getFaker()->randomElement(Judgement::cases()),
                 'links' => [],
                 'matter' => 'xx',
-                'period' => null,
                 'refersTo' => [],
                 'remark' => $this->getFaker()->sentence(),
                 'sourceType' => $this->getFaker()->randomElement(SourceType::cases()),

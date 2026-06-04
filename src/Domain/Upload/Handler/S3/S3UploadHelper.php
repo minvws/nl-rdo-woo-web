@@ -7,6 +7,7 @@ namespace Shared\Domain\Upload\Handler\S3;
 use Aws\S3\S3Client;
 use Aws\S3\S3UriParser;
 use GuzzleHttp\Psr7\Stream;
+use Shared\Domain\Upload\StreamUpload;
 use Shared\Domain\Upload\UploadRequest;
 use Webmozart\Assert\Assert;
 
@@ -103,6 +104,15 @@ readonly class S3UploadHelper
             'Bucket' => $this->bucket,
             'Key' => $request->uploadId,
             'SourceFile' => $request->uploadedFile->getRealPath(),
+        ]);
+    }
+
+    public function uploadStream(StreamUpload $upload): void
+    {
+        $this->s3Client->putObject([
+            'Bucket' => $this->bucket,
+            'Key' => $upload->uploadId,
+            'Body' => $upload->stream,
         ]);
     }
 

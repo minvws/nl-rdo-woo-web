@@ -26,7 +26,6 @@ class WooDecisionAttachmentMapper
         $fileInfo->setName($attachmentRequestDto->fileName);
 
         $attachment->setFileInfo($fileInfo);
-        $attachment->setInternalReference($attachmentRequestDto->internalReference);
         $attachment->setGrounds($attachmentRequestDto->grounds);
         $attachment->setExternalId($attachmentRequestDto->externalId);
 

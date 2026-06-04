@@ -8,6 +8,7 @@ use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Shared\Exception\FileReaderException;
+use Webmozart\Assert\Assert;
 
 use function array_filter;
 use function array_keys;
@@ -27,7 +28,7 @@ use function trim;
  */
 class ExcelReaderFactory implements ReaderFactoryInterface
 {
-    /** @var string[] */
+    /** @var array<array-key, string> */
     protected $supportedMimeTypes = [
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'application/vnd.ms-excel',
@@ -67,7 +68,7 @@ class ExcelReaderFactory implements ReaderFactoryInterface
      * Resolve the header mapping into an array of mapped headers (name => column)
      * Will throw an exception for missing mandatory headers.
      *
-     * @param ColumnMapping[] $columnMappings
+     * @param array<array-key, ColumnMapping> $columnMappings
      *
      * @throws FileReaderException|Exception
      */
@@ -83,7 +84,10 @@ class ExcelReaderFactory implements ReaderFactoryInterface
 
         foreach ($sheet->getRowIterator(1, 1) as $row) {
             foreach ($row->getCellIterator() as $cell) {
-                $columnName = strval($cell->getValue());
+                $value = $cell->getValue();
+                Assert::nullOrScalar($value);
+
+                $columnName = strval($value);
                 $columnName = strtolower(trim($columnName));
                 $columnName = trim(ltrim($columnName, '0123456789'));
                 if ($columnName === '') {
@@ -101,7 +105,7 @@ class ExcelReaderFactory implements ReaderFactoryInterface
 
         $missingHeaders = array_filter(
             $missingHeaders,
-            static fn (ColumnMapping $mapping): bool => $mapping->isRequired()
+            static fn (ColumnMapping $mapping): bool => $mapping->isRequired(),
         );
 
         if (count($missingHeaders) > 0) {

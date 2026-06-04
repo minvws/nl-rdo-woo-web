@@ -36,7 +36,7 @@ class DocumentsStepHelperTest extends UnitTestCase
         $this->helper = new DocumentsStepHelper(
             $this->formErrorMapper,
             $this->twig,
-            $this->formFactory
+            $this->formFactory,
         );
     }
 

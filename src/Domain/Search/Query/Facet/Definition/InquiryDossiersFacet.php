@@ -29,7 +29,7 @@ readonly class InquiryDossiersFacet extends AbstractInquiryFacet
     public function getTitle(int|string $key, string $value): FacetDisplayValueInterface
     {
         return TranslatedFacetDisplayValue::fromString(
-            'admin.dossiers.decision.inquiry_number'
+            'admin.dossiers.decision.inquiry_number',
         );
     }
 }

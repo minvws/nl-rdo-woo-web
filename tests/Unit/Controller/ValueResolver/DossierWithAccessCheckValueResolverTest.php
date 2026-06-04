@@ -85,7 +85,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
             [
                 'documentPrefix' => 'foo',
                 'dossierNr' => 'bar',
-            ]
+            ],
         )->andReturnNull();
 
         $this->entityManager
@@ -112,7 +112,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
             [
                 'documentPrefix' => 'foo',
                 'dossierNr' => 'bar',
-            ]
+            ],
         )->andReturn($dossier);
 
         $this->entityManager

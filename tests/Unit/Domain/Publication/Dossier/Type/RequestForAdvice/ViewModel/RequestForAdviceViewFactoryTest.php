@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\RequestForAdvice\ViewModel;
 
-use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
@@ -15,6 +14,7 @@ use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFacto
 use Shared\Domain\Publication\Dossier\ViewModel\Department;
 use Shared\Domain\Publication\Dossier\ViewModel\Subject;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 
 final class RequestForAdviceViewFactoryTest extends UnitTestCase
 {
@@ -40,7 +40,7 @@ final class RequestForAdviceViewFactoryTest extends UnitTestCase
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = 'my title',
                 pageTitle: $expectedPageTitle = 'my page title',
-                publicationDate: $publicationDate = new DateTimeImmutable(),
+                publicationDate: $publicationDate = PlainDate::today(),
                 mainDepartment: $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
                 type: $expectedType = DossierType::REQUEST_FOR_ADVICE,
@@ -48,7 +48,7 @@ final class RequestForAdviceViewFactoryTest extends UnitTestCase
             ));
 
         $dossier = Mockery::mock(RequestForAdvice::class);
-        $dossier->expects('getDateFrom')->andReturn($expectedDate = new DateTimeImmutable());
+        $dossier->expects('getDateFrom')->andReturn($expectedDate = PlainDate::today());
         $dossier->expects('getLink')->andReturn($expectedLink = 'http://foo.bar');
         $dossier->expects('getAdvisoryBodies')->andReturn($expectedAdvisoryBodies = ['FooBar']);
 

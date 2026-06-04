@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Integration\Api\Publication\Dossier\Covenant;
 
 use Carbon\CarbonImmutable;
-use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PublicationApi\Api\Publication\Dossier\Covenant\CovenantDto;
+use PublicationApi\Api\Publication\Dossier\Covenant\CovenantResponseDto;
 use PublicationApi\Api\Publication\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Publication\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Domain\Department\Department;
@@ -19,14 +18,16 @@ use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\EntityExists;
+use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\Type;
 
 use function array_merge;
@@ -43,7 +44,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $covenant = CovenantFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -64,7 +65,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $covenant = CovenantFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -85,9 +86,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'id' => (string) $covenant->getOrganisation()->getId(),
                 'name' => $covenant->getOrganisation()->getName(),
             ],
-            'prefix' => $covenant->getDocumentPrefix(),
             'dossierNumber' => $covenant->getDossierNr(),
-            'internalReference' => '',
             'title' => $covenant->getTitle(),
             'summary' => $covenant->getSummary(),
             'subject' => $covenant->getSubject()?->getName(),
@@ -95,14 +94,13 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
             ],
-            'publicationDate' => $covenant->getPublicationDate()?->format(DateTime::RFC3339),
+            'publicationDate' => $covenant->getPublicationDate()?->format('Y-m-d'),
             'status' => $covenant->getStatus()->value,
             'mainDocument' => [
                 'id' => (string) $covenantMainDocument->getId(),
                 'type' => $covenantMainDocument->getType()->value,
                 'language' => $covenantMainDocument->getLanguage()->value,
-                'formalDate' => $covenantMainDocument->getFormalDate()->format(DateTime::RFC3339),
-                'internalReference' => $covenantMainDocument->getInternalReference(),
+                'formalDate' => $covenantMainDocument->getFormalDate()->format('Y-m-d'),
                 'grounds' => $covenantMainDocument->getGrounds(),
                 'fileName' => $covenantMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
@@ -112,22 +110,21 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'id' => (string) $covenantAttachment->getId(),
                     'type' => $covenantAttachment->getType()->value,
                     'language' => $covenantAttachment->getLanguage()->value,
-                    'formalDate' => $covenantAttachment->getFormalDate()->format(DateTime::RFC3339),
-                    'internalReference' => $covenantAttachment->getInternalReference(),
+                    'formalDate' => $covenantAttachment->getFormalDate()->format('Y-m-d'),
                     'grounds' => $covenantAttachment->getGrounds(),
                     'fileName' => $covenantAttachment->getFileInfo()->getName(),
                     'externalId' => $covenantAttachment->getExternalId(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                 ],
             ],
-            'dateFrom' => $covenant->getDateFrom()?->format(DateTime::RFC3339),
-            'dateTo' => $covenant->getDateTo()?->format(DateTime::RFC3339),
+            'dateFrom' => $covenant->getDateFrom()?->format('Y-m-d'),
+            'dateTo' => $covenant->getDateTo()?->format('Y-m-d'),
             'previousVersionLink' => $covenant->getPreviousVersionLink(),
             'parties' => $covenant->getParties(),
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
-        self::assertMatchesResourceItemJsonSchema(CovenantDto::class);
+        self::assertMatchesResourceItemJsonSchema(CovenantResponseDto::class);
     }
 
     public function testGetFromIncorrectOrganisation(): void
@@ -157,13 +154,14 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
         $data = $this->createValidCovenantDataPayload($department, $subject, $this->getFaker()->numberBetween(1, 3));
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(CovenantDto::class);
+        self::assertMatchesResourceItemJsonSchema(CovenantResponseDto::class);
 
         self::assertDatabaseCount(Covenant::class, 1);
     }
@@ -172,13 +170,14 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
         $data = $this->createValidCovenantDataPayload($department, null, 1);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(CovenantDto::class);
+        self::assertMatchesResourceItemJsonSchema(CovenantResponseDto::class);
 
         self::assertDatabaseCount(Covenant::class, 1);
     }
@@ -206,13 +205,14 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
         $data = $this->createValidCovenantDataPayload($department, $subject, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(CovenantDto::class);
+        self::assertMatchesResourceItemJsonSchema(CovenantResponseDto::class);
 
         self::assertDatabaseCount(Covenant::class, 1);
     }
@@ -227,6 +227,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
@@ -244,27 +245,18 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         return [
             'dateFrom in the future' => [
                 [
-                    'dateFrom' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                    'dateFrom' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
-                ],
-            ],
-            'null internal reference' => [
-                [
-                    'internalReference' => null,
-                ],
-                [
-                    'code' => Type::INVALID_TYPE_ERROR,
-                    'propertyPath' => 'internalReference',
                 ],
             ],
             'invalid mainDocument language' => [
                 [
                     'mainDocument' => [
-                        'filename' => 'filename.pdf',
-                        'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                        'fileName' => 'filename.pdf',
+                        'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                         'type' => AttachmentType::COVENANT,
                         'language' => 'invalid',
                     ],
@@ -279,9 +271,9 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'attachments' => [
                         [
                             'fileName' => 'filename.pdf',
-                            'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                             'type' => 'invalid',
-                            'language' => AttachmentLanguage::ENGLISH,
+                            'language' => AttachmentLanguage::ENG,
                         ],
                     ],
                 ],
@@ -325,7 +317,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $covenant = CovenantFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
@@ -342,12 +334,11 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $data = $this->createValidCovenantDataPayload($department, null, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $covenant), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(CovenantDto::class);
+        self::assertMatchesResourceItemJsonSchema(CovenantResponseDto::class);
 
         self::assertDatabaseHas(Covenant::class, [
             'dossierNr' => $data['dossierNumber'],
-            'internalReference' => $data['internalReference'],
-            'documentPrefix' => $data['prefix'],
+            'documentPrefix' => $covenant->getDocumentPrefix(),
             'summary' => $data['summary'],
             'title' => $data['title'],
             'previousVersionLink' => $data['previousVersionLink'],
@@ -364,7 +355,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $covenant = CovenantFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -397,19 +388,19 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         return [
             'dateFrom in the future' => [
                 [
-                    'dateFrom' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                    'dateFrom' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
                 ],
             ],
             'dateFrom too far in history' => [
                 [
-                    'dateFrom' => CarbonImmutable::now()->subYears(10)->format(DateTime::RFC3339),
+                    'dateFrom' => CarbonImmutable::now()->subYears(10)->subDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => '',
+                    'code' => PlainDateAfterOrEqual::PLAIN_DATE_AFTER_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
                 ],
             ],
@@ -421,7 +412,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $covenant = CovenantFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
@@ -453,11 +444,9 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         return [
             'title' => $this->getFaker()->sentence(),
             'dossierNumber' => $this->getFaker()->slug(2),
-            'internalReference' => $this->getFaker()->optional(default: '')->uuid(),
-            'prefix' => $this->getFaker()->slug(2),
-            'dateFrom' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format(DateTime::RFC3339),
-            'dateTo' => $this->getFaker()->dateTimeBetween('-2 weeks', '-1 week')->format(DateTime::RFC3339),
-            'publicationDate' => $this->getFaker()->dateTimeBetween('-2 weeks', '-1 week')->format(DateTime::RFC3339),
+            'dateFrom' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format('Y-m-d'),
+            'dateTo' => $this->getFaker()->dateTimeBetween('-2 weeks', '-1 week')->format('Y-m-d'),
+            'publicationDate' => $this->getFaker()->plainDateBetween('-2 weeks', '-1 week')->format('Y-m-d'),
             'summary' => $this->getFaker()->sentence(),
             'departmentId' => $department->getId(),
             'subjectId' => $subject?->getId(),
@@ -467,8 +456,8 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                 $this->getFaker()->words(3, true),
             ],
             'mainDocument' => [
-                'filename' => $this->getFaker()->word(),
-                'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
+                'fileName' => $this->getFaker()->word(),
+                'formalDate' => $this->getFaker()->date(),
                 'type' => AttachmentType::COVENANT,
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],

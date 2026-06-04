@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Integration\Api\Publication\Department;
 
-use PublicationApi\Api\Publication\Department\DepartmentDto;
+use PublicationApi\Api\Publication\Department\DepartmentResponseDto;
 use PublicationApi\Tests\Integration\Api\Publication\ApiPublicationV1TestCase;
 use Shared\Tests\Factory\DepartmentFactory;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,7 +34,7 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
-        self::assertMatchesResourceItemJsonSchema(DepartmentDto::class);
+        self::assertMatchesResourceItemJsonSchema(DepartmentResponseDto::class);
     }
 
     public function testGetWithoutSslUserNameReturnsUnauthorized(): void
@@ -77,7 +77,7 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
         self::createPublicationApiClient()
             ->request(Request::METHOD_GET, '/api/publication/v1/department/invalid');
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-        self::assertMatchesResourceItemJsonSchema(DepartmentDto::class);
+        self::assertMatchesResourceItemJsonSchema(DepartmentResponseDto::class);
     }
 
     public function testGetCollection(): void
@@ -89,7 +89,7 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
             ->request(Request::METHOD_GET, '/api/publication/v1/department');
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(DepartmentDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(DepartmentResponseDto::class);
         self::assertCount($departmentCount, $response->toArray());
     }
 
@@ -101,7 +101,7 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
             ->request(Request::METHOD_GET, '/api/publication/v1/department');
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(DepartmentDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(DepartmentResponseDto::class);
         self::assertCount(5, $response->toArray());
     }
 
@@ -124,7 +124,7 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(DepartmentDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(DepartmentResponseDto::class);
         self::assertCount(2, $response->toArray());
     }
 
@@ -140,7 +140,7 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(DepartmentDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(DepartmentResponseDto::class);
         self::assertCount(1, $response->toArray());
     }
 }

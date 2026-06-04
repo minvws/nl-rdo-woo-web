@@ -16,16 +16,16 @@ class PrefixMapper
     /**
      * @param array<array-key,DocumentPrefix> $documentPrefixes
      *
-     * @return array<array-key,PrefixDto>
+     * @return array<array-key,PrefixResponseDto>
      */
     public static function fromEntities(array $documentPrefixes): array
     {
         return array_values(array_map(self::fromEntity(...), $documentPrefixes));
     }
 
-    public static function fromEntity(DocumentPrefix $documentPrefix): PrefixDto
+    public static function fromEntity(DocumentPrefix $documentPrefix): PrefixResponseDto
     {
-        return new PrefixDto(
+        return new PrefixResponseDto(
             $documentPrefix->getId(),
             OrganisationReferenceDto::fromEntity($documentPrefix->getOrganisation()),
             $documentPrefix->getPrefix(),

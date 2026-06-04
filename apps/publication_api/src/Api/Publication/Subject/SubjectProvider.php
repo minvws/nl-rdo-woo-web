@@ -29,7 +29,7 @@ final readonly class SubjectProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|SubjectDto|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|SubjectResponse|null
     {
         $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
         if ($organisation === null) {
@@ -60,7 +60,7 @@ final readonly class SubjectProvider implements ProviderInterface
         return new ArrayPaginator(SubjectMapper::fromEntities($subjects), 0, count($subjects));
     }
 
-    private function provideSingle(Organisation $organisation, Uuid $subjectId): ?SubjectDto
+    private function provideSingle(Organisation $organisation, Uuid $subjectId): ?SubjectResponse
     {
         $subject = $this->subjectRepository->findByOrganisationAndId($organisation, $subjectId);
         if ($subject === null) {

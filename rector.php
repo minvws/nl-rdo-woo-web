@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Utils\Rector\AddArrayKeyToGenericArrayTypeRector;
 use Rector\Config\RectorConfig;
 use Rector\Php55\Rector\String_\StringClassNameToClassConstantRector;
 use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
@@ -16,10 +17,14 @@ return RectorConfig::configure()
         __DIR__ . '/src',
         __DIR__ . '/apps',
         __DIR__ . '/tests',
+        __DIR__ . '/utils',
     ])
     ->withComposerBased(twig: true, doctrine: true, phpunit: true, symfony: true)
     ->withAttributesSets()
     ->withPhpSets()
+    ->withrules([
+        AddArrayKeyToGenericArrayTypeRector::class,
+    ])
     ->withSkip([
         RemoveReflectionSetAccessibleCallsRector::class,
         ClassPropertyAssignToConstructorPromotionRector::class,
@@ -30,4 +35,5 @@ return RectorConfig::configure()
             __DIR__ . '/src/class_aliases.php',
         ],
         DeprecatedAnnotationToDeprecatedAttributeRector::class,
+        __DIR__ . '/utils/tests/PHPStan/**/data/*'
     ]);

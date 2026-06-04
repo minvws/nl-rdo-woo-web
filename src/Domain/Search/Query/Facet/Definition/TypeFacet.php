@@ -92,7 +92,7 @@ readonly class TypeFacet implements FacetDefinitionInterface
     public function getDescription(int|string $key, string $value): ?FacetDisplayValueInterface
     {
         return TranslatedFacetDisplayValue::fromString(
-            sprintf('public.search.type_description.%s', $value)
+            sprintf('public.search.type_description.%s', $value),
         );
     }
 }

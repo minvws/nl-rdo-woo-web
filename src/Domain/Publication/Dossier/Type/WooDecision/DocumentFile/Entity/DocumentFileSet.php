@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity;
 
+use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -40,6 +41,8 @@ class DocumentFileSet
         private WooDecision $dossier,
     ) {
         $this->id = Uuid::v6();
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
         $this->status = DocumentFileSetStatus::OPEN_FOR_UPLOADS;
         $this->uploads = new ArrayCollection();
         $this->updates = new ArrayCollection();

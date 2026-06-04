@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Search\Index\Dossier\Mapper;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
 use Mockery\MockInterface;
@@ -19,6 +18,7 @@ use Shared\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
 use Shared\Domain\Search\Index\ElasticDocument;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 
 class WooDecisionMapperTest extends UnitTestCase
@@ -60,7 +60,7 @@ class WooDecisionMapperTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getInquiries')->times(2)->andReturn(new ArrayCollection([$inquiry]));
         $dossier->expects('getPublicationReason')->andReturn(PublicationReason::WOO_REQUEST);
-        $dossier->expects('getDecisionDate')->andReturn(new DateTimeImmutable('2024-04-16 10:54:15'));
+        $dossier->expects('getDecisionDate')->andReturn(PlainDate::create('2024-04-16'));
         $dossier->expects('getDecision')->andReturn(DecisionType::PUBLIC);
 
         $this->defaultMapper
@@ -74,7 +74,7 @@ class WooDecisionMapperTest extends UnitTestCase
             [
                 'foo' => 'bar',
                 'publication_reason' => PublicationReason::WOO_REQUEST,
-                'decision_date' => '2024-04-16T10:54:15+00:00',
+                'decision_date' => '2024-04-16T00:00:00+00:00',
                 'decision' => DecisionType::PUBLIC,
                 'inquiry_ids' => [
                     $inquiryId,

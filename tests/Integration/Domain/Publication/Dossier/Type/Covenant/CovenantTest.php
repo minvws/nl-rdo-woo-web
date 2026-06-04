@@ -11,18 +11,12 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class CovenantTest extends SharedWebTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
-    }
-
     public function testStartDateValidationAllowsADate10YearsBeforeCreationDate(): void
     {
         $department = Mockery::mock(Department::class);
@@ -34,9 +28,9 @@ final class CovenantTest extends SharedWebTestCase
         $covenant->setTitle('bar');
         $covenant->setDocumentPrefix('FOO');
         $covenant->setCreatedAt($date);
-        $covenant->setDateFrom($date->modify('-10 years'));
+        $covenant->setDateFrom(PlainDate::create($date->modify('-10 years')->format('Y-m-d')));
 
-        $validator = self::getContainer()->get(ValidatorInterface::class);
+        $validator = self::fromContainer(ValidatorInterface::class);
 
         /** @var ConstraintViolationListInterface $errors */
         $errors = $validator->validate($covenant, null, [DossierValidationGroup::DETAILS->value]);
@@ -54,9 +48,9 @@ final class CovenantTest extends SharedWebTestCase
         $covenant->setDepartments([$department]);
         $covenant->setTitle('bar');
         $covenant->setDocumentPrefix('FOO');
-        $covenant->setDateFrom($date->modify('-10 years'));
+        $covenant->setDateFrom(PlainDate::create($date->modify('-10 years')->format('Y-m-d')));
 
-        $validator = self::getContainer()->get(ValidatorInterface::class);
+        $validator = self::fromContainer(ValidatorInterface::class);
 
         /** @var ConstraintViolationListInterface $errors */
         $errors = $validator->validate($covenant, null, [DossierValidationGroup::DETAILS->value]);

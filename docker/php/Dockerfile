@@ -2,7 +2,7 @@ FROM minio/mc:RELEASE.2025-08-13T08-35-41Z AS mc
 
 FROM composer/composer:2.9.5-bin AS composer
 
-FROM php:8.4.18-apache-trixie
+FROM php:8.4.19-apache-trixie
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 

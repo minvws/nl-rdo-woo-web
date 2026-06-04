@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Organisation;
 
+use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -71,6 +72,8 @@ class Organisation
     public function __construct()
     {
         $this->id = Uuid::v6();
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
         $this->users = new ArrayCollection();
         $this->documentPrefixes = new ArrayCollection();
         $this->departments = new ArrayCollection();
@@ -158,13 +161,13 @@ class Organisation
     }
 
     /**
-     * @return array<string>
+     * @return array<array-key, string>
      */
     public function getPrefixesAsArray(): array
     {
         return array_map(
             fn (DocumentPrefix $prefix): string => $prefix->getPrefix(),
-            $this->getDocumentPrefixes()->toArray()
+            $this->getDocumentPrefixes()->toArray(),
         );
     }
 

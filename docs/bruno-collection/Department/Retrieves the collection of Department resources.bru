@@ -1,0 +1,299 @@
+meta {
+  name: Retrieves the collection of Department resources.
+  type: http
+  seq: 1
+  tags: [
+    Department
+  ]
+}
+
+get {
+  url: {{baseUrl}}/department
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~cursor: 
+}
+
+script:post-response {
+  const data = res.getBody();
+  
+  const dept = data.find(item => item.name === "E2E Test Department 1") ?? data[0];
+  
+  if (dept) {
+    bru.setEnvVar("departmentId", dept.id);
+  } else {
+    console.log("Department not found");
+  }
+}
+
+docs {
+  Retrieves the collection of Department resources.
+}
+
+example {
+  name: 200 Response
+  description: Department collection
+  
+  request: {
+    url: {{baseUrl}}/department
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "id": "",
+            "name": ""
+          }
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 Response
+  description: Bad Request
+  
+  request: {
+    url: {{baseUrl}}/department
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 400
+      text: Bad Request
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 401 Response
+  description: Unauthorized
+  
+  request: {
+    url: {{baseUrl}}/department
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 401
+      text: Unauthorized
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 403 Response
+  description: Forbidden
+  
+  request: {
+    url: {{baseUrl}}/department
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 403
+      text: Forbidden
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Not Found
+  
+  request: {
+    url: {{baseUrl}}/department
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 404
+      text: Not Found
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 405 Response
+  description: Method Not Allowed
+  
+  request: {
+    url: {{baseUrl}}/department
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 405
+      text: Method Not Allowed
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 500 Response
+  description: Internal Server Error
+  
+  request: {
+    url: {{baseUrl}}/department
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 500
+      text: Internal Server Error
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}

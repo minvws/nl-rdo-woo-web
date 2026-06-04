@@ -16,7 +16,6 @@ Test Tags           api  investigation-report
 ${ORGANISATION_ID}  ${EMPTY}
 ${EXTERNAL_ID}      ${EMPTY}
 ${BODY}             ${EMPTY}
-${TODAY}            ${EMPTY}
 
 
 *** Test Cases ***
@@ -41,20 +40,16 @@ We Create Test Data For Investigation Report
   # Build body
   ${department_id} =  Get Department ID
   ${subject_id} =  Get Subject ID
-  ${prefix_id} =  Get Prefix
   ${dossier_number} =  Generate Dossier Reference Number
-  ${internal_reference} =  FakerLibrary.Sentence
   ${title} =  Catenate  Robot API ${dossier_number}
   ${summary} =  Fakerlibrary.Text  200
-  VAR  ${dossier_date} =  ${TODAY}
+  VAR  ${dossier_date} =  ${CURRENT_DATE}
   VAR  &{BODY} =
   ...  attachments=${attachments}
   ...  departmentId=${department_id}
   ...  dossierDate=${dossier_date}
   ...  dossierNumber=${dossier_number}
-  ...  internalReference=${internal_reference}
   ...  mainDocument=${main_document}
-  ...  prefix=${prefix_id}
   ...  publicationDate=${publication_date}
   ...  subjectId=${subject_id}
   ...  summary=${summary}
@@ -65,11 +60,11 @@ We Create Test Data For Investigation Report
 We Create An Investigation Report
   PUT On Session
   ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/investigation-report/${EXTERNAL_ID}
+  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/investigation-report/${EXTERNAL_ID}
   ...  json=${BODY}
 
 We Can Find It
   ${get_response} =  GET On Session
   ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/investigation-report/${EXTERNAL_ID}
+  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/investigation-report/${EXTERNAL_ID}
   VAR  ${RESPONSE} =  ${get_response.json()}  scope=TEST

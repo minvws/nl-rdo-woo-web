@@ -55,7 +55,7 @@ class RejectProductionReportUpdateHandlerTest extends UnitTestCase
         $this->processRunRepository->expects('save')->with($run, true);
 
         $this->handler->__invoke(
-            new RejectProductionReportUpdateCommand($wooDecision)
+            new RejectProductionReportUpdateCommand($wooDecision),
         );
     }
 
@@ -69,7 +69,7 @@ class RejectProductionReportUpdateHandlerTest extends UnitTestCase
         $this->expectException(ProductionReportUpdaterException::class);
 
         $this->handler->__invoke(
-            new RejectProductionReportUpdateCommand($wooDecision)
+            new RejectProductionReportUpdateCommand($wooDecision),
         );
     }
 
@@ -85,7 +85,7 @@ class RejectProductionReportUpdateHandlerTest extends UnitTestCase
         $this->expectException(DossierWorkflowException::class);
 
         $this->handler->__invoke(
-            new RejectProductionReportUpdateCommand($wooDecision)
+            new RejectProductionReportUpdateCommand($wooDecision),
         );
     }
 
@@ -105,7 +105,7 @@ class RejectProductionReportUpdateHandlerTest extends UnitTestCase
         $this->logger->expects('warning');
 
         $this->handler->__invoke(
-            new RejectProductionReportUpdateCommand($wooDecision)
+            new RejectProductionReportUpdateCommand($wooDecision),
         );
     }
 }

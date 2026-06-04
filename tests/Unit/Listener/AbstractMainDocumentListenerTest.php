@@ -29,7 +29,7 @@ class AbstractMainDocumentListenerTest extends SharedWebTestCase
             ->with(
                 Mockery::on(function (DossierChangedEvent $event) use ($wooDecision) {
                     return $event->getDossier() === $wooDecision;
-                })
+                }),
             );
 
         $listener = new AbstractMainDocumentListener($dispatcher);
@@ -51,7 +51,7 @@ class AbstractMainDocumentListenerTest extends SharedWebTestCase
             ->with(
                 Mockery::on(function (DossierChangedEvent $event) use ($wooDecision) {
                     return $event->getDossier() === $wooDecision;
-                })
+                }),
             );
 
         $listener = new AbstractMainDocumentListener($dispatcher);
@@ -73,7 +73,7 @@ class AbstractMainDocumentListenerTest extends SharedWebTestCase
             ->with(
                 Mockery::on(function (DossierChangedEvent $event) use ($wooDecision) {
                     return $event->getDossier() === $wooDecision;
-                })
+                }),
             );
 
         $listener = new AbstractMainDocumentListener($dispatcher);

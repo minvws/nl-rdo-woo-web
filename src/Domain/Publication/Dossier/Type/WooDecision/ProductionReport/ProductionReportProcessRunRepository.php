@@ -20,7 +20,7 @@ class ProductionReportProcessRunRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return ProductionReportProcessRun[]
+     * @return array<array-key, ProductionReportProcessRun>
      */
     public function findExpiredRuns(): array
     {

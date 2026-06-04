@@ -1,5 +1,5 @@
 # https://taskfile.dev
-version: "3"
+version: "3.48.0"
 
 vars:
   # See tags for latest version: https://hub.docker.com/r/davidanson/markdownlint-cli2/tags
@@ -93,7 +93,7 @@ tasks:
       - |
         cat <<EOF > bruno-collection/environments/Local.bru
         vars {
-          baseUrl: {{.MINVWS_PUBLICATION_API_URL}}
+          baseUrl: {{.MINVWS_PUBLICATION_API_URL}}/api/publication/v1
           organisationId:
         }
         EOF

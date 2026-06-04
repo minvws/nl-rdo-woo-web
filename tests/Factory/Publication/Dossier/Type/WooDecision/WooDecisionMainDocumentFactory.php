@@ -38,7 +38,7 @@ final class WooDecisionMainDocumentFactory extends PersistentObjectFactory
             'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'dossier' => WooDecisionFactory::new(),
             'fileInfo' => FileInfoFactory::new(),
-            'formalDate' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()->setTime(0, 0)),
+            'formalDate' => self::faker()->plainDate(),
             'grounds' => self::faker()->optional(default: [])->words(),
             'internalReference' => self::faker()->optional(default: '')->words(asText: true),
             'language' => self::faker()->randomElement(AttachmentLanguage::cases()),

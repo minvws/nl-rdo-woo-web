@@ -65,7 +65,7 @@ class ContentExtractCacheTest extends UnitTestCase
                     self::assertEquals($pageNr, $options->getPageNumber());
 
                     return true;
-                }
+                },
             ))
             ->andReturn($collection);
 

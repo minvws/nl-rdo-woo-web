@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inventory;
 
-use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\SourceType;
 use Shared\Exception\InventoryReaderException;
@@ -12,6 +11,7 @@ use Shared\Service\FileReader\ExcelReaderFactory;
 use Shared\Service\Inventory\Reader\InventoryReaderFactory;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 
 use function iterator_to_array;
 
@@ -76,8 +76,8 @@ class InventoryReaderTest extends UnitTestCase
         self::assertNotNull($documentMetadata1);
         self::assertNotNull($documentMetadata2);
 
-        self::assertEquals(new DateTimeImmutable('2023-11-04'), $documentMetadata1->getDate());
-        self::assertEquals(new DateTimeImmutable('2023-05-06'), $documentMetadata2->getDate());
+        self::assertEquals(PlainDate::create('2023-11-04'), $documentMetadata1->getDate());
+        self::assertEquals(PlainDate::create('2023-05-06'), $documentMetadata2->getDate());
 
         self::assertEquals(['http://foo.bar'], $documentMetadata1->getLinks());
         self::assertEquals(['http://foo.bar/baz'], $documentMetadata2->getLinks());
@@ -147,7 +147,7 @@ class InventoryReaderTest extends UnitTestCase
         self::assertNotNull($documentMetadata1);
         self::assertNotNull($documentMetadata2);
 
-        self::assertEquals(new DateTimeImmutable('2023-11-04'), $documentMetadata1->getDate());
+        self::assertEquals(PlainDate::create('2023-11-04'), $documentMetadata1->getDate());
         self::assertEquals(null, $documentMetadata2->getDate());
     }
 

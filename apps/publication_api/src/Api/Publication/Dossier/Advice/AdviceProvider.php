@@ -29,7 +29,7 @@ final readonly class AdviceProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|AdviceDto|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|AdviceResponseDto|null
     {
         $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
         if ($organisation === null) {
@@ -40,7 +40,7 @@ final readonly class AdviceProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, ExternalId::create($uriVariables['adviceExternalId']));
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dossierExternalId']));
     }
 
     /**
@@ -57,9 +57,9 @@ final readonly class AdviceProvider implements ProviderInterface
         return new ArrayPaginator($this->adviceMapper->fromEntities($advices), 0, count($advices));
     }
 
-    private function provideSingle(Organisation $organisation, ExternalId $adviceExternalId): ?AdviceDto
+    private function provideSingle(Organisation $organisation, ExternalId $dossierExternalId): ?AdviceResponseDto
     {
-        $advice = $this->adviceRepository->findByOrganisationAndExternalId($organisation, $adviceExternalId);
+        $advice = $this->adviceRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
         if ($advice === null) {
             return null;
         }

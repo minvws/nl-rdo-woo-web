@@ -8,6 +8,7 @@ use Erichard\ElasticQueryBuilder\QueryBuilder;
 use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Query\Facet\FacetListFactory;
 use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Query\Builder\DecisionRankingQueryBuilder;
 use Shared\Service\Search\Query\Component\QueryComponentHelper;
 use Shared\Service\Search\Query\Condition\QueryConditionHelper;
 use Shared\Service\Search\Query\Dsl\ElasticQueryParameters;
@@ -19,6 +20,7 @@ readonly class SearchAllQueryDefinition implements QueryDefinitionInterface
         private QueryComponentHelper $componentHelper,
         private QueryConditionHelper $conditionHelper,
         private ElasticConfig $elasticConfig,
+        private DecisionRankingQueryBuilder $decisionRankingQueryBuilder,
     ) {
     }
 
@@ -39,5 +41,7 @@ readonly class SearchAllQueryDefinition implements QueryDefinitionInterface
         $this->componentHelper->addAggregations($facetList, $queryBuilder, $searchParameters, 25);
         $this->componentHelper->addUniqueDossierCount($queryBuilder);
         $this->componentHelper->addHighlight($queryBuilder, $searchParameters);
+
+        $this->decisionRankingQueryBuilder->wrap($queryBuilder);
     }
 }

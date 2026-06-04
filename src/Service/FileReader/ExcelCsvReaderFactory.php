@@ -7,6 +7,7 @@ namespace Shared\Service\FileReader;
 use PhpOffice\PhpSpreadsheet\Exception;
 use RuntimeException;
 use Symfony\Component\Process\Process;
+use Webmozart\Assert\Assert;
 
 use function fclose;
 use function fgetcsv;
@@ -23,7 +24,7 @@ class ExcelCsvReaderFactory implements ReaderFactoryInterface
 {
     use HeaderMappingTrait;
 
-    /** @var string[] */
+    /** @var array<array-key, string> */
     protected $supportedMimeTypes = [
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'application/vnd.ms-excel',
@@ -70,6 +71,7 @@ class ExcelCsvReaderFactory implements ReaderFactoryInterface
         if ($headers === false) {
             $headers = [];
         }
+        Assert::allString($headers);
 
         $mapping = $this->resolveHeaderMapping($headers, $columnMappings);
 

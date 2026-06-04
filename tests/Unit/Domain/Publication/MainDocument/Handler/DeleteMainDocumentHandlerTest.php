@@ -88,13 +88,13 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
         $this->annualReportDocumentRepository->expects('remove')->with($annualReportDocument, true);
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static fn (MainDocumentDeletedEvent $message) => $message->documentId === $annualReportDocument->getId()
+            static fn (MainDocumentDeletedEvent $message) => $message->documentId === $annualReportDocument->getId(),
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->deleteStrategy->expects('delete')->with($annualReportDocument);
 
         $this->handler->__invoke(
-            new DeleteMainDocumentCommand($dossierUuid)
+            new DeleteMainDocumentCommand($dossierUuid),
         );
     }
 
@@ -123,7 +123,7 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
                     $dossier,
                     $transition,
                     Mockery::mock(TransitionException::class),
-                )
+                ),
             );
 
         $this->annualReportDocumentRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($annualReportDocument);
@@ -131,7 +131,7 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
         $this->expectException(DossierWorkflowException::class);
 
         $this->handler->__invoke(
-            new DeleteMainDocumentCommand($dossierUuid)
+            new DeleteMainDocumentCommand($dossierUuid),
         );
     }
 
@@ -154,7 +154,7 @@ class DeleteMainDocumentHandlerTest extends UnitTestCase
         $this->expectException(MainDocumentNotFoundException::class);
 
         $this->handler->__invoke(
-            new DeleteMainDocumentCommand($dossierUuid)
+            new DeleteMainDocumentCommand($dossierUuid),
         );
     }
 }

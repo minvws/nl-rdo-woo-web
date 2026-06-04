@@ -16,13 +16,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Install Task
-        uses: go-task/setup-task@v1
+        uses: go-task/setup-task@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup PHP
         uses: ./.github/actions/setup-php
+        env:
+          APP_ENV: prod
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          composer-options: --no-dev --classmap-authoritative
       - name: Setup Node
         uses: ./.github/actions/setup-node
         with:
@@ -44,7 +47,7 @@ jobs:
       - name: Create tar
         run: tar -czf woo-web_${{ env.RELEASE_VERSION }}.tar.gz ./apps ./tenants ./config ./public ./src ./templates ./translations ./vendor ./.db_requirements ./var/cache ./var/log ./bin/console
       - name: Upload release tar
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: woo-web_${{ env.RELEASE_VERSION }}
           path: woo-web_${{ env.RELEASE_VERSION }}.tar.gz

@@ -47,19 +47,19 @@ readonly class DossierListingService
         if (count($filterParameters->statuses) > 0) {
             $this->queryConditions->filterOnStatuses(
                 $queryBuilder,
-                ...$filterParameters->statuses
+                ...$filterParameters->statuses,
             );
         }
 
         if (count($filterParameters->types) > 0) {
             $this->queryConditions->filterOnTypes(
                 $queryBuilder,
-                ...$filterParameters->types
+                ...$filterParameters->types,
             );
         }
 
         if ($filterParameters->departments !== null && ! $filterParameters->departments->isEmpty()) {
-            /** @var Department[] $departments */
+            /** @var array<array-key, Department> $departments */
             $departments = $filterParameters->departments->toArray();
 
             $this->queryConditions->filterOnDepartments($queryBuilder, ...$departments);
@@ -69,7 +69,7 @@ readonly class DossierListingService
     }
 
     /**
-     * @return DossierStatus[]
+     * @return array<array-key, DossierStatus>
      */
     public function getAllowedStatuses(): array
     {
@@ -87,18 +87,18 @@ readonly class DossierListingService
     }
 
     /**
-     * @return DossierType[]
+     * @return array<array-key, DossierType>
      */
     public function getAvailableTypes(): array
     {
         return array_map(
             static fn (DossierTypeConfigInterface $config) => $config->getDossierType(),
-            $this->dossierTypeManager->getAvailableConfigs()
+            $this->dossierTypeManager->getAvailableConfigs(),
         );
     }
 
     /**
-     * @return DossierType[]
+     * @return array<array-key, DossierType>
      */
     public function getAvailableTypesOrderedByName(): array
     {
@@ -106,7 +106,7 @@ readonly class DossierListingService
 
         usort(
             $types,
-            fn (DossierType $a, DossierType $b): int => strnatcmp($a->trans($this->translator), $b->trans($this->translator))
+            fn (DossierType $a, DossierType $b): int => strnatcmp($a->trans($this->translator), $b->trans($this->translator)),
         );
 
         return $types;

@@ -14,6 +14,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\History\DossierEntityUpdateListener;
 use Shared\Domain\Publication\History\History;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 
 class DossierEntityUpdateListenerTest extends UnitTestCase
@@ -37,7 +38,7 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
         $preUpdateArgs = Mockery::mock(PreUpdateEventArgs::class);
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getId')->times(3)->andReturn(Uuid::v6());
-        $dossier->expects('getPublicationDate')->andReturn(new DateTimeImmutable());
+        $dossier->expects('getPublicationDate')->andReturn(PlainDate::today());
         $dossier->expects('getPreviewDate')->andReturn(new DateTimeImmutable());
 
         $preUpdateArgs->expects('hasChangedField')->with('decisionDate')->andReturnTrue();
@@ -60,15 +61,15 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
         $postUpdateArgs = Mockery::mock(PostUpdateEventArgs::class);
 
         $this->entityManager->expects('persist')->with(Mockery::on(
-            static fn (History $history): bool => $history->getContextKey() === 'dossier_updated'
+            static fn (History $history): bool => $history->getContextKey() === 'dossier_updated',
         ));
 
         $this->entityManager->expects('persist')->with(Mockery::on(
-            static fn (History $history): bool => $history->getContextKey() === 'dossier_update_publication_date'
+            static fn (History $history): bool => $history->getContextKey() === 'dossier_update_publication_date',
         ));
 
         $this->entityManager->expects('persist')->with(Mockery::on(
-            static fn (History $history): bool => $history->getContextKey() === 'dossier_update_preview_date'
+            static fn (History $history): bool => $history->getContextKey() === 'dossier_update_preview_date',
         ));
 
         $this->entityManager->expects('flush');

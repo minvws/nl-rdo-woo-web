@@ -6,58 +6,39 @@ namespace PublicationApi\Api\Publication\Dossier\Covenant;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Publication\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Publication\Dossier\AbstractDossierProcessor;
+use PublicationApi\Api\Publication\Dossier\DossierSupportService;
 use Shared\Domain\Department\Department;
-use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Organisation\OrganisationRepository;
-use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantRepository;
 use Shared\Domain\Publication\Subject\Subject;
-use Shared\Domain\Publication\Subject\SubjectRepository;
-use Shared\Service\AttachmentService;
-use Shared\Service\DossierService;
-use Shared\Service\MainDocumentService;
 use Shared\ValueObject\ExternalId;
-use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-final class CovenantProcessor extends AbstractDossierProcessor
+/**
+ * @implements ProcessorInterface<CovenantRequestDto,?CovenantResponseDto>
+ */
+final readonly class CovenantProcessor implements ProcessorInterface
 {
     public function __construct(
-        AttachmentService $attachmentService,
-        DepartmentRepository $departmentRepository,
-        DossierDispatcher $dossierDispatcher,
-        DossierService $dossierService,
-        MainDocumentService $mainDocumentService,
-        OrganisationRepository $organisationRepository,
-        SubjectRepository $subjectRepository,
-        private readonly CovenantRepository $covenantRepository,
-        private readonly Security $security,
-        private readonly CovenantMapper $covenantMapper,
+        private DossierSupportService $dossierSupportService,
+        private CovenantRepository $covenantRepository,
+        private CovenantMapper $covenantMapper,
+        private DocumentPrefixDeterminer $documentPrefixDeterminer,
     ) {
-        parent::__construct(
-            $attachmentService,
-            $departmentRepository,
-            $dossierDispatcher,
-            $dossierService,
-            $mainDocumentService,
-            $organisationRepository,
-            $subjectRepository,
-            $this->security,
-        );
     }
 
     /**
      * @param array<array-key, mixed> $uriVariables
      */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?CovenantDto
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?CovenantResponseDto
     {
         unset($context);
 
@@ -67,17 +48,18 @@ final class CovenantProcessor extends AbstractDossierProcessor
 
         Assert::isInstanceOf($data, CovenantRequestDto::class);
 
-        $covenantExternalId = $uriVariables['covenantExternalId'];
+        $covenantExternalId = $uriVariables['dossierExternalId'];
         Assert::string($covenantExternalId);
         $covenantExternalId = ExternalId::create($covenantExternalId);
 
-        $organisation = $this->getOrganisation($uriVariables);
-        $subject = $this->getSubject($data, $organisation);
-        $department = $this->getDepartment($organisation, $data->departmentId);
+        $organisation = $this->dossierSupportService->getOrganisation($uriVariables);
+        $subject = $this->dossierSupportService->getSubject($data, $organisation);
+        $department = $this->dossierSupportService->getDepartment($organisation, $data->departmentId);
         $covenant = $this->covenantRepository->findByOrganisationAndExternalId($organisation, $covenantExternalId);
 
         if ($covenant === null) {
-            $covenant = $this->create($organisation, $department, $subject, $data, $covenantExternalId);
+            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $covenant = $this->create($organisation, $department, $subject, $data, $covenantExternalId, $documentPrefix);
 
             return $this->covenantMapper->fromEntity($covenant);
         }
@@ -93,25 +75,27 @@ final class CovenantProcessor extends AbstractDossierProcessor
         ?Subject $subject,
         CovenantRequestDto $covenantRequestDto,
         ExternalId $covenantExternalId,
+        string $documentPrefix,
     ): Covenant {
         $covenant = CovenantMapper::create(
             $covenantRequestDto,
             $organisation,
             $department,
             $subject,
-            $covenantExternalId
+            $covenantExternalId,
+            $documentPrefix,
         );
         $mainDocument = CovenantMainDocumentMapper::create($covenant, $covenantRequestDto->mainDocument);
         $attachments = $this->getAttachments($covenant, $covenantRequestDto->attachments);
 
-        $this->validateMainDocument($mainDocument);
-        $this->validateAttachments($attachments);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateAttachments($attachments);
 
         $covenant->setMainDocument($mainDocument);
-        $this->addAttachments($covenant, $attachments);
+        $this->dossierSupportService->addAttachments($covenant, $attachments);
 
-        $this->validateDossier($covenant);
-        $this->dispatchCreateDossierCommand($covenant);
+        $this->dossierSupportService->validateDossier($covenant);
+        $this->dossierSupportService->dispatchCreateDossierCommand($covenant);
 
         return $covenant;
     }
@@ -127,15 +111,15 @@ final class CovenantProcessor extends AbstractDossierProcessor
         $mainDocument = CovenantMainDocumentMapper::update($covenant, $covenantRequestDto->mainDocument);
         $attachments = $this->getAttachments($covenant, $covenantRequestDto->attachments);
 
-        $this->validateMainDocument($mainDocument);
-        $this->validateAttachments($attachments);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateAttachments($attachments);
 
         $covenant->setMainDocument($mainDocument);
-        $this->removeDossierAttachments($covenant);
-        $this->addAttachments($covenant, $attachments);
+        $this->dossierSupportService->removeDossierAttachments($covenant);
+        $this->dossierSupportService->addAttachments($covenant, $attachments);
 
-        $this->validateDossier($covenant);
-        $this->dispatchUpdateDossierCommand($covenant);
+        $this->dossierSupportService->validateDossier($covenant);
+        $this->dossierSupportService->dispatchUpdateDossierCommand($covenant);
     }
 
     /**

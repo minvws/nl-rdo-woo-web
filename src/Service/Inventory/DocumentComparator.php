@@ -46,7 +46,7 @@ readonly class DocumentComparator
         $changeset->compare(
             MetadataField::SOURCETYPE->value,
             $document->getFileInfo()->getSourceType(),
-            $metadata->getSourceType()
+            $metadata->getSourceType(),
         );
         $changeset->compare(
             MetadataField::DOCUMENT->value,
@@ -78,7 +78,7 @@ readonly class DocumentComparator
     public function hasRefersToUpdate(WooDecision $dossier, Document $document, DocumentMetadata $metadata): bool
     {
         $currentDocNrs = $document->getRefersTo()->map(
-            fn (Document $doc) => $doc->getDocumentNr()
+            fn (Document $doc) => $doc->getDocumentNr(),
         )->toArray();
 
         $newDocNrs = [];

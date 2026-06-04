@@ -24,8 +24,8 @@ class DossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param DossierStatus[] $statuses
-     * @param DossierType[] $types
+     * @param array<array-key, DossierStatus> $statuses
+     * @param array<array-key, DossierType> $types
      */
     public function getDossiersForOrganisationQueryBuilder(
         Organisation $organisation,
@@ -61,7 +61,7 @@ class DossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return AbstractDossier[]
+     * @return array<array-key, AbstractDossier>
      */
     public function findDossiersPendingPublication(): array
     {
@@ -83,7 +83,7 @@ class DossierRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return AbstractDossier[]
+     * @return array<array-key, AbstractDossier>
      */
     public function getRecentDossiers(int $limit, ?Department $department): array
     {

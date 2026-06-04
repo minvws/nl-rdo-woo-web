@@ -87,7 +87,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
                         self::assertEquals($id->toRfc4122(), $context->id);
 
                         return true;
-                    }
+                    },
                 ),
             )
             ->andReturn($tikaData = ['X-TIKA:content' => 'lorem ipsum', 'key' => 'value']);
@@ -240,7 +240,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
                         self::assertEquals($entityUuid->toRfc4122(), $context->id);
 
                         return true;
-                    }
+                    },
                 ),
             )
             ->andReturn($tikaData = ['X-TIKA:content' => 'lorem ipsum', 'key' => 'value']);

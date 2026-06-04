@@ -119,7 +119,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * @param string[] $roles
+     * @param array<array-key, string> $roles
      */
     private function oneOfGivenRolesExpression(QueryBuilder $queryBuilder, array $roles): Orx
     {

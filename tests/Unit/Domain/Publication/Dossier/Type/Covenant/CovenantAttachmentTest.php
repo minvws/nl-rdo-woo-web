@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Covenant;
 
-use DateTimeImmutable;
 use Mockery;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 
 final class CovenantAttachmentTest extends UnitTestCase
 {
@@ -23,9 +23,9 @@ final class CovenantAttachmentTest extends UnitTestCase
     {
         $attachment = new CovenantAttachment(
             Mockery::mock(Covenant::class),
-            new DateTimeImmutable(),
+            PlainDate::today(),
             AttachmentType::ADVICE,
-            AttachmentLanguage::DUTCH,
+            AttachmentLanguage::NLD,
         );
 
         self::assertEquals('CovenantAttachment-' . $attachment->getId()->toBase58(), $attachment->getFileCacheKey());

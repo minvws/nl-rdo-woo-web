@@ -92,21 +92,21 @@ class DocumentController extends AbstractController
                 [
                     FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
                     FacetKey::FAMILY->getParamName() => [$document->getFamilyId()],
-                ]
+                ],
             ),
             'thread_search_url' => $this->generateUrl(
                 'app_search',
                 [
                     FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
                     FacetKey::THREAD->getParamName() => [$document->getThreadId()],
-                ]
+                ],
             ),
             'referred_search_url' => $this->generateUrl(
                 'app_search',
                 [
                     FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
                     FacetKey::REFERRED_DOCUMENT_NR->getParamName() => [$document->getDocumentNr()],
-                ]
+                ],
             ),
         ]);
     }

@@ -30,13 +30,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webmozart\Assert\Assert;
 
 use function str_replace;
+use function trim;
 
 #[When('dev')]
 #[AsCommand(name: 'woopie:dev:clean-sheet', description: 'Resets data from search index, database, file storage and message queue.')]
 class CleanSheet extends Command
 {
     /**
-     * @param string[] $queueDsns
+     * @param array<array-key, string> $queueDsns
      */
     public function __construct(
         private readonly array $queueDsns,
@@ -56,7 +57,7 @@ class CleanSheet extends Command
                 new InputOption('users', 'u', InputOption::VALUE_NONE, 'Reset users'),
                 new InputOption('keep-prefixes', 'p', InputOption::VALUE_NONE, 'Do not remove prefixes'),
                 new InputOption('keep-subjects', 's', InputOption::VALUE_NONE, 'Do not remove subjects'),
-                new InputOption('index', null, InputOption::VALUE_REQUIRED, 'ES index name', 'woopie'),
+                new InputOption('index', null, InputOption::VALUE_REQUIRED, 'ES index name'),
             ]);
     }
 
@@ -73,7 +74,13 @@ class CleanSheet extends Command
         $this->clearQueues($output);
 
         $indexName = $input->getOption('index');
-        Assert::string($indexName);
+        Assert::nullOrString($indexName);
+        if ($indexName === null || trim($indexName) === '') {
+            $output->writeln('<error>No ES index name provided. Please provide an index name using the --index option.</error>');
+
+            return self::FAILURE;
+        }
+
         $this->removeElasticSearchIndex($indexName, $output);
         $this->createElasticSearchIndex($indexName, $output);
 

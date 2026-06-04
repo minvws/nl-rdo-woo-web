@@ -29,7 +29,7 @@ readonly class DocumentHistoryHandler
             context: [
                 'explanation' => '%' . $event->reason->getTranslationKey() . '%',
                 'explanation_details' => $event->explanation,
-            ]
+            ],
         );
     }
 
@@ -42,7 +42,7 @@ readonly class DocumentHistoryHandler
             context: [
                 'explanation' => '%' . $event->reason->getTranslationKey() . '%',
                 'explanation_details' => $event->explanation,
-            ]
+            ],
         );
     }
 
@@ -59,7 +59,7 @@ readonly class DocumentHistoryHandler
                     'old' => '%' . ($event->document->getJudgement()->value ?? '') . '%',
                     'new' => '%' . $event->update->getJudgement()->value . '%',
                 ],
-                flush: false
+                flush: false,
             );
         }
 
@@ -68,7 +68,7 @@ readonly class DocumentHistoryHandler
                 document: $event->document,
                 key: $event->update->isSuspended() ? 'document_suspended' : 'document_unsuspended',
                 context: [],
-                flush: false
+                flush: false,
             );
         }
     }

@@ -21,8 +21,8 @@ trait HeaderMappingTrait
      * Resolve the header mapping into an array of mapped headers (name => column)
      * Will throw an exception for missing mandatory headers.
      *
-     * @param string[] $headers
-     * @param ColumnMapping[] $columnMappings
+     * @param array<array-key, string> $headers
+     * @param array<array-key, ColumnMapping> $columnMappings
      *
      * @throws FileReaderException|Exception
      */
@@ -53,7 +53,7 @@ trait HeaderMappingTrait
 
         $missingHeaders = array_filter(
             $missingHeaders,
-            static fn (ColumnMapping $mapping): bool => $mapping->isRequired()
+            static fn (ColumnMapping $mapping): bool => $mapping->isRequired(),
         );
 
         if (count($missingHeaders) > 0) {

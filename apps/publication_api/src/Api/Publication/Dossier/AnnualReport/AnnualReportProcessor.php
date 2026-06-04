@@ -6,58 +6,39 @@ namespace PublicationApi\Api\Publication\Dossier\AnnualReport;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Publication\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Publication\Dossier\AbstractDossierProcessor;
+use PublicationApi\Api\Publication\Dossier\DossierSupportService;
 use Shared\Domain\Department\Department;
-use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Organisation\OrganisationRepository;
-use Shared\Domain\Publication\Dossier\DossierDispatcher;
+use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportRepository;
 use Shared\Domain\Publication\Subject\Subject;
-use Shared\Domain\Publication\Subject\SubjectRepository;
-use Shared\Service\AttachmentService;
-use Shared\Service\DossierService;
-use Shared\Service\MainDocumentService;
 use Shared\ValueObject\ExternalId;
-use Symfony\Bundle\SecurityBundle\Security;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_values;
 
-final class AnnualReportProcessor extends AbstractDossierProcessor
+/**
+ * @implements ProcessorInterface<AnnualReportRequestDto,?AnnualReportResponseDto>
+ */
+final readonly class AnnualReportProcessor implements ProcessorInterface
 {
     public function __construct(
-        AttachmentService $attachmentService,
-        DepartmentRepository $departmentRepository,
-        DossierDispatcher $dossierDispatcher,
-        DossierService $dossierService,
-        MainDocumentService $mainDocumentService,
-        OrganisationRepository $organisationRepository,
-        SubjectRepository $subjectRepository,
-        private readonly AnnualReportRepository $annualReportRepository,
-        private readonly Security $security,
-        private readonly AnnualReportMapper $annualReportMapper,
+        private DossierSupportService $dossierSupportService,
+        private AnnualReportRepository $annualReportRepository,
+        private AnnualReportMapper $annualReportMapper,
+        private DocumentPrefixDeterminer $documentPrefixDeterminer,
     ) {
-        parent::__construct(
-            $attachmentService,
-            $departmentRepository,
-            $dossierDispatcher,
-            $dossierService,
-            $mainDocumentService,
-            $organisationRepository,
-            $subjectRepository,
-            $this->security,
-        );
     }
 
     /**
      * @param array<array-key, mixed> $uriVariables
      */
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?AnnualReportDto
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?AnnualReportResponseDto
     {
         unset($context);
 
@@ -67,17 +48,18 @@ final class AnnualReportProcessor extends AbstractDossierProcessor
 
         Assert::isInstanceOf($data, AnnualReportRequestDto::class);
 
-        $annualReportExternalId = $uriVariables['annualReportExternalId'];
-        Assert::string($annualReportExternalId);
-        $annualReportExternalId = ExternalId::create($annualReportExternalId);
+        $dossierExternalId = $uriVariables['dossierExternalId'];
+        Assert::string($dossierExternalId);
+        $dossierExternalId = ExternalId::create($dossierExternalId);
 
-        $organisation = $this->getOrganisation($uriVariables);
-        $subject = $this->getSubject($data, $organisation);
-        $department = $this->getDepartment($organisation, $data->departmentId);
-        $annualReport = $this->annualReportRepository->findByOrganisationAndExternalId($organisation, $annualReportExternalId);
+        $organisation = $this->dossierSupportService->getOrganisation($uriVariables);
+        $subject = $this->dossierSupportService->getSubject($data, $organisation);
+        $department = $this->dossierSupportService->getDepartment($organisation, $data->departmentId);
+        $annualReport = $this->annualReportRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
 
         if ($annualReport === null) {
-            $annualReport = $this->create($organisation, $department, $subject, $data, $annualReportExternalId);
+            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $annualReport = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
 
             return $this->annualReportMapper->fromEntity($annualReport);
         }
@@ -92,20 +74,28 @@ final class AnnualReportProcessor extends AbstractDossierProcessor
         Department $department,
         ?Subject $subject,
         AnnualReportRequestDto $annualReportRequestDto,
-        ExternalId $annualReportExternalId,
+        ExternalId $dossierExternalId,
+        string $documentPrefix,
     ): AnnualReport {
-        $annualReport = AnnualReportMapper::create($annualReportRequestDto, $organisation, $department, $subject, $annualReportExternalId);
+        $annualReport = AnnualReportMapper::create(
+            $annualReportRequestDto,
+            $organisation,
+            $department,
+            $subject,
+            $dossierExternalId,
+            $documentPrefix,
+        );
         $mainDocument = AnnualReportMainDocumentMapper::create($annualReport, $annualReportRequestDto->mainDocument);
         $attachments = $this->getAttachments($annualReport, $annualReportRequestDto->attachments);
 
-        $this->validateMainDocument($mainDocument);
-        $this->validateAttachments($attachments);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateAttachments($attachments);
 
         $annualReport->setMainDocument($mainDocument);
-        $this->addAttachments($annualReport, $attachments);
+        $this->dossierSupportService->addAttachments($annualReport, $attachments);
 
-        $this->validateDossier($annualReport);
-        $this->dispatchCreateDossierCommand($annualReport);
+        $this->dossierSupportService->validateDossier($annualReport);
+        $this->dossierSupportService->dispatchCreateDossierCommand($annualReport);
 
         return $annualReport;
     }
@@ -121,15 +111,15 @@ final class AnnualReportProcessor extends AbstractDossierProcessor
         $mainDocument = AnnualReportMainDocumentMapper::update($annualReport, $annualReportRequestDto->mainDocument);
         $attachments = $this->getAttachments($annualReport, $annualReportRequestDto->attachments);
 
-        $this->validateMainDocument($mainDocument);
-        $this->validateAttachments($attachments);
+        $this->dossierSupportService->validateMainDocument($mainDocument);
+        $this->dossierSupportService->validateAttachments($attachments);
 
         $annualReport->setMainDocument($mainDocument);
-        $this->removeDossierAttachments($annualReport);
-        $this->addAttachments($annualReport, $attachments);
+        $this->dossierSupportService->removeDossierAttachments($annualReport);
+        $this->dossierSupportService->addAttachments($annualReport, $attachments);
 
-        $this->validateDossier($annualReport);
-        $this->dispatchUpdateDossierCommand($annualReport);
+        $this->dossierSupportService->validateDossier($annualReport);
+        $this->dossierSupportService->dispatchUpdateDossierCommand($annualReport);
     }
 
     /**

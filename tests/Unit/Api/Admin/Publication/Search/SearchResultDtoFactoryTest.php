@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Api\Admin\Publication\Search;
 
 use Admin\Api\Admin\Publication\Search\SearchResultDtoFactory;
-use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
@@ -29,6 +28,7 @@ use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use Shared\Service\DossierWizard\DossierWizardStatus;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use stdClass;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
@@ -91,8 +91,8 @@ class SearchResultDtoFactoryTest extends UnitTestCase
                 'foo bar',
                 DecisionType::PUBLIC,
                 'summary',
-                new DateTimeImmutable('2024-03-04 12:10:45'),
-                new DateTimeImmutable('2023-03-04 12:10:45'),
+                PlainDate::create('2024-03-04'),
+                PlainDate::create('2023-03-04'),
                 10,
                 PublicationReason::WOO_REQUEST,
             ),
@@ -124,7 +124,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
                 456,
                 6,
                 Judgement::PUBLIC,
-                new DateTimeImmutable('2024-03-07 12:10:45'),
+                PlainDate::create('2024-03-07'),
             ),
             [
                 new DossierReference(
@@ -164,7 +164,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
                 null,
                 1,
                 '',
-                AttachmentLanguage::DUTCH,
+                AttachmentLanguage::NLD,
                 [],
                 '',
                 '',
@@ -226,7 +226,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
                 null,
                 1,
                 '',
-                AttachmentLanguage::DUTCH,
+                AttachmentLanguage::NLD,
                 [],
                 '',
                 '',

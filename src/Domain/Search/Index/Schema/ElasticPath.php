@@ -33,7 +33,7 @@ readonly class ElasticPath
     {
         return new self(
             ElasticNestedField::PAGES,
-            ElasticField::PAGE_NR
+            ElasticField::PAGE_NR,
         );
     }
 

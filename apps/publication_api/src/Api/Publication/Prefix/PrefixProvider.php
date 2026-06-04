@@ -29,7 +29,7 @@ final readonly class PrefixProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|PrefixDto|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|PrefixResponseDto|null
     {
         $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
         if ($organisation === null) {
@@ -60,7 +60,7 @@ final readonly class PrefixProvider implements ProviderInterface
         return new ArrayPaginator(PrefixMapper::fromEntities($documentPrefixes), 0, count($documentPrefixes));
     }
 
-    private function provideSingle(Organisation $organisation, Uuid $documentPrefixId): ?PrefixDto
+    private function provideSingle(Organisation $organisation, Uuid $documentPrefixId): ?PrefixResponseDto
     {
         $documentPrefix = $this->documentPrefixRepository->findByOrganisationAndId($organisation, $documentPrefixId);
         if ($documentPrefix === null) {

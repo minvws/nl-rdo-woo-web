@@ -50,7 +50,7 @@ class LazyFileReference implements FileReferenceInterface
                 }
 
                 return $filePath;
-            }
+            },
         );
     }
 }

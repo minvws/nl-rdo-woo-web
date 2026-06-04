@@ -48,7 +48,7 @@ class ThemeController extends AbstractController
             // Redirect to GET request, so we have the q in the query string.
             return $this->redirect($this->generateUrl(
                 'app_theme',
-                array_merge($request->query->all(), ['q' => $q, 'page' => null, 'name' => $name])
+                array_merge($request->query->all(), ['q' => $q, 'page' => null, 'name' => $name]),
             ));
         }
 
@@ -89,7 +89,7 @@ class ThemeController extends AbstractController
         $responseData['facets'] = json_encode(
             $this->renderView(
                 'public/search/facet.html.twig',
-                ['result' => $result]
+                ['result' => $result],
             ),
             JSON_THROW_ON_ERROR,
         );
@@ -124,6 +124,6 @@ class ThemeController extends AbstractController
             ->createFromRequest($request)
             ->withBaseQueryConditions($theme->getBaseQueryConditionBuilder());
 
-        return $this->searchService->getResult($this->queryDefinition, $searchParameters);
+        return $this->searchService->getResult($this->queryDefinition, $searchParameters, 'app_theme', ['name' => $theme->getUrlName()]);
     }
 }

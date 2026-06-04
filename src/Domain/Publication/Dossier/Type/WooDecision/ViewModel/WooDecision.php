@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
@@ -12,6 +11,7 @@ use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
 use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesAccessors;
 use Shared\Domain\Publication\Dossier\ViewModel\Department;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
+use Shared\ValueObject\PlainDate;
 
 final readonly class WooDecision
 {
@@ -28,10 +28,10 @@ final readonly class WooDecision
         public bool $isInventoryOptional,
         public bool $canProvideInventory,
         public DecisionType $decision,
-        public DateTimeImmutable $decisionDate,
+        public PlainDate $decisionDate,
         public MainDocument $mainDocument,
-        public ?DateTimeImmutable $dateFrom,
-        public ?DateTimeImmutable $dateTo,
+        public ?PlainDate $dateFrom,
+        public ?PlainDate $dateTo,
         public PublicationReason $publicationReason,
         public string $documentSearchUrl,
     ) {

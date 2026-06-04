@@ -24,11 +24,10 @@ class InvestigationReportMainDocumentMapper
         );
 
         $fileInfo = new FileInfo();
-        $fileInfo->setName($mainDocumentRequestDto->filename);
+        $fileInfo->setName($mainDocumentRequestDto->fileName);
 
         $mainDocument->setFileInfo($fileInfo);
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
-        $mainDocument->setInternalReference($mainDocumentRequestDto->internalReference);
 
         return $mainDocument;
     }
@@ -41,12 +40,11 @@ class InvestigationReportMainDocumentMapper
         Assert::notNull($mainDocument);
 
         $fileInfo = new FileInfo();
-        $fileInfo->setName($mainDocumentRequestDto->filename);
+        $fileInfo->setName($mainDocumentRequestDto->fileName);
 
         $mainDocument->setFileInfo($fileInfo);
         $mainDocument->setFormalDate($mainDocumentRequestDto->formalDate);
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
-        $mainDocument->setInternalReference($mainDocumentRequestDto->internalReference);
         $mainDocument->setLanguage($mainDocumentRequestDto->language);
         $mainDocument->setType($mainDocumentRequestDto->type);
 

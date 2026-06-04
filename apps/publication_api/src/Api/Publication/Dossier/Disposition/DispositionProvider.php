@@ -29,7 +29,7 @@ final readonly class DispositionProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|DispositionDto|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|DispositionResponseDto|null
     {
         $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
         if ($organisation === null) {
@@ -40,7 +40,7 @@ final readonly class DispositionProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dispositionExternalId']));
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dossierExternalId']));
     }
 
     /**
@@ -57,7 +57,7 @@ final readonly class DispositionProvider implements ProviderInterface
         return new ArrayPaginator($this->dispositionMapper->fromEntities($dispositions), 0, count($dispositions));
     }
 
-    private function provideSingle(Organisation $organisation, ExternalId $dispositionExternalId): ?DispositionDto
+    private function provideSingle(Organisation $organisation, ExternalId $dispositionExternalId): ?DispositionResponseDto
     {
         $disposition = $this->dispositionRepository->findByOrganisationAndExternalId($organisation, $dispositionExternalId);
         if ($disposition === null) {

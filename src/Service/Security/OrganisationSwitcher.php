@@ -10,9 +10,9 @@ use Shared\Domain\Organisation\OrganisationRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 use function reset;
-use function strval;
 
 class OrganisationSwitcher
 {
@@ -39,9 +39,11 @@ class OrganisationSwitcher
             return $defaultOrganisation;
         }
 
-        $id = Uuid::fromRfc4122(strval($session->get(self::SESSION_KEY)));
-        $organisation = $this->repository->find($id);
-        if (! $organisation) {
+        $sessionKey = $session->get(self::SESSION_KEY);
+        Assert::string($sessionKey);
+
+        $organisation = $this->repository->find(Uuid::fromRfc4122($sessionKey));
+        if (! $organisation instanceof Organisation) {
             return $this->getDefaultOrganisation($user);
         }
 
@@ -49,7 +51,7 @@ class OrganisationSwitcher
     }
 
     /**
-     * @return Organisation[]
+     * @return array<array-key, Organisation>
      */
     public function getOrganisations(User $user): array
     {

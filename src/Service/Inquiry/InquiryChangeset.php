@@ -22,7 +22,7 @@ class InquiryChangeset
     public const string ADD_DOSSIERS = 'add_dossiers';
 
     /**
-     * @var array<string, array<string, array<Uuid>>>
+     * @var array<string, array<string, array<array-key, Uuid>>>
      */
     private array $changes = [];
 
@@ -74,7 +74,7 @@ class InquiryChangeset
     }
 
     /**
-     * @return array<string, array<string, array<Uuid>>>
+     * @return array<string, array<string, array<array-key, Uuid>>>
      */
     public function getChanges(): array
     {

@@ -7,6 +7,21 @@ parameters:
     trusted_hosts: '%env(MINVWS_TRUSTED_HOSTS)%'
     database_encryption_key: '%env(MINVWS_DATABASE_ENCRYPTION_KEY)%'
 
+    # Elasticsearch
+    elasticsearch.host: '%env(MINVWS_ELASTICSEARCH_HOST)%'
+    elasticsearch.user: '%env(MINVWS_ELASTICSEARCH_USER)%'
+    elasticsearch.pass: '%env(MINVWS_ELASTICSEARCH_PASS)%'
+    elasticsearch.mtls.cert_path: '%env(MINVWS_ELASTICSEARCH_MTLS_CERT_PATH)%'
+    elasticsearch.mtls.key_path: '%env(MINVWS_ELASTICSEARCH_MTLS_KEY_PATH)%'
+    elasticsearch.mtls.ca_path: '%env(MINVWS_ELASTICSEARCH_MTLS_CA_PATH)%'
+
+    # ElasticSearch indexes
+    elasticsearch.index.prefix.default: 'minvws-'
+    elasticsearch.index.prefix: '%env(default:elasticsearch.index.prefix.default:MINVWS_ELASTICSEARCH_INDEX_PREFIX)%'
+    elasticsearch.index.read: '%elasticsearch.index.prefix%read'
+    elasticsearch.index.write: '%elasticsearch.index.prefix%write'
+    elasticsearch.index.worker_stats: '%elasticsearch.index.prefix%worker-stats'
+
     # RabbitMQ
     rabbitmq_url: '%env(MINVWS_RABBITMQ_URL)%'
     rabbitmq_stats_url: '%env(MINVWS_RABBITMQ_STATS_URL)%'
@@ -15,9 +30,29 @@ parameters:
     ingestor_transport_dsn: '%env(MINVWS_INGESTOR_TRANSPORT_DSN)%'
     esupdater_transport_dsn: '%env(MINVWS_ESUPDATER_TRANSPORT_DSN)%'
     global_transport_dsn: '%env(MINVWS_GLOBAL_TRANSPORT_DSN)%'
+    api_documents_transport_dsn: '%env(MINVWS_API_DOCUMENTS_TRANSPORT_DSN)%'
+
+    # Minio
+    storage.minio.region: '%env(MINVWS_STORAGE_MINIO_REGION)%'
+    storage.minio.endpoint: '%env(MINVWS_STORAGE_MINIO_ENDPOINT)%'
+    storage.minio.access_key: '%env(MINVWS_STORAGE_MINIO_ACCESS_KEY)%'
+    storage.minio.secret_key: '%env(MINVWS_STORAGE_MINIO_SECRET_KEY)%'
+
+    storage.minio.bucket.upload: '%env(MINVWS_STORAGE_MINIO_UPLOAD_BUCKET)%'
+    storage.minio.bucket.document: '%env(MINVWS_STORAGE_MINIO_DOCUMENT_BUCKET)%'
+    storage.minio.bucket.batch: '%env(MINVWS_STORAGE_MINIO_BATCH_BUCKET)%'
+    storage.minio.bucket.woo_index: '%env(MINVWS_STORAGE_MINIO_WOO_INDEX_BUCKET)%'
+    storage.minio.bucket.assets: '%env(MINVWS_STORAGE_MINIO_ASSETS_BUCKET)%'
+
+    # Redis
+    redis.url: '%env(MINVWS_REDIS_URL)%'
+    redis.tls.cafile: '%env(MINVWS_REDIS_TLS_CAFILE)%'
+    redis.tls.local_cert: '%env(MINVWS_REDIS_TLS_LOCAL_CERT)%'
+    redis.tls.local_pk: '%env(MINVWS_REDIS_TLS_LOCAL_PK)%'
 
     # Application publication_api specific configs:
     publication_api_ssl_username_whitelist: '%env(string:MINVWS_PUBLICATION_API_SSL_USERNAME_WHITELIST)%'
+    publication_api_ssl_organization_identifier: '%env(string:MINVWS_PUBLICATION_API_SSL_ORGANIZATION_IDENTIFIER)%'
 
 services:
     _defaults:

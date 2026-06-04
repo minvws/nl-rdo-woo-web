@@ -71,7 +71,7 @@ final class EnrichedPsrLoggerTest extends UnitTestCase
                         'id' => (string) $this->userId,
                         'roles' => self::MY_ROLES,
                     ],
-                ]
+                ],
             );
 
         $this->getLogger()->{$logLevel}('my message', ['context' => 'my context']);
@@ -97,7 +97,7 @@ final class EnrichedPsrLoggerTest extends UnitTestCase
                         'id' => (string) $this->userId,
                         'roles' => self::MY_ROLES,
                     ],
-                ]
+                ],
             );
 
         $this->getLogger()->alert($message, ['context' => 'my context']);
@@ -118,7 +118,7 @@ final class EnrichedPsrLoggerTest extends UnitTestCase
                         'id' => (string) $this->userId,
                         'roles' => self::MY_ROLES,
                     ],
-                ]
+                ],
             );
 
         $this->getLogger()->log($logLevel, 'my message', ['context' => 'my context']);

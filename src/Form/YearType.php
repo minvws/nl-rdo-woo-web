@@ -4,38 +4,36 @@ declare(strict_types=1);
 
 namespace Shared\Form;
 
-use Carbon\Carbon;
-use Carbon\CarbonImmutable;
-use Carbon\CarbonPeriod;
-use DateTimeInterface;
 use Override;
-use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeImmutableToDateTimeTransformer;
-use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
+use Shared\ValueObject\PlainDate;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Webmozart\Assert\Assert;
 
 use function array_reverse;
+use function is_string;
 
 class YearType extends ChoiceType
 {
-    public const MIN_YEARS = 'min_years';
-    public const PLUS_YEARS = 'plus_years';
-    public const REVERSE = 'reverse';
+    public const string MIN_YEARS = 'min_years';
+    public const string PLUS_YEARS = 'plus_years';
+    public const string REVERSE = 'reverse';
 
     #[Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $options['choices'] = $this->getChoices(...$this->getChoicesArgsFromOptions($options));
 
-        $builder->addModelTransformer(
-            new DateTimeToStringTransformer(null, null, DateTimeInterface::ATOM),
-        );
-
-        $builder->addModelTransformer(
-            new DateTimeImmutableToDateTimeTransformer(),
-        );
+        $builder->addModelTransformer(new CallbackTransformer(
+            static function (?PlainDate $date): string {
+                return $date ? $date->toString() : '';
+            },
+            static function (?string $value): ?PlainDate {
+                return is_string($value) && $value !== '' ? PlainDate::create($value) : null;
+            },
+        ));
 
         parent::buildForm($builder, $options);
     }
@@ -43,23 +41,21 @@ class YearType extends ChoiceType
     /**
      * @return array<int, string>
      */
-    public function getChoices(int $minYears, int $plusYears, bool $reverse): array
+    public function getChoices(int $minYears, int $plusYears, bool $reverse, ?PlainDate $plainDate = null): array
     {
+        if ($plainDate === null) {
+            $plainDate = PlainDate::today();
+        }
+
         $options = [];
 
-        $period = CarbonPeriod::create(
-            Carbon::now()->subYears($minYears),
-            '1 year',
-            Carbon::now()->addYears($plusYears),
-        );
+        $current = $plainDate->subYears($minYears)->firstOfYear();
+        $end = $plainDate->addYears($plusYears);
 
-        /** @var CarbonImmutable $date */
-        foreach ($period->getIterator() as $date) {
-            Assert::notNull($date);
-
-            $date = $date->firstOfYear();
-            $year = (int) $date->format('Y');
-            $options[$year] = $date->format(DateTimeInterface::ATOM);
+        while (! $current->isAfter($end)) {
+            $year = (int) $current->format('Y');
+            $options[$year] = $current->format(PlainDate::DEFAULT_STRING_FORMAT);
+            $current = $current->addYears(1);
         }
 
         if ($reverse) {

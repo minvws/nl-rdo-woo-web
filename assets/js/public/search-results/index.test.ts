@@ -26,44 +26,44 @@ vi.mock('./fetch-and-update-results', () => ({
   fetchAndUpdateResults: vi.fn(),
 }));
 
+vi.mock('./active-filter-pills', () => ({
+  activeFilterPills: () => ({
+    cleanup: activeFilterPillsCleanupSpy,
+    initialize: activeFilterPillsInitializeSpy,
+  }),
+}));
+
+vi.mock('./checkbox-filters', () => ({
+  checkboxFilters: () => ({
+    cleanup: checkboxFiltersCleanupSpy,
+    initialize: checkboxFiltersInitializeSpy,
+  }),
+}));
+
+vi.mock('./collapsible-filters', () => ({
+  collapsibleFilters: () => ({
+    cleanup: collapsibleFiltersCleanupSpy,
+    initialize: collapsibleFiltersInitializeSpy,
+  }),
+}));
+
+vi.mock('./date-filters', () => ({
+  dateFilters: () => ({
+    cleanup: dateFiltersCleanupSpy,
+    initialize: dateFiltersInitializeSpy,
+  }),
+}));
+
+vi.mock('./reset-focus', () => ({
+  resetFocus: () => ({
+    cleanup: resetFocusCleanupSpy,
+    initialize: resetFocusInitializeSpy,
+  }),
+}));
+
 describe('The search results function', () => {
   let initialize: () => void;
   let cleanup: () => void;
-
-  vi.mock('./active-filter-pills', () => ({
-    activeFilterPills: () => ({
-      cleanup: activeFilterPillsCleanupSpy,
-      initialize: activeFilterPillsInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./checkbox-filters', () => ({
-    checkboxFilters: () => ({
-      cleanup: checkboxFiltersCleanupSpy,
-      initialize: checkboxFiltersInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./collapsible-filters', () => ({
-    collapsibleFilters: () => ({
-      cleanup: collapsibleFiltersCleanupSpy,
-      initialize: collapsibleFiltersInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./date-filters', () => ({
-    dateFilters: () => ({
-      cleanup: dateFiltersCleanupSpy,
-      initialize: dateFiltersInitializeSpy,
-    }),
-  }));
-
-  vi.mock('./reset-focus', () => ({
-    resetFocus: () => ({
-      cleanup: resetFocusCleanupSpy,
-      initialize: resetFocusInitializeSpy,
-    }),
-  }));
 
   beforeEach(() => {
     activeFilterPillsCleanupSpy = vi.fn();

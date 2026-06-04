@@ -12,19 +12,6 @@ use Shared\Tests\Integration\SharedWebTestCase;
 
 final class WooDecisionMainDocumentRepositoryTest extends SharedWebTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
-    }
-
-    private function getRepository(): WooDecisionMainDocumentRepository
-    {
-        /** @var WooDecisionMainDocumentRepository */
-        return self::getContainer()->get(WooDecisionMainDocumentRepository::class);
-    }
-
     public function testCreate(): void
     {
         $dossier = WooDecisionFactory::createOne();
@@ -41,7 +28,8 @@ final class WooDecisionMainDocumentRepositoryTest extends SharedWebTestCase
             uploadFileReference: 'uploadFileReference',
         );
 
-        $result = $this->getRepository()->create($dossier, $createMainDocumentCommand);
+        $wooDecisionMainDocumentRepository = self::fromContainer(WooDecisionMainDocumentRepository::class);
+        $result = $wooDecisionMainDocumentRepository->create($dossier, $createMainDocumentCommand);
 
         self::assertEquals($dossier, $result->getDossier());
         self::assertEquals($createMainDocumentCommand->formalDate, $result->getFormalDate());

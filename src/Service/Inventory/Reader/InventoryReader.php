@@ -17,6 +17,8 @@ use Shared\Service\Inquiry\CaseNumbers;
 use Shared\Service\Inventory\DocumentMetadata;
 use Shared\Service\Inventory\InventoryDataHelper;
 use Shared\Service\Inventory\MetadataField;
+use Shared\ValueObject\PlainDate;
+use Webmozart\Assert\Assert;
 
 use function count;
 use function intval;
@@ -37,7 +39,7 @@ class InventoryReader implements InventoryReaderInterface
     private const int MAX_MATTER_LENGTH = 50;
 
     /**
-     * @var ColumnMapping[]
+     * @var array<array-key, ColumnMapping>
      */
     private readonly array $mappings;
     private FileReaderInterface $reader;
@@ -64,9 +66,13 @@ class InventoryReader implements InventoryReaderInterface
     {
         foreach ($this->reader as $rowIdx => $row) {
             unset($row);
+
+            Assert::scalar($rowIdx);
             $rowIdx = intval($rowIdx);
+
             $documentMetadata = null;
             $exception = null;
+
             try {
                 $documentMetadata = $this->mapRow($rowIdx);
             } catch (Exception $exception) {
@@ -95,8 +101,13 @@ class InventoryReader implements InventoryReaderInterface
             $remark = null;
         }
 
+        $documentDate = $this->reader->getOptionalDateTime($rowIdx, MetadataField::DATE->value);
+        if ($documentDate !== null) {
+            $documentDate = PlainDate::createFromFormat('Y-m-d', $documentDate->format('Y-m-d'));
+        }
+
         return new DocumentMetadata(
-            date: $this->reader->getOptionalDateTime($rowIdx, MetadataField::DATE->value),
+            date: $documentDate,
             filename: $this->getFilename($rowIdx),
             familyId: $this->getFamilyId($rowIdx),
             sourceType: SourceType::create($this->reader->getOptionalString($rowIdx, MetadataField::SOURCETYPE->value)),
@@ -120,7 +131,7 @@ class InventoryReader implements InventoryReaderInterface
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     private function getLinks(int $rowIdx): array
     {

@@ -9,6 +9,7 @@ use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentFactory;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\UuidV1;
 use Symfony\Component\Uid\UuidV6;
 use Zenstruck\Foundry\Object\Instantiator;
@@ -29,10 +30,11 @@ final class WooIndexAnnualReportStory extends Story
 
     public function build(): void
     {
-        $annualReport = CarbonImmutable::withTestNow(
-            CarbonImmutable::parse('2022-02-01 13:37:42'),
-            fn () => AnnualReportFactory::createOne(['dossierNr' => 'my-annual-report-1']),
-        );
+        $annualReport = AnnualReportFactory::createOne([
+            'dossierNr' => 'my-annual-report-1',
+            'createdAt' => CarbonImmutable::parse('2022-02-01 13:37:42'),
+            'updatedAt' => CarbonImmutable::parse('2022-02-01 13:37:42'),
+        ]);
         $this->addState('annualReport', $annualReport);
 
         $unpublishedAnnualReport = AnnualReportFactory::createOne([
@@ -41,37 +43,35 @@ final class WooIndexAnnualReportStory extends Story
         ]);
         $this->addState('unpublishedAnnualReport', $unpublishedAnnualReport);
 
-        $annualReportMainDocument = CarbonImmutable::withTestNow(
-            CarbonImmutable::create('2022-02-04 01:12:42'),
-            fn () => AnnualReportMainDocumentFactory::new()
-                ->instantiateWith(Instantiator::withConstructor()->allowExtra('overwrite_id'))
-                ->create([
-                    'overwrite_id' => $this->getUniqueUuid(),
-                    'formalDate' => CarbonImmutable::now()->subDays(5)->startOfDay()->toDateTimeImmutable(),
-                    'dossier' => $annualReport,
-                ]),
-        );
+        $annualReportMainDocument = AnnualReportMainDocumentFactory::new()
+            ->instantiateWith(Instantiator::withConstructor()->allowExtra('overwrite_id'))
+            ->create([
+                'overwrite_id' => $this->getUniqueUuid(),
+                'formalDate' => PlainDate::create('2022-01-30'),
+                'dossier' => $annualReport,
+                'createdAt' => CarbonImmutable::parse('2022-02-04 01:12:42'),
+                'updatedAt' => CarbonImmutable::parse('2022-02-04 01:12:42'),
+            ]);
         $this->addState('mainDocument', $annualReportMainDocument);
 
         $annualReportAttachments = [];
         foreach (range(1, 3) as $i) {
-            $annualReportAttachments[] = CarbonImmutable::withTestNow(
-                CarbonImmutable::create(year: 2022, month: 2, day: $i, hour: 13, minute: 37, second: 42),
-                fn () => AnnualReportAttachmentFactory::new()
-                    ->instantiateWith(Instantiator::withConstructor()->allowExtra('overwrite_id'))
-                    ->create([
-                        'overwrite_id' => $this->getUniqueUuid(),
-                        'formalDate' => CarbonImmutable::now()->subDays(10)->startOfDay()->toDateTimeImmutable(),
-                        'dossier' => $annualReport,
-                    ])
-            );
+            $annualReportAttachments[] = AnnualReportAttachmentFactory::new()
+                ->instantiateWith(Instantiator::withConstructor()->allowExtra('overwrite_id'))
+                ->create([
+                    'overwrite_id' => $this->getUniqueUuid(),
+                    'formalDate' => PlainDate::create('2022-01-21')->addDays($i),
+                    'dossier' => $annualReport,
+                    'createdAt' => CarbonImmutable::parse('2022-01-31 13:37:42')->addDays($i),
+                    'updatedAt' => CarbonImmutable::parse('2022-01-31 13:37:42')->addDays($i),
+                ]);
         }
         $this->addToPool('attachments', $annualReportAttachments);
     }
 
     private function getUniqueUuid(): UuidV6
     {
-        $date = CarbonImmutable::create(year: 2022, month: 2, day: $this->uuidIncrement++, hour: 13, minute: 37, second: 42);
+        $date = CarbonImmutable::parse('2022-01-31 13:37:42')->addDays($this->uuidIncrement++);
 
         return new UuidV6(UuidV6::generate($date, $this->v1Seed));
     }

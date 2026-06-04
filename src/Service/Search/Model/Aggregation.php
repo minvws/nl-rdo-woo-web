@@ -7,7 +7,7 @@ namespace Shared\Service\Search\Model;
 class Aggregation
 {
     /**
-     * @param AggregationBucketEntry[] $entries
+     * @param array<array-key, AggregationBucketEntry> $entries
      */
     public function __construct(protected string $name, protected array $entries)
     {
@@ -19,7 +19,7 @@ class Aggregation
     }
 
     /**
-     * @return AggregationBucketEntry[]
+     * @return array<array-key, AggregationBucketEntry>
      */
     public function getEntries(): array
     {

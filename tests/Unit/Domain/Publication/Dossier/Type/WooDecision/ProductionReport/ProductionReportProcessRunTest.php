@@ -262,7 +262,7 @@ final class ProductionReportProcessRunTest extends UnitTestCase
         self::assertFalse($this->productionReportProcessRun->hasErrors());
 
         $this->productionReportProcessRun->addGenericException(
-            ProcessInventoryException::forMaxRuntimeExceeded()
+            ProcessInventoryException::forMaxRuntimeExceeded(),
         );
 
         self::assertTrue($this->productionReportProcessRun->hasErrors());
@@ -283,7 +283,7 @@ final class ProductionReportProcessRunTest extends UnitTestCase
         $this->expectException(RuntimeException::class);
 
         $this->productionReportProcessRun->addGenericException(
-            ProcessInventoryException::forMaxRuntimeExceeded()
+            ProcessInventoryException::forMaxRuntimeExceeded(),
         );
     }
 
@@ -293,7 +293,7 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
         $this->productionReportProcessRun->addRowException(
             23,
-            ProcessInventoryException::forMaxRuntimeExceeded()
+            ProcessInventoryException::forMaxRuntimeExceeded(),
         );
 
         self::assertTrue($this->productionReportProcessRun->hasErrors());
@@ -315,7 +315,7 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
         $this->productionReportProcessRun->addRowException(
             23,
-            ProcessInventoryException::forMaxRuntimeExceeded()
+            ProcessInventoryException::forMaxRuntimeExceeded(),
         );
     }
 
@@ -331,7 +331,7 @@ final class ProductionReportProcessRunTest extends UnitTestCase
         self::assertTrue($this->productionReportProcessRun->hasNoErrors());
 
         $this->productionReportProcessRun->addGenericException(
-            ProcessInventoryException::forMaxRuntimeExceeded()
+            ProcessInventoryException::forMaxRuntimeExceeded(),
         );
 
         self::assertFalse($this->productionReportProcessRun->hasNoErrors());

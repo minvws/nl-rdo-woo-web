@@ -115,6 +115,7 @@ In A Public Dossier With N Public And M Non-public Documents, Replace The Produc
   ...  files/woodecision/productierapport - 9 openbaar 1 niet openbaar.xlsx
   ...  1 bestaand document wordt aangepast.
   Verify Document Upload Remaining  Nog te uploaden: 1 van 9 documenten.
+  Check if public page has notification  1008
   Upload And Process Documents  files/woodecision/1008.pdf
   Wait For Elements State  //div[@data-e2e-name="has-changes"]  attached  timeout=30s
   Get Text  //div[@data-e2e-name="has-changes"]  contains  1 document toevoegen
@@ -338,3 +339,11 @@ Replace Production Report
   Click Confirm Production Report Replacement
   Verify Production Report Replace  Het productierapport is succesvol vervangen.
   Click Continue To Documents
+
+Check if public page has notification
+  [Arguments]  ${document_id}
+  ${location}  Get Url
+  Open Document In Dossier  ${document_id}
+  Click Public URL
+  Get Text  //*[@data-e2e-name="main-content"]  contains  Dit bestand zal spoedig aangeleverd worden: probeert u later nog eens.
+  Go To  ${location}

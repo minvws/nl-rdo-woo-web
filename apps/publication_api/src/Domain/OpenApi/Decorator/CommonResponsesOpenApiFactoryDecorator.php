@@ -8,8 +8,10 @@ use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\PathItem;
 use ApiPlatform\OpenApi\Model\Paths;
+use ApiPlatform\OpenApi\Model\Reference;
 use ApiPlatform\OpenApi\OpenApi;
-use PublicationApi\Domain\OpenApi\Schema\Component\OpenApiResponseComponentProvider;
+use ArrayObject;
+use PublicationApi\Domain\OpenApi\Schema\Component\OpenApiCommonResponsesProvider;
 use PublicationApi\Domain\OpenApi\Schema\Component\OperationResponseDefinition;
 use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
@@ -20,7 +22,7 @@ use function strtolower;
 use function strtoupper;
 use function ucfirst;
 
-#[AsDecorator(decorates: 'api_platform.openapi.factory', priority: 30)]
+#[AsDecorator(decorates: 'api_platform.openapi.factory')]
 final class CommonResponsesOpenApiFactoryDecorator implements OpenApiFactoryInterface
 {
     /**
@@ -29,12 +31,12 @@ final class CommonResponsesOpenApiFactoryDecorator implements OpenApiFactoryInte
     private array $commonResponses;
 
     /**
-     * @param iterable<array-key,OpenApiResponseComponentProvider> $responseProviders
+     * @param iterable<array-key,OpenApiCommonResponsesProvider> $commonResponsesProviders
      */
     public function __construct(
         private readonly OpenApiFactoryInterface $decorated,
-        #[AutowireIterator('publication_api.open_api.response_component_provider')]
-        private readonly iterable $responseProviders,
+        #[AutowireIterator('publication_api.open_api.common_responses_provider')]
+        private readonly iterable $commonResponsesProviders,
     ) {
     }
 
@@ -84,7 +86,9 @@ final class CommonResponsesOpenApiFactoryDecorator implements OpenApiFactoryInte
     private function addCommonResponsesToOperation(string $method, Operation $operation, string $path): Operation
     {
         foreach ($this->getCommonResponses() as $responseDefinition) {
-            $responseExists = (($operation->getResponses() ?? [])[$responseDefinition->statusCode] ?? null) !== null;
+            $operationResponses = $operation->getResponses() ?? [];
+
+            $responseExists = ($operationResponses[$responseDefinition->statusCode] ?? null) !== null;
             if ($responseExists) {
                 continue;
             }
@@ -93,10 +97,13 @@ final class CommonResponsesOpenApiFactoryDecorator implements OpenApiFactoryInte
                 continue;
             }
 
-            $operation = $operation->withResponse(
-                $responseDefinition->statusCode,
-                $responseDefinition->response,
-            );
+            $response = $responseDefinition->response instanceof Reference
+                ? $this->unwrapReference($responseDefinition->response)
+                : $responseDefinition->response;
+
+            $operationResponses[$responseDefinition->statusCode] = $response;
+
+            $operation = $operation->withResponses($operationResponses);
         }
 
         return $operation;
@@ -132,12 +139,31 @@ final class CommonResponsesOpenApiFactoryDecorator implements OpenApiFactoryInte
         }
 
         $responses = [];
-        foreach ($this->responseProviders as $provider) {
-            foreach ($provider->getResponses() as $responseDefinition) {
+        foreach ($this->commonResponsesProviders as $provider) {
+            foreach ($provider->getCommonResponses() as $responseDefinition) {
                 $responses[] = $responseDefinition;
             }
         }
 
         return $this->commonResponses = $responses;
+    }
+
+    private function unwrapReference(Reference $reference): ArrayObject
+    {
+        $ref = new ArrayObject(['$ref' => $reference->getRef()]);
+
+        if ($reference->getSummary() !== null) {
+            $ref['summary'] = $reference->getSummary();
+        }
+
+        if ($reference->getDescription() !== null) {
+            $ref['description'] = $reference->getDescription();
+        }
+
+        foreach ($reference->getExtensionProperties() as $key => $value) {
+            $ref[$key] = $value;
+        }
+
+        return $ref;
     }
 }

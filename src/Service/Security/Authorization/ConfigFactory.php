@@ -7,7 +7,7 @@ namespace Shared\Service\Security\Authorization;
 readonly class ConfigFactory
 {
     /**
-     * @param array{entries?: mixed[]} $config
+     * @param array{entries?: array<array-key, mixed>} $config
      */
     public function __construct(
         private array $config,
@@ -15,13 +15,13 @@ readonly class ConfigFactory
     }
 
     /**
-     * @return Entry[]
+     * @return array<array-key, Entry>
      */
     public function create(): array
     {
         $entries = [];
         foreach ($this->config['entries'] ?? [] as $data) {
-            /** @var mixed[] $data */
+            /** @var array<array-key, mixed> $data */
             $entries[] = Entry::createFrom($data);
         }
 

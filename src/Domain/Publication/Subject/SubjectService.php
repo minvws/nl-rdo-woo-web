@@ -38,7 +38,7 @@ readonly class SubjectService
         $this->repository->save($subject, true);
 
         $this->messageBus->dispatch(
-            SubjectUpdatedEvent::forSubject($subject)
+            SubjectUpdatedEvent::forSubject($subject),
         );
     }
 

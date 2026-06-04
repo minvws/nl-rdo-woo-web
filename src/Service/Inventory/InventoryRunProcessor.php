@@ -69,7 +69,7 @@ readonly class InventoryRunProcessor
                 'ProductionReportProcessRun failed. See the ProductionReportProcessRun table for more details on the failure including the exception.',
                 [
                     'uuid' => $run->getId(),
-                ]
+                ],
             );
         } finally {
             if ($run->isFinal()) {

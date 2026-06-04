@@ -49,7 +49,7 @@ class ExcelReader implements IteratorAggregate, FileReaderInterface
     public function getCell(int $rowIndex, string $columnName): mixed
     {
         $cellCoord = $this->headerMapping->getCellCoordinate($columnName);
-        Assert::scalar($cellCoord);
+        Assert::nullOrScalar($cellCoord);
 
         $cellCoord = (string) $cellCoord;
 
@@ -58,7 +58,10 @@ class ExcelReader implements IteratorAggregate, FileReaderInterface
 
     public function getString(int $rowIndex, string $columnName): string
     {
-        return strval($this->getCell($rowIndex, $columnName));
+        $cell = $this->getCell($rowIndex, $columnName);
+        Assert::nullOrScalar($cell);
+
+        return strval($cell);
     }
 
     public function getOptionalString(int $rowIndex, string $columnName): ?string
@@ -68,7 +71,10 @@ class ExcelReader implements IteratorAggregate, FileReaderInterface
 
     public function getInt(int $rowIndex, string $columnName): int
     {
-        return intval($this->getCell($rowIndex, $columnName));
+        $cell = $this->getCell($rowIndex, $columnName);
+        Assert::nullOrScalar($cell);
+
+        return intval($cell);
     }
 
     public function getDateTime(int $rowIndex, string $columnName): DateTimeImmutable
@@ -107,6 +113,8 @@ class ExcelReader implements IteratorAggregate, FileReaderInterface
         $cellIterator->setIterateOnlyExistingCells(true);
         foreach ($cellIterator as $cell) {
             $value = $cell->getValue();
+            Assert::nullOrScalar($value);
+
             if ($value !== null && trim(strval($value)) !== '') {
                 return false;
             }

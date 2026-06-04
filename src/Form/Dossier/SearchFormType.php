@@ -58,7 +58,7 @@ class SearchFormType extends AbstractType
                 'expanded' => true,
                 'multiple' => true,
                 'choices' => $this->departmentRepository->getOrganisationDepartmentsSortedByName(
-                    $this->authorizationMatrix->getActiveOrganisation()
+                    $this->authorizationMatrix->getActiveOrganisation(),
                 ),
             ]);
 

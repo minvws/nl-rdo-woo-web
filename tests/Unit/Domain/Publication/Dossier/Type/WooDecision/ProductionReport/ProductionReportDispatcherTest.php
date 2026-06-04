@@ -45,7 +45,7 @@ class ProductionReportDispatcherTest extends UnitTestCase
                 self::assertEquals($upload, $command->upload);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchInitiateProductionReportUpdateCommand($wooDecision, $upload);
@@ -60,7 +60,7 @@ class ProductionReportDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->getUuid());
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchProductionReportProcessRunCommand($id);
@@ -75,7 +75,7 @@ class ProductionReportDispatcherTest extends UnitTestCase
                 self::assertEquals($wooDecision, $command->dossier);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchConfirmProductionReportUpdateCommand($wooDecision);
@@ -90,7 +90,7 @@ class ProductionReportDispatcherTest extends UnitTestCase
                 self::assertEquals($wooDecision, $command->dossier);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchRejectProductionReportUpdateCommand($wooDecision);
@@ -105,7 +105,7 @@ class ProductionReportDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->getUuid());
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchGenerateInventoryCommand($id);

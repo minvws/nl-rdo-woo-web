@@ -88,9 +88,9 @@ readonly class InquiryService
     }
 
     /**
-     * @param Uuid[] $docIdsToAdd
-     * @param Uuid[] $docIdsToDelete
-     * @param Uuid[] $dossierIdsToAdd
+     * @param array<array-key, Uuid> $docIdsToAdd
+     * @param array<array-key, Uuid> $docIdsToDelete
+     * @param array<array-key, Uuid> $dossierIdsToAdd
      */
     public function updateInquiryLinks(
         Organisation $organisation,

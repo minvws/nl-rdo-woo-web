@@ -89,7 +89,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
                     self::assertEquals([ContentExtractorKey::TIKA], array_values($options->getEnabledExtractors()));
 
                     return true;
-                }
+                },
             ))
             ->andReturn($text);
 
@@ -135,7 +135,7 @@ final class IngestTikaOnlyHandlerTest extends UnitTestCase
                     self::assertEquals([ContentExtractorKey::TIKA], array_values($options->getEnabledExtractors()));
 
                     return true;
-                }
+                },
             ))
             ->andReturn($text);
 

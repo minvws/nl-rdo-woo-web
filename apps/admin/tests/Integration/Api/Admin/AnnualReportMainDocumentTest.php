@@ -86,7 +86,7 @@ final class AnnualReportMainDocumentTest extends AdminApiTestCase
             'formalDate' => CarbonImmutable::yesterday()->format('Y-m-d'),
             'internalReference' => 'foo bar',
             'type' => AttachmentType::ANNUAL_REPORT->value,
-            'language' => AttachmentLanguage::DUTCH->value,
+            'language' => AttachmentLanguage::NLD->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => $upload->getUploadId(),
         ];
@@ -214,7 +214,7 @@ final class AnnualReportMainDocumentTest extends AdminApiTestCase
             'formalDate' => CarbonImmutable::yesterday()->format('Y-m-d'),
             'internalReference' => 'foo bar',
             'type' => AttachmentType::PROGRESS_REPORT->value,
-            'language' => AttachmentLanguage::DUTCH->value,
+            'language' => AttachmentLanguage::NLD->value,
             'grounds' => ['foo', 'bar'],
             'uploadUuid' => Uuid::v6(),
         ];

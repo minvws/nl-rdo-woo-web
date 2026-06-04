@@ -85,7 +85,7 @@ class ContentExtractServiceTest extends UnitTestCase
                 $fileReference->getPath();
 
                 return $contentA;
-            }
+            },
         );
 
         $contentB = "B line1\nB line 2";
@@ -96,7 +96,7 @@ class ContentExtractServiceTest extends UnitTestCase
                 $fileReference->getPath();
 
                 return $contentB;
-            }
+            },
         );
 
         $this->entityStorage->expects('removeDownload')->with($localFile);
@@ -134,7 +134,7 @@ class ContentExtractServiceTest extends UnitTestCase
                 $fileReference->getPath();
 
                 return $contentB;
-            }
+            },
         );
 
         $extracts = $this->service->getExtracts(
@@ -167,7 +167,7 @@ class ContentExtractServiceTest extends UnitTestCase
                 $fileReference->getPath();
 
                 return $contentA;
-            }
+            },
         );
 
         $contentB = "B line1\nB line 2";
@@ -178,7 +178,7 @@ class ContentExtractServiceTest extends UnitTestCase
                 $fileReference->getPath();
 
                 return $contentB;
-            }
+            },
         );
 
         $extracts = $this->service->getExtracts(
@@ -205,7 +205,7 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->logger->expects('log')->with(
             LogLevel::WARNING,
             'No content could be extracted',
-            ['id' => $entityId, 'class' => $entity::class]
+            ['id' => $entityId, 'class' => $entity::class],
         );
 
         $contentExtractOptions = ContentExtractOptions::create()->withExtractor(ContentExtractorKey::TIKA);
@@ -251,7 +251,7 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->logger->expects('log')->with(
             LogLevel::ERROR,
             sprintf('Content extract error: %s', $exMessage),
-            ['id' => $entityId, 'class' => $entity::class]
+            ['id' => $entityId, 'class' => $entity::class],
         );
 
         $extracts = $this->service->getExtracts(

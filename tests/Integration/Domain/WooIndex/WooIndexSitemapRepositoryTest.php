@@ -21,9 +21,7 @@ final class WooIndexSitemapRepositoryTest extends SharedWebTestCase
     {
         parent::setUp();
 
-        self::bootKernel();
-
-        $this->wooIndexSitemapRepository = self::getContainer()->get(WooIndexSitemapRepository::class);
+        $this->wooIndexSitemapRepository = self::fromContainer(WooIndexSitemapRepository::class);
     }
 
     #[WithStory(WooIndexSitemapsStory::class)]
@@ -48,10 +46,8 @@ final class WooIndexSitemapRepositoryTest extends SharedWebTestCase
     #[WithStory(WooIndexSitemapsStory::class)]
     public function testGetSitemapsForCleanup(): void
     {
-        $this->setTestNow($now = WooIndexSitemapsStory::now());
-
         $treshold = 3;
-        $date = $now->subDays(5);
+        $date = WooIndexSitemapsStory::now()->subDays(5);
 
         $result = iterator_to_array(
             $this->wooIndexSitemapRepository->getSitemapsForCleanup($treshold, $date),

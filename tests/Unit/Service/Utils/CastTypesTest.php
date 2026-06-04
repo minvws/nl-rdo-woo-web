@@ -17,7 +17,7 @@ class CastTypesTest extends UnitTestCase
         $result = CastTypes::asImmutableDate('1-1-2000 00:00:00', 'd-m-Y H:i:s');
         Assert::isInstanceOf($result, DateTimeImmutable::class);
 
-        self::assertTrue(Carbon::createStrict(2000)->eq($result));
+        self::assertTrue(Carbon::rawParse('2000-01-01')->eq($result));
     }
 
     public function testAsImmutableDateWithoutFormat(): void
@@ -25,7 +25,7 @@ class CastTypesTest extends UnitTestCase
         $result = CastTypes::asImmutableDate('1-1-2000');
         Assert::isInstanceOf($result, DateTimeImmutable::class);
 
-        self::assertTrue(Carbon::createStrict(2000)->eq($result));
+        self::assertTrue(Carbon::rawParse('2000-01-01')->eq($result));
     }
 
     public function testAsImmutableDateWithInvalidFormat(): void

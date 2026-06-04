@@ -14,6 +14,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInq
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
+use Shared\Domain\Upload\WooDecision\ProcessUploadedDocumentsCommand;
 use Shared\Tests\Unit\UnitTestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
@@ -43,7 +44,7 @@ class WooDecisionDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->getUuid());
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchRemoveInventoryAndDocumentsCommand($id);
@@ -65,7 +66,7 @@ class WooDecisionDispatcherTest extends UnitTestCase
                 self::assertEquals($explanation, $command->explanation);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchWithdrawAllDocumentsCommand($wooDecision, $reason, $explanation);
@@ -80,7 +81,7 @@ class WooDecisionDispatcherTest extends UnitTestCase
                 self::assertEquals($wooDecision, $command->dossier);
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchUpdateDecisionCommand($wooDecision);
@@ -95,7 +96,7 @@ class WooDecisionDispatcherTest extends UnitTestCase
                 self::assertEquals($id, $command->getUuid());
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchGenerateInquiryInventoryCommand($id);
@@ -118,9 +119,26 @@ class WooDecisionDispatcherTest extends UnitTestCase
                 self::assertEquals($dossierIdsToAdd, $command->getDossierIdsToAdd());
 
                 return true;
-            }
+            },
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchUpdateInquiryLinksCommand($id, $caseNr, $docIdsToAdd, $docIdsToDelete, $dossierIdsToAdd);
+    }
+
+    public function testDispatchProcessUploadedDocumentsCommand(): void
+    {
+        $wooDecisionId = Uuid::v6();
+        $uploadEntityId = Uuid::v6();
+
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
+            static function (ProcessUploadedDocumentsCommand $command) use ($wooDecisionId, $uploadEntityId) {
+                self::assertEquals($wooDecisionId, $command->wooDecisionId);
+                self::assertEquals($uploadEntityId, $command->uploadEntityId);
+
+                return true;
+            },
+        ))->andReturns(new Envelope(new stdClass()));
+
+        $this->dispatcher->dispatchProcessUploadedDocumentsCommand($wooDecisionId, $uploadEntityId);
     }
 }

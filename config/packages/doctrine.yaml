@@ -7,10 +7,9 @@ doctrine:
         profiling_collect_backtrace: '%kernel.debug%'
         types:
             !php/const Shared\Doctrine\ExternalIdType::NAME: Shared\Doctrine\ExternalIdType
+            !php/const Shared\Doctrine\PlainDateType::NAME: Shared\Doctrine\PlainDateType
     orm:
-        auto_generate_proxy_classes: NEVER
         enable_native_lazy_objects: true
-        enable_lazy_ghost_objects: true
         validate_xml_mapping: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: false
@@ -42,11 +41,6 @@ doctrine:
         controller_resolver:
             auto_mapping: false
 
-when@dev:
-    doctrine:
-        orm:
-            auto_generate_proxy_classes: FILE_NOT_EXISTS_OR_CHANGED
-
 when@test:
     doctrine:
         dbal:
@@ -58,8 +52,6 @@ when@test:
 when@prod:
     doctrine:
         orm:
-            auto_generate_proxy_classes: false
-            proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
             query_cache_driver:
                 type: pool
                 pool: doctrine.system_cache_pool

@@ -154,7 +154,7 @@ readonly class SearchParameters
         return new self(
             facetInputs: $this->facetInputs->withFacetInput(
                 FacetKey::DATE,
-                $dateFacet->includeWithoutDate()
+                $dateFacet->includeWithoutDate(),
             ),
             operator: $this->operator,
             limit: $this->limit,

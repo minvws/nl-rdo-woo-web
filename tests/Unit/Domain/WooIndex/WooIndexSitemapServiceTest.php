@@ -199,7 +199,8 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
 
     public function testCleanupSitemaps(): void
     {
-        $this->setTestNow($now = CarbonImmutable::parse('2025-02-18 10:00'));
+        $now = CarbonImmutable::parse('2025-02-18 10:00');
+        CarbonImmutable::setTestNow($now);
 
         $wooIndexSitemaps = [
             Mockery::mock(WooIndexSitemap::class),

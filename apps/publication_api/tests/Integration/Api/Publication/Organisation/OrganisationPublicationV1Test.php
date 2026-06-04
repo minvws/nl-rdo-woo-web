@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Integration\Api\Publication\Organisation;
 
-use PublicationApi\Api\Publication\Organisation\OrganisationDto;
+use PublicationApi\Api\Publication\Organisation\OrganisationResponseDto;
 use PublicationApi\Tests\Integration\Api\Publication\ApiPublicationV1TestCase;
 use Shared\Tests\Factory\OrganisationFactory;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,7 +34,7 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
-        self::assertMatchesResourceItemJsonSchema(OrganisationDto::class);
+        self::assertMatchesResourceItemJsonSchema(OrganisationResponseDto::class);
     }
 
     public function testGetWithoutSslUserNameReturnsUnauthorized(): void
@@ -71,7 +71,7 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
         self::createPublicationApiClient()
             ->request(Request::METHOD_GET, '/api/publication/v1/organisation/invalid');
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-        self::assertMatchesResourceItemJsonSchema(OrganisationDto::class);
+        self::assertMatchesResourceItemJsonSchema(OrganisationResponseDto::class);
     }
 
     public function testGetCollection(): void
@@ -82,7 +82,7 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
         $response = self::createPublicationApiClient()
             ->request(Request::METHOD_GET, '/api/publication/v1/organisation');
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(OrganisationDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(OrganisationResponseDto::class);
         self::assertCount($organisationCount, $response->toArray());
     }
 
@@ -94,7 +94,7 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
             ->request(Request::METHOD_GET, '/api/publication/v1/organisation');
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(OrganisationDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(OrganisationResponseDto::class);
         self::assertCount(5, $response->toArray());
     }
 
@@ -117,7 +117,7 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(OrganisationDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(OrganisationResponseDto::class);
         self::assertCount(2, $response->toArray());
     }
 
@@ -133,7 +133,7 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(OrganisationDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(OrganisationResponseDto::class);
         self::assertCount(1, $response->toArray());
     }
 }

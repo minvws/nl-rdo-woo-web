@@ -122,7 +122,7 @@ readonly class ElasticIndexManager
     }
 
     /**
-     * @return ElasticIndexDetails[]
+     * @return array<array-key, ElasticIndexDetails>
      */
     public function list(): array
     {
@@ -131,18 +131,18 @@ readonly class ElasticIndexManager
         // ES returns indices in a random order for each request, so manually order them for a consistent list
         usort(
             $indices,
-            static fn (ElasticIndexDetails $index1, ElasticIndexDetails $index2) => $index2->name <=> $index1->name
+            static fn (ElasticIndexDetails $index1, ElasticIndexDetails $index2) => $index2->name <=> $index1->name,
         );
 
         // Also filter out a special index that is not relevant
         return array_filter(
             $indices,
-            static fn (ElasticIndexDetails $index) => $index->name !== 'worker_stats'
+            fn (ElasticIndexDetails $index) => $index->name !== $this->elasticConfig->workerStatsIndex,
         );
     }
 
     /**
-     * @return ElasticIndexDetails[]
+     * @return array<array-key, ElasticIndexDetails>
      */
     public function find(?string $name = null): array
     {

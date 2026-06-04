@@ -16,17 +16,14 @@ trait TimestampableTrait
     #[ORM\Column(nullable: false)]
     protected DateTimeImmutable $updatedAt;
 
-    #[ORM\PrePersist]
-    public function onPrePersist(): void
-    {
-        $this->createdAt = new CarbonImmutable();
-        $this->updatedAt = new CarbonImmutable();
-    }
+    protected bool $hasUpdatedAtOverride = false;
 
     #[ORM\PreUpdate]
     public function onPreUpdate(): void
     {
-        $this->updatedAt = new CarbonImmutable();
+        if (! $this->hasUpdatedAtOverride) {
+            $this->updatedAt = new CarbonImmutable();
+        }
     }
 
     public function getCreatedAt(): DateTimeImmutable
@@ -49,6 +46,7 @@ trait TimestampableTrait
     public function setUpdatedAt(DateTimeImmutable $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+        $this->hasUpdatedAtOverride = true;
 
         return $this;
     }

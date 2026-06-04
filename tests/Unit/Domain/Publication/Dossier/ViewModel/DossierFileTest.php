@@ -22,7 +22,7 @@ final class DossierFileTest extends UnitTestCase
             $size = 456,
             $hasPages = true,
             $downloadUrl = '/foo/bar',
-            ...$pages
+            ...$pages,
         );
 
         self::assertEquals($type, $dossierFile->type);

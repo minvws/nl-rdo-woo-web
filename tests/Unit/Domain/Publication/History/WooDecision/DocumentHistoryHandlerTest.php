@@ -56,7 +56,7 @@ class DocumentHistoryHandlerTest extends UnitTestCase
             [
                 'explanation' => '%global.document.withdraw.reason.data_in_document%',
                 'explanation_details' => $explanation,
-            ]
+            ],
         );
 
         $this->handler->handleAllDocumentsWithdrawn($event);
@@ -76,7 +76,7 @@ class DocumentHistoryHandlerTest extends UnitTestCase
             [
                 'explanation' => '%global.document.withdraw.reason.data_in_document%',
                 'explanation_details' => $explanation,
-            ]
+            ],
         );
 
         $this->handler->handleDocumentWithdrawn($event);

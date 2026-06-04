@@ -43,7 +43,7 @@ class SubjectUpdatedHandlerTest extends UnitTestCase
         $this->indexUpdater->expects('update')->with($subject);
 
         $this->handler->__invoke(
-            SubjectUpdatedEvent::forSubject($subject)
+            SubjectUpdatedEvent::forSubject($subject),
         );
     }
 
@@ -57,7 +57,7 @@ class SubjectUpdatedHandlerTest extends UnitTestCase
         $this->expectException(InvalidArgumentException::class);
 
         $this->handler->__invoke(
-            SubjectUpdatedEvent::forSubject($subject)
+            SubjectUpdatedEvent::forSubject($subject),
         );
     }
 }

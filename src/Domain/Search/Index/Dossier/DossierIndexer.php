@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Index\Dossier;
 
+use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Search\Index\Dossier\Mapper\ElasticDossierMapperInterface;
 use Shared\Domain\Search\Index\ElasticDocument;
@@ -25,6 +26,9 @@ readonly class DossierIndexer
     ) {
     }
 
+    /**
+     * @throws ClientResponseException
+     */
     public function index(AbstractDossier $dossier, bool $updateSubItems = true): void
     {
         $doc = $this->map($dossier);

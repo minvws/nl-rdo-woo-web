@@ -19,7 +19,7 @@ class PathSetTest extends UnitTestCase
                 $pathA = '/foo/bar' => 'path_a_uuid',
                 $pathB = '/foo/baz' => 'path_b_uuid',
                 $pathC = '/foo/foo' => 'path_c_uuid',
-            ]
+            ],
         );
 
         self::assertEquals($name, $pathSet->name);

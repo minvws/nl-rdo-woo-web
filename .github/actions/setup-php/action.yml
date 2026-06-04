@@ -2,6 +2,9 @@ name: Setup PHP
 description: Compose action that sets up PHP and Composer
 
 inputs:
+  composer-options:
+    description: Extra options for composer install (i.e. '--no-dev')
+    default: ""
   php-version:
     description: The PHP version
     default: "8.4"
@@ -23,7 +26,7 @@ runs:
 
     - name: Restore Composer cache
       id: composer-cache
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: ${{ steps.composer-cache-dir.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
@@ -39,11 +42,11 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: composer install --no-interaction --no-progress --prefer-dist --ignore-platform-reqs
+      run: composer install --no-interaction --no-progress --prefer-dist --ignore-platform-reqs ${{ inputs.composer-options }}
 
     - name: Save Composer cache
       if: ${{ always() && steps.composer-cache.outputs.cache-hit != 'true' }}
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: ${{ steps.composer-cache-dir.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}

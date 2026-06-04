@@ -1,71 +1,76 @@
-*** Comments ***
-# robocop: off=no-suite-variable
-
-
 *** Settings ***
-Documentation       Tests for the Complaint Judgement endpoint
-Library             RequestsLibrary
+Documentation       Tests for the Complaint Judgement endpoint, utilizing a custom DataDriver reader.
+...                 Actual testcases are in the file files/api/complaintjudgement.yaml.
+Library             DataDriver  reader_class=libraries/yaml_reader.py  file_path=files/api/complaintjudgement.yaml
 Resource            ../../resources/API.resource
-Resource            ../../resources/ComplaintJudgement.resource
 Resource            ../../resources/Dossier.resource
 Suite Setup         Suite Setup
-Test Tags           api  complaint-judgement
-
-
-*** Variables ***
-${ORGANISATION_ID}  ${EMPTY}
-${EXTERNAL_ID}      ${EMPTY}
-${BODY}             ${EMPTY}
+Test Template       Complaint Judgement Test Case
+Test Tags           api  api-complaintjudgement
 
 
 *** Test Cases ***
-Create A Complaint Judgement
-  ${publication_date} =  Get Date Minus  1 day
-  When We Create Test Data For Complaint Judgement  ${publication_date}
-  And A Complaint Judgement Is Created
-  And We Dont Upload The Main Document
-  Then We Can Find It
-  And Its Not Published Yet
+Testcases     placeholder_arg
 
 
 *** Keywords ***
 Suite Setup
   Suite Setup API
 
-We Create Test Data For Complaint Judgement
-  [Arguments]  ${publication_date}
-  ${main_document} =  Generate Main Document  type=ww_jc6woe9
-  # Build body
+Complaint Judgement Test Case
+  [Arguments]  ${steps}
+  FOR  ${step}  IN  @{steps}
+    Log  ${step}[name]
+    IF  '${step}[type]' == 'request'
+      Create Complaint Judgement
+      ...  ${step}[expected_response_status]
+      ...  ${step}[body]
+      ...  ${step}[files]
+      ...  ${step}[expected_publication_status]
+    ELSE IF  '${step}[type]' == 'keyword'
+      Run Keyword  ${step}[keyword]  @{step["args"]}
+    END
+  END
+
+Create Complaint Judgement
+  [Arguments]  ${expected_response_status}  ${body}  ${files}  ${expected_publication_status}
+  ${external_id} =  Generate External ID
+  Parse And Randomize Dossier Data  ${body}
+  ${response} =  Send Put Request Complaint Judgement  ${external_id}  ${body}  ${expected_response_status}
+  IF  '${expected_response_status}' == '200'
+    IF  '${files}[mainDocument]' != 'None'
+      Upload Main Document  complaint-judgement  ${files}[mainDocument]  E:${response}[externalId]
+    END
+    Publication Status Should Be  complaint-judgement  ${expected_publication_status}
+  END
+
+Parse And Randomize Dossier Data
+  [Arguments]  ${body}
+  ${dossier_number} =  Generate Dossier Reference Number
+  ${title} =  Catenate  Robot API ${dossier_number}
   ${department_id} =  Get Department ID
   ${subject_id} =  Get Subject ID
-  ${prefix_id} =  Get Prefix
-  ${dossier_number} =  Generate Dossier Reference Number
-  ${internal_reference} =  FakerLibrary.Sentence
-  ${title} =  Catenate  Robot API ${dossier_number}
-  ${summary} =  Fakerlibrary.Text  200
-  ${dossier_date} =  Get Date Minus  1 day
-  VAR  &{BODY} =
-  ...  departmentId=${department_id}
-  ...  dossierDate=${dossier_date}
-  ...  dossierNumber=${dossier_number}
-  ...  internalReference=${internal_reference}
-  ...  mainDocument=${main_document}
-  ...  prefix=${prefix_id}
-  ...  publicationDate=${publication_date}
-  ...  subjectId=${subject_id}
-  ...  summary=${summary}
-  ...  title=${title}
-  ...  scope=SUITE
-  Generate External ID
+  Set To Dictionary  ${body}  dossierNumber  ${dossier_number}
+  Set To Dictionary  ${body}  title  ${title}
+  Set To Dictionary  ${body}  departmentId  ${department_id}
+  Set To Dictionary  ${body}  subjectId  ${subject_id}
+  Parse Dates  ${body}
+  Set Random Grounds  ${body}
 
-A Complaint Judgement Is Created
-  PUT On Session
-  ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/complaint-judgement/${EXTERNAL_ID}
-  ...  json=${BODY}
+Parse Dates
+  [Arguments]  ${body}
+  Parse Text To Date  ${body}  dossierDate
+  Parse Text To Date  ${body}  publicationDate
+  Parse Text To Date  ${body}[mainDocument]  formalDate
 
-We Can Find It
-  ${get_response} =  GET On Session
+Send Put Request Complaint Judgement
+  [Arguments]  ${external_id}  ${body}  ${expected_response_status}
+  ${put_response} =  PUT On Session
   ...  alias=publication_api
-  ...  url=${BASE_URL}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/complaint-judgement/${EXTERNAL_ID}
-  VAR  ${RESPONSE} =  ${get_response.json()}  scope=TEST
+  ...  url=%{URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/complaint-judgement/${external_id}
+  ...  json=${body}
+  ...  expected_status=any
+  Should Be True
+  ...  ${put_response.status_code} == ${expected_response_status}
+  ...  msg=Complaint judgement PUT returned ${put_response.status_code} while expecting ${expected_response_status}
+  RETURN  ${put_response.json()}

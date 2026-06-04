@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\RequestForAdvice\ViewModel;
 
-use DateTimeImmutable;
 use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
 use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesAccessors;
+use Shared\ValueObject\PlainDate;
 
 final readonly class RequestForAdvice
 {
@@ -17,7 +17,7 @@ final readonly class RequestForAdvice
      */
     public function __construct(
         private CommonDossierProperties $commonDossier,
-        public DateTimeImmutable $date,
+        public PlainDate $date,
         public string $link,
         public array $advisoryBodies,
     ) {

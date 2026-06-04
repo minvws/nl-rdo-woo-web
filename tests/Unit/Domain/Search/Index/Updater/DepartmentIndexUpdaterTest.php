@@ -9,7 +9,7 @@ use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Search\Index\Updater\DepartmentIndexUpdater;
 use Shared\Service\Elastic\ElasticClientInterface;
-use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
+use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -24,7 +24,7 @@ class DepartmentIndexUpdaterTest extends UnitTestCase
 
         $this->indexUpdater = new DepartmentIndexUpdater(
             $this->elasticClient,
-            ElasticConfigOverride::default(),
+            ElasticConfigFactory::default(),
         );
 
         parent::setUp();
@@ -40,7 +40,7 @@ class DepartmentIndexUpdaterTest extends UnitTestCase
 
         $this->elasticClient->expects('updateByQuery')->with(Mockery::on(
             static fn (array $input) => $input['body']['query']['bool']['should'][0]['match']['departments.id'] === $departmentId
-                && $input['body']['script']['params']['department']['name'] === 'FB|Foo Bar'
+                && $input['body']['script']['params']['department']['name'] === 'FB|Foo Bar',
         ));
 
         $this->indexUpdater->update($department);

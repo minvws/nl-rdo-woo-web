@@ -3,29 +3,29 @@ snc_redis:
         ingest:
             type: predis
             alias: ingest
-            dsn: '%env(REDIS_URL)%'
+            dsn: '%redis.url%'
             options:
                 parameters:
                     ssl_context: {
                         'verify_peer': true,
                         'allow_self_signed': false,
                         'verify_peer_name': true,
-                        'cafile': '%env(REDIS_TLS_CAFILE)%',
-                        'local_cert': '%env(REDIS_TLS_LOCAL_CERT)%',
-                        'local_pk': '%env(REDIS_TLS_LOCAL_PK)%'
+                        'cafile': '%redis.tls.cafile%',
+                        'local_cert': '%redis.tls.local_cert%',
+                        'local_pk': '%redis.tls.local_pk%'
                     }
 
         session:
             type: predis
             alias: session
-            dsn: '%env(REDIS_URL)%'
+            dsn: '%redis.url%'
             options:
                 parameters:
                     ssl_context: {
                         'verify_peer': true,
                         'allow_self_signed': false,
                         'verify_peer_name': true,
-                        'cafile': '%env(REDIS_TLS_CAFILE)%',
-                        'local_cert': '%env(REDIS_TLS_LOCAL_CERT)%',
-                        'local_pk': '%env(REDIS_TLS_LOCAL_PK)%'
+                        'cafile': '%redis.tls.cafile%',
+                        'local_cert': '%redis.tls.local_cert%',
+                        'local_pk': '%redis.tls.local_pk%'
                     }

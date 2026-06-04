@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\Disposition;
 
-use Carbon\CarbonImmutable;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\ValueObject\PlainDate;
 
 final class DispositionReportTest extends TestCase
 {
@@ -34,8 +34,7 @@ final class DispositionReportTest extends TestCase
     {
         $dossier = new Disposition();
 
-        $date = new CarbonImmutable();
-
+        $date = PlainDate::today();
         $dossier->setDateFrom($date);
 
         self::assertEquals($date, $dossier->getDateFrom());

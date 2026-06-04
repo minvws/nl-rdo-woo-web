@@ -62,7 +62,7 @@ final class PageContentExtractorTest extends UnitTestCase
                     self::assertEquals($pageNr, $options->getPageNumber());
 
                     return true;
-                }
+                },
             ))
             ->andReturn($content);
 
@@ -102,7 +102,7 @@ final class PageContentExtractorTest extends UnitTestCase
                     self::assertEquals($pageNr, $options->getPageNumber());
 
                     return true;
-                }
+                },
             ))
             ->andReturn($content);
 
@@ -142,7 +142,7 @@ final class PageContentExtractorTest extends UnitTestCase
                     self::assertEquals($pageNr, $options->getPageNumber());
 
                     return true;
-                }
+                },
             ))
             ->andReturn($content);
 

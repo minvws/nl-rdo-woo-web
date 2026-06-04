@@ -108,7 +108,7 @@ class InventoryServiceTest extends UnitTestCase
         $dossier->expects('getProductionReport')->andReturnNull();
 
         self::assertFalse(
-            $this->inventoryService->removeInventories($dossier)
+            $this->inventoryService->removeInventories($dossier),
         );
     }
 
@@ -132,7 +132,7 @@ class InventoryServiceTest extends UnitTestCase
         $this->entityManager->expects('persist')->with($dossier);
 
         self::assertTrue(
-            $this->inventoryService->removeInventories($dossier)
+            $this->inventoryService->removeInventories($dossier),
         );
     }
 }

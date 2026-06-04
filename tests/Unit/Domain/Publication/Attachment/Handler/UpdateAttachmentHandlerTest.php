@@ -61,7 +61,7 @@ class UpdateAttachmentHandlerTest extends UnitTestCase
         $this->expectException(AttachmentNotFoundException::class);
 
         $this->handler->__invoke(
-            new UpdateAttachmentCommand($dossierUuid, $docUuid)
+            new UpdateAttachmentCommand($dossierUuid, $docUuid),
         );
     }
 

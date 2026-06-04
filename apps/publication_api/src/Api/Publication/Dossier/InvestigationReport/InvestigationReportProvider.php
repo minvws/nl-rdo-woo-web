@@ -29,8 +29,11 @@ final readonly class InvestigationReportProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|InvestigationReportDto|null
-    {
+    public function provide(
+        Operation $operation,
+        array $uriVariables = [],
+        array $context = [],
+    ): ArrayPaginator|InvestigationReportResponseDto|null {
         $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
         if ($organisation === null) {
             return null;
@@ -40,7 +43,7 @@ final readonly class InvestigationReportProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, ExternalId::create($uriVariables['investigationReportExternalId']));
+        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dossierExternalId']));
     }
 
     /**
@@ -57,9 +60,9 @@ final readonly class InvestigationReportProvider implements ProviderInterface
         return new ArrayPaginator($this->investigationReportMapper->fromEntities($investigationReports), 0, count($investigationReports));
     }
 
-    private function provideSingle(Organisation $organisation, ExternalId $investigationReportExternalId): ?InvestigationReportDto
+    private function provideSingle(Organisation $organisation, ExternalId $dossierExternalId): ?InvestigationReportResponseDto
     {
-        $investigationReport = $this->investigationReportRepository->findByOrganisationAndExternalId($organisation, $investigationReportExternalId);
+        $investigationReport = $this->investigationReportRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
         if ($investigationReport === null) {
             return null;
         }

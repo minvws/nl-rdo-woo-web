@@ -49,7 +49,7 @@ class PageCheck extends Command
                             'Dossier %s Document %s Page %d does not exist in elastic...',
                             $dossier->getDossierNr(),
                             $document->getDocumentNr(),
-                            $i
+                            $i,
                         ));
                         $failed = true;
                     }

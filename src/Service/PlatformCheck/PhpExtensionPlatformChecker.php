@@ -12,9 +12,9 @@ readonly class PhpExtensionPlatformChecker implements PlatformCheckerInterface
     private const array REQUIRED_EXTENSIONS = ['amqp', 'json', 'pdo_pgsql', 'intl', 'zip'];
 
     /**
-     * @param string[] $requiredExtensions
+     * @param array<array-key, string> $requiredExtensions
      *
-     * @return PlatformCheckResult[]
+     * @return array<array-key, PlatformCheckResult>
      */
     public function getResults(array $requiredExtensions = self::REQUIRED_EXTENSIONS): array
     {

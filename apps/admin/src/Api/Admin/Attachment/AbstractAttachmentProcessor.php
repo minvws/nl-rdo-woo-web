@@ -77,13 +77,13 @@ abstract class AbstractAttachmentProcessor implements ProcessorInterface
         $attachment = $this->handle(
             new CreateAttachmentCommand(
                 dossierId: $dossierId,
-                formalDate: $data->getFormalDateInstance(),
+                formalDate: $data->formalDate,
                 internalReference: $data->internalReference,
                 type: $data->type,
                 language: $data->language,
                 grounds: $data->grounds,
                 uploadFileReference: $data->uploadUuid,
-            )
+            ),
         );
 
         return $this->fromEntityToDto($attachment);
@@ -98,13 +98,13 @@ abstract class AbstractAttachmentProcessor implements ProcessorInterface
             new UpdateAttachmentCommand(
                 dossierId: $dossierId,
                 attachmentId: $attachmentId,
-                formalDate: $data->getFormalDateInstance(),
+                formalDate: $data->formalDate,
                 internalReference: $data->internalReference,
                 type: $data->type,
                 language: $data->language,
                 grounds: $data->grounds,
                 uploadFileReference: $data->uploadUuid,
-            )
+            ),
         );
 
         return $this->fromEntityToDto($attachment);
@@ -118,7 +118,7 @@ abstract class AbstractAttachmentProcessor implements ProcessorInterface
             new DeleteAttachmentCommand(
                 dossierId: $dossierId,
                 attachmentId: $attachmentId,
-            )
+            ),
         );
 
         return null;

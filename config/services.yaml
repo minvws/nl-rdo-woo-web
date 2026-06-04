@@ -13,11 +13,14 @@ parameters:
     app_mode: '%env(APP_MODE)%'
     thumbnail_limit: 50
 
+    elasticsearch.suggestions_search_input: 'search-input'
+
 imports:
     - { resource: services/default_autowire.yaml }
     - { resource: services/woo_index.yaml }
     - { resource: services/batch_archiver.yaml }
     - { resource: services/es_index.yaml }
+    - { resource: services/decision_weights.php }
 
 services:
     _defaults:
@@ -41,12 +44,12 @@ services:
     Elastic\Elasticsearch\Client:
         factory: ['Shared\Service\Elastic\ElasticClientFactory', 'create']
         arguments:
-            $host: '%env(ELASTICSEARCH_HOST)%'
-            $username: '%env(ELASTICSEARCH_USER)%'
-            $password: '%env(ELASTICSEARCH_PASS)%'
-            $mtlsCertPath: '%env(ELASTICSEARCH_MTLS_CERT_PATH)%'
-            $mtlsKeyPath: '%env(ELASTICSEARCH_MTLS_KEY_PATH)%'
-            $mtlsCAPath: '%env(ELASTICSEARCH_MTLS_CA_PATH)%'
+            $host: '%elasticsearch.host%'
+            $username: '%elasticsearch.user%'
+            $password: '%elasticsearch.pass%'
+            $mtlsCertPath: '%elasticsearch.mtls.cert_path%'
+            $mtlsKeyPath: '%elasticsearch.mtls.key_path%'
+            $mtlsCAPath: '%elasticsearch.mtls.ca_path%'
 
     Elastic\Elasticsearch\ClientInterface:
         alias: 'Shared\DataCollector\CollectorClient'
@@ -138,12 +141,12 @@ services:
     Aws\S3\S3Client:
         arguments:
             - version: '2006-03-01'
-              region: '%env(STORAGE_MINIO_REGION)%'
-              endpoint: '%env(STORAGE_MINIO_ENDPOINT)%'
+              region: '%storage.minio.region%'
+              endpoint: '%storage.minio.endpoint%'
               use_path_style_endpoint: true
               credentials:
-                key: '%env(STORAGE_MINIO_ACCESS_KEY)%'
-                secret: '%env(STORAGE_MINIO_SECRET_KEY)%'
+                key: '%storage.minio.access_key%'
+                secret: '%storage.minio.secret_key%'
 
     Shared\Service\Security\Authorization\AuthorizationMatrix:
         arguments:
@@ -165,13 +168,10 @@ services:
         arguments:
             $translator: '@translator.default'
 
-    extractor.7z:
-        class: Shared\Domain\Upload\Extractor\Extractor
+    Shared\Domain\Upload\Extractor\Extractor:
         public: true
         arguments:
             $archive: '@Shared\Domain\ArchiveExtractor\SevenZipArchive'
-
-    Shared\Domain\Upload\Extractor\Extractor $sevenZipExtractor: '@extractor.7z'
 
     Shared\Domain\Upload\AntiVirus\ClamAvClientFactory:
         arguments:
@@ -183,7 +183,7 @@ services:
 
     Shared\Domain\Upload\Handler\S3\S3UploadHelper:
         arguments:
-            $bucket: '%env(STORAGE_MINIO_UPLOAD_BUCKET)%'
+            $bucket: '%storage.minio.bucket.upload%'
 
     League\MimeTypeDetection\FinfoMimeTypeDetector:
         arguments:

@@ -20,11 +20,11 @@ use function iterator_to_array;
  */
 class InventoryReaderFactory
 {
-    /** @var ReaderFactoryInterface[] */
+    /** @var array<array-key, ReaderFactoryInterface> */
     protected array $factories;
 
     /**
-     * @param ReaderFactoryInterface[] $factories
+     * @param iterable<ReaderFactoryInterface> $factories
      */
     public function __construct(iterable $factories)
     {
@@ -149,7 +149,7 @@ class InventoryReaderFactory
                     required: false,
                     columnNames: ['gerelateerd id'],
                 ),
-            ]
+            ],
         );
     }
 

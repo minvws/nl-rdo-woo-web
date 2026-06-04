@@ -30,7 +30,7 @@ readonly class AdviceMapper
     /**
      * @param array<array-key,Advice> $advices
      *
-     * @return list<AdviceDto>
+     * @return list<AdviceResponseDto>
      */
     public function fromEntities(array $advices): array
     {
@@ -40,7 +40,7 @@ readonly class AdviceMapper
         ));
     }
 
-    public function fromEntity(Advice $advice): AdviceDto
+    public function fromEntity(Advice $advice): AdviceResponseDto
     {
         $mainDocument = $advice->getMainDocument();
         Assert::notNull($mainDocument);
@@ -53,13 +53,11 @@ readonly class AdviceMapper
         $department = $advice->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
-        return new AdviceDto(
+        return new AdviceResponseDto(
             $advice->getId(),
             $advice->getExternalId(),
             OrganisationReferenceDto::fromEntity($advice->getOrganisation()),
-            $advice->getDocumentPrefix(),
             $advice->getDossierNr(),
-            $advice->getInternalReference(),
             $advice->getTitle(),
             $advice->getSummary(),
             $advice->getSubject()?->getName(),
@@ -78,10 +76,12 @@ readonly class AdviceMapper
         Department $department,
         ?Subject $subject,
         ExternalId $externalId,
+        string $documentPrefix,
     ): Advice {
         $advice = new Advice();
         $advice->setExternalId($externalId);
         $advice->setStatus(DossierStatus::NEW);
+        $advice->setDocumentPrefix($documentPrefix);
 
         self::update($advice, $adviceRequestDto, $organisation, $department, $subject);
 
@@ -97,9 +97,7 @@ readonly class AdviceMapper
     ): Advice {
         $advice->setDateFrom($adviceRequestDto->dossierDate);
         $advice->setDepartments([$department]);
-        $advice->setDocumentPrefix($adviceRequestDto->prefix);
         $advice->setDossierNr($adviceRequestDto->dossierNumber);
-        $advice->setInternalReference($adviceRequestDto->internalReference);
         $advice->setOrganisation($organisation);
         $advice->setPublicationDate($adviceRequestDto->publicationDate);
         $advice->setSubject($subject);

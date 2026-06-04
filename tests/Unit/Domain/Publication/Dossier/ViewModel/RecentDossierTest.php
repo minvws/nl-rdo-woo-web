@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
-use DateTimeImmutable;
 use Mockery;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\ViewModel\RecentDossier;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 
 final class RecentDossierTest extends UnitTestCase
 {
@@ -20,7 +20,7 @@ final class RecentDossierTest extends UnitTestCase
         $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'BAR');
         $dossier->expects('getTitle')->andReturn($title = 'foo bar baz');
         $dossier->expects('getType')->andReturn($type = DossierType::COVENANT);
-        $dossier->expects('getPublicationDate')->times(2)->andReturn($publicationDate = new DateTimeImmutable());
+        $dossier->expects('getPublicationDate')->times(2)->andReturn($publicationDate = PlainDate::today());
 
         $viewmodel = RecentDossier::create($dossier);
 

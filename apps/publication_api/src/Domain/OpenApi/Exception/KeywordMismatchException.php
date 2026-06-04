@@ -6,7 +6,7 @@ namespace PublicationApi\Domain\OpenApi\Exception;
 
 use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
 
-class KeywordMismatchException extends ValidatonException
+class KeywordMismatchException extends ValidationException
 {
     private ?string $keyword = null;
 

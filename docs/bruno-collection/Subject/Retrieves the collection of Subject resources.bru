@@ -1,0 +1,335 @@
+meta {
+  name: Retrieves the collection of Subject resources.
+  type: http
+  seq: 1
+  tags: [
+    Subject
+  ]
+}
+
+get {
+  url: {{baseUrl}}/organisation/:organisationId/subject
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~cursor: 
+}
+
+params:path {
+  organisationId: {{organisationId}}
+}
+
+script:post-response {
+  const data = res.getBody();
+  
+  const subject = data.find(item => item.name === "E2E Test Subject") ?? data[0];
+  
+  if (subject) {
+    bru.setEnvVar("subjectId", subject.id);
+  } else {
+    console.log("Subject not found");
+  }
+}
+
+docs {
+  Retrieves the collection of Subject resources.
+}
+
+example {
+  name: 200 Response
+  description: Subject collection
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/subject
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "id": "",
+            "organisation": {
+              "id": "",
+              "name": ""
+            },
+            "name": ""
+          }
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 400 Response
+  description: Bad Request
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/subject
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 400
+      text: Bad Request
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 401 Response
+  description: Unauthorized
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/subject
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 401
+      text: Unauthorized
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 403 Response
+  description: Forbidden
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/subject
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 403
+      text: Forbidden
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 404 Response
+  description: Not Found
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/subject
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 404
+      text: Not Found
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 405 Response
+  description: Method Not Allowed
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/subject
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 405
+      text: Method Not Allowed
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 500 Response
+  description: Internal Server Error
+  
+  request: {
+    url: {{baseUrl}}/organisation/:organisationId/subject
+    method: GET
+    mode: none
+    params:query: {
+      ~cursor: 
+    }
+  
+    params:path: {
+      organisationId: {{organisationId}}
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/problem+json
+    }
+  
+    status: {
+      code: 500
+      text: Internal Server Error
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "type": "",
+          "title": "",
+          "status": 0,
+          "detail": "",
+          "instance": ""
+        }
+      '''
+    }
+  }
+}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Shared;
 
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\FileCacheKeyBasedOnClassAndIdTrait;
 use Shared\Doctrine\TimestampableTrait;
@@ -25,15 +26,17 @@ abstract class AbstractPublicationItem implements EntityWithFileInfo
     #[Assert\Valid()]
     protected FileInfo $fileInfo;
 
-    public function getId(): Uuid
-    {
-        return $this->id;
-    }
-
     public function __construct()
     {
         $this->id = Uuid::v6();
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
         $this->fileInfo = new FileInfo();
+    }
+
+    public function getId(): Uuid
+    {
+        return $this->id;
     }
 
     public function getFileInfo(): FileInfo

@@ -8,6 +8,7 @@ use League\Flysystem\FilesystemOperator;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Log\NullLogger;
 use Shared\Domain\Upload\Event\UploadCompletedEvent;
 use Shared\Domain\Upload\Event\UploadValidatedEvent;
@@ -16,6 +17,7 @@ use Shared\Domain\Upload\Exception\UploadValidationException;
 use Shared\Domain\Upload\Handler\UploadHandlerInterface;
 use Shared\Domain\Upload\Result\PartialUploadResult;
 use Shared\Domain\Upload\Result\UploadCompletedResult;
+use Shared\Domain\Upload\StreamUpload;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Domain\Upload\UploadEntityStatus;
@@ -52,7 +54,7 @@ class UploadServiceTest extends UnitTestCase
         );
     }
 
-    public function testHandleUploadRequestThrowsExceptionForAbortedUpload(): void
+    public function testHandleUploadThrowsExceptionForAbortedUpload(): void
     {
         $user = Mockery::mock(User::class);
         $request = new UploadRequest(
@@ -77,10 +79,10 @@ class UploadServiceTest extends UnitTestCase
             ->andReturn($uploadEntity);
 
         $this->expectException(UploadException::class);
-        $this->uploadService->handleUploadRequest($request, $user);
+        $this->uploadService->handleUpload($request, $user);
     }
 
-    public function testHandleUploadRequestWithIncompleteResult(): void
+    public function testHandleUploadWithIncompleteResult(): void
     {
         $user = Mockery::mock(User::class);
         $request = new UploadRequest(
@@ -109,11 +111,11 @@ class UploadServiceTest extends UnitTestCase
 
         self::assertSame(
             $result,
-            $this->uploadService->handleUploadRequest($request, $user),
+            $this->uploadService->handleUpload($request, $user),
         );
     }
 
-    public function testHandleUploadRequestWithCompleteResult(): void
+    public function testHandleUploadWithCompleteResult(): void
     {
         $user = Mockery::mock(User::class);
         $request = new UploadRequest(
@@ -152,14 +154,63 @@ class UploadServiceTest extends UnitTestCase
                 self::assertEquals($uploadEntity, $event->uploadEntity);
 
                 return true;
-            }
+            },
         ));
 
         $this->uploadEntityRepository->expects('save')->with($uploadEntity, true);
 
         self::assertSame(
             $result,
-            $this->uploadService->handleUploadRequest($request, $user),
+            $this->uploadService->handleUpload($request, $user),
+        );
+    }
+
+    public function testHandleUploadPassingStreamUpload(): void
+    {
+        $user = null;
+        $request = new StreamUpload(
+            'foo.pdf',
+            Mockery::mock(StreamInterface::class),
+            $groupId = UploadGroupId::WOO_DECISION_DOCUMENTS,
+            $params = new InputBag(['foo' => 'bar']),
+            $uploadId = 'foo-bar-123',
+        );
+
+        $uploadEntity = Mockery::mock(UploadEntity::class);
+        $uploadEntity->expects('getStatus')->andReturn(UploadEntityStatus::INCOMPLETE);
+
+        $this->uploadEntityRepository
+            ->expects('findOrCreate')
+            ->with($uploadId, $groupId, $user, $params)
+            ->andReturn($uploadEntity);
+
+        $this->uploadHandler
+            ->expects('handleStreamUpload')
+            ->with($uploadEntity, $request)
+            ->andReturn($result = new UploadCompletedResult(
+                uploadId: $uploadId,
+                filename: $filename = 'foo.bar',
+                groupId: $groupId,
+                mimeType: 'application/octet-stream',
+                size: $size = 123,
+                additionalParameters: $params,
+            ));
+
+        $uploadEntity->expects('finishUploading')->with($filename, $size);
+
+        $this->eventDispatcher->expects('dispatch')->with(Mockery::on(
+            static function (UploadCompletedEvent $event) use ($uploadEntity) {
+                self::assertEquals($uploadEntity, $event->uploadEntity);
+
+                return true;
+            },
+        ));
+
+        $this->uploadEntityRepository->expects('save')->with($uploadEntity, true);
+
+        self::assertSame(
+            $result,
+            $this->uploadService->handleUpload($request, $user),
         );
     }
 
@@ -247,7 +298,7 @@ class UploadServiceTest extends UnitTestCase
                 self::assertEquals($uploadEntity, $event->uploadEntity);
 
                 return true;
-            }
+            },
         ));
 
         $this->uploadService->passValidation($uploadEntity, $mimetype);

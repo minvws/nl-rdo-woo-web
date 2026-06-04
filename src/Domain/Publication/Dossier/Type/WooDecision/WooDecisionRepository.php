@@ -51,7 +51,7 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
     }
 
     /**
-     * @return DossierReference[]
+     * @return array<array-key, DossierReference>
      */
     public function getDossierReferencesForDocument(string $documentNr): array
     {
@@ -105,7 +105,7 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
     }
 
     /**
-     * @return WooDecision[]
+     * @return array<array-key, WooDecision>
      */
     public function findAllForOrganisation(Organisation $organisation): array
     {
@@ -144,7 +144,7 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
     }
 
     /**
-     * @return WooDecision[]
+     * @return array<array-key, WooDecision>
      */
     public function getPubliclyAvailable(): array
     {

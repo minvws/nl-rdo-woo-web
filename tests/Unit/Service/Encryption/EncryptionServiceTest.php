@@ -51,7 +51,7 @@ class EncryptionServiceTest extends UnitTestCase
     {
         $encryptionService = new EncryptionService(
             $this->encryptionKey,
-            $this->logger
+            $this->logger,
         );
 
         $inputData = 'some VERY secret data!';

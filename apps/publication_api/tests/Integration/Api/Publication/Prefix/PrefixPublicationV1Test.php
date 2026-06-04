@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Integration\Api\Publication\Prefix;
 
-use PublicationApi\Api\Publication\Prefix\PrefixDto;
+use PublicationApi\Api\Publication\Prefix\PrefixResponseDto;
 use PublicationApi\Tests\Integration\Api\Publication\ApiPublicationV1TestCase;
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Tests\Factory\OrganisationFactory;
@@ -40,7 +40,7 @@ final class PrefixPublicationV1Test extends ApiPublicationV1TestCase
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
-        self::assertMatchesResourceItemJsonSchema(PrefixDto::class);
+        self::assertMatchesResourceItemJsonSchema(PrefixResponseDto::class);
     }
 
     public function testGetWithoutSslUserNameReturnsUnauthorized(): void
@@ -82,7 +82,7 @@ final class PrefixPublicationV1Test extends ApiPublicationV1TestCase
                 sprintf('/api/publication/v1/organisation/%s/prefix/invalid', $organisation->getId()),
             );
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-        self::assertMatchesResourceItemJsonSchema(PrefixDto::class);
+        self::assertMatchesResourceItemJsonSchema(PrefixResponseDto::class);
     }
 
     public function testGetWithInvalidOrganisationParameter(): void
@@ -95,7 +95,7 @@ final class PrefixPublicationV1Test extends ApiPublicationV1TestCase
                 sprintf('/api/publication/v1/organisation/invalid/prefix/%s', $prefix->getId()),
             );
         self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
-        self::assertMatchesResourceItemJsonSchema(PrefixDto::class);
+        self::assertMatchesResourceItemJsonSchema(PrefixResponseDto::class);
     }
 
     public function testGetWithOtherOrganisation(): void
@@ -108,7 +108,7 @@ final class PrefixPublicationV1Test extends ApiPublicationV1TestCase
                 sprintf('/api/publication/v1/organisation/%s/prefix/%s', $prefix->getOrganisation()->getId(), $prefix->getId()),
             );
         self::assertResponseStatusCodeSame(Response::HTTP_OK);
-        self::assertMatchesResourceItemJsonSchema(PrefixDto::class);
+        self::assertMatchesResourceItemJsonSchema(PrefixResponseDto::class);
     }
 
     public function testGetCollection(): void
@@ -124,7 +124,7 @@ final class PrefixPublicationV1Test extends ApiPublicationV1TestCase
                 sprintf('/api/publication/v1/organisation/%s/prefix', $organisation->getId()),
             );
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(PrefixDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(PrefixResponseDto::class);
         self::assertCount($prefixCount, $response->toArray());
     }
 
@@ -141,7 +141,7 @@ final class PrefixPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(PrefixDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(PrefixResponseDto::class);
         self::assertCount(5, $response->toArray());
     }
 
@@ -166,7 +166,7 @@ final class PrefixPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(PrefixDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(PrefixResponseDto::class);
         self::assertCount(2, $response->toArray());
     }
 
@@ -182,7 +182,7 @@ final class PrefixPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(PrefixDto::class);
+        self::assertMatchesResourceCollectionJsonSchema(PrefixResponseDto::class);
         self::assertCount(1, $response->toArray());
     }
 
@@ -205,7 +205,7 @@ final class PrefixPublicationV1Test extends ApiPublicationV1TestCase
                 ],
             );
         self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
-        self::assertMatchesResourceItemJsonSchema(PrefixDto::class);
+        self::assertMatchesResourceItemJsonSchema(PrefixResponseDto::class);
 
         self::assertDatabaseCount(DocumentPrefix::class, 1);
     }

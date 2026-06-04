@@ -21,7 +21,6 @@ readonly class MainDocumentResponseDtoFactory
             $mainDocument->getType(),
             $mainDocument->getLanguage(),
             $mainDocument->getFormalDate(),
-            $mainDocument->getInternalReference(),
             $mainDocument->getGrounds(),
             $mainDocument->getFileInfo()->getName(),
             $this->mainDocumentUploadStatusService->getUploadStatus($mainDocument),

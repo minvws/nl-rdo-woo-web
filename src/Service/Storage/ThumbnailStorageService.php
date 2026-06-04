@@ -9,6 +9,7 @@ use Shared\Domain\Publication\EntityWithFileInfo;
 use SplFileInfo;
 
 use function dirname;
+use function min;
 use function sprintf;
 
 /**
@@ -75,12 +76,14 @@ class ThumbnailStorageService extends StorageService
 
     public function deleteAllThumbsForEntity(EntityWithFileInfo $entity): void
     {
-        if (! $entity->getFileInfo()->hasPages()) {
+        if (! $entity->getFileInfo()->isPaginatable()) {
             return;
         }
 
-        $pageCount = $this->getPageCount($entity);
-        for ($pageNr = 1; $pageNr <= $pageCount && $pageNr <= $this->thumbnailLimit; $pageNr++) {
+        $pageCount = $entity->getFileInfo()->getPageCount();
+        $maxNrOfPages = $pageCount ? min($pageCount, $this->thumbnailLimit) : $this->thumbnailLimit;
+
+        for ($pageNr = 1; $pageNr <= $maxNrOfPages; $pageNr++) {
             $path = $this->generateThumbPath($entity, $pageNr);
             $this->remoteFilesystem->delete($path);
         }
@@ -91,14 +94,5 @@ class ThumbnailStorageService extends StorageService
         $rootPath = $this->getRootPathForEntity($entity);
 
         return sprintf('%s/thumbs/thumb-page-%d.png', $rootPath, $pageNr);
-    }
-
-    private function getPageCount(EntityWithFileInfo $entity): int
-    {
-        $pageCount = $entity->getFileInfo()->isPaginatable()
-            ? $entity->getFileInfo()->getPageCount()
-            : null;
-
-        return $pageCount ?? 0;
     }
 }

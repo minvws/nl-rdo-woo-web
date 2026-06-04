@@ -8,10 +8,12 @@ use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use ApiPlatform\Symfony\Bundle\Test\Client;
 use Shared\ApplicationId;
 use Shared\Service\Security\User;
+use Shared\Tests\Integration\ContainerTestTrait;
 use Shared\Tests\Integration\IntegrationTestTrait;
 
 abstract class AdminApiTestCase extends ApiTestCase
 {
+    use ContainerTestTrait;
     use IntegrationTestTrait;
 
     public function createAdminApiClient(User $user): Client

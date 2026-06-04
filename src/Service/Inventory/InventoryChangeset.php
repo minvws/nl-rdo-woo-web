@@ -6,6 +6,7 @@ namespace Shared\Service\Inventory;
 
 use OutOfBoundsException;
 use Shared\Exception\ProcessInventoryException;
+use Webmozart\Assert\Assert;
 
 use function array_filter;
 use function array_key_exists;
@@ -69,13 +70,13 @@ class InventoryChangeset
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getDeleted(): array
     {
         return array_keys(array_filter(
             $this->documentStatus,
-            static fn (string $status) => $status === self::DELETED
+            static fn (string $status) => $status === self::DELETED,
         ));
     }
 
@@ -84,10 +85,12 @@ class InventoryChangeset
      */
     public function getCounts(): array
     {
-        return array_reduce(
+        $counts = array_reduce(
             array_keys($this->documentStatus),
             function (array $totals, string $changeKey) {
                 $status = $this->documentStatus[$changeKey];
+
+                Assert::integer($totals[$status]);
                 $totals[$status]++;
 
                 return $totals;
@@ -97,8 +100,13 @@ class InventoryChangeset
                 self::UPDATED => 0,
                 self::DELETED => 0,
                 self::UNCHANGED => 0,
-            ]
+            ],
         );
+
+        Assert::isMap($counts);
+        Assert::allInteger($counts);
+
+        return $counts;
     }
 
     public function getResultingTotalDocumentCount(): int

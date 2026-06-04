@@ -22,7 +22,7 @@ class HistoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array<History>
+     * @return array<array-key, History>
      */
     public function getHistory(string $type, string $identifier, string $mode, ?int $max): array
     {

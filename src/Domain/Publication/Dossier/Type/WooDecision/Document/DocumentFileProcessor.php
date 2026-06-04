@@ -46,7 +46,7 @@ readonly class DocumentFileProcessor
                     'filename' => $file->getOriginalFilename(),
                     'documentId' => $documentId,
                     'dossierId' => $dossier->getId(),
-                ]
+                ],
             );
 
             return;

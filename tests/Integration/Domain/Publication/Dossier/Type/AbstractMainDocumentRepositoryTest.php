@@ -15,28 +15,18 @@ use Symfony\Component\Uid\Uuid;
 
 final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
 {
-    /**
-     * @return AbstractMainDocumentRepository<AnnualReportMainDocument>
-     */
-    private function getRepository(): AbstractMainDocumentRepository
-    {
-        $managerRegistry = self::getContainer()->get(ManagerRegistry::class);
+    private AbstractMainDocumentRepository $mainDocumentRepository;
 
-        return new
-        /** @extends AbstractMainDocumentRepository<AnnualReportMainDocument> */
-        class($managerRegistry) extends AbstractMainDocumentRepository {
+    protected function setUp(): void
+    {
+        $managerRegistry = self::fromContainer(ManagerRegistry::class);
+
+        $this->mainDocumentRepository = new class($managerRegistry) extends AbstractMainDocumentRepository {
             public function __construct(ManagerRegistry $managerRegistry)
             {
                 parent::__construct($managerRegistry, AnnualReportMainDocument::class);
             }
         };
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        self::bootKernel();
     }
 
     public function testSave(): void
@@ -47,10 +37,9 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
             'dossier' => $dossier,
         ]);
 
-        $repository = $this->getRepository();
-        $repository->save($document, true);
+        $this->mainDocumentRepository->save($document, true);
 
-        $result = $this->getRepository()->findOneByDossierId($dossier->getId());
+        $result = $this->mainDocumentRepository->findOneByDossierId($dossier->getId());
         self::assertEquals($document, $result);
     }
 
@@ -61,17 +50,15 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
             'dossier' => $dossier,
         ]);
 
-        $repository = $this->getRepository();
-
-        $result = $this->getRepository()->findForDossierByPrefixAndNr(
+        $result = $this->mainDocumentRepository->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
         );
         self::assertNotNull($result);
 
-        $repository->remove($result, true);
+        $this->mainDocumentRepository->remove($result, true);
 
-        $result = $this->getRepository()->findForDossierByPrefixAndNr(
+        $result = $this->mainDocumentRepository->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
         );
@@ -88,11 +75,11 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
 
         self::assertEquals(
             $document->getId(),
-            $this->getRepository()->findOneByDossierId($dossier->getId())?->getId(),
+            $this->mainDocumentRepository->findOneByDossierId($dossier->getId())?->getId(),
         );
 
         self::assertNull(
-            $this->getRepository()->findOneByDossierId(Uuid::v6())
+            $this->mainDocumentRepository->findOneByDossierId(Uuid::v6()),
         );
     }
 
@@ -104,7 +91,7 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
             'dossier' => $dossier,
         ]);
 
-        $result = $this->getRepository()->findForDossierByPrefixAndNr(
+        $result = $this->mainDocumentRepository->findForDossierByPrefixAndNr(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNr(),
         );
@@ -115,7 +102,7 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
 
     public function testFindForDossierByPrefixAndNrMismatch(): void
     {
-        $result = $this->getRepository()->findForDossierByPrefixAndNr(
+        $result = $this->mainDocumentRepository->findForDossierByPrefixAndNr(
             'a non-existing document prefix',
             'a non-existing dossier number',
         );
@@ -139,7 +126,7 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
             uploadFileReference: 'uploadFileReference',
         );
 
-        $result = $this->getRepository()->create($dossier, $createMainDocumentCommand);
+        $result = $this->mainDocumentRepository->create($dossier, $createMainDocumentCommand);
 
         self::assertEquals($dossier, $result->getDossier());
         self::assertEquals($createMainDocumentCommand->formalDate, $result->getFormalDate());

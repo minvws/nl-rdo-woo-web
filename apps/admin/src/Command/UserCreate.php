@@ -70,7 +70,7 @@ class UserCreate extends Command
                 $name,
                 $email,
                 [$role],
-                $organisation
+                $organisation,
             );
         } catch (UniqueConstraintViolationException) {
             $output->writeln("<error>A user account with email $email already exists</error>");

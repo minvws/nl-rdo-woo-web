@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Integration\Api\Publication\Dossier\InvestigationReport;
 
 use Carbon\CarbonImmutable;
-use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PublicationApi\Api\Publication\Dossier\InvestigationReport\InvestigationReportDto;
+use PublicationApi\Api\Publication\Dossier\InvestigationReport\InvestigationReportResponseDto;
 use PublicationApi\Api\Publication\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Publication\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Domain\Department\Department;
@@ -20,14 +19,15 @@ use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationRepo
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\EntityExists;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\Type;
 
 use function array_merge;
@@ -44,7 +44,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $investigationReport = InvestigationReportFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -63,7 +63,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $investigationReport = InvestigationReportFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -82,9 +82,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
                 'id' => (string) $investigationReport->getOrganisation()->getId(),
                 'name' => $investigationReport->getOrganisation()->getName(),
             ],
-            'prefix' => $investigationReport->getDocumentPrefix(),
             'dossierNumber' => $investigationReport->getDossierNr(),
-            'internalReference' => '',
             'title' => $investigationReport->getTitle(),
             'summary' => $investigationReport->getSummary(),
             'subject' => $investigationReport->getSubject()?->getName(),
@@ -92,14 +90,13 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
             ],
-            'publicationDate' => $investigationReport->getPublicationDate()?->format(DateTime::RFC3339),
+            'publicationDate' => $investigationReport->getPublicationDate()?->format('Y-m-d'),
             'status' => $investigationReport->getStatus()->value,
             'mainDocument' => [
                 'id' => (string) $investigationReportMainDocument->getId(),
                 'type' => $investigationReportMainDocument->getType()->value,
                 'language' => $investigationReportMainDocument->getLanguage()->value,
-                'formalDate' => $investigationReportMainDocument->getFormalDate()->format(DateTime::RFC3339),
-                'internalReference' => $investigationReportMainDocument->getInternalReference(),
+                'formalDate' => $investigationReportMainDocument->getFormalDate()->format('Y-m-d'),
                 'grounds' => $investigationReportMainDocument->getGrounds(),
                 'fileName' => $investigationReportMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
@@ -109,19 +106,18 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
                     'id' => (string) $investigationReportAttachment->getId(),
                     'type' => $investigationReportAttachment->getType()->value,
                     'language' => $investigationReportAttachment->getLanguage()->value,
-                    'formalDate' => $investigationReportAttachment->getFormalDate()->format(DateTime::RFC3339),
-                    'internalReference' => $investigationReportAttachment->getInternalReference(),
+                    'formalDate' => $investigationReportAttachment->getFormalDate()->format('Y-m-d'),
                     'grounds' => $investigationReportAttachment->getGrounds(),
                     'fileName' => $investigationReportAttachment->getFileInfo()->getName(),
                     'externalId' => $investigationReportAttachment->getExternalId()?->__toString(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                 ],
             ],
-            'dossierDate' => $investigationReport->getDateFrom()?->format(DateTime::RFC3339),
+            'dossierDate' => $investigationReport->getDateFrom()?->format('Y-m-d'),
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
-        self::assertMatchesResourceItemJsonSchema(InvestigationReportDto::class);
+        self::assertMatchesResourceItemJsonSchema(InvestigationReportResponseDto::class);
     }
 
     public function testGetFromIncorrectOrganisation(): void
@@ -151,13 +147,14 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(InvestigationReport::class, 0);
 
         $data = $this->createValidInvestigationReportDataPayload($department, $subject, $this->getFaker()->numberBetween(1, 3));
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(InvestigationReportDto::class);
+        self::assertMatchesResourceItemJsonSchema(InvestigationReportResponseDto::class);
 
         self::assertDatabaseCount(InvestigationReport::class, 1);
     }
@@ -166,13 +163,14 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(InvestigationReport::class, 0);
 
         $data = $this->createValidInvestigationReportDataPayload($department, null, 1);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(InvestigationReportDto::class);
+        self::assertMatchesResourceItemJsonSchema(InvestigationReportResponseDto::class);
 
         self::assertDatabaseCount(InvestigationReport::class, 1);
     }
@@ -200,13 +198,14 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(InvestigationReport::class, 0);
 
         $data = $this->createValidInvestigationReportDataPayload($department, $subject, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(InvestigationReportDto::class);
+        self::assertMatchesResourceItemJsonSchema(InvestigationReportResponseDto::class);
 
         self::assertDatabaseCount(InvestigationReport::class, 1);
     }
@@ -221,6 +220,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(InvestigationReport::class, 0);
 
@@ -238,27 +238,18 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         return [
             'dossierDate in the future' => [
                 [
-                    'dossierDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                    'dossierDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
-                ],
-            ],
-            'null internal reference' => [
-                [
-                    'internalReference' => null,
-                ],
-                [
-                    'code' => Type::INVALID_TYPE_ERROR,
-                    'propertyPath' => 'internalReference',
                 ],
             ],
             'invalid mainDocument language' => [
                 [
                     'mainDocument' => [
-                        'filename' => 'filename.pdf',
-                        'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                        'fileName' => 'filename.pdf',
+                        'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                         'type' => AttachmentType::ACCOUNTABILITY_REPORT,
                         'language' => 'invalid',
                     ],
@@ -273,9 +264,9 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
                     'attachments' => [
                         [
                             'fileName' => 'attachment.pdf',
-                            'formalDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                             'type' => 'invalid',
-                            'language' => AttachmentLanguage::ENGLISH,
+                            'language' => AttachmentLanguage::ENG,
                         ],
                     ],
                 ],
@@ -319,7 +310,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $investigationReport = InvestigationReportFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'date_from' => $this->getFaker()->plainDate(),
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
@@ -336,12 +327,11 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         $data = $this->createValidInvestigationReportDataPayload($department, null, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $investigationReport), ['json' => $data]);
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceItemJsonSchema(InvestigationReportDto::class);
+        self::assertMatchesResourceItemJsonSchema(InvestigationReportResponseDto::class);
 
         self::assertDatabaseHas(InvestigationReport::class, [
             'dossierNr' => $data['dossierNumber'],
-            'internalReference' => $data['internalReference'],
-            'documentPrefix' => $data['prefix'],
+            'documentPrefix' => $investigationReport->getDocumentPrefix(),
             'summary' => $data['summary'],
             'title' => $data['title'],
         ]);
@@ -357,7 +347,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $investigationReport = InvestigationReportFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
@@ -390,10 +380,10 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         return [
             'dossierDate in the future' => [
                 [
-                    'dossierDate' => CarbonImmutable::now()->addDay()->format(DateTime::RFC3339),
+                    'dossierDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
                 ],
                 [
-                    'code' => LessThanOrEqual::TOO_HIGH_ERROR,
+                    'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
                 ],
             ],
@@ -405,7 +395,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $investigationReport = InvestigationReportFactory::createOne([
-            'date_from' => $this->getFaker()->dateTime(),
+            'dateFrom' => $this->getFaker()->plainDate(),
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
@@ -437,16 +427,14 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         return [
             'title' => $this->getFaker()->sentence(),
             'dossierNumber' => $this->getFaker()->slug(2),
-            'internalReference' => $this->getFaker()->optional(default: '')->uuid(),
-            'prefix' => $this->getFaker()->slug(2),
-            'dossierDate' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format(DateTime::RFC3339),
-            'publicationDate' => $this->getFaker()->dateTimeBetween('-2 weeks', '-1 week')->format(DateTime::RFC3339),
+            'dossierDate' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format('Y-m-d'),
+            'publicationDate' => $this->getFaker()->plainDateBetween('-2 weeks', '-1 week')->format('Y-m-d'),
             'summary' => $this->getFaker()->sentence(),
             'departmentId' => $department->getId(),
             'subjectId' => $subject?->getId(),
             'mainDocument' => [
-                'filename' => $this->getFaker()->word(),
-                'formalDate' => $this->getFaker()->date(DateTime::RFC3339),
+                'fileName' => $this->getFaker()->word(),
+                'formalDate' => $this->getFaker()->date(),
                 'type' => $this->getFaker()->randomElement(InvestigationReportMainDocument::getAllowedTypes()),
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],

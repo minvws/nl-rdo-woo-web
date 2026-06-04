@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\OtherPublication;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,6 +17,9 @@ use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
+use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
+use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -63,8 +65,8 @@ class OtherPublication extends AbstractDossier implements EntityWithAttachments,
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    #[Assert\LessThanOrEqual(
-        value: 'today',
+    #[PlainDateBeforeOrEqual(
+        date: 'today',
         message: 'date_must_not_be_in_future',
         groups: [
             DossierValidationGroup::DETAILS->value,
@@ -72,27 +74,27 @@ class OtherPublication extends AbstractDossier implements EntityWithAttachments,
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    protected ?DateTimeImmutable $dateFrom = null;
+    protected ?PlainDate $dateFrom = null;
 
-    #[Assert\GreaterThanOrEqual(
-        propertyPath: 'dateFrom',
+    #[PlainDateAfterOrEqual(
         message: 'date_to_before_date_from',
+        propertyPath: 'dateFrom',
         groups: [
             DossierValidationGroup::DETAILS->value,
             DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
-        ]
+        ],
     )]
-    #[Assert\LessThanOrEqual(
-        value: 'today +5 years',
+    #[PlainDateBeforeOrEqual(
+        date: 'today +5 years',
         message: 'date_max_5_year_in_future',
         groups: [
             DossierValidationGroup::DETAILS->value,
             DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
-        ]
+        ],
     )]
-    protected ?DateTimeImmutable $dateTo = null;
+    protected ?PlainDate $dateTo = null;
 
     public function __construct()
     {
@@ -103,7 +105,7 @@ class OtherPublication extends AbstractDossier implements EntityWithAttachments,
     }
 
     #[Override]
-    public function setDateFrom(?DateTimeImmutable $dateFrom): static
+    public function setDateFrom(?PlainDate $dateFrom): static
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateFrom;

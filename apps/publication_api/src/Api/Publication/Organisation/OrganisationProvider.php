@@ -26,7 +26,7 @@ final readonly class OrganisationProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|OrganisationDto|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|OrganisationResponseDto|null
     {
         if ($operation instanceof CollectionOperationInterface) {
             return $this->provideCollection($context);
@@ -51,7 +51,7 @@ final readonly class OrganisationProvider implements ProviderInterface
         return new ArrayPaginator(OrganisationMapper::fromEntities($organisations), 0, count($organisations));
     }
 
-    private function provideSingle(Uuid $organisationId): ?OrganisationDto
+    private function provideSingle(Uuid $organisationId): ?OrganisationResponseDto
     {
         $organisation = $this->organisationRepository->find($organisationId);
         if ($organisation === null) {

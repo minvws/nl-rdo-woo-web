@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\MainDocument\Handler;
 
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery;
 use Mockery\MockInterface;
@@ -23,6 +22,7 @@ use Shared\Domain\Publication\MainDocument\Handler\CreateMainDocumentHandler;
 use Shared\Domain\Publication\MainDocument\MainDocumentAlreadyExistsException;
 use Shared\Domain\Upload\Process\EntityUploadStorer;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -82,10 +82,10 @@ class CreateMainDocumentHandlerTest extends UnitTestCase
 
         $this->dossierRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
 
-        $formalDate = new DateTimeImmutable();
+        $formalDate = PlainDate::today();
         $internalReference = 'foo bar';
         $attachmentType = AttachmentType::ANNUAL_REPORT;
-        $language = AttachmentLanguage::DUTCH;
+        $language = AttachmentLanguage::NLD;
         $grounds = ['foo', 'bar'];
 
         $this->dossierWorkflowManager->expects('applyTransition')->with($dossier, DossierStatusTransition::UPDATE_MAIN_DOCUMENT);
@@ -139,10 +139,10 @@ class CreateMainDocumentHandlerTest extends UnitTestCase
     {
         $uploadFileReference = 'file-' . Uuid::v6();
 
-        $formalDate = new DateTimeImmutable();
+        $formalDate = PlainDate::today();
         $internalReference = 'foo bar';
         $attachmentType = AttachmentType::ANNUAL_REPORT;
-        $language = AttachmentLanguage::DUTCH;
+        $language = AttachmentLanguage::NLD;
         $grounds = ['foo', 'bar'];
 
         $annualReportDocument = Mockery::mock(AnnualReportMainDocument::class);
@@ -164,7 +164,7 @@ class CreateMainDocumentHandlerTest extends UnitTestCase
                 $language,
                 $grounds,
                 $uploadFileReference,
-            )
+            ),
         );
     }
 
@@ -172,10 +172,10 @@ class CreateMainDocumentHandlerTest extends UnitTestCase
     {
         $uploadFileReference = 'file-' . Uuid::v6();
 
-        $formalDate = new DateTimeImmutable();
+        $formalDate = PlainDate::today();
         $internalReference = 'foo bar';
         $attachmentType = AttachmentType::ANNUAL_PLAN;
-        $language = AttachmentLanguage::DUTCH;
+        $language = AttachmentLanguage::NLD;
         $grounds = ['foo', 'bar'];
 
         $dossierUuid = Uuid::v6();

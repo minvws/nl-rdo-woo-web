@@ -4,18 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Public\Dossier;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
-use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
@@ -36,7 +30,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     private vfsStreamDirectory $root;
     private KernelBrowser $client;
-    private EntityManager $em;
+    private EntityManagerInterface $entityManager;
     private string $documentPathPrefix;
 
     protected function setUp(): void
@@ -44,19 +38,14 @@ final class DossierFileControllerTest extends SharedWebTestCase
         parent::setUp();
 
         $this->root = vfsStream::setup();
-
         $this->client = static::createClient();
-
-        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
+        $this->entityManager = self::fromContainer(EntityManagerInterface::class);
         $this->documentPathPrefix = self::getContainer()->getParameter('document_path');
     }
 
     public function testDownloadingWooDecisionDocument(): void
     {
-        /** @var WooDecision $dossier */
         $dossier = WooDecisionFactory::createOne();
-
-        /** @var Document $document */
         $document = DocumentFactory::createOne([
             'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::new([
@@ -77,10 +66,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     public function testDownloadingWooDecisionDocumentUsesOriginalFileType(): void
     {
-        /** @var WooDecision $dossier */
         $dossier = WooDecisionFactory::createOne();
-
-        /** @var Document $document */
         $document = DocumentFactory::createOne([
             'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::new([
@@ -103,10 +89,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     public function testDownloadingCovenantAttachment(): void
     {
-        /** @var Covenant $dossier */
         $dossier = CovenantFactory::createOne();
-
-        /** @var CovenantAttachment $attachment */
         $attachment = CovenantAttachmentFactory::createOne(['dossier' => $dossier]);
 
         $dossier->addAttachment($attachment);
@@ -116,10 +99,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     public function testDownloadingWooDecisionMainDocument(): void
     {
-        /** @var WooDecision $dossier */
         $dossier = WooDecisionFactory::createOne();
-
-        /** @var WooDecisionMainDocument $mainDocument */
         $mainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $dossier]);
 
         $dossier->setMainDocument($mainDocument);
@@ -129,10 +109,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     public function testDownloadingWooDecisionInventory(): void
     {
-        /** @var WooDecision $dossier */
         $dossier = WooDecisionFactory::createOne();
-
-        /** @var Inventory $inventory */
         $inventory = InventoryFactory::createOne(['dossier' => $dossier]);
 
         $dossier->setInventory($inventory);
@@ -154,8 +131,8 @@ final class DossierFileControllerTest extends SharedWebTestCase
     ): void {
         $expectedDownloadFileName ??= $entityWithFileInfo->getFileInfo()->getName();
 
-        $this->em->flush();
-        $this->em->persist($dossier);
+        $this->entityManager->flush();
+        $this->entityManager->persist($dossier);
 
         $this->createFileForEntityOnVfs($entityWithFileInfo, $this->documentPathPrefix);
 

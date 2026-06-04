@@ -33,7 +33,7 @@ class ThemeManagerTest extends UnitTestCase
 
         $this->themeManager = new ThemeManager(
             $this->themeViewFactory,
-            [$this->themeA, $this->themeB]
+            [$this->themeA, $this->themeB],
         );
 
         parent::setUp();
@@ -60,7 +60,7 @@ class ThemeManagerTest extends UnitTestCase
 
         self::assertEquals(
             [$viewA, $viewB],
-            iterator_to_array($this->themeManager->getViewsForAllThemes(), false)
+            iterator_to_array($this->themeManager->getViewsForAllThemes(), false),
         );
     }
 }

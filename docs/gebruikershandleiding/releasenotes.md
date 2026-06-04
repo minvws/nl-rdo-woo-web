@@ -2,6 +2,67 @@
 
 # Release notes
 
+## v2.5.0-hotfix.1
+
+- **Verversen van inventaris lijst van een zaak** Bij het vervangen van een productierapport in de balie, wordt nu ook de inventarislijst van de zaak ververst.
+- **Multi tenancy elasticsearch** De elasticsearch instance is nu tenant-aware doordat je nu ook naar een andere instance kan verwijzen in de configuratie. Hierdoor kunnen we in de toekomst per tenant een eigen elasticsearch instance draaien.
+
+## v2.5.0
+
+*april 2026*
+
+### Publication API
+
+#### Upload endpoints per dossiertype
+
+- **Upload endpoints voor alle dossiertypen**: Nieuwe upload endpoints toegevoegd voor Advies, Adviesaanvraag, Beschikking, Convenant, Jaarplan/Jaarverslag, Klachtoordeel, Onderzoeksrapport en Overig informatiestuk.
+- **Upload processor voor Documents**: De upload processor voor API Documents is afgerond, inclusief verwerking van WooDecision documenten.
+- **Autopublisher bij async updates**: De autopublisher werk weer correct wanneer entities in asynchrone processen werden bijgewerkt.
+- **Happy flow support**: In deze versie is het mogelijk om via de API een publicatie op de Publieke Website te publiceren.
+
+#### Validatie en foutafhandeling
+
+- **Schema validatie in 400-response**: Validatiefouten worden nu getoond in de 400-response van Woo-decision.
+- **Validatie op grounds-attribuut**: Validatie toegevoegd op het `grounds`-attribuut in API dossiers.
+- **Vereist aantal documenten**: Het vereiste aantal documenten bij WooDecision is in lijn gebracht met de balie.
+
+#### Veldnamen en datatypes
+
+- **Datum-velden genormaliseerd**: DateTime-velden in de API zijn omgezet naar date-velden voor consistentie.
+- **Veldnamen gelijkgetrokken**: Naamgeving van velden is gelijkgetrokken en meer generiek gemaakt across de API.
+- **Verwijderde velden**: `Document.period`, `Dossier.internalReference` en de Dossier Prefix zijn verwijderd uit de API.
+- **SourceType niet meer gezet**: SourceType wordt niet meer gezet via de API.
+
+#### Overig
+
+- **Correcte baseUrl in API-documentatie**: De API-documentatie toont nu de juiste baseUrl.
+- **Identieke bestanden negeren**: Eerder geüploade identieke bestanden worden herkend, genegeerd en opgeruimd.
+- **Talen via TOOI-lijst**: De TOOI-lijst is geintroduceerd voor taalwaarden in de API.
+- **OpenAPI tags en Bruno-collectie**: De OpenAPI-tag van upload endpoints is bijgewerkt en de Bruno-collectie is volledig vernieuwd.
+- **API doc meldt nu binary file**: De API documentatie maakt nu expliciet melding van de binary file die meegestuurd moet worden bij de upload endpoints.
+
+### Tenant Awareness
+
+- **Multi-kernel tenant awareness uitgebreid**: Tenant Awareness is uitgebreid in de multi-kernel setup zodat applicaties nu al hun randsystemen compleet tenant-aware kunnen benaderen.
+
+### Publieke website
+
+- **Relevantie zoekresultaten "Soort besluit"**: De relevantiescoring voor "Soort besluit" in zoekresultaten op de publieke website is aangepast.
+- **Preview informatiecategorieeen**: Sommige informatiecategorieeen gaven geen preview; dit is opgelost.
+- **Melding ontbrekend bestand**: De publieke website toont nu de melding "Dit bestand is nog niet aangeleverd" wanneer een bestand nog niet beschikbaar is.
+- **Sorteren op Thema COVID-19**: Sorteren op "Thema COVID-19" bracht de gebruiker onterecht buiten het thema; dit is gecorrigeerd.
+
+### Security
+
+- **Digikoppeling validatie (WOO-2026.P1.01)**: Validatie bij Digikoppeling beperkt zich nu correct tot de common name.
+
+### Fixes en technische verbeteringen
+
+- **Dev-dependencies op productieomgevingen**: De applicatie draaide in vorige versies met dev-dependencies op alle remote omgevingen, maar nu niet meer.
+- **PlainDate value object**: Een `PlainDate` value object is geintroduceerd voor consistente datumafhandeling.
+- **OpenAPI lint-issues**: Openstaande OpenAPI lint-issues zijn opgelost.
+- **Robot Framework Docker image**: Het Robot Framework Docker-image wordt nu opgeslagen in GitHub.
+
 ## v2.4.0
 
 *maart 2026*

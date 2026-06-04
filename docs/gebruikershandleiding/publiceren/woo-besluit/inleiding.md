@@ -21,9 +21,7 @@ Deze uploadstraat bestaat uit vier stappen: basisgegevens, gegevens over het Woo
 publicatiedatum. Het grootste verschil tussen de uploadstraten is dat documenten die openbaar worden gemaakt onder een Woo-besluit
 in bulk geüpload worden en de bijbehorende metadata wordt vastgelegd in een productierapport.
 
-<img src=images/besluit_balie_stappen.png  alt="In het figuur staan de 3 stappen die doorlopen worden bij het uploaden van een beschikking Woo-besluit"/>
-
-![In het figuur staan de 3 stappen die doorlopen worden bij het uploaden van een beschikking Woo-besluit](img/besluit_balie_stappen.png)
+![In het figuur staan de 3 stappen die doorlopen worden bij het uploaden van een beschikking Woo-besluit](img/balie-woo-besluit-vier-stappen.png)
 
 ### Basisgegevens
 

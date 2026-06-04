@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\ViewModel;
 
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
 use Mockery\Matcher\Closure;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
@@ -26,14 +26,17 @@ use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Publication\SourceType;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\UuidV6;
+use Webmozart\Assert\Assert;
 
 use function sprintf;
 
 final class AttachmentViewFactoryTest extends UnitTestCase
 {
     /**
+     * @param class-string<AbstractAttachment> $attachmentClass
      * @param list<string> $expectedDetailsParameterKeys
      * @param list<string> $expectedDownloadParameterKeys
      */
@@ -79,11 +82,14 @@ final class AttachmentViewFactoryTest extends UnitTestCase
             ->andReturn($expectedDownloadUrl = 'http://download.test');
 
         $attachment = Mockery::mock($attachmentClass);
+        Assert::isInstanceOf($attachment, AbstractAttachment::class);
+        Assert::isInstanceOf($attachment, MockInterface::class);
+
         $attachment->expects('getId')->times(3)->andReturn($uuid);
-        $attachment->expects('getFormalDate')->andReturn(new DateTimeImmutable($expectedFormalDate = '2021-05-10'));
+        $attachment->expects('getFormalDate')->andReturn(PlainDate::create($expectedFormalDate = '2021-05-10'));
         $attachment->expects('getFileInfo')->times(5)->andReturn($fileInfo);
         $attachment->expects('getType')->andReturn(AttachmentType::ADVICE);
-        $attachment->expects('getLanguage')->andReturn(AttachmentLanguage::DUTCH);
+        $attachment->expects('getLanguage')->andReturn(AttachmentLanguage::NLD);
         $attachment->expects('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
         $attachment->expects('getGrounds')->andReturn($expectedGrounds = ['bar', 'foo']);
         $attachment->expects('isWithdrawn')->times(2)->andReturnFalse();
@@ -108,7 +114,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedSourceType, $result[0]->sourceType);
         $this->assertSame($expectedSize, $result[0]->size);
         $this->assertSame($expectedInternalReference, $result[0]->internalReference);
-        $this->assertSame(AttachmentLanguage::DUTCH, $result[0]->language);
+        $this->assertSame(AttachmentLanguage::NLD, $result[0]->language);
         $this->assertSame($expectedGrounds, $result[0]->grounds);
         $this->assertSame($expectedDownloadUrl, $result[0]->downloadUrl);
         $this->assertSame($expectedDetailsUrl, $result[0]->detailsUrl);

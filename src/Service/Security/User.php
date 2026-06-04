@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Security;
 
+use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -20,6 +21,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 use function array_filter;
 use function array_unique;
@@ -42,7 +44,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(length: 180, unique: true)]
     private string $email;
 
-    /** @var string[] */
+    /** @var array<array-key, string> */
     #[ORM\Column(type: Types::JSON, options: ['jsonb' => true])]
     private array $roles = [];
 
@@ -59,7 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     private ?string $mfaToken = null;
 
     /**
-     * @var string[]|null
+     * @var array<array-key, string>|null
      */
     #[ORM\Column(type: 'encrypted_array', nullable: true)]
     private ?array $mfaRecovery = null;
@@ -74,12 +76,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\JoinColumn(nullable: false)]
     private Organisation $organisation;
 
-    /** @var Collection|LoginActivity[] */
+    /** @var Collection<array-key,LoginActivity> */
     #[ORM\OneToMany(mappedBy: 'account', targetEntity: LoginActivity::class)]
     private Collection $loginActivities;
 
     public function __construct()
     {
+        $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
         $this->loginActivities = new ArrayCollection();
     }
 
@@ -100,18 +104,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        $email = $this->email;
+        Assert::stringNotEmpty($email);
+
+        return $email;
     }
 
     /**
-     * @return string[]
+     * @return array<array-key, string>
      */
     public function getRoles(): array
     {
@@ -126,7 +128,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     }
 
     /**
-     * @param string[] $roles
+     * @param array<array-key, string> $roles
      *
      * @return $this
      */
@@ -186,7 +188,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     }
 
     /**
-     * @return string[]|null
+     * @return array<array-key, string>|null
      */
     public function getMfaRecovery(): ?array
     {
@@ -194,7 +196,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     }
 
     /**
-     * @param string[]|null $mfaRecovery
+     * @param array<array-key, string>|null $mfaRecovery
      *
      * @return $this
      */

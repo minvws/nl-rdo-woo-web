@@ -25,17 +25,13 @@ use function Zenstruck\Foundry\Persistence\save;
 
 final class WooDecisionRepositoryTest extends SharedWebTestCase
 {
+    private WooDecisionRepository $wooDecisionRepository;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        self::bootKernel();
-    }
-
-    private function getRepository(): WooDecisionRepository
-    {
-        /** @var WooDecisionRepository */
-        return self::getContainer()->get(WooDecisionRepository::class);
+        $this->wooDecisionRepository = self::fromContainer(WooDecisionRepository::class);
     }
 
     public function testGetDossierCounts(): void
@@ -57,7 +53,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
             'judgement' => Judgement::NOT_PUBLIC,
         ]);
 
-        $result = $this->getRepository()->getDossierCounts($wooDecision);
+        $result = $this->wooDecisionRepository->getDossierCounts($wooDecision);
 
         $this->assertSame(3, $result->getTotalDocumentCount());
         $this->assertTrue($result->hasDocuments());
@@ -72,7 +68,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
             'dossiers' => [$wooDecision],
         ]);
 
-        $result = $this->getRepository()->getDossierReferencesForDocument($doc->getDocumentNr());
+        $result = $this->wooDecisionRepository->getDossierReferencesForDocument($doc->getDocumentNr());
         $dossierReference = reset($result);
 
         self::assertInstanceOf(DossierReference::class, $dossierReference);
@@ -113,7 +109,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
             ]),
         ]);
 
-        $result = $this->getRepository()->getSearchResultViewModel(
+        $result = $this->wooDecisionRepository->getSearchResultViewModel(
             $wooDecision->getDocumentPrefix(),
             $wooDecision->getDossierNr(),
             ApplicationMode::PUBLIC,
@@ -142,8 +138,8 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
             'organisation' => $organisationA,
         ]);
 
-        $result = $this->getRepository()->findAllForOrganisation(
-            $organisationA
+        $result = $this->wooDecisionRepository->findAllForOrganisation(
+            $organisationA,
         );
 
         $this->assertCount(2, $result);
@@ -161,7 +157,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
     {
         $wooDecision = WooDecisionFactory::createOne();
 
-        $result = $this->getRepository()->findOne($wooDecision->getId());
+        $result = $this->wooDecisionRepository->findOne($wooDecision->getId());
 
         $this->assertEquals($wooDecision->getId(), $result->getId());
     }
@@ -170,7 +166,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
     {
         self::expectExceptionObject(new NoResultException());
 
-        $this->getRepository()->findOne(Uuid::v6());
+        $this->wooDecisionRepository->findOne(Uuid::v6());
     }
 
     public function testGetDocumentsForBatchDownload(): void
@@ -210,7 +206,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
             'judgement' => Judgement::NOT_PUBLIC,
         ]);
 
-        $result = $this->getRepository()
+        $result = $this->wooDecisionRepository
             ->getDocumentsForBatchDownload($wooDecision)
             ->getQuery()
             ->getResult();
@@ -231,7 +227,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
             'status' => DossierStatus::PUBLISHED,
         ]);
 
-        $result = $this->getRepository()->getPubliclyAvailable();
+        $result = $this->wooDecisionRepository->getPubliclyAvailable();
 
         $dosserNrResults = array_map(
             static fn (WooDecision $decision): string => $decision->getDossierNr(),
@@ -275,7 +271,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
             'suspended' => true,
         ]);
 
-        $result = $this->getRepository()->getNotificationCounts($wooDecision);
+        $result = $this->wooDecisionRepository->getNotificationCounts($wooDecision);
 
         $this->assertEquals(1, $result['missing_uploads']);
         $this->assertEquals(1, $result['withdrawn']);

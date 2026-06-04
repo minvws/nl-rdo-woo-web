@@ -5,11 +5,9 @@ baseline:
     body:
       decision: public
       departmentId: <ROBOT SELECT>
-      dossierDateFrom: <ROBOT DATE -14>
-      dossierDateTo: <ROBOT DATE -7>
+      dateFrom: <ROBOT DATE -14>
+      dateTo: <ROBOT DATE -7>
       dossierNumber: <ROBOT RANDOMIZE>
-      internalReference: "Most same break church cover."
-      prefix: E2E-A
       previewDate: <ROBOT DATE +0>
       publicationDate: <ROBOT DATE +0>
       reason: woo_request
@@ -19,78 +17,70 @@ baseline:
         Seem happen civil begin that out. Occur either couple parent appear operation hair simple.
       title: <ROBOT RANDOMIZE>
       mainDocument:
-        filename: dummy.txt
+        fileName: dummy.txt
+        type: c_4f50ca9c
         formalDate: <ROBOT DATE -14>
         grounds: []
-        internalReference: "Environment program coach decide pattern."
-        language: Dutch
+        language: NLD
       attachments:
         - externalId: <PYTHON GUID>
           fileName: kranten artikel.txt
           formalDate: <ROBOT DATE -12>
           grounds: []
-          internalReference: "Stond in de krant."
-          language: Dutch
+          language: NLD
           type: c_c2f56984
         - externalId: <PYTHON GUID>
           fileName: bijbehorende vergunning.txt
           formalDate: <ROBOT DATE -25>
           grounds: []
-          internalReference: "Vergunning van destijds"
-          language: Dutch
+          language: NLD
           type: c_002fc258
       documents:
-        - externalId: <PYTHON GUID>
-          caseNumbers: [E2E-CASE-001]
-          date: "2020-06-01T00:00:00.000Z"
-          documentId: <ROBOT RANDOM INT>
-          documentNr: <ROBOT RANDOM INT, COPY OF documentId>
-          familyId: 333
-          fileName: quality.doc
-          grounds: [pietjepuk]
-          isSuspended: false
-          judgement: public
-          links: []
-          matter: "2025-01"
-          period: ""
-          refersTo: []
-          remark: "Niets op aan te merken"
-          sourceType: doc
-          threadId: 12345
-        - externalId: <PYTHON GUID>
-          caseNumbers: [E2E-CASE-001, E2E-CASE-333]
-          date: "2020-06-02T00:00:00.000Z"
-          documentId: <ROBOT RANDOM INT>
-          documentNr: <ROBOT RANDOM INT, COPY OF documentId>
-          familyId: 333
-          fileName: Dit document is meesterlijk.doc
-          grounds: [pietjepuk]
-          isSuspended: false
-          judgement: public
-          links: []
-          matter: "2025-01"
-          period: ""
-          refersTo: []
-          remark: "Niets op aan te merken"
-          sourceType: doc
-          threadId: 12345
-        - externalId: <PYTHON GUID>
-          caseNumbers: [E2E-CASE-001, E2E-CASE-333]
-          date: "2020-06-03T00:00:00.000Z"
-          documentId: <ROBOT RANDOM INT>
-          documentNr: <ROBOT RANDOM INT, COPY OF documentId>
-          familyId: 333
-          fileName: leipste slides.pptx
-          grounds: [pietjepuk]
-          isSuspended: false
-          judgement: public
-          links: []
-          matter: "2025-01"
-          period: ""
-          refersTo: []
-          remark: "Niets op aan te merken"
-          sourceType: spreadsheet
-          threadId:
+       - externalId: <PYTHON GUID>
+         caseNumbers: [E2E-CASE-001]
+         date: "2020-06-01"
+         documentId: <ROBOT RANDOM INT>
+         familyId: 333
+         fileName: quality.doc
+         grounds: [pietjepuk]
+         isSuspended: false
+         judgement: public
+         links: []
+         matter: "2025-01"
+         refersTo: []
+         remark: "Niets op aan te merken"
+         sourceType: doc
+         threadId: 12345
+       - externalId: <PYTHON GUID>
+         caseNumbers: [E2E-CASE-001, E2E-CASE-333]
+         date: "2020-06-02"
+         documentId: <ROBOT RANDOM INT>
+         familyId: 333
+         fileName: Dit document is meesterlijk.doc
+         grounds: [pietjepuk]
+         isSuspended: false
+         judgement: public
+         links: []
+         matter: "2025-01"
+         refersTo: []
+         remark: "Niets op aan te merken"
+         sourceType: doc
+         threadId: 12345
+       - externalId: <PYTHON GUID>
+         caseNumbers: [E2E-CASE-001, E2E-CASE-333]
+         date: "2020-06-03"
+         documentId: <ROBOT RANDOM INT>
+         familyId: 333
+         fileName: leipste slides.pptx
+         grounds: [pietjepuk]
+         isSuspended: false
+         judgement: public
+         links: []
+         matter: "2025-01"
+         refersTo: []
+         remark: "Niets op aan te merken"
+         sourceType: spreadsheet
+         threadId:
     files:
       mainDocument: files/dummy.txt
       attachments:
@@ -110,12 +100,12 @@ baseline:
 
 testcases:
 - title: Happy flow
-  tags: [failing]
   steps:
     - name: Create dossier
       request: {}
 
-- title: Create a dossier without documents
+- title: Create a public dossier without documents
+  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -123,6 +113,19 @@ testcases:
           documents: []
         files:
           documents: []
+        expected_response_status: 422
+
+- title: Create a partially public dossier without documents
+  tags: [failing]
+  steps:
+    - name: Create dossier
+      request:
+        body:
+          decision: partial_public
+          documents: []
+        files:
+          documents: []
+        expected_response_status: 422
 
 - title: Create a dossier without uploading a main document
   steps:
@@ -136,7 +139,6 @@ testcases:
         name: Verify WooDecision In Admin
 
 - title: Create a non-public dossier
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -144,7 +146,6 @@ testcases:
           decision: not_public
 
 - title: Create a nothing-found dossier
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -167,10 +168,9 @@ testcases:
           attachments: []
         files:
           attachments: []
-        expected_publication_status: published
+        expected_response_status: 422
 
 - title: Create dossier with a TXT main document
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -178,10 +178,12 @@ testcases:
           mainDocument: files/dummy.txt
 
 - title: Create dossier with a PDF main document
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
+        body:
+          mainDocument:
+            fileName: 16115.pdf
         files:
           mainDocument: files/filetypes/16115.pdf
 
@@ -195,40 +197,58 @@ testcases:
               fileName: kranten artikel.txt
               formalDate: <ROBOT DATE -12>
               grounds: []
-              internalReference: "Stond in de krant."
-              language: Dutch
+              language: NLD
               type: c_c2f56984
             - externalId: SAME-ID-AS-OTHER-ATTACHMENT
               fileName: bijbehorende vergunning.txt
               formalDate: <ROBOT DATE -25>
               grounds: []
-              internalReference: "Vergunning van destijds"
-              language: Dutch
+              language: NLD
               type: c_002fc258
         expected_response_status: 422
 
-- title: Attachments with zip file
+- title: Upload zip files # https://github.com/minvws/nl-rdo-woo-web-private/issues/6630
   tags: [failing]
   steps:
     - name: Create dossier
       request:
         body:
+          mainDocument:
+            fileName: relations.zip
           attachments:
             - externalId: <PYTHON GUID>
               fileName: relations.zip
               formalDate: <ROBOT DATE -12>
               grounds: []
-              internalReference: "Stond in de krant."
-              language: Dutch
+              language: NLD
               type: c_c2f56984
+          documents:
+            - externalId: <PYTHON GUID>
+              caseNumbers: [E2E-CASE-001]
+              date: "2020-06-01"
+              documentId: <ROBOT RANDOM INT>
+              familyId: 333
+              fileName: relations.zip
+              grounds: [pietjepuk]
+              isSuspended: false
+              judgement: public
+              links: []
+              matter: "2025-01"
+              refersTo: []
+              remark: "Niets op aan te merken"
+              sourceType: doc
+              threadId: 12345
         files:
+          mainDocument: files/woodecision/relations.zip
           attachments:
+            - externalId: <PYTHON GUID>
+              file: files/woodecision/relations.zip
+          documents:
             - externalId: <PYTHON GUID>
               file: files/woodecision/relations.zip
         expected_response_status: 422
 
 - title: Past publication
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -238,56 +258,51 @@ testcases:
         expected_publication_status: published
 
 - title: Future publication
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
         body:
           previewDate: <ROBOT DATE +0>
           publicationDate: <ROBOT DATE +7>
-        expected_publication_status: scheduled
+        expected_publication_status: preview
 
 - title: Preview publication
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
         body:
           previewDate: <ROBOT DATE +7>
           publicationDate: <ROBOT DATE +14>
-        expected_publication_status: preview
+        expected_publication_status: scheduled
 
 - title: Change # TODO: This might just create a new dossier instead of updating the previous one
-  tags: [failing]
   steps:
     - name: Create dossier
       request: {}
     - name: Update the dossier
       request:
         body:
-          decision: non_public
+          decision: not_public
         expected_publication_status: published
 
 - title: Non-unique document IDs  # https://github.com/minvws/nl-rdo-woo-web-private/issues/6183
   tags: [failing]
   steps:
-    - name: Create dossier
+    - name: Create dossier A
       request:
         body:
           documents:
-            - externalId: A123
+            - externalId: <PYTHON GUID>
               caseNumbers: [E2E-CASE-001]
-              date: "2020-06-01T00:00:00.000Z"
-              documentId: THIS-IS-NOT-RANDOM-THOUGH
-              documentNr: THIS-IS-NOT-RANDOM-THOUGH
-              familyId: 333
+              date: "2020-06-01"
+              documentId: DOCUMENT-A
+              familyId: 111
               fileName: quality.doc
               grounds: [pietjepuk]
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
-              period: ""
+              matter: A
               refersTo: []
               remark: "Niets op aan te merken"
               sourceType: doc
@@ -295,10 +310,36 @@ testcases:
               file: files/dummy.txt
         files:
           documents:
-            - externalId: A123
+            - externalId: <PYTHON GUID>
               file: files/dummy.txt
+        expected_response_status: 200
+    - name: Create dossier B
+      request:
+        body:
+          documents:
+            - externalId: <PYTHON GUID>
+              caseNumbers: [E2E-CASE-001]
+              date: "2020-06-01"
+              documentId: DOCUMENT-A
+              familyId: 111
+              fileName: quality.doc
+              grounds: [pietjepuk]
+              isSuspended: false
+              judgement: public
+              links: []
+              matter: A
+              refersTo: []
+              remark: "Niets op aan te merken"
+              sourceType: doc
+              threadId: 12345
+              file: files/dummy.txt
+        files:
+          documents:
+            - externalId: <PYTHON GUID>
+              file: files/dummy.txt
+        expected_response_status: 422
 
-- title: Mimetype failing
+- title: Mimetype mismatch
   steps:
     - name: Create dossier
       request:
@@ -306,9 +347,8 @@ testcases:
           documents:
             - externalId: <PYTHON GUID>
               caseNumbers: [E2E-CASE-001]
-              date: "2020-06-01T00:00:00.000Z"
+              date: "2020-06-01"
               documentId: <ROBOT RANDOM INT>
-              documentNr: <ROBOT RANDOM INT, COPY OF documentId>
               familyId: 333
               fileName: magicbytes-fail.xlsx
               grounds: []
@@ -316,15 +356,47 @@ testcases:
               judgement: public
               links: []
               matter: "2025-01"
-              period: ""
               refersTo: []
-              remark: "Niets op aan te merken"
+              remark: Uploading an xlsx file which does not have the correct magic bytes for an xlsx file.
               sourceType: spreadsheet
               threadId: 12345
         files:
           documents:
-            - externalId: A123
+            - externalId: <PYTHON GUID>
               file: files/magicbytes-fail.xlsx
+        expected_response_status: 200
+        expected_publication_status: concept
+    - name: Document processing check
+      keyword:
+        name: Verify WooDecision Document Processing
+        args:
+          - processing_failed
+
+- title: Filetype mismatch
+  steps:
+    - name: Create dossier
+      request:
+        body:
+          documents:
+            - externalId: <PYTHON GUID>
+              caseNumbers: [E2E-CASE-001]
+              date: "2020-06-01"
+              documentId: <ROBOT RANDOM INT>
+              familyId: 333
+              fileName: quality.doc
+              grounds: [pietjepuk]
+              isSuspended: false
+              judgement: public
+              links: []
+              matter: "2025-01"
+              refersTo: []
+              remark: Uploading a zip file while fileName says it's a doc.
+              sourceType: doc
+              threadId: 12345
+        files:
+          documents:
+            - externalId: <PYTHON GUID>
+              file: files/woodecision/relations.zip
         expected_response_status: 200
         expected_publication_status: concept
     - name: Document processing check

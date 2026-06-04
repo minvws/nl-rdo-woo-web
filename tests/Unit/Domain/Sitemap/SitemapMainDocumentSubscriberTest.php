@@ -71,7 +71,7 @@ class SitemapMainDocumentSubscriberTest extends UnitTestCase
                     self::assertEquals($updatedAt, $urlConcrete->getLastmod());
 
                     return true;
-                }
+                },
             ),
             'main_documents',
         );

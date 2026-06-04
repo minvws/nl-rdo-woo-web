@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Attachment\Entity;
 
-use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
@@ -16,6 +15,7 @@ use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\PlainDate;
 
 class AbstractAttachmentTest extends UnitTestCase
 {
@@ -32,9 +32,9 @@ class AbstractAttachmentTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $this->dossier,
-            new DateTimeImmutable(),
+            PlainDate::today(),
             AttachmentType::ADVICE,
-            AttachmentLanguage::DUTCH,
+            AttachmentLanguage::NLD,
         );
 
         self::assertFalse($attachment->canWithdraw());
@@ -46,9 +46,9 @@ class AbstractAttachmentTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $this->dossier,
-            new DateTimeImmutable(),
+            PlainDate::today(),
             AttachmentType::ADVICE,
-            AttachmentLanguage::DUTCH,
+            AttachmentLanguage::NLD,
         );
 
         self::assertFalse($attachment->canWithdraw());
@@ -60,9 +60,9 @@ class AbstractAttachmentTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $this->dossier,
-            new DateTimeImmutable(),
+            PlainDate::today(),
             AttachmentType::ADVICE,
-            AttachmentLanguage::DUTCH,
+            AttachmentLanguage::NLD,
         );
 
         $fileInfo = new FileInfo();
@@ -79,9 +79,9 @@ class AbstractAttachmentTest extends UnitTestCase
 
         $attachment = new CovenantAttachment(
             $this->dossier,
-            new DateTimeImmutable(),
+            PlainDate::today(),
             AttachmentType::ADVICE,
-            AttachmentLanguage::DUTCH,
+            AttachmentLanguage::NLD,
         );
 
         $fileInfo = new FileInfo();

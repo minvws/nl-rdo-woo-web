@@ -4,30 +4,14 @@ declare(strict_types=1);
 
 namespace Admin\Api\Admin\Attachment;
 
-use ApiPlatform\Metadata\ApiProperty;
-use DateTimeImmutable;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\Constraints as Assert;
-use Webmozart\Assert\Assert as WebmozartAssert;
-
-use function is_null;
 
 class AttachmentUpdateDto
 {
-    #[Assert\NotBlank(allowNull: true, normalizer: 'trim')]
-    #[Assert\Date]
-    #[ApiProperty(
-        openapiContext: [
-            'type' => 'string',
-            'format' => 'date',
-        ],
-        jsonSchemaContext: [
-            'type' => 'string',
-            'format' => 'date',
-        ]
-    )]
-    public ?string $formalDate = null;
+    public ?PlainDate $formalDate = null;
 
     #[Assert\NotBlank(allowNull: true, normalizer: 'trim')]
     public ?string $uploadUuid = null;
@@ -36,12 +20,6 @@ class AttachmentUpdateDto
 
     public ?string $internalReference = null;
 
-    #[ApiProperty(
-        openapiContext: [
-            'type' => 'string',
-            'enum' => [AttachmentLanguage::DUTCH->value, AttachmentLanguage::ENGLISH->value],
-        ],
-    )]
     public ?AttachmentLanguage $language = null;
 
     /** @var ?array<array-key,string> $grounds */
@@ -50,26 +28,4 @@ class AttachmentUpdateDto
         new Assert\NotBlank(),
     ])]
     public ?array $grounds = null;
-
-    /**
-     * @phpstan-assert-if-true !null $this->formalDate
-     * @phpstan-assert-if-true !null $this->getFormalDateInstance()
-     */
-    public function hasFormalDateInstance(): bool
-    {
-        return ! is_null($this->formalDate);
-    }
-
-    public function getFormalDateInstance(): ?DateTimeImmutable
-    {
-        if (! $this->hasFormalDateInstance()) {
-            return null;
-        }
-
-        $date = DateTimeImmutable::createFromFormat('Y-m-d', $this->formalDate);
-
-        WebmozartAssert::notFalse($date);
-
-        return $date;
-    }
 }

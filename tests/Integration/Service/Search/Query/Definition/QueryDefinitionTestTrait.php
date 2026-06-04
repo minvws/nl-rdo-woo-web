@@ -15,7 +15,7 @@ use Shared\Service\Search\Query\Definition\QueryDefinitionInterface;
 use Shared\Service\Search\Result\Result;
 use Shared\Service\Search\Result\ResultTransformer;
 use Shared\Service\Search\SearchService;
-use Shared\Tests\Unit\Domain\Search\Index\ElasticConfigOverride;
+use Shared\Tests\ElasticConfigFactory;
 use Spatie\Snapshots\MatchesSnapshots;
 
 trait QueryDefinitionTestTrait
@@ -24,8 +24,10 @@ trait QueryDefinitionTestTrait
 
     /**
      * @param class-string<QueryDefinitionInterface> $definitionClass
+     *
+     * @return array<string, mixed>
      */
-    private function matchDefinitionToSnapshot(string $definitionClass, ?SearchParameters $searchParameters = null): void
+    private function getDefinitionSearchData(string $definitionClass, ?SearchParameters $searchParameters = null): array
     {
         $elasticResponse = Mockery::mock(Elasticsearch::class);
         $resultTransformer = Mockery::mock(ResultTransformer::class);
@@ -37,21 +39,29 @@ trait QueryDefinitionTestTrait
 
         $searchService = new SearchService(
             $elasticClient,
-            self::getContainer()->get(LoggerInterface::class),
-            self::getContainer()->get(ObjectHandler::class),
+            self::fromContainer(LoggerInterface::class),
+            self::fromContainer(ObjectHandler::class),
             $resultTransformer,
-            self::getContainer()->get(SearchParametersFactory::class),
-            ElasticConfigOverride::default(),
+            self::fromContainer(SearchParametersFactory::class),
+            ElasticConfigFactory::default(),
         );
 
-        $queryDefinition = self::getContainer()->get($definitionClass);
-        self::assertInstanceOf(QueryDefinitionInterface::class, $queryDefinition);
-
+        $queryDefinition = self::fromContainer($definitionClass);
         $searchService->getResult(
             $queryDefinition,
             $searchParameters,
         );
 
-        $this->assertMatchesJsonSnapshot($searchData);
+        return $searchData;
+    }
+
+    /**
+     * @param class-string<QueryDefinitionInterface> $definitionClass
+     */
+    private function matchDefinitionToSnapshot(string $definitionClass, ?SearchParameters $searchParameters = null): void
+    {
+        $this->assertMatchesJsonSnapshot(
+            $this->getDefinitionSearchData($definitionClass, $searchParameters),
+        );
     }
 }
