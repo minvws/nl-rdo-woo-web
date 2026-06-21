@@ -36,14 +36,11 @@ use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\IndexException;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\PlainDate;
-use Spatie\Snapshots\MatchesSnapshots;
 use stdClass;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ElasticDocumentTypeTest extends UnitTestCase
 {
-    use MatchesSnapshots;
-
     /**
      * @return array<string, array{entity: AbstractDossier|AbstractAttachment|AbstractMainDocument, expectedType: ElasticDocumentType}>
      */

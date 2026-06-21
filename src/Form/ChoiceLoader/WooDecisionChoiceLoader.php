@@ -28,9 +28,8 @@ class WooDecisionChoiceLoader implements ChoiceLoaderInterface
 
     public function loadChoiceList(?callable $value = null): ChoiceListInterface
     {
-        /** @var User|null $user */
         $user = $this->security->getUser();
-        if (! $user) {
+        if ($user instanceof User) {
             return new ArrayChoiceList([]);
         }
 
@@ -40,7 +39,7 @@ class WooDecisionChoiceLoader implements ChoiceLoaderInterface
 
         $choices = [];
         foreach ($entities as $entity) {
-            $choices[$entity->getTitle()] = (string) $entity->getId();
+            $choices[(string) $entity->getTitle()] = (string) $entity->getId();
         }
 
         return new ArrayChoiceList($choices);

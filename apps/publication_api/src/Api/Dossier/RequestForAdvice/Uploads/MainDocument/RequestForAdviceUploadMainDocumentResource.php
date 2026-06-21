@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
             output: false,
             read: false,
             deserialize: false,
-            name: 'request_for_advice_main_document_upload',
+            name: self::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
             processor: RequestForAdviceUploadMainDocumentProcessor::class,
         ),
     ],
@@ -37,4 +37,5 @@ use Symfony\Component\HttpFoundation\Response;
 )]
 final readonly class RequestForAdviceUploadMainDocumentResource
 {
+    public const string ROUTE_NAME_MAIN_DOCUMENT_UPLOAD = 'request_for_advice_main_document_upload';
 }

@@ -119,7 +119,7 @@ readonly class StepActionHelper
     public function addDossierToBreadcrumbs(Breadcrumbs $breadcrumbs, AbstractDossier $dossier, ?string $item = null): void
     {
         $breadcrumbs->addRouteItem(
-            $dossier->getTitle() ?? '',
+            (string) $dossier->getTitle(),
             'app_admin_dossier',
             ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );

@@ -41,7 +41,7 @@ readonly class FileStorageLister
     {
         $files = $filesystem
             ->listContents('/', true)
-            ->filter(fn (StorageAttributes $attributes) => $attributes->isFile());
+            ->filter(static fn (StorageAttributes $attributes) => $attributes->isFile());
 
         foreach ($files as $file) {
             /** @var int $size */

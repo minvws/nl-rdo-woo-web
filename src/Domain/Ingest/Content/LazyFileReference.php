@@ -39,7 +39,7 @@ class LazyFileReference implements FileReferenceInterface
         EntityStorageService $entityStorage,
     ): self {
         return new self(
-            function () use ($entity, $options, $entityStorage) {
+            static function () use ($entity, $options, $entityStorage) {
                 if ($options->hasPageNumber()) {
                     throw ContentExtractException::forCannotCreateLazyFileReferenceForPage();
                 }

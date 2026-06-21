@@ -234,6 +234,11 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
         return $this->isInventoryRequired() || $this->isInventoryOptional();
     }
 
+    public function canRemoveInventory(): bool
+    {
+        return $this->isInventoryOptional() && $this->status->isConcept();
+    }
+
     public function hasProductionReport(): bool
     {
         return $this->getProductionReport()?->getFileInfo()->isUploaded() ?? false;

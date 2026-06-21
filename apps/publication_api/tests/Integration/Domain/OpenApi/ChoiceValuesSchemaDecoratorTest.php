@@ -11,8 +11,8 @@ use ApiPlatform\OpenApi\Model\Paths;
 use ApiPlatform\OpenApi\OpenApi;
 use ArrayObject;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PublicationApi\Domain\OpenApi\Decorator\ChoiceValuesSchemaDecorator;
+use PublicationApi\Tests\Integration\PublicationApiTestCase;
 use ReflectionClass;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Choice;
@@ -21,7 +21,7 @@ use Webmozart\Assert\Assert;
 
 use function substr_count;
 
-final class ChoiceValuesSchemaDecoratorTest extends MockeryTestCase
+final class ChoiceValuesSchemaDecoratorTest extends PublicationApiTestCase
 {
     public function testItReturnsOpenApiUnchangedWhenNoSchemas(): void
     {

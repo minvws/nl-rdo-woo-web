@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\Disposition;
 
-use PublicationApi\Api\MainDocument\MainDocumentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use Shared\Domain\Publication\FileInfo;
@@ -14,7 +13,7 @@ class DispositionMainDocumentMapper
 {
     public static function create(
         Disposition $disposition,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        DispositionMainDocumentRequestDto $mainDocumentRequestDto,
     ): DispositionMainDocument {
         $mainDocument = new DispositionMainDocument(
             $disposition,
@@ -34,7 +33,7 @@ class DispositionMainDocumentMapper
 
     public static function update(
         Disposition $disposition,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        DispositionMainDocumentRequestDto $mainDocumentRequestDto,
     ): DispositionMainDocument {
         $mainDocument = $disposition->getMainDocument();
         Assert::notNull($mainDocument);

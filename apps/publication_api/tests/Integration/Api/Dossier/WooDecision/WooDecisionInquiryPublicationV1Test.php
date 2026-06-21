@@ -72,7 +72,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         self::assertDatabaseCount(WooDecision::class, 1);
         self::assertDatabaseCount(Inquiry::class, 6);
 
-        $inquiryC1 = $this->getEntity(Inquiry::class, ['casenr' => 'C-1']);
+        $inquiryC1 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-1']);
         self::assertNotNull($inquiryC1);
         self::assertEqualsCanonicalizing(
             [
@@ -83,7 +83,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             $this->getDocumentExternalIds($inquiryC1->getDocuments()->toArray()),
         );
 
-        $inquiryC2 = $this->getEntity(Inquiry::class, ['casenr' => 'C-2']);
+        $inquiryC2 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-2']);
         self::assertNotNull($inquiryC2);
         self::assertEqualsCanonicalizing(
             [
@@ -93,7 +93,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             $this->getDocumentExternalIds($inquiryC2->getDocuments()->toArray()),
         );
 
-        $inquiryC3 = $this->getEntity(Inquiry::class, ['casenr' => 'C-3']);
+        $inquiryC3 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-3']);
         self::assertNotNull($inquiryC3);
         self::assertEqualsCanonicalizing(
             [
@@ -103,7 +103,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             $this->getDocumentExternalIds($inquiryC3->getDocuments()->toArray()),
         );
 
-        $inquiryC4 = $this->getEntity(Inquiry::class, ['casenr' => 'C-4']);
+        $inquiryC4 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-4']);
         self::assertNotNull($inquiryC4);
         self::assertEqualsCanonicalizing(
             [
@@ -112,7 +112,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             $this->getDocumentExternalIds($inquiryC4->getDocuments()->toArray()),
         );
 
-        $inquiryC5 = $this->getEntity(Inquiry::class, ['casenr' => 'C-5']);
+        $inquiryC5 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-5']);
         self::assertNotNull($inquiryC5);
         self::assertEqualsCanonicalizing(
             [
@@ -121,7 +121,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             $this->getDocumentExternalIds($inquiryC5->getDocuments()->toArray()),
         );
 
-        $inquiryC6 = $this->getEntity(Inquiry::class, ['casenr' => 'C-6']);
+        $inquiryC6 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-6']);
         self::assertNotNull($inquiryC6);
         self::assertEqualsCanonicalizing(
             [
@@ -146,7 +146,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         WooDecisionAttachmentFactory::createOne(['dossier' => $wooDecision]);
 
         $documents = DocumentFactory::new()
-            ->sequence(function () {
+            ->sequence(static function () {
                 foreach (range(0, 2) as $i) {
                     yield ['externalId' => ExternalId::create(sprintf('external-document-id-%d', $i))];
                 }
@@ -156,7 +156,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             ]);
 
         $inquiry = InquiryFactory::createOne([
-            'casenr' => 'C-1',
+            'inquiryNumber' => 'C-1',
             'organisation' => $organisation,
             'documents' => $documents,
             'dossiers' => [],
@@ -181,10 +181,10 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         self::assertDatabaseCount(WooDecision::class, 1);
         self::assertDatabaseCount(Inquiry::class, 3);
 
-        $inquiry = $this->getEntity(Inquiry::class, ['casenr' => 'C-1']);
+        $inquiry = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-1']);
         self::assertNotNull($inquiry);
 
-        $inquiryC1 = $this->getEntity(Inquiry::class, ['casenr' => 'C-1']);
+        $inquiryC1 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-1']);
         self::assertNotNull($inquiryC1);
         self::assertEqualsCanonicalizing(
             ['external-document-id-0'],
@@ -193,7 +193,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         );
         self::assertSame($inquiry->getId(), $inquiryC1->getId());
 
-        $inquiryC2 = $this->getEntity(Inquiry::class, ['casenr' => 'C-2']);
+        $inquiryC2 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-2']);
         self::assertNotNull($inquiryC2);
         self::assertEqualsCanonicalizing(
             [
@@ -203,7 +203,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             $this->getDocumentExternalIds($inquiryC2->getDocuments()->toArray()),
             'Case C2: Mismatched document external IDs',
         );
-        $inquiryC3 = $this->getEntity(Inquiry::class, ['casenr' => 'C-3']);
+        $inquiryC3 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-3']);
         self::assertNotNull($inquiryC3);
         self::assertEqualsCanonicalizing(
             ['external-document-id-1'],
@@ -229,7 +229,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         WooDecisionAttachmentFactory::createOne(['dossier' => $wooDecisionA]);
 
         $documentsA = DocumentFactory::new()
-            ->sequence(function () {
+            ->sequence(static function () {
                 foreach (range(0, 1) as $i) {
                     yield ['externalId' => ExternalId::create(sprintf('external-document-id-A-%d', $i))];
                 }
@@ -250,7 +250,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         WooDecisionAttachmentFactory::createOne(['dossier' => $wooDecisionB]);
 
         $documentsB = DocumentFactory::new()
-            ->sequence(function () {
+            ->sequence(static function () {
                 foreach (range(0, 1) as $i) {
                     yield ['externalId' => ExternalId::create(sprintf('external-document-id-B-%d', $i))];
                 }
@@ -261,7 +261,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
 
         // Inquiries
         $inquiryOne = InquiryFactory::createOne([
-            'casenr' => 'C-1',
+            'inquiryNumber' => 'C-1',
             'organisation' => $organisation,
             'documents' => [
                 $documentsA[0],
@@ -272,7 +272,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         ]);
 
         $inquiryTwo = InquiryFactory::createOne([
-            'casenr' => 'C-2',
+            'inquiryNumber' => 'C-2',
             'organisation' => $organisation,
             'documents' => [
                 $documentsA[1],
@@ -301,7 +301,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         self::assertDatabaseCount(WooDecision::class, 2);
         self::assertDatabaseCount(Inquiry::class, 2);
 
-        $inquiryC1 = $this->getEntity(Inquiry::class, ['casenr' => 'C-1']);
+        $inquiryC1 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-1']);
         self::assertNotNull($inquiryC1);
         self::assertEqualsCanonicalizing(
             [
@@ -313,7 +313,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             'Case C1: Mismatched document external IDs',
         );
 
-        $inquiryC2 = $this->getEntity(Inquiry::class, ['casenr' => 'C-2']);
+        $inquiryC2 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-2']);
         self::assertNotNull($inquiryC2);
         self::assertEqualsCanonicalizing(
             [
@@ -343,7 +343,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         WooDecisionAttachmentFactory::createOne(['dossier' => $wooDecisionA]);
 
         $documentsA = DocumentFactory::new()
-            ->sequence(function () {
+            ->sequence(static function () {
                 foreach (range(0, 1) as $i) {
                     yield ['externalId' => ExternalId::create(sprintf('external-document-id-A-%d', $i))];
                 }
@@ -364,7 +364,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         WooDecisionAttachmentFactory::createOne(['dossier' => $wooDecisionB]);
 
         $documentsB = DocumentFactory::new()
-            ->sequence(function () {
+            ->sequence(static function () {
                 foreach (range(0, 1) as $i) {
                     yield ['externalId' => ExternalId::create(sprintf('external-document-id-B-%d', $i))];
                 }
@@ -375,7 +375,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
 
         // Inquiries
         $inquiryOne = InquiryFactory::createOne([
-            'casenr' => 'C-1',
+            'inquiryNumber' => 'C-1',
             'organisation' => $organisation,
             'documents' => [
                 $documentsA[0],
@@ -386,7 +386,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         ]);
 
         $inquiryTwo = InquiryFactory::createOne([
-            'casenr' => 'C-2',
+            'inquiryNumber' => 'C-2',
             'organisation' => $organisation,
             'documents' => [
                 $documentsA[1],
@@ -415,7 +415,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         self::assertDatabaseCount(WooDecision::class, 2);
         self::assertDatabaseCount(Inquiry::class, 2);
 
-        $inquiryC1 = $this->getEntity(Inquiry::class, ['casenr' => 'C-1']);
+        $inquiryC1 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-1']);
         self::assertNotNull($inquiryC1);
         self::assertEqualsCanonicalizing(
             [
@@ -427,7 +427,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             'Case C1: Mismatched document external IDs',
         );
 
-        $inquiryC2 = $this->getEntity(Inquiry::class, ['casenr' => 'C-2']);
+        $inquiryC2 = $this->getEntity(Inquiry::class, ['inquiryNumber' => 'C-2']);
         self::assertNotNull($inquiryC2);
         self::assertEqualsCanonicalizing(
             [
@@ -473,10 +473,10 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
     }
 
     /**
-     * This test was added because numeric case numbers were causing issues in the past. Casenumbers are being used as
+     * This test was added because numeric case numbers were causing issues in the past. InquiryNumbers are being used as
      * the keys in arrays which where auto casted to integers by PHP. That caused type issues.
      */
-    public function testCreateWooDecisionWithDocumentsAttachedToInquiresUsingNumericCaseNrs(): void
+    public function testCreateWooDecisionWithDocumentsAttachedToInquiresUsingNumericInquiryNumbers(): void
     {
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
@@ -498,7 +498,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         self::assertDatabaseCount(WooDecision::class, 1);
         self::assertDatabaseCount(Inquiry::class, 3);
 
-        $inquiryC1 = $this->getEntity(Inquiry::class, ['casenr' => '1']);
+        $inquiryC1 = $this->getEntity(Inquiry::class, ['inquiryNumber' => '1']);
         self::assertNotNull($inquiryC1);
         self::assertEqualsCanonicalizing(
             [
@@ -507,7 +507,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             $this->getDocumentExternalIds($inquiryC1->getDocuments()->toArray()),
         );
 
-        $inquiryC2 = $this->getEntity(Inquiry::class, ['casenr' => '2']);
+        $inquiryC2 = $this->getEntity(Inquiry::class, ['inquiryNumber' => '2']);
         self::assertNotNull($inquiryC2);
         self::assertEqualsCanonicalizing(
             [
@@ -516,7 +516,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             $this->getDocumentExternalIds($inquiryC2->getDocuments()->toArray()),
         );
 
-        $inquiryC3 = $this->getEntity(Inquiry::class, ['casenr' => '3']);
+        $inquiryC3 = $this->getEntity(Inquiry::class, ['inquiryNumber' => '3']);
         self::assertNotNull($inquiryC3);
         self::assertEqualsCanonicalizing(
             [
@@ -572,29 +572,32 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
     }
 
     /**
-     * @param array<array-key,array<array-key,string>> $caseNumberProvider
+     * In the context of these testcases a 'valid' document has judgement 'public' and is not `suspended`, so they
+     * support uploads.
+     *
+     * @param array<array-key,array<array-key,string>> $inquiryNumberProvider
      *
      * @return list<array<string,mixed>>
      */
     private function createValidDocumentsPayload(
         int $documentCount,
-        array $caseNumberProvider = [],
+        array $inquiryNumberProvider = [],
         string $externalIdPrefix = 'external-document-id',
     ): array {
         $documents = [];
         for ($i = 0; $i < $documentCount; $i++) {
-            $caseNumbers = array_shift($caseNumberProvider) ?? [];
+            $inquiryNumbers = array_shift($inquiryNumberProvider) ?? [];
 
             $documents[] = [
-                'caseNumbers' => $caseNumbers,
+                'inquiryNumbers' => $inquiryNumbers,
                 'documentDate' => $this->getFaker()->date(),
-                'documentId' => $this->getFaker()->word(),
+                'documentId' => $this->getFaker()->unique()->documentId()->toString(),
                 'externalId' => sprintf('%s-%d', $externalIdPrefix, $i),
                 'familyId' => $this->getFaker()->numberBetween(1, 1000),
                 'fileName' => $this->getFaker()->fileNameForGroup(UploadGroupId::API_WOO_DECISION_DOCUMENTS)->toString(),
                 'grounds' => $this->getFaker()->groundsBetween(0, 3),
-                'isSuspended' => $this->getFaker()->boolean(),
-                'judgement' => $this->getFaker()->randomElement(Judgement::cases()),
+                'isSuspended' => false,
+                'judgement' => Judgement::PUBLIC,
                 'links' => [],
                 'matter' => 'xx',
                 'refersTo' => [],
@@ -615,7 +618,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
     private function getDocumentExternalIds(array $documents): array
     {
         $externalIds = array_map(
-            fn (Document $document): ?string => $document->getExternalId()?->__toString(),
+            static fn (Document $document): ?string => $document->getExternalId()?->toString(),
             $documents,
         );
 

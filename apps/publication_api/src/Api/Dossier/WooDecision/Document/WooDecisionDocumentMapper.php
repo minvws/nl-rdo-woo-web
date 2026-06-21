@@ -27,7 +27,7 @@ readonly class WooDecisionDocumentMapper
         $documentNr = DocumentNumber::fromString(
             $documentPrefix,
             $wooDecisionDocumentRequestDto->matter,
-            $wooDecisionDocumentRequestDto->documentId,
+            $wooDecisionDocumentRequestDto->documentId->toString(),
         );
 
         $fileInfo = new FileInfo();
@@ -38,17 +38,25 @@ readonly class WooDecisionDocumentMapper
         $document->setDocumentNr($documentNr->getValue());
         $document->setFileInfo($fileInfo);
 
-        return self::update($document, $wooDecisionDocumentRequestDto);
+        return self::update($documentPrefix, $document, $wooDecisionDocumentRequestDto);
     }
 
     public function update(
+        string $documentPrefix,
         Document $document,
         WooDecisionDocumentRequestDto $wooDecisionDocumentRequestDto,
     ): Document {
         $documentHash = $this->objectHasher->get($document);
 
+        $documentNr = DocumentNumber::fromString(
+            $documentPrefix,
+            $wooDecisionDocumentRequestDto->matter,
+            $wooDecisionDocumentRequestDto->documentId->toString(),
+        );
+
         $document->setDocumentDate($wooDecisionDocumentRequestDto->documentDate);
         $document->setDocumentId($wooDecisionDocumentRequestDto->documentId);
+        $document->setDocumentNr($documentNr->getValue());
         $document->setFamilyId($wooDecisionDocumentRequestDto->familyId);
         $document->setGrounds($wooDecisionDocumentRequestDto->grounds);
         $document->setJudgement($wooDecisionDocumentRequestDto->judgement);

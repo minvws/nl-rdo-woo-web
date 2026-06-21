@@ -19,7 +19,6 @@ Suite Setup
 Advice Test Case
   [Arguments]  ${steps}
   FOR  ${step}  IN  @{steps}
-    Log  ${step}[name]
     IF  '${step}[type]' == 'request'
       Create Advice
       ...  ${step}[expected_response_status]
@@ -102,3 +101,7 @@ Send Put Request Advice
   ...  ${put_response.status_code} == ${expected_response_status}
   ...  msg=Advice PUT returned ${put_response.status_code} while expecting ${expected_response_status}
   RETURN  ${put_response.json()}
+
+Verify HAL Links Are Reachable
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  Verify HAL Links Are Reachable For Dossier  advice

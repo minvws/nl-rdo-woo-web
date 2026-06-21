@@ -6,18 +6,19 @@ namespace Shared\Domain\Upload\Process;
 
 use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\ValueObject\DocumentId;
 use SplFileInfo;
 
 use function sprintf;
 
 class FileProcessException extends RuntimeException
 {
-    public static function forFailingToStoreDocument(SplFileInfo $file, string $documentId): self
+    public static function forFailingToStoreDocument(SplFileInfo $file, DocumentId $documentId): self
     {
         return new self(
             sprintf(
                 'Failed to store document with id "%s" with file at local path "%s"',
-                $documentId,
+                $documentId->toString(),
                 $file->getPathname(),
             ),
         );

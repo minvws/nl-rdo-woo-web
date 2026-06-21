@@ -48,7 +48,7 @@ class ContentStepController extends AbstractController
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem(
-            $dossier->getTitle() ?? '',
+            (string) $dossier->getTitle(),
             'app_admin_dossier',
             ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );

@@ -132,7 +132,7 @@ Error: Fout
 'Please select a valid range.': 'Kies een geldig bereik.'
 'Please enter a valid week.': 'Vul een geldige week in.'
 'Please upload a valid spreadsheet': 'Upload een geldige spreadsheet.'
-'Enter a case number or multiple case numbers, separate multiple case numbers with commas': 'Vul een zaaknummer of meerdere zaaknummers in, scheid meerdere zaaknummers met komma’s'
+'Enter a inquiry number or multiple inquiry numbers, separate multiple inquiry numbers with commas': 'Vul een zaaknummer of meerdere zaaknummers in, scheid meerdere zaaknummers met komma’s'
 'Choose from the selection of published decisions': 'Kies uit de selectie gepubliceerde besluiten'
 'Mapping version does not exist': 'De mapping versie bestaat niet'
 date_mandatory: 'Deze datum is verplicht. Vul een datum in. Je kunt op het kalender-icoon klikken om een datum te selecteren.'
@@ -164,6 +164,11 @@ dossier.incomplete_documents: 'Een dossier met onvolledige documenten kan niet g
 dossier.incomplete_attachments: 'Een dossier met onvolledige bijlagen kan niet gepubliceerd worden'
 subject_already_exists: 'Dit onderwerp bestaat al'
 alpha_numeric_dash_only: 'Prefix mag alleen bestaan uit letters, cijfers en streepjes'
-casenumbers_invalid: "Zaaknummers mogen alleen letters, cijfers en verbindingstekens bevatten. Maximale lengte is 255 tekens."
+inquiry_numbers_invalid: "Zaaknummers mogen alleen letters, cijfers en verbindingstekens bevatten. Maximale lengte is 255 tekens."
 external_id_invalid_characters: 'Het externe id mag alleen bestaan uit letters, cijfers en de tekens: -, ., _, ~'
 dossier.dossier_nr_not_unique: 'Dit besluitnummer is al in gebruik'
+document.document_nr_not_unique: 'DocumentId {{ documentId }} met matter {{ matter }} bestaat al voor prefix {{ prefix }}'
+woo_decision.duplicate_document_id: 'De collectie bevat dubbele documenten. Dubbel documentId: {{ value }}.'
+dossier.title_too_short: 'De titel moet minimaal {{ limit }} tekens bevatten.'
+dossier.title_too_long: 'De titel mag maximaal {{ limit }} tekens bevatten.'
+dossier.title_required: 'De titel is verplicht.'

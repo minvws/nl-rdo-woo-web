@@ -12,7 +12,13 @@
 
 ## Robot Framework
 
-Robot framework is used for the Woo Project to execute E2E tests and mainly uses the [Browser library](https://robotframework-browser.org) and several other libraries.
+Robot framework is used for the Woo project to execute E2E tests and mainly uses the [Browser library](https://robotframework-browser.org) and several other libraries.
+
+### Pre-requisites
+
+Make sure Woo is running locally. Read the [development_install](development_install.md) instructions first, only applying steps 1 to 4, you can skip step 5
+
+## General setup
 
 All tests are run under a user called Robot Admin, which has 'super admin' rights, username `email@example.org` and password `IkLoopNooitVastVandaag`.
 The creation of this user is handled by the following command:
@@ -44,9 +50,59 @@ task rf:docker:run:ci
 task rf:docker:run:api
 ```
 
-## Running the tests in a local virtual environment
+### Test and Acceptance tests
 
-Make sure Woo is running locally. Read the [development_install](development_install.md) instructions first.
+Running the test towards the Test and Acceptance environments requires the following files:
+
+```bash
+/tests/robot_framework/.env.rf.test.minvws
+/tests/robot_framework/.env.rf.acc.minvws
+```
+
+They should contain the following values:
+
+```bash
+HEADLESS=true
+
+URL_PUBLIC=
+URL_ADMIN=
+URL_API=
+
+CLIENT_CERT=
+CLIENT_KEY=
+CA_BUNDLE=
+
+HTACCESS_USERNAME=
+HTACCESS_PASSWORD=
+
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
+ADMIN_SECRET=
+```
+
+Secrets can be collected through team members.
+
+Then you need the following files:
+
+```bash
+/certs/acc/client-minvws-combined.pem
+/certs/acc/client-minvws.key
+/certs/acc/client-bundle.pem
+/certs/test/client-minvws-combined.pem
+/certs/test/client-minvws.key
+/certs/test/client-bundle.pem
+```
+
+These can also be collected through team members.
+
+To run the tests towards either environment, use the following commands:
+
+```shell
+task rf:test:run tag=testdossiers
+task rf:acc:run tag=testdossiers
+```
+
+## Running the tests in a local virtual environment
 
 ### Step 1: Install Python
 
@@ -72,48 +128,6 @@ This command will always run the tests sequential.
 
 ```shell
 task rf:local:run tag=testdossiers
-```
-
-#### Test and Acceptance tests
-
-Running the test towards the Test and Acceptance environments requires the following files:
-
-```bash
-/tests/robot_framework/.env.rf.test
-/tests/robot_framework/.env.rf.acc
-```
-
-They should contain the following values:
-
-```bash
-ENVIRONMENT=acc
-
-HEADLESS=true
-
-URL_PUBLIC=
-URL_ADMIN=
-
-HTACCESS_USERNAME=
-HTACCESS_PASSWORD=
-ADMIN_EMAIL=
-ADMIN_PASSWORD=
-ADMIN_SECRET=
-
-URL_API=
-
-CLIENT_CERT=
-CLIENT_KEY=
-CA_BUNDLE=
-
-```
-
-Secrets can be collected through team members.
-
-To run the tests towards either environment, use the following commands:
-
-```shell
-task rf:test:run tag=testdossiers
-task rf:acc:run tag=testdossiers
 ```
 
 ## Dependency management

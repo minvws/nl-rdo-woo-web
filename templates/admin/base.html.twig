@@ -31,8 +31,8 @@
         {% set isAuthenticated = app.user and is_granted('ROLE_BALIE') %}
 
         {% macro nav_item(routeName, titleTranslationKey, routePattern, e2eName) %}
-            {% set isCurrentPage = app.request.get('_route') is same as (routeName) %}
-            {% set isActivePage = isCurrentPage or (routePattern is not empty and app.request.get('_route') matches routePattern) %}
+            {% set isCurrentPage = app.current_route is same as (routeName) %}
+            {% set isActivePage = isCurrentPage or (routePattern is not empty and app.current_route matches routePattern) %}
             <li>
                 <a
                     {% if isCurrentPage %}aria-current="page"{% endif %}

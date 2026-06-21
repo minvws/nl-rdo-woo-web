@@ -21,7 +21,7 @@ class PropertyChangeset
 
     public function hasChanges(): bool
     {
-        return array_any($this->changes, fn ($changed) => $changed);
+        return array_any($this->changes, static fn ($changed) => $changed);
     }
 
     public function isChanged(string $key): bool

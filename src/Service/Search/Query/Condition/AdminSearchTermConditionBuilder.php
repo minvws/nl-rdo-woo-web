@@ -24,7 +24,7 @@ class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
                 $this->getDocumentFilenameQuery($searchParameters),
                 $this->getDocumentNrQuery($searchParameters),
                 $this->getDocumentIdQuery($searchParameters),
-                $this->getCaseNrQuery($searchParameters),
+                $this->getInquiryNumberQuery($searchParameters),
             ],
             filter: [
                 $this->getTypeFilter(),
@@ -38,7 +38,7 @@ class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
         $query = parent::createMainTypesQuery($searchParameters);
         $query->addShould(
             Query::simpleQueryString(
-                fields: [ElasticField::INQUIRY_CASE_NRS->value],
+                fields: [ElasticField::INQUIRY_NUMBERS->value],
                 query: $searchParameters->query,
             ),
         );
@@ -46,13 +46,13 @@ class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
         return $query;
     }
 
-    private function getCaseNrQuery(SearchParameters $searchParameters): NestedQuery
+    private function getInquiryNumberQuery(SearchParameters $searchParameters): NestedQuery
     {
         return Query::nested(
             path: ElasticNestedField::DOSSIERS->value,
             query: Query::simpleQueryString(
                 fields: [
-                    ElasticPath::dossiersInquiryCaseNrs()->value,
+                    ElasticPath::dossiersInquiryNumbers()->value,
                 ],
                 query: $searchParameters->query,
             ),

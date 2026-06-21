@@ -12,7 +12,7 @@ use Webmozart\Assert\Assert;
 use function array_key_exists;
 
 /**
- * This class aggregates Document level changes to caseNrs into a changeset grouped by caseNrs. Grouping it that way
+ * This class aggregates Document level changes to inquiryNumbers into a changeset grouped by inquiryNumbers. Grouping it that way
  * makes it much more efficient to process, as it can be applied as one change per case.
  */
 class InquiryChangeset
@@ -31,40 +31,40 @@ class InquiryChangeset
     ) {
     }
 
-    public function updateCaseNrsForDocument(
-        DocumentCaseNumbers $documentCaseNumbers,
-        CaseNumbers $updatedCaseNumbers,
+    public function updateInquiryNumbersForDocument(
+        DocumentInquiryNumbers $documentInquiryNumbers,
+        InquiryNumbers $updatedInquiryNumbers,
     ): void {
-        $currentCaseNumbers = $documentCaseNumbers->caseNumbers;
-        Assert::notNull($documentCaseNumbers->documentId);
+        $currentInquiryNumbers = $documentInquiryNumbers->inquiryNumbers;
+        Assert::notNull($documentInquiryNumbers->documentId);
 
-        $caseNumbersToRemove = $updatedCaseNumbers->getMissingValuesComparedToInput($currentCaseNumbers);
-        $this->addActionForCases($documentCaseNumbers->documentId, self::DEL_DOCUMENTS, $caseNumbersToRemove);
+        $inquiryNumbersToRemove = $updatedInquiryNumbers->getMissingValuesComparedToInput($currentInquiryNumbers);
+        $this->addActionForInquiries($documentInquiryNumbers->documentId, self::DEL_DOCUMENTS, $inquiryNumbersToRemove);
 
-        $caseNumbersToAdd = $updatedCaseNumbers->getExtraValuesComparedToInput($currentCaseNumbers);
-        $this->addActionForCases($documentCaseNumbers->documentId, self::ADD_DOCUMENTS, $caseNumbersToAdd);
+        $inquiryNumbersToAdd = $updatedInquiryNumbers->getExtraValuesComparedToInput($currentInquiryNumbers);
+        $this->addActionForInquiries($documentInquiryNumbers->documentId, self::ADD_DOCUMENTS, $inquiryNumbersToAdd);
     }
 
-    public function addCaseNrsForDossier(WooDecision $dossier, CaseNumbers $updatedCaseNumbers): void
+    public function addInquiryNumbersForDossier(WooDecision $dossier, InquiryNumbers $updatedInquiryNumbers): void
     {
-        $currentCaseNumbers = CaseNumbers::forWooDecision($dossier);
+        $currentInquiryNumbers = InquiryNumbers::forWooDecision($dossier);
 
-        $caseNumbersToAdd = $updatedCaseNumbers->getExtraValuesComparedToInput($currentCaseNumbers);
-        $this->addActionForCases($dossier->getId(), self::ADD_DOSSIERS, $caseNumbersToAdd);
+        $inquiryNumbersToAdd = $updatedInquiryNumbers->getExtraValuesComparedToInput($currentInquiryNumbers);
+        $this->addActionForInquiries($dossier->getId(), self::ADD_DOSSIERS, $inquiryNumbersToAdd);
     }
 
-    private function addActionForCases(Uuid $id, string $action, CaseNumbers $caseNrs): void
+    private function addActionForInquiries(Uuid $id, string $action, InquiryNumbers $inquiryNumbers): void
     {
-        foreach ($caseNrs as $caseNr) {
-            if (! array_key_exists($caseNr, $this->changes)) {
-                $this->changes[$caseNr] = [
+        foreach ($inquiryNumbers as $inquiryNumber) {
+            if (! array_key_exists($inquiryNumber, $this->changes)) {
+                $this->changes[$inquiryNumber] = [
                     self::ADD_DOCUMENTS => [],
                     self::DEL_DOCUMENTS => [],
                     self::ADD_DOSSIERS => [],
                 ];
             }
 
-            $this->changes[$caseNr][$action][] = $id;
+            $this->changes[$inquiryNumber][$action][] = $id;
         }
     }
 

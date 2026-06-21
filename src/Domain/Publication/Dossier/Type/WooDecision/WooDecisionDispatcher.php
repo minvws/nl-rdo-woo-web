@@ -9,7 +9,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDraw
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveDocumentsCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryCommand;
 use Shared\Domain\Upload\WooDecision\ProcessUploadedDocumentsCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -24,7 +25,10 @@ readonly class WooDecisionDispatcher
     public function dispatchRemoveInventoryAndDocumentsCommand(Uuid $id): void
     {
         $this->messageBus->dispatch(
-            new RemoveInventoryAndDocumentsCommand($id),
+            new RemoveInventoryCommand($id),
+        );
+        $this->messageBus->dispatch(
+            new RemoveDocumentsCommand($id),
         );
     }
 
@@ -63,7 +67,7 @@ readonly class WooDecisionDispatcher
      */
     public function dispatchUpdateInquiryLinksCommand(
         Uuid $id,
-        string $caseNr,
+        string $inquiryNumber,
         array $docIdsToAdd,
         array $docIdsToDelete,
         array $dossierIdsToAdd,
@@ -71,7 +75,7 @@ readonly class WooDecisionDispatcher
         $this->messageBus->dispatch(
             new UpdateInquiryLinksCommand(
                 $id,
-                $caseNr,
+                $inquiryNumber,
                 $docIdsToAdd,
                 $docIdsToDelete,
                 $dossierIdsToAdd,

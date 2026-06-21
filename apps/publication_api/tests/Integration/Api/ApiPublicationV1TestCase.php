@@ -19,7 +19,7 @@ abstract class ApiPublicationV1TestCase extends PublicationApiTestCase
     {
         $client = self::createClient(defaultOptions: [
             'headers' => [
-                'Accept' => 'application/json, application/ld+json, multipart/form-data, application/hal+json',
+                'Accept' => 'application/json, application/ld+json, multipart/form-data',
             ],
         ]);
         $client->getKernelBrowser()->setServerParameter('SSL_CLIENT_S_DN_CN', $sslUserName);

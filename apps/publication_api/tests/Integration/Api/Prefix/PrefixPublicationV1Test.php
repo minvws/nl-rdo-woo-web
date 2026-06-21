@@ -6,7 +6,6 @@ namespace PublicationApi\Tests\Integration\Api\Prefix;
 
 use PublicationApi\Api\Prefix\PrefixResource;
 use PublicationApi\Tests\Integration\Api\ApiPublicationV1TestCase;
-use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Symfony\Component\HttpFoundation\Request;
@@ -232,48 +231,5 @@ final class PrefixPublicationV1Test extends ApiPublicationV1TestCase
         self::assertResponseIsSuccessful();
         self::assertMatchesResourceCollectionJsonSchema(PrefixResource::class);
         self::assertCount(1, $response->toArray());
-    }
-
-    public function testCreatePrefix(): void
-    {
-        $organisation = OrganisationFactory::createOne();
-        $prefix = $this->getFaker()->unique()->word();
-
-        self::assertDatabaseCount(DocumentPrefix::class, 0);
-
-        $data = [
-            'prefix' => $prefix,
-        ];
-        self::createPublicationApiClient()
-            ->request(
-                Request::METHOD_POST,
-                sprintf('/api/publication/v1/organisation/%s/prefix', $organisation->getId()),
-                [
-                    'json' => $data,
-                ],
-            );
-        self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
-        self::assertMatchesResourceItemJsonSchema(PrefixResource::class);
-
-        self::assertDatabaseCount(DocumentPrefix::class, 1);
-    }
-
-    public function testCreatePrefixWithInvalidName(): void
-    {
-        $organisation = OrganisationFactory::createOne();
-        $prefix = $this->getFaker()->unique()->word();
-
-        $data = [
-            'prefix' => [$prefix],
-        ];
-        self::createPublicationApiClient()
-            ->request(
-                Request::METHOD_POST,
-                sprintf('/api/publication/v1/organisation/%s/prefix', $organisation->getId()),
-                [
-                    'json' => $data,
-                ],
-            );
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

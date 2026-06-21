@@ -10,21 +10,19 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Exception\InquiryLinkImportException;
-use Shared\Service\Inquiry\CaseNumbers;
-use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inquiry\DocumentInquiryNumbers;
 use Shared\Service\Inquiry\InquiryChangeset;
 use Shared\Service\Inquiry\InquiryLinkImporter;
 use Shared\Service\Inquiry\InquiryLinkImportParser;
+use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inquiry\InquiryService;
 use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
 use Shared\Tests\Unit\UnitTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Uid\Uuid;
 
 class InquiryLinkImporterTest extends UnitTestCase
 {
-    use MatchesSnapshots;
     use IterableToGenerator;
 
     private InquiryLinkImporter $importer;
@@ -83,17 +81,17 @@ class InquiryLinkImporterTest extends UnitTestCase
             ]));
 
         $this->documentRepository
-            ->expects('getDocumentCaseNrs')
+            ->expects('getDocumentInquiryNumbers')
             ->with($documentNrA)
             ->andReturn(
-                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), CaseNumbers::empty()),
+                new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), InquiryNumbers::empty()),
             );
 
         $this->documentRepository
-            ->expects('getDocumentCaseNrs')
+            ->expects('getDocumentInquiryNumbers')
             ->with($documentNrB)
             ->andReturn(
-                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), CaseNumbers::empty()),
+                new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), InquiryNumbers::empty()),
             );
 
         $this->inquiryService->expects('applyChangesetAsync')->with(Mockery::on(
@@ -110,7 +108,7 @@ class InquiryLinkImporterTest extends UnitTestCase
         self::assertEquals(3, $result->getAddedRelationsCount());
     }
 
-    public function testParseReportsInvalidCaseNumber(): void
+    public function testParseReportsInvalidInquiryNumber(): void
     {
         $upload = Mockery::mock(UploadedFile::class);
 
@@ -131,17 +129,17 @@ class InquiryLinkImporterTest extends UnitTestCase
             ]));
 
         $this->documentRepository
-            ->expects('getDocumentCaseNrs')
+            ->expects('getDocumentInquiryNumbers')
             ->with($documentNrA)
             ->andReturn(
-                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), CaseNumbers::empty()),
+                new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), InquiryNumbers::empty()),
             );
 
         $this->documentRepository
-            ->expects('getDocumentCaseNrs')
+            ->expects('getDocumentInquiryNumbers')
             ->with($documentNrB)
             ->andReturn(
-                new DocumentCaseNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), CaseNumbers::empty()),
+                new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), InquiryNumbers::empty()),
             );
 
         $this->inquiryService->expects('applyChangesetAsync')->with(Mockery::on(
@@ -158,7 +156,7 @@ class InquiryLinkImporterTest extends UnitTestCase
         self::assertEquals(
             [
                 2 => [
-                    InquiryLinkImportException::forInvalidCaseNumber(2, ['case1', '<script>foo</script>']),
+                    InquiryLinkImportException::forInvalidInquiryNumber(2, ['case1', '<script>foo</script>']),
                 ],
             ],
             $result->rowExceptions,

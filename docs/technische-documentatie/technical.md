@@ -1,7 +1,7 @@
-# Woo Platform
+# Woo Publication Platform
 
 <!-- TOC -->
-- [Woo Platform](#woo-platform)
+- [Woo Publication Platform](#woo-publication-platform)
   - [Technical details](#technical-details)
     - [Paths & Classes](#paths--classes)
       - [Path: /src/Command](#path-srccommand)

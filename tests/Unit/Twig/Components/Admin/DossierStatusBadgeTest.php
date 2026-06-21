@@ -15,7 +15,7 @@ final class DossierStatusBadgeTest extends UnitTestCase
 {
     public function testGetBadgeColorCssClass(): void
     {
-        $badgeColors = array_reduce(DossierStatus::cases(), function (array $carry, DossierStatus $status) {
+        $badgeColors = array_reduce(DossierStatus::cases(), static function (array $carry, DossierStatus $status) {
             $badge = new DossierStatusBadge();
             $badge->status = $status;
 

@@ -14,6 +14,7 @@ parameters:
         - src/
         - tests/
         - apps/
+        - tenants/
         - utils/
     excludePaths:
         - src/Domain/Publication/Dossier/Type/**/*Workflow.php
@@ -28,6 +29,7 @@ parameters:
             - Shared\Tests\Faker\DateTimeFakerProvider
             - Shared\Tests\Faker\FileFakerProvider
             - Shared\Tests\Faker\UuidFakerProvider
+            - Shared\Tests\Faker\DocumentIdFakerProvider
     ignoreErrors:
         - identifier: missingType.generics
 

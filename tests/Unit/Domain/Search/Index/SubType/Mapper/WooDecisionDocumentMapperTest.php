@@ -18,14 +18,12 @@ use Shared\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
 use Shared\Domain\Search\Index\ElasticDocument;
 use Shared\Domain\Search\Index\SubType\Mapper\WooDecisionDocumentMapper;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\PlainDate;
-use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Uid\Uuid;
 
 class WooDecisionDocumentMapperTest extends UnitTestCase
 {
-    use MatchesSnapshots;
-
     private WooDecisionDocumentMapper $mapper;
     private WooDecisionMapper&MockInterface $wooDecisionMapper;
 
@@ -94,7 +92,7 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
         $document->expects('getFileInfo')->times(2)->andReturn($fileInfo);
         $document->expects('getDocumentDate')->andReturn(PlainDate::create('2024-04-16'));
         $document->expects('getFamilyId')->andReturn(789);
-        $document->expects('getDocumentId')->andReturn('abc123');
+        $document->expects('getDocumentId')->andReturn(DocumentId::create('abc123'));
         $document->expects('getThreadId')->andReturn(567);
         $document->expects('getJudgement')->andReturn(Judgement::PARTIAL_PUBLIC);
         $document->expects('getGrounds')->andReturn(['x', 'y']);

@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Webmozart\Assert\Assert;
 
 use function count;
 use function reset;
@@ -51,8 +52,8 @@ class DossierController extends AbstractController
         $form = $this->createForm(SearchFormType::class);
         $form->handleRequest($request);
 
-        /** @var ?DossierFilterParameters $filterParameters */
         $filterParameters = $form->getData();
+        Assert::nullOrIsInstanceOf($filterParameters, DossierFilterParameters::class);
 
         $query = $this->listingService->getFilteredListingQuery($filterParameters);
 

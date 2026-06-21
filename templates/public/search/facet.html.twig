@@ -15,7 +15,7 @@
 
         {% macro date_input(fromOrTo, label) %}
             <label class="block text-base mb-0.5" for="date-{{ fromOrTo }}">{{ label }} ({{ 'public.search.date_format' | trans }})</label>
-            <input class="woo-input-text" id="date-{{ fromOrTo }}" name="dt[{{ fromOrTo }}]" type="date" value="{{ app.request.get('dt')[fromOrTo] | default }}">
+            <input class="woo-input-text" id="date-{{ fromOrTo }}" name="dt[{{ fromOrTo }}]" type="date" value="{{ app.request.query.all('dt')[fromOrTo] | default }}">
         {% endmacro %}
 
         <div aria-live="assertive">
@@ -106,7 +106,7 @@
     {{ macro.facet_select('categories.category.judgement' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::JUDGEMENT'), result) }}
     {{ macro.facet_select('categories.category.grounds' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
 
-    <input type="hidden" name="q" value="{{ app.request.get('q') }}">
+    <input type="hidden" name="q" value="{{ app.request.query.get('q') }}">
 
     <div class="pt-8 js:hidden">
         <button class="woo-btn-filled-pink" type="submit">{{ 'public.search.filter_results' | trans() }}</button>

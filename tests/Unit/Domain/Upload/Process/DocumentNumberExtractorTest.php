@@ -15,6 +15,7 @@ use Shared\Domain\Upload\Process\DocumentNumberExtractor;
 use Shared\Domain\Upload\Process\FileProcessException;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 use Symfony\Component\Uid\Uuid;
 
 final class DocumentNumberExtractorTest extends UnitTestCase
@@ -43,7 +44,7 @@ final class DocumentNumberExtractorTest extends UnitTestCase
     {
         $this->assertSame(
             $expectedDocNr,
-            $this->extractor->extract($filename, $this->dossier),
+            $this->extractor->extract($filename, $this->dossier)->__toString(),
         );
     }
 
@@ -60,7 +61,6 @@ final class DocumentNumberExtractorTest extends UnitTestCase
                 'Cannot extract document ID from the filename',
                 [
                     'filename' => $filename,
-                    'matches' => [],
                     'dossierId' => $expectedDossierId,
                 ],
             );
@@ -90,11 +90,7 @@ final class DocumentNumberExtractorTest extends UnitTestCase
             ],
             'alpha-numerical-with-dashes' => [
                 'filename' => '1234abc7-89xyz.pdf',
-                'expectedDocNr' => '1234abc7-89xyz',
-            ],
-            'dashes-only' => [
-                'filename' => '---.pdf',
-                'expectedDocNr' => '---',
+                'expectedDocNr' => '1234abc7',
             ],
             'characters-after-whitespace-are-ignored' => [
                 'filename' => '1234 - test.pdf',
@@ -115,6 +111,9 @@ final class DocumentNumberExtractorTest extends UnitTestCase
             'underscore-is-not-accepted' => [
                 'filename' => '_.pdf',
             ],
+            'dashes-only' => [
+                'filename' => '---.pdf',
+            ],
         ];
     }
 
@@ -127,7 +126,7 @@ final class DocumentNumberExtractorTest extends UnitTestCase
 
         $this->documentRepository
             ->expects('findOneByDossierAndDocumentId')
-            ->with($this->dossier, '1234')
+            ->with($this->dossier, Mockery::on(static fn (DocumentId $docId): bool => $docId->__toString() === '1234'))
             ->andReturn($document);
 
         self::assertSame(

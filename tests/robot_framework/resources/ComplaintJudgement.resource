@@ -7,7 +7,6 @@ Library             FakerLibrary
 
 
 *** Variables ***
-${FILE_NAME}        ${EMPTY}
 ${FILE_LOCATION}    ${EMPTY}
 
 

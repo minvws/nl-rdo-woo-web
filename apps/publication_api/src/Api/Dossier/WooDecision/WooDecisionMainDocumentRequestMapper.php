@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\WooDecision;
 
-use PublicationApi\Api\MainDocument\MainDocumentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
@@ -14,7 +13,7 @@ class WooDecisionMainDocumentRequestMapper
 {
     public static function create(
         WooDecision $wooDecision,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        WooDecisionMainDocumentRequestDto $mainDocumentRequestDto,
     ): WooDecisionMainDocument {
         $mainDocument = new WooDecisionMainDocument(
             $wooDecision,
@@ -33,7 +32,7 @@ class WooDecisionMainDocumentRequestMapper
 
     public static function update(
         WooDecision $wooDecision,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        WooDecisionMainDocumentRequestDto $mainDocumentRequestDto,
     ): WooDecisionMainDocument {
         $mainDocument = $wooDecision->getMainDocument();
         Assert::notNull($mainDocument);

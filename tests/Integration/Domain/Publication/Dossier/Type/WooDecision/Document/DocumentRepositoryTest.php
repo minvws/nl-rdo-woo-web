@@ -17,6 +17,7 @@ use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Story\WooIndexWooDecisionStory;
+use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
@@ -380,8 +381,9 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         $dossier = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
 
+        $documentId = DocumentId::create('foo.123');
         DocumentFactory::createOne([
-            'documentId' => $documentId = 'FOO-123',
+            'documentId' => $documentId,
             'dossiers' => [$dossier],
         ]);
 
@@ -394,11 +396,10 @@ final class DocumentRepositoryTest extends SharedWebTestCase
     public function testFindOneByDossierAndId(): void
     {
         $organisation = OrganisationFactory::createOne();
-
         $dossier = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
 
         $document = DocumentFactory::createOne([
-            'documentId' => $documentId = 'FOO-123',
+            'documentId' => DocumentId::create('FOO.123'),
             'dossiers' => [$dossier],
         ]);
 
@@ -473,7 +474,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         ];
 
         $expectedDocumentUuids = array_map(
-            fn (Document $document): string => $document->getId()->toRfc4122(),
+            static fn (Document $document): string => $document->getId()->toRfc4122(),
             $documents,
         );
 
@@ -495,22 +496,22 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         self::assertEquals($documentNr, $result->getDocumentNr());
     }
 
-    public function testGetDocumentCaseNrs(): void
+    public function testGetDocumentInquiryNumbers(): void
     {
         $document = DocumentFactory::createOne([
             'documentNr' => $documentNr = 'FOO-xx-123',
         ]);
 
         InquiryFactory::createOne([
-            'caseNr' => $caseNr = 'FOO-123',
+            'inquiryNumber' => $inquiryNumber = 'FOO-123',
             'documents' => [$document],
         ]);
 
-        $documentCaseNrs = $this->documentRepository->getDocumentCaseNrs(strtoupper($documentNr));
+        $documentInquiryNumbers = $this->documentRepository->getDocumentInquiryNumbers(strtoupper($documentNr));
 
-        self::assertFalse($documentCaseNrs->isDocumentNotFound());
-        self::assertEquals($document->getId(), $documentCaseNrs->documentId);
-        self::assertEquals($documentCaseNrs->caseNumbers->values, [$caseNr]);
+        self::assertFalse($documentInquiryNumbers->isDocumentNotFound());
+        self::assertEquals($document->getId(), $documentInquiryNumbers->documentId);
+        self::assertEquals($documentInquiryNumbers->inquiryNumbers->values, [$inquiryNumber]);
     }
 
     public function testGetPublicInquiryDocumentsWithDossiers(): void
@@ -528,7 +529,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $documentConcept = DocumentFactory::createOne(['dossiers' => [$dossierConcept]]);
 
         $inquiry = InquiryFactory::createOne([
-            'caseNr' => 'FOO-123',
+            'inquiryNumber' => 'FOO-123',
             'dossiers' => [
                 $dossierA,
                 $dossierB,
@@ -559,7 +560,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
     public function testFindByDossierAndExternalId(): void
     {
-        $externalId = ExternalId::create($this->getFaker()->uuid());
+        $externalId = $this->getFaker()->externalId();
 
         $dossier = WooDecisionFactory::createOne();
         DocumentFactory::createOne([
@@ -574,7 +575,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
     public function testFindByDossierAndExternalIdWhenNotLinkedReturnsNull(): void
     {
-        $externalId = ExternalId::create($this->getFaker()->uuid());
+        $externalId = $this->getFaker()->externalId();
 
         $dossier = WooDecisionFactory::createOne();
         DocumentFactory::createOne([
@@ -945,5 +946,34 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $this->documentRepository->save($doc2, true);
 
         self::assertFalse($this->documentRepository->hasIncompleteDocumentsForDossier($dossier->getId()));
+    }
+
+    public function testFindExistingExternalIds(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $dossier = WooDecisionFactory::createOne(['organisation' => $organisation]);
+
+        $existingId1 = ExternalId::create('existing-1');
+        $existingId2 = ExternalId::create('existing-2');
+        $nonExisting = ExternalId::create('non-existing');
+
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'externalId' => $existingId1,
+        ]);
+        DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'externalId' => $existingId2,
+        ]);
+
+        $result = $this->documentRepository->findExistingExternalIds([
+            $existingId1,
+            $nonExisting,
+            $existingId2,
+        ]);
+
+        self::assertCount(2, $result);
+        self::assertContains('existing-1', $result);
+        self::assertContains('existing-2', $result);
     }
 }

@@ -3,6 +3,7 @@ Documentation       Tests that verify that all the limits are working correctly.
 Resource            ../resources/Covenant.resource
 Resource            ../resources/Organisations.resource
 Resource            ../resources/Setup.resource
+Resource            ../resources/WooDecision.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin

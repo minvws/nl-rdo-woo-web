@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Subject;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
@@ -64,6 +65,10 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
             input: SubjectUpdateDto::class,
             name: 'update_subject',
         ),
+        new Delete(
+            uriTemplate: '/organisation/{organisationId}/subject/{subjectId}',
+            name: 'delete_subject',
+        ),
     ],
     uriVariables: [
         'organisationId' => new Link(toProperty: 'organisation', fromClass: OrganisationResponseDto::class),
@@ -73,6 +78,7 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     openapi: new Operation(
         tags: ['Subject'],
     ),
+    output: SubjectResponse::class,
     provider: SubjectProvider::class,
     processor: SubjectProcessor::class,
 )]

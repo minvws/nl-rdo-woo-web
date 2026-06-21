@@ -21,12 +21,9 @@ use Shared\Service\Search\Result\ResultTransformer;
 use Shared\Service\Search\SearchService;
 use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
 class SearchServiceTest extends UnitTestCase
 {
-    use MatchesSnapshots;
-
     private ElasticClientInterface&MockInterface $elasticClient;
     private LoggerInterface&MockInterface $logger;
     private ObjectHandler&MockInterface $objectHandler;

@@ -19,11 +19,11 @@ class AttachmentSynchronizer
     {
         $incomingByExternalId = [];
         foreach ($attachmentRequestDtos as $attachmentRequestDto) {
-            $incomingByExternalId[$attachmentRequestDto->externalId->__toString()] = $attachmentRequestDto;
+            $incomingByExternalId[$attachmentRequestDto->externalId->toString()] = $attachmentRequestDto;
         }
 
         foreach ($dossier->getAttachments()->toArray() as $existingAttachment) {
-            $externalId = $existingAttachment->getExternalId()?->__toString();
+            $externalId = $existingAttachment->getExternalId()?->toString();
 
             if ($externalId !== null && array_key_exists($externalId, $incomingByExternalId)) {
                 AttachmentMapper::updateFromRequestDto($existingAttachment, $incomingByExternalId[$externalId]);

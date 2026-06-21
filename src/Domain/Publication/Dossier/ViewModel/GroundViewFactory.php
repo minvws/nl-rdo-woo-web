@@ -25,7 +25,7 @@ readonly class GroundViewFactory
         }
 
         $grounds = array_map(
-            fn (string $label, string $citation): array => [
+            static fn (string $label, string $citation): array => [
                 'citation' => $citation,
                 'label' => $label,
             ],

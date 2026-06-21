@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
 
-use function ucfirst;
+use function mb_ucfirst;
 
 class RequestForAdviceController extends AbstractController
 {
@@ -41,7 +41,7 @@ class RequestForAdviceController extends AbstractController
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem(ucfirst($requestForAdvice->getTitle() ?? ''));
+        $breadcrumbs->addItem(mb_ucfirst((string) $requestForAdvice->getTitle()));
 
         return $this->render('public/dossier/request-for-advice/details.html.twig', [
             'dossier' => $this->viewFactory->make($requestForAdvice),
@@ -67,7 +67,7 @@ class RequestForAdviceController extends AbstractController
             'prefix' => $dossier->getDocumentPrefix(),
             'dossierId' => $dossier->getDossierNr(),
         ]);
-        $breadcrumbs->addItem($dossier->getTitle() ?? '');
+        $breadcrumbs->addItem((string) $dossier->getTitle());
 
         return $this->render('public/dossier/request-for-advice/document.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
@@ -100,7 +100,7 @@ class RequestForAdviceController extends AbstractController
             'prefix' => $dossier->getDocumentPrefix(),
             'dossierId' => $dossier->getDossierNr(),
         ]);
-        $breadcrumbs->addItem($dossier->getTitle() ?? '');
+        $breadcrumbs->addItem((string) $dossier->getTitle());
 
         return $this->render('public/dossier/request-for-advice/attachment.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),

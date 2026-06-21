@@ -131,7 +131,7 @@
     </section>
 
     <section id="documents" class="bhr-card mt-10" data-e2e-name="documents-section">
-        {% set canEditDocuments = matrix_has_permission('dossier.update') and dossier.canProvideInventory and workflowStatus.isReadyForDocuments and (dossier.hasProductionReport or not dossier.status.isPubliclyAvailableOrScheduled) %}
+        {% set canEditDocuments = matrix_has_permission('dossier.update') and dossier.canProvideInventory and workflowStatus.isReadyForDocuments %}
         <twig:Admin:LeftAndRight>
             <h2 class="bhr-title">{{ 'global.documents' | trans }}{% if dossier.canProvideInventory and workflowStatus.isReadyForDocuments and dossier.inventory is not null %} ({{ uploadStatus.actualUploadCount }}/{{ uploadStatus.expectedUploadCount }}){%endif %}</h2>
 
@@ -254,9 +254,9 @@
                                     <th scope="col">Link voor verzoeker</th>
                                 </thead>
                                 <tbody data-e2e-name="linked-inquiries">
-                                    {% for inquiry in dossier.inquiries|sort((a, b) => a.casenr <=> b.casenr) %}
+                                    {% for inquiry in dossier.inquiries|sort((a, b) => a.inquiryNumber <=> b.inquiryNumber) %}
                                     <tr>
-                                        <td><span class="break-all">{{ inquiry.casenr }}</span></td>
+                                        <td><span class="break-all">{{ inquiry.inquiryNumber }}</span></td>
                                         <td class="pr-0!">
                                             {% set url = PUBLIC_BASE_URL ~ path('app_inquiry_detail', {token: inquiry.token}) %}
                                             <twig:Admin:CopyToClipboardLayout copy="{{ url }}">

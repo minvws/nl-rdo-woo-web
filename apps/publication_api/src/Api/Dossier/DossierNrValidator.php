@@ -6,9 +6,8 @@ namespace PublicationApi\Api\Dossier;
 
 use ApiPlatform\Validator\Exception\ValidationException;
 use Shared\Validator\UniqueDossierNr;
+use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use function count;
@@ -31,16 +30,9 @@ final readonly class DossierNrValidator
             return;
         }
 
-        $mapped = new ConstraintViolationList();
+        $mapped = ConstraintViolationBuilder::createList();
         foreach ($violations as $violation) {
-            $mapped->add(new ConstraintViolation(
-                $violation->getMessage(),
-                $violation->getMessageTemplate(),
-                $violation->getParameters(),
-                $violation->getRoot(),
-                'dossierNumber',
-                $violation->getInvalidValue(),
-            ));
+            $mapped->add(ConstraintViolationBuilder::forViolation($violation, 'dossierNumber'));
         }
 
         throw new ValidationException($mapped);

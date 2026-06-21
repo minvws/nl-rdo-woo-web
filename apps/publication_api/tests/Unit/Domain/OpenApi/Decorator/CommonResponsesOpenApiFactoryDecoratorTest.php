@@ -160,7 +160,7 @@ class CommonResponsesOpenApiFactoryDecoratorTest extends UnitTestCase
         $responseDefinition = new OperationResponseDefinition(
             statusCode: 404,
             response: new Response(description: 'Not Found'),
-            when: function (Operation $op, string $path, string $method) use (&$capturedOperation, &$capturedPath, &$capturedMethod): bool {
+            when: static function (Operation $op, string $path, string $method) use (&$capturedOperation, &$capturedPath, &$capturedMethod): bool {
                 $capturedOperation = $op;
                 $capturedPath = $path;
                 $capturedMethod = $method;

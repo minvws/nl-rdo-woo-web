@@ -5,26 +5,17 @@ declare(strict_types=1);
 namespace Shared\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Shared\Domain\Department\Department;
 
 /**
  * This is a set of fixtures for the Department entities. It is not meant to be used in production.
  */
-class DepartmentFixtures extends Fixture implements FixtureGroupInterface
+class DepartmentFixtures extends Fixture
 {
     public const string REFERENCE_1 = 'department-fixture-reference-1';
     public const string REFERENCE_2 = 'department-fixture-reference-2';
     public const string REFERENCE_3 = 'department-fixture-reference-3';
-
-    /**
-     * @return list<string>
-     */
-    public static function getGroups(): array
-    {
-        return ['example'];
-    }
 
     public function load(ObjectManager $manager): void
     {

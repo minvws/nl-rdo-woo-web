@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Woo publicatieplatform'
+project = 'Woo Publicatieplatform'
 author = 'The Woo team'
 #release = "2.0.0"
 

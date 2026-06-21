@@ -7,10 +7,11 @@ namespace PublicationApi\Api\Dossier\Advice;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
-use ApiPlatform\Validator\Exception\ValidationException;
+use ApiPlatform\Validator\Exception\ValidationException as ApiPlatformValidationException;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use PublicationApi\Api\Dossier\DossierNrValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
 use Shared\Domain\Department\Department;
@@ -59,10 +60,8 @@ final readonly class AdviceProcessor implements ProcessorInterface
         }
 
         Assert::isInstanceOf($data, AdviceRequestDto::class);
-
-        $dossierExternalId = $uriVariables['dossierExternalId'];
-        Assert::string($dossierExternalId);
-        $dossierExternalId = ExternalId::create($dossierExternalId);
+        Assert::string($uriVariables['dossierExternalId']);
+        $dossierExternalId = ExternalIdFactory::create($uriVariables['dossierExternalId']);
 
         $organisation = $this->organisationResolver->resolve($uriVariables);
         $subject = $this->dossierSupportService->getSubject($data, $organisation);
@@ -142,7 +141,7 @@ final readonly class AdviceProcessor implements ProcessorInterface
      */
     private function getAttachments(Advice $advice, array $attachments): array
     {
-        return array_values(array_map(fn (AttachmentRequestDto $attachment): AdviceAttachment => AdviceAttachmentMapper::create(
+        return array_values(array_map(static fn (AttachmentRequestDto $attachment): AdviceAttachment => AdviceAttachmentMapper::create(
             $advice,
             $attachment,
         ), $attachments));
@@ -155,7 +154,7 @@ final readonly class AdviceProcessor implements ProcessorInterface
     {
         $attachmentType = AttachmentType::REQUEST_FOR_ADVICE;
         if ($this->hasMoreThanOneAttachmentOfType($attachments, $attachmentType)) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage(sprintf(
+            throw new ApiPlatformValidationException(ConstraintViolationList::createFromMessage(sprintf(
                 'dossier should have at most one attachment of type "%s"',
                 $attachmentType->value,
             )));
@@ -169,6 +168,6 @@ final readonly class AdviceProcessor implements ProcessorInterface
      */
     private function hasMoreThanOneAttachmentOfType(array $attachments, AttachmentType $attachmentType): bool
     {
-        return count(array_filter($attachments, fn (AdviceAttachment $attachment): bool => $attachment->getType() === $attachmentType)) > 1;
+        return count(array_filter($attachments, static fn (AdviceAttachment $attachment): bool => $attachment->getType() === $attachmentType)) > 1;
     }
 }

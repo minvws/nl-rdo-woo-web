@@ -35,13 +35,13 @@ readonly class InquiryService
     ) {
     }
 
-    public function findOrCreateInquiryForCaseNumber(Organisation $organisation, string $caseNumber): Inquiry
+    public function findOrCreateInquiryForInquiryNumber(Organisation $organisation, string $inquiryNumber): Inquiry
     {
-        $inquiry = $this->doctrine->getRepository(Inquiry::class)->findOneBy(['organisation' => $organisation, 'casenr' => $caseNumber]);
+        $inquiry = $this->doctrine->getRepository(Inquiry::class)->findOneBy(['organisation' => $organisation, 'inquiryNumber' => $inquiryNumber]);
 
         if (! $inquiry) {
             $inquiry = new Inquiry();
-            $inquiry->setCasenr($caseNumber);
+            $inquiry->setInquiryNumber($inquiryNumber);
             $inquiry->setOrganisation($organisation);
 
             $this->doctrine->persist($inquiry);
@@ -94,13 +94,13 @@ readonly class InquiryService
      */
     public function updateInquiryLinks(
         Organisation $organisation,
-        string $caseNr,
+        string $inquiryNumber,
         array $docIdsToAdd,
         array $docIdsToDelete,
         array $dossierIdsToAdd,
     ): void {
-        $inquiry = $this->findOrCreateInquiryForCaseNumber($organisation, $caseNr);
-        $result = new InquiryLinkUpdateResult($inquiry, $caseNr);
+        $inquiry = $this->findOrCreateInquiryForInquiryNumber($organisation, $inquiryNumber);
+        $result = new InquiryLinkUpdateResult($inquiry, $inquiryNumber);
 
         foreach ($docIdsToAdd as $docIdToAdd) {
             $this->handleDocumentAdd($docIdToAdd, $result);
@@ -134,10 +134,10 @@ readonly class InquiryService
 
     public function applyChangesetAsync(InquiryChangeset $changeset): void
     {
-        foreach ($changeset->getChanges() as $caseNr => $actions) {
+        foreach ($changeset->getChanges() as $inquiryNumber => $actions) {
             $this->wooDecisionDispatcher->dispatchUpdateInquiryLinksCommand(
                 $changeset->getOrganisation()->getId(),
-                strval($caseNr),
+                strval($inquiryNumber),
                 $actions[InquiryChangeset::ADD_DOCUMENTS],
                 $actions[InquiryChangeset::DEL_DOCUMENTS],
                 $actions[InquiryChangeset::ADD_DOSSIERS],
@@ -187,7 +187,7 @@ readonly class InquiryService
         $inquiry = $result->getInquiry();
         $inquiry->addDocument($document);
         foreach ($document->getDossiers() as $dossier) {
-            if ($this->addDossierToInquiry($inquiry, $dossier, $result->getCaseNr())) {
+            if ($this->addDossierToInquiry($inquiry, $dossier, $result->getInquiryNumber())) {
                 $result->dossierAdded($dossier);
             }
         }
@@ -204,12 +204,12 @@ readonly class InquiryService
             return;
         }
 
-        if ($this->addDossierToInquiry($result->getInquiry(), $dossier, $result->getCaseNr())) {
+        if ($this->addDossierToInquiry($result->getInquiry(), $dossier, $result->getInquiryNumber())) {
             $result->dossierAdded($dossier);
         }
     }
 
-    private function addDossierToInquiry(Inquiry $inquiry, ?WooDecision $dossier, string $caseNr): bool
+    private function addDossierToInquiry(Inquiry $inquiry, ?WooDecision $dossier, string $inquiryNumber): bool
     {
         if (! $dossier || $inquiry->getDossiers()->contains($dossier)) {
             return false;
@@ -217,7 +217,7 @@ readonly class InquiryService
 
         $inquiry->addDossier($dossier);
 
-        $this->historyService->addDossierEntry($dossier->getId(), 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
+        $this->historyService->addDossierEntry($dossier->getId(), 'dossier_inquiry_added', ['count' => 1, 'inquiryNumbers' => $inquiryNumber]);
 
         return $dossier->getStatus()->isPubliclyAvailable();
     }

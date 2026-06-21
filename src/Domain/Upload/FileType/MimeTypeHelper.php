@@ -13,6 +13,7 @@ use Webmozart\Assert\Assert;
 
 use function in_array;
 use function json_encode;
+use function strtolower;
 
 readonly class MimeTypeHelper
 {
@@ -29,6 +30,7 @@ readonly class MimeTypeHelper
         ?string $mimeType,
         UploadGroupId $groupId,
     ): MimeTypeHelperResult {
+        $fileExtension = strtolower($fileExtension);
         $groupExtensions = $groupId->getExtensions();
         if (! in_array($fileExtension, $groupExtensions, true)) {
             $this->logger->warning('fileExtension not allowed in groupExtensions', [

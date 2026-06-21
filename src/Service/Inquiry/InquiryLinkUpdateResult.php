@@ -26,7 +26,7 @@ class InquiryLinkUpdateResult
 
     public function __construct(
         private readonly Inquiry $inquiry,
-        private readonly string $caseNr,
+        private readonly string $inquiryNumber,
     ) {
     }
 
@@ -84,8 +84,8 @@ class InquiryLinkUpdateResult
         return $this->inquiry;
     }
 
-    public function getCaseNr(): string
+    public function getInquiryNumber(): string
     {
-        return $this->caseNr;
+        return $this->inquiryNumber;
     }
 }

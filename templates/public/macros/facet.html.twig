@@ -77,7 +77,7 @@ Display facet with hyperlinks
             {% if hasMoreEntries and gotoPlural is not null %}
                 <a class="woo-a no-underline" href="{{ path('app_browse') }}#{{ facetKey.value }}">
                     <twig:Public:Icon class="-mr-1 relative -top-px" size="20" name="chevron-right" />
-                    {{ 'categories.label.go_to_all_of_type' | trans({'count': numberOfAllEntries, 'type': gotoPlural}) }}
+                    {{ 'categories.label.go_to_all_of_type' | trans({'type': gotoPlural}) }}
                 </a>
             {% endif %}
         </div>

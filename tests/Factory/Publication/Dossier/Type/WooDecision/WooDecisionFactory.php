@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
@@ -18,6 +19,8 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class WooDecisionFactory extends PersistentObjectFactory
 {
+    public const string DEFAULT_PREFIX = 'PREF';
+
     /**
      * @return array<string, mixed>
      */
@@ -35,9 +38,9 @@ final class WooDecisionFactory extends PersistentObjectFactory
 
         return [
             'dossierNr' => self::faker()->bothify('DOSSIER-####-#####'),
-            'title' => self::faker()->sentence(),
+            'title' => DossierTitle::create(self::faker()->sentence()),
             'summary' => self::faker()->sentences(4, true),
-            'documentPrefix' => 'PREF',
+            'documentPrefix' => self::DEFAULT_PREFIX,
             'publicationReason' => self::faker()->randomElement(PublicationReason::cases()),
             'decision' => self::faker()->randomElement([
                 DecisionType::ALREADY_PUBLIC,
@@ -60,6 +63,8 @@ final class WooDecisionFactory extends PersistentObjectFactory
         return $this->with([
             'status' => DossierStatus::CONCEPT,
             'mainDocument' => null,
+            'previewDate' => self::faker()->optional()->plainDateBetween('+1 week', '+2 weeks'),
+            'publicationDate' => self::faker()->plainDateBetween('+1 week', '+2 weeks'),
         ]);
     }
 
@@ -71,6 +76,17 @@ final class WooDecisionFactory extends PersistentObjectFactory
             'status' => DossierStatus::SCHEDULED,
             'previewDate' => self::faker()->optional()->plainDateBetween('+1 week', '+2 weeks'),
             'publicationDate' => self::faker()->plainDateBetween('+1 week', '+2 weeks'),
+        ]);
+    }
+
+    public function published(): self
+    {
+        return $this->with([
+            'departments' => [DepartmentFactory::new()],
+            'mainDocument' => WooDecisionMainDocumentFactory::new(),
+            'status' => DossierStatus::PUBLISHED,
+            'previewDate' => self::faker()->optional()->plainDateBetween('-2 weeks', '-1 week'),
+            'publicationDate' => self::faker()->plainDateBetween('-2 weeks', '-1 week'),
         ]);
     }
 

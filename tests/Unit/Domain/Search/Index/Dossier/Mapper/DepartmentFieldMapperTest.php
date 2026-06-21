@@ -68,6 +68,11 @@ class DepartmentFieldMapperTest extends UnitTestCase
                 'expectedValue' => 'abc',
                 'expectedDescription' => 'def|ghi',
             ],
+            'multibyte-description-survives-ascii-byte-split' => [
+                'rawValue' => 'abc|wëreld',
+                'expectedValue' => 'abc',
+                'expectedDescription' => 'wëreld',
+            ],
         ];
     }
 }

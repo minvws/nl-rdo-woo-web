@@ -25,6 +25,7 @@ use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use Shared\Tests\Story\DepartmentEnum;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -109,8 +110,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 dossierNr: $expectedDossierNr = 'my dossier nr',
                 documentPrefix: $expectedDocumentPrefix = 'my document prefix',
                 isPreview: $expectedIsPreview = true,
-                title: $expectedTitle = 'my title',
-                pageTitle: $expectedPageTitle = 'my page title',
+                title: $expectedTitle = DossierTitle::create('my title'),
                 publicationDate: $publicationDate = PlainDate::today(),
                 mainDepartment: $expectedMainDepartment = new Department(
                     name: DepartmentEnum::VWS->value,
@@ -142,7 +142,6 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedDocumentPrefix, $result->getDocumentPrefix());
         $this->assertSame($expectedIsPreview, $result->isPreview());
         $this->assertSame($expectedTitle, $result->getTitle());
-        $this->assertSame($expectedPageTitle, $result->getPageTitle());
         $this->assertSame($publicationDate, $result->getPublicationDate());
         $this->assertSame($expectedMainDepartment, $result->getMainDepartment());
         $this->assertSame($expectedSubject, $result->getSubject());
@@ -177,8 +176,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
                 dossierNr: $expectedDossierNr = 'my dossier nr',
                 documentPrefix: $expectedDocumentPrefix = 'my document prefix',
                 isPreview: $expectedIsPreview = true,
-                title: $expectedTitle = 'my title',
-                pageTitle: $expectedPageTitle = 'my page title',
+                title: $expectedTitle = DossierTitle::create('my title'),
                 publicationDate: $publicationDate = PlainDate::today(),
                 mainDepartment: $expectedMainDepartment = new Department(
                     name: DepartmentEnum::JV->value,
@@ -240,7 +238,6 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedDocumentPrefix, $result->getDocumentPrefix());
         $this->assertSame($expectedIsPreview, $result->isPreview());
         $this->assertSame($expectedTitle, $result->getTitle());
-        $this->assertSame($expectedPageTitle, $result->getPageTitle());
         $this->assertEquals($publicationDate, $result->getPublicationDate());
         $this->assertSame($expectedMainDepartment, $result->getMainDepartment());
         $this->assertSame($expectedSubject, $result->getSubject());

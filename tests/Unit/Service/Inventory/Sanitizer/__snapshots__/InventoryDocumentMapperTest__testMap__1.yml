@@ -11,6 +11,6 @@
     https://x.y.z
 - 'http://foo.bar/test-url'
 - ja
-- A;matterB_B
+- a;matterB_b
 - 'http://foo.bar/test-url-A;http://foo.bar/test-url-B'
 - 'Foo Bar'

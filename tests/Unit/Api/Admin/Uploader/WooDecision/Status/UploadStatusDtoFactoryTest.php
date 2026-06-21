@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shared\Tests\Unit\Api\Admin\Uploader\WooDecision\Status;
+namespace Admin\Tests\Unit\Api\Admin\Uploader\WooDecision\Status;
 
 use Admin\Api\Admin\Uploader\WooDecision\Status\UploadedFileDto;
 use Admin\Api\Admin\Uploader\WooDecision\Status\UploadStatusDtoFactory;
@@ -61,7 +61,7 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
             'status' => $result->status,
             'canProcess' => $result->canProcess,
             'uploadedFiles' => array_map(
-                fn (UploadedFileDto $dto) => [
+                static fn (UploadedFileDto $dto) => [
                     'id' => $dto->id,
                     'name' => $dto->name,
                     'mimeType' => $dto->mimeType,
@@ -101,7 +101,7 @@ final class UploadStatusDtoFactoryTest extends UnitTestCase
             'status' => $result->status,
             'canProcess' => $result->canProcess,
             'uploadedFiles' => array_map(
-                fn (UploadedFileDto $dto) => [
+                static fn (UploadedFileDto $dto) => [
                     'id' => $dto->id,
                     'name' => $dto->name,
                     'mimeType' => $dto->mimeType,

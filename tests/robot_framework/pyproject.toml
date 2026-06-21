@@ -5,7 +5,7 @@ readme = "README.md"
 version = "1.0"
 requires-python = "==3.14.*"
 dependencies = [
-    "pyotp>=2.9.0",
+    "pyotp>=2.10.0",
     "pyzbar>=0.1.9",
     "robocorp-truststore>=0.9.1",
     "robotframework>=7.1.0",
@@ -21,7 +21,7 @@ dependencies = [
     "robotframework-pabot>=4.3.2",
     "robotframework-requests>=0.9.7",
     "robotframework-retryfailed>=0.2.0",
-    "robotframework-robocop>=6.5",
+    "robotframework-robocop>=8.3.2",
     "robotframework-tidy>=4.17.0",
     "rpaframework-pdf>=8.0.1",
     "pyyaml"

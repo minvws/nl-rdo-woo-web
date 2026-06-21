@@ -97,7 +97,7 @@ final class DossierTypeViewFactoryTest extends UnitTestCase
                 DossierTypeEnum::COVENANT->value,
                 DossierTypeEnum::DISPOSITION->value,
             ],
-            array_map(fn ($dossierType): string => $dossierType->type, $result),
+            array_map(static fn ($dossierType): string => $dossierType->type, $result),
         );
 
         $this->assertSame([$result[0]->type, $result[0]->createUrl], [DossierTypeEnum::ANNUAL_REPORT->value, $urlTwo]);

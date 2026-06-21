@@ -47,12 +47,12 @@ final class WooIndexTest extends SharedWebTestCase
         $this->wooIndexNamer = self::fromContainer(WooIndexNamer::class);
 
         $sitemapIndexBuilder = self::fromContainer(SitemapIndexBuilder::class);
-        $sitemapIndexBuilder->setXMLWriterConfigurator(function (DiWooXMLWriter $writer) {
+        $sitemapIndexBuilder->setXMLWriterConfigurator(static function (DiWooXMLWriter $writer) {
             $writer->setIndent(true);
         });
 
         $sitemapBuilder = self::fromContainer(SitemapBuilder::class);
-        $sitemapBuilder->setXMLWriterConfigurator(function (DiWooXMLWriter $writer) {
+        $sitemapBuilder->setXMLWriterConfigurator(static function (DiWooXMLWriter $writer) {
             $writer->setIndent(true);
         });
 

@@ -9,6 +9,9 @@ This is because we expect the primary audience for this document to be developer
 
 The OpenAPI documentation of the Publication API can be found at {public}`api`.
 
+To test interaction with the API, a [Bruno](https://www.usebruno.com/) collection is available on our [public repo](https://github.com/minvws/nl-rdo-woo-web/tree/main/docs/bruno-collection).
+See the [README](https://github.com/minvws/nl-rdo-woo-web/tree/main/docs/bruno-collection/README.md) for instructions.
+
 ## Platform Summary
 
 A more extensive description of the platform can be found in the User Manual. However, for purposes of understanding the API, a brief summary is provided here.

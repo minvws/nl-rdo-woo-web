@@ -17,7 +17,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Search\SearchDispatcher;
 use Shared\Exception\ProductionReportUpdaterException;
-use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inquiry\DocumentInquiryNumbers;
 use Shared\Service\Inquiry\InquiryChangeset;
 use Shared\Service\Inquiry\InquiryService;
 use Shared\Service\Inventory\Progress\RunProgress;
@@ -87,9 +87,9 @@ readonly class InventoryUpdater
                 $document->setDocumentNr($documentNr->getValue());
 
                 $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
-                $inquiryChangeset->updateCaseNrsForDocument(
-                    DocumentCaseNumbers::fromDocumentEntity($document),
-                    $documentMetadata->getCaseNumbers(),
+                $inquiryChangeset->updateInquiryNumbersForDocument(
+                    DocumentInquiryNumbers::fromDocumentEntity($document),
+                    $documentMetadata->getInquiryNumbers(),
                 );
 
                 $documentsToUpdate[] = $document;
@@ -107,9 +107,9 @@ readonly class InventoryUpdater
                 );
 
                 $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
-                $inquiryChangeset->updateCaseNrsForDocument(
-                    DocumentCaseNumbers::fromDocumentEntity($document),
-                    $documentMetadata->getCaseNumbers(),
+                $inquiryChangeset->updateInquiryNumbersForDocument(
+                    DocumentInquiryNumbers::fromDocumentEntity($document),
+                    $documentMetadata->getInquiryNumbers(),
                 );
 
                 $documentsToUpdate[] = $document;

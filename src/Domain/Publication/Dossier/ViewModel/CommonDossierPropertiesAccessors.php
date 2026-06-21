@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\ViewModel;
 
 use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 
 trait CommonDossierPropertiesAccessors
@@ -34,14 +35,9 @@ trait CommonDossierPropertiesAccessors
         return $this->getCommonDossier()->isPreview;
     }
 
-    public function getTitle(): string
+    public function getTitle(): DossierTitle
     {
         return $this->getCommonDossier()->title;
-    }
-
-    public function getPageTitle(): string
-    {
-        return $this->getCommonDossier()->pageTitle;
     }
 
     public function getPublicationDate(): PlainDate

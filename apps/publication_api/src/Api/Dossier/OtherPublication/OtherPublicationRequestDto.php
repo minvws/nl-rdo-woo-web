@@ -6,7 +6,8 @@ namespace PublicationApi\Api\Dossier\OtherPublication;
 
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use PublicationApi\Api\Dossier\AbstractDossierRequestDto;
-use PublicationApi\Api\MainDocument\MainDocumentRequestDto;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,10 +19,11 @@ class OtherPublicationRequestDto extends AbstractDossierRequestDto
      */
     public function __construct(
         public Uuid $departmentId,
-        public MainDocumentRequestDto $mainDocument,
+        public OtherPublicationMainDocumentRequestDto $mainDocument,
         public ?Uuid $subjectId,
         public string $summary,
-        public string $title,
+        public DossierTitle $title,
+        #[Assert\Count(max: AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER)]
         #[Assert\All([
             new Assert\Type(AttachmentRequestDto::class),
         ])]

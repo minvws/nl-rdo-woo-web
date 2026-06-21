@@ -28,9 +28,8 @@ class DocumentPrefixChoiceLoader implements ChoiceLoaderInterface
 
     public function loadChoiceList(?callable $value = null): ChoiceListInterface
     {
-        /** @var User|null $user */
         $user = $this->security->getUser();
-        if (! $user) {
+        if (! $user instanceof User) {
             return new ArrayChoiceList([]);
         }
 

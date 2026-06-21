@@ -7,6 +7,7 @@ namespace PublicationApi\Tests\Integration\Api\Department;
 use PublicationApi\Api\Department\DepartmentResource;
 use PublicationApi\Tests\Integration\Api\ApiPublicationV1TestCase;
 use Shared\Tests\Factory\DepartmentFactory;
+use Shared\Tests\Factory\OrganisationFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,7 +19,9 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
 {
     public function testGetDepartment(): void
     {
-        $department = DepartmentFactory::createOne();
+        $organisationA = OrganisationFactory::createOne();
+        $organisationB = OrganisationFactory::createOne();
+        $department = DepartmentFactory::createOne(['organisations' => [$organisationA, $organisationB]]);
 
         $response = self::createPublicationApiClient()
             ->request(
@@ -31,10 +34,31 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
         $expectedResponse = [
             'id' => (string) $department->getId(),
             'name' => $department->getName(),
+            'organisations' => [
+                [
+                    'id' => $organisationA->getId()->toRfc4122(),
+                    'name' => $organisationA->getName(),
+                ],
+                [
+                    'id' => $organisationB->getId()->toRfc4122(),
+                    'name' => $organisationB->getName(),
+                ],
+            ],
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
         self::assertMatchesResourceItemJsonSchema(DepartmentResource::class);
+    }
+
+    public function testGetDepartmentsWithSpecialUrlCharactersDoesNotFail(): void
+    {
+        self::createPublicationApiClient()
+            ->request(
+                Request::METHOD_GET,
+                '/api/publication/v1/department?y%5B%C2%9D%C3%84%F0%AA%89%93%C3%9D%10%F1%B3%B7%AB%C3%BB%F1%A5%82%AA5%0A-=',
+            );
+
+        self::assertResponseIsSuccessful();
     }
 
     public function testGetWithoutSslUserNameReturnsUnauthorized(): void

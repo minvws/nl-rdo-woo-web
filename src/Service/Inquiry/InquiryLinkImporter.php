@@ -57,21 +57,21 @@ readonly class InquiryLinkImporter
         InquiryLinkImportResult $result,
     ): void {
         $rowNr = 0;
-        foreach ($this->parser->parse($uploadedFile, $prefix) as $documentNr => $caseNumberValues) {
+        foreach ($this->parser->parse($uploadedFile, $prefix) as $documentNr => $inquiryNumberValues) {
             $rowNr++;
             try {
-                $documentCaseNrs = $this->documentRepository->getDocumentCaseNrs($documentNr);
-                if ($documentCaseNrs->isDocumentNotFound()) {
+                $documentInquiryNumbers = $this->documentRepository->getDocumentInquiryNumbers($documentNr);
+                if ($documentInquiryNumbers->isDocumentNotFound()) {
                     throw InquiryLinkImportException::forMissingDocument($documentNr);
                 }
 
                 try {
-                    $caseNumbers = new CaseNumbers($caseNumberValues);
+                    $inquiryNumbers = new InquiryNumbers($inquiryNumberValues);
                 } catch (InvalidArgumentException) {
-                    throw InquiryLinkImportException::forInvalidCaseNumber($rowNr, $caseNumberValues);
+                    throw InquiryLinkImportException::forInvalidInquiryNumber($rowNr, $inquiryNumberValues);
                 }
 
-                $inquiryChangeset->updateCaseNrsForDocument($documentCaseNrs, $caseNumbers);
+                $inquiryChangeset->updateInquiryNumbersForDocument($documentInquiryNumbers, $inquiryNumbers);
             } catch (TranslatableException $exception) {
                 $result->addRowException($rowNr, $exception);
             }

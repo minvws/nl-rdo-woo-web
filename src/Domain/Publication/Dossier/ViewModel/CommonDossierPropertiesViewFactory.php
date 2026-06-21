@@ -7,8 +7,6 @@ namespace Shared\Domain\Publication\Dossier\ViewModel;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Webmozart\Assert\Assert;
 
-use function sprintf;
-
 readonly class CommonDossierPropertiesViewFactory
 {
     public function __construct(
@@ -20,7 +18,6 @@ readonly class CommonDossierPropertiesViewFactory
     public function make(AbstractDossier $dossier): CommonDossierProperties
     {
         $title = $dossier->getTitle();
-        Assert::notNull($title);
 
         $publicationDate = $dossier->getPublicationDate();
         Assert::notNull($publicationDate);
@@ -34,9 +31,6 @@ readonly class CommonDossierPropertiesViewFactory
             documentPrefix: $dossier->getDocumentPrefix(),
             isPreview: $dossier->getStatus()->isPreview(),
             title: $title,
-            pageTitle: $dossier->getStatus()->isPreview()
-                ? sprintf('%s %s', $title, '(preview)')
-                : $title,
             publicationDate: $publicationDate,
             mainDepartment: $this->departmentViewFactory->make($mainDepartment),
             summary: $dossier->getSummary(),

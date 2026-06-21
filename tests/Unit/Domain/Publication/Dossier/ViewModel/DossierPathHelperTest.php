@@ -14,6 +14,7 @@ use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
 use Symfony\Component\Routing\RouterInterface;
 
 final class DossierPathHelperTest extends UnitTestCase
@@ -39,7 +40,7 @@ final class DossierPathHelperTest extends UnitTestCase
         $reference = new DossierReference(
             'dos-nr',
             'doc-prefix',
-            'dos-title',
+            DossierTitle::create('dos-title'),
             DossierType::COVENANT,
         );
 
@@ -83,7 +84,7 @@ final class DossierPathHelperTest extends UnitTestCase
         $reference = new DossierReference(
             'dos-nr',
             'doc-prefix',
-            'dos-title',
+            DossierTitle::create('dos-title'),
             DossierType::COMPLAINT_JUDGEMENT,
         );
 

@@ -17,6 +17,7 @@ use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Result\SubType\Attachment\AttachmentSearchResultMapper;
 use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
 
 class AttachmentSearchResultMapperTest extends UnitTestCase
 {
@@ -71,7 +72,7 @@ class AttachmentSearchResultMapperTest extends UnitTestCase
         $dossier = Mockery::mock(Covenant::class);
         $dossier->expects('getDossierNr')->andReturn($dossierNr = '123');
         $dossier->expects('getDocumentPrefix')->andReturn($documentPrefix = 'foo');
-        $dossier->expects('getTitle')->andReturn($title = 'bar');
+        $dossier->expects('getTitle')->andReturn($title = DossierTitle::create('bar'));
         $dossier->expects('getType')->andReturn($dossierType = DossierType::COVENANT);
 
         $attachment = Mockery::mock(AbstractAttachment::class);

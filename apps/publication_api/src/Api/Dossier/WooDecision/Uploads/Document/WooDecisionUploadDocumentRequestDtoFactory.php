@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\WooDecision\Uploads\Document;
 
 use GuzzleHttp\Psr7\Utils;
-use Shared\ValueObject\ExternalId;
+use PublicationApi\Api\ExternalIdFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
@@ -21,8 +21,8 @@ final class WooDecisionUploadDocumentRequestDtoFactory
         return new WooDecisionUploadDocumentRequestDto(
             Utils::streamFor($request->getContent(asResource: true)),
             $organisationId,
-            ExternalId::create($dossierExternalId),
-            ExternalId::create($documentExternalId),
+            ExternalIdFactory::create($dossierExternalId),
+            ExternalIdFactory::create($documentExternalId),
         );
     }
 }

@@ -4,10 +4,15 @@ Resource            ../../resources/Covenant.resource
 Resource            ../../resources/Departments.resource
 Resource            ../../resources/Organisations.resource
 Resource            ../../resources/Setup.resource
+Resource            ../../resources/WooDecision.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
 Test Tags           ci  misc
+
+
+*** Variables ***
+${DOSSIER_REFERENCE}    ${EMPTY}
 
 
 *** Test Cases ***
@@ -87,7 +92,7 @@ Update Department Texts
   Fill Text  //*[@id="department_responsibility_content"]  Bassie is verantwoordelijk!
   Click Save Department
   Click Publications
-  Publish Generated Test WooDecision
+  Publish Generated Test WooDecision  department=E2E Test Department 1
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Public URL
   Get Text  //*[@data-e2e-name="responsible"]  contains  Bassie is verantwoordelijk!

@@ -69,7 +69,7 @@
                         <th scope="row">Zaaknummers</th>
                         <td data-e2e-name="inquiries">
                             {% for inquiry in document.inquiries %}
-                                <span class="break-all">{{ inquiry.caseNr }}</span>{% if not loop.last %}, {% endif %}
+                                <span class="break-all">{{ inquiry.inquiryNumber }}</span>{% if not loop.last %}, {% endif %}
                             {% endfor %}
                         </td>
                     </tr>

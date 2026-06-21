@@ -58,7 +58,7 @@ trait AttachmentAndMainDocumentEntityTrait
     #[ORM\Column(type: Types::JSON, nullable: false)]
     #[Assert\All([
         new Assert\Type('string'),
-        new Assert\NotBlank(),
+        new Assert\NotBlank(normalizer: 'trim'),
     ])]
     protected array $grounds = [];
 

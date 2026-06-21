@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Twig\Runtime;
 
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -15,13 +14,14 @@ use Shared\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Service\HistoryService;
 use Shared\Service\Security\OrganisationSwitcher;
+use Shared\Tests\Unit\UnitTestCase;
 use Shared\Twig\Runtime\WooExtensionRuntime;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 use function urldecode;
 
-class WooExtensionRuntimeTest extends MockeryTestCase
+class WooExtensionRuntimeTest extends UnitTestCase
 {
     private RequestStack&MockInterface $requestStack;
     private WooExtensionRuntime $runtime;

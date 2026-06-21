@@ -9,6 +9,7 @@ use Mockery;
 use PublicationApi\Api\Dossier\WooDecision\Uploads\Document\DocumentFileName;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 
 final class DocumentFileNameTest extends UnitTestCase
 {
@@ -16,7 +17,7 @@ final class DocumentFileNameTest extends UnitTestCase
     {
         $document = Mockery::mock(Document::class);
         $document->expects('getFileInfo->getName')->andReturn('my-fancy-name.pdf');
-        $document->expects('getDocumentId')->andReturn('1337');
+        $document->expects('getDocumentId')->andReturn(DocumentId::create('1337'));
 
         $documentFileName = new DocumentFileName($document);
 

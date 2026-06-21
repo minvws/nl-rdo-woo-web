@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Security;
 
+use Deprecated;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 readonly class ApiUser implements UserInterface
@@ -21,6 +22,7 @@ readonly class ApiUser implements UserInterface
         return ['ROLE_API_CLIENT'];
     }
 
+    #[Deprecated]
     public function eraseCredentials(): void
     {
     }

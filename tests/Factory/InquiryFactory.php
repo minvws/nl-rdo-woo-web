@@ -37,10 +37,10 @@ final class InquiryFactory extends PersistentObjectFactory
      */
     protected function defaults(): array|callable
     {
-        $org = LazyValue::memoize(fn () => OrganisationFactory::createOne());
+        $org = LazyValue::memoize(static fn () => OrganisationFactory::createOne());
 
         return [
-            'casenr' => self::faker()->text(255),
+            'inquiryNumber' => self::faker()->text(255),
             'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'organisation' => $org,
@@ -58,7 +58,7 @@ final class InquiryFactory extends PersistentObjectFactory
     protected function initialize(): static
     {
         return $this
-            ->afterPersist(function (Inquiry $inquiry) {
+            ->afterPersist(static function (Inquiry $inquiry) {
                 $inquiry->setInventory(InquiryInventoryFactory::new()->create([
                     'inquiry' => $inquiry,
                 ]));

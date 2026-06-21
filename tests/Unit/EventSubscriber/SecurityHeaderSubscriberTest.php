@@ -9,7 +9,6 @@ use Mockery\MockInterface;
 use Shared\EventSubscriber\SecurityHeaderSubscriber;
 use Shared\Service\EnvironmentService;
 use Shared\Tests\Unit\UnitTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -22,8 +21,6 @@ use function trim;
 
 class SecurityHeaderSubscriberTest extends UnitTestCase
 {
-    use MatchesSnapshots;
-
     private EnvironmentService&MockInterface $environmentService;
 
     protected function setUp(): void
@@ -94,7 +91,7 @@ class SecurityHeaderSubscriberTest extends UnitTestCase
         $subscriber->onKernelResponse($responseEvent);
 
         $cspHeaders = (string) $response->headers->get('Content-Security-Policy');
-        $this->assertStringContainsString('http://localhost:8001', $cspHeaders);
+        $this->assertStringContainsString('http://localhost:8010', $cspHeaders);
 
         $cspHeaders = explode(';', $cspHeaders);
         $cspHeaders = array_map(trim(...), $cspHeaders);

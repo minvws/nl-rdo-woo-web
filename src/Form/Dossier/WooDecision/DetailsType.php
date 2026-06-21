@@ -7,19 +7,16 @@ namespace Shared\Form\Dossier\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Form\Dossier\AbstractDossierStepType;
-use Shared\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Form\Dossier\DossierFormFactory;
 use Shared\Form\YearMonthType;
-use Shared\Service\Security\Roles;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Webmozart\Assert\Assert;
 
 class DetailsType extends AbstractDossierStepType
 {
-    use DossierFormBuilderTrait;
-
     public function __construct(
-        private readonly Security $security,
+        private readonly DossierFormFactory $dossierFormFactory,
     ) {
     }
 
@@ -30,10 +27,11 @@ class DetailsType extends AbstractDossierStepType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var WooDecision $dossier */
         $dossier = $builder->getData();
+        Assert::isInstanceOf($dossier, WooDecision::class);
 
-        $this->addTitleField($builder);
+        $dossierForm = $this->dossierFormFactory->for($builder);
+        $dossierForm->addTitleField();
         $builder
             ->add('date_from', YearMonthType::class, [
                 'label' => 'global.date_from',
@@ -57,8 +55,8 @@ class DetailsType extends AbstractDossierStepType
                 'property_path' => 'dateTo',
             ]);
 
-        $this->addDepartmentsField($builder);
-        $this->addSubjectField($builder);
+        $dossierForm->addDepartmentsField();
+        $dossierForm->addSubjectField();
 
         $builder
             ->add('publication_reason', EnumType::class, [
@@ -68,9 +66,9 @@ class DetailsType extends AbstractDossierStepType
                 'required' => true,
             ]);
 
-        $this->addInternalReferenceField($builder);
-        $this->addDossierNrField($builder, $this->security->isGranted(Roles::ROLE_ORGANISATION_ADMIN));
-        $this->addDocumentPrefixField($builder);
-        $this->addSubmits($builder);
+        $dossierForm->addInternalReferenceField();
+        $dossierForm->addDossierNrField();
+        $dossierForm->addDocumentPrefixField();
+        $dossierForm->addSubmits();
     }
 }

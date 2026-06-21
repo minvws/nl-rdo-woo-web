@@ -18,6 +18,7 @@ use Shared\Domain\Publication\Dossier\ViewModel\Subject as SubjectViewModel;
 use Shared\Domain\Publication\Dossier\ViewModel\SubjectViewFactory;
 use Shared\Tests\Story\DepartmentEnum;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
 use Symfony\Component\Uid\Uuid;
 
 final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
@@ -56,13 +57,12 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
                 feedbackContent: null,
                 responsibilityContent: null,
             ));
-
         $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->expects('getId')->andReturn($uuid);
         $dossier->expects('getDossierNr')->andReturn($expectedDossierNr = 'my dossier nr');
         $dossier->expects('getDocumentPrefix')->andReturn($expectedDocumentPrefix = 'my document prefix');
-        $dossier->expects('getStatus')->times(2)->andReturn($expectedStatus = DossierStatus::PUBLISHED);
-        $dossier->expects('getTitle')->andReturn($expectedTitle = 'my title');
+        $dossier->expects('getStatus')->times(1)->andReturn($expectedStatus = DossierStatus::PUBLISHED);
+        $dossier->expects('getTitle')->andReturn($expectedTitle = DossierTitle::create('my title'));
         $dossier->expects('getPublicationDate')->andReturn($expectedPublicationDate = $this->getFaker()->plainDateBetween('-2 years'));
         $dossier->expects('getDepartments')->andReturn($departments);
         $dossier->expects('getSummary')->andReturn($expectedSummary = 'my summary');
@@ -80,57 +80,6 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedDocumentPrefix, $result->documentPrefix);
         $this->assertSame($expectedStatus->isPreview(), $result->isPreview);
         $this->assertSame($expectedTitle, $result->title);
-        $this->assertSame($expectedTitle, $result->pageTitle);
-        $this->assertSame($expectedPublicationDate, $result->publicationDate);
-        $this->assertSame($expectedMainDepartment, $result->mainDepartment);
-        $this->assertSame($expectedSummary, $result->summary);
-        $this->assertSame($expectedType, $result->type);
-        $this->assertSame($expectedSubject, $result->subject);
-    }
-
-    public function testMakeForPreview(): void
-    {
-        $uuid = Mockery::mock(Uuid::class);
-        $uuid->expects('toRfc4122')->andReturn($expectedUuid = 'my uuid');
-
-        $department = Mockery::mock(DepartmentEntity::class);
-        /** @var ArrayCollection<array-key,DepartmentEntity> $departments */
-        $departments = new ArrayCollection([$department]);
-
-        $expectedMainDepartment = new Department(
-            name: DepartmentEnum::VWS->value,
-            feedbackContent: null,
-            responsibilityContent: null,
-        );
-        $this->departmentViewFactory
-            ->expects('make')
-            ->with($department)
-            ->andReturn($expectedMainDepartment);
-
-        $dossier = Mockery::mock(AbstractDossier::class);
-        $dossier->expects('getId')->andReturn($uuid);
-        $dossier->expects('getDossierNr')->andReturn($expectedDossierNr = 'my dossier nr');
-        $dossier->expects('getDocumentPrefix')->andReturn($expectedDocumentPrefix = 'my document prefix');
-        $dossier->expects('getStatus')->times(2)->andReturn($expectedStatus = DossierStatus::PREVIEW);
-        $dossier->expects('getTitle')->andReturn($expectedTitle = 'my title');
-        $dossier->expects('getPublicationDate')->andReturn($expectedPublicationDate = $this->getFaker()->plainDateBetween('-2 years'));
-        $dossier->expects('getDepartments')->andReturn($departments);
-        $dossier->expects('getSummary')->andReturn($expectedSummary = 'my summary');
-        $dossier->expects('getType')->andReturn($expectedType = DossierType::COVENANT);
-
-        $this->subjectViewFactory
-            ->expects('getSubjectForDossier')
-            ->with($dossier)
-            ->andReturn($expectedSubject = Mockery::mock(SubjectViewModel::class));
-
-        $result = $this->factory->make($dossier);
-
-        $this->assertSame($expectedUuid, $result->dossierId);
-        $this->assertSame($expectedDossierNr, $result->dossierNr);
-        $this->assertSame($expectedDocumentPrefix, $result->documentPrefix);
-        $this->assertSame($expectedStatus->isPreview(), $result->isPreview);
-        $this->assertSame($expectedTitle, $result->title);
-        $this->assertSame($expectedTitle . ' (preview)', $result->pageTitle);
         $this->assertSame($expectedPublicationDate, $result->publicationDate);
         $this->assertSame($expectedMainDepartment, $result->mainDepartment);
         $this->assertSame($expectedSummary, $result->summary);

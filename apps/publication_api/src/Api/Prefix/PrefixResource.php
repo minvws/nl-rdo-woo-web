@@ -8,7 +8,6 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
-use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\Parameter;
 use PublicationApi\Api\Organisation\OrganisationResponseDto;
@@ -49,15 +48,6 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
             name: 'get_prefixes',
             itemUriTemplate: '/organisation/{organisationId}/prefix/{prefixId}',
         ),
-        new Post(
-            uriTemplate: '/organisation/{organisationId}/prefix',
-            uriVariables: [
-                'organisationId' => new Link(toProperty: 'organisation', fromClass: OrganisationResponseDto::class),
-            ],
-            input: PrefixCreateDto::class,
-            read: false,
-            name: 'create_prefix',
-        ),
     ],
     uriVariables: [
         'organisationId' => new Link(toProperty: 'organisation', fromClass: OrganisationResponseDto::class),
@@ -67,8 +57,8 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     openapi: new Operation(
         tags: ['Prefix'],
     ),
+    output: PrefixResponseDto::class,
     provider: PrefixProvider::class,
-    processor: PrefixProcessor::class,
 )]
 final class PrefixResource
 {

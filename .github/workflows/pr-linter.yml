@@ -1,0 +1,35 @@
+name: PR Linter
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  check-pr-title:
+    name: Check PR Title
+    runs-on: ubuntu-24.04
+    if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          scopes: |
+            e2e
+            \d{4}
+
+  check-pr-description:
+    name: Check PR Description
+    runs-on: ubuntu-24.04
+    if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
+    steps:
+      - name: Require PR description
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if [ -z "$(echo "$BODY" | tr -d '[:space:]')" ]; then
+            echo "PR description is empty. Please add a description."
+            exit 1
+          fi

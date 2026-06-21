@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Upload\Process;
 
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Upload\UploadedFile;
+use Shared\ValueObject\DocumentId;
 
-use function basename;
-use function is_null;
+use function pathinfo;
 use function preg_match;
+
+use const PATHINFO_FILENAME;
 
 readonly class DocumentNumberExtractor
 {
@@ -22,23 +25,23 @@ readonly class DocumentNumberExtractor
     ) {
     }
 
-    public function extract(string $originalFile, WooDecision $dossier): string
+    public function extract(string $originalFile, WooDecision $dossier): DocumentId
     {
-        $originalFile = basename($originalFile);
-        preg_match('/^([a-zA-Z0-9\-]+)/', $originalFile, $matches);
-        $documentId = $matches[1] ?? null;
+        $originalFileName = pathinfo($originalFile, PATHINFO_FILENAME);
 
-        if (is_null($documentId)) {
+        preg_match('/^([a-zA-Z0-9]+)/', $originalFileName, $matches);
+        $documentIdString = $matches[1] ?? null;
+
+        try {
+            return DocumentId::create($documentIdString ?? '');
+        } catch (InvalidArgumentException) {
             $this->logger->error('Cannot extract document ID from the filename', [
                 'filename' => $originalFile,
-                'matches' => $matches,
                 'dossierId' => $dossier->getId(),
             ]);
 
             throw FileProcessException::forFailingToExtractDocumentId($originalFile, $dossier);
         }
-
-        return $documentId;
     }
 
     public function matchDocumentForFile(UploadedFile $file, WooDecision $wooDecision): ?Document

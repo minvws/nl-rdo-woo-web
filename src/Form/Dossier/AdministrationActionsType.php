@@ -11,6 +11,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @template-extends AbstractType<AdministrationActionsType>
@@ -24,8 +25,8 @@ class AdministrationActionsType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var AbstractDossier $dossier */
         $dossier = $builder->getData();
+        Assert::isInstanceOf($dossier, AbstractDossier::class);
 
         $builder
             ->add('action', EnumType::class, [

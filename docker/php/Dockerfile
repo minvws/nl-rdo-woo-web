@@ -1,8 +1,8 @@
 FROM minio/mc:RELEASE.2025-08-13T08-35-41Z AS mc
 
-FROM composer/composer:2.9.7-bin AS composer
+FROM composer/composer:2.10.1-bin AS composer
 
-FROM php:8.4.20-apache-trixie
+FROM php:8.4.22-apache-trixie
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -28,6 +28,7 @@ RUN apt-get update \
         xlsx2csv \
         p7zip-full \
         vim \
+        qrencode \
     # Cleanup
     && rm -rf /var/www/* \
     && apt-get autoremove --assume-yes \
@@ -103,7 +104,7 @@ RUN apt-get update \
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen \
     && cp "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
-ARG NODE_MAJOR=22
+ARG NODE_MAJOR=24
 
 ENV COREPACK_HOME=/tmp/corepack
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0

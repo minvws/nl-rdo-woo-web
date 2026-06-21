@@ -29,7 +29,7 @@ final class InventoryReaderExceptionTest extends TestCase
     {
         self::assertStringContainsString(
             '123',
-            InventoryReaderException::forInvalidMatterInRow(123, 2, 50)->getMessage(),
+            InventoryReaderException::forInvalidMatterInRow(123)->getMessage(),
         );
     }
 
@@ -46,6 +46,14 @@ final class InventoryReaderExceptionTest extends TestCase
         $message = InventoryReaderException::forFileTooLong('foo-bar', 123)->getMessage();
 
         self::assertStringContainsString('foo-bar', $message);
+        self::assertStringContainsString('123', $message);
+    }
+
+    public function testForInvalidLink(): void
+    {
+        $message = InventoryReaderException::forInvalidLink('not-a-url', 123)->getMessage();
+
+        self::assertStringContainsString('not-a-url', $message);
         self::assertStringContainsString('123', $message);
     }
 }

@@ -1,7 +1,7 @@
-# Woo Platform commands
+# Woo Publication Platform commands
 
 <!-- TOC -->
-- [Woo Platform commands](#woo-platform-commands)
+- [Woo Publication Platform commands](#woo-publication-platform-commands)
   - [Cron commands](#cron-commands)
     - [Upload cleanup](#upload-cleanup)
     - [Archives cleanup](#archives-cleanup)
@@ -75,7 +75,7 @@ Publish dossiers when their publication date is reached. Should be executed at l
 
 ## Console commands
 
-This is a list of all console commands available for the Woo platform.
+This is a list of all console commands available for the Woo Publication Platform.
 
 ### Production check
 

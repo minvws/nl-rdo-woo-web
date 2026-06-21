@@ -1,8 +1,8 @@
-# Woo Platform
+# Woo Publication Platform
 
 ## Terminology
 
-A list of common used terms in the Woo platform.
+A list of common used terms in the Woo Publication Platform.
 
 <dl>
   <dt>inquiry</dt>

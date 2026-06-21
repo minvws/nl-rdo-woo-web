@@ -55,6 +55,7 @@ readonly class AttachmentTypeFactory
                     AttachmentType::ANNUAL_PLAN,
                     AttachmentType::ANNUAL_REPORT,
                     AttachmentType::TERM_AGENDA,
+                    AttachmentType::GEOGRAPHIC_MAP,
                 ],
             ),
 
@@ -90,6 +91,8 @@ readonly class AttachmentTypeFactory
                     AttachmentType::ORGANIZATION_DETAILS,
                     AttachmentType::PRESS_RELEASE,
                     AttachmentType::SPEECH,
+                    AttachmentType::OFFICIAL_FORM,
+                    AttachmentType::MEDIA_TEXT,
                 ],
             ),
 
@@ -116,6 +119,16 @@ readonly class AttachmentTypeFactory
                     attachmentTypes: [
                         AttachmentType::PARLIAMENTARY_QUESTION_WITH_ANSWER,
                         AttachmentType::PARLIAMENTARY_QUESTION_WITHOUT_ANSWER,
+                        AttachmentType::COUNCIL_OF_STATE_ADVICE,
+                        AttachmentType::PARLIAMENTARY_LETTER,
+                        AttachmentType::MEMORANDUM_OF_REPLY,
+                        AttachmentType::EXPLANATORY_MEMORANDUM,
+                        AttachmentType::FURTHER_REPORT,
+                        AttachmentType::FURTHER_MEMORANDUM_OF_REPLY,
+                        AttachmentType::NOTE_ON_FURTHER_REPORT,
+                        AttachmentType::NOTE_ON_REPORT,
+                        AttachmentType::AMENDMENT_NOTE,
+                        AttachmentType::LEGISLATIVE_PROPOSAL,
                     ],
                 ),
                 attachmentTypes: [
@@ -139,6 +152,9 @@ readonly class AttachmentTypeFactory
                 attachmentTypes: [
                     AttachmentType::POLICY,
                     AttachmentType::PLAN,
+                    AttachmentType::DIPLOMATIC_DECLARATION,
+                    AttachmentType::REGULATION,
+                    AttachmentType::DIRECTIVE,
                 ],
             ),
 

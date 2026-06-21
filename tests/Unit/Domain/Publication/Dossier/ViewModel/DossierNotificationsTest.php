@@ -6,12 +6,9 @@ namespace Shared\Tests\Unit\Domain\Publication\Dossier\ViewModel;
 
 use Shared\Domain\Publication\Dossier\ViewModel\DossierNotifications;
 use Shared\Tests\Unit\UnitTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
 class DossierNotificationsTest extends UnitTestCase
 {
-    use MatchesSnapshots;
-
     public function testHasAnyDocumentNotificationsReturnsFalseForCompletedDossier(): void
     {
         $notifications = new DossierNotifications(false, 0, 0, 0);

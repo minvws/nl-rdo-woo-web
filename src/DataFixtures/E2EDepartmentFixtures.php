@@ -30,8 +30,14 @@ class E2EDepartmentFixtures extends Fixture implements FixtureGroupInterface
     {
         $departmentOneName = 'E2E Test Department 1';
 
-        $existingDept = $manager->getRepository(Department::class)->findOneBy(['name' => $departmentOneName]);
-        if ($existingDept) {
+        $existingDept1 = $manager->getRepository(Department::class)->findOneBy(['name' => $departmentOneName]);
+        $existingDept2 = $manager->getRepository(Department::class)->findOneBy(['name' => 'E2E Test Department 2']);
+        $existingDept3 = $manager->getRepository(Department::class)->findOneBy(['name' => 'E2E Test Department 3']);
+        if ($existingDept1 && $existingDept2 && $existingDept3) {
+            $this->addReference(self::REFERENCE_1, $existingDept1);
+            $this->addReference(self::REFERENCE_2, $existingDept2);
+            $this->addReference(self::REFERENCE_3, $existingDept3);
+
             return;
         }
 

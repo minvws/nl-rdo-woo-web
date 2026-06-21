@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\ComplaintJudgement;
 
-use PublicationApi\Api\MainDocument\MainDocumentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use Shared\Domain\Publication\FileInfo;
@@ -14,7 +13,7 @@ class ComplaintJudgementMainDocumentMapper
 {
     public static function create(
         ComplaintJudgement $complaintJudgement,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        ComplaintJudgementMainDocumentRequestDto $mainDocumentRequestDto,
     ): ComplaintJudgementMainDocument {
         $mainDocument = new ComplaintJudgementMainDocument(
             $complaintJudgement,
@@ -34,7 +33,7 @@ class ComplaintJudgementMainDocumentMapper
 
     public static function update(
         ComplaintJudgement $complaintJudgement,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        ComplaintJudgementMainDocumentRequestDto $mainDocumentRequestDto,
     ): ComplaintJudgementMainDocument {
         $mainDocument = $complaintJudgement->getMainDocument();
         Assert::notNull($mainDocument);
@@ -47,7 +46,6 @@ class ComplaintJudgementMainDocumentMapper
         $mainDocument->setFormalDate($mainDocumentRequestDto->formalDate);
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
         $mainDocument->setLanguage($mainDocumentRequestDto->language);
-        $mainDocument->setType($mainDocumentRequestDto->type);
 
         return $mainDocument;
     }

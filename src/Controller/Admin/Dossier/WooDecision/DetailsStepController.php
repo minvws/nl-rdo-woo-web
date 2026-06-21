@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Webmozart\Assert\Assert;
 
 class DetailsStepController extends AbstractController
 {
@@ -41,8 +42,8 @@ class DetailsStepController extends AbstractController
     #[IsGranted('AuthMatrix.dossier.create')]
     public function create(Request $request): Response
     {
-        /** @var WooDecision $dossier */
         $dossier = $this->dossierFactory->create(DossierType::WOO_DECISION);
+        Assert::isInstanceOf($dossier, WooDecision::class);
 
         $form = $this->getForm($dossier);
 

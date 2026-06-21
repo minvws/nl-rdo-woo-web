@@ -7,6 +7,7 @@ namespace Shared\Controller\Public;
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Content\Page\ContentPageService;
 use Shared\Domain\Content\Page\ContentPageType;
+use Shared\Domain\Department\DepartmentService;
 use Shared\Service\Search\Query\Definition\BrowseMainAggregationsQueryDefinition;
 use Shared\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +25,7 @@ class HomeController extends AbstractController
         private readonly SearchService $searchService,
         private readonly BrowseMainAggregationsQueryDefinition $queryDefinition,
         private readonly ContentPageService $contentPageService,
+        private readonly DepartmentService $departmentService,
     ) {
     }
 
@@ -54,6 +56,7 @@ class HomeController extends AbstractController
             'other_publications' => $this->contentPageService->getViewModel(ContentPageType::HOMEPAGE_OTHER_PUBLICATIONS),
             'woo_request' => $this->contentPageService->getViewModel(ContentPageType::HOMEPAGE_WOO_REQUEST),
             'facets' => $this->searchService->getResult($this->queryDefinition),
+            'departments' => $this->departmentService->getPublicDepartments(),
         ]);
     }
 }

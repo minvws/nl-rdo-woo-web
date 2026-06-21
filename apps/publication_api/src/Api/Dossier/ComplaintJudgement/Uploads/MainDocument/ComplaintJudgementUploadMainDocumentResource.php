@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
             output: false,
             read: false,
             deserialize: false,
-            name: 'complaint_judgement_main_document_upload',
+            name: self::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
             processor: ComplaintJudgementUploadMainDocumentProcessor::class,
         ),
     ],
@@ -37,4 +37,5 @@ use Symfony\Component\HttpFoundation\Response;
 )]
 final readonly class ComplaintJudgementUploadMainDocumentResource
 {
+    public const string ROUTE_NAME_MAIN_DOCUMENT_UPLOAD = 'complaint_judgement_main_document_upload';
 }

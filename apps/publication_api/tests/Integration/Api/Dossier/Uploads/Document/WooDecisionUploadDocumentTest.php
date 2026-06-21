@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Integration\Api\Dossier\Uploads\Document;
 
 use Mockery;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Dossier\WooDecision\Uploads\Document\DocumentFileName;
 use PublicationApi\Tests\Integration\Api\ApiPublicationV1TestCase;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
@@ -17,13 +18,13 @@ use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
-use Shared\ValueObject\ExternalId;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\UuidV6;
 
 use function file_get_contents;
 use function sprintf;
+use function str_repeat;
 use function Zenstruck\Foundry\Persistence\save;
 
 final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
@@ -41,7 +42,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
         $document = DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
             'judgement' => Judgement::PUBLIC,
         ]);
 
@@ -54,7 +55,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         $uploadService
             ->expects('handleUpload')
             ->with(
-                Mockery::on(function (StreamUpload $streamUpload) use ($document, $wooDecision, $fileContent): bool {
+                Mockery::on(static function (StreamUpload $streamUpload) use ($document, $wooDecision, $fileContent): bool {
                     if ($streamUpload->fileName !== new DocumentFileName($document)->fileName) {
                         return false;
                     }
@@ -87,7 +88,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
             '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/document/external/%s',
             $organisation->getId(),
             $wooDecision->getExternalId(),
-            $document->getExternalId()?->__toString(),
+            $document->getExternalId()?->toString(),
         );
 
         $client->request(Request::METHOD_PUT, $url, [
@@ -112,7 +113,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         ]);
         $document = DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
         $client = self::createPublicationApiClient();
 
@@ -120,7 +121,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
             '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/document/external/%s',
             $organisation->getId(),
             $wooDecision->getExternalId(),
-            $document->getExternalId()?->__toString(),
+            $document->getExternalId()?->toString(),
         );
         $client->request(Request::METHOD_PUT, $url, [
             'headers' => [
@@ -143,7 +144,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         ]);
         $document = DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
             'suspended' => true,
         ]);
 
@@ -160,7 +161,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
             '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/document/external/%s',
             $organisation->getId(),
             $wooDecision->getExternalId(),
-            $document->getExternalId()?->__toString(),
+            $document->getExternalId()?->toString(),
         );
 
         $client->request(Request::METHOD_PUT, $url, [
@@ -185,7 +186,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         ]);
         $document = DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
         $document->withdraw(DocumentWithdrawReason::SUSPENDED_DOCUMENT, 'explanation');
         save($document);
@@ -203,7 +204,7 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
             '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/document/external/%s',
             $organisation->getId(),
             $wooDecision->getExternalId(),
-            $document->getExternalId()?->__toString(),
+            $document->getExternalId()?->toString(),
         );
 
         $client->request(Request::METHOD_PUT, $url, [
@@ -216,8 +217,11 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
-    public function testUploadWooDecisionDocumentWhenDocumentIsNotPublic(): void
-    {
+    #[DataProvider('uploadWooDecisionDocumentForAllJudgementsDataProvider')]
+    public function testUploadWooDecisionDocumentForAllJudgements(
+        Judgement $judgement,
+        int $expectedResponseCode,
+    ): void {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $wooDecision = WooDecisionFactory::createOne([
@@ -228,24 +232,28 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         ]);
         $document = DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
-            'judgement' => Judgement::NOT_PUBLIC,
+            'externalId' => $this->getFaker()->externalId(),
+            'judgement' => $judgement,
         ]);
 
-        $client = self::createPublicationApiClient();
+        $client = $this->createPublicationApiClient();
 
         $testFileName = '1008.pdf';
         $testFilePath = sprintf('%s/tests/robot_framework/files/woodecision/%s', static::$kernel?->getProjectDir(), $testFileName);
         $fileContent = file_get_contents($testFilePath);
 
         $uploadService = Mockery::mock(UploadService::class);
+        if ($expectedResponseCode === Response::HTTP_NO_CONTENT) {
+            $uploadService->expects('handleUpload');
+        }
+
         self::getContainer()->set(UploadService::class, $uploadService);
 
         $url = sprintf(
             '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/document/external/%s',
             $organisation->getId(),
             $wooDecision->getExternalId(),
-            $document->getExternalId()?->__toString(),
+            $document->getExternalId()?->toString(),
         );
 
         $client->request(Request::METHOD_PUT, $url, [
@@ -255,6 +263,61 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
             'body' => $fileContent,
         ]);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertResponseStatusCodeSame($expectedResponseCode);
+    }
+
+    /**
+     * @return array<string,array<array-key,mixed>>
+     */
+    public static function uploadWooDecisionDocumentForAllJudgementsDataProvider(): array
+    {
+        return [
+            Judgement::PUBLIC->value => [
+                'judgement' => Judgement::PUBLIC,
+                'expectedResponseCode' => Response::HTTP_NO_CONTENT,
+            ],
+            Judgement::ALREADY_PUBLIC->value => [
+                'judgement' => Judgement::ALREADY_PUBLIC,
+                'expectedResponseCode' => Response::HTTP_UNPROCESSABLE_ENTITY,
+            ],
+            Judgement::PARTIAL_PUBLIC->value => [
+                'judgement' => Judgement::PARTIAL_PUBLIC,
+                'expectedResponseCode' => Response::HTTP_NO_CONTENT,
+            ],
+            Judgement::NOT_PUBLIC->value => [
+                'judgement' => Judgement::NOT_PUBLIC,
+                'expectedResponseCode' => Response::HTTP_UNPROCESSABLE_ENTITY,
+            ],
+        ];
+    }
+
+    public function testUploadWooDecisionDocumentWithTooLongDossierExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/document/external/%s',
+            $organisation->getId(),
+            str_repeat('x', 129),
+            'some-id',
+        ));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testUploadWooDecisionDocumentWithTooLongDocumentExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/document/external/%s',
+            $organisation->getId(),
+            'some-id',
+            str_repeat('x', 129),
+        ));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

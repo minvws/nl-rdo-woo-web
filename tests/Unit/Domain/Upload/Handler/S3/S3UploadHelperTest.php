@@ -8,7 +8,6 @@ use Aws\Result;
 use Aws\S3\S3Client;
 use GuzzleHttp\Psr7\Stream;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -18,16 +17,14 @@ use Shared\Domain\Upload\Handler\S3\S3UploadHelper;
 use Shared\Domain\Upload\StreamUpload;
 use Shared\Domain\Upload\UploadRequest;
 use Shared\Service\Uploader\UploadGroupId;
-use Spatie\Snapshots\MatchesSnapshots;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
 
 use function sprintf;
 
-class S3UploadHelperTest extends MockeryTestCase
+class S3UploadHelperTest extends UnitTestCase
 {
-    use MatchesSnapshots;
-
     private S3UploadHelper $helper;
     private S3Client&MockInterface $s3Client;
     private string $bucket = 'some-bucket';

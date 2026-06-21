@@ -9,6 +9,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
+use Webmozart\Assert\Assert;
 
 use function in_array;
 
@@ -30,8 +31,9 @@ class DocumentVoter extends WooDecisionVoter
             return false;
         }
 
-        /** @var WooDecision $dossier */
         $dossier = $document->getDossiers()->first();
+        Assert::isInstanceOf($dossier, WooDecision::class);
+
         if (parent::voteOnAttribute($attribute, $dossier, $token) === true) {
             return true;
         }

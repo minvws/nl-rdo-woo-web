@@ -16,6 +16,7 @@ use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 
 final class FileStorerTest extends UnitTestCase
 {
@@ -50,6 +51,7 @@ final class FileStorerTest extends UnitTestCase
 
     public function testStoreForDocumentForFirstUpload(): void
     {
+        $documentId = DocumentId::create('foo.123');
         $this->document->expects('getFileInfo')
             ->times(2)
             ->andReturn($this->fileInfo);
@@ -78,11 +80,12 @@ final class FileStorerTest extends UnitTestCase
         $this->doctrine->expects('persist')->with($this->document);
         $this->doctrine->expects('flush');
 
-        $this->fileStorer->storeForDocument($this->file, $this->document, 'documentId');
+        $this->fileStorer->storeForDocument($this->file, $this->document, $documentId);
     }
 
     public function testStoreForAlreadyUploadedDocumentRemovedOldFilesFirst(): void
     {
+        $documentId = DocumentId::create('foo.123');
         $this->document->expects('getFileInfo')
             ->times(2)
             ->andReturn($this->fileInfo);
@@ -113,11 +116,12 @@ final class FileStorerTest extends UnitTestCase
         $this->doctrine->expects('persist')->with($this->document);
         $this->doctrine->expects('flush');
 
-        $this->fileStorer->storeForDocument($this->file, $this->document, 'documentId');
+        $this->fileStorer->storeForDocument($this->file, $this->document, $documentId);
     }
 
     public function testStoreForDocumentWithFailure(): void
     {
+        $documentId = DocumentId::create('foo.123');
         $this->document->expects('getFileInfo')
             ->andReturn($this->fileInfo);
 
@@ -137,12 +141,12 @@ final class FileStorerTest extends UnitTestCase
         $this->logger
             ->expects('error')
             ->with('Failed to store document', [
-                'documentId' => $expectedDocumentId = 'documentId',
+                'documentId' => $documentId,
                 'path' => $expectedPath,
             ]);
 
-        $this->expectExceptionObject(FileProcessException::forFailingToStoreDocument($this->file, $expectedDocumentId));
+        $this->expectExceptionObject(FileProcessException::forFailingToStoreDocument($this->file, $documentId));
 
-        $this->fileStorer->storeForDocument($this->file, $this->document, $expectedDocumentId);
+        $this->fileStorer->storeForDocument($this->file, $this->document, $documentId);
     }
 }

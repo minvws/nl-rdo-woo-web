@@ -11,7 +11,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDraw
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\GenerateInquiryInventoryCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Command\UpdateInquiryLinksCommand;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryAndDocumentsCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveDocumentsCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Command\RemoveInventoryCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Upload\WooDecision\ProcessUploadedDocumentsCommand;
@@ -35,12 +36,20 @@ class WooDecisionDispatcherTest extends UnitTestCase
         );
     }
 
-    public function testDispatchCreateDossierCommand(): void
+    public function testDispatchRemoveInventoryAndDocumentsCommand(): void
     {
         $id = Uuid::v6();
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static function (RemoveInventoryAndDocumentsCommand $command) use ($id) {
+            static function (RemoveInventoryCommand $command) use ($id) {
+                self::assertEquals($id, $command->getUuid());
+
+                return true;
+            },
+        ))->andReturns(new Envelope(new stdClass()));
+
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
+            static function (RemoveDocumentsCommand $command) use ($id) {
                 self::assertEquals($id, $command->getUuid());
 
                 return true;
@@ -105,15 +114,15 @@ class WooDecisionDispatcherTest extends UnitTestCase
     public function testDispatchUpdateInquiryLinksCommand(): void
     {
         $id = Uuid::v6();
-        $caseNr = 'foo-123';
+        $inquiryNumber = 'foo-123';
         $docIdsToAdd = [Uuid::v6(), Uuid::v6()];
         $docIdsToDelete = [Uuid::v6()];
         $dossierIdsToAdd = [Uuid::v6()];
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static function (UpdateInquiryLinksCommand $command) use ($id, $caseNr, $docIdsToAdd, $docIdsToDelete, $dossierIdsToAdd) {
+            static function (UpdateInquiryLinksCommand $command) use ($id, $inquiryNumber, $docIdsToAdd, $docIdsToDelete, $dossierIdsToAdd) {
                 self::assertEquals($id, $command->getOrganisationId());
-                self::assertEquals($caseNr, $command->getCaseNr());
+                self::assertEquals($inquiryNumber, $command->getInquiryNumber());
                 self::assertEquals($docIdsToAdd, $command->getDocIdsToAdd());
                 self::assertEquals($docIdsToDelete, $command->getDocIdsToDelete());
                 self::assertEquals($dossierIdsToAdd, $command->getDossierIdsToAdd());
@@ -122,7 +131,7 @@ class WooDecisionDispatcherTest extends UnitTestCase
             },
         ))->andReturns(new Envelope(new stdClass()));
 
-        $this->dispatcher->dispatchUpdateInquiryLinksCommand($id, $caseNr, $docIdsToAdd, $docIdsToDelete, $dossierIdsToAdd);
+        $this->dispatcher->dispatchUpdateInquiryLinksCommand($id, $inquiryNumber, $docIdsToAdd, $docIdsToDelete, $dossierIdsToAdd);
     }
 
     public function testDispatchProcessUploadedDocumentsCommand(): void

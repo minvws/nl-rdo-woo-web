@@ -1,7 +1,7 @@
-# Woo Platform Authorization matrix
+# Woo Publication Platform Authorization matrix
 
 <!-- TOC -->
-- [Woo Platform Authorization matrix](#woo-platform-authorization-matrix)
+- [Woo Publication Platform Authorization matrix](#woo-publication-platform-authorization-matrix)
   - [User](#user)
   - [Department](#department)
   - [Dossier](#dossier)

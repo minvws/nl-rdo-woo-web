@@ -13,6 +13,7 @@ Resource            ../../resources/OtherPublication.resource
 Resource            ../../resources/RequestForAdvice.resource
 Resource            ../../resources/Setup.resource
 Resource            ../../resources/Subjects.resource
+Resource            ../../resources/WooDecision.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Teardown       Run Keyword If Test Failed  Go To Admin

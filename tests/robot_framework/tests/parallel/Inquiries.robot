@@ -8,6 +8,7 @@ Documentation       Tests that focus on using the inquiry system
 Resource            ../../resources/Inquiry.resource
 Resource            ../../resources/Organisations.resource
 Resource            ../../resources/Setup.resource
+Resource            ../../resources/WooDecision.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
@@ -240,7 +241,7 @@ Replacing Production Report Updates Document Names In Inventory Pages
   Modify Production Report  ${PRODUCTION_REPORT}  2  5  ${new_doc_name}
   Replace The Production Report On The Published Dossier
   Verify Updated Document Name In Public Inventory  ${new_doc_name}  ${old_doc_name}
-  Verify Updated Document Name In Inquiry Inventory  ${new_doc_name}  ${old_doc_name}  ${CASE_ID}
+  Verify Updated Document Name In Inquiry Inventory  ${new_doc_name}  ${old_doc_name}  ${case_id}
 
 
 *** Keywords ***
@@ -308,10 +309,11 @@ Verify Updated Document Name In Public Inventory
   Close Current Excel Document
 
 Verify Updated Document Name In Inquiry Inventory
-  [Arguments]  ${new_doc_name}  ${old_doc_name}  ${CASE_ID}
+  [Arguments]  ${new_doc_name}  ${old_doc_name}  ${case_id}
+  Wait For Queue To Empty
   Go To Admin
   Click Inquiries
-  Open Inquiry  ${CASE_ID}
+  Open Inquiry  ${case_id}
   ${inventory_file} =  Generic Download Click  //*[@data-e2e-name="download-inventory"]
   Open Excel Document  ${inventory_file}  inventory
   ${names_column} =  Read Excel Column  col_num=3  row_offset=0  max_num=10

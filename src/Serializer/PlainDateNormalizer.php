@@ -13,35 +13,42 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webmozart\Assert\Assert;
 
-use function array_key_exists;
-use function is_string;
+use function sprintf;
 
 #[AutoconfigureTag('serializer.normalizer')]
 final class PlainDateNormalizer implements NormalizerInterface, DenormalizerInterface
 {
-    public const string DEFAULT_STRING_FORMAT = 'Y-m-d';
+    use PathFromContext;
 
-    public function normalize($object, ?string $format = null, array $context = []): string
+    public function normalize($data, ?string $format = null, array $context = []): string
     {
-        Assert::isInstanceOf($object, PlainDate::class);
+        Assert::isInstanceOf($data, PlainDate::class);
 
-        return $object->toString();
+        return $data->toString();
     }
 
-    public function denormalize($data, string $type, ?string $format = null, array $context = []): PlainDate|string
+    public function denormalize($data, string $type, ?string $format = null, array $context = []): PlainDate
     {
         try {
             Assert::string($data);
-
-            return PlainDate::createFromFormat(PlainDate::DEFAULT_STRING_FORMAT, $data);
-        } catch (PlainDateException) {
-            return $data;
         } catch (InvalidArgumentException) {
             throw NotNormalizableValueException::createForUnexpectedDataType(
                 'The data is either not a string or null (if null is allowed)',
                 $data,
                 ['string'],
-                $this->getDeserializationPath($context),
+                $this->getPathFromContext($context),
+                true,
+            );
+        }
+
+        try {
+            return PlainDate::createFromFormat(PlainDate::DEFAULT_STRING_FORMAT, $data);
+        } catch (PlainDateException) {
+            throw NotNormalizableValueException::createForUnexpectedDataType(
+                sprintf('The data is not a valid date in format "%s"', PlainDate::DEFAULT_STRING_FORMAT),
+                $data,
+                ['date'],
+                $this->getPathFromContext($context),
                 true,
             );
         }
@@ -65,17 +72,5 @@ final class PlainDateNormalizer implements NormalizerInterface, DenormalizerInte
         return [
             PlainDate::class => true,
         ];
-    }
-
-    /**
-     * @param array<array-key, mixed> $context
-     */
-    public function getDeserializationPath(array $context): ?string
-    {
-        if (array_key_exists('deserialization_path', $context) && is_string($context['deserialization_path'])) {
-            return $context['deserialization_path'];
-        }
-
-        return null;
     }
 }

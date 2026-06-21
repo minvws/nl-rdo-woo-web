@@ -16,7 +16,7 @@ class SubjectMapper
     /**
      * @param array<array-key,Subject> $subjects
      *
-     * @return array<array-key,SubjectResponse>
+     * @return list<SubjectResponse>
      */
     public static function fromEntities(array $subjects): array
     {
@@ -26,6 +26,29 @@ class SubjectMapper
     public static function fromEntity(Subject $subject): SubjectResponse
     {
         return new SubjectResponse(
+            $subject->getId(),
+            $subject->getName(),
+        );
+    }
+
+    public static function fromNullableEntity(?Subject $subject): ?SubjectResponse
+    {
+        return $subject !== null ? self::fromEntity($subject) : null;
+    }
+
+    /**
+     * @param array<array-key,Subject> $subjects
+     *
+     * @return list<SubjectDetailResponse>
+     */
+    public static function fromEntitiesWithDetail(array $subjects): array
+    {
+        return array_values(array_map(self::fromEntityWithDetail(...), $subjects));
+    }
+
+    public static function fromEntityWithDetail(Subject $subject): SubjectDetailResponse
+    {
+        return new SubjectDetailResponse(
             $subject->getId(),
             OrganisationMapper::fromEntity($subject->getOrganisation()),
             $subject->getName(),

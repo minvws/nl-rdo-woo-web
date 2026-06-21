@@ -16,6 +16,7 @@ use Shared\Domain\Publication\Dossier\ViewModel\Department;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use Shared\Tests\Story\DepartmentEnum;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
@@ -72,8 +73,7 @@ final class WooDecisionTest extends UnitTestCase
                 dossierNr: 'dossierNr',
                 documentPrefix: 'documentPrefix',
                 isPreview: true,
-                title: 'title',
-                pageTitle: 'pageTitle',
+                title: DossierTitle::create('title'),
                 publicationDate: PlainDate::today(),
                 mainDepartment: $mainDepartment,
                 summary: 'summary',

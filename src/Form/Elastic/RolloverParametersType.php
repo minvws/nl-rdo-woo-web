@@ -16,6 +16,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * @template-extends AbstractType<RolloverParametersType>
@@ -39,15 +40,16 @@ class RolloverParametersType extends AbstractType
                 'label' => 'global.save',
             ])
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
-                /** @var RolloverParameters $data */
                 $data = $event->getData();
+                Assert::isInstanceOf($data, RolloverParameters::class);
 
                 $version = $data->getMappingVersion();
                 $isValid = $this->mappingService->isValidMappingVersion($version);
                 if (! $isValid) {
                     $form = $event->getForm();
-                    /** @var FormInterface $mappingField */
                     $mappingField = $form['mappingVersion'];
+                    Assert::isInstanceOf($mappingField, FormInterface::class);
+
                     $mappingField->addError(new FormError($this->translator->trans('Mapping version does not exist', domain: 'validators')));
                 }
             });

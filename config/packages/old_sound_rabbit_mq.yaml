@@ -2,6 +2,9 @@ old_sound_rabbit_mq:
     connections:
         default:
             url: '%rabbitmq_url%'
+            heartbeat: 60
+            read_write_timeout: 130
+            keepalive: true
     producers:
         audit_logger:
             connection:       default

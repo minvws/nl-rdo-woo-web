@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\DossierTitleType;
 use Shared\Doctrine\ExternalIdType;
 use Shared\Doctrine\PlainDateType;
 use Shared\Doctrine\TimestampableTrait;
@@ -28,6 +29,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -37,8 +39,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use function strtolower;
 
 /**
- * @template T of object
- *
  * This is the base class for dossier type entities. It contains only the common properties and relationships.
  */
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
@@ -98,14 +98,14 @@ abstract class AbstractDossier
     )]
     protected string $dossierNr = '';
 
-    #[ORM\Column(length: 500)]
-    #[Assert\Length(min: 2, max: 500, groups: [
+    #[ORM\Column(type: DossierTitleType::NAME, length: 500)]
+    #[Assert\NotNull(groups: [
         DossierValidationGroup::DETAILS->value,
         DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
         DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
         DossierValidationGroup::WORKFLOW_PUBLISH->value,
     ])]
-    protected string $title = '';
+    protected DossierTitle $title;
 
     #[ORM\Column(length: 255, enumType: DossierStatus::class)]
     protected DossierStatus $status;
@@ -242,12 +242,12 @@ abstract class AbstractDossier
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): DossierTitle
     {
         return $this->title;
     }
 
-    public function setTitle(string $title): self
+    public function setTitle(DossierTitle $title): self
     {
         $this->title = $title;
 

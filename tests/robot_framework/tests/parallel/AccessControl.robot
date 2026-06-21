@@ -13,15 +13,11 @@ Resource            ../../resources/Departments.resource
 Resource            ../../resources/Inquiry.resource
 Resource            ../../resources/Setup.resource
 Resource            ../../resources/Subjects.resource
+Resource            ../../resources/WooDecision.resource
 Suite Setup         Suite Setup
 Suite Teardown      Close Browser
 Test Teardown       Run Keyword If Test Failed  No-Click Logout
 Test Tags           ci  accesscontrol
-
-
-*** Variables ***
-${EMAIL}        ${EMPTY}
-${PASSWORD}     ${EMPTY}
 
 
 *** Test Cases ***

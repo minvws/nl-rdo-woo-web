@@ -35,14 +35,14 @@ class UpdateInquiryLinksHandler
 
             $this->inquiryService->updateInquiryLinks(
                 $organisation,
-                $message->getCaseNr(),
+                $message->getInquiryNumber(),
                 $message->getDocIdsToAdd(),
                 $message->getDocIdsToDelete(),
                 $message->getDossierIdsToAdd(),
             );
         } catch (Exception $e) {
             $this->logger->error('Failed to update inquiry links', [
-                'casenr' => $message->getCaseNr(),
+                'inquiryNumber' => $message->getInquiryNumber(),
                 'adds' => $message->getDocIdsToAdd(),
                 'deletes' => $message->getDocIdsToDelete(),
                 'exception' => $e->getMessage(),

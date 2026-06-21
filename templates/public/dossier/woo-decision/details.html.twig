@@ -1,7 +1,7 @@
 {% extends 'public/base.html.twig' %}
 {% import 'public/macros/document.html.twig' as macro %}
 
-{% set page_title = dossier.pageTitle %}
+{% set page_title = dossier.title.toString ~ (dossier.isPreview ? ' (preview)' : '') %}
 
 {% block body %}
 <div class="woo-container woo-container--sm">

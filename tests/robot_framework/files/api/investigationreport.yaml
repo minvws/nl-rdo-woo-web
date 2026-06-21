@@ -86,3 +86,11 @@ testcases:
           mainDocument:
           attachments: []
         expected_publication_status: concept
+
+- title: HAL links should be reachable
+  steps:
+    - name: Create dossier
+      request: {}
+    - name: Verify HAL links
+      keyword:
+        name: Verify HAL Links Are Reachable

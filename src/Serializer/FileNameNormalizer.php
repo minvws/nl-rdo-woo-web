@@ -12,12 +12,13 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Webmozart\Assert\Assert;
 
-use function array_key_exists;
 use function is_string;
 
 #[AutoconfigureTag('serializer.normalizer')]
 final class FileNameNormalizer implements NormalizerInterface, DenormalizerInterface
 {
+    use PathFromContext;
+
     public function normalize($data, ?string $format = null, array $context = []): string
     {
         Assert::isInstanceOf($data, FileName::class);
@@ -31,20 +32,20 @@ final class FileNameNormalizer implements NormalizerInterface, DenormalizerInter
             throw NotNormalizableValueException::createForUnexpectedDataType(
                 'The data is either not a string or null (if allowed)',
                 $data,
-                ['string'],
-                $this->getDeserializationPath($context),
+                [],
+                $this->getPathFromContext($context),
                 true,
             );
         }
 
         try {
             return FileName::create($data);
-        } catch (InvalidArgumentException) {
+        } catch (InvalidArgumentException $invalidArgumentException) {
             throw NotNormalizableValueException::createForUnexpectedDataType(
-                'The filename contains invalid characters or exceeds the maximum length',
+                $invalidArgumentException->getMessage(),
                 $data,
-                ['string'],
-                $this->getDeserializationPath($context),
+                [],
+                $this->getPathFromContext($context),
                 true,
             );
         }
@@ -68,17 +69,5 @@ final class FileNameNormalizer implements NormalizerInterface, DenormalizerInter
         return [
             FileName::class => true,
         ];
-    }
-
-    /**
-     * @param array<array-key, mixed> $context
-     */
-    public function getDeserializationPath(array $context): ?string
-    {
-        if (array_key_exists('deserialization_path', $context) && is_string($context['deserialization_path'])) {
-            return $context['deserialization_path'];
-        }
-
-        return null;
     }
 }

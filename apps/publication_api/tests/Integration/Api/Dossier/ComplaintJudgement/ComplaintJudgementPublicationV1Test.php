@@ -7,15 +7,20 @@ namespace PublicationApi\Tests\Integration\Api\Dossier\ComplaintJudgement;
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementResource;
+use PublicationApi\Api\Dossier\ComplaintJudgement\Uploads\MainDocument\ComplaintJudgementUploadMainDocumentResource;
 use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
+use Shared\Controller\Public\Dossier\DossierFileController;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Factory\DepartmentFactory;
@@ -24,8 +29,8 @@ use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
-use Shared\Validator\EntityExists;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
@@ -35,6 +40,7 @@ use Webmozart\Assert\Assert;
 use function array_merge;
 use function is_string;
 use function sprintf;
+use function str_repeat;
 
 final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierTestCase
 {
@@ -58,18 +64,20 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
         self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $complaintJudgement->getExternalId()?->__toString()]]);
+        self::assertJsonContains([['externalId' => $complaintJudgement->getExternalId()?->toString()]]);
     }
 
     public function testGetComplaintJudgement(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $subject = SubjectFactory::createOne();
         $complaintJudgement = ComplaintJudgementFactory::createOne([
             'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
+            'subject' => $subject,
         ]);
         $complaintJudgementMainDocument = ComplaintJudgementMainDocumentFactory::createOne(['dossier' => $complaintJudgement]);
 
@@ -77,17 +85,22 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
 
         self::assertResponseIsSuccessful();
 
+        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $complaintJudgement->getId(),
-            'externalId' => $complaintJudgement->getExternalId()?->__toString(),
+            'externalId' => $complaintJudgement->getExternalId()?->toString(),
             'organisation' => [
-                'id' => (string) $complaintJudgement->getOrganisation()->getId(),
-                'name' => $complaintJudgement->getOrganisation()->getName(),
+                'id' => $organisation->getId()->toString(),
+                'name' => $organisation->getName(),
             ],
             'dossierNumber' => $complaintJudgement->getDossierNr(),
-            'title' => $complaintJudgement->getTitle(),
+            'title' => (string) $complaintJudgement->getTitle(),
             'summary' => $complaintJudgement->getSummary(),
-            'subject' => $complaintJudgement->getSubject()?->getName(),
+            'subject' => [
+                'id' => $subject->getId()->toString(),
+                'name' => $subject->getName(),
+            ],
             'department' => [
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
@@ -102,8 +115,35 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                 'grounds' => $complaintJudgementMainDocument->getGrounds(),
                 'fileName' => $complaintJudgementMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
+                '_links' => [
+                    'upload' => [
+                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            ComplaintJudgementUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                            [
+                                'organisationId' => $complaintJudgement->getOrganisation()->getId(),
+                                'dossierExternalId' => $complaintJudgement->getExternalId(),
+                            ],
+                        )->toString(),
+                    ],
+                    'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($complaintJudgement)],
+                    'file' => [
+                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
+                            [
+                                'prefix' => $complaintJudgement->getDocumentPrefix(),
+                                'dossierId' => $complaintJudgement->getDossierNr(),
+                                'type' => DossierFileType::MAIN_DOCUMENT->value,
+                                'id' => $complaintJudgementMainDocument->getId(),
+                            ],
+                        )->toString(),
+                    ],
+                ],
             ],
             'dossierDate' => $complaintJudgement->getDateFrom()?->format('Y-m-d'),
+            '_links' => [
+                'self' => ['href' => $this->buildPublicUrl($organisation, $complaintJudgement)],
+                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($complaintJudgement)],
+            ],
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
@@ -202,6 +242,18 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         ], ]]);
     }
 
+    public function testCreateComplaintJudgeenetWithTooLongExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+
+        $data = $this->createValidComplaintJudgementDataPayload($department, $subject);
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, str_repeat('x', 129)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
     /**
      * @param array<string,array<array-key,mixed>> $dataOverrides
      * @param array<string,array<array-key,mixed>> $violations
@@ -267,7 +319,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                     'subjectId' => '00000000-0000-0000-0000-000000000000',
                 ],
                 [
-                    'code' => EntityExists::ENTITY_EXISTS_ERROR,
+                    'code' => ConstraintViolationBuilder::ENTITY_MISSING_ERROR,
                     'propertyPath' => 'subjectId',
                 ],
             ],
@@ -276,7 +328,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                     'departmentId' => '00000000-0000-0000-0000-000000000000',
                 ],
                 [
-                    'code' => EntityExists::ENTITY_EXISTS_ERROR,
+                    'code' => ConstraintViolationBuilder::ENTITY_MISSING_ERROR,
                     'propertyPath' => 'departmentId',
                 ],
             ],
@@ -297,7 +349,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         ComplaintJudgementMainDocumentFactory::createOne(['dossier' => $complaintJudgement]);
 
         self::assertDatabaseHas(ComplaintJudgement::class, [
-            'title' => $complaintJudgement->getTitle(),
+            'title' => (string) $complaintJudgement->getTitle(),
             'summary' => $complaintJudgement->getSummary(),
         ]);
 
@@ -341,7 +393,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
             $this->buildComplaintJudgementUrl($organisation, $complaintJudgement),
         );
         self::assertArraySubset([
-            'title' => $complaintJudgement->getTitle(),
+            'title' => (string) $complaintJudgement->getTitle(),
             'summary' => $complaintJudgement->getSummary(),
         ], $response->toArray());
 
@@ -355,7 +407,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         self::assertJsonContains(['violations' => [$violations]]);
 
         self::assertDatabaseHas(ComplaintJudgement::class, [
-            'title' => $complaintJudgement->getTitle(),
+            'title' => (string) $complaintJudgement->getTitle(),
             'summary' => $complaintJudgement->getSummary(),
         ]);
     }
@@ -392,7 +444,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         ComplaintJudgementMainDocumentFactory::createOne(['dossier' => $complaintJudgement]);
 
         self::assertDatabaseHas(ComplaintJudgement::class, [
-            'title' => $complaintJudgement->getTitle(),
+            'title' => (string) $complaintJudgement->getTitle(),
             'summary' => $complaintJudgement->getSummary(),
         ]);
 
@@ -406,7 +458,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         self::assertJsonContains(['violations' => [['message' => 'dossier update is not allowed in non-concept state']]]);
 
         self::assertDatabaseHas(ComplaintJudgement::class, [
-            'title' => $complaintJudgement->getTitle(),
+            'title' => (string) $complaintJudgement->getTitle(),
             'summary' => $complaintJudgement->getSummary(),
         ]);
     }
@@ -418,7 +470,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
     {
         return [
             'title' => $this->getFaker()->sentence(),
-            'externalId' => $this->getFaker()->externalId()->__toString(),
+            'externalId' => $this->getFaker()->externalId()->toString(),
             'dossierNumber' => $this->getFaker()->slug(2),
             'dossierDate' => $this->getFaker()->dateTimeBetween('-3 weeks', '-2 week')->format('Y-m-d'),
             'publicationDate' => $this->getFaker()->plainDateBetween('-2 weeks', '-1 week')->format('Y-m-d'),

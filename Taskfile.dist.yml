@@ -24,30 +24,21 @@ includes:
 vars:
   BASE_PATH:
     sh: pwd
-  ORBSTACK_ENABLED:
-    sh: echo ${ORBSTACK_ENABLED:-$(test "$(docker context show)" = "orbstack" && echo 1 || echo 0)}
-  DOCKER_MINVWS_PUBLIC_URL: http://public-minvws.local
-  DOCKER_MINFIN_PUBLIC_URL: http://public-minfin.local
-  DOCKER_MINVWS_ADMIN_URL: http://admin-minvws.local/balie
-  DOCKER_MINFIN_ADMIN_URL: http://admin-minfin.local/balie
-  DOCKER_HTTP_HOST_TO_TENANT_MAPPING: >-
-    public-minvws.local=minvws,
-    admin-minvws.local=minvws,
-    publication-api-minvws.local=minvws,
-    localhost:8443=minvws,
-    public-minfin.local=minfin,
-    admin-minfin.local=minfin,
-    publication-api-minfin.local=minfin,
-    localhost:8444=minfin
   MINVWS_PUBLICATION_API_URL: https://localhost:8443
   MINFIN_PUBLICATION_API_URL: https://localhost:8444
-  GH_VERSION: v2.83.1
+  # Latest version: https://hub.docker.com/r/maniator/gh/tags
+  GH_VERSION: v2.94.0
   TENANTS:
     - minvws
     - minfin
+  APPLICATION_IDS:
+    - admin
+    - public
+    - publication_api
+    - worker
+    - shared
 
 env:
-  ORBSTACK_ENABLED: '{{.ORBSTACK_ENABLED}}'
   COMPOSE_PROJECT_NAME: nl-rdo-woo-web-private
   # BUILDKIT_PROGRESS: plain
 
@@ -60,20 +51,8 @@ tasks:
         sh: echo ${FIXUID:-$(id -u)}
       FIXGID:
         sh: echo ${FIXGID:-$(id -g)}
-      COMPOSE_OVERRIDE_EXISTS:
-        sh: test -f "{{.BASE_PATH}}/compose.override.yml" && echo "1" || echo "0"
     cmds:
-      - >-
-        FIXUID={{.FIXUID}} FIXGID={{.FIXGID}}
-        docker compose
-        --file compose.yml
-        {{ if eq .ORBSTACK_ENABLED "0" }}
-        --file compose.ports.yml
-        {{ end }}
-        {{if eq .COMPOSE_OVERRIDE_EXISTS "1"}}
-        --file compose.override.yml
-        {{end}}
-        {{.SUB_CMD}}
+      - FIXUID={{.FIXUID}} FIXGID={{.FIXGID}} docker compose {{.SUB_CMD}}
 
   dc:run:
     interactive: true
@@ -153,9 +132,11 @@ tasks:
         vars: { TENANT: '{{.ITEM}}' }
         for: { var: TENANTS }
       - task: dc:run
-        vars: { SUB_CMD: "admin bash -c 'curl -X GET \"elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=30s\"'" }
+        vars: { SUB_CMD: "admin bash -c 'curl -u elastic:secret -X GET \"elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=30s\"'" }
       - task: dc:run
-        vars: { SUB_CMD: "admin bin/console --tenant={{.ITEM}} woopie:index:create woopie-{{.ITEM}} latest --read --write" }
+        vars: { SUB_CMD: "elasticsearch /init/init.sh" }
+      - task: dc:run
+        vars: { SUB_CMD: "admin bin/console --tenant={{.ITEM}} woopie:index:create {{.ITEM}}-initial latest --read --write" }
         for: { var: TENANTS }
       - task: npm:install
       - task: npm:build
@@ -246,48 +227,12 @@ tasks:
         vars: { SUB_CMD: "ps -a" }
 
   env:
-    desc: Template .env
+    desc: Manage dotenvs
     run: once
     cmds:
-      - cp .env.development .env.local
-      - cmd: |
-          sed -i '' 's#^\(MINVWS_PUBLIC_BASE_URL=\).*#\1{{.DOCKER_MINVWS_PUBLIC_URL}}#' .env.local
-          sed -i '' 's#^\(MINFIN_PUBLIC_BASE_URL=\).*#\1{{.DOCKER_MINFIN_PUBLIC_URL}}#' .env.local
-          sed -i '' 's#^\(HTTP_HOST_TO_TENANT_MAPPING=\).*#\1"{{.DOCKER_HTTP_HOST_TO_TENANT_MAPPING}}"#' .env.local
-        if: test "{{.ORBSTACK_ENABLED }}" = "1"
-        platforms: [darwin]
-      - cmd: |
-          sed -i 's#^\(MINVWS_PUBLIC_BASE_URL=\).*#\1{{.DOCKER_MINVWS_PUBLIC_URL}}#' .env.local
-          sed -i 's#^\(MINFIN_PUBLIC_BASE_URL=\).*#\1{{.DOCKER_MINFIN_PUBLIC_URL}}#' .env.local
-          sed -i 's#^\(HTTP_HOST_TO_TENANT_MAPPING=\).*#\1"{{.DOCKER_HTTP_HOST_TO_TENANT_MAPPING}}"#' .env.local
+      - cmd: cp .env.e2e .env.dev.local
         if: test "$GITHUB_ACTIONS" = "true"
         platforms: [linux]
-    sources:
-      - .env.development
-    generates:
-      - .env.local
-
-  cleanup:all:
-    desc: Cleanup of almost all gitignored files, untracked files and development containers
-    prompt: This could potentially delete untracked files!! Do you want to continue?
-    summary: |
-      Cleanup of almost all gitignored files, untracked files and development containers.
-
-      The following files/dirs are excluded:
-        - .idea
-        - certs/test
-        - certs/acc
-    cmds:
-      - task: down
-      - task: down
-      - docker volume rm woo_composer || true
-      - docker volume rm woo_npm || true
-      - git clean
-        -xd
-        --force
-        --exclude .idea
-        --exclude certs/test
-        --exclude certs/acc
 
   app:user:create:
     desc: Create an user
@@ -312,9 +257,7 @@ tasks:
     desc: Load doctrine example fixtures
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:fixtures:load --no-interaction --group=example --append" }
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:fixtures:load --no-interaction --group=vws --append" }
+        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:fixtures:load --no-interaction --append" }
     requires:
       vars: [TENANT]
 
@@ -348,7 +291,7 @@ tasks:
       TENANT: '{{.TENANT | default "minvws"}}'
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: 'admin bin/console --tenant={{.TENANT}} woopie:dev:clean-sheet --index woopie-{{.TENANT}} --force --keep-prefixes {{.CLI_ARGS}}' }
+        vars: { SUB_CMD: 'admin bin/console --tenant={{.TENANT}} woopie:dev:clean-sheet --index {{.TENANT}}-inital --force --keep-prefixes {{.CLI_ARGS}}' }
       - task: minio:clear-buckets
 
   app:db:reset:
@@ -476,17 +419,16 @@ tasks:
       - task: dc:shell
         vars: { SUB_CMD: "admin composer checktemplates" }
 
-  app:syncdotenv:
-    desc: Synchronize .env.development with .env.local
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer syncdotenv" }
-
   app:postdeploy:
     desc: Run postdeploy script
     cmds:
       - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant=minvws woopie:post-deploy" }
+        vars: { SUB_CMD: "admin bin/console --tenant=minvws --id={{.APPLICATION_ID}} woopie:post-deploy" }
+    requires:
+      vars:
+        - name: APPLICATION_ID
+          enum:
+            ref: .APPLICATION_IDS
 
   app:openapi:export:
     desc: Export all OpenAPI specifications
@@ -498,8 +440,8 @@ tasks:
     desc: (re) Pull dependencies, run migrations, build front-end and sync .env
     aliases: [app:refresh]
     cmds:
-      - task: up
       - rm -rf var
+      - task: up
       - task: d:create-cache-volumes
       - task: composer:install
       - task: app:migrate
@@ -510,10 +452,11 @@ tasks:
         for: { var: TENANTS }
       - task: npm:install
       - task: npm:build
-      - task: app:syncdotenv
       - task: docs:build:ci
       - task: minio:create-buckets
       - task: app:postdeploy
+        vars: { APPLICATION_ID: "{{.ITEM}}" }
+        for: [worker, publication_api, admin]
 
   d:create-cache-volumes:
     cmds:

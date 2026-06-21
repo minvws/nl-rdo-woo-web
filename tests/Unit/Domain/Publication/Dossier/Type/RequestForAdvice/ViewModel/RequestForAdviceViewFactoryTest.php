@@ -14,6 +14,7 @@ use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFacto
 use Shared\Domain\Publication\Dossier\ViewModel\Department;
 use Shared\Domain\Publication\Dossier\ViewModel\Subject;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 
 final class RequestForAdviceViewFactoryTest extends UnitTestCase
@@ -38,8 +39,7 @@ final class RequestForAdviceViewFactoryTest extends UnitTestCase
                 dossierNr: $expectedDossierNr = 'my dossier nr',
                 documentPrefix: $expectedDocumentPrefix = 'my document prefix',
                 isPreview: $expectedIsPreview = true,
-                title: $expectedTitle = 'my title',
-                pageTitle: $expectedPageTitle = 'my page title',
+                title: $expectedTitle = DossierTitle::create('my title'),
                 publicationDate: $publicationDate = PlainDate::today(),
                 mainDepartment: $expectedMainDepartment,
                 summary: $expectedSummary = 'my summary',
@@ -59,7 +59,6 @@ final class RequestForAdviceViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedDocumentPrefix, $result->getDocumentPrefix());
         $this->assertSame($expectedIsPreview, $result->isPreview());
         $this->assertSame($expectedTitle, $result->getTitle());
-        $this->assertSame($expectedPageTitle, $result->getPageTitle());
         $this->assertSame($publicationDate, $result->getPublicationDate());
         $this->assertSame($expectedMainDepartment, $result->getMainDepartment());
         $this->assertSame($expectedSubject, $result->getSubject());

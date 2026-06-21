@@ -7,15 +7,22 @@ namespace PublicationApi\Tests\Integration\Api\Dossier\AnnualReport;
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Dossier\AnnualReport\AnnualReportResource;
+use PublicationApi\Api\Dossier\AnnualReport\Uploads\Attachment\AnnualReportUploadAttachmentResource;
+use PublicationApi\Api\Dossier\AnnualReport\Uploads\MainDocument\AnnualReportUploadMainDocumentResource;
 use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
+use Shared\Controller\Public\Dossier\DossierFileController;
 use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Factory\DepartmentFactory;
@@ -26,13 +33,17 @@ use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportAttac
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
-use Shared\Validator\EntityExists;
+use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Type;
 
+use function array_map;
 use function array_merge;
+use function range;
 use function sprintf;
+use function str_repeat;
 
 final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCase
 {
@@ -52,42 +63,55 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
             'departments' => [$department],
         ]);
         AnnualReportMainDocumentFactory::createOne(['dossier' => $annualReport]);
-        AnnualReportAttachmentFactory::createOne(['dossier' => $annualReport]);
+        AnnualReportAttachmentFactory::createOne([
+            'dossier' => $annualReport,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
         self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $annualReport->getExternalId()?->__toString()]]);
+        self::assertJsonContains([['externalId' => $annualReport->getExternalId()?->toString()]]);
     }
 
     public function testGetAnnualReport(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $subject = SubjectFactory::createOne();
         $annualReport = AnnualReportFactory::createOne([
             'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
+            'subject' => $subject,
         ]);
         $annualReportMainDocument = AnnualReportMainDocumentFactory::createOne(['dossier' => $annualReport]);
-        $annualReportAttachment = AnnualReportAttachmentFactory::createOne(['dossier' => $annualReport]);
+        $annualReportAttachment = AnnualReportAttachmentFactory::createOne([
+            'dossier' => $annualReport,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         $response = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation, $annualReport));
 
         self::assertResponseIsSuccessful();
 
+        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $annualReport->getId(),
-            'externalId' => $annualReport->getExternalId()?->__toString(),
+            'externalId' => $annualReport->getExternalId()?->toString(),
             'organisation' => [
-                'id' => (string) $annualReport->getOrganisation()->getId(),
-                'name' => $annualReport->getOrganisation()->getName(),
+                'id' => $organisation->getId()->toString(),
+                'name' => $organisation->getName(),
             ],
             'dossierNumber' => $annualReport->getDossierNr(),
-            'title' => $annualReport->getTitle(),
+            'title' => (string) $annualReport->getTitle(),
             'summary' => $annualReport->getSummary(),
-            'subject' => $annualReport->getSubject()?->getName(),
+            'subject' => [
+                'id' => $subject->getId()->toString(),
+                'name' => $subject->getName(),
+            ],
             'department' => [
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
@@ -102,6 +126,29 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                 'grounds' => $annualReportMainDocument->getGrounds(),
                 'fileName' => $annualReportMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
+                '_links' => [
+                    'upload' => [
+                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            AnnualReportUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                            [
+                                'organisationId' => $annualReport->getOrganisation()->getId(),
+                                'dossierExternalId' => $annualReport->getExternalId(),
+                            ],
+                        )->toString(),
+                    ],
+                    'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($annualReport)],
+                    'file' => [
+                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
+                            [
+                                'prefix' => $annualReport->getDocumentPrefix(),
+                                'dossierId' => $annualReport->getDossierNr(),
+                                'type' => DossierFileType::MAIN_DOCUMENT->value,
+                                'id' => $annualReportMainDocument->getId(),
+                            ],
+                        )->toString(),
+                    ],
+                ],
             ],
             'attachments' => [
                 [
@@ -111,11 +158,39 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                     'formalDate' => $annualReportAttachment->getFormalDate()->format('Y-m-d'),
                     'grounds' => $annualReportAttachment->getGrounds(),
                     'fileName' => $annualReportAttachment->getFileInfo()->getName(),
-                    'externalId' => $annualReportAttachment->getExternalId()?->__toString(),
+                    'externalId' => $annualReportAttachment->getExternalId()?->toString(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
+                    '_links' => [
+                        'upload' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                AnnualReportUploadAttachmentResource::ROUTE_NAME_UPLOAD,
+                                [
+                                    'organisationId' => $annualReport->getOrganisation()->getId(),
+                                    'dossierExternalId' => $annualReport->getExternalId(),
+                                    'attachmentExternalId' => $annualReportAttachment->getExternalId(),
+                                ],
+                            )->toString(),
+                        ],
+                        'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($annualReport)],
+                        'file' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
+                                [
+                                    'prefix' => $annualReport->getDocumentPrefix(),
+                                    'dossierId' => $annualReport->getDossierNr(),
+                                    'type' => DossierFileType::ATTACHMENT->value,
+                                    'id' => $annualReportAttachment->getId(),
+                                ],
+                            )->toString(),
+                        ],
+                    ],
                 ],
             ],
             'year' => (int) $annualReport->getDateFrom()?->format('Y'),
+            '_links' => [
+                'self' => ['href' => $this->buildPublicUrl($organisation, $annualReport)],
+                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($annualReport)],
+            ],
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
@@ -226,6 +301,18 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         self::assertDatabaseCount(AnnualReport::class, 1);
     }
 
+    public function testCreateAnnualReportWithTooLongExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+
+        $data = $this->createValidAnnualReportDataPayload($department, $subject, 1);
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, str_repeat('x', 129)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
     /**
      * @param array<string, array<array-key, mixed>> $dataOverrides
      * @param array<string, array<array-key, mixed>> $violations
@@ -295,7 +382,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                     'subjectId' => '00000000-0000-0000-0000-000000000000',
                 ],
                 [
-                    'code' => EntityExists::ENTITY_EXISTS_ERROR,
+                    'code' => ConstraintViolationBuilder::ENTITY_MISSING_ERROR,
                     'propertyPath' => 'subjectId',
                 ],
             ],
@@ -304,8 +391,26 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                     'departmentId' => '00000000-0000-0000-0000-000000000000',
                 ],
                 [
-                    'code' => EntityExists::ENTITY_EXISTS_ERROR,
+                    'code' => ConstraintViolationBuilder::ENTITY_MISSING_ERROR,
                     'propertyPath' => 'departmentId',
+                ],
+            ],
+            'exceeds max attachments per dossier' => [
+                [
+                    'attachments' => array_map(
+                        static fn ($i) => [
+                            'fileName' => sprintf('file%s.pdf', $i),
+                            'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
+                            'type' => AttachmentType::ACCOUNTABILITY_REPORT->value,
+                            'language' => AttachmentLanguage::ENG->value,
+                            'externalId' => sprintf('external-id-%s', $i),
+                        ],
+                        range(1, AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER + 1),
+                    ),
+                ],
+                [
+                    'code' => Count::TOO_MANY_ERROR,
+                    'propertyPath' => 'attachments',
                 ],
             ],
         ];
@@ -326,7 +431,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         AnnualReportAttachmentFactory::createOne(['dossier' => $annualReport]);
 
         self::assertDatabaseHas(AnnualReport::class, [
-            'title' => $annualReport->getTitle(),
+            'title' => (string) $annualReport->getTitle(),
             'summary' => $annualReport->getSummary(),
         ]);
 
@@ -363,7 +468,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         AnnualReportAttachmentFactory::createOne(['dossier' => $annualReport]);
 
         self::assertDatabaseHas(AnnualReport::class, [
-            'title' => $annualReport->getTitle(),
+            'title' => (string) $annualReport->getTitle(),
             'summary' => $annualReport->getSummary(),
         ]);
 
@@ -373,7 +478,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         self::assertJsonContains(['violations' => [$violations]]);
 
         self::assertDatabaseHas(AnnualReport::class, [
-            'title' => $annualReport->getTitle(),
+            'title' => (string) $annualReport->getTitle(),
             'summary' => $annualReport->getSummary(),
         ]);
     }
@@ -391,6 +496,24 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                 [
                     'code' => Type::INVALID_TYPE_ERROR,
                     'propertyPath' => 'year',
+                ],
+            ],
+            'exceeds max attachments per dossier' => [
+                [
+                    'attachments' => array_map(
+                        static fn ($i) => [
+                            'fileName' => sprintf('file%s.pdf', $i),
+                            'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
+                            'type' => AttachmentType::ACCOUNTABILITY_REPORT->value,
+                            'language' => AttachmentLanguage::ENG->value,
+                            'externalId' => sprintf('external-id-%s', $i),
+                        ],
+                        range(1, AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER + 1),
+                    ),
+                ],
+                [
+                    'code' => Count::TOO_MANY_ERROR,
+                    'propertyPath' => 'attachments',
                 ],
             ],
         ];
@@ -411,7 +534,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         AnnualReportAttachmentFactory::createOne(['dossier' => $annualReport]);
 
         self::assertDatabaseHas(AnnualReport::class, [
-            'title' => $annualReport->getTitle(),
+            'title' => (string) $annualReport->getTitle(),
             'summary' => $annualReport->getSummary(),
         ]);
 
@@ -420,7 +543,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         self::assertDatabaseHas(AnnualReport::class, [
-            'title' => $annualReport->getTitle(),
+            'title' => (string) $annualReport->getTitle(),
             'summary' => $annualReport->getSummary(),
         ]);
     }
@@ -468,7 +591,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         self::assertDatabaseCount(AnnualReportAttachment::class, 1);
 
         $data = [
-            'title' => $annualReport->getTitle(),
+            'title' => (string) $annualReport->getTitle(),
             'dossierNumber' => $annualReport->getDossierNr(),
             'year' => (int) $annualReport->getDateFrom()?->format('Y'),
             'publicationDate' => $annualReport->getPublicationDate()?->format('Y-m-d'),
@@ -487,7 +610,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                     'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment->getLanguage(),
                     'type' => $attachment->getType(),
-                    'externalId' => $attachment->getExternalId()?->__toString(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
                 ],
             ],
         ];
@@ -524,7 +647,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         ]);
 
         $data = [
-            'title' => $annualReport->getTitle(),
+            'title' => (string) $annualReport->getTitle(),
             'dossierNumber' => $annualReport->getDossierNr(),
             'year' => (int) $annualReport->getDateFrom()?->format('Y'),
             'publicationDate' => $annualReport->getPublicationDate()?->format('Y-m-d'),
@@ -543,7 +666,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                     'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment->getLanguage(),
                     'type' => $attachment->getType(),
-                    'externalId' => $attachment->getExternalId()?->__toString(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
                 ],
             ],
         ];
@@ -579,7 +702,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         ]);
 
         $data = [
-            'title' => $annualReport->getTitle(),
+            'title' => (string) $annualReport->getTitle(),
             'dossierNumber' => $annualReport->getDossierNr(),
             'year' => (int) $annualReport->getDateFrom()?->format('Y'),
             'publicationDate' => $annualReport->getPublicationDate()?->format('Y-m-d'),
@@ -598,14 +721,14 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $attachment1->getExternalId()?->__toString(),
+                    'externalId' => $attachment1->getExternalId()?->toString(),
                 ],
                 [
                     'fileName' => $changedFileName,
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $newAttachmentExternalId->__toString(),
+                    'externalId' => $newAttachmentExternalId->toString(),
                 ],
             ],
         ];
@@ -650,7 +773,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         ]);
 
         $data = [
-            'title' => $annualReport->getTitle(),
+            'title' => (string) $annualReport->getTitle(),
             'dossierNumber' => $annualReport->getDossierNr(),
             'year' => (int) $annualReport->getDateFrom()?->format('Y'),
             'publicationDate' => $annualReport->getPublicationDate()?->format('Y-m-d'),
@@ -669,7 +792,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $attachment1->getExternalId()?->__toString(),
+                    'externalId' => $attachment1->getExternalId()?->toString(),
                 ],
             ],
         ];

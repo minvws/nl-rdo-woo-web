@@ -52,7 +52,7 @@ final readonly class DossierTypeViewFactory
         );
         Assert::allIsInstanceOf($result, DossierType::class);
 
-        uksort($result, fn (string $a, string $b): int => $a <=> $b);
+        uksort($result, static fn (string $a, string $b): int => $a <=> $b);
 
         return array_values($result);
     }

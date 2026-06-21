@@ -51,13 +51,13 @@
                         <tr>
                             <td>{{ info.node }}</td>
                             <td>{{ info.name }}</td>
-                            <td class="text-right">{{ info.messages }}</td>
-                            <td class="text-right">{{ info.messages_ready }}</td>
-                            <td class="text-right">{{ info.messages_unacknowledged }}</td>
-                            <td class="text-right">{{ info.message_stats.publish | default(0) }}</td>
-                            <td class="text-right">{{ info.message_stats.publish_details.rate | default(0) }}</td>
-                            <td class="text-right">{{ info.message_stats.deliver_get | default(0) }}</td>
-                            <td class="text-right">{{ info.message_stats.deliver_get_details.rate | default(0) }}</td>
+                            <td class="text-right">{{ info.messages | default('not available') }}</td>
+                            <td class="text-right">{{ info.messages_ready | default('not available') }}</td>
+                            <td class="text-right">{{ info.messages_unacknowledged | default('not available') }}</td>
+                            <td class="text-right">{{ info.message_stats.publish | default('not available') }}</td>
+                            <td class="text-right">{{ info.message_stats.publish_details.rate | default('not available') }}</td>
+                            <td class="text-right">{{ info.message_stats.deliver_get | default('not available') }}</td>
+                            <td class="text-right">{{ info.message_stats.deliver_get_details.rate | default('not available') }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

@@ -10,7 +10,7 @@ Deze pagina is alleen beschikbaar voor Super Beheerders.
 Deze pagina is niet vindbaar in het menu. Ga naar {balie}`admin` om deze pagina te bereiken.
 :::
 
-Naast het organisatiebeheer van de balie is er ook een Beheer pagina die meer inzicht geeft in de data op het publicatieplatform en extra administratie mogelijkheden bied om de werking van het platform te beheren.
+Naast het organisatiebeheer van de balie is er ook een Beheer pagina die meer inzicht geeft in de data op het Woo Publicatieplatform en extra administratie mogelijkheden bied om de werking van het platform te beheren.
 
 ```{toctree}
 :maxdepth: 2

@@ -7,7 +7,7 @@ namespace Shared\Service\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\InquiryNumbers;
 
 use function array_diff;
 use function count;
@@ -54,8 +54,8 @@ readonly class DocumentComparator
             $metadata->getFilename($document->getDocumentNr()),
         );
 
-        if ($this->hasCaseNrUpdate($document, $metadata)) {
-            $changeset->add(MetadataField::CASENR->value);
+        if ($this->hasInquiryNumberUpdate($document, $metadata)) {
+            $changeset->add(MetadataField::INQUIRY_NUMBER->value);
         }
 
         if ($this->hasRefersToUpdate($dossier, $document, $metadata)) {
@@ -65,20 +65,20 @@ readonly class DocumentComparator
         return $changeset;
     }
 
-    private function hasCaseNrUpdate(Document $document, DocumentMetadata $metadata): bool
+    private function hasInquiryNumberUpdate(Document $document, DocumentMetadata $metadata): bool
     {
-        $currentCaseNrs = CaseNumbers::forDocument($document);
-        $newCaseNrs = $metadata->getCaseNumbers();
-        $addedCaseNrs = $newCaseNrs->getExtraValuesComparedToInput($currentCaseNrs);
+        $currentInquiryNumbers = InquiryNumbers::forDocument($document);
+        $newInquiryNumbers = $metadata->getInquiryNumbers();
+        $addedInquiryNumbers = $newInquiryNumbers->getExtraValuesComparedToInput($currentInquiryNumbers);
 
         // Case removals in the production report are intentionally ignored, only additions should be seen as a change.
-        return $addedCaseNrs->isNotEmpty();
+        return $addedInquiryNumbers->isNotEmpty();
     }
 
     public function hasRefersToUpdate(WooDecision $dossier, Document $document, DocumentMetadata $metadata): bool
     {
         $currentDocNrs = $document->getRefersTo()->map(
-            fn (Document $doc) => $doc->getDocumentNr(),
+            static fn (Document $doc) => $doc->getDocumentNr(),
         )->toArray();
 
         $newDocNrs = [];

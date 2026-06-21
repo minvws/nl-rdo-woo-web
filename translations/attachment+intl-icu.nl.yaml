@@ -7,6 +7,7 @@ policy_note: beleidsnota
 decision_note: beslisnota
 annual_plan: jaarplan
 annual_report: jaarverslag
+geographic_map: kaart
 
 official_message: ambtsbericht
 evaluation_report: evaluatierapport
@@ -37,6 +38,8 @@ news_item: nieuwsbericht
 organization_details: organisatiegegevens
 press_release: persbericht
 speech: toespraak
+official_form: formulier
+media_text: mediatekst
 
 covenant: convenant
 
@@ -55,12 +58,25 @@ non_dossier_document: niet-dossierstuk
 parliamentary_question_with_answer: kamervraag met antwoord
 parliamentary_question_without_answer: kamervraag zonder antwoord
 motion: motie
+council_of_state_advice: advies Raad van State
+parliamentary_letter: Kamerbrief
+memorandum_of_reply: memorie van antwoord
+explanatory_memorandum: memorie van toelichting
+further_report: nader rapport
+further_memorandum_of_reply: nadere memorie van antwoord
+note_on_further_report: nota n.a.v. het nader verslag
+note_on_report: nota n.a.v. het verslag
+amendment_note: nota van wijziging
+legislative_proposal: voorstel van wet
 
 government_gazette: staatsblad
 staatscourant: staatscourant
 
 policy: beleidsregel
 plan: plan
+diplomatic_declaration: diplomatieke verklaring
+regulation: regeling
+directive: richtlijn
 
 agenda: agenda
 decision_list: besluitenlijst

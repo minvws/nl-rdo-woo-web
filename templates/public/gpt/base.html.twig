@@ -5,7 +5,7 @@
 {% import "public/macros/main-nav.html.twig" as macro %}
 
 {% block mainNav %}
-    {% set currentRoute = app.request.get('_route') %}
+    {% set currentRoute = app.current_route %}
     {{ macro.main_nav_anchor(
             path('app_gpt_home'),
             currentRoute == 'app_gpt_home',

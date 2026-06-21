@@ -8,6 +8,7 @@ use PublicationApi\Api\Subject\SubjectResource;
 use PublicationApi\EventSubscriber\ApiVersionHeaderSubscriber;
 use PublicationApi\Tests\Integration\Api\ApiPublicationV1TestCase;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -355,5 +356,61 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             );
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertMatchesResourceItemJsonSchema(SubjectResource::class);
+    }
+
+    // test bug https://github.com/minvws/nl-rdo-woo-web-private/issues/6919
+    public function testCreateSubjectWithDuplicateNameInSameOrganisation(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $name = $this->getFaker()->unique()->word();
+
+        self::createPublicationApiClient()
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/api/publication/v1/organisation/%s/subject', $organisation->getId()),
+                ['json' => ['name' => $name]],
+            );
+        self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        self::createPublicationApiClient()
+            ->request(
+                Request::METHOD_POST,
+                sprintf('/api/publication/v1/organisation/%s/subject', $organisation->getId()),
+                ['json' => ['name' => $name]],
+            );
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testDeleteUnusedSubjectReturns204(): void
+    {
+        $subject = SubjectFactory::createOne();
+
+        self::createPublicationApiClient()
+            ->request(
+                Request::METHOD_DELETE,
+                sprintf('/api/publication/v1/organisation/%s/subject/%s', $subject->getOrganisation()->getId(), $subject->getId()),
+            );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+    }
+
+    public function testDeleteSubjectInUseReturns405(): void
+    {
+        $subject = SubjectFactory::createOne();
+        WooDecisionFactory::createOne(['subject' => $subject]);
+
+        self::createPublicationApiClient()
+            ->request(
+                Request::METHOD_DELETE,
+                sprintf('/api/publication/v1/organisation/%s/subject/%s', $subject->getOrganisation()->getId(), $subject->getId()),
+            );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
+        self::assertJsonEquals([
+            'type' => 'errors#resource-in-use',
+            'title' => 'Method Not Allowed',
+            'status' => Response::HTTP_METHOD_NOT_ALLOWED,
+            'detail' => 'Resource is still linked to one or more dossiers and cannot be deleted',
+        ]);
     }
 }

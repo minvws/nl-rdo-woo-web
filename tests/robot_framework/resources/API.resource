@@ -11,11 +11,12 @@ Resource            ../resources/TestData.resource
 
 
 *** Variables ***
-${ORGANISATION_ID}  ${EMPTY}
-${CURRENT_DATE}     ${EMPTY}
-${RESPONSE}         ${EMPTY}
-${EXTERNAL_ID}      ${EMPTY}
-${API_ALIAS}        publication_api
+${ORGANISATION_ID}          ${EMPTY}
+${CURRENT_DATE}             ${EMPTY}
+${RESPONSE}                 ${EMPTY}
+${EXTERNAL_ID}              ${EMPTY}
+${API_ALIAS}                publication_api
+${PREVIOUS_REQUEST_BODY}    ${EMPTY}
 
 
 *** Keywords ***
@@ -28,7 +29,7 @@ Suite Setup API
 Create Session
   [Arguments]  ${alias}=publication_api
   VAR  @{client_certs} =  ${CLIENT_CERT}  ${CLIENT_KEY}
-  IF  '${ENVIRONMENT}' == 'local'
+  IF  '${ENVIRONMENT}' == 'local' or '${ENVIRONMENT}' == 'docker'
     Set Environment Variable  REQUESTS_CA_BUNDLE  ${CA_BUNDLE}
     Create Client Cert Session
     ...  url=${URL_API}
@@ -43,6 +44,19 @@ Create Session
     ...  client_certs=@{client_certs}
     ...  verify=True
     ...  debug=1
+  ELSE
+    Fatal Error  Env var ENVIRONMENT returned unsupported value '${ENVIRONMENT}'.
+  END
+
+Create Public Session
+  [Arguments]  ${alias}=public
+  IF  '${ENVIRONMENT}' == 'local' or '${ENVIRONMENT}' == 'docker'
+    RequestsLibrary.Create Session  alias=${alias}  url=${URL_PUBLIC}  verify=${CA_BUNDLE}
+  ELSE IF  '${ENVIRONMENT}' == 'test' or '${ENVIRONMENT}' == 'acc'
+    # The public site on test/acc is behind htaccess basic auth; send the same credentials
+    # the browser context uses, otherwise every public request is rejected with a 401.
+    ${auth} =  Create List  ${HTACCESS_USERNAME}  ${HTACCESS_PASSWORD}
+    RequestsLibrary.Create Session  alias=${alias}  url=${URL_PUBLIC}  verify=True  auth=${auth}
   ELSE
     Fatal Error  Env var ENVIRONMENT returned unsupported value '${ENVIRONMENT}'.
   END
@@ -204,23 +218,6 @@ Generate Attachment
   ...  externalId=${external_id}
   RETURN  ${main_document}
 
-Generate Attachments
-  [Arguments]  ${allowed_types}
-  VAR  @{attachments} =  @{EMPTY}
-  WHILE  True  limit=5  on_limit=pass
-    ${attachment} =  Generate Attachment  ${allowed_types}
-    Append To List  ${attachments}  ${attachment}
-  END
-  RETURN  ${attachments}
-
-We Dont Upload The Main Document
-  Log  We explicitly don't upload the main document (because its not working yet)  level=WARN
-
-Its Not Published Yet
-  Log  ${RESPONSE}[publicationDate]
-  Log  ${RESPONSE}[status]
-  Should Be Equal  ${RESPONSE}[status]  concept
-
 Parse Text To Date
   [Arguments]  ${dict}  ${field}
   ${match} =  Get Regexp Matches  ${dict}[${field}]  <ROBOT DATE (?P<offset>[+-]+[0-9]+)>  offset
@@ -302,3 +299,54 @@ Send Put Request WooDecision
   ...  ${put_response.status_code} == ${expected_response_status}
   ...  msg=WooDecision PUT returned ${put_response.status_code} while expecting ${expected_response_status}
   RETURN  ${put_response.json()}
+
+Verify HAL Links Are Reachable For Dossier
+  [Arguments]  ${dossier_type}  ${has_documents}=${FALSE}
+  Create Public Session
+  ${response} =  GET On Session
+  ...  alias=publication_api
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/${dossier_type}/external/${EXTERNAL_ID}
+  VAR  ${body} =  ${response.json()}
+  Verify HAL Link  public  ${body}[_links][public][href]
+  Verify HAL Link  public  ${body}[mainDocument][_links][public][href]
+  Verify HAL Link  public  ${body}[mainDocument][_links][file][href]
+  Verify HAL Upload Link  ${body}[mainDocument][_links][upload][href]
+  ${has_attachments} =  Run Keyword And Return Status  Dictionary Should Contain Key  ${body}  attachments
+  IF  ${has_attachments}
+    FOR  ${attachment}  IN  @{body}[attachments]
+      Verify HAL Link  public  ${attachment}[_links][public][href]
+      Verify HAL Link  public  ${attachment}[_links][file][href]
+      Verify HAL Upload Link  ${attachment}[_links][upload][href]
+    END
+  END
+  IF  ${has_documents}
+    ${has_documents_key} =  Run Keyword And Return Status  Dictionary Should Contain Key  ${body}  documents
+    IF  ${has_documents_key}
+      FOR  ${document}  IN  @{body}[documents]
+        Verify HAL Link  public  ${document}[_links][public][href]
+        Verify HAL Link  public  ${document}[_links][file][href]
+        Verify HAL Upload Link  ${document}[_links][upload][href]
+      END
+    END
+  END
+
+Verify HAL Link
+  [Arguments]  ${session_alias}  ${href}
+  Log  Verifying HAL link: ${href}
+  ${path} =  Remove String Using Regexp  ${href}  ^https?://[^/]+
+  ${link_response} =  GET On Session  alias=${session_alias}  url=${path}  expected_status=any
+  Should Be Equal As Integers
+  ...  ${link_response.status_code}
+  ...  200
+  ...  msg=HAL link ${href} returned ${link_response.status_code}
+
+Verify HAL Upload Link
+  [Arguments]  ${href}
+  Log  Verifying upload HAL link: ${href}
+  ${path} =  Remove String Using Regexp  ${href}  ^https?://[^/]+
+  VAR  &{headers} =  Content-Type=application/octet-stream
+  ${link_response} =  PUT On Session  alias=publication_api  url=${path}  headers=${headers}  expected_status=any
+  Should Be Equal As Integers
+  ...  ${link_response.status_code}
+  ...  422
+  ...  msg=Upload HAL link ${href} returned ${link_response.status_code}, expected 422

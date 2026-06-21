@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webmozart\Assert\Assert;
 
 class DocumentActionController extends AbstractController
 {
@@ -61,8 +62,9 @@ class DocumentActionController extends AbstractController
         $form->handleRequest($request);
 
         // When the cancel button is clicked, redirect back to the dossier
-        /** @var SubmitButton $cancelButton */
         $cancelButton = $form->get('cancel');
+        Assert::isInstanceOf($cancelButton, SubmitButton::class);
+
         if ($cancelButton->isClicked()) {
             return $this->redirectToRoute('app_admin_dossier_woodecision_document', [
                 'prefix' => $dossier->getDocumentPrefix(),
@@ -72,11 +74,11 @@ class DocumentActionController extends AbstractController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var DocumentWithdrawReason $reason */
             $reason = $form->get('reason')->getData();
+            Assert::isInstanceOf($reason, DocumentWithdrawReason::class);
 
-            /** @var string $explanation */
             $explanation = $form->get('explanation')->getData();
+            Assert::string($explanation);
 
             $this->dispatcher->dispatchWithDrawDocumentCommand($dossier, $document, $reason, $explanation);
 

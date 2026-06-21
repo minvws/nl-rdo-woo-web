@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\Type;
 
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\ValueObject\DossierTitle;
 
 readonly class DossierReference
 {
@@ -13,7 +14,7 @@ readonly class DossierReference
     public function __construct(
         private string $dossierNr,
         private string $documentPrefix,
-        private string $title,
+        private DossierTitle $title,
         DossierType|string $type,
     ) {
         $this->type = $type instanceof DossierType ? $type : DossierType::from($type);
@@ -24,7 +25,7 @@ readonly class DossierReference
         return new self(
             $dossier->getDossierNr(),
             $dossier->getDocumentPrefix(),
-            $dossier->getTitle() ?? '',
+            $dossier->getTitle(),
             $dossier->getType(),
         );
     }
@@ -39,7 +40,7 @@ readonly class DossierReference
         return $this->documentPrefix;
     }
 
-    public function getTitle(): string
+    public function getTitle(): DossierTitle
     {
         return $this->title;
     }

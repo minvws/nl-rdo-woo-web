@@ -1,0 +1,16 @@
+{% if departments | length > 0 %}
+    <h2 class="{{ titleClass | default('woo-h2 woo-h2-spacing') }}">{{ 'categories.category.department' | trans }}</h2>
+
+    <ul class="{{ listClass | default('sm:columns-2 sm:gap-x-12') }}">
+        {% for department in departments %}
+        <li>
+            <twig:Public:ArrowedLink
+                prefix="{{ department.tag | default('') }}"
+                to="{{ department.url }}"
+            >
+                {{ department.name }}
+            </twig:Public:ArrowedLink>
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}

@@ -98,6 +98,7 @@ Update Organisation
   Click Save Organisation
 
 Select Random Department
+  Wait For Elements State  //select[@name="organisation_form[departments][0]"]  attached
   ${nr_of_subjects} =  Get Element Count  //select[@name="organisation_form[departments][0]"]/option
   ${random_number} =  Evaluate  random.randint(1, ${nr_of_subjects})  random
   ${random_index} =  Evaluate  ${random_number} - 1

@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "OpenVWS Publication V1 API",
+  "name": "Woo Publication Platform Publication V1 API",
   "type": "collection",
   "ignore": [
     "node_modules",
@@ -26,17 +26,31 @@
         "passphrase": ""
       },
       {
-        "domain": "{{process.env.DOMAIN_TEST}}",
+        "domain": "{{process.env.DOMAIN_TEST_MINVWS}}",
         "type": "cert",
         "certFilePath": "../../certs/test/client-minvws-combined.pem",
         "keyFilePath": "../../certs/test/client-minvws.key",
         "passphrase": ""
       },
       {
-        "domain": "{{process.env.DOMAIN_ACC}}",
+        "domain": "{{process.env.DOMAIN_ACC_MINVWS}}",
         "type": "cert",
         "certFilePath": "../../certs/acc/client-minvws-combined.pem",
         "keyFilePath": "../../certs/acc/client-minvws.key",
+        "passphrase": ""
+      },
+      {
+        "domain": "{{process.env.DOMAIN_TEST_MINFIN}}",
+        "type": "cert",
+        "certFilePath": "../../certs/test/client-minfin-combined.pem",
+        "keyFilePath": "../../certs/test/client-minfin.key",
+        "passphrase": ""
+      },
+      {
+        "domain": "{{process.env.DOMAIN_ACC_MINFIN}}",
+        "type": "cert",
+        "certFilePath": "../../certs/acc/client-minfin-combined.pem",
+        "keyFilePath": "../../certs/acc/client-minfin.key",
         "passphrase": ""
       }
     ]

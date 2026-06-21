@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\Advice\Uploads\Attachment;
 
 use GuzzleHttp\Psr7\Utils;
-use Shared\ValueObject\ExternalId;
+use PublicationApi\Api\ExternalIdFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
@@ -21,8 +21,8 @@ final class AdviceUploadAttachmentRequestDtoFactory
         return new AdviceUploadAttachmentRequestDto(
             Utils::streamFor($request->getContent(asResource: true)),
             $organisationId,
-            ExternalId::create($dossierExternalId),
-            ExternalId::create($attachmentExternalId),
+            ExternalIdFactory::create($dossierExternalId),
+            ExternalIdFactory::create($attachmentExternalId),
         );
     }
 }

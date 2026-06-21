@@ -10,9 +10,11 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
-use Shared\ValueObject\ExternalId;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 use function sprintf;
+use function str_repeat;
 
 final class InvestigationReportUploadAttachmentTest extends ApiPublicationV1UploadTestCase
 {
@@ -22,12 +24,12 @@ final class InvestigationReportUploadAttachmentTest extends ApiPublicationV1Uplo
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $investigationReport = InvestigationReportFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
         ]);
         $attachment = InvestigationReportAttachmentFactory::createOne([
             'dossier' => $investigationReport,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $this->assertUpload(
@@ -43,5 +45,51 @@ final class InvestigationReportUploadAttachmentTest extends ApiPublicationV1Uplo
             uploadGroupId: UploadGroupId::ATTACHMENTS,
             entityParameterKey: 'attachmentId',
         );
+    }
+
+    public function testUploadWithTooLongDossierExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $investigationReport = InvestigationReportFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'departments' => [$department],
+        ]);
+        $attachment = InvestigationReportAttachmentFactory::createOne([
+            'dossier' => $investigationReport,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/investigation-report/external/%s/uploads/attachment/external/%s',
+            $organisation->getId(),
+            str_repeat('x', 129),
+            $attachment->getExternalId(),
+        ));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testUploadWithTooLongAttachmentExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $investigationReport = InvestigationReportFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'departments' => [$department],
+        ]);
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/investigation-report/external/%s/uploads/attachment/external/%s',
+            $organisation->getId(),
+            $investigationReport->getExternalId(),
+            str_repeat('x', 129),
+        ));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

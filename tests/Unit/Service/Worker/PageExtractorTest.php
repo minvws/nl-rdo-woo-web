@@ -55,7 +55,7 @@ final class PageExtractorTest extends UnitTestCase
 
         $this->statsService
             ->expects('measure')
-            ->with('pdftk.extractPage', Mockery::on(function () {
+            ->with('pdftk.extractPage', Mockery::on(static function () {
                 return true;
             }))
             ->andReturn($result);
@@ -81,7 +81,7 @@ final class PageExtractorTest extends UnitTestCase
 
         $this->statsService
             ->expects('measure')
-            ->with('pdftk.extractPage', Mockery::on(function () {
+            ->with('pdftk.extractPage', Mockery::on(static function () {
                 return true;
             }))
             ->andReturn($result);

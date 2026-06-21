@@ -27,7 +27,7 @@ readonly class InquiryBatchDownload implements BatchDownloadTypeInterface
     {
         Assert::notNull($scope->inquiry);
 
-        return $scope->inquiry->getCasenr();
+        return $scope->inquiry->getInquiryNumber();
     }
 
     public function getDocumentsQuery(BatchDownloadScope $scope): QueryBuilder

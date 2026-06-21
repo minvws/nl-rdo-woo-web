@@ -11,8 +11,11 @@ use ReflectionClass;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Service\Inventory\DocumentNumber;
 use Shared\Service\Storage\StorageRootPathGenerator;
-use Shared\ValueObject\ExternalId;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentMatter;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 use function array_filter;
@@ -26,6 +29,8 @@ use function sprintf;
  */
 final class DocumentFactory extends PersistentObjectFactory
 {
+    public const string DEFAULT_MATTER = 'MAT';
+
     public function __construct(
         private readonly StorageRootPathGenerator $storageRootPathGenerator,
         private readonly EntityManagerInterface $entityManager,
@@ -39,7 +44,7 @@ final class DocumentFactory extends PersistentObjectFactory
      */
     protected function defaults(): array
     {
-        $documentId = (string) self::faker()->unique()->randomNumber(nbDigits: 6, strict: true);
+        $documentId = self::faker()->unique()->documentId();
 
         $judgement = self::faker()
             ->optional(0.5, Judgement::PUBLIC)
@@ -51,9 +56,9 @@ final class DocumentFactory extends PersistentObjectFactory
 
         return [
             'documentDate' => self::faker()->plainDate(),
-            'familyId' => $documentId,
+            'familyId' => $documentId->__toString(),
             'documentId' => $documentId,
-            'externalId' => self::faker()->boolean() ? ExternalId::create(self::faker()->uuid()) : null,
+            'externalId' => self::faker()->boolean() ? self::faker()->externalId() : null,
             'threadId' => 0,
             'grounds' => self::faker()->groundsBetween(),
             'judgement' => $judgement,
@@ -72,9 +77,17 @@ final class DocumentFactory extends PersistentObjectFactory
     protected function initialize(): static
     {
         return $this
-            ->beforeInstantiate(function (array $attributes): array {
-                if (! array_key_exists('documentNr', $attributes) && is_scalar($attributes['documentId'])) {
-                    $attributes['documentNr'] = sprintf('PREF-%s', $attributes['documentId']);
+            ->beforeInstantiate(static function (array $attributes): array {
+                if (array_key_exists('documentId', $attributes) && is_scalar($attributes['documentId'])) {
+                    $attributes['documentId'] = DocumentId::create((string) $attributes['documentId']);
+                }
+
+                if (! array_key_exists('documentNr', $attributes) && $attributes['documentId'] instanceof DocumentId) {
+                    $attributes['documentNr'] = DocumentNumber::fromString(
+                        WooDecisionFactory::DEFAULT_PREFIX,
+                        DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
+                        (string) $attributes['documentId'],
+                    )->getValue();
                 }
 
                 if (! array_key_exists('fileInfo', $attributes) && is_scalar($attributes['documentNr'])) {
@@ -113,7 +126,7 @@ final class DocumentFactory extends PersistentObjectFactory
 
     public function removeFileProperties(): self
     {
-        return $this->afterInstantiate(function (Document $document): void {
+        return $this->afterInstantiate(static function (Document $document): void {
             $document->getFileInfo()->removeFileProperties();
         });
     }
@@ -122,7 +135,7 @@ final class DocumentFactory extends PersistentObjectFactory
     {
         return $this
             ->removeFileProperties()
-            ->afterInstantiate(function (Document $document) {
+            ->afterInstantiate(static function (Document $document) {
                 /** @var DocumentWithdrawReason $withdrawReason */
                 $withdrawReason = self::faker()->randomElement(DocumentWithdrawReason::cases());
 
@@ -155,7 +168,7 @@ final class DocumentFactory extends PersistentObjectFactory
 
     public function withExternalId(): self
     {
-        return $this->with(['externalId' => ExternalId::create(self::faker()->uuid())]);
+        return $this->with(['externalId' => self::faker()->externalId()]);
     }
 
     public static function class(): string

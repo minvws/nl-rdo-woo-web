@@ -9,7 +9,7 @@ use Webmozart\Assert\Assert;
 
 require_once dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
-return function (array $context) {
+return static function (array $context) {
     Assert::keyExists($context, 'APP_ENV', 'APP_ENV is required in context to create Kernel');
     $appEnv = $context['APP_ENV'];
     Assert::string($appEnv);

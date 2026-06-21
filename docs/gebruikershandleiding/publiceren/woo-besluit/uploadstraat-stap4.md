@@ -12,4 +12,4 @@ vul je dezelfde datum in als bij de openbare publicatie. Meer informatie over de
 
 ## Datum openbare publicatie
 
-Op deze datum komt het besluit openbaar op het publicatieplatform. Deze individuele linkjes van de feitelijke verstrekking zullen blijven werken.
+Op deze datum komt het besluit openbaar op het Woo Publicatieplatform. Deze individuele linkjes van de feitelijke verstrekking zullen blijven werken.

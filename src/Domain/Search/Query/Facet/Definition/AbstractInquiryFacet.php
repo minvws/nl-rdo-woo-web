@@ -63,7 +63,7 @@ abstract readonly class AbstractInquiryFacet implements FacetDefinitionInterface
     {
         $inquiry = $this->repository->find($value);
 
-        return UntranslatedStringFacetDisplayValue::fromString($inquiry ? $inquiry->getCasenr() : '');
+        return UntranslatedStringFacetDisplayValue::fromString($inquiry ? $inquiry->getInquiryNumber() : '');
     }
 
     public function getDescription(int|string $key, string $value): ?FacetDisplayValueInterface

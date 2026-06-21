@@ -15,8 +15,8 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
 {
     public function testFindLatestByContextData(): void
     {
-        $key = $this->getFaker()->word();
-        $value = $this->getFaker()->word();
+        $key = $this->getFaker()->unique()->word();
+        $value = $this->getFaker()->unique()->word();
 
         UploadEntityFactory::createOne([
             'context' => new InputBag([$key => $value]),
@@ -30,8 +30,8 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
 
     public function testFindLatestByContextDataWithOrdering(): void
     {
-        $key = $this->getFaker()->word();
-        $value = $this->getFaker()->word();
+        $key = $this->getFaker()->unique()->word();
+        $value = $this->getFaker()->unique()->word();
 
         $expectedResult = UploadEntityFactory::createOne([
             'context' => new InputBag([$key => $value]),
@@ -51,7 +51,7 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
 
     public function testFindLatestByContextDataKeyNotFound(): void
     {
-        $value = $this->getFaker()->word();
+        $value = $this->getFaker()->unique()->word();
 
         UploadEntityFactory::createOne([
             'context' => new InputBag([$this->getFaker()->unique()->word() => $value]),
@@ -65,7 +65,7 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
 
     public function testFindLatestByContextDataValueNotFound(): void
     {
-        $key = $this->getFaker()->word();
+        $key = $this->getFaker()->unique()->word();
 
         UploadEntityFactory::createOne([
             'context' => new InputBag([$key => $this->getFaker()->unique()->word()]),
@@ -80,11 +80,11 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
     public function testFindLatestByContextDataKeyAndValueNotFound(): void
     {
         UploadEntityFactory::createOne([
-            'context' => new InputBag([$this->getFaker()->unique()->word() => $this->getFaker()->word()]),
+            'context' => new InputBag([$this->getFaker()->unique()->word() => $this->getFaker()->unique()->word()]),
         ]);
 
         $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
-        $result = $uploadEntityRepository->findLatestByContextData($this->getFaker()->unique()->word(), $this->getFaker()->word());
+        $result = $uploadEntityRepository->findLatestByContextData($this->getFaker()->unique()->word(), $this->getFaker()->unique()->word());
 
         self::assertNull($result);
     }
@@ -92,15 +92,15 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
     public function testFindLatestByContextDataWhenTableEmpty(): void
     {
         $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
-        $result = $uploadEntityRepository->findLatestByContextData($this->getFaker()->word(), $this->getFaker()->word());
+        $result = $uploadEntityRepository->findLatestByContextData($this->getFaker()->unique()->word(), $this->getFaker()->unique()->word());
 
         self::assertNull($result);
     }
 
     public function testRemoveAllByContextData(): void
     {
-        $key = $this->getFaker()->word();
-        $value = $this->getFaker()->word();
+        $key = $this->getFaker()->unique()->word();
+        $value = $this->getFaker()->unique()->word();
 
         UploadEntityFactory::createOne(['context' => new InputBag([$key => $value])]);
         UploadEntityFactory::createOne(['context' => new InputBag([$key => $value])]);
@@ -113,11 +113,11 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
 
     public function testRemoveAllByContextDataOnlyRemovesMatching(): void
     {
-        $key = $this->getFaker()->word();
-        $value = $this->getFaker()->word();
+        $key = $this->getFaker()->unique()->word();
+        $value = $this->getFaker()->unique()->word();
 
         UploadEntityFactory::createOne(['context' => new InputBag([$key => $value])]);
-        UploadEntityFactory::createOne(['context' => new InputBag([$this->getFaker()->unique()->word() => $this->getFaker()->word()])]);
+        UploadEntityFactory::createOne(['context' => new InputBag([$this->getFaker()->unique()->word() => $this->getFaker()->unique()->word()])]);
 
         $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
         $uploadEntityRepository->removeAllByContextData($key, $value);
@@ -129,7 +129,7 @@ class UploadEntityRepositoryTest extends SharedWebTestCase
     public function testRemoveAllByContextDataWhenNothingMatches(): void
     {
         $uploadEntityRepository = self::fromContainer(UploadEntityRepository::class);
-        $uploadEntityRepository->removeAllByContextData($this->getFaker()->word(), $this->getFaker()->word());
+        $uploadEntityRepository->removeAllByContextData($this->getFaker()->unique()->word(), $this->getFaker()->unique()->word());
 
         self::assertCount(0, $uploadEntityRepository->findAll());
     }

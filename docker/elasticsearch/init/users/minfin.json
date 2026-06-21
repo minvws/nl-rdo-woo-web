@@ -1,0 +1,8 @@
+{
+    "password": "secret",
+    "roles": [
+        "minfin_role",
+        "viewer",
+        "monitor"
+    ]
+}

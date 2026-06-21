@@ -14,9 +14,7 @@ use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
 
 /**
- * @template T of AbstractAttachment
- *
- * @extends ServiceEntityRepository<T>
+ * @extends ServiceEntityRepository<AbstractAttachment>
  */
 class AttachmentRepository extends ServiceEntityRepository
 {
@@ -81,12 +79,9 @@ class AttachmentRepository extends ServiceEntityRepository
         return $qb->getQuery()->toIterable();
     }
 
-    /**
-     * @return ?T
-     */
     public function findByDossierAndExternalId(AbstractDossier $dossier, ExternalId $externalId): ?AbstractAttachment
     {
-        /** @var ?T */
+        /** @var ?AbstractAttachment */
         return $this->createQueryBuilder('attachment')
             ->where('attachment.dossier = :dossier')
             ->setParameter('dossier', $dossier)

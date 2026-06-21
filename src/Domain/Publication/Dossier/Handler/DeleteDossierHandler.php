@@ -96,7 +96,7 @@ readonly class DeleteDossierHandler
                     'id' => $dossier->getId()->toRfc4122(),
                     'prefix' => $dossier->getDocumentPrefix(),
                     'dossier_nr' => $dossier->getDossierNr(),
-                    'title' => $dossier->getTitle(),
+                    'title' => (string) $dossier->getTitle(),
                     'status' => $dossier->getStatus()->value,
                 ])
                 ->withFailed($failed, $failureReason));

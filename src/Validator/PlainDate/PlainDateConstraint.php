@@ -28,6 +28,6 @@ abstract class PlainDateConstraint extends Constraint
             throw new LogicException('Property access failed');
         }
 
-        parent::__construct([], $groups, $payload);
+        parent::__construct(null, $groups, $payload);
     }
 }

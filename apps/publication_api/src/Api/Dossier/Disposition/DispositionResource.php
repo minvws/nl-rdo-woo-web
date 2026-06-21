@@ -18,7 +18,7 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     operations: [
         new Get(
             uriTemplate: '/organisation/{organisationId}/dossiers/disposition/external/{dossierExternalId}',
-            name: 'get_disposition',
+            name: self::ROUTE_NAME_GET_DISPOSITION,
         ),
         new GetCollection(
             uriTemplate: '/organisation/{organisationId}/dossiers/disposition',
@@ -64,9 +64,11 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     openapi: new Operation(
         tags: ['Disposition'],
     ),
+    output: DispositionResponseDto::class,
     provider: DispositionProvider::class,
     processor: DispositionProcessor::class,
 )]
 final class DispositionResource
 {
+    public const string ROUTE_NAME_GET_DISPOSITION = 'get_disposition';
 }

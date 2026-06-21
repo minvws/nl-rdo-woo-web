@@ -32,7 +32,7 @@ final class SitemapIndexBuilderTest extends UnitTestCase
     public function testCreatingSitemapIndex(): void
     {
         $builder = new SitemapIndexBuilder();
-        $builder->setXMLWriterConfigurator(function (DiWooXMLWriter $writer): void {
+        $builder->setXMLWriterConfigurator(static function (DiWooXMLWriter $writer): void {
             $writer->setIndent(true);
         });
 

@@ -18,6 +18,6 @@ enum SearchResultType: string
      */
     public static function getAllValues(): array
     {
-        return array_map(fn (SearchResultType $type): string => $type->value, SearchResultType::cases());
+        return array_map(static fn (SearchResultType $type): string => $type->value, SearchResultType::cases());
     }
 }

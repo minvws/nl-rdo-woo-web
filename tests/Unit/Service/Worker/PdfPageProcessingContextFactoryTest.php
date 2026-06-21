@@ -52,7 +52,7 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
 
         $this->statsService
             ->expects('measure')
-            ->with('download.entity', Mockery::on(function (Closure $closure) {
+            ->with('download.entity', Mockery::on(static function (Closure $closure) {
                 $closure();
 
                 return true;
@@ -78,7 +78,7 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
 
         $this->statsService
             ->expects('measure')
-            ->with('download.entity', Mockery::on(function (Closure $closure) use ($localFile) {
+            ->with('download.entity', Mockery::on(static function (Closure $closure) use ($localFile) {
                 $result = $closure();
 
                 self::assertEquals($localFile, $result);
@@ -109,7 +109,7 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
 
         $this->statsService
             ->expects('measure')
-            ->with('download.entity', Mockery::on(function (Closure $closure) use ($localFile) {
+            ->with('download.entity', Mockery::on(static function (Closure $closure) use ($localFile) {
                 $result = $closure();
 
                 self::assertEquals($localFile, $result);

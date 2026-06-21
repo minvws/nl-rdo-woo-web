@@ -12,13 +12,14 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\Parameter;
 use PublicationApi\Api\Organisation\OrganisationResponseDto;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 
 #[ApiResource(
     shortName: 'WooDecision',
     operations: [
         new Get(
             uriTemplate: '/organisation/{organisationId}/dossiers/woo-decision/external/{dossierExternalId}',
-            name: 'get_woo_decision',
+            name: self::ROUTE_NAME_GET_WOO_DECISION,
         ),
         new GetCollection(
             uriTemplate: '/organisation/{organisationId}/dossiers/woo-decision',
@@ -46,14 +47,14 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
                 ],
             ),
             paginationEnabled: false,
-            name: 'get_woo_decisions',
+            name: self::ROUTE_NAME_GET_WOO_DECISIONS,
             itemUriTemplate: '/organisation/{organisationId}/dossiers/woo-decision/external/{dossierExternalId}',
         ),
         new Put(
             uriTemplate: '/organisation/{organisationId}/dossiers/woo-decision/external/{dossierExternalId}',
             input: WooDecisionRequestDto::class,
             read: false,
-            name: 'update_woo_decision',
+            name: self::ROUTE_NAME_UPDATE_WOO_DECISION,
         ),
     ],
     uriVariables: [
@@ -61,12 +62,19 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
         'dossierExternalId' => new Link(fromClass: self::class, identifiers: ['externalId']),
     ],
     stateless: false,
+    normalizationContext: [
+        AbstractObjectNormalizer::PRESERVE_EMPTY_OBJECTS => true,
+    ],
     openapi: new Operation(
         tags: ['WooDecision'],
     ),
+    output: WooDecisionResponseDto::class,
     provider: WooDecisionProvider::class,
     processor: WooDecisionProcessor::class,
 )]
 final class WooDecisionResource
 {
+    public const string ROUTE_NAME_GET_WOO_DECISION = 'get_woo_decision';
+    public const string ROUTE_NAME_GET_WOO_DECISIONS = 'get_woo_decisions';
+    public const string ROUTE_NAME_UPDATE_WOO_DECISION = 'update_woo_decision';
 }

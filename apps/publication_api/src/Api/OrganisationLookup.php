@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api;
 
-use ApiPlatform\Validator\Exception\ValidationException;
+use PublicationApi\Domain\Exception\EntityNotFoundException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
-use Symfony\Component\Validator\ConstraintViolationList;
 
 readonly class OrganisationLookup
 {
@@ -20,7 +19,7 @@ readonly class OrganisationLookup
     {
         $organisation = $this->organisationRepository->find($organisationId);
         if (! $organisation instanceof Organisation) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('No organisation found'));
+            throw EntityNotFoundException::for('Organisation', $organisationId);
         }
 
         return $organisation;

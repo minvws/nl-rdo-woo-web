@@ -47,13 +47,11 @@ baseline:
 
 testcases:
 - title: Happy flow
-  tags: [failing]
   steps:
     - name: Create dossier
       request: {}
 
 - title: Create without attachments
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -63,7 +61,6 @@ testcases:
           attachments: []
 
 - title: Create without uploading a main document
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -82,40 +79,21 @@ testcases:
           mainDocument:
         expected_publication_status: concept
 
-- title: Create with year in the past
-  tags: [failing]
+- title: Create with too short year
   steps:
     - name: Create dossier
       request:
         body:
-          year: <ROBOT YEAR PAST>
+          year: 922
         expected_response_status: 422
 
-- title: Create with year at minimum allowed
-  tags: [failing]
+- title: Create with too long year
   steps:
     - name: Create dossier
       request:
         body:
-          year: <ROBOT YEAR MIN>
-
-- title: Create with year at maximum allowed
-  tags: [failing]
-  steps:
-    - name: Create dossier
-      request:
-        body:
-          year: <ROBOT YEAR MAX>
-
-- title: Create with year in the future
-  tags: [failing]
-  steps:
-    - name: Create dossier
-      request:
-        body:
-          year: <ROBOT YEAR FUTURE>
+          year: 12345
         expected_response_status: 422
-
 - title: Upload the exact same request twice
   steps:
     - name: Create dossier
@@ -132,3 +110,11 @@ testcases:
           mainDocument:
           attachments: []
         expected_publication_status: concept
+
+- title: HAL links should be reachable
+  steps:
+    - name: Create dossier
+      request: {}
+    - name: Verify HAL links
+      keyword:
+        name: Verify HAL Links Are Reachable

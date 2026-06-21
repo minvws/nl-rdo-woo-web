@@ -43,13 +43,11 @@ baseline:
 
 testcases:
 - title: Happy flow
-  tags: [failing]
   steps:
     - name: Create dossier
       request: {}
 
 - title: Create without attachments
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -59,7 +57,6 @@ testcases:
           attachments: []
 
 - title: Create without uploading main document
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -79,7 +76,6 @@ testcases:
         expected_publication_status: concept
 
 - title: Create with 3 parties
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -90,7 +86,6 @@ testcases:
             - <ROBOT RANDOM DEPARTMENT ID>
 
 - title: Create with max parties (10)
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -108,7 +103,6 @@ testcases:
             - Party 10
 
 - title: Create with too few parties (should fail)
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -118,7 +112,6 @@ testcases:
         expected_response_status: 422
 
 - title: Create with too many parties (should fail)
-  tags: [failing]
   steps:
     - name: Create dossier
       request:
@@ -153,3 +146,11 @@ testcases:
           mainDocument:
           attachments: []
         expected_publication_status: concept
+
+- title: HAL links should be reachable
+  steps:
+    - name: Create dossier
+      request: {}
+    - name: Verify HAL links
+      keyword:
+        name: Verify HAL Links Are Reachable

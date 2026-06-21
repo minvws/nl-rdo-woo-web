@@ -47,7 +47,7 @@ readonly class DossierWizardStatus
 
     public function isCompleted(): bool
     {
-        return array_all($this->steps, fn ($step) => $step->isCompleted());
+        return array_all($this->steps, static fn ($step) => $step->isCompleted());
     }
 
     /**

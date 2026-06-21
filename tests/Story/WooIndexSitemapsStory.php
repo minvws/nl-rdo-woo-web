@@ -24,7 +24,7 @@ final class WooIndexSitemapsStory extends Story
         foreach (range(1, 10) as $i) {
             $finishedSitemaps[] = CarbonImmutable::withTestNow(
                 $now->subDays($i),
-                fn () => WooIndexSitemapFactory::new()->done()->create(),
+                static fn () => WooIndexSitemapFactory::new()->done()->create(),
             );
         }
         $this->addToPool('finishedSitemaps', $finishedSitemaps);
@@ -33,7 +33,7 @@ final class WooIndexSitemapsStory extends Story
         foreach (range(1, 10) as $i) {
             $unfinishedSitemaps[] = CarbonImmutable::withTestNow(
                 $now->subDays($i),
-                fn () => WooIndexSitemapFactory::new()->processing()->create(),
+                static fn () => WooIndexSitemapFactory::new()->processing()->create(),
             );
         }
         $this->addToPool('unfinishedSitemaps', $unfinishedSitemaps);

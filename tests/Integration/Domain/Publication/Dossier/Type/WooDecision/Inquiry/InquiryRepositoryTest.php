@@ -78,7 +78,7 @@ final class InquiryRepositoryTest extends SharedWebTestCase
         $this->assertEquals([$docB], $result);
     }
 
-    public function testCountDocumentsByJudgement(): void
+    public function testGetDocumentCountSummary(): void
     {
         $organisation = OrganisationFactory::new()->create();
         $wooDecision = WooDecisionFactory::new()->create([
@@ -112,17 +112,126 @@ final class InquiryRepositoryTest extends SharedWebTestCase
             ],
         ]);
 
-        $result = self::fromContainer(InquiryRepository::class)->countDocumentsByJudgement($inquiry);
+        $result = self::fromContainer(InquiryRepository::class)->getDocumentCountSummary($inquiry);
 
-        self::assertEquals(5, $result['total']);
-        self::assertEquals(3, $result['public']);
-        self::assertEquals(1, $result['public_withdrawn']);
-        self::assertEquals(2, $result['public_suspended']);
-        self::assertEquals(0, $result['partial_public']);
-        self::assertEquals(0, $result['partial_public_withdrawn']);
-        self::assertEquals(0, $result['partial_public_suspended']);
-        self::assertEquals(0, $result['already_public']);
-        self::assertEquals(2, $result['not_public']);
+        self::assertEquals(3, $result->public);
+        self::assertEquals(1, $result->publicWithdrawn);
+        self::assertEquals(2, $result->publicSuspended);
+        self::assertEquals(0, $result->partialPublic);
+        self::assertEquals(0, $result->partialPublicWithdrawn);
+        self::assertEquals(0, $result->partialPublicSuspended);
+        self::assertEquals(0, $result->alreadyPublic);
+        self::assertEquals(2, $result->notPublic);
+    }
+
+    public function testGetDocumentCountSummaryCountsPartialPublicWithWithdrawnAndSuspended(): void
+    {
+        $organisation = OrganisationFactory::new()->create();
+        $wooDecision = WooDecisionFactory::new()->create([
+            'organisation' => $organisation,
+            'status' => $this->getFaker()->randomElement([DossierStatus::PREVIEW, DossierStatus::PUBLISHED]),
+        ]);
+
+        $plainPartialPublic = DocumentFactory::createMany(3, [
+            'dossiers' => [$wooDecision],
+            'judgement' => Judgement::PARTIAL_PUBLIC,
+        ]);
+
+        $suspendedPartialPublic = DocumentFactory::createOne([
+            'dossiers' => [$wooDecision],
+            'judgement' => Judgement::PARTIAL_PUBLIC,
+            'suspended' => true,
+        ]);
+
+        $withdrawnPartialPublic = DocumentFactory::createOne([
+            'dossiers' => [$wooDecision],
+            'judgement' => Judgement::PARTIAL_PUBLIC,
+        ]);
+        $withdrawnPartialPublic->withdraw(DocumentWithdrawReason::DATA_IN_DOCUMENT, '');
+
+        $inquiry = InquiryFactory::createOne([
+            'organisation' => $organisation,
+            'dossiers' => [$wooDecision],
+            'documents' => [
+                ...$plainPartialPublic,
+                $suspendedPartialPublic,
+                $withdrawnPartialPublic,
+            ],
+        ]);
+
+        $result = self::fromContainer(InquiryRepository::class)->getDocumentCountSummary($inquiry);
+
+        self::assertEquals(5, $result->partialPublic);
+        self::assertEquals(1, $result->partialPublicWithdrawn);
+        self::assertEquals(1, $result->partialPublicSuspended);
+    }
+
+    public function testGetDocumentCountSummaryExcludesDocumentsInConceptDossiers(): void
+    {
+        $organisation = OrganisationFactory::new()->create();
+        $publishedWooDecision = WooDecisionFactory::new()->create([
+            'organisation' => $organisation,
+            'status' => DossierStatus::PUBLISHED,
+        ]);
+        $conceptWooDecision = WooDecisionFactory::new()->create([
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+
+        $publishedDoc = DocumentFactory::createOne([
+            'dossiers' => [$publishedWooDecision],
+            'judgement' => Judgement::PUBLIC,
+        ]);
+
+        $conceptDoc = DocumentFactory::createOne([
+            'dossiers' => [$conceptWooDecision],
+            'judgement' => Judgement::PUBLIC,
+        ]);
+
+        $inquiry = InquiryFactory::createOne([
+            'organisation' => $organisation,
+            'dossiers' => [$publishedWooDecision, $conceptWooDecision],
+            'documents' => [$publishedDoc, $conceptDoc],
+        ]);
+
+        $result = self::fromContainer(InquiryRepository::class)->getDocumentCountSummary($inquiry);
+
+        self::assertEquals(1, $result->public);
+    }
+
+    public function testGetDocumentCountSummaryOnlyCountsDocumentsAttachedToTheGivenInquiry(): void
+    {
+        $organisation = OrganisationFactory::new()->create();
+        $wooDecision = WooDecisionFactory::new()->create([
+            'organisation' => $organisation,
+            'status' => DossierStatus::PUBLISHED,
+        ]);
+
+        $docForOurInquiry = DocumentFactory::createOne([
+            'dossiers' => [$wooDecision],
+            'judgement' => Judgement::PUBLIC,
+        ]);
+
+        $docForOtherInquiry = DocumentFactory::createOne([
+            'dossiers' => [$wooDecision],
+            'judgement' => Judgement::PUBLIC,
+        ]);
+
+        $ourInquiry = InquiryFactory::createOne([
+            'organisation' => $organisation,
+            'dossiers' => [$wooDecision],
+            'documents' => [$docForOurInquiry],
+        ]);
+
+        InquiryFactory::createOne([
+            'organisation' => $organisation,
+            'dossiers' => [$wooDecision],
+            'documents' => [$docForOtherInquiry],
+        ]);
+
+        $result = self::fromContainer(InquiryRepository::class)->getDocumentCountSummary($ourInquiry);
+
+        self::assertEquals(1, $result->public);
     }
 
     public function testCountPubliclyAvailableDossiers(): void

@@ -50,7 +50,7 @@ class OrphanedFileMoverTest extends UnitTestCase
 
         $ticketCalls = 0;
         $targetBucket = 'trash';
-        $callable = function () use (&$ticketCalls): void {
+        $callable = static function () use (&$ticketCalls): void {
             $ticketCalls++;
         };
 

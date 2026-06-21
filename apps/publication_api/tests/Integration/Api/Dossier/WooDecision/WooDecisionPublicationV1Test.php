@@ -6,21 +6,30 @@ namespace PublicationApi\Tests\Integration\Api\Dossier\WooDecision;
 
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PublicationApi\Api\Dossier\WooDecision\Uploads\Attachment\WooDecisionUploadAttachmentResource;
+use PublicationApi\Api\Dossier\WooDecision\Uploads\Document\WooDecisionUploadDocumentResource;
+use PublicationApi\Api\Dossier\WooDecision\Uploads\MainDocument\WooDecisionUploadMainDocumentResource;
 use PublicationApi\Api\Dossier\WooDecision\WooDecisionResource;
 use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
+use Shared\Controller\Public\Dossier\DossierFileController;
 use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Validator\UniqueDocumentNr;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
@@ -34,18 +43,25 @@ use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\AllowedFileExtension;
-use Shared\Validator\EntityExists;
 use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Constraints\Unique;
+use Webmozart\Assert\Assert;
 
+use function array_map;
 use function array_merge;
+use function range;
+use function sprintf;
+use function str_repeat;
 
 final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 {
@@ -66,14 +82,20 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'externalId' => $this->getFaker()->externalId(),
         ]);
         WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
-        WooDecisionAttachmentFactory::createOne(['dossier' => $wooDecision]);
-        DocumentFactory::createOne(['dossiers' => [$wooDecision]]);
+        WooDecisionAttachmentFactory::createOne([
+            'dossier' => $wooDecision,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+        DocumentFactory::createOne([
+            'dossiers' => [$wooDecision],
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
         self::assertCount(1, $result->toArray());
 
-        self::assertJsonContains([['externalId' => $wooDecision->getExternalId()?->__toString()]]);
+        self::assertJsonContains([['externalId' => $wooDecision->getExternalId()?->toString()]]);
     }
 
     public function testGetWooDecisionCollectionDoesNotContainWooDecisionWithoutExternalId(): void
@@ -88,8 +110,14 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'externalId' => $this->getFaker()->externalId(),
         ]);
         WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision1]);
-        WooDecisionAttachmentFactory::createOne(['dossier' => $wooDecision1]);
-        DocumentFactory::createOne(['dossiers' => [$wooDecision1]]);
+        WooDecisionAttachmentFactory::createOne([
+            'dossier' => $wooDecision1,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+        DocumentFactory::createOne([
+            'dossiers' => [$wooDecision1],
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         $wooDecision2 = WooDecisionFactory::createOne([
             'departments' => [$department],
@@ -102,29 +130,36 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
         self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $wooDecision1->getExternalId()?->__toString()]]);
+        self::assertJsonContains([['externalId' => $wooDecision1->getExternalId()?->toString()]]);
     }
 
     public function testGetWooDecision(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $subject = SubjectFactory::createOne();
         $wooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
-                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+                'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'previewDate' => $this->getFaker()->plainDate(),
+                'subject' => $subject,
             ],
         );
         $wooDecisionMainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
-        $wooDecisionAttachment = WooDecisionAttachmentFactory::createOne(['dossier' => $wooDecision]);
+        $wooDecisionAttachment = WooDecisionAttachmentFactory::createOne([
+            'dossier' => $wooDecision,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         // watch it: documents are sorted by documentNr
         $wooDecisionDocument1 = DocumentFactory::createOne(
             [
                 'documentNr' => 'A',
+                'judgement' => Judgement::PUBLIC,
                 'dossiers' => [$wooDecision],
+                'externalId' => $this->getFaker()->externalId(),
                 'fileInfo' => FileInfoFactory::createOne([
                     'uploaded' => true,
                 ]),
@@ -133,7 +168,9 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecisionDocument2 = DocumentFactory::createOne(
             [
                 'documentNr' => 'B',
+                'judgement' => Judgement::PUBLIC,
                 'dossiers' => [$wooDecision],
+                'externalId' => $this->getFaker()->externalId(),
                 'fileInfo' => FileInfoFactory::createOne([
                     'uploaded' => true,
                 ]),
@@ -142,20 +179,24 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         );
 
         $response = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation, $wooDecision));
-
         self::assertResponseIsSuccessful();
 
+        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $wooDecision->getId(),
-            'externalId' => $wooDecision->getExternalId(),
+            'externalId' => $wooDecision->getExternalId()?->toString(),
             'organisation' => [
-                'id' => (string) $wooDecision->getOrganisation()->getId(),
-                'name' => $wooDecision->getOrganisation()->getName(),
+                'id' => $organisation->getId()->toString(),
+                'name' => $organisation->getName(),
             ],
             'dossierNumber' => $wooDecision->getDossierNr(),
-            'title' => $wooDecision->getTitle(),
+            'title' => (string) $wooDecision->getTitle(),
             'summary' => $wooDecision->getSummary(),
-            'subject' => $wooDecision->getSubject()?->getName(),
+            'subject' => [
+                'id' => $subject->getId()->toString(),
+                'name' => $subject->getName(),
+            ],
             'department' => [
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
@@ -170,6 +211,29 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'grounds' => $wooDecisionMainDocument->getGrounds(),
                 'fileName' => $wooDecisionMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
+                '_links' => [
+                    'upload' => [
+                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            WooDecisionUploadMainDocumentResource::ROUTE_NAME_UPLOAD,
+                            [
+                                'organisationId' => $wooDecision->getOrganisation()->getId(),
+                                'dossierExternalId' => $wooDecision->getExternalId()?->toString(),
+                            ],
+                        )->toString(),
+                    ],
+                    'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
+                    'file' => [
+                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
+                            [
+                                'prefix' => $wooDecision->getDocumentPrefix(),
+                                'dossierId' => $wooDecision->getDossierNr(),
+                                'type' => DossierFileType::MAIN_DOCUMENT->value,
+                                'id' => $wooDecisionMainDocument->getId(),
+                            ],
+                        )->toString(),
+                    ],
+                ],
             ],
             'attachments' => [
                 [
@@ -179,8 +243,32 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'formalDate' => $wooDecisionAttachment->getFormalDate()->format('Y-m-d'),
                     'grounds' => $wooDecisionAttachment->getGrounds(),
                     'fileName' => $wooDecisionAttachment->getFileInfo()->getName(),
-                    'externalId' => $wooDecisionAttachment->getExternalId()?->__toString(),
+                    'externalId' => $wooDecisionAttachment->getExternalId()?->toString(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
+                    '_links' => [
+                        'upload' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                WooDecisionUploadAttachmentResource::ROUTE_NAME_UPLOAD,
+                                [
+                                    'organisationId' => $wooDecision->getOrganisation()->getId(),
+                                    'dossierExternalId' => $wooDecision->getExternalId()?->toString(),
+                                    'attachmentExternalId' => $wooDecisionAttachment->getExternalId(),
+                                ],
+                            )->toString(),
+                        ],
+                        'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
+                        'file' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
+                                [
+                                    'prefix' => $wooDecision->getDocumentPrefix(),
+                                    'dossierId' => $wooDecision->getDossierNr(),
+                                    'type' => DossierFileType::ATTACHMENT->value,
+                                    'id' => $wooDecisionAttachment->getId(),
+                                ],
+                            )->toString(),
+                        ],
+                    ],
                 ],
             ],
             'dateFrom' => $wooDecision->getDateFrom()?->format('Y-m-d'),
@@ -190,12 +278,13 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'previewDate' => $wooDecision->getPreviewDate()?->format('Y-m-d'),
             'documents' => [
                 [
-                    'caseNumbers' => [],
+                    'inquiryNumbers' => [],
                     'documentDate' => $wooDecisionDocument1->getDocumentDate()?->format('Y-m-d'),
-                    'documentId' => $wooDecisionDocument1->getDocumentId(),
+                    'documentId' => $wooDecisionDocument1->getDocumentId()?->toString(),
                     'documentNr' => $wooDecisionDocument1->getDocumentNr(),
-                    'externalId' => $wooDecisionDocument1->getExternalId()?->__toString(),
+                    'externalId' => $wooDecisionDocument1->getExternalId()?->toString(),
                     'familyId' => $wooDecisionDocument1->getFamilyId(),
+                    'filename' => $wooDecisionDocument2->getFileInfo()->getName(),
                     'grounds' => $wooDecisionDocument1->getGrounds(),
                     'isSuspended' => $wooDecisionDocument1->isSuspended(),
                     'isUploaded' => $wooDecisionDocument1->isUploaded(),
@@ -206,14 +295,39 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'remark' => $wooDecisionDocument1->getRemark(),
                     'threadId' => $wooDecisionDocument1->getThreadId(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
+                    '_links' => [
+                        'upload' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                WooDecisionUploadDocumentResource::ROUTE_NAME_UPLOAD,
+                                [
+                                    'organisationId' => $wooDecision->getOrganisation()->getId(),
+                                    'dossierExternalId' => $wooDecision->getExternalId()?->toString(),
+                                    'documentExternalId' => $wooDecisionDocument1->getExternalId(),
+                                ],
+                            )->toString(),
+                        ],
+                        'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
+                        'file' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
+                                [
+                                    'prefix' => $wooDecision->getDocumentPrefix(),
+                                    'dossierId' => $wooDecision->getDossierNr(),
+                                    'type' => DossierFileType::DOCUMENT->value,
+                                    'id' => $wooDecisionDocument1->getId(),
+                                ],
+                            )->toString(),
+                        ],
+                    ],
                 ],
                 [
-                    'caseNumbers' => [],
+                    'inquiryNumbers' => [],
                     'documentDate' => $wooDecisionDocument2->getDocumentDate()?->format('Y-m-d'),
-                    'documentId' => $wooDecisionDocument2->getDocumentId(),
+                    'documentId' => $wooDecisionDocument2->getDocumentId()?->toString(),
                     'documentNr' => $wooDecisionDocument2->getDocumentNr(),
-                    'externalId' => $wooDecisionDocument2->getExternalId()?->__toString(),
+                    'externalId' => $wooDecisionDocument2->getExternalId()?->toString(),
                     'familyId' => $wooDecisionDocument2->getFamilyId(),
+                    'filename' => $wooDecisionDocument2->getFileInfo()->getName(),
                     'grounds' => $wooDecisionDocument2->getGrounds(),
                     'isSuspended' => $wooDecisionDocument2->isSuspended(),
                     'isUploaded' => $wooDecisionDocument2->isUploaded(),
@@ -222,51 +336,106 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'links' => $wooDecisionDocument2->getLinks(),
                     'refersTo' => [
                         [
-                            'documentId' => $wooDecisionDocument1->getDocumentId(),
-                            'externalId' => $wooDecisionDocument1->getExternalId(),
+                            'documentId' => $wooDecisionDocument1->getDocumentId()?->toString(),
+                            'externalId' => $wooDecisionDocument1->getExternalId()?->toString(),
                         ],
                     ],
                     'remark' => $wooDecisionDocument2->getRemark(),
                     'threadId' => $wooDecisionDocument2->getThreadId(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
+                    '_links' => [
+                        'upload' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                WooDecisionUploadDocumentResource::ROUTE_NAME_UPLOAD,
+                                [
+                                    'organisationId' => $wooDecision->getOrganisation()->getId(),
+                                    'dossierExternalId' => $wooDecision->getExternalId()?->toString(),
+                                    'documentExternalId' => $wooDecisionDocument2->getExternalId(),
+                                ],
+                            )->toString(),
+                        ],
+                        'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
+                        'file' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
+                                [
+                                    'prefix' => $wooDecision->getDocumentPrefix(),
+                                    'dossierId' => $wooDecision->getDossierNr(),
+                                    'type' => DossierFileType::DOCUMENT->value,
+                                    'id' => $wooDecisionDocument2->getId(),
+                                ],
+                            )->toString(),
+                        ],
+                    ],
                 ],
+            ],
+            '_links' => [
+                'self' => ['href' => $this->buildPublicUrl($organisation, $wooDecision)],
+                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
             ],
         ];
 
-        self::assertEquals($expectedResponse, $response->toArray());
+        self::assertSame($expectedResponse, $response->toArray());
         self::assertMatchesResourceItemJsonSchema(WooDecisionResource::class);
     }
 
-    //    fix this test in https://github.com/minvws/nl-rdo-woo-web-private/issues/6795
-    //    public function testGetWooDecisionWithJsonHal(): void
-    //    {
-    //        $organisation = OrganisationFactory::createOne();
-    //        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-    //        $wooDecision = WooDecisionFactory::createOne(
-    //            [
-    //                'departments' => [$department],
-    //                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
-    //                'organisation' => $organisation,
-    //            ],
-    //        );
-    //        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
-    //        WooDecisionAttachmentFactory::createOne(['dossier' => $wooDecision]);
-    //
-    //        self::createPublicationApiRequest(
-    //            Request::METHOD_GET,
-    //            $this->buildUrl($organisation, $wooDecision),
-    //            ['headers' => ['Accept' => 'application/hal+json']],
-    //        );
-    //
-    //        self::assertResponseIsSuccessful();
-    //        self::assertJsonContains([
-    //            '_links' => [
-    //                'self' => [
-    //                    'href' => $this->buildUrl($organisation, $wooDecision),
-    //                ],
-    //            ],
-    //        ]);
-    //    }
+    public function testGetWooDecisionWithPublicLink(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::new()->published()->create(
+            [
+                'departments' => [$department],
+                'externalId' => $this->getFaker()->externalId(),
+                'organisation' => $organisation,
+            ],
+        );
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
+        WooDecisionAttachmentFactory::createOne([
+            'dossier' => $wooDecision,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $result = self::createPublicationApiRequest(
+            Request::METHOD_GET,
+            $this->buildUrl($organisation, $wooDecision),
+        );
+        self::assertResponseIsSuccessful();
+
+        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        self::assertEquals([
+            'self' => ['href' => $this->buildPublicUrl($organisation, $wooDecision)],
+            'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
+        ], $result->toArray()['_links']);
+    }
+
+    public function testGetWooDecisionWithoutPublicLinkIfNotPublished(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::new()->concept()->create(
+            [
+                'departments' => [$department],
+                'externalId' => $this->getFaker()->externalId(),
+                'organisation' => $organisation,
+            ],
+        );
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
+        WooDecisionAttachmentFactory::createOne([
+            'dossier' => $wooDecision,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $result = self::createPublicationApiRequest(
+            Request::METHOD_GET,
+            $this->buildUrl($organisation, $wooDecision),
+        );
+        self::assertResponseIsSuccessful();
+
+        self::assertEquals([
+            'self' => ['href' => $this->buildPublicUrl($organisation, $wooDecision)],
+        ], $result->toArray()['_links']);
+    }
 
     public function testGetFromIncorrectOrganisation(): void
     {
@@ -275,7 +444,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
-                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+                'externalId' => $this->getFaker()->externalId(),
             ],
         );
 
@@ -436,7 +605,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
-                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+                'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'previewDate' => $this->getFaker()->plainDate(),
                 'documentPrefix' => $documentPrefix->getPrefix(),
@@ -447,6 +616,18 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $data['dossierNumber'] = $wooDecision->getDossierNr();
 
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->externalId()), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testCreateWooDecisionWithTooLongExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+
+        $data = $this->createValidWooDecisionDataPayload($department, $subject);
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, str_repeat('x', 129)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
@@ -468,6 +649,25 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => [$violations]]);
         self::assertDatabaseCount(WooDecision::class, 0);
+    }
+
+    public function testCreateWooDecisionWithoutMatter(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(WooDecision::class, 0);
+
+        $data = $this->createValidWooDecisionDataPayload($department, $subject);
+        unset($data['matter']);
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResource::class);
+
+        self::assertDatabaseCount(WooDecision::class, 1);
     }
 
     /**
@@ -586,8 +786,28 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'subjectId' => '00000000-0000-0000-0000-000000000000',
                 ],
                 [
-                    'code' => EntityExists::ENTITY_EXISTS_ERROR,
+                    'code' => ConstraintViolationBuilder::ENTITY_MISSING_ERROR,
                     'propertyPath' => 'subjectId',
+                ],
+            ],
+            'invalid departmentId format' => [
+                [
+                    'departmentId' => [],
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'propertyPath' => 'departmentId',
+                    'message' => 'Invalid string format',
+                ],
+            ],
+            'invalid departmentId uuid format' => [
+                [
+                    'departmentId' => 'invalid-uuid',
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'propertyPath' => 'departmentId',
+                    'message' => 'Invalid uuid format',
                 ],
             ],
             'unknown departmentId' => [
@@ -595,7 +815,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'departmentId' => '00000000-0000-0000-0000-000000000000',
                 ],
                 [
-                    'code' => EntityExists::ENTITY_EXISTS_ERROR,
+                    'code' => ConstraintViolationBuilder::ENTITY_MISSING_ERROR,
                     'propertyPath' => 'departmentId',
                 ],
             ],
@@ -603,9 +823,9 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 [
                     'documents' => [
                         [
-                            'caseNumbers' => [],
+                            'inquiryNumbers' => [],
                             'documentDate' => '2025-09-17',
-                            'documentId' => '7d54bd0f-96be-309c-a541-290efacef319',
+                            'documentId' => '7d54bd0f',
                             'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
                             'familyId' => 838,
                             'fileName' => 'quos',
@@ -630,9 +850,9 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 [
                     'documents' => [
                         [
-                            'caseNumbers' => [],
+                            'inquiryNumbers' => [],
                             'documentDate' => '2025-09-17',
-                            'documentId' => '7d54bd0f-96be-309c-a541-290efacef319',
+                            'documentId' => '7d54bd0f',
                             'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
                             'familyId' => 838,
                             'fileName' => 'document.pdf',
@@ -657,9 +877,9 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 [
                     'documents' => [
                         [
-                            'caseNumbers' => [],
+                            'inquiryNumbers' => [],
                             'documentDate' => '2025-09-17',
-                            'documentId' => '7d54bd0f-96be-309c-a541-290efacef319',
+                            'documentId' => '7d54bd0f',
                             'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
                             'familyId' => 838,
                             'fileName' => 'document.pdf',
@@ -678,6 +898,34 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 [
                     'code' => Choice::NO_SUCH_CHOICE_ERROR,
                     'propertyPath' => 'documents[0].grounds[2]',
+                ],
+            ],
+            'document matter with invalid character' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => '7d54bd0f',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'document.pdf',
+                            'grounds' => [],
+                            'isSuspended' => true,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'invalid-character-$',
+                            'refersTo' => [],
+                            'remark' => 'Consequatur perferendis facere omnis.',
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => 341,
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'propertyPath' => 'documents[0].matter',
+                    'hint' => 'DocumentMatter contains invalid characters',
                 ],
             ],
             'mainDocument grounds contains both valid & invalid values' => [
@@ -713,9 +961,9 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 [
                     'documents' => [
                         [
-                            'caseNumbers' => [],
+                            'inquiryNumbers' => [],
                             'documentDate' => '2025-09-17',
-                            'documentId' => '7d54bd0f-96be-309c-a541-290efacef319',
+                            'documentId' => '7d54bd0f',
                             'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
                             'familyId' => 838,
                             'fileName' => '\secret.txt',
@@ -768,6 +1016,23 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'propertyPath' => 'mainDocument.fileName',
                 ],
             ],
+            'attachment externalId too short' => [
+                [
+                    'attachments' => [
+                        [
+                            'externalId' => '',
+                            'fileName' => 'document.pdf',
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
+                            'type' => AttachmentType::ACCOUNTABILITY_REPORT,
+                            'language' => AttachmentLanguage::NLD,
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'propertyPath' => 'attachments[0].externalId',
+                ],
+            ],
             'disallowed attachment fileName extension' => [
                 [
                     'attachments' => [
@@ -785,13 +1050,30 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'propertyPath' => 'attachments[0].fileName',
                 ],
             ],
+            'disallowed attachment language' => [
+                [
+                    'attachments' => [
+                        [
+                            'externalId' => 'externalId',
+                            'fileName' => 'document.exe',
+                            'formalDate' => CarbonImmutable::now()->addDay()->format('Y-m-d'),
+                            'type' => AttachmentType::ACCOUNTABILITY_REPORT,
+                            'language' => 'non-enum-value',
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'propertyPath' => 'attachments[0].language',
+                ],
+            ],
             'disallowed document fileName extension' => [
                 [
                     'documents' => [
                         [
-                            'caseNumbers' => [],
+                            'inquiryNumbers' => [],
                             'documentDate' => '2025-09-17',
-                            'documentId' => '7d54bd0f-96be-309c-a541-290efacef319',
+                            'documentId' => '7d54bd0f',
                             'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
                             'familyId' => 838,
                             'fileName' => 'document.exe',
@@ -812,7 +1094,377 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'propertyPath' => 'documents[0].fileName',
                 ],
             ],
+            'exceeds max attachments per dossier' => [
+                [
+                    'attachments' => array_map(
+                        static fn ($i) => [
+                            'fileName' => sprintf('file%s.pdf', $i),
+                            'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
+                            'type' => AttachmentType::ACCOUNTABILITY_REPORT->value,
+                            'language' => AttachmentLanguage::ENG->value,
+                            'externalId' => sprintf('external-id-%s', $i),
+                        ],
+                        range(1, AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER + 1),
+                    ),
+                ],
+                [
+                    'code' => Count::TOO_MANY_ERROR,
+                    'propertyPath' => 'attachments',
+                ],
+            ],
+            'externalId too short' => [
+                [
+                    'attachments' => [
+                        [
+                            'fileName' => 'foo.pdf',
+                            'formalDate' => '2000-01-01',
+                            'language' => 'NLD',
+                            'type' => 'c_d506b718',
+                            'externalId' => '',
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'hint' => 'Invalid external id length',
+                    'propertyPath' => 'attachments[0].externalId',
+                ],
+            ],
+            'externalId too long (129 chars exceeds 128 max)' => [
+                [
+                    'attachments' => [
+                        [
+                            'fileName' => 'foo.pdf',
+                            'formalDate' => '2000-01-01',
+                            'language' => 'NLD',
+                            'type' => 'c_d506b718',
+                            'externalId' => str_repeat('x', 129),
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'hint' => 'Invalid external id length',
+                    'propertyPath' => 'attachments[0].externalId',
+                ],
+            ],
+            'duplicate document external_ids' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => '7d54bd0f',
+                            'externalId' => 'ext-1',
+                            'familyId' => 838,
+                            'fileName' => 'document1.pdf',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [],
+                            'remark' => null,
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => null,
+                        ],
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => 'a1b2c3d4',
+                            'externalId' => 'ext-1',
+                            'familyId' => 839,
+                            'fileName' => 'document2.pdf',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [],
+                            'remark' => null,
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => null,
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Unique::IS_NOT_UNIQUE,
+                    'propertyPath' => 'documents',
+                ],
+            ],
+            'duplicate document document_ids' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => 'doc1',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'document1.pdf',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [],
+                            'remark' => null,
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => null,
+                        ],
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => 'doc1',
+                            'externalId' => 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+                            'familyId' => 839,
+                            'fileName' => 'document2.pdf',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [],
+                            'remark' => null,
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => null,
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Unique::IS_NOT_UNIQUE,
+                    'propertyPath' => 'documents',
+                ],
+            ],
+            'empty document externalId' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => 'documentId',
+                            'externalId' => '',
+                            'familyId' => 838,
+                            'fileName' => 'document1.pdf',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [],
+                            'remark' => null,
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => null,
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'propertyPath' => 'documents[0].externalId',
+                    'message' => 'Invalid external id length',
+                ],
+            ],
+            'invalid documentId format' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => 'invalid-format-$',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'document1.pdf',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [],
+                            'remark' => null,
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => null,
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'propertyPath' => 'documents[0].documentId',
+                    'message' => 'Invalid document ID format',
+                ],
+            ],
+            'invalid document filename format' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => 'my-document-id',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'invalid-format-$',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [],
+                            'remark' => null,
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => null,
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'propertyPath' => 'documents[0].fileName',
+                    'message' => 'Filename contains invalid characters',
+                ],
+            ],
+            'invalid previewDate format' => [
+                [
+                    'previewDate' => 'invalid',
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'propertyPath' => 'previewDate',
+                    'message' => 'This value should be of type date.',
+                ],
+            ],
         ];
+    }
+
+    public function testCreateWooDecisionWithInvalidDocumentIdFormatReturnsOpenApiValidationError(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+        self::assertDatabaseCount(WooDecision::class, 0);
+
+        $data = $this->createValidWooDecisionDataPayload($department, $subject, 0, 0);
+        $data['documents'] = [array_merge($this->createDocumentDataPayload(), ['documentId' => 'INVALID/DOC/ID'])];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains([
+            'type' => sprintf('/validation_errors/%s', Type::INVALID_TYPE_ERROR),
+            'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+            'title' => 'An error occurred',
+        ]);
+        self::assertDatabaseCount(WooDecision::class, 0);
+    }
+
+    public function testCreateWooDecisionWithDocumentExternalIdAlreadyExistsInAnotherDossier(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        $existingWooDecision = WooDecisionFactory::createOne(['departments' => [$department], 'organisation' => $organisation]);
+        $existingExternalId = $this->getFaker()->externalId();
+        DocumentFactory::createOne(['dossiers' => [$existingWooDecision], 'externalId' => $existingExternalId]);
+
+        $data = $this->createValidWooDecisionDataPayload($department, $subject, 0, 0);
+        $data['documents'] = [array_merge($this->createDocumentDataPayload(), ['externalId' => $existingExternalId->toString()])];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'code' => UniqueEntity::NOT_UNIQUE_ERROR,
+            'propertyPath' => 'documents.[0].externalId',
+        ]]]);
+    }
+
+    public function testCreateWooDecisionWithDocumentNrAlreadyExistsInAnotherDossier(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $documentPrefix = DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        $matter = 'testmatter';
+        $documentId = 'testdocid';
+
+        $existingWooDecision = WooDecisionFactory::createOne(['departments' => [$department], 'organisation' => $organisation]);
+        DocumentFactory::createOne([
+            'dossiers' => [$existingWooDecision],
+            'documentNr' => sprintf('%s-%s-%s', $documentPrefix->getPrefix(), $matter, $documentId),
+        ]);
+
+        $data = $this->createValidWooDecisionDataPayload($department, $subject, 0, 0);
+        $data['documents'] = [array_merge($this->createDocumentDataPayload(), ['matter' => $matter, 'documentId' => $documentId])];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'code' => UniqueDocumentNr::NOT_UNIQUE_ERROR,
+            'propertyPath' => 'documents.[0].documentNr',
+        ]]]);
+    }
+
+    public function testUpdateWooDecisionWithDocumentExternalIdAlreadyExistsInAnotherDossier(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        $existingWooDecision = WooDecisionFactory::createOne(['departments' => [$department], 'organisation' => $organisation]);
+        $existingExternalId = $this->getFaker()->externalId();
+        DocumentFactory::createOne(['dossiers' => [$existingWooDecision], 'externalId' => $existingExternalId]);
+
+        $wooDecisionToUpdate = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecisionToUpdate]);
+
+        $data = $this->createValidWooDecisionDataPayload($department, null, 0, 0);
+        $data['documents'] = [array_merge($this->createDocumentDataPayload(), ['externalId' => $existingExternalId->toString()])];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecisionToUpdate), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'code' => UniqueEntity::NOT_UNIQUE_ERROR,
+            'propertyPath' => 'documents.[0].externalId',
+        ]]]);
+    }
+
+    public function testUpdateWooDecisionWithDocumentNrAlreadyExistsInAnotherDossier(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $documentPrefix = DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        $matter = 'testmatter';
+        $documentId = 'testdocid';
+
+        $existingWooDecision = WooDecisionFactory::createOne(['departments' => [$department], 'organisation' => $organisation]);
+        DocumentFactory::createOne([
+            'dossiers' => [$existingWooDecision],
+            'documentNr' => sprintf('%s-%s-%s', $documentPrefix->getPrefix(), $matter, $documentId),
+        ]);
+
+        $wooDecisionToUpdate = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'documentPrefix' => $documentPrefix->getPrefix(),
+            'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecisionToUpdate]);
+
+        $data = $this->createValidWooDecisionDataPayload($department, null, 0, 0);
+        $data['documents'] = [array_merge($this->createDocumentDataPayload(), ['matter' => $matter, 'documentId' => $documentId])];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecisionToUpdate), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'code' => UniqueDocumentNr::NOT_UNIQUE_ERROR,
+            'propertyPath' => 'documents.[0].documentNr',
+        ]]]);
     }
 
     public function testUpdateWooDecision(): void
@@ -822,7 +1474,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
-                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+                'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'previewDate' => $this->getFaker()->plainDate(),
                 'status' => DossierStatus::CONCEPT,
@@ -835,7 +1487,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseHas(
             WooDecision::class,
             [
-                'title' => $wooDecision->getTitle(),
+                'title' => (string) $wooDecision->getTitle(),
                 'summary' => $wooDecision->getSummary(),
             ],
         );
@@ -878,7 +1530,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => [[
             'propertyPath' => 'departmentId',
-            'message' => 'Deze waarde moet van het type Uuid zijn.',
+            'message' => 'This value should be of type Uuid.',
             'code' => Type::INVALID_TYPE_ERROR,
         ]]]);
     }
@@ -895,7 +1547,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
-                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+                'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'previewDate' => $this->getFaker()->plainDate(),
                 'status' => DossierStatus::CONCEPT,
@@ -907,7 +1559,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseHas(
             WooDecision::class,
             [
-                'title' => $wooDecision->getTitle(),
+                'title' => (string) $wooDecision->getTitle(),
                 'summary' => $wooDecision->getSummary(),
             ],
         );
@@ -920,7 +1572,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseHas(
             WooDecision::class,
             [
-                'title' => $wooDecision->getTitle(),
+                'title' => (string) $wooDecision->getTitle(),
                 'summary' => $wooDecision->getSummary(),
             ],
         );
@@ -952,6 +1604,50 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'propertyPath' => 'dateTo',
                 ],
             ],
+            'exceeds max attachments per dossier' => [
+                [
+                    'attachments' => array_map(
+                        static fn ($i) => [
+                            'fileName' => sprintf('file%s.pdf', $i),
+                            'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
+                            'type' => AttachmentType::ACCOUNTABILITY_REPORT->value,
+                            'language' => AttachmentLanguage::ENG->value,
+                            'externalId' => sprintf('external-id-%s', $i),
+                        ],
+                        range(1, AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER + 1),
+                    ),
+                ],
+                [
+                    'code' => Count::TOO_MANY_ERROR,
+                    'propertyPath' => 'attachments',
+                ],
+            ],
+            'invalid document link format' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-01-01',
+                            'documentId' => 'document-id-1',
+                            'externalId' => 'document-external-id-1',
+                            'familyId' => 333,
+                            'fileName' => 'document.pdf',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => ['asasdfasdf'],
+                            'matter' => '2025-01',
+                            'refersTo' => [],
+                            'remark' => 'None',
+                            'sourceType' => SourceType::PDF->value,
+                            'threadId' => 12345,
+                        ],
+                    ],
+                ],
+                [
+                    'propertyPath' => 'documents[0].links[0]',
+                ],
+            ],
         ];
     }
 
@@ -964,7 +1660,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $existingWooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
-                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+                'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'previewDate' => $this->getFaker()->plainDate(),
                 'documentPrefix' => $documentPrefix->getPrefix(),
@@ -974,7 +1670,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecisionToUpdate = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
-                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+                'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'previewDate' => $this->getFaker()->plainDate(),
                 'documentPrefix' => $documentPrefix->getPrefix(),
@@ -995,7 +1691,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
-                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+                'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'previewDate' => $this->getFaker()->plainDate(),
                 'status' => $this->getFaker()->randomElement(DossierStatus::nonConceptCases()),
@@ -1007,7 +1703,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseHas(
             WooDecision::class,
             [
-                'title' => $wooDecision->getTitle(),
+                'title' => (string) $wooDecision->getTitle(),
                 'summary' => $wooDecision->getSummary(),
             ],
         );
@@ -1019,7 +1715,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseHas(
             WooDecision::class,
             [
-                'title' => $wooDecision->getTitle(),
+                'title' => (string) $wooDecision->getTitle(),
                 'summary' => $wooDecision->getSummary(),
             ],
         );
@@ -1032,7 +1728,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
-                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+                'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'status' => DossierStatus::CONCEPT,
             ],
@@ -1046,13 +1742,13 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             ],
         );
 
-        $newDocumentId = $this->getFaker()->uuid();
+        $newDocumentId = $this->getFaker()->unique()->documentId()->toString();
 
         $putData = $this->createValidWooDecisionDataPayload($department, null, 0, 0);
 
         $documentData = $this->createDocumentDataPayload();
         $documentData['documentId'] = $newDocumentId;
-        $documentData['externalId'] = $wooDecisionDocument->getExternalId()?->__toString();
+        $documentData['externalId'] = $wooDecisionDocument->getExternalId()?->toString();
         $putData['documents'] = [$documentData];
 
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecision), ['json' => $putData]);
@@ -1074,7 +1770,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
-                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+                'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'status' => DossierStatus::CONCEPT,
             ],
@@ -1083,7 +1779,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecisionDocument = DocumentFactory::createOne(
             [
                 'dossiers' => [$wooDecision],
-                'externalId' => ExternalId::create($this->getFaker()->uuid()),
+                'externalId' => $this->getFaker()->externalId(),
                 'judgement' => Judgement::PUBLIC, // force isUploaded = true
             ],
         );
@@ -1091,17 +1787,17 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $putData = $this->createValidWooDecisionDataPayload($department, null, 0, 0);
         $putData['documents'] = [
             [
-                'caseNumbers' => [],
+                'inquiryNumbers' => [],
                 'documentDate' => $wooDecisionDocument->getDocumentDate()?->format('Y-m-d'),
-                'documentId' => $wooDecisionDocument->getDocumentId(),
-                'externalId' => $wooDecisionDocument->getExternalId()?->__toString(),
+                'documentId' => $wooDecisionDocument->getDocumentId()?->toString(),
+                'externalId' => $wooDecisionDocument->getExternalId()?->toString(),
                 'familyId' => $wooDecisionDocument->getFamilyId(),
                 'fileName' => $wooDecisionDocument->getFileInfo()->getName(),
                 'grounds' => $wooDecisionDocument->getGrounds(),
                 'isSuspended' => $wooDecisionDocument->isSuspended(),
                 'judgement' => $wooDecisionDocument->getJudgement()?->value,
                 'links' => $wooDecisionDocument->getLinks(),
-                'matter' => 'ignored-in-update',
+                'matter' => DocumentFactory::DEFAULT_MATTER,
                 'refersTo' => $wooDecisionDocument->getRefersTo()->toArray(),
                 'remark' => $wooDecisionDocument->getRemark(),
                 'sourceType' => $wooDecisionDocument->getFileInfo()->getSourceType(),
@@ -1132,7 +1828,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
-                'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+                'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'status' => DossierStatus::CONCEPT,
             ],
@@ -1141,7 +1837,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecisionDocument = DocumentFactory::createOne(
             [
                 'dossiers' => [$wooDecision],
-                'externalId' => ExternalId::create($this->getFaker()->uuid()),
+                'externalId' => $this->getFaker()->externalId(),
                 'judgement' => Judgement::PUBLIC, // force isUploaded = true
             ],
         );
@@ -1149,17 +1845,17 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $putData = $this->createValidWooDecisionDataPayload($department, null, 0, 0);
         $putData['documents'] = [
             [
-                'caseNumbers' => [],
+                'inquiryNumbers' => [],
                 'documentDate' => $wooDecisionDocument->getDocumentDate()?->addDays(1)->format('Y-m-d'),
-                'documentId' => $wooDecisionDocument->getDocumentId(),
-                'externalId' => $wooDecisionDocument->getExternalId()?->__toString(),
+                'documentId' => $wooDecisionDocument->getDocumentId()?->toString(),
+                'externalId' => $wooDecisionDocument->getExternalId()?->toString(),
                 'familyId' => $wooDecisionDocument->getFamilyId(),
                 'fileName' => $wooDecisionDocument->getFileInfo()->getName(),
                 'grounds' => $wooDecisionDocument->getGrounds(),
                 'isSuspended' => $wooDecisionDocument->isSuspended(),
                 'judgement' => $wooDecisionDocument->getJudgement()?->value,
                 'links' => $wooDecisionDocument->getLinks(),
-                'matter' => 'ignored-in-update',
+                'matter' => DocumentFactory::DEFAULT_MATTER,
                 'refersTo' => $wooDecisionDocument->getRefersTo()->toArray(),
                 'remark' => $wooDecisionDocument->getRemark(),
                 'sourceType' => $wooDecisionDocument->getFileInfo()->getSourceType(),
@@ -1179,7 +1875,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $wooDecision = WooDecisionFactory::createOne([
             'departments' => [$department],
-            'externalId' => ExternalId::create($this->getFaker()->slug(1)),
+            'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'status' => DossierStatus::CONCEPT,
         ]);
@@ -1187,26 +1883,26 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $wooDecisionDocument = DocumentFactory::createOne([
             'documentNr' => 'A',
             'dossiers' => [$wooDecision],
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
             'judgement' => Judgement::PUBLIC, // force isUploaded = true
         ]);
 
-        $newDocumentId = 'this-document-id-update-should-require-new-file-upload';
+        $newDocumentId = 'this.document.id.update.should.require.new.file.upload';
 
         $putData = $this->createValidWooDecisionDataPayload($department, null, 0, 0);
         $putData['documents'] = [
             [
-                'caseNumbers' => [],
+                'inquiryNumbers' => [],
                 'documentDate' => $wooDecisionDocument->getDocumentDate()?->format('Y-m-d'),
                 'documentId' => $newDocumentId,
-                'externalId' => $wooDecisionDocument->getExternalId()?->__toString(),
+                'externalId' => $wooDecisionDocument->getExternalId()?->toString(),
                 'familyId' => $wooDecisionDocument->getFamilyId(),
                 'fileName' => $wooDecisionDocument->getFileInfo()->getName(),
                 'grounds' => $wooDecisionDocument->getGrounds(),
                 'isSuspended' => $wooDecisionDocument->isSuspended(),
                 'judgement' => $wooDecisionDocument->getJudgement()?->value,
                 'links' => $wooDecisionDocument->getLinks(),
-                'matter' => 'ignored-in-update',
+                'matter' => DocumentFactory::DEFAULT_MATTER,
                 'refersTo' => $wooDecisionDocument->getRefersTo()->toArray(),
                 'remark' => $wooDecisionDocument->getRemark(),
                 'sourceType' => SourceType::VIDEO->value,
@@ -1252,11 +1948,11 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]);
         $attachment = WooDecisionAttachmentFactory::createOne([
             'dossier' => $wooDecision,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $data = [
-            'title' => $wooDecision->getTitle(),
+            'title' => (string) $wooDecision->getTitle(),
             'dossierNumber' => $wooDecision->getDossierNr(),
             'dateFrom' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $wooDecision->getDateFrom()?->format('Y-m-d'),
@@ -1279,7 +1975,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment->getLanguage(),
                     'type' => $attachment->getType(),
-                    'externalId' => $attachment->getExternalId()?->__toString(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
                 ],
             ],
         ];
@@ -1317,11 +2013,11 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]);
         $attachment = WooDecisionAttachmentFactory::createOne([
             'dossier' => $wooDecision,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $data = [
-            'title' => $wooDecision->getTitle(),
+            'title' => (string) $wooDecision->getTitle(),
             'dossierNumber' => $wooDecision->getDossierNr(),
             'dateFrom' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $wooDecision->getDateFrom()?->format('Y-m-d'),
@@ -1344,7 +2040,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment->getLanguage(),
                     'type' => $attachment->getType(),
-                    'externalId' => $attachment->getExternalId()?->__toString(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
                 ],
             ],
         ];
@@ -1362,7 +2058,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
     public function testUpdateWooDecisionWithOneNewAttachmentMetadataAndOneExistingMetadataIsPartiallyUpdated(): void
     {
         $changedFileName = 'new-file.pdf';
-        $newAttachmentExternalId = ExternalId::create($this->getFaker()->uuid());
+        $newAttachmentExternalId = $this->getFaker()->externalId();
 
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -1384,11 +2080,11 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]);
         $attachment1 = WooDecisionAttachmentFactory::createOne([
             'dossier' => $wooDecision,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $data = [
-            'title' => $wooDecision->getTitle(),
+            'title' => (string) $wooDecision->getTitle(),
             'dossierNumber' => $wooDecision->getDossierNr(),
             'dateFrom' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $wooDecision->getDateFrom()?->format('Y-m-d'),
@@ -1411,14 +2107,14 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $attachment1->getExternalId()?->__toString(),
+                    'externalId' => $attachment1->getExternalId()?->toString(),
                 ],
                 [
                     'fileName' => $changedFileName,
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $newAttachmentExternalId->__toString(),
+                    'externalId' => $newAttachmentExternalId->toString(),
                 ],
             ],
         ];
@@ -1463,16 +2159,16 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]);
         $attachment1 = WooDecisionAttachmentFactory::createOne([
             'dossier' => $wooDecision,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $attachment2 = WooDecisionAttachmentFactory::createOne([
             'dossier' => $wooDecision,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $data = [
-            'title' => $wooDecision->getTitle(),
+            'title' => (string) $wooDecision->getTitle(),
             'dossierNumber' => $wooDecision->getDossierNr(),
             'dateFrom' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $wooDecision->getDateFrom()?->format('Y-m-d'),
@@ -1495,7 +2191,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $attachment1->getExternalId()?->__toString(),
+                    'externalId' => $attachment1->getExternalId()?->toString(),
                 ],
             ],
         ];
@@ -1576,21 +2272,249 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
     private function createDocumentDataPayload(): array
     {
         return [
-            'caseNumbers' => [],
+            'inquiryNumbers' => [],
             'documentDate' => $this->getFaker()->date(),
-            'documentId' => $this->getFaker()->uuid(),
-            'externalId' => $this->getFaker()->externalId()->__toString(),
+            'documentId' => $this->getFaker()->unique()->documentId()->toString(),
+            'externalId' => $this->getFaker()->externalId()->toString(),
             'familyId' => $this->getFaker()->numberBetween(1, 1000),
             'fileName' => $this->getFaker()->fileNameForGroup(UploadGroupId::API_WOO_DECISION_DOCUMENTS)->toString(),
             'grounds' => $this->getFaker()->groundsBetween(0, 3),
-            'isSuspended' => $this->getFaker()->boolean(),
-            'judgement' => $this->getFaker()->randomElement(Judgement::cases()),
+            'isSuspended' => false,
+            'judgement' => Judgement::PUBLIC,
             'links' => [],
-            'matter' => $this->getFaker()->slug(1),
+            'matter' => $this->getFaker()->optional()->slug(1),
             'refersTo' => [],
             'remark' => $this->getFaker()->sentence(),
             'sourceType' => $this->getFaker()->randomElement(SourceType::cases()),
             'threadId' => $this->getFaker()->numberBetween(1, 1000),
         ];
+    }
+
+    /**
+     * @param array<string, array<array-key, mixed>> $dataOverrides
+     * @param array<string, mixed> $expectedSubset
+     *
+     * Pattern A fix (500→422): https://github.com/minvws/nl-rdo-woo-web-private/issues/6923
+     * Pattern B (data persists despite 422): https://github.com/minvws/nl-rdo-woo-web-private/issues/7043
+     */
+    #[DataProvider('createWooDecisionRefersToValidationDataProvider')]
+    public function testCreateWooDecisionWithInvalidRefersTo(array $dataOverrides, array $expectedSubset): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        $data = array_merge($this->createValidWooDecisionDataPayload($department, $subject, 1, 1), $dataOverrides);
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains($expectedSubset);
+
+        // Make sure no data inconsistency entity persists despite 422
+        self::assertDatabaseCount(WooDecision::class, 0);
+        self::assertDatabaseCount(WooDecisionMainDocument::class, 0);
+        self::assertDatabaseCount(WooDecisionAttachment::class, 0);
+        self::assertDatabaseCount(Document::class, 0);
+    }
+
+    /**
+     * @return array<string, array{array<string, array<array-key, mixed>>, array<string, mixed>}>
+     */
+    public static function createWooDecisionRefersToValidationDataProvider(): array
+    {
+        return [
+            'refersTo with empty externalId' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => '7d54bd0f',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'document.pdf',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [''],
+                            'remark' => null,
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => null,
+                        ],
+                    ],
+                ],
+                [
+                    'violations' => [
+                        [
+                            'propertyPath' => 'documents[0].refersTo[0]',
+                            'message' => 'Invalid external id length',
+                        ],
+                    ],
+                ],
+            ],
+            'refersTo with too long externalId (129 chars)' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => '7d54bd0f',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'document.pdf',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => [str_repeat('x', 129)],
+                            'remark' => null,
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => null,
+                        ],
+                    ],
+                ],
+                [
+                    'violations' => [
+                        [
+                            'propertyPath' => 'documents[0].refersTo[0]',
+                            'message' => 'Invalid external id length',
+                        ],
+                    ],
+                ],
+            ],
+            // Bug replicator: https://github.com/minvws/nl-rdo-woo-web-private/issues/7053
+            'refersTo with non-existent externalId' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => '7d54bd0f',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'document.pdf',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => ['non-existent-document-id'],
+                            'remark' => null,
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => null,
+                        ],
+                    ],
+                ],
+                [
+                    'violations' => [
+                        [
+                            'propertyPath' => 'documents[0].refersTo[0]',
+                            'message' => 'The referenced document could not be found',
+                        ],
+                    ],
+                ],
+            ],
+            'refersTo with two non-existent externalIds' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => '7d54bd0f',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'document.pdf',
+                            'grounds' => [],
+                            'isSuspended' => false,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'sint',
+                            'refersTo' => ['non-existent-document-id-1', 'non-existent-document-id-2'],
+                            'remark' => null,
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => null,
+                        ],
+                    ],
+                ],
+                [
+                    'violations' => [
+                        [
+                            'propertyPath' => 'documents[0].refersTo[0]',
+                            'message' => 'The referenced document could not be found',
+                        ],
+                        [
+                            'propertyPath' => 'documents[0].refersTo[1]',
+                            'message' => 'The referenced document could not be found',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    public function testCreateWooDecisionWithAlreadyPublicDocument(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        $putData = $this->createValidWooDecisionDataPayload($department, $subject, 0, 0);
+
+        $documentData = $this->createDocumentDataPayload();
+        $documentData['judgement'] = Judgement::ALREADY_PUBLIC->value;
+        $documentData['isSuspended'] = false;
+        $documentData['links'] = ['http://dummy.domain.com/path'];
+
+        $putData['documents'] = [$documentData];
+
+        $response = $this->createPublicationApiRequest(
+            Request::METHOD_PUT,
+            $this->buildUrl($organisation, $this->getFaker()->slug(1)),
+            ['json' => $putData],
+        );
+        self::assertResponseIsSuccessful();
+
+        Assert::string($documentData['externalId']);
+        $documentEntity = $this->getEntity(
+            Document::class,
+            ['externalId' => ExternalId::create($documentData['externalId'])],
+        );
+        Assert::notNull($documentEntity);
+
+        $expectedDocumentResponseData = [
+            'inquiryNumbers' => [],
+            'documentDate' => $documentData['documentDate'],
+            'documentId' => $documentData['documentId'],
+            'externalId' => $documentData['externalId'],
+            'familyId' => $documentData['familyId'],
+            'grounds' => $documentData['grounds'],
+            'isSuspended' => $documentData['isSuspended'],
+            'judgement' => $documentData['judgement'],
+            'links' => $documentData['links'],
+            'refersTo' => $documentData['refersTo'],
+            'remark' => $documentData['remark'],
+            'threadId' => $documentData['threadId'],
+            'uploadStatus' => UploadStatus::NO_UPLOAD_REQUIRED->value,
+            'isUploaded' => false,
+            'isWithdrawn' => false,
+            'documentNr' => $documentEntity->getDocumentNr(),
+            'filename' => $documentData['fileName'],
+            '_links' => [],
+        ];
+
+        $responseData = $response->toArray();
+        Assert::isArray($responseData);
+        Assert::keyExists($responseData, 'documents');
+        Assert::isArray($responseData['documents']);
+        Assert::keyExists($responseData['documents'], 0);
+
+        self::assertEquals(
+            $expectedDocumentResponseData,
+            $responseData['documents'][0],
+        );
     }
 }

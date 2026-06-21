@@ -57,11 +57,5 @@ when@dev:
             cookie_secure: auto
         trusted_hosts:
             - '%trusted_hosts%'
-            - public-minvws.local
-            - public-minfin.local
-            - admin-minvws.local
-            - admin-minfin.local
-            - publication-api-minvws.local
-            - publication-api-minfin.local
         trusted_proxies: '%env(default::TRUSTED_PROXIES)%'
         trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']

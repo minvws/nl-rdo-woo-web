@@ -7,7 +7,6 @@ Resource            Admin.resource
 
 
 *** Variables ***
-${FILE_NAME}        ${EMPTY}
 ${FILE_LOCATION}    ${EMPTY}
 
 

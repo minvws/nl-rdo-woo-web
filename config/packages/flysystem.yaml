@@ -9,28 +9,22 @@ parameters:
 flysystem:
     storages:
         document.storage:
-            adapter: 'lazy'
-            options:
+            lazy:
                 source: 'document.storage.%env(STORAGE_DOCUMENT_ADAPTER)%'
         batch.storage:
-            adapter: 'lazy'
-            options:
+            lazy:
                 source: 'batch.storage.%env(STORAGE_BATCH_ADAPTER)%'
         woo_index.storage:
-            adapter: 'lazy'
-            options:
+            lazy:
                 source: 'woo_index.storage.%env(STORAGE_WOO_INDEX_ADAPTER)%'
         upload.storage:
-            adapter: 'lazy'
-            options:
+            lazy:
                 source: 'upload.storage.%env(STORAGE_UPLOAD_ADAPTER)%'
         working_copy.storage:
-            adapter: 'lazy'
-            options:
+            lazy:
                 source: 'working_copy.storage.local'
         assets.storage:
-            adapter: 'lazy'
-            options:
+            lazy:
                 source: 'assets.storage.%env(STORAGE_ASSETS_ADAPTER)%'
 
 
@@ -38,42 +32,37 @@ flysystem:
         # Minio storage definitions
         #
         document.storage.aws:
-            adapter: 'aws'
             visibility: 'public'
             directory_visibility: 'public'
-            options:
+            aws:
                 client: 'Aws\S3\S3Client'
                 bucket: '%storage.minio.bucket.document%'
 
         batch.storage.aws:
-            adapter: 'aws'
             visibility: 'public'
             directory_visibility: 'public'
-            options:
+            aws:
                 client: 'Aws\S3\S3Client'
                 bucket: '%storage.minio.bucket.batch%'
 
         woo_index.storage.aws:
-            adapter: 'aws'
             visibility: 'public'
             directory_visibility: 'public'
-            options:
+            aws:
                 client: 'Aws\S3\S3Client'
                 bucket: '%storage.minio.bucket.woo_index%'
 
         upload.storage.aws:
-            adapter: 'aws'
             visibility: 'public'
             directory_visibility: 'public'
-            options:
+            aws:
                 client: 'Aws\S3\S3Client'
                 bucket: '%storage.minio.bucket.upload%'
 
         assets.storage.aws:
-            adapter: 'aws'
             visibility: 'public'
             directory_visibility: 'public'
-            options:
+            aws:
                 client: 'Aws\S3\S3Client'
                 bucket: '%storage.minio.bucket.assets%'
 
@@ -81,10 +70,9 @@ flysystem:
         # Local storage definitions
         #
         document.storage.local: &document.storage.local
-            adapter: 'local'
             visibility: 'public'
             directory_visibility: 'public'
-            options: &document.storage.local.options
+            local: &document.storage.local.options
                 directory: '%document_path%'
                 permissions:
                     file:
@@ -96,31 +84,31 @@ flysystem:
 
         batch.storage.local:
             <<: *document.storage.local
-            options:
+            local:
                 <<: *document.storage.local.options
                 directory: '%batch_path%'
 
         woo_index.storage.local:
             <<: *document.storage.local
-            options:
+            local:
                 <<: *document.storage.local.options
                 directory: '%woo_index_path%'
 
         upload.storage.local:
             <<: *document.storage.local
-            options:
+            local:
                 <<: *document.storage.local.options
                 directory: '%upload_path%'
 
         working_copy.storage.local:
             <<: *document.storage.local
-            options:
+            local:
                 <<: *document.storage.local.options
                 directory: '%working_copy_path%'
 
         assets.storage.local:
             <<: *document.storage.local
-            options:
+            local:
                 <<: *document.storage.local.options
                 directory: '%upload_path%'
 
@@ -128,10 +116,9 @@ flysystem:
         # Phpunit (vfsStream) storage definitions
         #
         document.storage.phpunit: &document.storage.phpunit
-            adapter: 'local'
             visibility: 'public'
             directory_visibility: 'public'
-            options: &document.storage.phpunit.options
+            local: &document.storage.phpunit.options
                 directory:   'vfs://root/%document_path%'
                 permissions:
                     file:
@@ -143,7 +130,7 @@ flysystem:
 
         assets.storage.phpunit:
             <<: *document.storage.phpunit
-            options:
+            local:
                 <<: *document.storage.phpunit.options
                 directory: 'vfs://root/%assets_path%'
 
@@ -151,5 +138,5 @@ when@test:
     flysystem:
         storages:
             woo_index.storage.memory:
-                adapter: 'memory'
                 visibility: 'public'
+                memory: ~

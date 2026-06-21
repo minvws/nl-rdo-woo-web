@@ -28,7 +28,7 @@ class DocumentController extends AbstractController
         #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId,documentId)')] Document $document,
     ): Response {
         $breadcrumbs->addRouteItem(
-            $dossier->getTitle() ?? '',
+            (string) $dossier->getTitle(),
             'app_admin_dossier',
             ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );

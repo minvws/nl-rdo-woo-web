@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
+use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
@@ -147,14 +148,28 @@ final class WooDecisionTest extends UnitTestCase
         );
     }
 
+    #[DataProvider('canRemoveInventoryDataProvider')]
+    public function testCanRemoveInventoryReturnsTrueOnlyWhenInventoryIsOptionalAndStatusIsConcept(
+        DecisionType $decisionType,
+        DossierStatus $status,
+        bool $expectedCanRemoveInventory,
+    ): void {
+        $this->wooDecision->setDecision($decisionType);
+        $this->wooDecision->setStatus($status);
+
+        self::assertEquals($expectedCanRemoveInventory, $this->wooDecision->canRemoveInventory());
+    }
+
     /**
-     * @param array<array-key, DecisionType> $decisionTypes
-     *
-     * @return array<array-key, array{DecisionType, bool}>
+     * @return array<string, array{DecisionType, DossierStatus, bool}>
      */
-    public static function mapDecisionTypesToTrue(array $decisionTypes): array
+    public static function canRemoveInventoryDataProvider(): array
     {
-        return array_map(fn (DecisionType $decisionType) => [$decisionType, in_array($decisionType, $decisionTypes, true)], DecisionType::cases());
+        return [
+            'optional inventory and concept status' => [DecisionType::NOT_PUBLIC, DossierStatus::CONCEPT, true],
+            'optional inventory but non-concept status' => [DecisionType::NOT_PUBLIC, DossierStatus::NEW, false],
+            'required inventory and concept status' => [DecisionType::PUBLIC, DossierStatus::CONCEPT, false],
+        ];
     }
 
     public function testSetAndGetPreviewDate(): void
@@ -251,5 +266,17 @@ final class WooDecisionTest extends UnitTestCase
         $this->wooDecision->addDocument($document);
 
         self::assertTrue($this->wooDecision->hasWithdrawnOrSuspendedDocuments());
+    }
+
+    /**
+     * @param array<array-key, DecisionType> $decisionTypes
+     *
+     * @return array<array-key, array{DecisionType, bool}>
+     */
+    private static function mapDecisionTypesToTrue(array $decisionTypes): array
+    {
+        return array_map(static function (DecisionType $decisionType) use ($decisionTypes) {
+            return [$decisionType, in_array($decisionType, $decisionTypes, true)];
+        }, DecisionType::cases());
     }
 }

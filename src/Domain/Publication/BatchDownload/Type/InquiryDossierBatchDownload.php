@@ -33,7 +33,7 @@ readonly class InquiryDossierBatchDownload implements BatchDownloadTypeInterface
 
         return sprintf(
             '%s-%s-%s',
-            $scope->inquiry->getCasenr(),
+            $scope->inquiry->getInquiryNumber(),
             $scope->wooDecision->getDocumentPrefix(),
             $scope->wooDecision->getDossierNr(),
         );

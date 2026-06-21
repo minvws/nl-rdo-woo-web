@@ -33,7 +33,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
     {
         $event = new ControllerArgumentsEvent(
             Mockery::mock(Kernel::class),
-            fn () => true,
+            static fn () => true,
             [],
             $this->request,
             HttpKernelInterface::SUB_REQUEST,
@@ -50,7 +50,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
 
         $event = new ControllerArgumentsEvent(
             Mockery::mock(Kernel::class),
-            fn () => true,
+            static fn () => true,
             [],
             $this->request,
             HttpKernelInterface::MAIN_REQUEST,
@@ -65,7 +65,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
 
         $event = new ControllerArgumentsEvent(
             Mockery::mock(Kernel::class),
-            fn () => true,
+            static fn () => true,
             [],
             $this->request,
             HttpKernelInterface::MAIN_REQUEST,
@@ -82,7 +82,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
 
         $event = new ControllerArgumentsEvent(
             Mockery::mock(Kernel::class),
-            fn () => true,
+            static fn () => true,
             [],
             $this->request,
             HttpKernelInterface::MAIN_REQUEST,
@@ -101,7 +101,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
 
         $event = new ControllerArgumentsEvent(
             Mockery::mock(Kernel::class),
-            fn () => true,
+            static fn () => true,
             [],
             $this->request,
             HttpKernelInterface::MAIN_REQUEST,

@@ -82,6 +82,7 @@ global.results: "Resultaten"
 global.ref_number: "Referentienummer"
 global.or: "of"
 global.last_update: "Laatste update"
+global.remove: "Verwijder"
 global.save: "Opslaan"
 global.save_and_continue: "Opslaan en verder"
 global.save_and_publish: "Opslaan en klaarzetten"
@@ -191,7 +192,7 @@ categories.category.judgement.go_to_plural: "soorten besluiten"
 categories.category.grounds: "Beoordelingsgronden"
 categories.category.grounds.go_to_plural: "beoordelingsgronden"
 categories.label.all-categories: "Naar alle categorieën"
-categories.label.go_to_all_of_type: "Naar alle {count} {type}"
+categories.label.go_to_all_of_type: "Naar alle {type}"
 categories.category.date.from: "Datum vanaf"
 categories.category.date.to: "Datum tot"
 categories.category.date.without_date: "Datum"
@@ -308,7 +309,7 @@ admin.subject.name_help: "Bijvoorbeeld: 'Vaccinaties en medicatie'. Minimaal 1 e
 admin.inquiries.manage: "Verzoekenbeheer"
 admin.inquiries.manage_details: "Verzoekenbeheer: details"
 admin.inquiries.manage_help: "Deze link biedt toegang tot beheerdersacties voor zaken."
-admin.inquiries.number_of_cases_added: "Er zijn {count} zaaknummers gekoppeld"
+admin.inquiries.number_of_inquiries_added: "Er zijn {count} zaaknummers gekoppeld"
 admin.inquiries.back_to_overview: "Terug naar het overzicht"
 admin.inquiries.generic_errors_title: "De volgende algemene fouten zijn opgetreden"
 admin.inquiries.row_errors_title: "Niet alle zaaknummers zijn gekoppeld om de volgende redenen"
@@ -646,10 +647,10 @@ admin.dossiers.documents.needs_upload: "Nog te uploaden"
 admin.dossiers.documents.needs_work.title: 'Documenten vereisen aandacht'
 admin.dossiers.documents.needs_work.text: 'Bekijk de sectie "<a class="bhr-a" href="#documents">Documenten</a>" voor meer informatie over de status van de documenten.'
 
-admin.inquiries.case_number: "Zaaknummer"
-admin.inquiries.case_numbers: "Alle zaaknummers"
-admin.inquiries.link_case: "Zaaknummer aan Woo-besluiten of -documenten koppelen"
-admin.inquiries.link_to_case: "Link naar zaak"
+admin.inquiries.inquiry_number: "Zaaknummer"
+admin.inquiries.inquiry_numbers: "Alle zaaknummers"
+admin.inquiries.link_inquiry: "Zaaknummer aan Woo-besluiten of -documenten koppelen"
+admin.inquiries.link_to_inquiry: "Link naar zaak"
 admin.user.password_changed: "Wachtwoord succesvol gewijzigd"
 
 public.global.access_denied.message: "U heeft niet de toegangsrechten die nodig zijn om deze pagina of dit document te mogen bekijken."
@@ -678,7 +679,7 @@ public.global.decisions: "Besluiten"
 public.global.size: "Grootte"
 public.global.subjects: Onderwerpen
 public.global.request_summary: "Samenvatting verzoek"
-public.global.logo.text: "Woo Platform"
+public.global.logo.text: "Woo Publicatieplatform"
 public.global.logo.label: "ga naar de homepage"
 public.global.navigation.accessible.label: "Hoofdnavigatie"
 public.global.label.home: "Home"
@@ -810,8 +811,8 @@ public.results.in_dossiers: >-
 
 public.messages.new_dossiers: "Op {dates} komt op deze pagina een nieuw (deel)besluit beschikbaar."
 
-public.inquiries.no_docs_available: 'Er zijn op dit moment geen documenten beschikbaar voor het verzoek met zaaknummer {casenumber}'
-public.inquiries.download_inventory: "Download de inventarislijst zaaknummer {casenumber}"
+public.inquiries.no_docs_available: 'Er zijn op dit moment geen documenten beschikbaar voor het verzoek met zaaknummer {inquiry_number}'
+public.inquiries.download_inventory: "Download de inventarislijst zaaknummer {inquiry_number}"
 public.inquiries.number_of_decisions: >-
   { count, plural,
     =1{# (deel)besluit}
@@ -840,13 +841,13 @@ public.inquiries.documents_wont_be_published: >-
 
 public.inquiry.documents.of_which_withdrawn: "waarvan {count} ingetrokken"
 public.inquiry.documents.of_which_suspended: "waarvan {count} opgeschort"
-public.inquiry.page_title: "Besluiten en documenten voor zaaknummer {case_number}"
+public.inquiry.page_title: "Besluiten en documenten voor zaaknummer {inquiry_number}"
 public.inquiry.dossiers_and_documents: "Besluiten en documenten"
 public.inquiry.dossier_detail_breadcrumb: "Documenten voor {title}"
-public.inquiry.dossier_detail_title: "Documenten voor {title} voor zaaknummer {case_number}"
-public.inquiry.decisions_for_case: "Er {are_or_is} {number_of_decisions} genomen voor het verzoek om informatie te openbaren met zaaknummer {case_number}"
+public.inquiry.dossier_detail_title: "Documenten voor {title} voor zaaknummer {inquiry_number}"
+public.inquiry.decisions_for_inquiry: "Er {are_or_is} {number_of_decisions} genomen voor het verzoek om informatie te openbaren met zaaknummer {inquiry_number}"
 public.inquiry.dossiers_breadcrumb: "Alle besluiten en documenten"
-public.inquiry.dossiers_title: "Alle besluiten en documenten voor zaaknummer {case_number}"
+public.inquiry.dossiers_title: "Alle besluiten en documenten voor zaaknummer {inquiry_number}"
 public.inquiry.view_all_dossiers: "Alle besluiten bekijken ({count})"
 public.inquiry.documents_in_dossier: "{count} documenten in dit besluit"
 public.documents.viewer.click_on_page: "Klik op een pagina om de {fileInfo} ({fileSize} - {pages}) te openen in uw browser"
@@ -947,8 +948,8 @@ history.dossier_update_publication_date.public: null
 history.dossier_inquiry_added.public: null
 history.dossier_inquiry_added.private: >-
   { count, plural,
-    =1{Toegevoegd aan zaak {casenrs}}
-    other{Toegevoegd aan zaken {casennrs}}
+    =1{Toegevoegd aan zaak {inquiryNumbers}}
+    other{Toegevoegd aan zaken {inquiryNumbers}}
   }
 history.dossier_withdraw_all.private: 'Alle documenten ingetrokken: {explanation} ({explanation_details})'
 history.dossier_withdraw_all.public: 'Alle documenten in dit besluit zijn ingetrokken met reden: {explanation}'
@@ -1036,12 +1037,13 @@ publication.dossier.error.invalid_document_number: "Rij {rownumber} heeft een on
 publication.dossier.error.invalid_document_id_length: "Rij {rownumber} heeft een ongeldig documentnummer, lengte minimaal {min} en maximaal {max} tekens"
 publication.dossier.error.invalid_family_id: "Rij {rownumber} heeft een ongeldige familie / family id"
 publication.dossier.error.invalid_thread_id: "Rij {rownumber} heeft een ongeldige thread id"
-publication.dossier.error.invalid_matter: "Rij {rownumber} heeft geen matter van minimaal {min} en maximaal {max} tekens"
+publication.dossier.error.invalid_matter: "Rij {rownumber} heeft een matter met een incorrect aantal en/of incorrecte karakters"
 publication.dossier.error.remark_too_long: "Rij {rownumber} heeft een te lange toelichting / opmerking (max {max} tekens)"
 publication.dossier.error.link_too_long: "Rij {rownumber} heeft een te lange link (max 2048 tekens)"
 publication.dossier.error.file_name_too_long: "Rij {rownumber} heeft een te lange bestandsnaam (max 1024 tekens)"
-publication.dossier.error.casenumbers_invalid: "Rij {rownumber} bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
-publication.inquiry.error.casenumbers_invalid: "Bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
+publication.dossier.error.inquiry_numbers_invalid: "Rij {rownumber} bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
+publication.dossier.error.invalid_link: "Rij {rownumber} heeft een ongeldige URL"
+publication.inquiry.error.inquiry_numbers_invalid: "Bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
 publication.dossier.error.generic_document_row_exception: "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 publication.dossier.error.processing_inventory: "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
 publication.dossier.error.no_inventory_changes: "Het nieuwe productierapport is gelijk aan het huidige rapport"
@@ -1051,7 +1053,8 @@ publication.dossier.error.referred_document_does_not_exist: "Gerelateerd ID {doc
 publication.dossier.error.document_not_unique: "Het documentnummer {documentNumber} is niet uniek binnen het productierapport"
 publication.dossier.error.maximum_processing_time_exceeded: "De verwerking van het productierapport heeft de maximale duur overschreden"
 publication.dossier.error.file_name_does_not_match_document_number: "De bestandsnaam {filename} komt niet overeen met documentnummer {documentnr}"
-publication.dossier.error.date_header: "Onderstaande fouten zijn opgetreden op {date}"
+publication.dossier.error.productionreport_date_header: "Op {date} is een poging gedaan het productierapport te vervangen - dit is gefaald met de volgende fouten:"
+publication.dossier.error.productionreport_noop: "Het productierapport is niet vervangen en het originele productierapport is behouden."
 
 global.document.withdraw.reason.data_in_document: 'Ongelakte gegevens in het document'
 global.document.withdraw.reason.data_in_file: 'Ongelakte gegevens in de bestandsnaam'

@@ -91,6 +91,11 @@
                 "type": "AttachmentType",
                 "value": "c_a1dae55d",
                 "label": "term_agenda"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_b3a6a7fc",
+                "label": "geographic_map"
             }
         ]
     },
@@ -201,6 +206,16 @@
                 "type": "AttachmentType",
                 "value": "c_2aedadff",
                 "label": "speech"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_3a121159",
+                "label": "official_form"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_6604fe5b",
+                "label": "media_text"
             }
         ]
     },
@@ -268,6 +283,56 @@
                     "type": "AttachmentType",
                     "value": "c_03c52ba0",
                     "label": "parliamentary_question_without_answer"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_9b2d26fc",
+                    "label": "council_of_state_advice"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_49599e6c",
+                    "label": "parliamentary_letter"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_1422b182",
+                    "label": "memorandum_of_reply"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_11305262",
+                    "label": "explanatory_memorandum"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_0d0e9b52",
+                    "label": "further_report"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_622408c6",
+                    "label": "further_memorandum_of_reply"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_8f5898e5",
+                    "label": "note_on_further_report"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_bee85371",
+                    "label": "note_on_report"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_c2052ba5",
+                    "label": "amendment_note"
+                },
+                {
+                    "type": "AttachmentType",
+                    "value": "c_33d7570c",
+                    "label": "legislative_proposal"
                 }
             ]
         },
@@ -325,6 +390,21 @@
                 "type": "AttachmentType",
                 "value": "c_5b1055aa",
                 "label": "plan"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_4bd6c154",
+                "label": "diplomatic_declaration"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_995d4fe9",
+                "label": "regulation"
+            },
+            {
+                "type": "AttachmentType",
+                "value": "c_41ac5574",
+                "label": "directive"
             }
         ]
     },

@@ -80,7 +80,7 @@
             "department": {
                 "terms": {
                     "field": "department_names",
-                    "size": 5,
+                    "size": 7,
                     "order": {
                         "_count": "desc"
                     },
@@ -90,7 +90,7 @@
             "grounds": {
                 "terms": {
                     "field": "grounds",
-                    "size": 5,
+                    "size": 7,
                     "order": {
                         "_count": "desc"
                     },
@@ -100,7 +100,7 @@
             "judgement": {
                 "terms": {
                     "field": "judgement",
-                    "size": 5,
+                    "size": 7,
                     "order": {
                         "_count": "desc"
                     },
@@ -115,7 +115,7 @@
                     "period": {
                         "terms": {
                             "field": "dossiers.date_period",
-                            "size": 5,
+                            "size": 7,
                             "order": {
                                 "_count": "desc"
                             },
@@ -127,7 +127,7 @@
             "source": {
                 "terms": {
                     "field": "source_type",
-                    "size": 5,
+                    "size": 7,
                     "order": {
                         "_count": "desc"
                     },
@@ -137,7 +137,7 @@
             "subject": {
                 "terms": {
                     "field": "subject_names",
-                    "size": 5,
+                    "size": 7,
                     "order": {
                         "_count": "desc"
                     },
@@ -154,7 +154,7 @@
                     "sublevel_type": {
                         "terms": {
                             "field": "sublevel_type",
-                            "size": 5,
+                            "size": 7,
                             "order": {
                                 "_count": "desc"
                             },

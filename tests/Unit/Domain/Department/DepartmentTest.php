@@ -20,6 +20,14 @@ class DepartmentTest extends UnitTestCase
         self::assertEquals($title, $department->getLandingPageTitle());
     }
 
+    public function testSetSlugLowercasesInput(): void
+    {
+        $department = new Department();
+        $department->setSlug('MinFin');
+
+        self::assertEquals('minfin', $department->getSlug());
+    }
+
     public function testSetAndGetLandingPageDescription(): void
     {
         $department = new Department();

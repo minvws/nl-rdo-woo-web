@@ -68,7 +68,7 @@ tasks:
       - task: :dc
         vars:
           SUB_CMD: >
-            run -e ENVIRONMENT=local -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            run -e ENVIRONMENT=docker -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run robot --include 'first-login' {{.ROBOT_PARAMS}}"
 
   local:venv:
@@ -151,7 +151,7 @@ tasks:
       - task: :dc
         vars:
           SUB_CMD: >
-            run -e ENVIRONMENT=local -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            run -e ENVIRONMENT=docker -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run robot --include '{{.tag | default "single"}}' --exclude '{{.exclude | default ""}}' {{.ROBOT_PARAMS}}"
 
   docker:run:ci:
@@ -167,7 +167,7 @@ tasks:
       - task: :dc
         vars:
           SUB_CMD: >
-            run -e ENVIRONMENT=local -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            run -e ENVIRONMENT=docker -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include ci --exclude init --exclude sitemap --ordering order.txt {{.ROBOT_PARAMS}}"
 
   docker:run:api:
@@ -183,7 +183,7 @@ tasks:
       - task: :dc
         vars:
           SUB_CMD: >
-            run -e ENVIRONMENT=local -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            run -e ENVIRONMENT=docker -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --exclude failing {{.ROBOT_PARAMS}}"
 
   docker:shell:
@@ -192,7 +192,7 @@ tasks:
     cmds:
       - task: :dc
         vars:
-          SUB_CMD: "run -e ENVIRONMENT=local -e TENANT={{.tenant}} --rm robot /bin/bash"
+          SUB_CMD: "run -e ENVIRONMENT=docker -e TENANT={{.tenant}} --rm robot /bin/bash"
 
   test:run:
     desc: Run Robot tests with browser on TEST
@@ -235,7 +235,7 @@ tasks:
       - task: :dc
         vars:
           SUB_CMD: >
-            run -e ENVIRONMENT=acc -e TENANT={{.tenant}} --rm robot
+            run -e ENVIRONMENT=acc -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --exclude failing --exclude skip-test-acc {{.ROBOT_PARAMS}}"
 
   lint:
@@ -254,13 +254,6 @@ tasks:
       - task: :dc:shell
         vars: { SUB_CMD: "admin bin/console --tenant=minvws woopie:dev:clean-sheet --index woopie-minvws --force {{.CLI_ARGS}}" }
       - task: :minio:clear-buckets
-
-  fixtures:load:vws:
-    desc: Load the VWS fixtures, used by the Covid19 theme page
-    internal: true
-    cmds:
-      - task: :dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant=minvws doctrine:fixtures:load --no-interaction --append --group=vws" }
 
   fixtures:load:e2e:
     desc: Load the E2E fixtures

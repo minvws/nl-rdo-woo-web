@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\ValueObject\DocumentId;
 
 readonly class FileStorer
 {
@@ -21,7 +22,7 @@ readonly class FileStorer
     ) {
     }
 
-    public function storeForDocument(UploadedFile $file, Document $document, string $documentId): void
+    public function storeForDocument(UploadedFile $file, Document $document, DocumentId $documentId): void
     {
         if ($document->getFileInfo()->isUploaded()) {
             $this->thumbnailStorage->deleteAllThumbsForEntity($document);
@@ -29,7 +30,7 @@ readonly class FileStorer
 
         if (! $this->entityStorageService->storeEntity($file, $document)) {
             $this->logger->error('Failed to store document', [
-                'documentId' => $documentId,
+                'documentId' => $documentId->toString(),
                 'path' => $file->getPathname(),
             ]);
 

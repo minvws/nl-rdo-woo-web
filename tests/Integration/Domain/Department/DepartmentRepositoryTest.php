@@ -50,7 +50,7 @@ final class DepartmentRepositoryTest extends SharedWebTestCase
 
         self::assertCount(3, $departments);
 
-        $departments = array_map(fn (Department $department): array => [
+        $departments = array_map(static fn (Department $department): array => [
             'name' => $department->getName(),
             'shortTag' => $department->getShortTag(),
             'slug' => $department->getSlug(),
@@ -89,7 +89,7 @@ final class DepartmentRepositoryTest extends SharedWebTestCase
 
         self::assertCount(4, $departments);
 
-        $departments = array_map(fn (Department $department): array => [
+        $departments = array_map(static fn (Department $department): array => [
             'name' => $department->getName(),
             'shortTag' => $department->getShortTag(),
             'slug' => $department->getSlug(),

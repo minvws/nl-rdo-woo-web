@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
 
-use function ucfirst;
+use function mb_ucfirst;
 
 class InvestigationReportController extends AbstractController
 {
@@ -41,7 +41,7 @@ class InvestigationReportController extends AbstractController
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem(ucfirst($investigationReport->getTitle() ?? ''));
+        $breadcrumbs->addItem(mb_ucfirst((string) $investigationReport->getTitle()));
 
         return $this->render('public/dossier/investigation-report/details.html.twig', [
             'dossier' => $this->viewFactory->make($investigationReport),
@@ -67,7 +67,7 @@ class InvestigationReportController extends AbstractController
             'prefix' => $dossier->getDocumentPrefix(),
             'dossierId' => $dossier->getDossierNr(),
         ]);
-        $breadcrumbs->addItem($dossier->getTitle() ?? '');
+        $breadcrumbs->addItem((string) $dossier->getTitle());
 
         return $this->render('public/dossier/investigation-report/document.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
@@ -100,7 +100,7 @@ class InvestigationReportController extends AbstractController
             'prefix' => $dossier->getDocumentPrefix(),
             'dossierId' => $dossier->getDossierNr(),
         ]);
-        $breadcrumbs->addItem($dossier->getTitle() ?? '');
+        $breadcrumbs->addItem((string) $dossier->getTitle());
 
         return $this->render('public/dossier/investigation-report/attachment.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),

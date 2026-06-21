@@ -6,13 +6,13 @@ namespace Shared\Tests\Unit\Twig\Runtime;
 
 use League\CommonMark\Output\RenderedContentInterface;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Override;
 use Shared\Domain\Content\Markdown\MarkdownConverter;
+use Shared\Tests\Unit\UnitTestCase;
 use Shared\Twig\Runtime\MarkdownExtensionRuntime;
 
-class MarkdownExtensionRuntimeTest extends MockeryTestCase
+class MarkdownExtensionRuntimeTest extends UnitTestCase
 {
     private MarkdownConverter&MockInterface $converter;
     private MarkdownExtensionRuntime $runtime;

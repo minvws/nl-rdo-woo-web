@@ -74,7 +74,7 @@ class UpdateInquiryLinksHandlerTest extends UnitTestCase
     {
         $message = new UpdateInquiryLinksCommand(
             $organisationId = Uuid::v6(),
-            $caseNr = 'foo-123',
+            $inquiryNumber = 'foo-123',
             $docIdsToAdd = [Uuid::v6()],
             $docIdsToRemove = [Uuid::v6()],
             $dossierIdsToAdd = [Uuid::v6()],
@@ -85,7 +85,7 @@ class UpdateInquiryLinksHandlerTest extends UnitTestCase
 
         $this->inquiryService->expects('updateInquiryLinks')->with(
             $organisation,
-            $caseNr,
+            $inquiryNumber,
             $docIdsToAdd,
             $docIdsToRemove,
             $dossierIdsToAdd,

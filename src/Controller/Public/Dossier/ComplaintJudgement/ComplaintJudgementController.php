@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
 
-use function ucfirst;
+use function mb_ucfirst;
 
 class ComplaintJudgementController extends AbstractController
 {
@@ -38,7 +38,7 @@ class ComplaintJudgementController extends AbstractController
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('Home', 'app_home');
-        $breadcrumbs->addItem(ucfirst($dossier->getTitle() ?? ''));
+        $breadcrumbs->addItem(mb_ucfirst((string) $dossier->getTitle()));
 
         return $this->render('public/dossier/complaint-judgement/details.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
@@ -65,7 +65,7 @@ class ComplaintJudgementController extends AbstractController
             'prefix' => $dossier->getDocumentPrefix(),
             'dossierId' => $dossier->getDossierNr(),
         ]);
-        $breadcrumbs->addItem(ucfirst($dossier->getTitle() ?? ''));
+        $breadcrumbs->addItem(mb_ucfirst((string) $dossier->getTitle()));
 
         return $this->render('public/dossier/complaint-judgement/document.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),

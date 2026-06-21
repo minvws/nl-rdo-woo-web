@@ -9,6 +9,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraint;
+use Webmozart\Assert\Assert;
 
 /**
  * @template-extends AbstractType<AbstractDossierStepType>
@@ -24,10 +25,11 @@ abstract class AbstractDossierStepType extends AbstractType
         ]);
 
         $resolver->setDefaults([
-            'validation_groups' => function (FormInterface $form): array {
+            'validation_groups' => static function (FormInterface $form): array {
                 if ($form->has('cancel')) {
-                    /** @var SubmitButton $cancelSubmit */
                     $cancelSubmit = $form->get('cancel');
+                    Assert::isInstanceOf($cancelSubmit, SubmitButton::class);
+
                     if ($cancelSubmit->isClicked()) {
                         return [];
                     }

@@ -33,12 +33,12 @@ final readonly class InquiryService extends SharedInquiryService
 
     public function applyChangesetSync(InquiryChangeset $changeset): void
     {
-        foreach ($changeset->getChanges() as $caseNr => $actions) {
-            $caseNr = (string) $caseNr; // PHP will auto-cast numeric string keys to an int, we need it as a string
+        foreach ($changeset->getChanges() as $inquiryNumber => $actions) {
+            $inquiryNumber = (string) $inquiryNumber; // PHP will auto-cast numeric string keys to an int, we need it as a string
 
             $this->updateInquiryLinks(
                 $changeset->getOrganisation(),
-                $caseNr,
+                $inquiryNumber,
                 $actions[InquiryChangeset::ADD_DOCUMENTS],
                 $actions[InquiryChangeset::DEL_DOCUMENTS],
                 $actions[InquiryChangeset::ADD_DOSSIERS],

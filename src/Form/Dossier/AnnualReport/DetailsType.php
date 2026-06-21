@@ -6,18 +6,14 @@ namespace Shared\Form\Dossier\AnnualReport;
 
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Form\Dossier\AbstractDossierStepType;
-use Shared\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Form\Dossier\DossierFormFactory;
 use Shared\Form\YearType;
-use Shared\Service\Security\Roles;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class DetailsType extends AbstractDossierStepType
 {
-    use DossierFormBuilderTrait;
-
     public function __construct(
-        private readonly Security $security,
+        private readonly DossierFormFactory $dossierFormFactory,
     ) {
     }
 
@@ -28,10 +24,10 @@ class DetailsType extends AbstractDossierStepType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var AnnualReport $dossier */
-        $dossier = $builder->getData();
+        $dossierForm = $this->dossierFormFactory->for($builder);
+        $dossier = $dossierForm->getDossier();
 
-        $this->addTitleField($builder);
+        $dossierForm->addTitleField();
 
         $builder
             ->add('year', YearType::class, [
@@ -48,11 +44,11 @@ class DetailsType extends AbstractDossierStepType
                 'plus_years' => 2,
             ]);
 
-        $this->addInternalReferenceField($builder);
-        $this->addDepartmentsField($builder);
-        $this->addSubjectField($builder);
-        $this->addDossierNrField($builder, $this->security->isGranted(Roles::ROLE_ORGANISATION_ADMIN));
-        $this->addDocumentPrefixField($builder);
-        $this->addSubmits($builder);
+        $dossierForm->addInternalReferenceField();
+        $dossierForm->addDepartmentsField();
+        $dossierForm->addSubjectField();
+        $dossierForm->addDossierNrField();
+        $dossierForm->addDocumentPrefixField();
+        $dossierForm->addSubmits();
     }
 }

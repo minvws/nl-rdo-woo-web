@@ -46,7 +46,7 @@
                 </a>
             </p>
 
-            {% set currentRoute = app.request.get('_route') %}
+            {% set currentRoute = app.current_route %}
             <div class="woo-main-header__nav-search">
                 <div class="woo-main-header__nav-search-container">
                     <div class="woo-main-header__nav-search-wrapper">
@@ -75,7 +75,7 @@
                                         <ul class="woo-main-nav__list" id="main-nav-list" data-e2e-name="main-nav">
                                             {{ macro.main_nav_item(
                                                     path('app_browse'),
-                                                    currentRoute == 'app_browse' or (currentRoute == 'app_search' and app.request.get('type') != 'dossier'),
+                                                    currentRoute == 'app_browse' or (currentRoute == 'app_search' and app.request.query.get('type') != 'dossier'),
                                                     'public.global.label.search_publications' | trans
                                                 )
                                             }}
@@ -83,7 +83,7 @@
                                             {% for theme in all_themes() %}
                                                 {{ macro.main_nav_item(
                                                     path('app_theme', {'name': theme.urlName}),
-                                                    currentRoute == 'app_theme' and app.request.get('name') == theme.urlName,
+                                                    currentRoute == 'app_theme' and app.request.attributes.get('name') == theme.urlName,
                                                     theme.menuName | trans
                                                 )
                                                 }}

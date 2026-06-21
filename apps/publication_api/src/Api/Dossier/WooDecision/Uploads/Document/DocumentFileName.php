@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\WooDecision\Uploads\Document;
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\ValueObject\DocumentId;
 use Stringable;
 use Webmozart\Assert\Assert;
 
@@ -41,8 +42,13 @@ final readonly class DocumentFileName implements Stringable
         Assert::stringNotEmpty($extension, 'Document file name must have an extension');
 
         $documentId = $document->getDocumentId();
-        Assert::string($documentId, 'Document must have a documentId');
+        Assert::isInstanceOf($documentId, DocumentId::class, 'Document must have a documentId');
 
         return sprintf('%s.%s', $documentId, $extension);
+    }
+
+    public function toString(): string
+    {
+        return $this->__toString();
     }
 }

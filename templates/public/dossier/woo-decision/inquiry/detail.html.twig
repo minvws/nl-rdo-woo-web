@@ -1,7 +1,7 @@
 {% extends 'public/base.html.twig' %}
 {% import "public/macros/document.html.twig" as macro %}
 
-{% set page_title = 'public.inquiry.page_title' | trans({'{case_number}': inquiry.casenr}) %}
+{% set page_title = 'public.inquiry.page_title' | trans({'{inquiry_number}': inquiry.inquiryNumber}) %}
 
 {% block body %}
 <div class="woo-container woo-container--sm">

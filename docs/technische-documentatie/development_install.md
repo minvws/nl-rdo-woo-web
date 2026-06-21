@@ -1,7 +1,7 @@
-# Woo Platform
+# Woo Publication Platform
 
 <!-- TOC -->
-- [Woo Platform](#woo-platform)
+- [Woo Publication Platform](#woo-publication-platform)
   - [Step 1: Clone the repository](#step-1-clone-the-repository)
   - [Step 2: Install dependencies](#step-2-install-dependencies)
   - [Step 3: Authenticate with GitHub Container Registry](#step-3-authenticate-with-github-container-registry)

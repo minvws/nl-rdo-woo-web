@@ -58,10 +58,27 @@
         </div>
     </div>
 {% elseif inventoryStatus.hasErrors %}
-    {{ form(inventoryForm) }}
+    {{ form_start(inventoryForm) }}
+    <div class="mb-4" data-e2e-name="production-report-errors">
+        <twig:Admin:Alert type="warning">
+            <strong>{{ 'publication.dossier.error.productionreport_date_header'|trans({'date': inventoryStatus.runDate.format('d-m-Y H:i')}) }}</strong>
+
+            <twig:block name="extra">
+                <ul class="bhr-ul">
+                    {% for error in inventoryForm.vars.errors %}
+                    <li class="bhr-li">{{ error.message }}</li>
+                    {% endfor %}
+                </ul>
+                <br/>
+                {{ 'publication.dossier.error.productionreport_noop'|trans }}
+            </twig:block>
+        </twig:Admin:Alert>
+    </div>
+    {{ form_rest(inventoryForm) }}
+    {{ form_end(inventoryForm) }}
 {% else %}
-    {% if dossier.status.isConcept or app.request.get('replace') is not null %}
-        {% if not inventoryStatus.needsUpload and app.request.get('replace') is null %}
+    {% if dossier.status.isConcept or app.request.query.get('replace') is not null %}
+        {% if not inventoryStatus.needsUpload and app.request.query.get('replace') is null %}
             <twig:Admin:UploadedFile
                 downloadUrl="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('Shared\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
                 fileName="{{ dossier.productionReport.fileInfo.name }}"
@@ -71,9 +88,15 @@
                 <a class="text-bhr-blue-800 content-center underline hover-focus:no-underline px-4" href="?replace">
                     {{ 'admin.dossiers.replace_report' | trans }}
                 </a>
+                {% if dossier.canRemoveInventory %}
+                    <a class="bhr-btn-ghost-danger w-12" href="?remove" data-e2e-name="delete-file">
+                        <twig:Admin:Icon name="trash-bin" size="{{ 20 }}" color="fill-current" />
+                        <span class="sr-only">{{ 'global.remove' | trans }} {{ dossier.productionReport.fileInfo.name }}</span>
+                    </a>
+                {% endif %}
             </twig:Admin:UploadedFile>
         {% endif %}
-        {% if inventoryStatus.needsUpload or app.request.get('replace') is not null %}
+        {% if inventoryStatus.needsUpload or app.request.query.get('replace') is not null %}
             {{ form(inventoryForm) }}
         {% endif %}
     {% else %}

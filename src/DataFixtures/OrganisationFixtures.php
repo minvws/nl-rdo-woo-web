@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shared\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Shared\Domain\Department\Department;
@@ -15,17 +14,9 @@ use Shared\Domain\Publication\Dossier\DocumentPrefix;
 /**
  * This is a set of fixtures for the Organisation entity. It is not meant to be used in production.
  */
-class OrganisationFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
+class OrganisationFixtures extends Fixture implements DependentFixtureInterface
 {
     public const string REFERENCE = 'organisation-fixture-reference';
-
-    /**
-     * @return list<string>
-     */
-    public static function getGroups(): array
-    {
-        return ['example'];
-    }
 
     public function load(ObjectManager $manager): void
     {

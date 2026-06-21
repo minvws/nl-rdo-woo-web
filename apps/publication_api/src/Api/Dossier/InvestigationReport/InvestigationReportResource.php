@@ -18,7 +18,7 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     operations: [
         new Get(
             uriTemplate: '/organisation/{organisationId}/dossiers/investigation-report/external/{dossierExternalId}',
-            name: 'get_investigation_report',
+            name: self::ROUTE_NAME_GET_INVESTIGATION_REPORT,
         ),
         new GetCollection(
             uriTemplate: '/organisation/{organisationId}/dossiers/investigation-report',
@@ -64,9 +64,11 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     openapi: new Operation(
         tags: ['InvestigationReport'],
     ),
+    output: InvestigationReportResponseDto::class,
     provider: InvestigationReportProvider::class,
     processor: InvestigationReportProcessor::class,
 )]
 final class InvestigationReportResource
 {
+    public const string ROUTE_NAME_GET_INVESTIGATION_REPORT = 'get_investigation_report';
 }

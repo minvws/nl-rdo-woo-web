@@ -8,8 +8,8 @@
         <div class="bhr-card">
             {% include 'admin/shared/flash-messages.html.twig' %}
 
-            {% if dossier.hasProductionReport  %}
                 <twig:Admin:LeftAndRight class="pt-1">
+                    {% if dossier.hasProductionReport  %}
                     <a
                         class="bhr-btn-filled-primary mr-2"
                         href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, type: constant('Shared\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
@@ -18,7 +18,7 @@
 
                         <twig:Admin:Button:Icon isRight="{{ true }}" name="download" />
                     </a>
-
+                    {% endif %}
                     <a class="bhr-btn-bordered-primary mr-2" href="{{ path('app_admin_dossier_woodecision_documents_edit_replace_inventory', { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, replace: 1 }) }}" data-e2e-name="replace-report">
                         {{ 'admin.dossiers.replace_report' | trans }}
                     </a>
@@ -35,9 +35,9 @@
                         </div>
                     </twig:block>
                 </twig:Admin:LeftAndRight>
-            {% endif %}
 
-            {% if dossier.canProvideInventory and dossier.hasProductionReport %}
+
+            {% if dossier.canProvideInventory  %}
                 <div class="mb-6">
                     <twig:Admin:Publication:WooDecision:ReplaceDocuments
                         dossier="{{ dossier }}"
@@ -86,10 +86,6 @@
                 {% else %}
                     <p class="text-center">Er zijn nog geen documenten aan dit besluit gekoppeld.</p>
                 {% endif %}
-            {% elseif dossier.canProvideInventory and not dossier.hasProductionReport %}
-                <twig:Admin:Alert type="info">
-                    {{ 'admin.dossiers.woo-decision.has_no_publication_report' | trans }}
-                </twig:Admin:Alert>
             {% else %}
                 <twig:Admin:Alert type="info">
                     Op basis van het besluit '{{ dossier.decision | trans }}' heeft dit dossier geen inventarislijst en/of documenten.

@@ -58,6 +58,7 @@ class InventoryReaderFactory
                         'document nr.',
                         'nr.',
                         'omschrijving',
+                        'name',
                     ],
                 ),
                 new ColumnMapping(
@@ -104,7 +105,7 @@ class InventoryReaderFactory
                     ],
                 ),
                 new ColumnMapping(
-                    name: MetadataField::CASENR->value,
+                    name: MetadataField::INQUIRY_NUMBER->value,
                     required: false,
                     columnNames: [
                         'zaaknr',
@@ -138,7 +139,7 @@ class InventoryReaderFactory
                 ),
                 new ColumnMapping(
                     name: MetadataField::MATTER->value,
-                    required: true,
+                    required: false,
                     columnNames: [
                         'matter',
                         'matter / marjoleinnummer',

@@ -10,9 +10,11 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
-use Shared\ValueObject\ExternalId;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 use function sprintf;
+use function str_repeat;
 
 final class WooDecisionUploadAttachmentTest extends ApiPublicationV1UploadTestCase
 {
@@ -22,13 +24,13 @@ final class WooDecisionUploadAttachmentTest extends ApiPublicationV1UploadTestCa
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $wooDecision = WooDecisionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
             'previewDate' => $this->getFaker()->plainDate(),
             'departments' => [$department],
         ]);
         $wooDecisionAttachment = WooDecisionAttachmentFactory::createOne([
             'dossier' => $wooDecision,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $this->assertUpload(
@@ -52,13 +54,13 @@ final class WooDecisionUploadAttachmentTest extends ApiPublicationV1UploadTestCa
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $wooDecision = WooDecisionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
             'previewDate' => $this->getFaker()->plainDate(),
             'departments' => [$department],
         ]);
         $wooDecisionAttachment = WooDecisionAttachmentFactory::createOne([
             'dossier' => $wooDecision,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $this->assertUploadWithoutFile(sprintf(
@@ -67,5 +69,53 @@ final class WooDecisionUploadAttachmentTest extends ApiPublicationV1UploadTestCa
             $wooDecision->getExternalId(),
             $wooDecisionAttachment->getExternalId(),
         ));
+    }
+
+    public function testUploadWithTooLongDossierExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'previewDate' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+        ]);
+        $wooDecisionAttachment = WooDecisionAttachmentFactory::createOne([
+            'dossier' => $wooDecision,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/attachment/external/%s',
+            $organisation->getId(),
+            str_repeat('x', 129),
+            $wooDecisionAttachment->getExternalId(),
+        ));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testUploadWithTooLongAttachmentExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'previewDate' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+        ]);
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/attachment/external/%s',
+            $organisation->getId(),
+            $wooDecision->getExternalId(),
+            str_repeat('x', 129),
+        ));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

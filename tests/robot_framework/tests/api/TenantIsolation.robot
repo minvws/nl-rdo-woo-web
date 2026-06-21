@@ -12,7 +12,6 @@ Test Tags           api  tenant-isolation  skip-test-acc
 
 *** Variables ***
 ${ORG_ID_MINVWS}    ${EMPTY}
-${ORG_ID_MINFIN}    ${EMPTY}
 
 
 *** Test Cases ***
@@ -21,7 +20,7 @@ Dossier Created On Minvws Is Not Searchable On Minfin Public
   Create Dossier On Tenant  alias=api_minvws  org_id=${ORG_ID_MINVWS}  reference=${unique_ref}  tenant=minvws
   # Verify it is findable via the minvws public search
   Set Tenant Context  minvws
-  Search On Public For  ${unique_ref}  2 resultaten
+  Wait Until Keyword Succeeds  10x  3s  Search On Public For  ${unique_ref}  2 resultaten
   # Switch to minfin public — dossier must NOT appear
   Set Tenant Context  minfin
   Search On Public For  ${unique_ref}  0 resultaten
@@ -35,8 +34,6 @@ Setup Cross-Tenant API Sessions
   VAR  ${ORG_ID_MINVWS} =  ${ORGANISATION_ID}  scope=suite
   Create Session For Tenant  minfin  api_minfin
   VAR  ${API_ALIAS} =  api_minfin  scope=suite
-  Retrieve Organisation ID
-  VAR  ${ORG_ID_MINFIN} =  ${ORGANISATION_ID}  scope=suite
   Open Browser And BaseUrl
 
 Create Dossier On Tenant

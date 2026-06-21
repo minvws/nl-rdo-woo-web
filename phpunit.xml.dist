@@ -30,6 +30,7 @@
             <directory>apps/public/tests/Unit</directory>
             <directory>apps/publication_api/tests/Unit</directory>
             <directory>apps/worker/tests/Unit</directory>
+            <directory>tenants/minvws/tests/Unit</directory>
         </testsuite>
         <testsuite name="integration">
             <directory>tests/Integration/</directory>
@@ -37,6 +38,7 @@
             <directory>apps/public/tests/Integration</directory>
             <directory>apps/publication_api/tests/Integration</directory>
             <directory>apps/worker/tests/Integration</directory>
+            <directory>tenants/minvws/tests/Integration</directory>
         </testsuite>
         <testsuite name="utils">
             <directory>utils/tests</directory>

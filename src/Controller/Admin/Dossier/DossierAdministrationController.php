@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webmozart\Assert\Assert;
 
 use function sprintf;
 
@@ -59,8 +60,9 @@ class DossierAdministrationController extends AbstractController
         $form = $this->createForm(AdministrationActionsType::class, $dossier);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var DossierAdminAction $adminAction */
             $adminAction = $form->get('action')->getData();
+            Assert::isInstanceOf($adminAction, DossierAdminAction::class);
+
             $this->adminActionService->execute($dossier, $adminAction);
 
             $this->addFlash(

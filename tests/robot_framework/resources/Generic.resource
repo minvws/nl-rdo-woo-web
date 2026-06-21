@@ -10,10 +10,7 @@ Library             DebugLibrary
 
 
 *** Variables ***
-${TST_BALIE_USER}           email@example.org
-${TST_BALIE_PASSWORD}       IkLoopNooitVastVandaag
-${TST_BALIE_OTP_SECRET}     ${EMPTY}
-${DOSSIER_REFERENCE}        ${EMPTY}
+${DOSSIER_REFERENCE}    ${EMPTY}
 
 
 *** Keywords ***

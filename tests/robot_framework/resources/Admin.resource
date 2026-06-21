@@ -102,5 +102,8 @@ Is Queue Empty
   ...  //*[@data-e2e-name="rabbitmq-stats"]//tr[contains(.,'ingestor')]/td[3]
   FOR  ${element}  IN  @{elements}
     ${value} =  Get Text  ${element}
+    IF  '${value}' == 'not available'
+      Fail  RabbitMQ stats not yet available, retrying...
+    END
     IF  '${value}' != '0'  Fail
   END

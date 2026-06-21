@@ -13,6 +13,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Webmozart\Assert\Assert;
 
 use function count;
 
@@ -56,8 +57,9 @@ class DocumentPrefixType extends AbstractType
 
             // If we have just one prefix preselect it
             if (count($prefixes) === 1) {
-                /** @var DocumentPrefix $prefix */
                 $prefix = $prefixes->first();
+                Assert::isInstanceOf($prefix, DocumentPrefix::class);
+
                 $options['data'] = $this->doctrine->getReference(DocumentPrefix::class, $prefix->getId());
             }
 

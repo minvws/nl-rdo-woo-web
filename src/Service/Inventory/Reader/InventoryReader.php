@@ -13,30 +13,31 @@ use Shared\Exception\InventoryReaderException;
 use Shared\Service\FileReader\ColumnMapping;
 use Shared\Service\FileReader\FileReaderInterface;
 use Shared\Service\FileReader\ReaderFactoryInterface;
-use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inventory\DocumentMetadata;
 use Shared\Service\Inventory\InventoryDataHelper;
 use Shared\Service\Inventory\MetadataField;
+use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
 use function count;
+use function filter_var;
 use function intval;
 use function is_string;
 use function mb_strlen;
-use function preg_match;
 use function str_starts_with;
 use function strlen;
+use function trim;
+
+use const FILTER_VALIDATE_URL;
 
 class InventoryReader implements InventoryReaderInterface
 {
     private const int MAX_LINK_LENGTH = 2048;
     private const int MAX_FILENAME_LENGTH = 500;
     private const int MAX_REMARK_LENGTH = 1000;
-    private const int MIN_DOCUMENT_ID_LENGTH = 1;
-    private const int MAX_DOCUMENT_ID_LENGTH = 170;
-    private const int MIN_MATTER_LENGTH = 2;
-    private const int MAX_MATTER_LENGTH = 50;
 
     /**
      * @var array<array-key, ColumnMapping>
@@ -97,7 +98,8 @@ class InventoryReader implements InventoryReaderInterface
 
         // In old documents, it's possible that the link is in the remark column
         if (count($links) === 0 && is_string($remark) && str_starts_with($remark, 'http')) {
-            $links = [$remark];
+            $links = InventoryDataHelper::separateValues($remark, '|');
+            $this->validateLinks($links, $rowIdx);
             $remark = null;
         }
 
@@ -116,7 +118,7 @@ class InventoryReader implements InventoryReaderInterface
             judgement: InventoryDataHelper::judgement($this->reader->getString($rowIdx, MetadataField::JUDGEMENT->value)),
             period: null,
             threadId: $this->getThreadId($rowIdx),
-            caseNumbers: $this->getCaseNumbers($rowIdx),
+            inquiryNumbers: $this->getInquiryNumbers($rowIdx),
             suspended: InventoryDataHelper::isTrue($this->reader->getOptionalString($rowIdx, MetadataField::SUSPENDED->value)),
             links: $links,
             remark: $remark,
@@ -137,11 +139,7 @@ class InventoryReader implements InventoryReaderInterface
     {
         $links = InventoryDataHelper::separateValues($this->reader->getOptionalString($rowIdx, MetadataField::LINK->value), '|');
 
-        foreach ($links as $link) {
-            if ($link && strlen($link) > self::MAX_LINK_LENGTH) {
-                throw InventoryReaderException::forLinkTooLong($link, $rowIdx);
-            }
-        }
+        $this->validateLinks($links, $rowIdx);
 
         return $links;
     }
@@ -176,23 +174,21 @@ class InventoryReader implements InventoryReaderInterface
         return $threadId;
     }
 
-    private function getDocumentId(int $rowIdx): string
+    private function getDocumentId(int $rowIdx): DocumentId
     {
-        $documentId = $this->reader->getString($rowIdx, MetadataField::ID->value);
-        if ($documentId === '') {
-            throw InventoryReaderException::forMissingDocumentIdInRow($rowIdx);
-        }
+        $rawDocumentId = $this->reader->getString($rowIdx, MetadataField::ID->value);
 
-        $length = mb_strlen($documentId);
-        if ($length < self::MIN_DOCUMENT_ID_LENGTH || $length > self::MAX_DOCUMENT_ID_LENGTH) {
-            throw InventoryReaderException::forInvalidDocumentIdLength($rowIdx, self::MIN_DOCUMENT_ID_LENGTH, self::MAX_DOCUMENT_ID_LENGTH);
+        try {
+            return DocumentId::create($rawDocumentId);
+        } catch (InvalidArgumentException $e) {
+            match ($e->getCode()) {
+                DocumentId::ERROR_EMPTY
+                    => throw InventoryReaderException::forMissingDocumentIdInRow($rowIdx),
+                DocumentId::ERROR_INVALID_LENGTH
+                    => throw InventoryReaderException::forInvalidDocumentIdLength($rowIdx, DocumentId::MIN_LENGTH, DocumentId::MAX_LENGTH),
+                default => throw InventoryReaderException::forInvalidDocumentId($rowIdx),
+            };
         }
-
-        if (preg_match('/[^a-z0-9.]/i', $documentId)) {
-            throw InventoryReaderException::forInvalidDocumentId($rowIdx);
-        }
-
-        return $documentId;
     }
 
     private function getFilename(int $rowIdx): string
@@ -205,27 +201,45 @@ class InventoryReader implements InventoryReaderInterface
         return $filename;
     }
 
-    private function getCaseNumbers(int $rowIdx): CaseNumbers
+    private function getInquiryNumbers(int $rowIdx): InquiryNumbers
     {
-        $caseNumbersInput = $this->reader->getOptionalString($rowIdx, MetadataField::CASENR->value);
+        $inquiryNumbersInput = $this->reader->getOptionalString($rowIdx, MetadataField::INQUIRY_NUMBER->value);
         try {
-            $caseNumbers = CaseNumbers::fromCommaSeparatedString($caseNumbersInput);
+            $inquiryNumbers = InquiryNumbers::fromCommaSeparatedString($inquiryNumbersInput);
         } catch (InvalidArgumentException) {
-            throw InventoryReaderException::forCaseNumbersInvalid($caseNumbersInput ?? '', $rowIdx);
+            throw InventoryReaderException::forInvalidInquiryNumbers($inquiryNumbersInput ?? '', $rowIdx);
         }
 
-        return $caseNumbers;
+        return $inquiryNumbers;
     }
 
-    private function getMatter(int $rowIdx): string
+    private function getMatter(int $rowIdx): ?DocumentMatter
     {
-        $matter = $this->reader->getString($rowIdx, MetadataField::MATTER->value);
-
-        $length = mb_strlen($matter);
-        if ($length < self::MIN_MATTER_LENGTH || $length > self::MAX_MATTER_LENGTH) {
-            throw InventoryReaderException::forInvalidMatterInRow($rowIdx, self::MIN_MATTER_LENGTH, self::MAX_MATTER_LENGTH);
+        $matter = $this->reader->getOptionalString($rowIdx, MetadataField::MATTER->value);
+        if ($matter === null || trim($matter) === '') {
+            return null;
         }
 
-        return $matter;
+        try {
+            return DocumentMatter::create($matter);
+        } catch (InvalidArgumentException) {
+            throw InventoryReaderException::forInvalidMatterInRow($rowIdx);
+        }
+    }
+
+    /**
+     * @param array<array-key, string> $links
+     */
+    private function validateLinks(array $links, int $rowIdx): void
+    {
+        foreach ($links as $link) {
+            if (mb_strlen($link) > self::MAX_LINK_LENGTH) {
+                throw InventoryReaderException::forLinkTooLong($link, $rowIdx);
+            }
+
+            if (! filter_var($link, FILTER_VALIDATE_URL)) {
+                throw InventoryReaderException::forInvalidLink($link, $rowIdx);
+            }
+        }
     }
 }

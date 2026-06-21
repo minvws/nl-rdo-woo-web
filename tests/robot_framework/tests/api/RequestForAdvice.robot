@@ -1,6 +1,8 @@
 *** Settings ***
 Documentation       Tests for the Request For Advice endpoint, utilizing a custom DataDriver reader. Actual testcases are in the file files/api/requestforadvice.yaml.
-Library             DataDriver  reader_class=libraries/yaml_reader.py  file_path=files/api/requestforadvice.yaml
+Library             DataDriver
+...                     reader_class=libraries/yaml_reader.py
+...                     file_path=files/api/requestforadvice.yaml
 Resource            ../../resources/API.resource
 Resource            ../../resources/Dossier.resource
 Suite Setup         Suite Setup
@@ -19,7 +21,6 @@ Suite Setup
 Request For Advice Test Case
   [Arguments]  ${steps}
   FOR  ${step}  IN  @{steps}
-    Log  ${step}[name]
     IF  '${step}[type]' == 'request'
       Create Request For Advice
       ...  ${step}[expected_response_status]
@@ -102,3 +103,7 @@ Send Put Request Request For Advice
   ...  ${put_response.status_code} == ${expected_response_status}
   ...  msg=Request for advice PUT returned ${put_response.status_code} while expecting ${expected_response_status}
   RETURN  ${put_response.json()}
+
+Verify HAL Links Are Reachable
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  Verify HAL Links Are Reachable For Dossier  request-for-advice

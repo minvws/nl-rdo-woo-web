@@ -8,15 +8,12 @@ use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Service\FileReader\ExcelReaderFactory;
 use Shared\Service\Inquiry\InquiryLinkImportParser;
 use Shared\Tests\Unit\UnitTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use function iterator_to_array;
 
 class InquiryLinkImportParserTest extends UnitTestCase
 {
-    use MatchesSnapshots;
-
     public function testParse(): void
     {
         $input = new UploadedFile(__DIR__ . '/input.xlsx', 'input.xlsx');

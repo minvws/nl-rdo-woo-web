@@ -50,7 +50,7 @@ readonly class S3UploadHandler implements UploadHandlerInterface
         }
 
         Assert::notNull($externalId);
-        $s3UploadId = $externalId->__toString();
+        $s3UploadId = $externalId->toString();
 
         $this->s3UploadHelper->uploadPart($request, $s3UploadId);
 

@@ -27,10 +27,10 @@ class SecurityHeaderSubscriber
     private const string CSP_SELF = "'self'";
     private const string CSP_DATA = 'data:';
     private const string CSP_STATS = 'https://statistiek.rijksoverheid.nl';
-    private const string CSP_VITE_WS = 'ws://localhost:8001';
+    private const string CSP_VITE_WS = 'ws://localhost:8010';
 
     /** @var list<string> */
-    private const array DEV_CSPS = ['http://localhost:8001'];
+    private const array DEV_CSPS = ['http://localhost:8010'];
 
     /** @var array<array-key, string> */
     protected array $fields = [

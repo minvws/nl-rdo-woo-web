@@ -7,14 +7,21 @@ namespace PublicationApi\Tests\Integration\Api\Dossier\Covenant;
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Dossier\Covenant\CovenantResource;
+use PublicationApi\Api\Dossier\Covenant\Uploads\Attachment\CovenantUploadAttachmentResource;
+use PublicationApi\Api\Dossier\Covenant\Uploads\MainDocument\CovenantUploadMainDocumentResource;
 use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
+use Shared\Controller\Public\Dossier\DossierFileController;
 use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Factory\DepartmentFactory;
@@ -25,15 +32,19 @@ use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFac
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
-use Shared\Validator\EntityExists;
 use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Type;
 
+use function array_map;
 use function array_merge;
+use function range;
 use function sprintf;
+use function str_repeat;
 
 final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
 {
@@ -55,18 +66,22 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
             'parties' => [$this->getFaker()->words(3, true), $this->getFaker()->words(3, true)],
         ]);
         CovenantMainDocumentFactory::createOne(['dossier' => $covenant]);
-        CovenantAttachmentFactory::createOne(['dossier' => $covenant]);
+        CovenantAttachmentFactory::createOne([
+            'dossier' => $covenant,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
         self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $covenant->getExternalId()?->__toString()]]);
+        self::assertJsonContains([['externalId' => $covenant->getExternalId()?->toString()]]);
     }
 
     public function testGetCovenant(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $subject = SubjectFactory::createOne();
         $covenant = CovenantFactory::createOne([
             'dateFrom' => $this->getFaker()->plainDateBetween('-9 years', 'now'),
             'externalId' => $this->getFaker()->externalId(),
@@ -74,25 +89,34 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
             'departments' => [$department],
             'previousVersionLink' => $this->getFaker()->url(),
             'parties' => [$this->getFaker()->words(3, true), $this->getFaker()->words(3, true)],
+            'subject' => $subject,
         ]);
         $covenantMainDocument = CovenantMainDocumentFactory::createOne(['dossier' => $covenant]);
-        $covenantAttachment = CovenantAttachmentFactory::createOne(['dossier' => $covenant]);
+        $covenantAttachment = CovenantAttachmentFactory::createOne([
+            'dossier' => $covenant,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         $response = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation, $covenant));
 
         self::assertResponseIsSuccessful();
 
+        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $covenant->getId(),
-            'externalId' => $covenant->getExternalId()?->__toString(),
+            'externalId' => $covenant->getExternalId()?->toString(),
             'organisation' => [
-                'id' => (string) $covenant->getOrganisation()->getId(),
-                'name' => $covenant->getOrganisation()->getName(),
+                'id' => $organisation->getId()->toString(),
+                'name' => $organisation->getName(),
             ],
             'dossierNumber' => $covenant->getDossierNr(),
-            'title' => $covenant->getTitle(),
+            'title' => (string) $covenant->getTitle(),
             'summary' => $covenant->getSummary(),
-            'subject' => $covenant->getSubject()?->getName(),
+            'subject' => [
+                'id' => $subject->getId()->toString(),
+                'name' => $subject->getName(),
+            ],
             'department' => [
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
@@ -107,6 +131,29 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'grounds' => $covenantMainDocument->getGrounds(),
                 'fileName' => $covenantMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
+                '_links' => [
+                    'upload' => [
+                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            CovenantUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                            [
+                                'organisationId' => $covenant->getOrganisation()->getId(),
+                                'dossierExternalId' => $covenant->getExternalId()?->toString(),
+                            ],
+                        )->toString(),
+                    ],
+                    'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($covenant)],
+                    'file' => [
+                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
+                            [
+                                'prefix' => $covenant->getDocumentPrefix(),
+                                'dossierId' => $covenant->getDossierNr(),
+                                'type' => DossierFileType::MAIN_DOCUMENT->value,
+                                'id' => $covenantMainDocument->getId(),
+                            ],
+                        )->toString(),
+                    ],
+                ],
             ],
             'attachments' => [
                 [
@@ -116,14 +163,42 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'formalDate' => $covenantAttachment->getFormalDate()->format('Y-m-d'),
                     'grounds' => $covenantAttachment->getGrounds(),
                     'fileName' => $covenantAttachment->getFileInfo()->getName(),
-                    'externalId' => $covenantAttachment->getExternalId(),
+                    'externalId' => $covenantAttachment->getExternalId()?->toString(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
+                    '_links' => [
+                        'upload' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                CovenantUploadAttachmentResource::ROUTE_NAME_UPLOAD,
+                                [
+                                    'organisationId' => $covenant->getOrganisation()->getId(),
+                                    'dossierExternalId' => $covenant->getExternalId()?->toString(),
+                                    'attachmentExternalId' => $covenantAttachment->getExternalId()?->toString(),
+                                ],
+                            )->toString(),
+                        ],
+                        'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($covenant)],
+                        'file' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
+                                [
+                                    'prefix' => $covenant->getDocumentPrefix(),
+                                    'dossierId' => $covenant->getDossierNr(),
+                                    'type' => DossierFileType::ATTACHMENT->value,
+                                    'id' => $covenantAttachment->getId(),
+                                ],
+                            )->toString(),
+                        ],
+                    ],
                 ],
             ],
             'dateFrom' => $covenant->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $covenant->getDateTo()?->format('Y-m-d'),
             'previousVersionLink' => $covenant->getPreviousVersionLink(),
             'parties' => $covenant->getParties(),
+            '_links' => [
+                'self' => ['href' => $this->buildPublicUrl($organisation, $covenant)],
+                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($covenant)],
+            ],
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
@@ -233,6 +308,18 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseCount(Covenant::class, 1);
     }
 
+    public function testCreateCovenantWithTooLongExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+
+        $data = $this->createValidCovenantDataPayload($department, $subject, 1);
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, str_repeat('x', 129)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
     /**
      * @param array<string,array<array-key,mixed>> $dataOverrides
      * @param array<string,array<array-key,mixed>> $violations
@@ -312,7 +399,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'subjectId' => '00000000-0000-0000-0000-000000000000',
                 ],
                 [
-                    'code' => EntityExists::ENTITY_EXISTS_ERROR,
+                    'code' => ConstraintViolationBuilder::ENTITY_MISSING_ERROR,
                     'propertyPath' => 'subjectId',
                 ],
             ],
@@ -321,8 +408,26 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'departmentId' => '00000000-0000-0000-0000-000000000000',
                 ],
                 [
-                    'code' => EntityExists::ENTITY_EXISTS_ERROR,
+                    'code' => ConstraintViolationBuilder::ENTITY_MISSING_ERROR,
                     'propertyPath' => 'departmentId',
+                ],
+            ],
+            'exceeds max attachments per dossier' => [
+                [
+                    'attachments' => array_map(
+                        static fn ($i) => [
+                            'fileName' => sprintf('file%s.pdf', $i),
+                            'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
+                            'type' => AttachmentType::COVENANT->value,
+                            'language' => AttachmentLanguage::ENG->value,
+                            'externalId' => sprintf('external-id-%s', $i),
+                        ],
+                        range(1, AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER + 1),
+                    ),
+                ],
+                [
+                    'code' => Count::TOO_MANY_ERROR,
+                    'propertyPath' => 'attachments',
                 ],
             ],
         ];
@@ -343,7 +448,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         CovenantAttachmentFactory::createOne(['dossier' => $covenant]);
 
         self::assertDatabaseHas(Covenant::class, [
-            'title' => $covenant->getTitle(),
+            'title' => (string) $covenant->getTitle(),
             'summary' => $covenant->getSummary(),
         ]);
 
@@ -381,7 +486,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         CovenantAttachmentFactory::createOne(['dossier' => $covenant]);
 
         self::assertDatabaseHas(Covenant::class, [
-            'title' => $covenant->getTitle(),
+            'title' => (string) $covenant->getTitle(),
             'summary' => $covenant->getSummary(),
         ]);
 
@@ -391,7 +496,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertJsonContains(['violations' => [$violations]]);
 
         self::assertDatabaseHas(Covenant::class, [
-            'title' => $covenant->getTitle(),
+            'title' => (string) $covenant->getTitle(),
             'summary' => $covenant->getSummary(),
         ]);
     }
@@ -420,6 +525,24 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'propertyPath' => 'dateFrom',
                 ],
             ],
+            'exceeds max attachments per dossier' => [
+                [
+                    'attachments' => array_map(
+                        static fn ($i) => [
+                            'fileName' => sprintf('file%s.pdf', $i),
+                            'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
+                            'type' => AttachmentType::COVENANT->value,
+                            'language' => AttachmentLanguage::ENG->value,
+                            'externalId' => sprintf('external-id-%s', $i),
+                        ],
+                        range(1, AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER + 1),
+                    ),
+                ],
+                [
+                    'code' => Count::TOO_MANY_ERROR,
+                    'propertyPath' => 'attachments',
+                ],
+            ],
         ];
     }
 
@@ -438,7 +561,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         CovenantAttachmentFactory::createOne(['dossier' => $covenant]);
 
         self::assertDatabaseHas(Covenant::class, [
-            'title' => $covenant->getTitle(),
+            'title' => (string) $covenant->getTitle(),
             'summary' => $covenant->getSummary(),
         ]);
 
@@ -447,7 +570,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         self::assertDatabaseHas(Covenant::class, [
-            'title' => $covenant->getTitle(),
+            'title' => (string) $covenant->getTitle(),
             'summary' => $covenant->getSummary(),
         ]);
     }
@@ -505,7 +628,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseCount(CovenantAttachment::class, 1);
 
         $data = [
-            'title' => $covenant->getTitle(),
+            'title' => (string) $covenant->getTitle(),
             'dossierNumber' => $covenant->getDossierNr(),
             'dateFrom' => $covenant->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $covenant->getDateTo()?->format('Y-m-d'),
@@ -527,7 +650,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment->getLanguage(),
                     'type' => $attachment->getType(),
-                    'externalId' => $attachment->getExternalId()?->__toString(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
                 ],
             ],
         ];
@@ -568,7 +691,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]);
 
         $data = [
-            'title' => $covenant->getTitle(),
+            'title' => (string) $covenant->getTitle(),
             'dossierNumber' => $covenant->getDossierNr(),
             'dateFrom' => $covenant->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $covenant->getDateTo()?->format('Y-m-d'),
@@ -590,7 +713,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment->getLanguage(),
                     'type' => $attachment->getType(),
-                    'externalId' => $attachment->getExternalId()?->__toString(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
                 ],
             ],
         ];
@@ -630,7 +753,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]);
 
         $data = [
-            'title' => $covenant->getTitle(),
+            'title' => (string) $covenant->getTitle(),
             'dossierNumber' => $covenant->getDossierNr(),
             'dateFrom' => $covenant->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $covenant->getDateTo()?->format('Y-m-d'),
@@ -652,14 +775,14 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $attachment1->getExternalId()?->__toString(),
+                    'externalId' => $attachment1->getExternalId()?->toString(),
                 ],
                 [
                     'fileName' => $changedFileName,
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $newAttachmentExternalId->__toString(),
+                    'externalId' => $newAttachmentExternalId->toString(),
                 ],
             ],
         ];
@@ -708,7 +831,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]);
 
         $data = [
-            'title' => $covenant->getTitle(),
+            'title' => (string) $covenant->getTitle(),
             'dossierNumber' => $covenant->getDossierNr(),
             'dateFrom' => $covenant->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $covenant->getDateTo()?->format('Y-m-d'),
@@ -730,7 +853,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $attachment1->getExternalId()?->__toString(),
+                    'externalId' => $attachment1->getExternalId()?->toString(),
                 ],
             ],
         ];

@@ -37,7 +37,7 @@ final class HasAliveTest extends UnitTestCase
             ->andReturnTrue();
         $this->storage
             ->expects('read')
-            ->andReturnUsing(function () use (&$hash) {
+            ->andReturnUsing(static function () use (&$hash) {
                 return $hash;
             });
         $this->storage->expects('delete')->andReturnTrue();
@@ -97,7 +97,7 @@ final class HasAliveTest extends UnitTestCase
             ->andReturnTrue();
         $this->storage
             ->expects('read')
-            ->andReturnUsing(function () use (&$hash) {
+            ->andReturnUsing(static function () use (&$hash) {
                 return $hash;
             });
         $this->storage->expects('delete')->andReturnFalse();
@@ -124,7 +124,7 @@ final class HasAliveTest extends UnitTestCase
 
     private function locationMatcher(?string &$locationRef): ClosureMatcher
     {
-        return Mockery::on(function (string $location) use (&$locationRef): bool {
+        return Mockery::on(static function (string $location) use (&$locationRef): bool {
             $locationRef = $location;
 
             if (! str_contains($location, '.')) {
@@ -139,7 +139,7 @@ final class HasAliveTest extends UnitTestCase
 
     private function hashMatcher(?string &$hashRef): ClosureMatcher
     {
-        return Mockery::on(function (string $hash) use (&$hashRef): bool {
+        return Mockery::on(static function (string $hash) use (&$hashRef): bool {
             $hashRef = $hash;
 
             return strlen($hash) === 64;

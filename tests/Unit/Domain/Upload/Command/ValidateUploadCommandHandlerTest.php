@@ -147,7 +147,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
             ->expects('failValidation')
             ->with(
                 $uploadEntity,
-                Mockery::on(fn (UploadValidationException $exception): bool => $exception->getMessage() === $expectedExceptionMessage),
+                Mockery::on(static fn (UploadValidationException $exception): bool => $exception->getMessage() === $expectedExceptionMessage),
             );
 
         $command = new ValidateUploadCommand($uuid);
@@ -193,7 +193,7 @@ class ValidateUploadCommandHandlerTest extends UnitTestCase
             ->expects('failValidation')
             ->with(
                 $uploadEntity,
-                Mockery::on(fn (UploadValidationException $exception): bool => $exception->getMessage() === $expectedExceptionMessage),
+                Mockery::on(static fn (UploadValidationException $exception): bool => $exception->getMessage() === $expectedExceptionMessage),
             );
 
         $command = new ValidateUploadCommand($uuid);

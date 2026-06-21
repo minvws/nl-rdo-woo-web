@@ -7,11 +7,11 @@ namespace Shared\Service\Inquiry;
 class InquiryDocumentsLink
 {
     /**
-     * @param array<array-key, string> $caseNrs
+     * @param array<array-key, string> $inquiryNumbers
      */
     public function __construct(
         private readonly string $documentNr,
-        private readonly array $caseNrs,
+        private readonly array $inquiryNumbers,
     ) {
     }
 
@@ -23,8 +23,8 @@ class InquiryDocumentsLink
     /**
      * @return array<array-key, string>
      */
-    public function getCaseNrs(): array
+    public function getInquiryNumbers(): array
     {
-        return $this->caseNrs;
+        return $this->inquiryNumbers;
     }
 }

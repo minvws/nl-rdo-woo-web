@@ -34,7 +34,7 @@ final class WooIndexController extends AbstractController
     ): StreamedResponse {
         $stream = $this->wooIndexSitemapService->getFileAsStream($wooIndexSitemap, $file);
 
-        return new StreamedResponse(function () use ($stream) {
+        return new StreamedResponse(static function () use ($stream) {
             fpassthru($stream);
             fclose($stream);
         }, Response::HTTP_OK, [

@@ -11,7 +11,7 @@ Submit your findings via the Dutch Government GOV-CERT:
 
  <https://www.ncsc.nl/contact/kwetsbaarheid-melden>
 
-And reference the "MinVWS/CIO-office, Woo platform security" in your report.
+And reference the "MinVWS/CIO-office, Woo Publication Platform security" in your report.
 
 Please do not publicly disclose these details without contacting us first. In return we will
 investigate all received vulnerability reports and, where needed, will take appropriate action

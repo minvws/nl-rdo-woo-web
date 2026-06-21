@@ -11,6 +11,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inventory\DocumentMetadata;
 use Shared\Service\Inventory\DocumentNumber;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentMatter;
 
 use function strval;
 
@@ -24,7 +26,7 @@ class DocumentNumberTest extends UnitTestCase
 
         $document = Mockery::mock(Document::class);
         $document->expects('getDocumentNr')->andReturn($documentNr);
-        $document->expects('getDocumentId')->times(3)->andReturn($documentId);
+        $document->expects('getDocumentId')->times(3)->andReturn(DocumentId::create($documentId));
 
         $documentNumber = DocumentNumber::fromReferral($dossier, $document, $referral);
 
@@ -82,6 +84,13 @@ class DocumentNumberTest extends UnitTestCase
                 'referral' => 'other-doc-matter-d0c1d',
                 'expected' => 'pr3f1x-other-doc-matter-d0c1d',
             ],
+            'without-matter' => [
+                'documentNr' => 'pr3f1x-123',
+                'prefix' => 'pr3f1x',
+                'documentId' => '123',
+                'referral' => 'other-d0c1d',
+                'expected' => 'pr3f1x-other-d0c1d',
+            ],
         ];
     }
 
@@ -90,13 +99,14 @@ class DocumentNumberTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getDocumentPrefix')->andReturn('pr3f1x');
 
+        $matter = DocumentMatter::create('bar');
         $documentMetadata = Mockery::mock(DocumentMetadata::class);
-        $documentMetadata->expects('getMatter')->andReturn('bar');
-        $documentMetadata->expects('getId')->andReturn('foo123');
+        $documentMetadata->expects('getMatter')->andReturn($matter);
+        $documentMetadata->expects('getId')->andReturn(DocumentId::create('foo123'));
 
         $documentNumber = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
 
         self::assertEquals('pr3f1x-bar-foo123', $documentNumber->getValue());
-        self::assertEquals('bar', $documentNumber->getMatter());
+        self::assertEquals($matter, $documentNumber->getMatter());
     }
 }

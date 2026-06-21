@@ -23,8 +23,9 @@ Publish Test WooDecision
   ...  ${number_of_documents}
   ...  ${prefix}=E2E-A
   ...  ${publication_status}=Gepubliceerd
+  ...  ${department}=${EMPTY}
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=${prefix}  type=woo-decision
+  Fill Out Basic Details  prefix=${prefix}  type=woo-decision  department=${department}
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  ${production_report}
   Verify Document Upload Remaining  Nog te uploaden: ${number_of_documents} van ${number_of_documents} document
@@ -38,6 +39,7 @@ Publish Generated Test WooDecision
   [Arguments]
   ...  ${prefix}=E2E-A
   ...  ${publication_status}=Gepubliceerd
+  ...  ${department}=${EMPTY}
   Generate Test Data Set  woo-decision
   Publish Test WooDecision
   ...  production_report=${PRODUCTION_REPORT}
@@ -45,6 +47,7 @@ Publish Generated Test WooDecision
   ...  number_of_documents=${NUMBER_OF_DOCUMENTS}
   ...  prefix=${prefix}
   ...  publication_status=${publication_status}
+  ...  department=${department}
 
 Fill Out WooDecision Details
   [Arguments]  ${decision}  ${has_attachment}=${FALSE}
@@ -88,7 +91,7 @@ Upload Production Report
 
 Verify Production Report Error
   [Arguments]  ${expected_result}
-  Get Text  //*[@id="inventory-error"]  contains  ${expected_result}
+  Get Text  //div[@data-e2e-name="production-report-errors"]  contains  ${expected_result}
 
 Verify Document Upload Remaining
   [Arguments]  ${expected_result}
@@ -169,17 +172,6 @@ Danger Zone Withdraw All Documents
   ...  //*[@id="inhoud"]
   ...  contains
   ...  Alle (deels) openbare documenten worden nu ingetrokken. Het kan even duren voor dit verwerkt is.
-
-Fill Publication Date
-  [Arguments]  ${date}
-  ${day} =  Convert Date  ${date}  result_format=%d
-  ${month} =  Convert Date  ${date}  result_format=%m
-  ${year} =  Convert Date  ${date}  result_format=%Y
-  IF  '${ENVIRONMENT}' == 'local' or '${ENVIRONMENT}' == 'test' or '${ENVIRONMENT}' == 'acc'
-    Type Text  id=publish_publication_date  ${day}${month}${year}
-  ELSE
-    Type Text  id=publish_publication_date  ${month}${day}${year}
-  END
 
 Click Edit Decision
   Click  //a[@data-e2e-name="edit-decision"]

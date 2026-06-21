@@ -84,7 +84,7 @@ class MoveOrphanedFiles extends Command
         $this->orphanedFileMover->move(
             orphanedPaths: $orphanedPaths,
             targetBucket: $bucketName,
-            progressTicker: fn () => $progressBar->advance(),
+            progressTicker: static fn () => $progressBar->advance(),
         );
         $progressBar->finish();
 

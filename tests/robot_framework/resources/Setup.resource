@@ -1,5 +1,5 @@
 *** Comments ***
-# robocop: off=no-global-variable,unused-variable
+# robocop: off=no-suite-variable
 
 
 *** Settings ***
@@ -17,16 +17,20 @@ Resource            Public.resource
 
 
 *** Variables ***
-${OTP_SECRET_PATH}          ${EMPTY}
-${ADMIN_CONTAINER_NAME}     nl-rdo-woo-web-private-admin-1
-${ENVIRONMENT}              ${EMPTY}
-&{TENANT_CONFIGS}           &{EMPTY}
-${URL_ADMIN}                ${EMPTY}
-${URL_PUBLIC}               ${EMPTY}
-${URL_API}                  ${EMPTY}
-${CLIENT_CERT}              ${EMPTY}
-${CLIENT_KEY}               ${EMPTY}
-${CA_BUNDLE}                ${EMPTY}
+${OTP_SECRET_PATH}      ${EMPTY}
+${ENVIRONMENT}          ${EMPTY}
+&{TENANT_CONFIGS}       &{EMPTY}
+${URL_ADMIN}            ${EMPTY}
+${URL_PUBLIC}           ${EMPTY}
+${URL_API}              ${EMPTY}
+${CLIENT_CERT}          ${EMPTY}
+${CLIENT_KEY}           ${EMPTY}
+${CA_BUNDLE}            ${EMPTY}
+${ADMIN_EMAIL}          ${EMPTY}
+${ADMIN_PASSWORD}       ${EMPTY}
+${HTACCESS_USERNAME}    ${EMPTY}
+${HTACCESS_PASSWORD}    ${EMPTY}
+${DOSSIER_REFERENCE}    ${EMPTY}
 
 
 *** Keywords ***
@@ -34,10 +38,10 @@ Suite Setup Generic
   [Documentation]  Opens a new browser and sets environment specific credential variables.
   Set DateTime Variables
   Set Tenant Context  %{TENANT}
-  IF  '${ENVIRONMENT}' == 'local'
+  IF  '${ENVIRONMENT}' == 'local' or '${ENVIRONMENT}' == 'docker'
     Open Browser And BaseUrl
     ${admin_otp_secret} =  Get OTP Secret
-    Set Credential Variables  ${TST_BALIE_USER}  ${TST_BALIE_PASSWORD}  ${admin_otp_secret}
+    Set Credential Variables  ${ADMIN_EMAIL}  ${ADMIN_PASSWORD}  ${admin_otp_secret}
   ELSE IF  '${ENVIRONMENT}' == 'test' or '${ENVIRONMENT}' == 'acc'
     ${config} =  Get From Dictionary  ${TENANT_CONFIGS}  %{TENANT}
     Open Browser And BaseUrl  http_username=${config}[HTACCESS_USERNAME]  http_password=${config}[HTACCESS_PASSWORD]
@@ -68,7 +72,7 @@ Open Browser And BaseUrl
   [Arguments]  ${slow_mo}=50ms  ${http_username}=${EMPTY}  ${http_password}=${EMPTY}
   VAR  ${device} =  %{DEVICE=Desktop Chrome}
   ${device_context} =  Get Device  ${device}
-  IF  'Desktop' in '${device}' and '${ENVIRONMENT}' != 'local'
+  IF  'Desktop' in '${device}' and '${ENVIRONMENT}' != 'local' and '${ENVIRONMENT}' != 'docker'
     # When not running locally on potentially a laptop screen, we resize the viewport so it fits within a 1920x1080 resolution.
     VAR  ${viewport} =  { "width": 1920, "height": 970 }
   ELSE
@@ -111,3 +115,11 @@ Set Tenant Context
   VAR  ${CLIENT_KEY} =  ${config}[CLIENT_KEY]  scope=suite
   VAR  ${CA_BUNDLE} =  ${config}[CA_BUNDLE]  scope=suite
   VAR  ${OTP_SECRET_PATH} =  secrets/.otp_secret_${TENANT}  scope=suite
+  ${admin_email} =  Get From Dictionary  ${config}  ADMIN_EMAIL  default=${EMPTY}
+  VAR  ${ADMIN_EMAIL} =  ${admin_email}  scope=suite
+  ${admin_password} =  Get From Dictionary  ${config}  ADMIN_PASSWORD  default=${EMPTY}
+  VAR  ${ADMIN_PASSWORD} =  ${admin_password}  scope=suite
+  ${htaccess_username} =  Get From Dictionary  ${config}  HTACCESS_USERNAME  default=${EMPTY}
+  VAR  ${HTACCESS_USERNAME} =  ${htaccess_username}  scope=suite
+  ${htaccess_password} =  Get From Dictionary  ${config}  HTACCESS_PASSWORD  default=${EMPTY}
+  VAR  ${HTACCESS_PASSWORD} =  ${htaccess_password}  scope=suite

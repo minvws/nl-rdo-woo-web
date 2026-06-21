@@ -1,58 +1,50 @@
-FROM marketsquare/robotframework-browser:19.12
-
+# syntax=docker/dockerfile:1
+FROM marketsquare/robotframework-browser:20.0
 WORKDIR /home/pwuser
 
+# Systeem-deps + locale in één laag
 USER root
-
 RUN apt-get update \
     && apt-get install --assume-yes --no-install-recommends \
         docker-cli \
         locales \
-    # Cleanup
-    && rm -rf /var/www/* \
+        curl \
+    && sed -i -e 's/# nl_NL.UTF-8 UTF-8/nl_NL.UTF-8 UTF-8/' /etc/locale.gen \
+    && locale-gen \
     && apt-get autoremove --assume-yes \
     && apt-get clean --assume-yes \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /tmp/* \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /tmp/*
 
-# Set locale to NL
-RUN sed -i -e 's/# nl_NL.UTF-8 UTF-8/nl_NL.UTF-8 UTF-8/' /etc/locale.gen && \
-    locale-gen
-ENV LANG=nl_NL.UTF-8ß
+ENV LANG=nl_NL.UTF-8
 ENV LANGUAGE=nl_NL:nl
 ENV LC_ALL=nl_NL.UTF-8
+
+# Installeer uv system-wide als root
+RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh
 
 COPY docker/robot/files/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 USER pwuser
 
-# Make sure nothing is set to root
 ENV HOME=/home/pwuser
 ENV RFDEBUG_HISTORY=/home/pwuser/.rfdebug_history
-ENV UV_CACHE_DIR=/home/pwuser/.cache/uv
-RUN mkdir -p /home/pwuser/.cache/uv \
-    &&  mkdir -p /home/pwuser/results
+ENV UV_CACHE_DIR=/tmp/uv-cache
+ENV PATH="/home/pwuser/.venv/bin:/usr/local/bin:${PATH}"
+
+RUN mkdir -p /home/pwuser/results
 
 COPY ./tests/robot_framework/pyproject.toml .
 
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/home/pwuser/.local/bin:/home/pwuser/.venv/bin:${PATH}"
-
-# Configure uv
-RUN uv venv --clear \
+# uv is nu beschikbaar als system binary, sync als pwuser
+RUN --mount=type=cache,target=/tmp/uv-cache,uid=1001 \
+    uv venv --clear \
     && uv sync \
-    && uv run rfbrowser init
+    && PLAYWRIGHT_BROWSERS_PATH=/ms-playwright uv run rfbrowser init --skip-browsers
 
-
-# Make home dir traversable/readable for any runtime UID.
 USER root
-# Base image has pwuser=1001, but compose user may set host UID (e.g. 1000).
 RUN chmod o+x /home/pwuser \
-    && chmod -R o+rX /home/pwuser/.local /home/pwuser/.venv \
-    && chmod -R o+rwX /home/pwuser/.cache
-
+    && chmod -R o+rX /home/pwuser/.venv
 USER pwuser
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

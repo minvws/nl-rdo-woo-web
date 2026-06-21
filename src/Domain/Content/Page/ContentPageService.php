@@ -16,7 +16,7 @@ readonly class ContentPageService
     public function createMissingPages(): void
     {
         $existingPages = new ArrayCollection($this->contentPageRepository->findAll());
-        $existingSlugs = $existingPages->map(fn (ContentPage $page) => $page->getSlug());
+        $existingSlugs = $existingPages->map(static fn (ContentPage $page) => $page->getSlug());
 
         foreach (ContentPageType::cases() as $type) {
             if (! $existingSlugs->contains($type->getSlug())) {

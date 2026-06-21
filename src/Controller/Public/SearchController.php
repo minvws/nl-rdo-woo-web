@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Controller\Public;
 
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
+use Shared\Domain\Department\DepartmentService;
 use Shared\Domain\Search\Query\SearchParametersFactory;
 use Shared\Service\Search\Query\Definition\BrowseAllAggregationsQueryDefinition;
 use Shared\Service\Search\Query\Definition\SearchAllQueryDefinition;
@@ -28,6 +29,7 @@ class SearchController extends AbstractController
         private readonly SearchParametersFactory $searchParametersFactory,
         private readonly BrowseAllAggregationsQueryDefinition $aggregationsQueryDefinition,
         private readonly SearchAllQueryDefinition $searchAllQueryDefinition,
+        private readonly DepartmentService $departmentService,
     ) {
     }
 
@@ -126,6 +128,7 @@ class SearchController extends AbstractController
 
         return $this->render('public/search/browse-facets.html.twig', [
             'result' => $result,
+            'departments' => $this->departmentService->getPublicDepartments(),
         ]);
     }
 }

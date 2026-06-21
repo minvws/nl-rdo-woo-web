@@ -78,7 +78,7 @@ class DossierNrValidatorTest extends UnitTestCase
         $validator->expects('validate')
             ->with(
                 'some-nr',
-                Mockery::on(function (UniqueDossierNr $constraint) use ($excludeId): bool {
+                Mockery::on(static function (UniqueDossierNr $constraint) use ($excludeId): bool {
                     return $constraint->documentPrefix === 'prefix'
                         && $constraint->excludeId === $excludeId;
                 }),

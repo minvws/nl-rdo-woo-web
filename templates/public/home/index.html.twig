@@ -34,7 +34,9 @@
 
     <section class="pt-8 lg:pt-16">
         <div class="woo-container woo-container--sm">
-            <div class="woo-rich-text">
+            <twig:Public:DepartmentsList departments="{{ departments }}" titleClass="woo-h2 woo-h2-spacing" />
+
+            <div class="woo-rich-text pt-16">
                 <h2>{{ other_publications.title }}</h2>
                 {{ other_publications.content | render_markdown }}
 

@@ -22,9 +22,9 @@ class Inquiry
 {
     use TimestampableTrait;
 
-    public const int CASENUMBER_MIN_LENGTH = 1;
-    public const int CASENUMBER_MAX_LENGTH = 255;
-    public const string CASENUMBER_REGEX = '/^[a-z0-9-.;\(\) ]+$/i';
+    public const int INQUIRY_NUMBER_MIN_LENGTH = 1;
+    public const int INQUIRY_NUMBER_MAX_LENGTH = 255;
+    public const string INQUIRY_NUMBER_REGEX = '/^[a-z0-9-.;\(\) ]+$/i';
 
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -32,13 +32,13 @@ class Inquiry
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\Length(min: self::CASENUMBER_MIN_LENGTH, max: self::CASENUMBER_MAX_LENGTH)]
+    #[Assert\Length(min: self::INQUIRY_NUMBER_MIN_LENGTH, max: self::INQUIRY_NUMBER_MAX_LENGTH)]
     #[Assert\Regex(
-        pattern: self::CASENUMBER_REGEX,
+        pattern: self::INQUIRY_NUMBER_REGEX,
         message: 'use_only_letters_numbers_and_dashes',
     )]
-    private string $casenr;
+    #[ORM\Column(length: 255)]
+    private string $inquiryNumber;
 
     /** @var Collection<array-key,Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, inversedBy: 'inquiries', cascade: ['persist'])]
@@ -79,14 +79,14 @@ class Inquiry
         return $this->id;
     }
 
-    public function getCasenr(): string
+    public function getInquiryNumber(): string
     {
-        return $this->casenr;
+        return $this->inquiryNumber;
     }
 
-    public function setCasenr(string $casenr): self
+    public function setInquiryNumber(string $inquiryNumber): self
     {
-        $this->casenr = $casenr;
+        $this->inquiryNumber = $inquiryNumber;
 
         return $this;
     }

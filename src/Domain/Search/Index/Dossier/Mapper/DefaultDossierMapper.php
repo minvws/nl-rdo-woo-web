@@ -35,7 +35,7 @@ readonly class DefaultDossierMapper implements ElasticDossierMapperInterface
                 ElasticField::ID->value => $id,
                 ElasticField::DOSSIER_NR->value => $dossier->getDossierNr(),
                 ElasticField::PREFIXED_DOSSIER_NR->value => PrefixedDossierNr::forDossier($dossier),
-                ElasticField::TITLE->value => $dossier->getTitle(),
+                ElasticField::TITLE->value => (string) $dossier->getTitle(),
                 ElasticField::STATUS->value => $dossier->getStatus(),
                 ElasticField::SUMMARY->value => $dossier->getSummary(),
                 ElasticField::DOCUMENT_PREFIX->value => $dossier->getDocumentPrefix(),
@@ -60,7 +60,7 @@ readonly class DefaultDossierMapper implements ElasticDossierMapperInterface
     private function mapDepartments(AbstractDossier $dossier): array
     {
         return $dossier->getDepartments()->map(
-            fn (Department $department) => [
+            static fn (Department $department) => [
                 ElasticField::NAME->value => DepartmentFieldMapper::fromDepartment($department)->getIndexValue(),
                 ElasticField::ID->value => $department->getId(),
             ],

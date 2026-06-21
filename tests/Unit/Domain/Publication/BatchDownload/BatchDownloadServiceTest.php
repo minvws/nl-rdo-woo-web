@@ -160,7 +160,7 @@ class BatchDownloadServiceTest extends UnitTestCase
 
         $service
             ->expects('findOrCreate')
-            ->with(Mockery::on(function (BatchDownloadScope $scope) use ($dossier) {
+            ->with(Mockery::on(static function (BatchDownloadScope $scope) use ($dossier) {
                 if ($scope->containsBothInquiryAndWooDecision()) {
                     return false;
                 }

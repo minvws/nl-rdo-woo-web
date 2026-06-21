@@ -10,6 +10,7 @@ use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use PublicationApi\Api\Dossier\DossierNrValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
 use Shared\Domain\Department\Department;
@@ -53,10 +54,8 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
         }
 
         Assert::isInstanceOf($data, OtherPublicationRequestDto::class);
-
-        $otherPublicationExternalId = $uriVariables['dossierExternalId'];
-        Assert::string($otherPublicationExternalId);
-        $otherPublicationExternalId = ExternalId::create($otherPublicationExternalId);
+        Assert::string($uriVariables['dossierExternalId']);
+        $otherPublicationExternalId = ExternalIdFactory::create($uriVariables['dossierExternalId']);
 
         $organisation = $this->organisationResolver->resolve($uriVariables);
         $subject = $this->dossierSupportService->getSubject($data, $organisation);
@@ -136,9 +135,11 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
      */
     private function getAttachments(OtherPublication $otherPublication, array $attachments): array
     {
-        return array_values(array_map(fn (AttachmentRequestDto $attachment): OtherPublicationAttachment => OtherPublicationAttachmentMapper::create(
-            $otherPublication,
-            $attachment,
-        ), $attachments));
+        return array_values(array_map(static function (AttachmentRequestDto $attachment) use ($otherPublication): OtherPublicationAttachment {
+            return OtherPublicationAttachmentMapper::create(
+                $otherPublication,
+                $attachment,
+            );
+        }, $attachments));
     }
 }

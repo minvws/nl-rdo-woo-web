@@ -38,13 +38,11 @@ baseline:
 
 testcases:
 - title: Happy flow
-  tags: [failing]
   steps:
     - name: Create disposition
       request: {}
 
 - title: Create without attachments
-  tags: [failing]
   steps:
     - name: Create disposition
       request:
@@ -54,7 +52,6 @@ testcases:
           attachments: []
 
 - title: Create without uploading a main document
-  tags: [failing]
   steps:
     - name: Create disposition
       request:
@@ -89,3 +86,11 @@ testcases:
           mainDocument:
           attachments: []
         expected_publication_status: concept
+
+- title: HAL links should be reachable
+  steps:
+    - name: Create dossier
+      request: {}
+    - name: Verify HAL links
+      keyword:
+        name: Verify HAL Links Are Reachable

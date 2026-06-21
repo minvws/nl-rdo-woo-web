@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\InvestigationReport;
 
-use PublicationApi\Api\MainDocument\MainDocumentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
 use Shared\Domain\Publication\FileInfo;
@@ -14,7 +13,7 @@ class InvestigationReportMainDocumentMapper
 {
     public static function create(
         InvestigationReport $investigationReport,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        InvestigationReportMainDocumentRequestDto $mainDocumentRequestDto,
     ): InvestigationReportMainDocument {
         $mainDocument = new InvestigationReportMainDocument(
             $investigationReport,
@@ -34,7 +33,7 @@ class InvestigationReportMainDocumentMapper
 
     public static function update(
         InvestigationReport $investigationReport,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        InvestigationReportMainDocumentRequestDto $mainDocumentRequestDto,
     ): InvestigationReportMainDocument {
         $mainDocument = $investigationReport->getMainDocument();
         Assert::notNull($mainDocument);

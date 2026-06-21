@@ -9,6 +9,7 @@ use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\ViewModel\RecentDossier;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 
 final class RecentDossierTest extends UnitTestCase
@@ -18,7 +19,7 @@ final class RecentDossierTest extends UnitTestCase
         $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->expects('getDossierNr')->andReturn($dossierNr = 'foo-123');
         $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'BAR');
-        $dossier->expects('getTitle')->andReturn($title = 'foo bar baz');
+        $dossier->expects('getTitle')->andReturn($title = DossierTitle::create('foo bar baz'));
         $dossier->expects('getType')->andReturn($type = DossierType::COVENANT);
         $dossier->expects('getPublicationDate')->times(2)->andReturn($publicationDate = PlainDate::today());
 

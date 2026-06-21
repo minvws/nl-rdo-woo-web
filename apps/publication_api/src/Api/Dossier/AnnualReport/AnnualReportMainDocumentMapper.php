@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\AnnualReport;
 
-use PublicationApi\Api\MainDocument\MainDocumentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
 use Shared\Domain\Publication\FileInfo;
@@ -14,7 +13,7 @@ class AnnualReportMainDocumentMapper
 {
     public static function create(
         AnnualReport $annualReport,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        AnnualReportMainDocumentRequestDto $mainDocumentRequestDto,
     ): AnnualReportMainDocument {
         $mainDocument = new AnnualReportMainDocument(
             $annualReport,
@@ -34,7 +33,7 @@ class AnnualReportMainDocumentMapper
 
     public static function update(
         AnnualReport $annualReport,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        AnnualReportMainDocumentRequestDto $mainDocumentRequestDto,
     ): AnnualReportMainDocument {
         $mainDocument = $annualReport->getMainDocument();
         Assert::notNull($mainDocument);

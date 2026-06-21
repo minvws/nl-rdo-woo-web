@@ -9,10 +9,13 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
+use PublicationApi\Domain\Exception\ResourceInUseException;
+use PublicationApi\Domain\Validator\EntityValidator;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectRepository;
+use Shared\Domain\Publication\Subject\SubjectService;
 use Webmozart\Assert\Assert;
 
 /**
@@ -23,10 +26,12 @@ final readonly class SubjectProcessor implements ProcessorInterface
     public function __construct(
         private OrganisationRepository $organisationRepository,
         private SubjectRepository $subjectRepository,
+        private SubjectService $subjectService,
+        private EntityValidator $validator,
     ) {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?SubjectResponse
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?SubjectDetailResponse
     {
         unset($context);
 
@@ -37,7 +42,7 @@ final readonly class SubjectProcessor implements ProcessorInterface
             Assert::isInstanceOf($data, SubjectCreateDto::class);
             $subject = $this->create($organisation, $data);
 
-            return SubjectMapper::fromEntity($subject);
+            return SubjectMapper::fromEntityWithDetail($subject);
         }
 
         $subject = $this->subjectRepository->find($uriVariables['subjectId']);
@@ -47,7 +52,7 @@ final readonly class SubjectProcessor implements ProcessorInterface
             Assert::isInstanceOf($data, SubjectUpdateDto::class);
             $this->update($subject, $data);
 
-            return SubjectMapper::fromEntity($subject);
+            return SubjectMapper::fromEntityWithDetail($subject);
         }
 
         if ($operation instanceof Delete) {
@@ -60,7 +65,10 @@ final readonly class SubjectProcessor implements ProcessorInterface
     private function create(Organisation $organisation, SubjectCreateDto $subjectCreateDto): Subject
     {
         $subject = SubjectMapper::fromCreateDto($subjectCreateDto, $organisation);
-        $this->subjectRepository->save($subject, true);
+
+        $this->validator->throwExceptionIfNotValid($subject);
+
+        $this->subjectService->saveNew($subject);
 
         return $subject;
     }
@@ -68,13 +76,20 @@ final readonly class SubjectProcessor implements ProcessorInterface
     private function update(Subject $subject, SubjectUpdateDto $subjectUpdateDto): Subject
     {
         $subject = SubjectMapper::fromUpdateDto($subject, $subjectUpdateDto);
-        $this->subjectRepository->save($subject, true);
+
+        $this->validator->throwExceptionIfNotValid($subject);
+
+        $this->subjectService->save($subject);
 
         return $subject;
     }
 
     private function delete(Subject $subject): void
     {
+        if ($this->subjectRepository->isInUse($subject)) {
+            throw new ResourceInUseException();
+        }
+
         $this->subjectRepository->remove($subject, true);
     }
 }

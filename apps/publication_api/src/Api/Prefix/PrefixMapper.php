@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Prefix;
 
 use PublicationApi\Api\Organisation\OrganisationMapper;
-use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
 
 use function array_map;
@@ -16,7 +15,7 @@ class PrefixMapper
     /**
      * @param array<array-key,DocumentPrefix> $documentPrefixes
      *
-     * @return array<array-key,PrefixResponseDto>
+     * @return list<PrefixResponseDto>
      */
     public static function fromEntities(array $documentPrefixes): array
     {
@@ -27,16 +26,26 @@ class PrefixMapper
     {
         return new PrefixResponseDto(
             $documentPrefix->getId(),
-            OrganisationMapper::fromEntity($documentPrefix->getOrganisation()),
             $documentPrefix->getPrefix(),
         );
     }
 
-    public static function fromCreateDto(PrefixCreateDto $prefixCreateDto, Organisation $organisation): DocumentPrefix
+    /**
+     * @param array<array-key,DocumentPrefix> $documentPrefixes
+     *
+     * @return array<array-key,PrefixDetailResponseDto>
+     */
+    public static function fromEntitiesWithDetail(array $documentPrefixes): array
     {
-        $documentPrefix = new DocumentPrefix($prefixCreateDto->prefix);
-        $documentPrefix->setOrganisation($organisation);
+        return array_values(array_map(self::fromEntityWithDetail(...), $documentPrefixes));
+    }
 
-        return $documentPrefix;
+    public static function fromEntityWithDetail(DocumentPrefix $documentPrefix): PrefixDetailResponseDto
+    {
+        return new PrefixDetailResponseDto(
+            $documentPrefix->getId(),
+            OrganisationMapper::fromEntity($documentPrefix->getOrganisation()),
+            $documentPrefix->getPrefix(),
+        );
     }
 }

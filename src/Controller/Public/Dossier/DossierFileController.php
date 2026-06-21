@@ -24,6 +24,8 @@ use function sprintf;
 
 class DossierFileController extends AbstractController
 {
+    public const string ROUTE_NAME_DOSSIER_FILE_DOWNLOAD = 'app_dossier_file_download';
+
     public function __construct(
         private readonly ThumbnailStorageService $thumbnailStorage,
         private readonly DownloadResponseHelper $downloadHelper,
@@ -32,7 +34,7 @@ class DossierFileController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/dossier/{prefix}/{dossierId}/file/download/{type}/{id?""}', name: 'app_dossier_file_download', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierId}/file/download/{type}/{id?""}', name: self::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, methods: ['GET'])]
     public function download(
         #[ValueResolver('dossierWithAccessCheck')] AbstractDossier $dossier,
         DossierFileType $type,
@@ -74,7 +76,7 @@ class DossierFileController extends AbstractController
         $response = new StreamedResponse();
         $response->headers->set('Content-Type', 'image/png');
         $response->headers->set('Content-Length', (string) $fileSize);
-        $response->setCallback(function () use ($stream) {
+        $response->setCallback(static function () use ($stream) {
             fpassthru($stream);
         });
 

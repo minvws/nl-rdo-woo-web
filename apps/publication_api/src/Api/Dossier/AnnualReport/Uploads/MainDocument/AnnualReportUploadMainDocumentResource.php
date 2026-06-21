@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
             output: false,
             read: false,
             deserialize: false,
-            name: 'annual_report_main_document_upload',
+            name: self::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
             processor: AnnualReportUploadMainDocumentProcessor::class,
         ),
     ],
@@ -37,4 +37,5 @@ use Symfony\Component\HttpFoundation\Response;
 )]
 final readonly class AnnualReportUploadMainDocumentResource
 {
+    public const string ROUTE_NAME_MAIN_DOCUMENT_UPLOAD = 'annual_report_main_document_upload';
 }

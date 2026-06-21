@@ -44,11 +44,11 @@ class InquiryBatchDownloadTest extends UnitTestCase
     public function testGetFileBasename(): void
     {
         $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->expects('getCasenr')->andReturn($caseNr = 'foo-123');
+        $inquiry->expects('getInquiryNumber')->andReturn($inquiryNumber = 'foo-123');
         $scope = BatchDownloadScope::forInquiry($inquiry);
 
         self::assertEquals(
-            $caseNr,
+            $inquiryNumber,
             $this->type->getFileBaseName($scope),
         );
     }

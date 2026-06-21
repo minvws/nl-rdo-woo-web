@@ -11,7 +11,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Search\Index\ElasticDocument;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\Schema\ElasticField;
-use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\InquiryNumbers;
 use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 
 #[AsTaggedItem(priority: 100)]
@@ -40,10 +40,10 @@ readonly class WooDecisionMapper implements ElasticDossierMapperInterface
         $fields[ElasticField::DECISION->value] = $dossier->getDecision();
 
         $fields[ElasticField::INQUIRY_IDS->value] = $dossier->getInquiries()->map(
-            fn (Inquiry $inquiry) => $inquiry->getId(),
+            static fn (Inquiry $inquiry) => $inquiry->getId(),
         )->toArray();
 
-        $fields[ElasticField::INQUIRY_CASE_NRS->value] = CaseNumbers::forWooDecision($dossier)->values;
+        $fields[ElasticField::INQUIRY_NUMBERS->value] = InquiryNumbers::forWooDecision($dossier)->values;
 
         return new ElasticDocument(
             $defaultDocument->getId(),

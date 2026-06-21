@@ -58,8 +58,8 @@ class MimeTypeHelperTest extends UnitTestCase
         string $mimeType,
     ): void {
         self::assertSame(
-            $this->helper->isValidForUploadGroup($fileExtension, $mimeType, UploadGroupId::WOO_DECISION_DOCUMENTS),
             MimeTypeHelperResult::VALID,
+            $this->helper->isValidForUploadGroup($fileExtension, $mimeType, UploadGroupId::WOO_DECISION_DOCUMENTS),
         );
     }
 
@@ -70,8 +70,11 @@ class MimeTypeHelperTest extends UnitTestCase
     {
         return [
             ['fileExtension' => 'pdf', 'mimeType' => 'application/pdf'],
+            ['fileExtension' => 'PDF', 'mimeType' => 'application/pdf'],
             ['fileExtension' => 'xls', 'mimeType' => 'application/msexcel'],
+            ['fileExtension' => 'Xls', 'mimeType' => 'application/msexcel'],
             ['fileExtension' => 'xlsx', 'mimeType' => 'application/msexcel'],
+            ['fileExtension' => 'xlsX', 'mimeType' => 'application/msexcel'],
         ];
     }
 

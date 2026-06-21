@@ -85,7 +85,7 @@
                                             "simple_query_string": {
                                                 "query": "foo",
                                                 "fields": [
-                                                    "dossiers.inquiry_case_nrs"
+                                                    "dossiers.inquiry_numbers"
                                                 ]
                                             }
                                         }
@@ -159,7 +159,7 @@
                                     "simple_query_string": {
                                         "query": "foo",
                                         "fields": [
-                                            "inquiry_case_nrs"
+                                            "inquiry_numbers"
                                         ]
                                     }
                                 }

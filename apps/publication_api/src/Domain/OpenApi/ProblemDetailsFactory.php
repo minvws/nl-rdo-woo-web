@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace PublicationApi\Domain\OpenApi;
 
 use PublicationApi\Domain\Exception\EntityNotFoundException;
-use PublicationApi\Domain\OpenApi\Exception\FormatMismatchException;
-use PublicationApi\Domain\OpenApi\Exception\KeywordMismatchException;
-use PublicationApi\Domain\OpenApi\Exception\SchemaMismatchException;
+use PublicationApi\Domain\Exception\ResourceInUseException;
 use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Throwable;
 
 use function sprintf;
@@ -27,6 +26,8 @@ class ProblemDetailsFactory
             $exception instanceof EntityNotFoundException => $this->buildEntityNotFoundProblem($exception),
             $exception instanceof NotFoundHttpException => $this->buildNotFoundProblem($exception),
             $exception instanceof ValidationException => $this->buildValidationProblem($exception),
+            $exception instanceof NotEncodableValueException => $this->buildInvalidRequestBodyProblem(),
+            $exception instanceof ResourceInUseException => $this->buildResourceInUseProblem(),
             default => null,
         };
     }
@@ -68,9 +69,26 @@ class ProblemDetailsFactory
             title: 'Invalid API Request',
             status: Response::HTTP_UNPROCESSABLE_ENTITY,
             detail: $exception->getMessage(),
-            field: $exception instanceof SchemaMismatchException ? $exception->getBreadCrumb() : null,
-            keyword: $exception instanceof KeywordMismatchException ? $exception->getKeyword() : null,
-            format: $exception instanceof FormatMismatchException ? $exception->getFormat() : null,
+        );
+    }
+
+    private function buildInvalidRequestBodyProblem(): ProblemDetails
+    {
+        return new ProblemDetails(
+            type: self::BASE_URI . 'invalid-request-body',
+            title: 'Invalid Request Body',
+            status: Response::HTTP_UNPROCESSABLE_ENTITY,
+            detail: 'Request body must be a valid JSON object',
+        );
+    }
+
+    private function buildResourceInUseProblem(): ProblemDetails
+    {
+        return new ProblemDetails(
+            type: self::BASE_URI . 'resource-in-use',
+            title: 'Method Not Allowed',
+            status: Response::HTTP_METHOD_NOT_ALLOWED,
+            detail: 'Resource is still linked to one or more dossiers and cannot be deleted',
         );
     }
 }

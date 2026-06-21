@@ -18,7 +18,7 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     operations: [
         new Get(
             uriTemplate: '/organisation/{organisationId}/dossiers/covenant/external/{dossierExternalId}',
-            name: 'get_covenant',
+            name: self::ROUTE_NAME_GET_COVENANT,
         ),
         new GetCollection(
             uriTemplate: '/organisation/{organisationId}/dossiers/covenant',
@@ -64,9 +64,11 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     openapi: new Operation(
         tags: ['Covenant'],
     ),
+    output: CovenantResponseDto::class,
     provider: CovenantProvider::class,
     processor: CovenantProcessor::class,
 )]
 final class CovenantResource
 {
+    public const string ROUTE_NAME_GET_COVENANT = 'get_covenant';
 }

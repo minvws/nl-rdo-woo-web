@@ -6,14 +6,22 @@ namespace PublicationApi\Api\Dossier\OtherPublication;
 
 use PublicationApi\Api\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Department\DepartmentMapper;
+use PublicationApi\Api\Dossier\OtherPublication\Uploads\Attachment\OtherPublicationUploadAttachmentResource;
+use PublicationApi\Api\Dossier\OtherPublication\Uploads\MainDocument\OtherPublicationUploadMainDocumentResource;
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Organisation\OrganisationMapper;
+use PublicationApi\Api\Subject\SubjectMapper;
+use PublicationApi\Domain\OpenApi\Links\Link;
+use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\Url;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -23,7 +31,9 @@ readonly class OtherPublicationMapper
 {
     public function __construct(
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
+        private DossierPathHelper $dossierPathHelper,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+        private PublicUrlGenerator $publicUrlGenerator,
     ) {
     }
 
@@ -45,8 +55,6 @@ readonly class OtherPublicationMapper
         $mainDocument = $otherPublication->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
-
         $dateFrom = $otherPublication->getDateFrom();
         Assert::notNull($dateFrom);
 
@@ -60,13 +68,18 @@ readonly class OtherPublicationMapper
             $otherPublication->getDossierNr(),
             $otherPublication->getTitle(),
             $otherPublication->getSummary(),
-            $otherPublication->getSubject()?->getName(),
+            SubjectMapper::fromNullableEntity($otherPublication->getSubject()),
             DepartmentMapper::fromEntity($department),
             $otherPublication->getPublicationDate(),
             $otherPublication->getStatus(),
-            $mainDocumentDto,
-            $this->attachmentResponseDtoFactory->fromEntities($otherPublication->getAttachments()->toArray()),
+            $this->mainDocumentResponseDtoFactory->fromEntity(
+                $mainDocument,
+                OtherPublicationUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                OtherPublicationMainDocumentResponseDto::class,
+            ),
+            $this->attachmentResponseDtoFactory->fromDossier($otherPublication, OtherPublicationUploadAttachmentResource::ROUTE_NAME_UPLOAD),
             $dateFrom,
+            $this->getHalLinks($otherPublication),
         );
     }
 
@@ -105,5 +118,23 @@ readonly class OtherPublicationMapper
         $otherPublication->setTitle($otherPublicationRequestDto->title);
 
         return $otherPublication;
+    }
+
+    private function getHalLinks(OtherPublication $otherPublication): LinkCollection
+    {
+        $linkCollection = new LinkCollection();
+        $linkCollection->set(
+            LinkCollection::SELF,
+            new Link($this->publicUrlGenerator->buildUrlFromRoute(OtherPublicationResource::ROUTE_NAME_GET_OTHER_PUBLICATION, [
+                'organisationId' => $otherPublication->getOrganisation()->getId(),
+                'dossierExternalId' => $otherPublication->getExternalId(),
+            ])),
+        );
+
+        if ($otherPublication->getStatus()->isPublished()) {
+            $linkCollection->set(LinkCollection::PUBLIC, new Link(Url::create($this->dossierPathHelper->getAbsoluteDetailsPath($otherPublication))));
+        }
+
+        return $linkCollection;
     }
 }

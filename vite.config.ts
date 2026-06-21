@@ -46,22 +46,13 @@ export default defineConfig({
     cors: {
       origin: [
         'http://localhost:8000',
-
-        'https://public-minvws.local',
-        'http://public-minvws.local',
-
-        'https://public-minfin.local',
-        'http://public-minfin.local',
-
-        'https://admin-minvws.local',
-        'http://admin-minvws.local',
-
-        'https://admin-minfin.local',
-        'http://admin-minfin.local',
+        'http://localhost:8001',
+        'http://localhost:8100',
+        'http://localhost:8101',
       ],
     },
     host: 'localhost',
-    port: 8001,
+    port: 8010,
   },
 
   resolve: {

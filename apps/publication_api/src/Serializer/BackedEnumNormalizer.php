@@ -10,11 +10,11 @@ use Webmozart\Assert\Assert;
 
 readonly class BackedEnumNormalizer implements NormalizerInterface
 {
-    public function normalize(mixed $object, ?string $format = null, array $context = []): int|string
+    public function normalize(mixed $data, ?string $format = null, array $context = []): int|string
     {
-        Assert::isInstanceOf($object, BackedEnum::class);
+        Assert::isInstanceOf($data, BackedEnum::class);
 
-        return $object->value;
+        return $data->value;
     }
 
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool

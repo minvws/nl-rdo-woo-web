@@ -7,7 +7,7 @@
             name="q"
             placeholder="{{ 'public.search.hint' | trans }}"
             type="text"
-            value="{{ app.request.get('q') }}"
+            value="{{ app.request.query.get('q') }}"
         >
         <button class="woo-btn-filled-pink px-3 h-auto" type="submit">
             <span class="sr-only">{{ 'public.search.label' | trans }}</span>

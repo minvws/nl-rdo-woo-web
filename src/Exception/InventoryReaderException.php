@@ -43,15 +43,13 @@ class InventoryReaderException extends FileReaderException
         );
     }
 
-    public static function forInvalidMatterInRow(int $rowIndex, int $mix, int $max): self
+    public static function forInvalidMatterInRow(int $rowIndex): self
     {
         return new self(
             "Invalid matter in inventory row #$rowIndex",
             'publication.dossier.error.invalid_matter',
             [
                 '{rownumber}' => strval($rowIndex),
-                '{min}' => strval($mix),
-                '{max}' => strval($max),
             ],
         );
     }
@@ -112,11 +110,22 @@ class InventoryReaderException extends FileReaderException
         );
     }
 
-    public static function forCaseNumbersInvalid(string $caseNumbers, int $rowIdx): self
+    public static function forInvalidInquiryNumbers(string $inquiryNumbers, int $rowIdx): self
     {
         return new self(
-            "Casenumbers '$caseNumbers' are not valid in inventory row #$rowIdx",
-            'publication.dossier.error.casenumbers_invalid',
+            "Inquiry numbers '$inquiryNumbers' are not valid in inventory row #$rowIdx",
+            'publication.dossier.error.inquiry_numbers_invalid',
+            [
+                '{rownumber}' => strval($rowIdx),
+            ],
+        );
+    }
+
+    public static function forInvalidLink(string $link, int $rowIdx): self
+    {
+        return new self(
+            "Invalid URL '$link' in inventory row #$rowIdx",
+            'publication.dossier.error.invalid_link',
             [
                 '{rownumber}' => strval($rowIdx),
             ],

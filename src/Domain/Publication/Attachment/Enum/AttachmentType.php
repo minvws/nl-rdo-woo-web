@@ -36,6 +36,7 @@ enum AttachmentType: string implements TranslatableInterface
     case DECISION_NOTE = 'c_2977c34f';
     case ANNUAL_PLAN = 'c_a6f44748';
     case ANNUAL_REPORT = 'c_3d782f30';
+    case GEOGRAPHIC_MAP = 'c_b3a6a7fc';
 
     case OFFICIAL_MESSAGE = 'c_8b92eab4';
     case EVALUATION_REPORT = 'c_38ba44de';
@@ -66,6 +67,8 @@ enum AttachmentType: string implements TranslatableInterface
     case ORGANIZATION_DETAILS = 'c_9ecc0007';
     case PRESS_RELEASE = 'c_7eba29ad';
     case SPEECH = 'c_2aedadff';
+    case OFFICIAL_FORM = 'c_3a121159';
+    case MEDIA_TEXT = 'c_6604fe5b';
 
     case COVENANT = 'c_386e74cb';
 
@@ -84,12 +87,25 @@ enum AttachmentType: string implements TranslatableInterface
     case PARLIAMENTARY_QUESTION_WITH_ANSWER = 'c_6d494ab6';
     case PARLIAMENTARY_QUESTION_WITHOUT_ANSWER = 'c_03c52ba0';
     case MOTION = 'c_bf0f9c95';
+    case COUNCIL_OF_STATE_ADVICE = 'c_9b2d26fc';
+    case PARLIAMENTARY_LETTER = 'c_49599e6c';
+    case MEMORANDUM_OF_REPLY = 'c_1422b182';
+    case EXPLANATORY_MEMORANDUM = 'c_11305262';
+    case FURTHER_REPORT = 'c_0d0e9b52';
+    case FURTHER_MEMORANDUM_OF_REPLY = 'c_622408c6';
+    case NOTE_ON_FURTHER_REPORT = 'c_8f5898e5';
+    case NOTE_ON_REPORT = 'c_bee85371';
+    case AMENDMENT_NOTE = 'c_c2052ba5';
+    case LEGISLATIVE_PROPOSAL = 'c_33d7570c';
 
     case GOVERNMENT_GAZETTE = 'c_61e3099a';
     case STAATSCOURANT = 'c_0670bae1';
 
     case POLICY = 'c_fbaa7e4b';
     case PLAN = 'c_5b1055aa';
+    case DIPLOMATIC_DECLARATION = 'c_4bd6c154';
+    case REGULATION = 'c_995d4fe9';
+    case DIRECTIVE = 'c_41ac5574';
 
     case AGENDA = 'c_f90465b3';
     case DECISION_LIST = 'c_d4a4792f';

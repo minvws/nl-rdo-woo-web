@@ -5,22 +5,13 @@ declare(strict_types=1);
 namespace Shared\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Subject\Subject;
 
-class SubjectFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
+class SubjectFixtures extends Fixture implements DependentFixtureInterface
 {
-    /**
-     * @return list<string>
-     */
-    public static function getGroups(): array
-    {
-        return ['example'];
-    }
-
     public function load(ObjectManager $manager): void
     {
         $entity = new Subject();

@@ -18,7 +18,7 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     operations: [
         new Get(
             uriTemplate: '/organisation/{organisationId}/dossiers/other-publication/external/{dossierExternalId}',
-            name: 'get_other_publication',
+            name: self::ROUTE_NAME_GET_OTHER_PUBLICATION,
         ),
         new GetCollection(
             uriTemplate: '/organisation/{organisationId}/dossiers/other-publication',
@@ -64,9 +64,11 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     openapi: new Operation(
         tags: ['OtherPublication'],
     ),
+    output: OtherPublicationResponseDto::class,
     provider: OtherPublicationProvider::class,
     processor: OtherPublicationProcessor::class,
 )]
 final class OtherPublicationResource
 {
+    public const string ROUTE_NAME_GET_OTHER_PUBLICATION = 'get_other_publication';
 }

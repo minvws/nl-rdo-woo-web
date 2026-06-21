@@ -11,17 +11,23 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Override;
 use Shared\Doctrine\PlainDateType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Validator\UniqueDocumentNr;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 use function array_values;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[UniqueEntity('externalId')]
+#[UniqueDocumentNr]
 class Document extends AbstractPublicationItem
 {
     #[ORM\Column(name: 'external_id', type: 'external_id', length: 128, unique: true, nullable: true)]
@@ -45,8 +51,8 @@ class Document extends AbstractPublicationItem
     #[ORM\Column(nullable: true)]
     private ?int $familyId = null;
 
-    #[ORM\Column(length: 170, nullable: true)]
-    private ?string $documentId = null;
+    #[ORM\Column(type: 'document_id', length: 170, nullable: true)]
+    private ?DocumentId $documentId = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $threadId = null;
@@ -56,6 +62,10 @@ class Document extends AbstractPublicationItem
 
     /** @var array<array-key, string> */
     #[ORM\Column(type: Types::JSON, nullable: false)]
+    #[Assert\All([
+        new Assert\Type('string'),
+        new Assert\NotBlank(normalizer: 'trim'),
+    ])]
     private array $grounds = [];
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -157,12 +167,12 @@ class Document extends AbstractPublicationItem
         return $this;
     }
 
-    public function getDocumentId(): ?string
+    public function getDocumentId(): ?DocumentId
     {
         return $this->documentId;
     }
 
-    public function setDocumentId(string $documentId): self
+    public function setDocumentId(DocumentId $documentId): self
     {
         $this->documentId = $documentId;
 

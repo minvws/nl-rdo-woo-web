@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shared\Tests\Unit\Api\Admin;
+namespace Admin\Tests\Unit\Api\Admin;
 
 use Admin\Api\Admin\ApiDossierAccessChecker;
 use ApiPlatform\Symfony\Security\Exception\AccessDeniedException;

@@ -1,0 +1,17 @@
+update_details: {  }
+update_decision: {  }
+update_production_report: {  }
+update_documents: {  }
+schedule_publish:
+    - { name: WORKFLOW_SCHEDULE_PUBLISH, value: workflow_schedule_publish }
+schedule_publish_as_preview: {  }
+publish_as_preview:
+    - { name: WORKFLOW_PUBLISH_AS_PREVIEW, value: workflow_publish_as_preview }
+publish:
+    - { name: WORKFLOW_PUBLISH, value: workflow_publish }
+delete: {  }
+update_content: {  }
+update_main_document: {  }
+delete_main_document: {  }
+update_attachment: {  }
+delete_attachment: {  }

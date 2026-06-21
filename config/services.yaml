@@ -19,7 +19,6 @@ imports:
     - { resource: services/default_autowire.yaml }
     - { resource: services/woo_index.yaml }
     - { resource: services/batch_archiver.yaml }
-    - { resource: services/es_index.yaml }
     - { resource: services/decision_weights.php }
 
 services:

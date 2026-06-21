@@ -1,0 +1,6 @@
+{
+    "password": "secret",
+    "roles": [
+        "superuser"
+    ]
+}

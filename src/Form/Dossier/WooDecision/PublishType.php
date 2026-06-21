@@ -5,25 +5,30 @@ declare(strict_types=1);
 namespace Shared\Form\Dossier\WooDecision;
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Form\Dossier\DossierFormFactory;
 use Shared\Form\PlainDateType;
 use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Webmozart\Assert\Assert;
 
 /**
  * @template-extends AbstractType<PublishType>
  */
 class PublishType extends AbstractType
 {
-    use DossierFormBuilderTrait;
+    public function __construct(
+        private readonly DossierFormFactory $dossierFormFactory,
+    ) {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var WooDecision $dossier */
-        $dossier = $builder->getData();
+        $dossierForm = $this->dossierFormFactory->for($builder);
+        $dossier = $dossierForm->getDossier();
+        Assert::isInstanceOf($dossier, WooDecision::class);
 
         if ($dossier->getStatus()->isConceptOrScheduled()) {
             $builder->add('preview_date', PlainDateType::class, [
@@ -69,6 +74,6 @@ class PublishType extends AbstractType
             ]);
         }
 
-        $this->addSaveAndPublishSubmit($builder);
+        $dossierForm->addSaveAndPublishSubmit();
     }
 }

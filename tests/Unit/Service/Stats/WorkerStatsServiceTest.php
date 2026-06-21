@@ -42,7 +42,7 @@ final class WorkerStatsServiceTest extends UnitTestCase
         $statsHandlerOne
             ->expects('store')
             ->with(
-                Mockery::on(fn (DateTimeImmutable $date): bool => $date == $testNow),
+                Mockery::on(static fn (DateTimeImmutable $date): bool => $date == $testNow),
                 $hostname,
                 $section,
                 $duration,
@@ -51,7 +51,7 @@ final class WorkerStatsServiceTest extends UnitTestCase
         $statsHandlerTwo
             ->expects('store')
             ->with(
-                Mockery::on(fn (DateTimeImmutable $date): bool => $date == $testNow),
+                Mockery::on(static fn (DateTimeImmutable $date): bool => $date == $testNow),
                 $hostname,
                 $section,
                 $duration,

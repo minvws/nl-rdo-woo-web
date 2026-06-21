@@ -51,7 +51,7 @@ final readonly class UrlProducer
                 throw UnconsumedPreviousChunkGeneratorException::create();
             }
 
-            yield $chunkGen = (function () use ($chunkSize, &$producer) {
+            yield $chunkGen = (static function () use ($chunkSize, &$producer) {
                 for ($i = 0; $i < $chunkSize && $producer->valid(); $i++) {
                     $signal = yield $producer->current();
 

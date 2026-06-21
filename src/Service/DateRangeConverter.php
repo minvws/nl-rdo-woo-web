@@ -9,7 +9,7 @@ use IntlDateFormatter;
 use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
-use function ucfirst;
+use function mb_ucfirst;
 
 /**
  * This class will convert a date range into a human-readable string.
@@ -68,16 +68,16 @@ class DateRangeConverter
     {
         // Spanning multiple years
         if ($from->format('y') !== $to->format('y')) {
-            return ucfirst(self::getMonthAndYear($from) . ' t/m ' . self::getMonthAndYear($to));
+            return mb_ucfirst(self::getMonthAndYear($from) . ' t/m ' . self::getMonthAndYear($to));
         }
 
         // Single month
         if ($from->format('m') === $to->format('m')) {
-            return ucfirst(self::getMonthAndYear($from));
+            return mb_ucfirst(self::getMonthAndYear($from));
         }
 
         // Spanning multiple months within a single year
-        return ucfirst(self::getMonth($from) . ' t/m ' . self::getMonthAndYear($to));
+        return mb_ucfirst(self::getMonth($from) . ' t/m ' . self::getMonthAndYear($to));
     }
 
     private static function convertToDateTimeImmutableOrNull(DateTimeImmutable|PlainDate|null $date): ?DateTimeImmutable

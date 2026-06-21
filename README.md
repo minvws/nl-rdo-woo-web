@@ -1,4 +1,4 @@
-# Woo-platform Ministry of VWS
+# Woo-platform
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=nl-rdo-woo-web-private&metric=alert_status&token=b35ec24b06834af668d51efc85b6f181dabf4a5b)](https://sonarcloud.io/summary/new_code?id=nl-rdo-woo-web-private) [![CI](https://github.com/minvws/nl-rdo-woo-web-private/actions/workflows/ci.yml/badge.svg)](https://github.com/minvws/nl-rdo-woo-web-private/actions/workflows/ci.yml)
 
@@ -6,9 +6,9 @@
 
 This repository contains the source code and the technical documentation of the website <https://open.minvws.nl/>.
 
-**Design, context and contribution information of the project OpenMinVWS can be found in the [nl-rdo-woo-coordination](https://github.com/minvws/nl-rdo-woo-coordination)-repository.**
+**Design, context and contribution information of the Woo-project can be found in the [nl-rdo-woo-coordination](https://github.com/minvws/nl-rdo-woo-coordination)-repository.**
 
-Note: The published version does not include the Rijksoverheid theme used on OpenMinVWS. The site look and feel is very minimal out of the box.
+Note: The published version does not include the Rijksoverheid theme used on OpenVWS. The site look and feel is very minimal out of the box.
 
 ## Technical information
 
@@ -16,7 +16,7 @@ For technical info, see the [Technical](docs/technische-documentatie/technical.m
 
 ## Installation (for development purposes)
 
-The Woo platform is based on the Symfony framework and uses Elasticsearch as search engine.
+The Woo-platform is based on the Symfony framework and uses Elasticsearch as search engine.
 
 - For installing, see the [Developer Installation](docs/technische-documentatie/development_install.md) documentation
 - For updating or local setup troubleshooting, see the [Update](docs/technische-documentatie/update.md) documentation

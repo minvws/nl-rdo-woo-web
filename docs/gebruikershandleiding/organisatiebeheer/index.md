@@ -2,7 +2,7 @@
 
 Beheerders met Super Beheerder of Organisatie Admin rechten zijn verantwoordelijk voor het beheren van de inrichting van een specifieke organisatie. De volgende pagina's lichten dit verder toe.
 
-Als organisatiebeheerder ben jij verantwoordelijk voor het beheer van de organisatie in het uploadportaal van het publicatieplatform.
+Als organisatiebeheerder ben jij verantwoordelijk voor het beheer van de organisatie in het uploadportaal van het Woo Publicatieplatform.
 
 Je hebt toegang tot exclusieve menu-opties, zoals 'Toegangsbeheer' en 'Onderwerpen', waartoe collega’s met de
 gebruikersrechten 'publicatiebeheer' of 'alleen-lezen' geen toegang hebben. Daarnaast heb je toegang tot het menu

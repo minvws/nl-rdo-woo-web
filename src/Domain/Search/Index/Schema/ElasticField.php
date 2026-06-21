@@ -26,7 +26,7 @@ enum ElasticField: string
     case DECISION_DATE = 'decision_date';
     case DECISION = 'decision';
     case INQUIRY_IDS = 'inquiry_ids';
-    case INQUIRY_CASE_NRS = 'inquiry_case_nrs';
+    case INQUIRY_NUMBERS = 'inquiry_numbers';
     case MIME_TYPE = 'mime_type';
     case FILE_SIZE = 'file_size';
     case FILE_TYPE = 'file_type';

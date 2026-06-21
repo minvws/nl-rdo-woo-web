@@ -54,10 +54,13 @@ parameters:
     publication_api_ssl_username_whitelist: '%env(string:MINVWS_PUBLICATION_API_SSL_USERNAME_WHITELIST)%'
     publication_api_ssl_organization_identifier: '%env(string:MINVWS_PUBLICATION_API_SSL_ORGANIZATION_IDENTIFIER)%'
 
+imports:
+    - { resource: services/default_autowire.yaml }
+
 services:
     _defaults:
         autowire: true
         autoconfigure: true
 
-    Shared\Vws\Search\Theme\Covid19Theme:
+    WooMinVWS\Search\Theme\Covid19Theme:
         tags: [ 'woo_platform.search.theme' ]

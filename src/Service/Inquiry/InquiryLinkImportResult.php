@@ -45,7 +45,7 @@ class InquiryLinkImportResult
     {
         return array_reduce(
             $this->changeset->getChanges(),
-            static fn (int $count, array $caseChanges) => $count + count($caseChanges[InquiryChangeset::ADD_DOCUMENTS]),
+            static fn (int $count, array $inquiryChanges) => $count + count($inquiryChanges[InquiryChangeset::ADD_DOCUMENTS]),
             0,
         );
     }

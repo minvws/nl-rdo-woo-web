@@ -1,6 +1,6 @@
 {% extends 'admin/base.html.twig' %}
 
-{% set page_title = 'admin.inquiries.case_numbers' | trans() %}
+{% set page_title = 'admin.inquiries.inquiry_numbers' | trans() %}
 
 {% block body %}
 <div class="bhr-container">
@@ -9,7 +9,7 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('inquiry.update') %}
-            <a class="bhr-btn-filled-primary" href="{{ path('app_admin_inquiries_link') }}" data-e2e-name="go-to-link-inquires-link">{{ 'admin.inquiries.link_case' | trans() }}</a>
+            <a class="bhr-btn-filled-primary" href="{{ path('app_admin_inquiries_link') }}" data-e2e-name="go-to-link-inquires-link">{{ 'admin.inquiries.link_inquiry' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>
@@ -20,7 +20,7 @@
         <table class="bhr-table">
             <thead>
                 <tr>
-                    {{ knp_pagination_sortable(pagination, 'admin.inquiries.case_number' | trans, 'inq.casenr', {}, {}, 'admin/layout/sort.html.twig') }}
+                    {{ knp_pagination_sortable(pagination, 'admin.inquiries.inquiry_number' | trans, 'inq.inquiryNumber', {}, {}, 'admin/layout/sort.html.twig') }}
                     <th scope="col">{{ 'public.global.decisions' | trans }}</th>
                     <th scope="col">{{ 'global.documents' | trans }}</th>
                     <th scope="col">{{ 'global.last_update' | trans }}</th>
@@ -31,7 +31,7 @@
                     <tr>
                         <td>
                             <a class="bhr-a js-bhr-clickable-row-link break-all" href="{{ PUBLIC_BASE_URL ~ path('app_inquiry_detail', { token: row.inquiry.token }) }}">
-                                {{ row.inquiry.casenr }}
+                                {{ row.inquiry.inquiryNumber }}
                             </a>
                         </td>
                         <td>

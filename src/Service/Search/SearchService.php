@@ -17,6 +17,7 @@ use Shared\Service\Search\Object\ObjectHandler;
 use Shared\Service\Search\Query\Definition\QueryDefinitionInterface;
 use Shared\Service\Search\Result\Result;
 use Shared\Service\Search\Result\ResultTransformer;
+use Webmozart\Assert\Assert;
 
 readonly class SearchService
 {
@@ -50,10 +51,11 @@ readonly class SearchService
 
         $queryDefinition->configure($queryBuilder, $searchParameters);
         $query = $queryBuilder->build();
+        Assert::isMap($query);
 
         try {
-            /** @var Elasticsearch $response */
             $response = $this->elastic->search($query);
+            Assert::isInstanceOf($response, Elasticsearch::class);
         } catch (Exception $e) {
             $this->logger->error('ElasticSearch error', [
                 'exception' => $e->getMessage(),

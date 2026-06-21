@@ -20,11 +20,11 @@ baseline:
         type: c_d506b718
       attachments:
         - externalId: <PYTHON GUID>
-          fileName: kranten artikel.txt
+          fileName: de-aanvraag-om-advies.txt
           formalDate: <ROBOT DATE -12>
           grounds: [<ROBOT RANDOMIZE>]
           language: NLD
-          type: c_c2f56984
+          type: c_a40458df
         - externalId: <PYTHON GUID>
           fileName: bijbehorende vergunning.txt
           formalDate: <ROBOT DATE -25>
@@ -67,3 +67,11 @@ testcases:
           mainDocument:
           attachments: []
         expected_publication_status: concept
+
+- title: HAL links should be reachable
+  steps:
+    - name: Create dossier
+      request: {}
+    - name: Verify HAL links
+      keyword:
+        name: Verify HAL Links Are Reachable

@@ -30,7 +30,7 @@ final readonly class PrefixProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|PrefixResponseDto
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|PrefixDetailResponseDto
     {
         $organisation = $this->organisationResolver->resolve($uriVariables);
 
@@ -58,16 +58,16 @@ final readonly class PrefixProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(PrefixMapper::fromEntities($documentPrefixes), 0, count($documentPrefixes));
+        return new ArrayPaginator(PrefixMapper::fromEntitiesWithDetail($documentPrefixes), 0, count($documentPrefixes));
     }
 
-    private function provideSingle(Organisation $organisation, Uuid $documentPrefixId): PrefixResponseDto
+    private function provideSingle(Organisation $organisation, Uuid $documentPrefixId): PrefixDetailResponseDto
     {
         $documentPrefix = $this->documentPrefixRepository->findByOrganisationAndId($organisation, $documentPrefixId);
         if ($documentPrefix === null) {
             throw EntityNotFoundException::for('Prefix', $documentPrefixId);
         }
 
-        return PrefixMapper::fromEntity($documentPrefix);
+        return PrefixMapper::fromEntityWithDetail($documentPrefix);
     }
 }

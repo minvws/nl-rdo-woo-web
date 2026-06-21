@@ -35,6 +35,7 @@ class UserViewTest extends UnitTestCase
             ->andReturn($user);
 
         $totp = Mockery::mock(Totp::class);
+        $totp->expects('getTotpUri')->with($user);
 
         $command = new UserView($userRepository, $totp);
         $commandTester = new CommandTester($command);

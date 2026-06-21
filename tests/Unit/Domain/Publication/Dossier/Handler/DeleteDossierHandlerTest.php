@@ -23,6 +23,7 @@ use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Service\Security\AuditUserDetails;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Uid\UuidV6;
 
@@ -41,7 +42,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
     private UuidV6 $dossierId;
     private string $documentPrefix;
     private string $dossierNr;
-    private string $dossierTitle;
+    private DossierTitle $dossierTitle;
     private DossierStatus $dossierStatus;
     private AuditLogger $auditLogger;
 
@@ -60,7 +61,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
         $this->dossierUuid = Uuid::v6();
         $this->documentPrefix = 'foo-bar';
         $this->dossierNr = 'foo123';
-        $this->dossierTitle = 'Foo Bar';
+        $this->dossierTitle = DossierTitle::create('Foo Bar');
         $this->dossierStatus = DossierStatus::PUBLISHED;
 
         $this->dossierId = Uuid::v6();

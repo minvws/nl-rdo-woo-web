@@ -21,19 +21,33 @@ final readonly class UploadDocumentHandler
     public function handle(WooDecision $dossier, Document $document, StreamInterface $content): void
     {
         if ($document->getJudgement() === Judgement::NOT_PUBLIC) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('Document is not public'));
+            throw new ValidationException(ConstraintViolationList::createFromMessage(
+                'Upload not allowed for a document with judgement not_public',
+            ));
+        }
+
+        if ($document->getJudgement() === Judgement::ALREADY_PUBLIC) {
+            throw new ValidationException(ConstraintViolationList::createFromMessage(
+                'Upload not allowed for a document with judgement already_public',
+            ));
         }
 
         if ($document->isSuspended()) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('Document is suspended'));
+            throw new ValidationException(ConstraintViolationList::createFromMessage(
+                'Upload not allowed for a suspended document',
+            ));
         }
 
         if ($document->isWithdrawn()) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('Document is withdrawn'));
+            throw new ValidationException(ConstraintViolationList::createFromMessage(
+                'Upload not allowed for a withdrawn document',
+            ));
         }
 
         if ($content->getSize() === 0) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('No file content provided'));
+            throw new ValidationException(ConstraintViolationList::createFromMessage(
+                'No file content provided',
+            ));
         }
 
         $this->documentUploadProcessor->process($dossier, $document, $content);

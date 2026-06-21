@@ -34,7 +34,7 @@ class PlatformCheck extends Command
         unset($input);
         $returnCode = self::SUCCESS;
 
-        $output->writeln('Woo platform sanity check status');
+        $output->writeln('Woo Publication Platform sanity check status');
         $output->writeln('=========================================');
         $output->writeln('');
 

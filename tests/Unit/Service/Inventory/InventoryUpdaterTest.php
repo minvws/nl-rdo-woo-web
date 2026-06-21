@@ -20,8 +20,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Search\SearchDispatcher;
-use Shared\Service\Inquiry\CaseNumbers;
 use Shared\Service\Inquiry\InquiryChangeset;
+use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inquiry\InquiryService;
 use Shared\Service\Inventory\DocumentComparator;
 use Shared\Service\Inventory\DocumentMetadata;
@@ -31,7 +31,10 @@ use Shared\Service\Inventory\InventoryUpdater;
 use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Shared\Service\Inventory\Reader\InventoryReadItem;
+use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -186,25 +189,25 @@ class InventoryUpdaterTest extends UnitTestCase
             familyId: 10,
             sourceType: SourceType::PDF,
             grounds: ['5.1.1a'],
-            id: '1',
+            id: DocumentId::create('1'),
             judgement: Judgement::PUBLIC,
             period: null,
             threadId: null,
-            caseNumbers: new CaseNumbers(['21-a']),
+            inquiryNumbers: new InquiryNumbers(['21-a']),
             suspended: false,
             links: [],
             remark: null,
-            matter: 'matter',
+            matter: DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
             refersTo: ['matter-77'],
         );
 
         $reader = Mockery::mock(InventoryReaderInterface::class);
-        $reader->expects('getDocumentMetadataGenerator')->with($dossier)->andReturn((function () use ($metadata) {
+        $reader->expects('getDocumentMetadataGenerator')->with($dossier)->andReturn((static function () use ($metadata) {
             yield new InventoryReadItem($metadata, 1, null);
         })());
 
         $changeset = new InventoryChangeset([
-            'pfx-matter-1' => InventoryChangeset::ADDED,
+            'pfx-mat-1' => InventoryChangeset::ADDED,
         ]);
 
         $runProgress = Mockery::mock(RunProgress::class);
@@ -214,11 +217,11 @@ class InventoryUpdaterTest extends UnitTestCase
         $createdDocument = Mockery::mock(Document::class);
         $this->documentRepository
             ->expects('findOneByDocumentNrCaseInsensitive')
-            ->with('PFX-matter-1')
+            ->with('PFX-MAT-1')
             ->andReturn(null);
         $this->documentRepository
             ->expects('findOneByDocumentNrCaseInsensitive')
-            ->with('PFX-matter-1')
+            ->with('PFX-MAT-1')
             ->andReturn($createdDocument);
 
         $this->documentUpdater

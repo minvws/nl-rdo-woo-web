@@ -7,7 +7,6 @@ namespace Shared\Tests\Unit\Domain\Upload\Handler\S3;
 use GuzzleHttp\Psr7\Stream;
 use League\Flysystem\FilesystemOperator;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -21,8 +20,8 @@ use Shared\Domain\Upload\StreamUpload;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadRequest;
 use Shared\Service\Uploader\UploadGroupId;
+use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\ExternalId;
-use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\InputBag;
 use Webmozart\Assert\Assert;
@@ -31,10 +30,8 @@ use function fclose;
 use function fopen;
 use function sprintf;
 
-class S3UploadHandlerTest extends MockeryTestCase
+class S3UploadHandlerTest extends UnitTestCase
 {
-    use MatchesSnapshots;
-
     private S3UploadHandler $handler;
     private S3UploadHelper&MockInterface $s3uploadHelper;
     private vfsStreamDirectory $vfs;

@@ -19,7 +19,7 @@ use function sprintf;
 
 class InquiryLinkImportParser
 {
-    private const string COLUMN_CASE_NR = 'caseNr';
+    private const string COLUMN_INQUIRY_NUMBER = 'inquiryNumber';
     private const string COLUMN_MATTER = 'matter';
     private const string COLUMN_DOCUMENT_ID = 'documentId';
 
@@ -40,14 +40,14 @@ class InquiryLinkImportParser
             $rowIdx = intval($rowIdx);
             $documentId = $reader->getString($rowIdx, self::COLUMN_DOCUMENT_ID);
             $matter = $reader->getString($rowIdx, self::COLUMN_MATTER);
-            $caseNrs = InventoryDataHelper::separateValues(
-                $reader->getString($rowIdx, self::COLUMN_CASE_NR),
+            $inquiryNumbers = InventoryDataHelper::separateValues(
+                $reader->getString($rowIdx, self::COLUMN_INQUIRY_NUMBER),
                 [',', ';'],
             );
 
             $documentNr = sprintf('%s-%s-%s', $prefix->getPrefix(), $matter, $documentId);
 
-            yield $documentNr => $caseNrs;
+            yield $documentNr => $inquiryNumbers;
         }
     }
 
@@ -67,9 +67,9 @@ class InquiryLinkImportParser
                     columnNames: ['id', 'documentid', 'document', 'document id', 'documentnr', 'document nr', 'documentnr.', 'document nr.'],
                 ),
                 new ColumnMapping(
-                    name: self::COLUMN_CASE_NR,
+                    name: self::COLUMN_INQUIRY_NUMBER,
                     required: true,
-                    columnNames: ['zaaknr', 'casenr', 'zaak', 'case', 'zaaknummer', 'zaaknummers', 'zaaknummer(s)'],
+                    columnNames: ['zaaknr', 'casenr', 'zaak', 'case', 'zaaknummer', 'zaaknummers', 'zaaknummer(s)', 'inquiry_number', 'inquiry_nr'],
                 ),
             );
         } catch (Exception $exception) {

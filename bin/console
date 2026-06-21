@@ -22,7 +22,7 @@ if (! is_file(dirname(__DIR__) . '/vendor/autoload_runtime.php')) {
 
 require_once dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
-return function (InputInterface $input, array $context) {
+return static function (InputInterface $input, array $context) {
     $applicationId = ApplicationId::fromString($input->getParameterOption(['--id', '-i'], $context['APP_ID'] ?? null));
     $tenantValue = $input->getParameterOption(['--tenant', '-T'], $context['TENANT_ID'] ?? null);
 

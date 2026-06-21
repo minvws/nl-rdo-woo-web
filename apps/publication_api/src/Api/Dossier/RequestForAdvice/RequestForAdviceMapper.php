@@ -6,14 +6,22 @@ namespace PublicationApi\Api\Dossier\RequestForAdvice;
 
 use PublicationApi\Api\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Department\DepartmentMapper;
+use PublicationApi\Api\Dossier\RequestForAdvice\Uploads\Attachment\RequestForAdviceUploadAttachmentResource;
+use PublicationApi\Api\Dossier\RequestForAdvice\Uploads\MainDocument\RequestForAdviceUploadMainDocumentResource;
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Organisation\OrganisationMapper;
+use PublicationApi\Api\Subject\SubjectMapper;
+use PublicationApi\Domain\OpenApi\Links\Link;
+use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\Url;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -23,7 +31,9 @@ readonly class RequestForAdviceMapper
 {
     public function __construct(
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
+        private DossierPathHelper $dossierPathHelper,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+        private PublicUrlGenerator $publicUrlGenerator,
     ) {
     }
 
@@ -45,8 +55,6 @@ readonly class RequestForAdviceMapper
         $mainDocument = $requestForAdvice->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
-
         $dateFrom = $requestForAdvice->getDateFrom();
         Assert::notNull($dateFrom);
 
@@ -60,15 +68,20 @@ readonly class RequestForAdviceMapper
             $requestForAdvice->getDossierNr(),
             $requestForAdvice->getTitle(),
             $requestForAdvice->getSummary(),
-            $requestForAdvice->getSubject()?->getName(),
+            SubjectMapper::fromNullableEntity($requestForAdvice->getSubject()),
             DepartmentMapper::fromEntity($department),
             $requestForAdvice->getPublicationDate(),
             $requestForAdvice->getStatus(),
-            $mainDocumentDto,
-            $this->attachmentResponseDtoFactory->fromEntities($requestForAdvice->getAttachments()->toArray()),
+            $this->mainDocumentResponseDtoFactory->fromEntity(
+                $mainDocument,
+                RequestForAdviceUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                RequestForAdviceMainDocumentResponseDto::class,
+            ),
+            $this->attachmentResponseDtoFactory->fromDossier($requestForAdvice, RequestForAdviceUploadAttachmentResource::ROUTE_NAME_UPLOAD),
             $dateFrom,
             $requestForAdvice->getLink(),
             $requestForAdvice->getAdvisoryBodies(),
+            $this->getHalLinks($requestForAdvice),
         );
     }
 
@@ -109,5 +122,23 @@ readonly class RequestForAdviceMapper
         $requestForAdvice->setAdvisoryBodies($requestForAdviceRequestDto->advisoryBodies);
 
         return $requestForAdvice;
+    }
+
+    private function getHalLinks(RequestForAdvice $requestForAdvice): LinkCollection
+    {
+        $linkCollection = new LinkCollection();
+        $linkCollection->set(
+            LinkCollection::SELF,
+            new Link($this->publicUrlGenerator->buildUrlFromRoute(RequestForAdviceResource::ROUTE_NAME_GET_REQUEST_FOR_ADVICE, [
+                'organisationId' => $requestForAdvice->getOrganisation()->getId(),
+                'dossierExternalId' => $requestForAdvice->getExternalId(),
+            ])),
+        );
+
+        if ($requestForAdvice->getStatus()->isPublished()) {
+            $linkCollection->set(LinkCollection::PUBLIC, new Link(Url::create($this->dossierPathHelper->getAbsoluteDetailsPath($requestForAdvice))));
+        }
+
+        return $linkCollection;
     }
 }

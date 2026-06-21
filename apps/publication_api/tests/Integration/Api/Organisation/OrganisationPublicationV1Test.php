@@ -6,7 +6,10 @@ namespace PublicationApi\Tests\Integration\Api\Organisation;
 
 use PublicationApi\Api\Organisation\OrganisationResource;
 use PublicationApi\Tests\Integration\Api\ApiPublicationV1TestCase;
+use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
+use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,7 +21,28 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
 {
     public function testGetOrganisation(): void
     {
-        $organisation = OrganisationFactory::createOne();
+        $departmentA = DepartmentFactory::createOne([
+            'name' => 'departmentA',
+        ]);
+        $departmentB = DepartmentFactory::createOne([
+            'name' => 'departmentB',
+        ]);
+
+        $organisation = OrganisationFactory::createOne([
+            'departments' => [$departmentA, $departmentB],
+        ]);
+
+        $subjectA = SubjectFactory::createOne([
+            'organisation' => $organisation,
+            'name' => 'subjectA',
+        ]);
+        $subjectB = SubjectFactory::createOne([
+            'organisation' => $organisation,
+            'name' => 'subjectB',
+        ]);
+
+        $prefixA = DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+        $prefixB = DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $response = self::createPublicationApiClient()
             ->request(
@@ -31,9 +55,39 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
         $expectedResponse = [
             'id' => (string) $organisation->getId(),
             'name' => $organisation->getName(),
+            'departments' => [
+                [
+                    'id' => (string) $departmentA->getId(),
+                    'name' => $departmentA->getName(),
+                ],
+                [
+                    'id' => (string) $departmentB->getId(),
+                    'name' => $departmentB->getName(),
+                ],
+            ],
+            'subjects' => [
+                [
+                    'id' => (string) $subjectA->getId(),
+                    'name' => $subjectA->getName(),
+                ],
+                [
+                    'id' => (string) $subjectB->getId(),
+                    'name' => $subjectB->getName(),
+                ],
+            ],
+            'prefixes' => [
+                [
+                    'id' => (string) $prefixA->getId(),
+                    'prefix' => $prefixA->getPrefix(),
+                ],
+                [
+                    'id' => (string) $prefixB->getId(),
+                    'prefix' => $prefixB->getPrefix(),
+                ],
+            ],
         ];
 
-        self::assertSame($expectedResponse, $response->toArray());
+        self::assertEquals($expectedResponse, $response->toArray());
         self::assertMatchesResourceItemJsonSchema(OrganisationResource::class);
     }
 

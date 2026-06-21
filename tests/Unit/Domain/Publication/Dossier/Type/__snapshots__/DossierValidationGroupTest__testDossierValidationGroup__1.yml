@@ -1,0 +1,24 @@
+-
+    name: DETAILS
+    value: details
+-
+    name: DECISION
+    value: decision
+-
+    name: DOCUMENTS
+    value: documents
+-
+    name: PUBLICATION
+    value: publication
+-
+    name: CONTENT
+    value: content
+-
+    name: WORKFLOW_PUBLISH
+    value: workflow_publish
+-
+    name: WORKFLOW_PUBLISH_AS_PREVIEW
+    value: workflow_publish_as_preview
+-
+    name: WORKFLOW_SCHEDULE_PUBLISH
+    value: workflow_schedule_publish

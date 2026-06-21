@@ -1,12 +1,12 @@
 {
     "name": "minvws/nl-rdo-woo-web-private",
-    "description": "Source code for the (new) WOO platform used by the Ministry of Health, Welfare and Sport",
+    "description": "Source code for the (new) Woo Publication Platform used by the Ministry of Health, Welfare and Sport",
     "type": "project",
     "license": "EUPL-1.2",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": "^8.4",
+        "php": "^8.4.1",
         "ext-ctype": "*",
         "ext-fileinfo": "*",
         "ext-iconv": "*",
@@ -14,10 +14,8 @@
         "ext-xmlwriter": "*",
         "ext-zip": "*",
         "api-platform/doctrine-orm": "^4.1",
-        "api-platform/hal": "^4.3",
         "api-platform/symfony": "^4.1",
         "aws/aws-sdk-php": "^3.279",
-        "devizzent/cebe-php-openapi": "^1.1",
         "doctrine/doctrine-bundle": "^3.0.0",
         "doctrine/doctrine-fixtures-bundle": "^4.0",
         "doctrine/doctrine-migrations-bundle": "^4.0.0",
@@ -36,12 +34,11 @@
         "league/flysystem-aws-s3-v3": "^3.15",
         "league/flysystem-bundle": "^3.1",
         "league/mime-type-detection": "^1.16",
-        "league/openapi-psr7-validator": "^0.22.0",
         "maennchen/zipstream-php": "^3.1",
         "martin-georgiev/postgresql-for-doctrine": "^4.0.0",
         "minvws/audit-logger": "^1.1.0",
         "minvws/audit-logger-bundle": "^1.1.0",
-        "minvws/horsebattery": "^1.1",
+        "minvws/horsebattery": "^2.0",
         "minvws/icore-php-typearray": "^1.0.0",
         "nesbot/carbon": "^3.7",
         "nikic/php-parser": "^5.0",
@@ -114,7 +111,7 @@
         "twig/intl-extra": "^3.7",
         "twig/string-extra": "^3.6",
         "twig/twig": "^3.14.0",
-        "webmozart/assert": "^1.11",
+        "webmozart/assert": "^2.0",
         "xenolope/quahog": "^3.0"
     },
     "config": {
@@ -133,7 +130,8 @@
             "Admin\\": "apps/admin/src/",
             "Public\\": "apps/public/src/",
             "PublicationApi\\": "apps/publication_api/src/",
-            "Worker\\": "apps/worker/src/"
+            "Worker\\": "apps/worker/src/",
+            "WooMinVWS\\": "tenants/minvws/src/"
         }
     },
     "autoload-dev": {
@@ -143,6 +141,7 @@
             "Public\\Tests\\": "apps/public/tests/",
             "PublicationApi\\Tests\\": "apps/publication_api/tests/",
             "Worker\\Tests\\": "apps/worker/tests/",
+            "WooMinVWS\\Tests\\": "tenants/minvws/tests/",
             "Utils\\PHPStan\\": "utils/src/PHPStan/",
             "Utils\\Rector\\": "utils/src/Rector/",
             "Utils\\Tests\\": "utils/tests"
@@ -177,7 +176,6 @@
             "@auto-scripts",
             "@openapi:export"
         ],
-        "syncdotenv": "phpdotenvsync --opt=sync --src=.env.development --dest=.env.local --no-interaction",
         "checkstyle": [
             "XDEBUG_MODE=off phpcs",
             "XDEBUG_MODE=off php-cs-fixer fix --dry-run --diff --verbose"
@@ -229,7 +227,6 @@
         "checkarc": "phparkitect check"
     },
     "scripts-descriptions": {
-        "syncdotenv": "Synchronize .env.development with .env.local",
         "checkstyle": "Check code style using php_codesniffer and php-cs-fixer",
         "fixstyle": "Fix code style using php_codesniffer and php-cs-fixer",
         "checktype": "Check code type using PHPStan",
@@ -260,10 +257,11 @@
         "dama/doctrine-test-bundle": "^8.2",
         "dg/bypass-finals": "^1.5",
         "friendsofphp/php-cs-fixer": "^3.91.2",
+        "justinrainbow/json-schema": "^6.8",
         "league/flysystem-memory": "^3.0",
         "mikey179/vfsstream": "^1.6",
         "mockery/mockery": "^1.6.12",
-        "phparkitect/phparkitect": "^0.8.0",
+        "phparkitect/phparkitect": "^1.0.0",
         "phpcompatibility/php-compatibility": "^10.0.0-alpha1",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.0",
@@ -272,12 +270,11 @@
         "phpstan/phpstan-mockery": "^2.0",
         "phpstan/phpstan-symfony": "^2.0",
         "phpstan/phpstan-webmozart-assert": "^2.0",
-        "phpunit/phpunit": "^12.4",
+        "phpunit/phpunit": "^13.0",
         "rector/rector": "^2.0",
         "slevomat/coding-standard": "^8.25",
         "spatie/phpunit-snapshot-assertions": "^5.1",
         "squizlabs/php_codesniffer": "^4.0",
-        "stefanocbt/phpdotenv-sync": "^1.2",
         "swisnl/phpstan-faker": "^1.0",
         "symfony/browser-kit": "*",
         "symfony/css-selector": "*",

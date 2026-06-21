@@ -66,8 +66,9 @@ class AttachmentActionController extends AbstractController
         $form = $this->createForm(WithdrawAttachmentFormType::class);
         $form->handleRequest($request);
 
-        /** @var SubmitButton $cancelButton */
         $cancelButton = $form->get('cancel');
+        Assert::isInstanceOf($cancelButton, SubmitButton::class);
+
         if ($cancelButton->isClicked()) {
             return $this->redirectToRoute(
                 $wizardStatus->getAttachmentStep()->getRouteName(),
@@ -79,11 +80,11 @@ class AttachmentActionController extends AbstractController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var AttachmentWithdrawReason $reason */
             $reason = $form->get('reason')->getData();
+            Assert::isInstanceOf($reason, AttachmentWithdrawReason::class);
 
-            /** @var string $explanation */
             $explanation = $form->get('explanation')->getData();
+            Assert::string($explanation);
 
             $this->dispatcher->dispatchWithDrawAttachmentCommand($dossier, $attachment, $reason, $explanation);
         }

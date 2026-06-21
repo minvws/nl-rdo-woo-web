@@ -11,6 +11,7 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -25,7 +26,7 @@ final class CovenantTest extends SharedWebTestCase
         $covenant = new Covenant();
         $covenant->setDossierNr('foo-123');
         $covenant->setDepartments([$department]);
-        $covenant->setTitle('bar');
+        $covenant->setTitle(DossierTitle::create('bar'));
         $covenant->setDocumentPrefix('FOO');
         $covenant->setCreatedAt($date);
         $covenant->setDateFrom(PlainDate::create($date->modify('-10 years')->format('Y-m-d')));
@@ -46,7 +47,7 @@ final class CovenantTest extends SharedWebTestCase
         $covenant = new Covenant();
         $covenant->setDossierNr('foo-123');
         $covenant->setDepartments([$department]);
-        $covenant->setTitle('bar');
+        $covenant->setTitle(DossierTitle::create('bar'));
         $covenant->setDocumentPrefix('FOO');
         $covenant->setDateFrom(PlainDate::create($date->modify('-10 years')->format('Y-m-d')));
 

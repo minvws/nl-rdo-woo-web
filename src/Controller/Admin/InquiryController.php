@@ -14,9 +14,9 @@ use Shared\Form\ChoiceLoader\DocumentPrefixChoiceLoader;
 use Shared\Form\ChoiceLoader\WooDecisionChoiceLoader;
 use Shared\Form\Inquiry\InquiryLinkDocumentsFormType;
 use Shared\Form\Inquiry\InquiryLinkDossierFormType;
-use Shared\Service\Inquiry\CaseNumbers;
 use Shared\Service\Inquiry\InquiryChangeset;
 use Shared\Service\Inquiry\InquiryLinkImporter;
+use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inquiry\InquiryService;
 use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -128,14 +128,14 @@ class InquiryController extends AbstractController
             $map = $form->get('map')->getData();
             Assert::string($map);
 
-            $caseNrs = CaseNumbers::fromCommaSeparatedString($map);
+            $inquiryNumbers = InquiryNumbers::fromCommaSeparatedString($map);
 
             $dossiers = $form->get('dossiers')->getData();
             Assert::allIsInstanceOf($dossiers, WooDecision::class);
 
             foreach ($dossiers as $dossier) {
                 $this->denyAccessUnlessGranted('AuthMatrix.dossier.read', subject: $dossier);
-                $inquiryChangeset->addCaseNrsForDossier($dossier, $caseNrs);
+                $inquiryChangeset->addInquiryNumbersForDossier($dossier, $inquiryNumbers);
             }
 
             $this->inquiryService->applyChangesetAsync($inquiryChangeset);

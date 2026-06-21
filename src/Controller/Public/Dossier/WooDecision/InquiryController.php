@@ -43,8 +43,7 @@ class InquiryController extends AbstractController
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
     ): Response {
         $this->inquirySession->saveInquiry($inquiry);
-
-        $documentCount = $this->inquiryRepository->countDocumentsByJudgement($inquiry);
+        $documentCount = $this->inquiryRepository->getDocumentCountSummary($inquiry);
 
         $searchUrl = $this->generateUrl(
             'app_search',
@@ -96,7 +95,7 @@ class InquiryController extends AbstractController
             text: 'public.inquiry.page_title',
             route: 'app_inquiry_detail',
             parameters: ['token' => $inquiry->getToken()],
-            translationParameters: ['case_number' => $inquiry->getCasenr()],
+            translationParameters: ['inquiry_number' => $inquiry->getInquiryNumber()],
         );
         $breadcrumbs->addItem(
             text: 'public.inquiry.dossiers_breadcrumb',
@@ -138,7 +137,7 @@ class InquiryController extends AbstractController
             text: 'public.inquiry.page_title',
             route: 'app_inquiry_detail',
             parameters: ['token' => $inquiry->getToken()],
-            translationParameters: ['case_number' => $inquiry->getCasenr()],
+            translationParameters: ['inquiry_number' => $inquiry->getInquiryNumber()],
         );
         $breadcrumbs->addItem(
             text: 'public.inquiry.dossier_detail_breadcrumb',

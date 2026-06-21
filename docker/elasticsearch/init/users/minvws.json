@@ -1,0 +1,8 @@
+{
+    "password": "secret",
+    "roles": [
+        "minvws_role",
+        "viewer",
+        "monitor"
+    ]
+}

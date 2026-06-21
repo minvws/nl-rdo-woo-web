@@ -10,9 +10,11 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
-use Shared\ValueObject\ExternalId;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 use function sprintf;
+use function str_repeat;
 
 final class CovenantUploadAttachmentTest extends ApiPublicationV1UploadTestCase
 {
@@ -22,12 +24,12 @@ final class CovenantUploadAttachmentTest extends ApiPublicationV1UploadTestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $covenant = CovenantFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
         ]);
         $covenantAttachment = CovenantAttachmentFactory::createOne([
             'dossier' => $covenant,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $this->assertUpload(
@@ -51,12 +53,12 @@ final class CovenantUploadAttachmentTest extends ApiPublicationV1UploadTestCase
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $covenant = CovenantFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
         ]);
         $covenantAttachment = CovenantAttachmentFactory::createOne([
             'dossier' => $covenant,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $this->assertUploadWithoutFile(sprintf(
@@ -65,5 +67,51 @@ final class CovenantUploadAttachmentTest extends ApiPublicationV1UploadTestCase
             $covenant->getExternalId(),
             $covenantAttachment->getExternalId(),
         ));
+    }
+
+    public function testUploadWithTooLongDossierExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $covenant = CovenantFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'departments' => [$department],
+        ]);
+        $covenantAttachment = CovenantAttachmentFactory::createOne([
+            'dossier' => $covenant,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/covenant/external/%s/uploads/attachment/external/%s',
+            $organisation->getId(),
+            str_repeat('x', 129),
+            $covenantAttachment->getExternalId(),
+        ));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testUploadWithTooLongAttachmentExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $covenant = CovenantFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'departments' => [$department],
+        ]);
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/covenant/external/%s/uploads/attachment/external/%s',
+            $organisation->getId(),
+            $covenant->getExternalId(),
+            str_repeat('x', 129),
+        ));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

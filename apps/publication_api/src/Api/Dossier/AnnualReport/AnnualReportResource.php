@@ -18,7 +18,7 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     operations: [
         new Get(
             uriTemplate: '/organisation/{organisationId}/dossiers/annual-report/external/{dossierExternalId}',
-            name: 'get_annual_report',
+            name: self::ROUTE_NAME_GET_ANNUAL_REPORT,
         ),
         new GetCollection(
             uriTemplate: '/organisation/{organisationId}/dossiers/annual-report',
@@ -64,9 +64,11 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     openapi: new Operation(
         tags: ['AnnualReport'],
     ),
+    output: AnnualReportResponseDto::class,
     provider: AnnualReportProvider::class,
     processor: AnnualReportProcessor::class,
 )]
 final class AnnualReportResource
 {
+    public const string ROUTE_NAME_GET_ANNUAL_REPORT = 'get_annual_report';
 }

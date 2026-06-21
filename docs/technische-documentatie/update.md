@@ -1,7 +1,7 @@
-# Woo Platform
+# Woo Publication Platform
 
 <!-- TOC -->
-- [Woo Platform](#woo-platform)
+- [Woo Publication Platform](#woo-publication-platform)
   - [After pulling new changes or switching branches](#after-pulling-new-changes-or-switching-branches)
   - [Local setup troubleshooting](#local-setup-troubleshooting)
 <!-- TOC -->

@@ -57,7 +57,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->cache
             ->expects('get')
             ->with('foobar-tika-metadata', Mockery::type('callable'))
-            ->andReturnUsing(fn (string $key, Closure $closure) => $closure());
+            ->andReturnUsing(static fn (string $key, Closure $closure) => $closure());
 
         $this->entityStorageService
             ->expects('downloadEntity')
@@ -121,7 +121,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
 
         $this->statsService
             ->expects('measure')
-            ->with('index.entity', Mockery::on(function (Closure $closure) {
+            ->with('index.entity', Mockery::on(static function (Closure $closure) {
                 $closure();
 
                 return true;
@@ -147,7 +147,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
 
         $this->statsService
             ->expects('measure')
-            ->with('index.entity', Mockery::on(function (Closure $closure) {
+            ->with('index.entity', Mockery::on(static function (Closure $closure) {
                 $closure();
 
                 return true;
@@ -161,7 +161,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->cache
             ->expects('get')
             ->with('foobar-tika-metadata', Mockery::type('callable'))
-            ->andReturnUsing(fn (string $key, Closure $closure) => $closure());
+            ->andReturnUsing(static fn (string $key, Closure $closure) => $closure());
 
         $this->entityStorageService
             ->expects('downloadEntity')
@@ -196,7 +196,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
 
         $this->statsService
             ->expects('measure')
-            ->with('index.entity', Mockery::on(function (Closure $closure) {
+            ->with('index.entity', Mockery::on(static function (Closure $closure) {
                 $closure();
 
                 return true;
@@ -210,7 +210,7 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
         $this->cache
             ->expects('get')
             ->with('foobar-tika-metadata', Mockery::type('callable'))
-            ->andReturnUsing(fn (string $key, Closure $closure) => $closure());
+            ->andReturnUsing(static fn (string $key, Closure $closure) => $closure());
 
         $this->entityStorageService
             ->expects('downloadEntity')

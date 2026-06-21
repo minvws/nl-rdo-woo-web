@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Form\Dossier\AnnualReport;
 
-use Shared\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Form\Dossier\DossierFormFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -13,11 +13,15 @@ use Symfony\Component\Form\FormBuilderInterface;
  */
 class PublishType extends AbstractType
 {
-    use DossierFormBuilderTrait;
+    public function __construct(
+        private readonly DossierFormFactory $dossierFormFactory,
+    ) {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $this->addPublicationDateField($builder);
-        $this->addSaveAndPublishSubmit($builder);
+        $dossierForm = $this->dossierFormFactory->for($builder);
+        $dossierForm->addPublicationDateField();
+        $dossierForm->addSaveAndPublishSubmit();
     }
 }

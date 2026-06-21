@@ -14,6 +14,7 @@ use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Webmozart\Assert\Assert;
 
 use function intval;
 use function sprintf;
@@ -109,43 +110,46 @@ class InquiryRepository extends ServiceEntityRepository
             ]);
     }
 
-    /**
-     * @return array<string, int>
-     */
-    public function countDocumentsByJudgement(Inquiry $inquiry): array
+    public function getDocumentCountSummary(Inquiry $inquiry): DocumentCountSummary
     {
-        $queryBuilder = $this->createQueryBuilder('inq')
-            ->select('count(doc) as total')
-            ->join('inq.documents', 'doc')
-            ->join('doc.dossiers', 'dos')
-            ->where('inq.id = :inquiryId')
-            ->andWhere('dos.status IN (:statuses)')
+        $row = $this->createQueryBuilder('inquiry')
+            ->select('SUM(CASE WHEN document.judgement = :alreadyPublic AND dossier.status IN (:statuses) THEN 1 ELSE 0 END) AS alreadyPublic')
+            ->addSelect('SUM(CASE WHEN document.judgement = :notPublic AND dossier.status IN (:statuses) THEN 1 ELSE 0 END) AS notPublic')
+            ->addSelect('SUM(CASE WHEN document.judgement = :partialPublic AND dossier.status IN (:statuses) THEN 1 ELSE 0 END) AS partialPublic')
+            ->addSelect('SUM(CASE WHEN document.judgement = :partialPublic AND document.suspended = true '
+                . 'AND dossier.status IN (:statuses) THEN 1 ELSE 0 END) AS partialPublicSuspended')
+            ->addSelect('SUM(CASE WHEN document.judgement = :partialPublic AND document.withdrawn = true '
+                . 'AND dossier.status IN (:statuses) THEN 1 ELSE 0 END) AS partialPublicWithdrawn')
+            ->addSelect('SUM(CASE WHEN document.judgement = :public AND dossier.status IN (:statuses) THEN 1 ELSE 0 END) AS public')
+            ->addSelect('SUM(CASE WHEN document.judgement = :public AND document.suspended = true '
+                . 'AND dossier.status IN (:statuses) THEN 1 ELSE 0 END) AS publicSuspended')
+            ->addSelect('SUM(CASE WHEN document.judgement = :public AND document.withdrawn = true '
+                . 'AND dossier.status IN (:statuses) THEN 1 ELSE 0 END) AS publicWithdrawn')
+            ->leftJoin('inquiry.documents', 'document')
+            ->leftJoin('document.dossiers', 'dossier')
+            ->where('inquiry.id = :inquiryId')
             ->setParameter('inquiryId', $inquiry->getId())
-            ->setParameter('statuses', [
-                DossierStatus::PREVIEW,
-                DossierStatus::PUBLISHED,
-            ]);
+            ->setParameter('alreadyPublic', Judgement::ALREADY_PUBLIC->value)
+            ->setParameter('notPublic', Judgement::NOT_PUBLIC->value)
+            ->setParameter('partialPublic', Judgement::PARTIAL_PUBLIC->value)
+            ->setParameter('public', Judgement::PUBLIC->value)
+            ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED])
+            ->getQuery()
+            ->getSingleResult();
 
-        foreach (Judgement::cases() as $judgement) {
-            $queryBuilder
-                ->addSelect('SUM('
-                    . 'CASE WHEN doc.judgement = :' . $judgement->value . ' THEN 1 ELSE 0 END'
-                    . ') as ' . $judgement->value)
-                ->setParameter($judgement->value, $judgement->value);
+        Assert::isArray($row);
+        Assert::allNumeric($row);
 
-            if ($judgement->isAtLeastPartialPublic()) {
-                $queryBuilder
-                    ->addSelect('SUM('
-                        . 'CASE WHEN doc.judgement = :' . $judgement->value . ' AND doc.withdrawn=true  THEN 1 ELSE 0 END'
-                        . ') as ' . $judgement->value . '_withdrawn')
-                    ->addSelect('SUM('
-                        . ' CASE WHEN doc.judgement = :' . $judgement->value . ' AND doc.suspended=true THEN 1 ELSE 0 END'
-                        . ') as ' . $judgement->value . '_suspended');
-            }
-        }
-
-        /** @var array<string, int> */
-        return $queryBuilder->getQuery()->getSingleResult();
+        return new DocumentCountSummary(
+            alreadyPublic: (int) $row['alreadyPublic'],
+            notPublic: (int) $row['notPublic'],
+            partialPublic: (int) $row['partialPublic'],
+            partialPublicSuspended: (int) $row['partialPublicSuspended'],
+            partialPublicWithdrawn: (int) $row['partialPublicWithdrawn'],
+            public: (int) $row['public'],
+            publicSuspended: (int) $row['publicSuspended'],
+            publicWithdrawn: (int) $row['publicWithdrawn'],
+        );
     }
 
     public function getDocumentsForPubliclyAvailableDossiers(Inquiry $inquiry): QueryBuilder

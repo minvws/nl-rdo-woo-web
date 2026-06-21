@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\Covenant;
 
-use PublicationApi\Api\MainDocument\MainDocumentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use Shared\Domain\Publication\FileInfo;
@@ -14,7 +13,7 @@ class CovenantMainDocumentMapper
 {
     public static function create(
         Covenant $covenant,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        CovenantMainDocumentRequestDto $mainDocumentRequestDto,
     ): CovenantMainDocument {
         $mainDocument = new CovenantMainDocument(
             $covenant,
@@ -33,7 +32,7 @@ class CovenantMainDocumentMapper
 
     public static function update(
         Covenant $covenant,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        CovenantMainDocumentRequestDto $mainDocumentRequestDto,
     ): CovenantMainDocument {
         $mainDocument = $covenant->getMainDocument();
         Assert::notNull($mainDocument);

@@ -21,6 +21,7 @@ use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 use Symfony\Component\Uid\Uuid;
 
 class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
@@ -55,12 +56,13 @@ class ProcessDocumentFileUpdateHandlerTest extends UnitTestCase
 
     public function testInvokeSuccessfully(): void
     {
+        $documentId = DocumentId::create('foo.123');
         $wooDecision = Mockery::mock(WooDecision::class);
 
         $document = Mockery::mock(Document::class);
         $document
             ->expects('getDocumentId')
-            ->andReturn($documentId = 'foo-123');
+            ->andReturn($documentId);
 
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
         $documentFileSet

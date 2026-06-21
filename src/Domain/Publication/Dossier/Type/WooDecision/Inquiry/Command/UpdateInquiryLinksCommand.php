@@ -10,7 +10,7 @@ class UpdateInquiryLinksCommand
 {
     public function __construct(
         private readonly Uuid $organisationId,
-        private readonly string $caseNr,
+        private readonly string $inquiryNumber,
         /** @var array<Uuid> */
         private readonly array $docIdsToAdd,
         /** @var array<Uuid> */
@@ -25,9 +25,9 @@ class UpdateInquiryLinksCommand
         return $this->organisationId;
     }
 
-    public function getCaseNr(): string
+    public function getInquiryNumber(): string
     {
-        return $this->caseNr;
+        return $this->inquiryNumber;
     }
 
     /**

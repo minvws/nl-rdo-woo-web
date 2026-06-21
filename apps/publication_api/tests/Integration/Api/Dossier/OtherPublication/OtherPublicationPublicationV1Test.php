@@ -7,15 +7,22 @@ namespace PublicationApi\Tests\Integration\Api\Dossier\OtherPublication;
 use Carbon\CarbonImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Dossier\OtherPublication\OtherPublicationResource;
+use PublicationApi\Api\Dossier\OtherPublication\Uploads\Attachment\OtherPublicationUploadAttachmentResource;
+use PublicationApi\Api\Dossier\OtherPublication\Uploads\MainDocument\OtherPublicationUploadMainDocumentResource;
 use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
+use Shared\Controller\Public\Dossier\DossierFileController;
 use Shared\Domain\Department\Department;
+use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Factory\DepartmentFactory;
@@ -26,14 +33,18 @@ use Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication\OtherPublicat
 use Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication\OtherPublicationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
-use Shared\Validator\EntityExists;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
+use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Type;
 
+use function array_map;
 use function array_merge;
+use function range;
 use function sprintf;
+use function str_repeat;
 
 final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTestCase
 {
@@ -53,42 +64,55 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
             'departments' => [$department],
         ]);
         OtherPublicationMainDocumentFactory::createOne(['dossier' => $otherPublication]);
-        OtherPublicationAttachmentFactory::createOne(['dossier' => $otherPublication]);
+        OtherPublicationAttachmentFactory::createOne([
+            'dossier' => $otherPublication,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
         self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $otherPublication->getExternalId()?->__toString()]]);
+        self::assertJsonContains([['externalId' => $otherPublication->getExternalId()?->toString()]]);
     }
 
     public function testGetOtherPublication(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $subject = SubjectFactory::createOne();
         $otherPublication = OtherPublicationFactory::createOne([
             'dateFrom' => $this->getFaker()->plainDate(),
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
             'departments' => [$department],
+            'subject' => $subject,
         ]);
         $otherPublicationMainDocument = OtherPublicationMainDocumentFactory::createOne(['dossier' => $otherPublication]);
-        $otherPublicationAttachment = OtherPublicationAttachmentFactory::createOne(['dossier' => $otherPublication]);
+        $otherPublicationAttachment = OtherPublicationAttachmentFactory::createOne([
+            'dossier' => $otherPublication,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         $response = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation, $otherPublication));
 
         self::assertResponseIsSuccessful();
 
+        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $otherPublication->getId(),
-            'externalId' => $otherPublication->getExternalId()?->__toString(),
+            'externalId' => $otherPublication->getExternalId()?->toString(),
             'organisation' => [
-                'id' => (string) $otherPublication->getOrganisation()->getId(),
-                'name' => $otherPublication->getOrganisation()->getName(),
+                'id' => $organisation->getId()->toString(),
+                'name' => $organisation->getName(),
             ],
             'dossierNumber' => $otherPublication->getDossierNr(),
-            'title' => $otherPublication->getTitle(),
+            'title' => (string) $otherPublication->getTitle(),
             'summary' => $otherPublication->getSummary(),
-            'subject' => $otherPublication->getSubject()?->getName(),
+            'subject' => [
+                'id' => $subject->getId()->toString(),
+                'name' => $subject->getName(),
+            ],
             'department' => [
                 'id' => (string) $department->getId(),
                 'name' => $department->getName(),
@@ -103,6 +127,29 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                 'grounds' => $otherPublicationMainDocument->getGrounds(),
                 'fileName' => $otherPublicationMainDocument->getFileInfo()->getName(),
                 'uploadStatus' => UploadStatus::PROCESSED->value,
+                '_links' => [
+                    'upload' => [
+                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            OtherPublicationUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                            [
+                                'organisationId' => $otherPublication->getOrganisation()->getId(),
+                                'dossierExternalId' => $otherPublication->getExternalId(),
+                            ],
+                        )->toString(),
+                    ],
+                    'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($otherPublication)],
+                    'file' => [
+                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
+                            [
+                                'prefix' => $otherPublication->getDocumentPrefix(),
+                                'dossierId' => $otherPublication->getDossierNr(),
+                                'type' => DossierFileType::MAIN_DOCUMENT->value,
+                                'id' => $otherPublicationMainDocument->getId(),
+                            ],
+                        )->toString(),
+                    ],
+                ],
             ],
             'attachments' => [
                 [
@@ -112,11 +159,39 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                     'formalDate' => $otherPublicationAttachment->getFormalDate()->format('Y-m-d'),
                     'grounds' => $otherPublicationAttachment->getGrounds(),
                     'fileName' => $otherPublicationAttachment->getFileInfo()->getName(),
-                    'externalId' => $otherPublicationAttachment->getExternalId()?->__toString(),
+                    'externalId' => $otherPublicationAttachment->getExternalId()?->toString(),
                     'uploadStatus' => UploadStatus::PROCESSED->value,
+                    '_links' => [
+                        'upload' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                OtherPublicationUploadAttachmentResource::ROUTE_NAME_UPLOAD,
+                                [
+                                    'organisationId' => $otherPublication->getOrganisation()->getId(),
+                                    'dossierExternalId' => $otherPublication->getExternalId(),
+                                    'attachmentExternalId' => $otherPublicationAttachment->getExternalId(),
+                                ],
+                            )->toString(),
+                        ],
+                        'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($otherPublication)],
+                        'file' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
+                                [
+                                    'prefix' => $otherPublication->getDocumentPrefix(),
+                                    'dossierId' => $otherPublication->getDossierNr(),
+                                    'type' => DossierFileType::ATTACHMENT->value,
+                                    'id' => $otherPublicationAttachment->getId(),
+                                ],
+                            )->toString(),
+                        ],
+                    ],
                 ],
             ],
             'dossierDate' => $otherPublication->getDateFrom()?->format('Y-m-d'),
+            '_links' => [
+                'self' => ['href' => $this->buildPublicUrl($organisation, $otherPublication)],
+                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($otherPublication)],
+            ],
         ];
 
         self::assertSame($expectedResponse, $response->toArray());
@@ -226,6 +301,18 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         self::assertDatabaseCount(OtherPublication::class, 1);
     }
 
+    public function testCreateOtherPublicationWithTooLongExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+
+        $data = $this->createValidOtherPublicationDataPayload($department, $subject, 1);
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, str_repeat('x', 129)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
     /**
      * @param array<string,array<array-key,mixed>> $dataOverrides
      * @param array<string,array<array-key,mixed>> $violations
@@ -305,7 +392,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                     'subjectId' => '00000000-0000-0000-0000-000000000000',
                 ],
                 [
-                    'code' => EntityExists::ENTITY_EXISTS_ERROR,
+                    'code' => ConstraintViolationBuilder::ENTITY_MISSING_ERROR,
                     'propertyPath' => 'subjectId',
                 ],
             ],
@@ -314,8 +401,26 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                     'departmentId' => '00000000-0000-0000-0000-000000000000',
                 ],
                 [
-                    'code' => EntityExists::ENTITY_EXISTS_ERROR,
+                    'code' => ConstraintViolationBuilder::ENTITY_MISSING_ERROR,
                     'propertyPath' => 'departmentId',
+                ],
+            ],
+            'exceeds max attachments per dossier' => [
+                [
+                    'attachments' => array_map(
+                        static fn ($i) => [
+                            'fileName' => sprintf('file%s.pdf', $i),
+                            'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
+                            'type' => AttachmentType::ACCOUNTABILITY_REPORT->value,
+                            'language' => AttachmentLanguage::ENG->value,
+                            'externalId' => sprintf('external-id-%s', $i),
+                        ],
+                        range(1, AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER + 1),
+                    ),
+                ],
+                [
+                    'code' => Count::TOO_MANY_ERROR,
+                    'propertyPath' => 'attachments',
                 ],
             ],
         ];
@@ -336,7 +441,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         OtherPublicationAttachmentFactory::createOne(['dossier' => $otherPublication]);
 
         self::assertDatabaseHas(OtherPublication::class, [
-            'title' => $otherPublication->getTitle(),
+            'title' => (string) $otherPublication->getTitle(),
             'summary' => $otherPublication->getSummary(),
         ]);
 
@@ -373,7 +478,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         OtherPublicationAttachmentFactory::createOne(['dossier' => $otherPublication]);
 
         self::assertDatabaseHas(OtherPublication::class, [
-            'title' => $otherPublication->getTitle(),
+            'title' => (string) $otherPublication->getTitle(),
             'summary' => $otherPublication->getSummary(),
         ]);
 
@@ -383,7 +488,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         self::assertJsonContains(['violations' => [$violations]]);
 
         self::assertDatabaseHas(OtherPublication::class, [
-            'title' => $otherPublication->getTitle(),
+            'title' => (string) $otherPublication->getTitle(),
             'summary' => $otherPublication->getSummary(),
         ]);
     }
@@ -401,6 +506,24 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                 [
                     'code' => PlainDateBeforeOrEqual::PLAIN_DATE_BEFORE_OR_EQUAL_ERROR,
                     'propertyPath' => 'dateFrom',
+                ],
+            ],
+            'exceeds max attachments per dossier' => [
+                [
+                    'attachments' => array_map(
+                        static fn ($i) => [
+                            'fileName' => sprintf('file%s.pdf', $i),
+                            'formalDate' => CarbonImmutable::now()->format('Y-m-d'),
+                            'type' => AttachmentType::ACCOUNTABILITY_REPORT->value,
+                            'language' => AttachmentLanguage::ENG->value,
+                            'externalId' => sprintf('external-id-%s', $i),
+                        ],
+                        range(1, AbstractAttachment::MAX_ATTACHMENTS_PER_DOSSIER + 1),
+                    ),
+                ],
+                [
+                    'code' => Count::TOO_MANY_ERROR,
+                    'propertyPath' => 'attachments',
                 ],
             ],
         ];
@@ -421,7 +544,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         OtherPublicationAttachmentFactory::createOne(['dossier' => $otherPublication]);
 
         self::assertDatabaseHas(OtherPublication::class, [
-            'title' => $otherPublication->getTitle(),
+            'title' => (string) $otherPublication->getTitle(),
             'summary' => $otherPublication->getSummary(),
         ]);
 
@@ -430,7 +553,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         self::assertDatabaseHas(OtherPublication::class, [
-            'title' => $otherPublication->getTitle(),
+            'title' => (string) $otherPublication->getTitle(),
             'summary' => $otherPublication->getSummary(),
         ]);
     }
@@ -478,7 +601,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         self::assertDatabaseCount(OtherPublicationAttachment::class, 1);
 
         $data = [
-            'title' => $otherPublication->getTitle(),
+            'title' => (string) $otherPublication->getTitle(),
             'dossierNumber' => $otherPublication->getDossierNr(),
             'dossierDate' => $otherPublication->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $otherPublication->getPublicationDate()?->format('Y-m-d'),
@@ -497,7 +620,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                     'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment->getLanguage(),
                     'type' => $attachment->getType(),
-                    'externalId' => $attachment->getExternalId()?->__toString(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
                 ],
             ],
         ];
@@ -534,7 +657,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         ]);
 
         $data = [
-            'title' => $otherPublication->getTitle(),
+            'title' => (string) $otherPublication->getTitle(),
             'dossierNumber' => $otherPublication->getDossierNr(),
             'dossierDate' => $otherPublication->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $otherPublication->getPublicationDate()?->format('Y-m-d'),
@@ -553,7 +676,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                     'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment->getLanguage(),
                     'type' => $attachment->getType(),
-                    'externalId' => $attachment->getExternalId()?->__toString(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
                 ],
             ],
         ];
@@ -589,7 +712,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         ]);
 
         $data = [
-            'title' => $otherPublication->getTitle(),
+            'title' => (string) $otherPublication->getTitle(),
             'dossierNumber' => $otherPublication->getDossierNr(),
             'dossierDate' => $otherPublication->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $otherPublication->getPublicationDate()?->format('Y-m-d'),
@@ -608,14 +731,14 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $attachment1->getExternalId()?->__toString(),
+                    'externalId' => $attachment1->getExternalId()?->toString(),
                 ],
                 [
                     'fileName' => $changedFileName,
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $newAttachmentExternalId->__toString(),
+                    'externalId' => $newAttachmentExternalId->toString(),
                 ],
             ],
         ];
@@ -660,7 +783,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         ]);
 
         $data = [
-            'title' => $otherPublication->getTitle(),
+            'title' => (string) $otherPublication->getTitle(),
             'dossierNumber' => $otherPublication->getDossierNr(),
             'dossierDate' => $otherPublication->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $otherPublication->getPublicationDate()?->format('Y-m-d'),
@@ -679,7 +802,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                     'formalDate' => $attachment1->getFormalDate()->format('Y-m-d'),
                     'language' => $attachment1->getLanguage(),
                     'type' => $attachment1->getType(),
-                    'externalId' => $attachment1->getExternalId()?->__toString(),
+                    'externalId' => $attachment1->getExternalId()?->toString(),
                 ],
             ],
         ];

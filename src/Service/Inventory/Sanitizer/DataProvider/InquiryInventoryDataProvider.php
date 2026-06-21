@@ -38,6 +38,6 @@ readonly class InquiryInventoryDataProvider implements InventoryDataProviderInte
 
     public function getFilename(): string
     {
-        return 'inventarislijst-' . $this->inquiry->getCasenr();
+        return 'inventarislijst-' . $this->inquiry->getInquiryNumber();
     }
 }

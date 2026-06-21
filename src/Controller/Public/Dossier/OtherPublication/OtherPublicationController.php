@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
 
-use function ucfirst;
+use function mb_ucfirst;
 
 class OtherPublicationController extends AbstractController
 {
@@ -41,7 +41,7 @@ class OtherPublicationController extends AbstractController
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem(ucfirst($otherPublication->getTitle() ?? ''));
+        $breadcrumbs->addItem(mb_ucfirst((string) $otherPublication->getTitle()));
 
         return $this->render('public/dossier/other-publication/details.html.twig', [
             'dossier' => $this->viewFactory->make($otherPublication),
@@ -67,7 +67,7 @@ class OtherPublicationController extends AbstractController
             'prefix' => $dossier->getDocumentPrefix(),
             'dossierId' => $dossier->getDossierNr(),
         ]);
-        $breadcrumbs->addItem($dossier->getTitle() ?? '');
+        $breadcrumbs->addItem((string) $dossier->getTitle());
 
         return $this->render('public/dossier/other-publication/document.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),
@@ -100,7 +100,7 @@ class OtherPublicationController extends AbstractController
             'prefix' => $dossier->getDocumentPrefix(),
             'dossierId' => $dossier->getDossierNr(),
         ]);
-        $breadcrumbs->addItem($dossier->getTitle() ?? '');
+        $breadcrumbs->addItem((string) $dossier->getTitle());
 
         return $this->render('public/dossier/other-publication/attachment.html.twig', [
             'dossier' => $this->viewFactory->make($dossier),

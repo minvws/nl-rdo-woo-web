@@ -31,8 +31,19 @@ class E2EOrganisationFixtures extends Fixture implements DependentFixtureInterfa
     {
         $organisationName = 'E2E Test Organisation';
 
+        $department1 = $this->getReference(E2EDepartmentFixtures::REFERENCE_1, Department::class);
+        $department2 = $this->getReference(E2EDepartmentFixtures::REFERENCE_2, Department::class);
+
         $existingOrg = $manager->getRepository(Organisation::class)->findOneBy(['name' => $organisationName]);
         if ($existingOrg) {
+            // Self-heal partial state: an organisation left without its department links (e.g. by an
+            // interrupted earlier load) renders an empty "bestuursorgaan" dropdown and blocks dossier
+            // creation. addDepartment() is idempotent, so re-running restores the links without duplicates.
+            $existingOrg->addDepartment($department1);
+            $existingOrg->addDepartment($department2);
+            $manager->flush();
+            $this->addReference(self::REFERENCE, $existingOrg);
+
             return;
         }
 
@@ -43,12 +54,8 @@ class E2EOrganisationFixtures extends Fixture implements DependentFixtureInterfa
         $entity->setName($organisationName);
         $entity->addDocumentPrefix($documentPrefix1);
         $entity->addDocumentPrefix($documentPrefix2);
-        $entity->addDepartment(
-            $this->getReference(E2EDepartmentFixtures::REFERENCE_1, Department::class),
-        );
-        $entity->addDepartment(
-            $this->getReference(E2EDepartmentFixtures::REFERENCE_2, Department::class),
-        );
+        $entity->addDepartment($department1);
+        $entity->addDepartment($department2);
 
         $manager->persist($entity);
         $manager->flush();

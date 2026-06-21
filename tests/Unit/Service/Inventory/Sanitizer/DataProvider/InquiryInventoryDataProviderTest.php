@@ -62,7 +62,7 @@ class InquiryInventoryDataProviderTest extends UnitTestCase
 
     public function testGetFilename(): void
     {
-        $this->inquiry->expects('getCasenr')->andReturn('foo123');
+        $this->inquiry->expects('getInquiryNumber')->andReturn('foo123');
 
         self::assertEquals(
             'inventarislijst-foo123',

@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
             output: false,
             read: false,
             deserialize: false,
-            name: 'woo_decision_attachment_upload',
+            name: self::ROUTE_NAME_UPLOAD,
             processor: WooDecisionUploadAttachmentProcessor::class,
         ),
     ],
@@ -39,4 +39,5 @@ use Symfony\Component\HttpFoundation\Response;
 )]
 final readonly class WooDecisionUploadAttachmentResource
 {
+    public const string ROUTE_NAME_UPLOAD = 'woo_decision_attachment_upload';
 }

@@ -107,7 +107,7 @@ enum UploadGroupId: string
     public function getFileLimits(): array
     {
         return array_map(
-            fn (FileType $type): array => [
+            static fn (FileType $type): array => [
                 'label' => $type->getTypeName(),
                 'mimeTypes' => $type->getMimeTypes(),
                 'size' => $type->getMaxUploadSize(),

@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
             output: false,
             read: false,
             deserialize: false,
-            name: 'covenant_main_document_upload',
+            name: self::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
             processor: CovenantUploadMainDocumentProcessor::class,
         ),
     ],
@@ -37,4 +37,5 @@ use Symfony\Component\HttpFoundation\Response;
 )]
 final readonly class CovenantUploadMainDocumentResource
 {
+    public const string ROUTE_NAME_MAIN_DOCUMENT_UPLOAD = 'covenant_main_document_upload';
 }

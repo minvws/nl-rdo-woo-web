@@ -12,7 +12,10 @@ use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Service\ObjectHasher;
 use Shared\Service\Storage\EntityStorageService;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\FileName;
 use Shared\ValueObject\PlainDate;
@@ -22,12 +25,11 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
     public function testCreateDocumentSetsSourceTypeFromDto(): void
     {
         $sourceType = SourceType::EMAIL;
-        $documentId = 'doc-123';
 
         $dto = new WooDecisionDocumentRequestDto(
-            caseNumbers: [],
+            inquiryNumbers: [],
             documentDate: PlainDate::create('2025-01-01'),
-            documentId: $documentId,
+            documentId: DocumentId::create('doc.123'),
             externalId: ExternalId::create('ext-123'),
             familyId: 1,
             fileName: FileName::create('test.eml'),
@@ -35,11 +37,11 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
             isSuspended: false,
             judgement: Judgement::PUBLIC,
             links: [],
-            matter: 'test',
             refersTo: [],
             remark: null,
             sourceType: $sourceType,
             threadId: null,
+            matter: DocumentMatter::create('test'),
         );
 
         $entityStorageService = Mockery::mock(EntityStorageService::class);
@@ -62,9 +64,9 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
     {
         $sourceType = SourceType::DOC;
         $updateDto = new WooDecisionDocumentRequestDto(
-            caseNumbers: [],
+            inquiryNumbers: [],
             documentDate: PlainDate::create('2025-01-01'),
-            documentId: 'doc-456',
+            documentId: DocumentId::create('doc.123'),
             externalId: ExternalId::create('ext-456'),
             familyId: 2,
             fileName: FileName::create('updated.doc'),
@@ -72,17 +74,17 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
             isSuspended: false,
             judgement: Judgement::PUBLIC,
             links: [],
-            matter: 'updated',
             refersTo: [],
             remark: null,
             sourceType: $sourceType,
             threadId: null,
+            matter: DocumentMatter::create('updated'),
         );
 
         $initialDto = new WooDecisionDocumentRequestDto(
-            caseNumbers: [],
+            inquiryNumbers: [],
             documentDate: PlainDate::create('2025-01-01'),
-            documentId: 'doc-456',
+            documentId: DocumentId::create('doc.456'),
             externalId: ExternalId::create('ext-456'),
             familyId: 2,
             fileName: FileName::create('original.doc'),
@@ -90,11 +92,11 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
             isSuspended: false,
             judgement: Judgement::PUBLIC,
             links: [],
-            matter: 'original',
             refersTo: [],
             remark: null,
             sourceType: SourceType::PDF,
             threadId: null,
+            matter: DocumentMatter::create('original'),
         );
 
         $entityStorageService = Mockery::mock(EntityStorageService::class);
@@ -110,11 +112,12 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
             new ObjectHasher(),
             $uploadEntityRepository,
         );
-        $document = $wooDecisionDocumentMapper->create('PREFIX', $initialDto);
+        $document = $wooDecisionDocumentMapper->create(WooDecisionFactory::DEFAULT_PREFIX, $initialDto);
         $this->assertEquals(SourceType::PDF, $document->getFileInfo()->getSourceType());
 
-        $document = $wooDecisionDocumentMapper->update($document, $updateDto);
+        $document = $wooDecisionDocumentMapper->update(WooDecisionFactory::DEFAULT_PREFIX, $document, $updateDto);
 
         $this->assertEquals($sourceType, $document->getFileInfo()->getSourceType());
+        $this->assertStringContainsString('doc.123', $document->getDocumentNr());
     }
 }

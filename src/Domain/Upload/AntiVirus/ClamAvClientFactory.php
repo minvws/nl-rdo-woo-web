@@ -7,6 +7,8 @@ namespace Shared\Domain\Upload\AntiVirus;
 use Socket\Raw\Factory;
 use Xenolope\Quahog\Client;
 
+use const PHP_NORMAL_READ;
+
 readonly class ClamAvClientFactory
 {
     public function __construct(
@@ -18,6 +20,6 @@ readonly class ClamAvClientFactory
     {
         $socket = new Factory()->createClient($this->address);
 
-        return new Client($socket);
+        return new Client(socket: $socket, mode: PHP_NORMAL_READ);
     }
 }

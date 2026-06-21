@@ -1,6 +1,6 @@
-# Welkom bij de documentatie van het publicatieplatform
+# Welkom bij de documentatie van het Woo Publicatieplatform
 
-Het publicatieplatform kan bereikt worden via [open.minvws.nl](https://open.minvws.nl/).
+Het Woo Publicatieplatform kan bereikt worden via [open.minvws.nl](https://open.minvws.nl/).
 
 Hieronder vind je de inhoudsopgave van deze documentatie. Via de zijbalk kan je ook zoeken door de documentatie.
 

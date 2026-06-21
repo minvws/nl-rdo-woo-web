@@ -10,6 +10,7 @@ use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use PublicationApi\Api\Dossier\DossierNrValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
 use Shared\Domain\Department\Department;
@@ -53,10 +54,9 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
         }
 
         Assert::isInstanceOf($data, RequestForAdviceRequestDto::class);
+        Assert::string($uriVariables['dossierExternalId']);
 
-        $requestForAdviceExternalId = $uriVariables['dossierExternalId'];
-        Assert::string($requestForAdviceExternalId);
-        $requestForAdviceExternalId = ExternalId::create($requestForAdviceExternalId);
+        $requestForAdviceExternalId = ExternalIdFactory::create($uriVariables['dossierExternalId']);
 
         $organisation = $this->organisationResolver->resolve($uriVariables);
         $subject = $this->dossierSupportService->getSubject($data, $organisation);
@@ -136,9 +136,11 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
      */
     private function getAttachments(RequestForAdvice $requestForAdvice, array $attachments): array
     {
-        return array_values(array_map(fn (AttachmentRequestDto $attachment): RequestForAdviceAttachment => RequestForAdviceAttachmentMapper::create(
-            $requestForAdvice,
-            $attachment,
-        ), $attachments));
+        return array_values(array_map(static function (AttachmentRequestDto $attachment) use ($requestForAdvice): RequestForAdviceAttachment {
+            return RequestForAdviceAttachmentMapper::create(
+                $requestForAdvice,
+                $attachment,
+            );
+        }, $attachments));
     }
 }

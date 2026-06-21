@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\AnnualReport\Uploads\MainDocument;
 
 use GuzzleHttp\Psr7\Utils;
-use Shared\ValueObject\ExternalId;
+use PublicationApi\Api\ExternalIdFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
@@ -20,7 +20,7 @@ final class AnnualReportUploadMainDocumentRequestDtoFactory
         return new AnnualReportUploadMainDocumentRequestDto(
             Utils::streamFor($request->getContent(asResource: true)),
             $organisationId,
-            ExternalId::create($dossierExternalId),
+            ExternalIdFactory::create($dossierExternalId),
         );
     }
 }

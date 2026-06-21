@@ -42,9 +42,9 @@ final class InquiryTest extends TestCase
         $inquiry->addDossier($wooDecisionConcept);
         $inquiry->addDossier($wooDecisionScheduled);
 
-        self::assertEqualsCanonicalizing(
+        self::assertEquals(
             [$wooDecisionScheduled],
-            $inquiry->getScheduledDossiers()->toArray(),
+            $inquiry->getScheduledDossiers()->getValues(),
         );
     }
 }

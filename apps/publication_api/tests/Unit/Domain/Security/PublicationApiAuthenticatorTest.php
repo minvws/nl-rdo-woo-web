@@ -70,7 +70,7 @@ class PublicationApiAuthenticatorTest extends UnitTestCase
             }));
 
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('not verified');
+        $this->expectExceptionMessageIs('Client Certificate is not verified or invalid');
 
         $this->buildAuthenticator($auditLogger)
             ->authenticate(new Request(server: $serverParams));
@@ -107,7 +107,7 @@ class PublicationApiAuthenticatorTest extends UnitTestCase
             }));
 
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('Organization Identifier');
+        $this->expectExceptionMessageIs('Client Certificate Organization Identifier is missing or invalid');
 
         $this->buildAuthenticator($auditLogger)
             ->authenticate(new Request(server: $serverParams));
@@ -128,7 +128,7 @@ class PublicationApiAuthenticatorTest extends UnitTestCase
         ]);
 
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('Common Name is missing or invalid');
+        $this->expectExceptionMessageIs('Client Certificate Common Name is missing or invalid');
 
         $this->buildAuthenticator($auditLogger)
             ->authenticate($request);
@@ -156,7 +156,9 @@ class PublicationApiAuthenticatorTest extends UnitTestCase
         ]);
 
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('not whitelisted');
+        $this->expectExceptionMessageIs(
+            'Client Certificate Common Name is not whitelisted. Please read the documentation or contact your system administrator.',
+        );
 
         $this->buildAuthenticator($auditLogger, $globDomainValidator)
             ->authenticate($request);

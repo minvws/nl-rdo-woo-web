@@ -71,21 +71,21 @@ final class PlainDateNormalizerTest extends TestCase
 
     public function testGetDeserializationPathReturnsPathFromContext(): void
     {
-        $result = new PlainDateNormalizer()->getDeserializationPath(['deserialization_path' => 'date']);
+        $result = new PlainDateNormalizer()->getPathFromContext(['deserialization_path' => 'date']);
 
         self::assertSame('date', $result);
     }
 
     public function testGetDeserializationPathReturnsNullWhenNotInContext(): void
     {
-        $result = new PlainDateNormalizer()->getDeserializationPath([]);
+        $result = new PlainDateNormalizer()->getPathFromContext([]);
 
         self::assertNull($result);
     }
 
     public function testGetDeserializationPathReturnsNullWhenPathIsNotString(): void
     {
-        $result = new PlainDateNormalizer()->getDeserializationPath(['deserialization_path' => 123]);
+        $result = new PlainDateNormalizer()->getPathFromContext(['deserialization_path' => 123]);
 
         self::assertNull($result);
     }

@@ -6,17 +6,13 @@ namespace Shared\Form\Dossier\InvestigationReport;
 
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Form\Dossier\AbstractDossierStepType;
-use Shared\Form\Dossier\DossierFormBuilderTrait;
-use Shared\Service\Security\Roles;
-use Symfony\Bundle\SecurityBundle\Security;
+use Shared\Form\Dossier\DossierFormFactory;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class DetailsType extends AbstractDossierStepType
 {
-    use DossierFormBuilderTrait;
-
     public function __construct(
-        private readonly Security $security,
+        private readonly DossierFormFactory $dossierFormFactory,
     ) {
     }
 
@@ -27,13 +23,14 @@ class DetailsType extends AbstractDossierStepType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $this->addTitleField($builder);
-        $this->addDateField($builder);
-        $this->addInternalReferenceField($builder);
-        $this->addDepartmentsField($builder);
-        $this->addSubjectField($builder);
-        $this->addDossierNrField($builder, $this->security->isGranted(Roles::ROLE_ORGANISATION_ADMIN));
-        $this->addDocumentPrefixField($builder);
-        $this->addSubmits($builder);
+        $dossierForm = $this->dossierFormFactory->for($builder);
+        $dossierForm->addTitleField();
+        $dossierForm->addDateField();
+        $dossierForm->addInternalReferenceField();
+        $dossierForm->addDepartmentsField();
+        $dossierForm->addSubjectField();
+        $dossierForm->addDossierNrField();
+        $dossierForm->addDocumentPrefixField();
+        $dossierForm->addSubmits();
     }
 }

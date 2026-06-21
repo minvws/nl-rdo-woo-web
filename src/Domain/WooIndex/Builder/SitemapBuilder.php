@@ -70,7 +70,7 @@ final class SitemapBuilder
         $writer = DiWooXMLWriter::toStream($stream);
 
         if ($this->writerFactoryConfigurator !== null) {
-            $this->writerFactoryConfigurator->call($this, $writer);
+            ($this->writerFactoryConfigurator)($writer);
         }
 
         return $writer;

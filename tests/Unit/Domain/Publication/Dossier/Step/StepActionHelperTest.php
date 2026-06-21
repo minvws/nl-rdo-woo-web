@@ -18,6 +18,7 @@ use Shared\Service\DossierWizard\DossierWizardStatus;
 use Shared\Service\DossierWizard\StepStatus;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
 use Symfony\Component\Form\Button;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -251,12 +252,12 @@ class StepActionHelperTest extends UnitTestCase
 
         $breadCrumbs = Mockery::mock(Breadcrumbs::class);
         $item = 'foo bar';
-        $dossierTitle = 'llama';
+        $dossierTitle = DossierTitle::create('llama');
 
         $this->dossier->expects('getTitle')->andReturn($dossierTitle);
 
         $breadCrumbs->expects('addRouteItem')->with(
-            $dossierTitle,
+            (string) $dossierTitle,
             'app_admin_dossier',
             [
                 'prefix' => $this->dossier->getDocumentPrefix(),

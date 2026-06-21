@@ -1,0 +1,39 @@
+{
+    "cluster": [
+        "monitor"
+    ],
+    "indices": [
+        {
+            "names": [
+                "minfin-*"
+            ],
+            "privileges": [
+                "create",
+                "create_doc",
+                "create_index",
+                "delete",
+                "delete_index",
+                "index",
+                "read",
+                "write",
+                "monitor",
+                "manage"
+            ],
+            "allow_restricted_indices": false
+        },
+        {
+            "names": [
+                "minfin-worker-stats"
+            ],
+            "privileges": [
+                "create",
+                "read",
+                "write",
+                "create_doc",
+                "index",
+                "create_index"
+            ],
+            "allow_restricted_indices": false
+        }
+    ]
+}

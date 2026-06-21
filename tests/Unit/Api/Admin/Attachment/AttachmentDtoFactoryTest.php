@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shared\Tests\Unit\Api\Admin\Attachment;
+namespace Admin\Tests\Unit\Api\Admin\Attachment;
 
 use Admin\Api\Admin\Attachment\AttachmentDtoFactory;
 use Admin\Api\Admin\WooDecisionAttachment\WooDecisionAttachmentDto;

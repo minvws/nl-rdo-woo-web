@@ -8,9 +8,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Mockery;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Service\Inquiry\CaseNumbers;
-use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inquiry\DocumentInquiryNumbers;
 use Shared\Service\Inquiry\InquiryChangeset;
+use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -33,16 +33,16 @@ class InquiryChangesetTest extends UnitTestCase
     {
         // Has no linked inquiries yet, so should be linked twice
         $docId123 = Uuid::v6();
-        $this->changeset->updateCaseNrsForDocument(
-            new DocumentCaseNumbers($docId123, CaseNumbers::empty()),
-            new CaseNumbers(['case-1', 'case-2']),
+        $this->changeset->updateInquiryNumbersForDocument(
+            new DocumentInquiryNumbers($docId123, InquiryNumbers::empty()),
+            new InquiryNumbers(['case-1', 'case-2']),
         );
 
         // Has two new inquiry links (case-1 and case-3), one unmodified/existing (case-2) and one removed ('case-4')
         $docId456 = Uuid::v6();
-        $this->changeset->updateCaseNrsForDocument(
-            new DocumentCaseNumbers($docId456, new CaseNumbers(['case-2', 'case-4'])),
-            new CaseNumbers(['case-1', 'case-2', 'case-3']),
+        $this->changeset->updateInquiryNumbersForDocument(
+            new DocumentInquiryNumbers($docId456, new InquiryNumbers(['case-2', 'case-4'])),
+            new InquiryNumbers(['case-1', 'case-2', 'case-3']),
         );
 
         // Dossier is added to case 3 and 4
@@ -50,7 +50,7 @@ class InquiryChangesetTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getId')->andReturn($dossierId);
         $dossier->expects('getInquiries')->andReturn(new ArrayCollection());
-        $this->changeset->addCaseNrsForDossier($dossier, new CaseNumbers(['case-3', 'case-4']));
+        $this->changeset->addInquiryNumbersForDossier($dossier, new InquiryNumbers(['case-3', 'case-4']));
 
         self::assertEquals(
             [

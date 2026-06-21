@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\WooDecision\Document;
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
 
 use function array_map;
@@ -13,7 +14,7 @@ use function array_values;
 final readonly class WooDecisionRelatedDocumentResponseDto
 {
     public function __construct(
-        public ?string $documentId,
+        public ?DocumentId $documentId,
         public ?ExternalId $externalId,
     ) {
     }

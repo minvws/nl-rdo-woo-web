@@ -19,6 +19,7 @@ use Shared\Domain\Upload\UploadService;
 use Shared\Service\Storage\FileHashService;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 use Symfony\Component\Uid\UuidV6;
 use Symfony\Component\Validator\ConstraintViolation;
 
@@ -54,7 +55,7 @@ class DocumentUploadProcessorTest extends UnitTestCase
         $wooDecision->expects('getId')->andReturn($wooDecisionId);
 
         $documentFileInfoName = 'foobar.pdf';
-        $documentDocumentId = '1337';
+        $documentDocumentId = DocumentId::create('1337');
         $expectedFileName = '1337.pdf';
         $documentId = new UuidV6();
         $document = Mockery::mock(Document::class);
@@ -67,7 +68,7 @@ class DocumentUploadProcessorTest extends UnitTestCase
 
         $this->uploadService
             ->expects('handleUpload')
-            ->with(Mockery::on(function (StreamUpload $streamUpload) use ($stream, $wooDecisionId, $documentId, $expectedFileName): bool {
+            ->with(Mockery::on(static function (StreamUpload $streamUpload) use ($stream, $wooDecisionId, $documentId, $expectedFileName): bool {
                 if ($streamUpload->fileName !== $expectedFileName) {
                     return false;
                 }
@@ -104,7 +105,7 @@ class DocumentUploadProcessorTest extends UnitTestCase
         $wooDecision->expects('getId')->andReturn($wooDecisionId);
 
         $documentFileInfoName = 'foobar.pdf';
-        $documentDocumentId = '1337';
+        $documentDocumentId = DocumentId::create('1337');
         $expectedFileName = '1337.pdf';
         $documentId = new UuidV6();
         $document = Mockery::mock(Document::class);
@@ -119,7 +120,7 @@ class DocumentUploadProcessorTest extends UnitTestCase
 
         $this->uploadService
             ->expects('handleUpload')
-            ->with(Mockery::on(function (StreamUpload $streamUpload) use ($stream, $wooDecisionId, $documentId, $expectedFileName): bool {
+            ->with(Mockery::on(static function (StreamUpload $streamUpload) use ($stream, $wooDecisionId, $documentId, $expectedFileName): bool {
                 if ($streamUpload->fileName !== $expectedFileName) {
                     return false;
                 }
@@ -156,7 +157,7 @@ class DocumentUploadProcessorTest extends UnitTestCase
         $wooDecision->expects('getId')->andReturn($wooDecisionId);
 
         $documentFileInfoName = 'foobar.pdf';
-        $documentDocumentId = '1337';
+        $documentDocumentId = DocumentId::create('1337');
         $expectedFileName = '1337.pdf';
         $documentId = new UuidV6();
         $document = Mockery::mock(Document::class);
@@ -171,7 +172,7 @@ class DocumentUploadProcessorTest extends UnitTestCase
 
         $this->uploadService
             ->expects('handleUpload')
-            ->with(Mockery::on(function (StreamUpload $streamUpload) use ($stream, $wooDecisionId, $documentId, $expectedFileName): bool {
+            ->with(Mockery::on(static function (StreamUpload $streamUpload) use ($stream, $wooDecisionId, $documentId, $expectedFileName): bool {
                 if ($streamUpload->fileName !== $expectedFileName) {
                     return false;
                 }
@@ -229,7 +230,7 @@ class DocumentUploadProcessorTest extends UnitTestCase
         $document->expects('getId')->andReturn(new UuidV6());
         $document->expects('getFileInfo->getHash')->andReturnNull();
         $document->expects('getFileInfo->getName')->andReturn('foobar.pdf');
-        $document->expects('getDocumentId')->andReturn('1337');
+        $document->expects('getDocumentId')->andReturn(DocumentId::create('1337'));
 
         $violation = new ConstraintViolation('Validation failed', '', [], null, '', null);
         $this->uploadValidationService->expects('getValidationErrorsForUpload')->andReturn([$violation]);

@@ -10,6 +10,7 @@ use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use PublicationApi\Api\Dossier\DossierNrValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
 use Shared\Domain\Department\Department;
@@ -53,10 +54,8 @@ final readonly class CovenantProcessor implements ProcessorInterface
         }
 
         Assert::isInstanceOf($data, CovenantRequestDto::class);
-
-        $covenantExternalId = $uriVariables['dossierExternalId'];
-        Assert::string($covenantExternalId);
-        $covenantExternalId = ExternalId::create($covenantExternalId);
+        Assert::string($uriVariables['dossierExternalId']);
+        $covenantExternalId = ExternalIdFactory::create($uriVariables['dossierExternalId']);
 
         $organisation = $this->organisationResolver->resolve($uriVariables);
         $subject = $this->dossierSupportService->getSubject($data, $organisation);
@@ -136,7 +135,7 @@ final readonly class CovenantProcessor implements ProcessorInterface
      */
     private function getAttachments(Covenant $covenant, array $attachments): array
     {
-        return array_values(array_map(fn (AttachmentRequestDto $attachment): CovenantAttachment => CovenantAttachmentMapper::create(
+        return array_values(array_map(static fn (AttachmentRequestDto $attachment): CovenantAttachment => CovenantAttachmentMapper::create(
             $covenant,
             $attachment,
         ), $attachments));

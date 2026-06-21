@@ -34,7 +34,7 @@ final class AttachmentTypeTest extends UnitTestCase
     public function testToArray(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->expects('trans')->times(59)->andReturnArg(0);
+        $translator->expects('trans')->times(75)->andReturnArg(0);
 
         $result = [];
         foreach (AttachmentType::cases() as $case) {

@@ -20,6 +20,7 @@ final readonly class DepartmentProvider implements ProviderInterface
 {
     public function __construct(
         private DepartmentRepository $departmentRepository,
+        private DepartmentMapper $departmentMapper,
         private int $itemsPerPage,
     ) {
     }
@@ -27,7 +28,7 @@ final readonly class DepartmentProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|DepartmentResponseDto
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|DepartmentDetailResponseDto
     {
         if ($operation instanceof CollectionOperationInterface) {
             return $this->provideCollection($context);
@@ -52,16 +53,16 @@ final readonly class DepartmentProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(DepartmentMapper::fromEntities($departments), 0, count($departments));
+        return new ArrayPaginator($this->departmentMapper->fromEntitiesWithDetail($departments), 0, count($departments));
     }
 
-    private function provideSingle(Uuid $departmentId): DepartmentResponseDto
+    private function provideSingle(Uuid $departmentId): DepartmentDetailResponseDto
     {
         $department = $this->departmentRepository->find($departmentId);
         if ($department === null) {
             throw EntityNotFoundException::for('Department', $departmentId);
         }
 
-        return DepartmentMapper::fromEntity($department);
+        return $this->departmentMapper->fromEntityWithDetail($department);
     }
 }

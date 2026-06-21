@@ -90,22 +90,6 @@ Parse TXT Files Into Excel Rows
   END
   RETURN  @{rows}
 
-Generate Dummy Production Report
-  [Documentation]  Generates a production report Excel file, without basing it on actual files
-  [Arguments]  ${nr_of_rows}
-  ${test_data_location} =  Create Unique TestData Location
-  VAR  ${excel_file} =  ${test_data_location}/production_report.xlsx
-  VAR  @{rows} =  @{EMPTY}
-  Copy File  ${PRODUCTION_REPORT_TEMPLATE}  ${excel_file}
-  Open Excel Document  ${excel_file}  prodrep
-  FOR  ${_}  IN RANGE  ${nr_of_rows}
-    ${filename} =  Generate Random Filename
-    @{row_data} =  Create New Row Data  ${filename}
-    Append To List  ${rows}  ${row_data}
-  END
-  Write Rows To Excel File  ${excel_file}  @{rows}
-  RETURN  ${excel_file}
-
 Create New Row Data
   [Arguments]  ${document_id}  ${case_id}=${EMPTY}
   # Define each column
@@ -152,21 +136,6 @@ Write Rows To Excel File
 Clear TestData Folder
   ${directory_exists} =  Run Keyword And Return Status  Directory Should Exist  ${TEST_DATA_ROOT}/generated
   IF  ${directory_exists}  Empty Directory  ${TEST_DATA_ROOT}/generated
-
-Create PDF From Template
-  [Documentation]  Currently not used anymore, replaced with Create TXT Document
-  [Arguments]  ${output_location}
-  ${body} =  Generate Body Text
-  VAR  &{data} =  body=${body}
-  Template HTML To PDF
-  ...  template=${PDF_TEMPLATE}
-  ...  output_path=${output_location}
-  ...  variables=${data}
-  ${pdf_content} =  Get Text From PDF  ${output_location}
-  # Verify that the PDF actually has content
-  ${pdf_length} =  Get Length  ${pdf_content[1]}
-  ${body_length} =  Get Length  ${body}
-  Evaluate  ${body_length} > ${pdf_length}
 
 Create TXT Document
   [Arguments]  ${output_location}

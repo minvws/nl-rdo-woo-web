@@ -16,6 +16,7 @@ use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Index\Schema\ElasticObjectField;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 
@@ -62,7 +63,7 @@ class DefaultDossierMapperTest extends UnitTestCase
         $dossier = Mockery::mock(Covenant::class);
         $dossier->expects('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
         $dossier->expects('getDossierNr')->times(2)->andReturn('dos-123');
-        $dossier->expects('getTitle')->andReturn('test-title');
+        $dossier->expects('getTitle')->andReturn(DossierTitle::create('test-title'));
         $dossier->expects('getSummary')->andReturn('test-summary');
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
         $dossier->expects('getDocumentPrefix')->times(2)->andReturn('foo');
@@ -135,7 +136,7 @@ class DefaultDossierMapperTest extends UnitTestCase
         $dossier = Mockery::mock(Covenant::class);
         $dossier->expects('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
         $dossier->expects('getDossierNr')->times(2)->andReturn('dos-123');
-        $dossier->expects('getTitle')->andReturn('test-title');
+        $dossier->expects('getTitle')->andReturn(DossierTitle::create('test-title'));
         $dossier->expects('getSummary')->andReturn('test-summary');
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
         $dossier->expects('getDocumentPrefix')->times(2)->andReturn('foo');

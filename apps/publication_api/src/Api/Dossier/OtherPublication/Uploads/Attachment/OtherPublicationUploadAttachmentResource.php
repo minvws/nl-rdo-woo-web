@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
             output: false,
             read: false,
             deserialize: false,
-            name: 'other_publication_attachment_upload',
+            name: self::ROUTE_NAME_UPLOAD,
             processor: OtherPublicationUploadAttachmentProcessor::class,
         ),
     ],
@@ -39,4 +39,5 @@ use Symfony\Component\HttpFoundation\Response;
 )]
 final readonly class OtherPublicationUploadAttachmentResource
 {
+    public const string ROUTE_NAME_UPLOAD = 'other_publication_attachment_upload';
 }

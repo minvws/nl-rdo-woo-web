@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 readonly class ProductionReportStatus
@@ -84,5 +86,10 @@ readonly class ProductionReportStatus
         }
 
         return $this->dossier->getProcessRun()?->hasErrors() ?? false;
+    }
+
+    public function getRunDate(): ?DateTimeImmutable
+    {
+        return $this->dossier->getProcessRun()?->getEndedAt()?->setTimezone(new DateTimeZone('Europe/Amsterdam'));
     }
 }

@@ -42,7 +42,7 @@ final class AttachmentDossierFileProviderTest extends UnitTestCase
 
         $this->repository->expects('findOneForDossier')->with(
             $dossierId,
-            Mockery::on(fn (Uuid $id): bool => $id->toRfc4122() === $idInput),
+            Mockery::on(static fn (Uuid $id): bool => $id->toRfc4122() === $idInput),
         )->andThrow(NoResultException::class);
 
         $this->expectException(DossierFileNotFoundException::class);
@@ -61,7 +61,7 @@ final class AttachmentDossierFileProviderTest extends UnitTestCase
 
         $this->repository->expects('findOneForDossier')->with(
             $dossierId,
-            Mockery::on(fn (Uuid $id): bool => $id->toRfc4122() === $idInput),
+            Mockery::on(static fn (Uuid $id): bool => $id->toRfc4122() === $idInput),
         )->andReturn($attachment);
 
         self::assertSame(
@@ -81,7 +81,7 @@ final class AttachmentDossierFileProviderTest extends UnitTestCase
 
         $this->repository->expects('findOneForDossier')->with(
             $dossierId,
-            Mockery::on(fn (Uuid $id): bool => $id->toRfc4122() === $idInput),
+            Mockery::on(static fn (Uuid $id): bool => $id->toRfc4122() === $idInput),
         )->andReturn($attachment);
 
         self::assertSame(

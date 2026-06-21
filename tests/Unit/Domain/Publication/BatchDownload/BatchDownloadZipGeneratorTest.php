@@ -322,7 +322,7 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
         $this->batchDownloadType->expects('isAvailableForBatchDownload')->andReturnTrue();
 
         $numberOfDocuments = 50;
-        $documents = array_map(function () {
+        $documents = array_map(static function () {
             return Mockery::mock(Document::class);
         }, range(1, $numberOfDocuments));
 

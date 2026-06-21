@@ -9,7 +9,7 @@ maken informatie valt. Zie onderstaande afbeelding.
 Afhankelijk van de gekozen informatiecategorie opent de bijbehorende uploadstraat.
 In de onderstaande pagina's wordt beschreven hoe je deze uploadstraten gebruikt.
 
-Nadat een publicatie daadwerkelijk openbaar gemaakt is, wordt de metadata opgenomen in de zoekmachine van het publicatieplatform.
+Nadat een publicatie daadwerkelijk openbaar gemaakt is, wordt de metadata opgenomen in de zoekmachine van het Woo Publicatieplatform.
 De publicatie en bijbehorende documenten kunnen zowel gevonden worden op basis van de metadata als op de inhoud van de documenten.
 
 ```{toctree}

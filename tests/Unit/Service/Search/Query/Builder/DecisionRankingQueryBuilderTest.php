@@ -98,7 +98,7 @@ final class DecisionRankingQueryBuilderTest extends UnitTestCase
         $builder = new DecisionRankingQueryBuilder($this->policy);
 
         $this->expectException(InvalidQueryConfigurationException::class);
-        $this->expectExceptionMessage('QueryBuilder has no query configured for decision ranking.');
+        $this->expectExceptionMessageIs('QueryBuilder has no query configured for decision ranking.');
 
         $builder->wrap(new QueryBuilder());
     }

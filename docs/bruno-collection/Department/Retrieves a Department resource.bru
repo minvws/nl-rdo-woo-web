@@ -8,7 +8,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/publication/v1/department/:departmentId
+  url: {{baseUrl}}/department/:departmentId
   body: none
   auth: inherit
 }
@@ -26,7 +26,7 @@ example {
   description: Department resource
   
   request: {
-    url: {{baseUrl}}/api/publication/v1/department/:departmentId
+    url: {{baseUrl}}/department/:departmentId
     method: GET
     mode: none
     params:path: {

@@ -10,9 +10,11 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Disposition\DispositionAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Disposition\DispositionFactory;
-use Shared\ValueObject\ExternalId;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 use function sprintf;
+use function str_repeat;
 
 final class DispositionUploadAttachmentTest extends ApiPublicationV1UploadTestCase
 {
@@ -22,12 +24,12 @@ final class DispositionUploadAttachmentTest extends ApiPublicationV1UploadTestCa
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $disposition = DispositionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
         ]);
         $dispositionAttachment = DispositionAttachmentFactory::createOne([
             'dossier' => $disposition,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $this->assertUpload(
@@ -51,12 +53,12 @@ final class DispositionUploadAttachmentTest extends ApiPublicationV1UploadTestCa
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $disposition = DispositionFactory::createOne([
             'organisation' => $organisation,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
         ]);
         $dispositionAttachment = DispositionAttachmentFactory::createOne([
             'dossier' => $disposition,
-            'externalId' => ExternalId::create($this->getFaker()->uuid()),
+            'externalId' => $this->getFaker()->externalId(),
         ]);
 
         $this->assertUploadWithoutFile(sprintf(
@@ -65,5 +67,51 @@ final class DispositionUploadAttachmentTest extends ApiPublicationV1UploadTestCa
             $disposition->getExternalId(),
             $dispositionAttachment->getExternalId(),
         ));
+    }
+
+    public function testUploadWithTooLongDossierExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $disposition = DispositionFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'departments' => [$department],
+        ]);
+        $dispositionAttachment = DispositionAttachmentFactory::createOne([
+            'dossier' => $disposition,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/disposition/external/%s/uploads/attachment/external/%s',
+            $organisation->getId(),
+            str_repeat('x', 129),
+            $dispositionAttachment->getExternalId(),
+        ));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testUploadWithTooLongAttachmentExternalId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $disposition = DispositionFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'departments' => [$department],
+        ]);
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/disposition/external/%s/uploads/attachment/external/%s',
+            $organisation->getId(),
+            $disposition->getExternalId(),
+            str_repeat('x', 129),
+        ));
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

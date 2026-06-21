@@ -53,8 +53,8 @@ class OrganisationController extends AbstractController
         $organisationForm->handleRequest($request);
 
         if ($organisationForm->isSubmitted() && $organisationForm->isValid()) {
-            /** @var Organisation $organisation */
             $organisation = $organisationForm->getData();
+            Assert::isInstanceOf($organisation, Organisation::class);
 
             // Use the service instead of the repo directly as it will do more work like audit logging
             $this->organisationService->create($organisation);
@@ -79,8 +79,8 @@ class OrganisationController extends AbstractController
         $organisationForm = $this->createForm(OrganisationFormType::class, $organisation);
         $organisationForm->handleRequest($request);
         if ($organisationForm->isSubmitted() && $organisationForm->isValid()) {
-            /** @var Organisation $organisation */
             $organisation = $organisationForm->getData();
+            Assert::isInstanceOf($organisation, Organisation::class);
 
             // Use the service instead of the repo directly as it will do more work like audit logging
             $this->organisationService->update($organisation);

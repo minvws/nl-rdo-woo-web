@@ -18,7 +18,7 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     operations: [
         new Get(
             uriTemplate: '/organisation/{organisationId}/dossiers/request-for-advice/external/{dossierExternalId}',
-            name: 'get_request_for_advice',
+            name: self::ROUTE_NAME_GET_REQUEST_FOR_ADVICE,
         ),
         new GetCollection(
             uriTemplate: '/organisation/{organisationId}/dossiers/request-for-advice',
@@ -64,9 +64,11 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     openapi: new Operation(
         tags: ['RequestForAdvice'],
     ),
+    output: RequestForAdviceResponseDto::class,
     provider: RequestForAdviceProvider::class,
     processor: RequestForAdviceProcessor::class,
 )]
 final class RequestForAdviceResource
 {
+    public const string ROUTE_NAME_GET_REQUEST_FOR_ADVICE = 'get_request_for_advice';
 }

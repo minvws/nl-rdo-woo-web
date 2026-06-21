@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Webmozart\Assert\Assert;
 
 /**
  * @template-extends AbstractType<InventoryType>
@@ -20,8 +21,8 @@ class InventoryType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var WooDecision $dossier */
         $dossier = $builder->getData();
+        Assert::isInstanceOf($dossier, WooDecision::class);
 
         $inventoryRequired = $dossier->isInventoryRequired();
 

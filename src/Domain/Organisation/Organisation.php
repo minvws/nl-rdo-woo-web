@@ -152,7 +152,7 @@ class Organisation
     public function getDocumentPrefixes(): ArrayCollection
     {
         $values = $this->documentPrefixes
-            ->filter(fn (DocumentPrefix $prefix): bool => ! $prefix->isArchived())
+            ->filter(static fn (DocumentPrefix $prefix): bool => ! $prefix->isArchived())
             ->getValues();
 
         // Create a new instance to reset keys, this is important for use in the CollectionType form field
@@ -166,7 +166,7 @@ class Organisation
     public function getPrefixesAsArray(): array
     {
         return array_map(
-            fn (DocumentPrefix $prefix): string => $prefix->getPrefix(),
+            static fn (DocumentPrefix $prefix): string => $prefix->getPrefix(),
             $this->getDocumentPrefixes()->toArray(),
         );
     }

@@ -37,7 +37,7 @@ final class AttachmentTypeFactoryTest extends UnitTestCase
     public function testMakeAsArray(): void
     {
         $translator = Mockery::mock(TranslatorInterface::class);
-        $translator->expects('trans')->times(73)->andReturnArg(0);
+        $translator->expects('trans')->times(89)->andReturnArg(0);
 
         $factory = new AttachmentTypeFactory($translator);
         $result = $factory->makeAsArray();

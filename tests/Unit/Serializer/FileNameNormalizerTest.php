@@ -78,21 +78,21 @@ final class FileNameNormalizerTest extends TestCase
 
     public function testGetDeserializationPathReturnsPathFromContext(): void
     {
-        $result = new FileNameNormalizer()->getDeserializationPath(['deserialization_path' => 'fileName']);
+        $result = new FileNameNormalizer()->getPathFromContext(['deserialization_path' => 'fileName']);
 
         self::assertSame('fileName', $result);
     }
 
     public function testGetDeserializationPathReturnsNullWhenNotInContext(): void
     {
-        $result = new FileNameNormalizer()->getDeserializationPath([]);
+        $result = new FileNameNormalizer()->getPathFromContext([]);
 
         self::assertNull($result);
     }
 
     public function testGetDeserializationPathReturnsNullWhenPathIsNotString(): void
     {
-        $result = new FileNameNormalizer()->getDeserializationPath(['deserialization_path' => 123]);
+        $result = new FileNameNormalizer()->getPathFromContext(['deserialization_path' => 123]);
 
         self::assertNull($result);
     }

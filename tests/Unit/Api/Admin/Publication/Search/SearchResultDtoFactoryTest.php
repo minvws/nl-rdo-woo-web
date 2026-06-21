@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shared\Tests\Unit\Api\Admin\Publication\Search;
+namespace Admin\Tests\Unit\Api\Admin\Publication\Search;
 
 use Admin\Api\Admin\Publication\Search\SearchResultDtoFactory;
 use InvalidArgumentException;
@@ -28,6 +28,7 @@ use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use Shared\Service\DossierWizard\DossierWizardStatus;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 use stdClass;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -130,7 +131,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
                 new DossierReference(
                     $wooDecisionNr,
                     $wooDecisionPrefix,
-                    'foo bar',
+                    DossierTitle::create('foo bar'),
                     DossierType::WOO_DECISION,
                 ),
             ],
@@ -177,7 +178,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
                 0 => new DossierReference(
                     $wooDecisionNr,
                     $wooDecisionPrefix,
-                    'foo bar',
+                    DossierTitle::create('foo bar'),
                     DossierType::WOO_DECISION,
                 ),
             ],
@@ -237,7 +238,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
                 0 => new DossierReference(
                     $wooDecisionNr,
                     $wooDecisionPrefix,
-                    'foo bar',
+                    DossierTitle::create('foo bar'),
                     DossierType::WOO_DECISION,
                 ),
             ],

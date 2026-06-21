@@ -22,9 +22,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Domain\Search\SearchDispatcher;
 use Shared\Service\HistoryService;
-use Shared\Service\Inquiry\CaseNumbers;
-use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inquiry\DocumentInquiryNumbers;
 use Shared\Service\Inquiry\InquiryChangeset;
+use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inquiry\InquiryService;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Tests\Unit\UnitTestCase;
@@ -111,25 +111,25 @@ class InquiryServiceTest extends UnitTestCase
         // $removeDoc->expects('removeInquiry');
         $removeDoc->expects('getId')->andReturn($removeDocId);
 
-        $caseNr = 'case-123';
+        $inquiryNumber = 'case-123';
         $inquiryId = Uuid::v6();
 
         $this->historyService
             ->expects('addDossierEntry')
-            ->with($this->dossier->getId(), 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
+            ->with($this->dossier->getId(), 'dossier_inquiry_added', ['count' => 1, 'inquiryNumbers' => $inquiryNumber]);
         $this->historyService
             ->expects('addDossierEntry')
-            ->with($newDossier->getId(), 'dossier_inquiry_added', ['count' => 1, 'casenrs' => $caseNr]);
-        $this->inquiryRepo->expects('findOneBy')->with(['organisation' => $this->organisation, 'casenr' => $caseNr])->andReturnNull();
+            ->with($newDossier->getId(), 'dossier_inquiry_added', ['count' => 1, 'inquiryNumbers' => $inquiryNumber]);
+        $this->inquiryRepo->expects('findOneBy')->with(['organisation' => $this->organisation, 'inquiryNumber' => $inquiryNumber])->andReturnNull();
 
         $this->documentRepo->expects('find')->with($addDoc1Id)->andReturn($addDoc1);
         $this->documentRepo->expects('find')->with($addDoc2Id)->andReturn($addDoc2);
         $this->documentRepo->expects('find')->with($removeDocId)->andReturn($removeDoc);
 
         $this->entityManager->expects('persist')->with(Mockery::on(
-            function (Inquiry $inquiry) use ($caseNr, $inquiryId): bool {
+            function (Inquiry $inquiry) use ($inquiryNumber, $inquiryId): bool {
                 self::assertEquals($this->organisation, $inquiry->getOrganisation());
-                self::assertEquals($caseNr, $inquiry->getCasenr());
+                self::assertEquals($inquiryNumber, $inquiry->getInquiryNumber());
 
                 // Set fake ID on doctrine entity
                 $reflectionClass = new ReflectionClass($inquiry::class);
@@ -156,7 +156,7 @@ class InquiryServiceTest extends UnitTestCase
         $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($this->dossierId);
         $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($newDossierId);
 
-        $this->inquiryService->updateInquiryLinks($this->organisation, $caseNr, [$addDoc1Id, $addDoc2Id], [$removeDocId], [$newDossierId]);
+        $this->inquiryService->updateInquiryLinks($this->organisation, $inquiryNumber, [$addDoc1Id, $addDoc2Id], [$removeDocId], [$newDossierId]);
     }
 
     public function testUpdateInquiryLinksWithNewDossier(): void
@@ -194,7 +194,7 @@ class InquiryServiceTest extends UnitTestCase
         $removeDoc = Mockery::mock(Document::class);
         $removeDoc->expects('getId')->andReturn($removeDocId);
 
-        $caseNr = 'case-123';
+        $inquiryNumber = 'case-123';
         $inquiryId = Uuid::v6();
         $inquiry = Mockery::mock(Inquiry::class);
         $inquiry->expects('addDocument')->with($addDoc1);
@@ -208,7 +208,9 @@ class InquiryServiceTest extends UnitTestCase
 
         $this->historyService->expects('addDossierEntry');
 
-        $this->inquiryRepo->expects('findOneBy')->with(['organisation' => $this->organisation, 'casenr' => $caseNr])->andReturn($inquiry);
+        $this->inquiryRepo->expects('findOneBy')
+            ->with(['organisation' => $this->organisation, 'inquiryNumber' => $inquiryNumber])
+            ->andReturn($inquiry);
 
         $this->documentRepo->expects('find')->with($addDoc1Id)->andReturn($addDoc1);
         $this->documentRepo->expects('find')->with($addDoc2Id)->andReturn($addDoc2);
@@ -229,7 +231,7 @@ class InquiryServiceTest extends UnitTestCase
 
         $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($newDossierId);
 
-        $this->inquiryService->updateInquiryLinks($this->organisation, $caseNr, [$addDoc1Id, $addDoc2Id], [$removeDocId], [$newDossierId]);
+        $this->inquiryService->updateInquiryLinks($this->organisation, $inquiryNumber, [$addDoc1Id, $addDoc2Id], [$removeDocId], [$newDossierId]);
     }
 
     public function testApplyChangesetAsync(): void
@@ -241,16 +243,16 @@ class InquiryServiceTest extends UnitTestCase
 
         // Has no linked inquiries yet, so should be linked twice
         $docId123 = Uuid::v6();
-        $changeset->updateCaseNrsForDocument(
-            new DocumentCaseNumbers($docId123, CaseNumbers::empty()),
-            new CaseNumbers(['case-1', 'case-2']),
+        $changeset->updateInquiryNumbersForDocument(
+            new DocumentInquiryNumbers($docId123, InquiryNumbers::empty()),
+            new InquiryNumbers(['case-1', 'case-2']),
         );
 
         // Has two new inquiry links (case-1 and case-3), one unmodified/existing (case-2) and one removed ('case-4')
         $docId456 = Uuid::v6();
-        $changeset->updateCaseNrsForDocument(
-            new DocumentCaseNumbers($docId456, new CaseNumbers(['case-2', 'case-4'])),
-            new CaseNumbers(['case-1', 'case-2', 'case-3']),
+        $changeset->updateInquiryNumbersForDocument(
+            new DocumentInquiryNumbers($docId456, new InquiryNumbers(['case-2', 'case-4'])),
+            new InquiryNumbers(['case-1', 'case-2', 'case-3']),
         );
 
         // Docs 123 and 456 should be added to case-1

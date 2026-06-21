@@ -19,6 +19,7 @@ use Shared\Domain\Upload\Process\FileStorer;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\HistoryService;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 use Symfony\Component\Uid\Uuid;
 
 use function sprintf;
@@ -34,7 +35,6 @@ final class DocumentFileProcessorTest extends UnitTestCase
     private DocumentRepository&MockInterface $documentRepository;
     private Document&MockInterface $document;
     private FileInfo&MockInterface $fileInfo;
-    private string $documentId = 'documentId';
     private DocumentFileProcessor $processor;
 
     protected function setUp(): void
@@ -62,9 +62,10 @@ final class DocumentFileProcessorTest extends UnitTestCase
 
     public function testProcess(): void
     {
+        $documentId = DocumentId::create('foo.123');
         $this->documentRepository
             ->expects('findOneByDossierAndDocumentId')
-            ->with($this->dossier, $this->documentId)
+            ->with($this->dossier, $documentId)
             ->andReturn($this->document);
 
         $this->document
@@ -90,13 +91,13 @@ final class DocumentFileProcessorTest extends UnitTestCase
 
         $this->fileStorer
             ->expects('storeForDocument')
-            ->with($this->file, $this->document, $this->documentId);
+            ->with($this->file, $this->document, $documentId);
 
         $this->ingestService
             ->expects('ingest')
             ->with(
                 $this->document,
-                Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
+                Mockery::on(static fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
             );
 
         $this->fileInfo
@@ -118,14 +119,15 @@ final class DocumentFileProcessorTest extends UnitTestCase
                 ],
             );
 
-        $this->processor->process($this->file, $this->dossier, $this->documentId);
+        $this->processor->process($this->file, $this->dossier, $documentId);
     }
 
     public function testProcessForWithdrawnDocument(): void
     {
+        $documentId = DocumentId::create('foo.123');
         $this->documentRepository
             ->expects('findOneByDossierAndDocumentId')
-            ->with($this->dossier, $this->documentId)
+            ->with($this->dossier, $documentId)
             ->andReturn($this->document);
 
         $this->document
@@ -157,13 +159,13 @@ final class DocumentFileProcessorTest extends UnitTestCase
 
         $this->fileStorer
             ->expects('storeForDocument')
-            ->with($this->file, $this->document, $this->documentId);
+            ->with($this->file, $this->document, $documentId);
 
         $this->ingestService
             ->expects('ingest')
             ->with(
                 $this->document,
-                Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
+                Mockery::on(static fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
             );
 
         $this->fileInfo
@@ -185,16 +187,17 @@ final class DocumentFileProcessorTest extends UnitTestCase
                 ],
             );
 
-        $this->processor->process($this->file, $this->dossier, $this->documentId);
+        $this->processor->process($this->file, $this->dossier, $documentId);
     }
 
     public function testProcessWithGivenFileType(): void
     {
+        $documentId = DocumentId::create('foo.123');
         $fileType = 'txt';
 
         $this->documentRepository
             ->expects('findOneByDossierAndDocumentId')
-            ->with($this->dossier, $this->documentId)
+            ->with($this->dossier, $documentId)
             ->andReturn($this->document);
 
         $this->document
@@ -216,13 +219,13 @@ final class DocumentFileProcessorTest extends UnitTestCase
 
         $this->fileStorer
             ->expects('storeForDocument')
-            ->with($this->file, $this->document, $this->documentId);
+            ->with($this->file, $this->document, $documentId);
 
         $this->ingestService
             ->expects('ingest')
             ->with(
                 $this->document,
-                Mockery::on(fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
+                Mockery::on(static fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
             );
 
         $this->fileInfo
@@ -251,18 +254,19 @@ final class DocumentFileProcessorTest extends UnitTestCase
             ->expects('getStatus')
             ->andReturn(DossierStatus::PUBLISHED);
 
-        $this->processor->process($this->file, $this->dossier, $this->documentId);
+        $this->processor->process($this->file, $this->dossier, $documentId);
     }
 
     public function testProcessWhenFailingToFetchDocument(): void
     {
+        $documentId = DocumentId::create('foo.123');
         $this->file
             ->expects('getOriginalFilename')
             ->andReturn($originalFile = 'originalFile.pdf');
 
         $this->documentRepository
             ->expects('findOneByDossierAndDocumentId')
-            ->with($this->dossier, $this->documentId)
+            ->with($this->dossier, $documentId)
             ->andReturnNull();
 
         $this->dossier
@@ -273,22 +277,23 @@ final class DocumentFileProcessorTest extends UnitTestCase
             ->expects('info')
             ->with('Could not find document, skipping processing file', [
                 'filename' => $originalFile,
-                'documentId' => $this->documentId,
+                'documentId' => $documentId,
                 'dossierId' => $dossierId,
             ]);
 
-        $this->processor->process($this->file, $this->dossier, $this->documentId);
+        $this->processor->process($this->file, $this->dossier, $documentId);
     }
 
     public function testProcessWhenDocumentShouldNotBeUploaded(): void
     {
+        $documentId = DocumentId::create('foo.123');
         $this->file
             ->expects('getOriginalFilename')
             ->andReturn($originalFile = 'originalFile.pdf');
 
         $this->documentRepository
             ->expects('findOneByDossierAndDocumentId')
-            ->with($this->dossier, $this->documentId)
+            ->with($this->dossier, $documentId)
             ->andReturn($this->document);
 
         $this->dossier
@@ -306,14 +311,14 @@ final class DocumentFileProcessorTest extends UnitTestCase
         $this->logger
             ->expects('warning')
             ->with(
-                sprintf('Document with id "%s" should not be uploaded, skipping it', $this->documentId),
+                sprintf('Document with id "%s" should not be uploaded, skipping it', $documentId),
                 [
                     'filename' => $originalFile,
-                    'documentId' => $this->documentId,
+                    'documentId' => $documentId,
                     'dossierId' => $dossierId,
                 ],
             );
 
-        $this->processor->process($this->file, $this->dossier, $this->documentId);
+        $this->processor->process($this->file, $this->dossier, $documentId);
     }
 }

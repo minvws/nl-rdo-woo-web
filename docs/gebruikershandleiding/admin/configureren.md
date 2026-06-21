@@ -1,6 +1,6 @@
 # Configuratie van de organisatie
 
-Iedere concernorganisatie krijgt een eigen organisatie in het uploadportaal van het publicatieplatform. Deze organisatie
+Iedere concernorganisatie krijgt een eigen organisatie in het uploadportaal van het Woo Publicatieplatform. Deze organisatie
 kunnen we configureren aan de hand van een aantal parameters. Zie onderstaande fictieve organisatie ‘Concernorganisatie Woo’.
 
 ![De figuur laat zien hoe de naam van de organisatie, het verantwoordelijke bestuursorgaan en de prefixes van de organisatie kunnen worden veranderd](img/organisatie_configuratie.png)

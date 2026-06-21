@@ -38,10 +38,10 @@ class InquiryAdmininistrationController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/admin/inquiry/{casenr}', name: 'app_admin_inquiry_administration_details', methods: ['GET', 'POST'])]
+    #[Route('/balie/admin/inquiry/{inquiryNumber}', name: 'app_admin_inquiry_administration_details', methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.inquiry.administration')]
     public function inquiry(
-        #[MapEntity(mapping: ['casenr' => 'casenr'])] Inquiry $inquiry,
+        #[MapEntity(mapping: ['inquiryNumber' => 'inquiryNumber'])] Inquiry $inquiry,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -58,7 +58,7 @@ class InquiryAdmininistrationController extends AbstractController
 
         $breadcrumbs->addRouteItem('global.admin', 'app_admin');
         $breadcrumbs->addRouteItem('global.inquiry', 'app_admin_inquiry_administration');
-        $breadcrumbs->addItem($inquiry->getCasenr());
+        $breadcrumbs->addItem($inquiry->getInquiryNumber());
 
         return $this->render('admin/dossier/woo-decision/inquiry/administration/details.html.twig', [
             'inquiry' => $inquiry,

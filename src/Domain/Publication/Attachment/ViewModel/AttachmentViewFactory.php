@@ -34,7 +34,7 @@ readonly class AttachmentViewFactory
 
         return $dossier
             ->getAttachments()
-            ->filter(fn (AbstractAttachment $entity) => ! $entity->isWithdrawn())
+            ->filter(static fn (AbstractAttachment $entity) => ! $entity->isWithdrawn())
             ->map(fn (AbstractAttachment $entity): Attachment => $this->make($dossier, $entity, $mode))
             ->toArray();
     }

@@ -30,7 +30,7 @@ final readonly class SubjectProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|SubjectResponse
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|SubjectDetailResponse
     {
         $organisation = $this->organisationResolver->resolve($uriVariables);
 
@@ -58,16 +58,16 @@ final readonly class SubjectProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(SubjectMapper::fromEntities($subjects), 0, count($subjects));
+        return new ArrayPaginator(SubjectMapper::fromEntitiesWithDetail($subjects), 0, count($subjects));
     }
 
-    private function provideSingle(Organisation $organisation, Uuid $subjectId): SubjectResponse
+    private function provideSingle(Organisation $organisation, Uuid $subjectId): SubjectDetailResponse
     {
         $subject = $this->subjectRepository->findByOrganisationAndId($organisation, $subjectId);
         if ($subject === null) {
             throw EntityNotFoundException::for('Subject', $subjectId);
         }
 
-        return SubjectMapper::fromEntity($subject);
+        return SubjectMapper::fromEntityWithDetail($subject);
     }
 }

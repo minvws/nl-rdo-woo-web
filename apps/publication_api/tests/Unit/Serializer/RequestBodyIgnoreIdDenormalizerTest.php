@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Unit\Serializer;
 
 use Mockery;
-use PublicationApi\Api\MainDocument\MainDocumentRequestDto;
+use PublicationApi\Api\Dossier\AnnualReport\AnnualReportMainDocumentRequestDto;
 use PublicationApi\Serializer\RequestBodyIgnoreIdDenormalizer;
 use Shared\Tests\Unit\UnitTestCase;
 use stdClass;
@@ -20,7 +20,7 @@ final class RequestBodyIgnoreIdDenormalizerTest extends UnitTestCase
 
         $innerDenormalizer = Mockery::mock(DenormalizerInterface::class);
         $innerDenormalizer->expects('denormalize')
-            ->with(['title' => $title], MainDocumentRequestDto::class, null, [])
+            ->with(['title' => $title], AnnualReportMainDocumentRequestDto::class, null, [])
             ->andReturn($expected);
 
         $denormalizer = new RequestBodyIgnoreIdDenormalizer();
@@ -30,7 +30,7 @@ final class RequestBodyIgnoreIdDenormalizerTest extends UnitTestCase
             'id' => self::getFaker()->uuid(),
             'title' => $title,
         ];
-        $result = $denormalizer->denormalize($data, MainDocumentRequestDto::class);
+        $result = $denormalizer->denormalize($data, AnnualReportMainDocumentRequestDto::class);
 
         self::assertSame($expected, $result);
     }
@@ -43,7 +43,7 @@ final class RequestBodyIgnoreIdDenormalizerTest extends UnitTestCase
             'id' => self::getFaker()->uuid(),
             'title' => self::getFaker()->word(),
         ];
-        $result = $denormalizer->supportsDenormalization($data, MainDocumentRequestDto::class);
+        $result = $denormalizer->supportsDenormalization($data, AnnualReportMainDocumentRequestDto::class);
 
         self::assertTrue($result);
     }
@@ -55,7 +55,7 @@ final class RequestBodyIgnoreIdDenormalizerTest extends UnitTestCase
         $data = ['id' => self::getFaker()->uuid()];
         $result = $denormalizer->supportsDenormalization(
             $data,
-            MainDocumentRequestDto::class,
+            AnnualReportMainDocumentRequestDto::class,
             context: ['preserve_id_in_body' => true],
         );
 
@@ -67,7 +67,7 @@ final class RequestBodyIgnoreIdDenormalizerTest extends UnitTestCase
         $denormalizer = new RequestBodyIgnoreIdDenormalizer();
 
         $data = ['title' => self::getFaker()->word()];
-        $result = $denormalizer->supportsDenormalization($data, MainDocumentRequestDto::class);
+        $result = $denormalizer->supportsDenormalization($data, AnnualReportMainDocumentRequestDto::class);
 
         self::assertFalse($result);
     }
@@ -76,7 +76,7 @@ final class RequestBodyIgnoreIdDenormalizerTest extends UnitTestCase
     {
         $denormalizer = new RequestBodyIgnoreIdDenormalizer();
 
-        $result = $denormalizer->supportsDenormalization('not-an-array', MainDocumentRequestDto::class);
+        $result = $denormalizer->supportsDenormalization('not-an-array', AnnualReportMainDocumentRequestDto::class);
 
         self::assertFalse($result);
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Service\Security;
 
 use Carbon\CarbonImmutable;
+use Deprecated;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -157,6 +158,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     /**
      * @see UserInterface
      */
+    #[Deprecated]
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
@@ -229,7 +231,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function invalidateBackupCode(string $code): void
     {
-        $this->mfaRecovery = array_filter($this->mfaRecovery ?? [], fn ($target) => $target !== $code);
+        $this->mfaRecovery = array_filter($this->mfaRecovery ?? [], static fn ($target) => $target !== $code);
     }
 
     public function isDisabled(): bool

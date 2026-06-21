@@ -22,7 +22,7 @@ class DocumentPrefixDeterminerTest extends SharedWebTestCase
         $documentPrefixDeterminer = new DocumentPrefixDeterminer(self::fromContainer(DocumentPrefixRepository::class));
 
         self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('no document prefix found for organisation');
+        self::expectExceptionMessageIs('no document prefix found for organisation');
         $documentPrefixDeterminer->forOrganisation($organisation);
     }
 

@@ -9,6 +9,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\ValueObject\ExternalId;
 use Stringable;
@@ -35,6 +36,13 @@ abstract class ApiPublicationV1DossierTestCase extends ApiPublicationV1TestCase
         return sprintf('/api/publication/v1/organisation/%s/dossiers/%s/external/%s', $organisationId, $this->getDossierApiUriSegment(), $dossierId);
     }
 
+    protected function buildPublicUrl(Uuid|Organisation $organisation, string|ExternalId|AbstractDossier|null $dossier = null): string
+    {
+        $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
+
+        return $publicUrlGenerator->buildUrlFromPath($this->buildUrl($organisation, $dossier));
+    }
+
     /**
      * @param array<array-key, AttachmentType> $attachmentTypes
      *
@@ -49,7 +57,7 @@ abstract class ApiPublicationV1DossierTestCase extends ApiPublicationV1TestCase
                 'formalDate' => $this->getFaker()->date(),
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
                 'type' => $this->getFaker()->randomElement($attachmentTypes),
-                'externalId' => $this->getFaker()->externalId()->__toString(),
+                'externalId' => $this->getFaker()->externalId()->toString(),
             ];
 
             if ($this->getFaker()->boolean()) {
@@ -72,7 +80,7 @@ abstract class ApiPublicationV1DossierTestCase extends ApiPublicationV1TestCase
             return $dossier->__toString();
         }
 
-        $dossierId = $dossier->getExternalId()?->__toString();
+        $dossierId = $dossier->getExternalId()?->toString();
         Assert::string($dossierId);
 
         return $dossierId;

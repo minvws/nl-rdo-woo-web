@@ -1,47 +1,10 @@
 # Documentatie
 
-## Bruno
+Dit document beschrijft de inhoud van de verschillende submappen.
 
-De `bruno-collection` map bevat een Collection die je in de open-source API tool [Bruno](https://www.usebruno.com/) kan importeren. Om je Bruno omgeving voor te bereiden, doe het volgende:
+## Bruno collection
 
-1. [Download](https://www.usebruno.com/downloads), installeer en open Bruno.
-2. Klik op het plusje linksboven en kies **Open collection**. Kies de bruno-collection map in de repo.
-3. Als er rechtsboven een groen schildje met vinkje te zien is dan zit je in safe mode. Klik hierop en schakel de `developer mode` in waarna icoontje verandert naar `</>`. Dit is nodig voor de uitvoer van pre-request scripts.
-
-### Lokaal
-
-Om lokaal te werken met Bruno, volg je de volgende stappen:
-
-1. In een terminal binnen de repo, voer het volgende uit: `task docs:bruno:init`
-
-   Dit zal een `Local.bru` environment file maken in *bruno-collection/environments* met de variabelen `baseUrl` en `organisationId`. Aangezien het organisationId per instance anders is, staat deze file niet in git.
-2. In Bruno, selecteer rechtsboven de **Local** environment.
-3. In Bruno, voer het volgende request uit: Organisation > **Retrieves the collection of OrganisationDto resources**
-
-   Dit zal de `organisationId` variabele vullen met de waarde van *E2E Test Organisation* van je lokale omgeving.
-
-Je bent nu klaar om Bruno requests uit te voeren.
-Let erop dat niet alle requests een default body of de juiste id's hebben.
-
-### Test en Acceptatie
-
-Om met de Test en Acceptatie te communiceren, doe dan het volgende:
-
-1. Maak de file `docs/bruno-collection/.env` aan met de volgende inhoud:
-
-   ```text
-   DOMAIN_TEST=
-   DOMAIN_ACC=
-   ```
-
-   Neem voor de waardes contact op met het team.
-2. Plaats in `certs/test` en/of `certs/acc` de `.pem` en `.key` files van een instantie (bijvoorbeeld VWS of MinFin) van de omgeving. Neem voor deze files ook contact op met het team.
-3. In Bruno, kies rechtsboven voor **Test** of **Acc** als environment.
-4. In Bruno, voer het volgende request uit: Organisation > **Retrieves the collection of OrganisationDto resources**
-
-   Dit zal de `organisationId` variabele vullen met de waarde van *E2E Test Organisation* van de betreffende omgeving.
-
-Nu zullen alle queries naar het betreffende organisation en environment gaan.
+Deze map bevat een Bruno collectie om de Puiblication API te testen, zie de README in de betreffende map voor meer informatie.
 
 ## Gebruikershandleiding
 

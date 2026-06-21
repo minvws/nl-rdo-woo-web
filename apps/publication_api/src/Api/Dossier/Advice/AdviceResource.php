@@ -18,7 +18,7 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     operations: [
         new Get(
             uriTemplate: '/organisation/{organisationId}/dossiers/advice/external/{dossierExternalId}',
-            name: 'get_advice',
+            name: self::ROUTE_NAME_GET_ADVICE,
         ),
         new GetCollection(
             uriTemplate: '/organisation/{organisationId}/dossiers/advice',
@@ -64,9 +64,11 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     openapi: new Operation(
         tags: ['Advice'],
     ),
+    output: AdviceResponseDto::class,
     provider: AdviceProvider::class,
     processor: AdviceProcessor::class,
 )]
 final class AdviceResource
 {
+    public const string ROUTE_NAME_GET_ADVICE = 'get_advice';
 }

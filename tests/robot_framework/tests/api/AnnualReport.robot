@@ -24,7 +24,6 @@ Suite Setup
 Annual Report Test Case
   [Arguments]  ${steps}
   FOR  ${step}  IN  @{steps}
-    Log  ${step}[name]
     IF  '${step}[type]' == 'request'
       Create Annual Report
       ...  ${step}[expected_response_status]
@@ -146,3 +145,7 @@ Compute Annual Report Year Boundary
     ${year} =  Evaluate  ${current_year_int} + ${PLUS_YEARS}
   END
   RETURN  ${year}
+
+Verify HAL Links Are Reachable
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  Verify HAL Links Are Reachable For Dossier  annual-report

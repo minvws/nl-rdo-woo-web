@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Security\ApplicationMode;
 
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Service\Security\ApplicationMode\ApplicationModeRedirector;
+use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
-class ApplicationModeRedirectorTest extends MockeryTestCase
+class ApplicationModeRedirectorTest extends UnitTestCase
 {
     #[DataProvider('applicationModeProvider')]
     public function testRedirectForNonDevFirewall(

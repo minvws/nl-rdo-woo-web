@@ -7,7 +7,7 @@ namespace PublicationApi\Api\Dossier\WooDecision;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
-use ApiPlatform\Validator\Exception\ValidationException;
+use ApiPlatform\Validator\Exception\ValidationException as ApiPlatformValidationException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
@@ -15,6 +15,8 @@ use PublicationApi\Api\Dossier\DossierNrValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
 use PublicationApi\Api\Dossier\WooDecision\Document\WooDecisionDocumentMapper;
 use PublicationApi\Api\Dossier\WooDecision\Document\WooDecisionDocumentRequestDto;
+use PublicationApi\Api\Dossier\WooDecision\Document\WooDecisionDocumentValidator;
+use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
 use PublicationApi\Domain\Inquiry\InquiryService;
@@ -29,9 +31,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\DocumentService;
-use Shared\Service\Inquiry\CaseNumbers;
-use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inquiry\DocumentInquiryNumbers;
 use Shared\Service\Inquiry\InquiryChangeset;
+use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inventory\DocumentUpdater;
 use Shared\Service\Inventory\InventoryUpdater;
 use Shared\ValueObject\ExternalId;
@@ -64,6 +66,7 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
         private AttachmentSynchronizer $attachmentSynchronizer,
         private OrganisationResolver $organisationResolver,
         private WooDecisionDocumentMapper $wooDecisionDocumentMapper,
+        private WooDecisionDocumentValidator $wooDecisionDocumentValidator,
         private InventoryUpdater $inventoryUpdater,
     ) {
     }
@@ -80,15 +83,16 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
         }
 
         Assert::isInstanceOf($data, WooDecisionRequestDto::class);
+        Assert::string($uriVariables['dossierExternalId']);
 
-        $dossierExternalId = $uriVariables['dossierExternalId'];
-        Assert::string($dossierExternalId);
-        $dossierExternalId = ExternalId::create($dossierExternalId);
+        $dossierExternalId = ExternalIdFactory::create($uriVariables['dossierExternalId']);
 
         $organisation = $this->organisationResolver->resolve($uriVariables);
         $subject = $this->dossierSupportService->getSubject($data, $organisation);
         $department = $this->dossierSupportService->getDepartment($organisation, $data->departmentId);
         $wooDecision = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
+
+        $this->wooDecisionDocumentValidator->validate($data->documents);
 
         if ($wooDecision === null) {
             $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
@@ -120,12 +124,12 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
         $this->dossierSupportService->validateMainDocument($mainDocument);
         $this->dossierSupportService->validateAttachments($attachments);
         $this->validateDocuments($documents);
-
         $wooDecision->setMainDocument($mainDocument);
         $this->dossierSupportService->addAttachments($wooDecision, $attachments);
         $this->addDossierDocuments($wooDecision, $documents);
 
         $this->dossierSupportService->validateDossier($wooDecision);
+
         $this->wooDecisionRepository->save($wooDecision, true);
 
         $this->handleInquiries($wooDecision, $wooDecisionRequestDto->documents);
@@ -156,18 +160,19 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
         $wooDecision->setMainDocument($mainDocument);
         $this->attachmentSynchronizer->sync($wooDecision, $wooDecisionRequestDto->attachments);
 
-        $previousDocumentCaseNumbers = $this->getDocumentCaseNumbers($wooDecision);
+        $previousDocumentInquiryNumbers = $this->getDocumentInquiryNumbers($wooDecision);
 
         $this->removeDossierDocuments($wooDecision);
         $this->addDossierDocuments($wooDecision, $documents);
 
         $this->dossierSupportService->validateDossier($wooDecision);
+
         $this->wooDecisionRepository->save($wooDecision, true);
 
         $this->handleInquiries(
             $wooDecision,
             $wooDecisionRequestDto->documents,
-            $previousDocumentCaseNumbers,
+            $previousDocumentInquiryNumbers,
         );
 
         $this->wooDecisionDispatcher->dispatchUpdateDecisionCommand($wooDecision);
@@ -183,7 +188,7 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
      */
     private function getAttachments(WooDecision $wooDecision, array $attachmentRequestDtos): array
     {
-        return array_values(array_map(fn (AttachmentRequestDto $attachment): WooDecisionAttachment => WooDecisionAttachmentMapper::create(
+        return array_values(array_map(static fn (AttachmentRequestDto $attachment): WooDecisionAttachment => WooDecisionAttachmentMapper::create(
             $wooDecision,
             $attachment,
         ), $attachmentRequestDtos));
@@ -201,22 +206,22 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
                 $validationFailedException->getViolations(),
                 'documents.',
             );
-            throw new ValidationException($violations, previous: $validationFailedException);
+            throw new ApiPlatformValidationException($violations, previous: $validationFailedException);
         }
     }
 
     /**
-     * @param array<array-key,WooDecisionDocumentRequestDto> $wooDecisionDocumentRequestDtos
+     * @param list<WooDecisionDocumentRequestDto> $wooDecisionDocumentRequestDtos
      *
      * @return list<Document>
      */
     private function getDocuments(WooDecision $wooDecision, array $wooDecisionDocumentRequestDtos): array
     {
         return array_values(array_map(function (WooDecisionDocumentRequestDto $wooDecisionDocumentRequestDto) use ($wooDecision): Document {
-            $document = $this->documentRepository->findByExternalId($wooDecisionDocumentRequestDto->externalId);
+            $document = $this->documentRepository->findByDossierAndExternalId($wooDecision, $wooDecisionDocumentRequestDto->externalId);
 
             if ($document instanceof Document) {
-                return $this->wooDecisionDocumentMapper->update($document, $wooDecisionDocumentRequestDto);
+                return $this->wooDecisionDocumentMapper->update($wooDecision->getDocumentPrefix(), $document, $wooDecisionDocumentRequestDto);
             }
 
             return $this->wooDecisionDocumentMapper->create($wooDecision->getDocumentPrefix(), $wooDecisionDocumentRequestDto);
@@ -241,7 +246,7 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
     }
 
     /**
-     * @param array<array-key,WooDecisionDocumentRequestDto> $wooDecisionDocumentRequestDtos
+     * @param list<WooDecisionDocumentRequestDto> $wooDecisionDocumentRequestDtos
      */
     private function updateDocumentRefersTo(array $wooDecisionDocumentRequestDtos): void
     {
@@ -256,42 +261,40 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
                 continue;
             }
 
-            $refersTo = array_map(ExternalId::create(...), $refersTo);
-
             $this->documentUpdater->updateDocumentReferralsByDocumentExternalId($document, $refersTo);
         }
     }
 
     /**
-     * @param array<array-key,WooDecisionDocumentRequestDto> $requestDocuments
-     * @param Collection<string,DocumentCaseNumbers> $previousDocumentCaseNumbers
+     * @param list<WooDecisionDocumentRequestDto> $requestDocuments
+     * @param Collection<string,DocumentInquiryNumbers> $previousDocumentInquiryNumbers
      */
     private function handleInquiries(
         WooDecision $wooDecision,
         array $requestDocuments,
-        Collection $previousDocumentCaseNumbers = new ArrayCollection(),
+        Collection $previousDocumentInquiryNumbers = new ArrayCollection(),
     ): void {
-        $currentDocumentCaseNumbers = $this->getDocumentCaseNumbers($wooDecision);
+        $currentDocumentInquiryNumbers = $this->getDocumentInquiryNumbers($wooDecision);
 
-        $allExternalIds = array_keys(array_flip(array_merge($previousDocumentCaseNumbers->getKeys(), $currentDocumentCaseNumbers->getKeys())));
+        $allExternalIds = array_keys(array_flip(array_merge($previousDocumentInquiryNumbers->getKeys(), $currentDocumentInquiryNumbers->getKeys())));
 
-        /** @var ArrayCollection<string,CaseNumbers> $targetDocumentCaseNumbers */
-        $targetDocumentCaseNumbers = new ArrayCollection($requestDocuments)
-            ->reduce(function (ArrayCollection $carry, WooDecisionDocumentRequestDto $documentRequestDto): ArrayCollection {
-                $carry->set($documentRequestDto->externalId->__toString(), new CaseNumbers($documentRequestDto->caseNumbers));
+        /** @var ArrayCollection<string,InquiryNumbers> $targetDocumentInquiryNumbers */
+        $targetDocumentInquiryNumbers = new ArrayCollection($requestDocuments)
+            ->reduce(static function (ArrayCollection $carry, WooDecisionDocumentRequestDto $documentRequestDto): ArrayCollection {
+                $carry->set($documentRequestDto->externalId->toString(), new InquiryNumbers($documentRequestDto->inquiryNumbers));
 
                 return $carry;
             }, new ArrayCollection());
 
         $inquiryChangeset = new InquiryChangeset($wooDecision->getOrganisation());
         foreach ($allExternalIds as $externalId) {
-            $documentCaseNumbers = $previousDocumentCaseNumbers->get($externalId) ?? $currentDocumentCaseNumbers->get($externalId);
-            Assert::isInstanceOf($documentCaseNumbers, DocumentCaseNumbers::class);
+            $documentInquiryNumbers = $previousDocumentInquiryNumbers->get($externalId) ?? $currentDocumentInquiryNumbers->get($externalId);
+            Assert::isInstanceOf($documentInquiryNumbers, DocumentInquiryNumbers::class);
 
             $inquiryChangeset
-                ->updateCaseNrsForDocument(
-                    $documentCaseNumbers,
-                    $targetDocumentCaseNumbers->get($externalId) ?? CaseNumbers::empty(),
+                ->updateInquiryNumbersForDocument(
+                    $documentInquiryNumbers,
+                    $targetDocumentInquiryNumbers->get($externalId) ?? InquiryNumbers::empty(),
                 );
         }
 
@@ -299,24 +302,24 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
     }
 
     /**
-     * @return Collection<string,DocumentCaseNumbers>
+     * @return Collection<string,DocumentInquiryNumbers>
      */
-    private function getDocumentCaseNumbers(WooDecision $wooDecision): Collection
+    private function getDocumentInquiryNumbers(WooDecision $wooDecision): Collection
     {
-        /** @var Collection<string,DocumentCaseNumbers> */
+        /** @var Collection<string,DocumentInquiryNumbers> */
         return $wooDecision->getDocuments()
-            ->reduce(function (Collection $carry, Document $document): Collection {
-                $externalId = $document->getExternalId()?->__toString();
+            ->reduce(static function (Collection $carry, Document $document): Collection {
+                $externalId = $document->getExternalId()?->toString();
 
                 if ($externalId === null) {
                     // A better solution for this issue should be implemented. See #6214:
-                    throw new ValidationException(
+                    throw new ApiPlatformValidationException(
                         // @phpcs:ignore Generic.Files.LineLength.TooLong
                         ConstraintViolationList::createFromMessage('Dossier has Document(s) without external ID(s). This is likely because this Dossier was updated through the UI.'),
                     );
                 }
 
-                $carry->set($externalId, DocumentCaseNumbers::fromDocumentEntity($document));
+                $carry->set($externalId, DocumentInquiryNumbers::fromDocumentEntity($document));
 
                 return $carry;
             }, new ArrayCollection());

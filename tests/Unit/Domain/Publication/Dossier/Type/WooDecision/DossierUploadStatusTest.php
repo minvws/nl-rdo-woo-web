@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DossierUploadStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 
 class DossierUploadStatusTest extends UnitTestCase
 {
@@ -66,11 +67,9 @@ class DossierUploadStatusTest extends UnitTestCase
             $this->unwantedUpload,
         ]));
 
-        self::assertEqualsCanonicalizing(
-            [
-                $this->completedUpload,
-            ],
-            $this->dossierUploadStatus->getUploadedDocuments()->toArray(),
+        self::assertEquals(
+            [$this->completedUpload],
+            $this->dossierUploadStatus->getUploadedDocuments()->getValues(),
         );
     }
 
@@ -163,7 +162,8 @@ class DossierUploadStatusTest extends UnitTestCase
             $this->unwantedUpload,
         ]));
 
-        $this->missingUpload->expects('getDocumentId')->times(4)->andReturn(123);
+        $documentId = DocumentId::create('123');
+        $this->missingUpload->expects('getDocumentId')->times(4)->andReturn($documentId);
 
         self::assertEquals(
             [$this->missingUpload],
@@ -182,7 +182,7 @@ class DossierUploadStatusTest extends UnitTestCase
         $document1->expects('shouldBeUploaded')->andReturn(false);
 
         $document2 = Mockery::mock(Document::class);
-        $document2->expects('getDocumentId')->andReturn('1002');
+        $document2->expects('getDocumentId')->andReturn(DocumentId::create('1002'));
         $document2->expects('shouldBeUploaded')->andReturn(true);
         $document2->expects('isUploaded')->andReturn(false);
 
@@ -191,12 +191,12 @@ class DossierUploadStatusTest extends UnitTestCase
         $document3->expects('isUploaded')->andReturn(true);
 
         $document4 = Mockery::mock(Document::class);
-        $document4->expects('getDocumentId')->andReturn('1004');
+        $document4->expects('getDocumentId')->andReturn(DocumentId::create('1004'));
         $document4->expects('shouldBeUploaded')->andReturn(true);
         $document4->expects('isUploaded')->andReturn(false);
 
         $document5 = Mockery::mock(Document::class);
-        $document5->expects('getDocumentId')->andReturn('1005');
+        $document5->expects('getDocumentId')->andReturn(DocumentId::create('1005'));
         $document5->expects('shouldBeUploaded')->andReturn(true);
         $document5->expects('isUploaded')->andReturn(false);
 
@@ -217,7 +217,7 @@ class DossierUploadStatusTest extends UnitTestCase
                 '1005',
             ],
             $this->dossierUploadStatus->getMissingDocuments()
-                ->map(fn (Document $document): string => (string) $document->getDocumentId())
+                ->map(static fn (Document $document): string => (string) $document->getDocumentId())
                 ->getValues(),
         );
     }
@@ -228,7 +228,7 @@ class DossierUploadStatusTest extends UnitTestCase
         $document1->expects('shouldBeUploaded')->andReturn(false);
 
         $document2 = Mockery::mock(Document::class);
-        $document2->expects('getDocumentId')->andReturn('1002');
+        $document2->expects('getDocumentId')->andReturn(DocumentId::create('1002'));
         $document2->expects('shouldBeUploaded')->andReturn(true);
         $document2->expects('isUploaded')->andReturn(false);
 
@@ -237,12 +237,12 @@ class DossierUploadStatusTest extends UnitTestCase
         $document3->expects('isUploaded')->andReturn(true);
 
         $document4 = Mockery::mock(Document::class);
-        $document4->expects('getDocumentId')->andReturn('1004');
+        $document4->expects('getDocumentId')->andReturn(DocumentId::create('1004'));
         $document4->expects('shouldBeUploaded')->andReturn(true);
         $document4->expects('isUploaded')->andReturn(false);
 
         $document5 = Mockery::mock(Document::class);
-        $document5->expects('getDocumentId')->andReturn('1005');
+        $document5->expects('getDocumentId')->andReturn(DocumentId::create('1005'));
         $document5->expects('shouldBeUploaded')->andReturn(true);
         $document5->expects('isUploaded')->andReturn(false);
 

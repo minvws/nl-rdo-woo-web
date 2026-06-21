@@ -27,7 +27,7 @@ class AbstractAttachmentListenerTest extends SharedWebTestCase
         $dispatcher
             ->expects('dispatch')
             ->with(
-                Mockery::on(function (DossierChangedEvent $event) use ($wooDecision) {
+                Mockery::on(static function (DossierChangedEvent $event) use ($wooDecision) {
                     return $event->getDossier() === $wooDecision;
                 }),
             );
@@ -49,7 +49,7 @@ class AbstractAttachmentListenerTest extends SharedWebTestCase
         $dispatcher
             ->expects('dispatch')
             ->with(
-                Mockery::on(function (DossierChangedEvent $event) use ($wooDecision) {
+                Mockery::on(static function (DossierChangedEvent $event) use ($wooDecision) {
                     return $event->getDossier() === $wooDecision;
                 }),
             );
@@ -71,7 +71,7 @@ class AbstractAttachmentListenerTest extends SharedWebTestCase
         $dispatcher
             ->expects('dispatch')
             ->with(
-                Mockery::on(function (DossierChangedEvent $event) use ($wooDecision) {
+                Mockery::on(static function (DossierChangedEvent $event) use ($wooDecision) {
                     return $event->getDossier() === $wooDecision;
                 }),
             );

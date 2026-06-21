@@ -1,0 +1,10 @@
+details:
+    - { name: DETAILS, value: details }
+decision:
+    - { name: DECISION, value: decision }
+documents:
+    - { name: DOCUMENTS, value: documents }
+publication:
+    - { name: PUBLICATION, value: publication }
+content:
+    - { name: CONTENT, value: content }

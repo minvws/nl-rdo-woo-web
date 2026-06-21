@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Webmozart\Assert\Assert;
 
 class DetailsStepController extends AbstractController
 {
@@ -42,8 +43,8 @@ class DetailsStepController extends AbstractController
     #[IsGranted('AuthMatrix.dossier.create')]
     public function create(Request $request): Response
     {
-        /** @var InvestigationReport $dossier */
         $dossier = $this->dossierFactory->create(DossierType::INVESTIGATION_REPORT);
+        Assert::isInstanceOf($dossier, InvestigationReport::class);
 
         $form = $this->getForm($dossier);
         $form->handleRequest($request);
@@ -75,7 +76,7 @@ class DetailsStepController extends AbstractController
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem(
-            $dossier->getTitle() ?? '',
+            (string) $dossier->getTitle(),
             'app_admin_dossier',
             ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
         );

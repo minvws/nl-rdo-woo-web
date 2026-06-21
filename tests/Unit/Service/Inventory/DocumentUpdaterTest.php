@@ -15,15 +15,19 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Publication\SourceType;
-use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inventory\DocumentMetadata;
 use Shared\Service\Inventory\DocumentNumber;
 use Shared\Service\Inventory\DocumentUpdater;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
+
+use function str_repeat;
 
 class DocumentUpdaterTest extends UnitTestCase
 {
@@ -121,12 +125,12 @@ class DocumentUpdaterTest extends UnitTestCase
 
         $oldReferredDoc = Mockery::mock(Document::class);
         $oldReferredDoc->expects('getDocumentNr')->andReturn('PREFIX-matter-456');
-        $oldReferredDoc->expects('getDocumentId')->times(3)->andReturn('456');
+        $oldReferredDoc->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('456'));
 
         $existingDocument = Mockery::mock(Document::class);
         $existingDocument->expects('getRefersTo')->andReturn(new ArrayCollection([$oldReferredDoc]));
         $existingDocument->expects('getDocumentNr')->andReturn('PREFIX-matter-1');
-        $existingDocument->expects('getDocumentId')->times(3)->andReturn('1');
+        $existingDocument->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('1'));
 
         // Old referred document is no longer in metadata so should be removed
         $existingDocument->expects('removeRefersTo')->with($oldReferredDoc);
@@ -179,23 +183,23 @@ class DocumentUpdaterTest extends UnitTestCase
         $this->documentUpdater->asyncRemove($document, $this->dossier);
     }
 
-    private function getDocumentMetadata(Judgement $judgement): DocumentMetadata
+    private function getDocumentMetadata(Judgement $judgement, string $filename = 'file.doc'): DocumentMetadata
     {
         return new DocumentMetadata(
             date: PlainDate::create('2023-09-28'),
-            filename: 'file.doc',
+            filename: $filename,
             familyId: 1,
             sourceType: SourceType::EMAIL,
             grounds: ['5.1.1a', '5.1.1b'],
-            id: '123',
+            id: DocumentId::create('123'),
             judgement: $judgement,
             period: '',
             threadId: 456,
-            caseNumbers: new CaseNumbers(['12-b', '13-a']),
+            inquiryNumbers: new InquiryNumbers(['12-b', '13-a']),
             suspended: true,
             links: ['https://a.dummy.link/here'],
             remark: 'remark',
-            matter: '987',
+            matter: DocumentMatter::create('987'),
             refersTo: ['matter-123'],
         );
     }
@@ -208,5 +212,38 @@ class DocumentUpdaterTest extends UnitTestCase
         $wooDecision->expects('removeDocument')->with($document);
 
         $this->documentUpdater->databaseRemove($document, $wooDecision);
+    }
+
+    public function testDatabaseUpdateTruncatesLongFilenameAtGraphemeBoundary(): void
+    {
+        // 1023 ASCII chars + 1 multibyte (é) + tail; after truncation at 1024 graphemes the é must stay whole.
+        $filename = str_repeat('a', 1023) . 'éxtra';
+        $expectedName = str_repeat('a', 1023) . 'é';
+
+        $documentMetadata = $this->getDocumentMetadata(Judgement::PUBLIC, $filename);
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('setSourceType')->with($documentMetadata->getSourceType());
+        $fileInfo->expects('setName')->with($expectedName);
+
+        $document = Mockery::mock(Document::class);
+        $document->expects('getDocumentNr')->andReturn('tst-123');
+        $document->expects('setJudgement')->with($documentMetadata->getJudgement());
+        $document->expects('setDocumentDate')->with($documentMetadata->getDate());
+        $document->expects('setFamilyId')->with($documentMetadata->getFamilyId());
+        $document->expects('setDocumentId')->with($documentMetadata->getId());
+        $document->expects('setThreadId')->with($documentMetadata->getThreadId());
+        $document->expects('setGrounds')->with($documentMetadata->getGrounds());
+        $document->expects('setPeriod')->with($documentMetadata->getPeriod());
+        $document->expects('setSuspended')->with($documentMetadata->isSuspended());
+        $document->expects('setLinks')->with($documentMetadata->getLinks());
+        $document->expects('setRemark')->with($documentMetadata->getRemark());
+        $document->expects('getFileInfo')->andReturn($fileInfo);
+        $document->expects('shouldBeUploaded')->andReturnTrue();
+        $document->expects('addDossier')->with($this->dossier);
+
+        $this->repository->expects('save')->with($document);
+
+        $this->documentUpdater->databaseUpdate($documentMetadata, $this->dossier, $document);
     }
 }

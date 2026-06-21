@@ -18,8 +18,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
-use Shared\Service\Inquiry\DocumentCaseNumbers;
+use Shared\Service\Inquiry\DocumentInquiryNumbers;
 use Shared\Service\Inventory\DocumentNumber;
+use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
 
@@ -27,9 +28,7 @@ use function intval;
 use function sprintf;
 
 /**
- * @template T of Document
- *
- * @extends ServiceEntityRepository<T>
+ * @extends ServiceEntityRepository<Document>
  */
 class DocumentRepository extends ServiceEntityRepository
 {
@@ -144,7 +143,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('status', DossierStatus::PUBLISHED);
     }
 
-    public function findOneByDossierAndDocumentId(WooDecision $dossier, string $documentId): ?Document
+    public function findOneByDossierAndDocumentId(WooDecision $dossier, DocumentId $documentId): ?Document
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds')
@@ -345,20 +344,20 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function getDocumentCaseNrs(string $documentNr): DocumentCaseNumbers
+    public function getDocumentInquiryNumbers(string $documentNr): DocumentInquiryNumbers
     {
         /**
-         * @var array<array-key, array{id:Uuid, casenr:string}> $result
+         * @var array<array-key, array{id:Uuid, inquiryNumber:string}> $result
          */
         $result = $this->createQueryBuilder('d')
-            ->select('d.id, inq.casenr')
+            ->select('d.id, inq.inquiryNumber')
             ->where('LOWER(d.documentNr) = LOWER(:documentNr)')
             ->setParameter('documentNr', $documentNr)
             ->leftJoin('d.inquiries', 'inq')
             ->getQuery()
             ->getArrayResult();
 
-        return DocumentCaseNumbers::fromArray($result);
+        return DocumentInquiryNumbers::fromArray($result);
     }
 
     public function findByExternalId(ExternalId $externalId): ?Document
@@ -366,12 +365,9 @@ class DocumentRepository extends ServiceEntityRepository
         return $this->findOneBy(['externalId' => $externalId]);
     }
 
-    /**
-     * @return ?T
-     */
     public function findByDossierAndExternalId(AbstractDossier $dossier, ExternalId $externalId): ?Document
     {
-        /** @var ?T */
+        /** @var ?Document */
         return $this->createQueryBuilder('document')
             ->innerJoin('document.dossiers', 'dossier')
             ->where('dossier = :dossier')
@@ -428,5 +424,25 @@ class DocumentRepository extends ServiceEntityRepository
         $result = $conn->executeQuery($sql, ['dossierId' => $dossierId]);
 
         return (bool) $result->fetchOne();
+    }
+
+    /**
+     * @param list<ExternalId> $externalIds
+     *
+     * @return list<string>
+     */
+    public function findExistingExternalIds(array $externalIds): array
+    {
+        if ($externalIds === []) {
+            return [];
+        }
+
+        /** @var list<string> */
+        return $this->createQueryBuilder('d')
+            ->select('d.externalId')
+            ->where('d.externalId IN (:ids)')
+            ->setParameter('ids', $externalIds)
+            ->getQuery()
+            ->getSingleColumnResult();
     }
 }

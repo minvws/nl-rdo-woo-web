@@ -6,14 +6,17 @@ namespace Shared\Form\Dossier\Covenant;
 
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Form\Dossier\AbstractDossierStepType;
-use Shared\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Form\Dossier\DossierFormFactory;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class ContentFormType extends AbstractDossierStepType
 {
-    use DossierFormBuilderTrait;
+    public function __construct(
+        private readonly DossierFormFactory $dossierFormFactory,
+    ) {
+    }
 
     public function getDataClass(): string
     {
@@ -30,8 +33,9 @@ class ContentFormType extends AbstractDossierStepType
                 'required' => true,
             ]);
 
-        $this->addSummaryField($builder);
-        $this->addDocumentField($builder);
+        $dossierForm = $this->dossierFormFactory->for($builder);
+        $dossierForm->addSummaryField();
+        $dossierForm->addDocumentField();
 
         $builder
             ->add('previous_version_link', TextType::class, [
@@ -45,6 +49,6 @@ class ContentFormType extends AbstractDossierStepType
                 'property_path' => 'previousVersionLink',
             ]);
 
-        $this->addSubmits($builder);
+        $dossierForm->addSubmits();
     }
 }

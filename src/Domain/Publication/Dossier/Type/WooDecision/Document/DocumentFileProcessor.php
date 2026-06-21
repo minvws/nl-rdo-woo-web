@@ -12,6 +12,7 @@ use Shared\Domain\Upload\Process\FileStorer;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\HistoryService;
 use Shared\Service\Utils\Utils;
+use Shared\ValueObject\DocumentId;
 
 use function sprintf;
 
@@ -26,7 +27,7 @@ readonly class DocumentFileProcessor
     ) {
     }
 
-    public function process(UploadedFile $file, WooDecision $dossier, string $documentId): void
+    public function process(UploadedFile $file, WooDecision $dossier, DocumentId $documentId): void
     {
         $document = $this->documentRepository->findOneByDossierAndDocumentId($dossier, $documentId);
         if ($document === null) {
@@ -44,7 +45,7 @@ readonly class DocumentFileProcessor
                 sprintf('Document with id "%s" should not be uploaded, skipping it', $documentId),
                 [
                     'filename' => $file->getOriginalFilename(),
-                    'documentId' => $documentId,
+                    'documentId' => $documentId->toString(),
                     'dossierId' => $dossier->getId(),
                 ],
             );

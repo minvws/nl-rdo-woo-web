@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\OtherPublication;
 
-use PublicationApi\Api\MainDocument\MainDocumentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
 use Shared\Domain\Publication\FileInfo;
@@ -14,7 +13,7 @@ class OtherPublicationMainDocumentMapper
 {
     public static function create(
         OtherPublication $otherPublication,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        OtherPublicationMainDocumentRequestDto $mainDocumentRequestDto,
     ): OtherPublicationMainDocument {
         $mainDocument = new OtherPublicationMainDocument(
             $otherPublication,
@@ -34,7 +33,7 @@ class OtherPublicationMainDocumentMapper
 
     public static function update(
         OtherPublication $otherPublication,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        OtherPublicationMainDocumentRequestDto $mainDocumentRequestDto,
     ): OtherPublicationMainDocument {
         $mainDocument = $otherPublication->getMainDocument();
         Assert::notNull($mainDocument);

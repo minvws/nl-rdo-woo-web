@@ -18,7 +18,7 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     operations: [
         new Get(
             uriTemplate: '/organisation/{organisationId}/dossiers/complaint-judgement/external/{dossierExternalId}',
-            name: 'get_complaint_judgement',
+            name: self::ROUTE_NAME_GET_COMPLAINT_JUDGEMENT,
         ),
         new GetCollection(
             uriTemplate: '/organisation/{organisationId}/dossiers/complaint-judgement',
@@ -64,9 +64,11 @@ use PublicationApi\Api\Organisation\OrganisationResponseDto;
     openapi: new Operation(
         tags: ['ComplaintJudgement'],
     ),
+    output: ComplaintJudgementResponseDto::class,
     provider: ComplaintJudgementProvider::class,
     processor: ComplaintJudgementProcessor::class,
 )]
 final class ComplaintJudgementResource
 {
+    public const string ROUTE_NAME_GET_COMPLAINT_JUDGEMENT = 'get_complaint_judgement';
 }

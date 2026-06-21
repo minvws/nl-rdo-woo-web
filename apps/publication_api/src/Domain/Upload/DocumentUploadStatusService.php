@@ -18,7 +18,7 @@ readonly class DocumentUploadStatusService
 
     public function getUploadStatus(Document $document): UploadStatus
     {
-        if ($document->isWithdrawn() || $document->isSuspended()) {
+        if (! $document->shouldBeUploaded()) {
             return UploadStatus::NO_UPLOAD_REQUIRED;
         }
 

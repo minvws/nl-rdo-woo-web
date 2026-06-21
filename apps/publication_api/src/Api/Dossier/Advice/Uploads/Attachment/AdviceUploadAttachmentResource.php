@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
             output: false,
             read: false,
             deserialize: false,
-            name: 'advice_attachment_upload',
+            name: self::ROUTE_NAME_UPLOAD,
             processor: AdviceUploadAttachmentProcessor::class,
         ),
     ],
@@ -39,4 +39,5 @@ use Symfony\Component\HttpFoundation\Response;
 )]
 final readonly class AdviceUploadAttachmentResource
 {
+    public const string ROUTE_NAME_UPLOAD = 'advice_attachment_upload';
 }

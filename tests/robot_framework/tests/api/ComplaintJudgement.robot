@@ -20,7 +20,6 @@ Suite Setup
 Complaint Judgement Test Case
   [Arguments]  ${steps}
   FOR  ${step}  IN  @{steps}
-    Log  ${step}[name]
     IF  '${step}[type]' == 'request'
       Create Complaint Judgement
       ...  ${step}[expected_response_status]
@@ -90,3 +89,7 @@ Send Put Request Complaint Judgement
   ...  ${put_response.status_code} == ${expected_response_status}
   ...  msg=Complaint judgement PUT returned ${put_response.status_code} while expecting ${expected_response_status}
   RETURN  ${put_response.json()}
+
+Verify HAL Links Are Reachable
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  Verify HAL Links Are Reachable For Dossier  complaint-judgement

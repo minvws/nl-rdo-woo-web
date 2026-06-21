@@ -53,6 +53,7 @@ use ApiPlatform\OpenApi\Model\Parameter;
     openapi: new Operation(
         tags: ['Department'],
     ),
+    output: DepartmentDetailResponseDto::class,
     provider: DepartmentProvider::class,
 )]
 final class DepartmentResource

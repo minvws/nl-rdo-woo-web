@@ -7,12 +7,9 @@ namespace Shared\Tests\Unit\Service\Security\ApplicationMode;
 use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Service\Security\ApplicationMode\ApplicationModeException;
 use Shared\Tests\Unit\UnitTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
 class ApplicationModeTest extends UnitTestCase
 {
-    use MatchesSnapshots;
-
     public function testIsAll(): void
     {
         self::assertTrue(ApplicationMode::ALL->isAll());

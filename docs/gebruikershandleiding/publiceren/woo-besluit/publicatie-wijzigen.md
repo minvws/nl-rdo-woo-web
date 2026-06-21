@@ -35,7 +35,7 @@ dat je wilt aanpassen en drukt op ‘bewerken’ onder het kopje documenten. Je 
 Excel bestand. Zoek de kolom ‘Opgeschort’ en vul daar ‘yes’ in in de rij van het document dat je wilt opschorten. Sla vervolgens
 het Excel bestand op en klik op de knop ‘vervang productierapport’. Upload het Excel bestand naar de balie. Wanneer het productierapport
 is geüpload zie je onder het kopje documenten dat het document is opgeschort. Het is ook niet meer mogelijk dit document te
-openen op het publicatieplatform. De wijziging van het productierapport wordt ook opgenomen in de geschiedenis van de publicatie
+openen op het Woo Publicatieplatform. De wijziging van het productierapport wordt ook opgenomen in de geschiedenis van de publicatie
 en is publiek zichtbaar.
 
 ## Vervangen van een document

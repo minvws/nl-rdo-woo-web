@@ -2,6 +2,116 @@
 
 # Release notes
 
+## v3.0.0
+
+### Publication API
+
+#### Productierapport
+
+- **Productierapport verwijderen**: Het is nu mogelijk om een productierapport te verwijderen als een productierapport niet vereist is.
+- **Matter optioneel**: Het `matter`-veld is optioneel gemaakt, voor zowel het productierapport als de API - het documentnummer wordt nu opgebouwd uit prefix en document ID.
+- **Validatie van URLs**: URLs in inventaris-links en opmerkingen worden nu gevalideerd.
+- **Verbeterde foutafhandeling**: Foutmeldingen bij verwerking van het productierapport zijn duidelijker gemaakt.
+
+#### Documenten en uploads
+
+- **Geen upload vereist bij already_public**: Voor documenten met beoordeling `already_public` is geen upload vereist, dus uploads voor deze documenten worden niet meer toegestaan.
+- **404 in plaats van 422**: Uploads naar een niet-bestemmend dossier geven nu een 404 in plaats van een 422-fout.
+- **DocumentId met dashes**: DocumentId's mogen nu ook dashes bevatten.
+- **DocumentNr-update**: Het wijzigen van de `documentId` van een WooDecision-document werkt de `documentNr` nu correct bij.
+- **Maximumaantal documenten/bijlagen**: Er wordt nu gevalideerd op het maximaal toegestane aantal documenten en bijlagen per dossier.
+- **Nieuwe attachment-types**: PLOOI documentsoorten zijn bijgewerkt naar v7 en de bijbehorende vertalingen zijn toegevoegd.
+
+#### Validatie en foutafhandeling
+
+- **refersTo-validatie**: `refersTo` wordt nu gevalideerd voordat een WooDecision wordt opgeslagen, inclusief duidelijke foutmeldingen bij een ongeldig externalId-formaat.
+- **Duidelijkere validatiefouten**: Validatiefoutmeldingen zijn op meerdere plekken in de API duidelijker gemaakt.
+- **Lege response bodies in API-docs**: De API-documentatie toont lege response bodies nu correct.
+
+#### Subjects en organisaties
+
+- **Subject als embedded object**: Het `subject` wordt nu als embedded object opgenomen in dossier API-responses.
+- **Unieke subjects**: Subjects worden nu uniek afgedwongen via de API.
+- **Subject opruimen**: Een subject dat niet meer gebruikt wordt, kan nu verwijderd worden.
+- **Department/organisation-relatie**: Een relatie tussen department en organisation is toegevoegd aan de API.
+
+#### HAL en endpoints
+
+- **Prefix-endpoint verwijderd**: Het losse POST-endpoint voor de prefix is verwijderd uit de API.
+- **HAL-links uitgebreid**: URLs zijn toegevoegd aan HAL-responses.
+- **Geen publieke HAL-links in preview**: Een WooDecision in preview-status toont niet langer publieke HAL-links.
+
+### Balie en publieke website
+
+- **Verantwoordelijke bestuursorganen**: Deze worden nu op één consistente manier getoond op de site, gebaseerd op selectie ipv zoekresultaten.
+
+### Infrastructuur en tenant-awareness
+
+- **Configureerbare base urls**: Base urls zijn per tenant configureerbaar gemaakt.
+- **Elasticsearch users en rollen**: Elasticsearch-gebruikers en -rollen zijn geïntroduceerd.
+
+### Fixes en technische verbeteringen
+
+- **Attachment-mapping**: De afhandeling van attachments in dossier-mappers is verbeterd.
+- **Deprecations opgeschoond**: Diverse Symfony/Doctrine-deprecations zijn opgelost (routing, controller resolver, native lazy objects, request->get, polyfill-intl-idn, e.a.).
+- **Diverse afhankelijkheden bijgewerkt**: PHP-, Composer- en overige package-versies zijn bijgewerkt.
+- **Flysystem-config**: De Flysystem-configuratie is bijgewerkt naar het nieuwe discoverable format.
+- **Inquiry-nummer**: Verwijzingen naar "case number" zijn hernoemd naar "inquiry number" voor consistentie.
+- **OrbStack verwijderd**: De afhankelijkheid van OrbStack is verwijderd uit de ontwikkelomgeving.
+- **QR-codepreview**: Het tonen van een QR-codepreview in de terminal is gerepareerd.
+- **Robuuste verwerking van ongeldige body**: Een ongeldige JSON-body bij een API-verzoek leidt niet meer tot een onverwachte fout.
+- **SubjectProcessor**: Gebruikt nu consequent `SubjectService` om subjects op te slaan.
+- **Tika-upgrade**: De Tika-versie voor tekstextractie is aangepast.
+- **UTF-8/multibyte support**: Onveilige stringfuncties zijn vervangen door multibyte-veilige alternatieven, o.a. voor query's met multibyte-karakters.
+- **woopie-prefix verwijderd**: Het gebruik van de `woopie-`-prefix is uit de codebase verwijderd.
+
+## v2.6.0
+
+*mei 2026*
+
+### Publication API
+
+#### Audit logging
+
+- **Audit logging**: Basis audit logging is geïmplementeerd voor de publicatie API, waarmee acties via de API worden bijgehouden.
+
+#### Validatie en foutafhandeling
+
+- **RFC 7807 JSON Problem Responses**: API-foutmeldingen volgen nu de RFC 7807-standaard voor gestructureerde JSON-foutresponses.
+- **Directe validatie van bestandsuploads**: Geüploade bestanden worden nu direct gevalideerd bij ontvangst in plaats van later in de verwerkingspipeline.
+- **Validatie van bestandsnamen**: De bestandsnaam (metadata) van uploads wordt nu gevalideerd en ongeldige namen worden direct afgewezen.
+
+#### PUT-endpoint verbeteringen
+
+- **Update upload metadata**: Metadata van uploads wordt nu bijgewerkt in plaats van verwijderd en opnieuw aangemaakt, wat dataverlies voorkomt.
+- **API Bugfixing**
+  - **Idempotente WooDecision PUT**: Twee keer hetzelfde PUT-verzoek voor een WooDecision geeft geen 500-fout meer.
+  - **Re-PUT van metadata endpoints**: Herhaald PUT-verzoek op metadata-endpoints geeft geen 500-fout meer.
+  - **PUT met GET-response als body**: Het versturen van een GET-response als body bij een PUT-verzoek geeft geen 500-fout meer.
+
+#### Veldnamen en structuur
+
+- **Duidelijke naamgeving datumvelden**: Datumvelden in WooDecision hanteren nu een consistente naamgeving.
+- **PreviewDate als PlainDate**: De WooDecision `PreviewDate` is omgezet naar een `PlainDate` value object.
+- **Refactor request/response definitie**: De definitie van de request is losgekoppeld van de response, waardoor beide afzonderlijk beheerd kunnen worden.
+
+### Balie
+
+- **Referentienummer aanpassen**: Het is nu mogelijk om het referentienummer/dossierNumber van een reeds openbaar dossier aan te passen.
+
+### Fixes en technische verbeteringen
+
+- **Gebruikersdocumentatie beoordelingswaarden**: De gebruikersdocumentatie toont nu de juiste beoordelingswaarden in plaats van verkeerde waarden.
+- **E2E testen uitgebreid**: De E2E datadriver-testen ondersteunen nu ook verwachte response codes op de upload endpoints.
+
+## v2.5.0-hotfix.3
+
+- **Beveiligings updates** Deze hotfix bevat enkele beveiligings updates.
+
+## v2.5.0-hotfix.2
+
+- **Inventaris bijwerken na vervanging productierapport**: De inventaris in een zaak wordt nu correct bijgewerkt nadat een productierapport is vervangen.
+
 ## v2.5.0-hotfix.1
 
 - **Verversen van inventaris lijst van een zaak** Bij het vervangen van een productierapport in de balie, wordt nu ook de inventarislijst van de zaak ververst.

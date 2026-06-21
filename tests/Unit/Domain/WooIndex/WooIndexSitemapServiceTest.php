@@ -67,14 +67,14 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
 
         $this->wooIndex
             ->expects('create')
-            ->with(Mockery::on(function (WooIndexSitemap $i) use (&$wooIndexSitemap): bool {
+            ->with(Mockery::on(static function (WooIndexSitemap $i) use (&$wooIndexSitemap): bool {
                 return $i === $wooIndexSitemap;
             }), Mockery::type(WooIndexRunOptions::class))
             ->andReturnTrue();
 
         $this->wooIndexSitemapRepository
             ->expects('save')
-            ->with(Mockery::on(function (WooIndexSitemap $i) use (&$wooIndexSitemap): bool {
+            ->with(Mockery::on(static function (WooIndexSitemap $i) use (&$wooIndexSitemap): bool {
                 if ($i->getStatus() !== WooIndexSitemapStatus::DONE) {
                     return false;
                 }
@@ -217,7 +217,7 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
             ->expects('getSitemapsForCleanup')
             ->with(
                 $treshold,
-                Mockery::on(fn (CarbonImmutable $givenDate): bool => $givenDate->eq($now->subDays($cleanupUnfinishedAfterDay))),
+                Mockery::on(static fn (CarbonImmutable $givenDate): bool => $givenDate->eq($now->subDays($cleanupUnfinishedAfterDay))),
             )
             ->andReturn(new ArrayIterator($wooIndexSitemaps));
 

@@ -16,6 +16,7 @@ use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUpdate
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\DocumentFileUploadFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Factory\UserFactory;
+use Shared\ValueObject\DocumentId;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
@@ -44,11 +45,13 @@ final class UploadStatusTest extends AdminApiTestCase
             'organisation' => $user->getOrganisation(),
         ]);
 
+        $missingDocumentId = DocumentId::create('1337');
+
         $wooDecision->addDocument(DocumentFactory::new()->withNotPublicJudgement()->create());
         $wooDecision->addDocument(DocumentFactory::new()->withPartialPublicJudgement()->create());
         $wooDecision->addDocument(DocumentFactory::new()->withPublicJudgement()->create());
         $wooDecision->addDocument(DocumentFactory::new()->withPublicJudgement()->removeFileProperties()->create([
-            'documentId' => $missingDocumentId = '1337',
+            'documentId' => $missingDocumentId,
         ]));
 
         DocumentFileUploadFactory::createOne([
@@ -75,7 +78,7 @@ final class UploadStatusTest extends AdminApiTestCase
             'expectedDocumentsCount' => 3,
             'currentDocumentsCount' => 2,
             'missingDocuments' => [
-                $missingDocumentId,
+                $missingDocumentId->toString(),
             ],
             'changes' => [],
         ]);

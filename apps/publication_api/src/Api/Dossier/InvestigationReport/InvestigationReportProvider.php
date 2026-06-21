@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\Pagination\ArrayPaginator;
 use ApiPlatform\State\ProviderInterface;
+use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
 use Shared\Domain\Organisation\Organisation;
@@ -41,7 +42,7 @@ final readonly class InvestigationReportProvider implements ProviderInterface
             return $this->provideCollection($organisation, $context);
         }
 
-        return $this->provideSingle($organisation, ExternalId::create($uriVariables['dossierExternalId']));
+        return $this->provideSingle($organisation, ExternalIdFactory::create($uriVariables['dossierExternalId']));
     }
 
     /**

@@ -2,7 +2,7 @@
 
 In deze handleiding vind je alle informatie die je nodig hebt om een Woo-besluit succesvol te publiceren. Het is belangrijk
 dat je al een account hebt met de rechten ‘publicatie-beheer’ in het uploadportaal, zodat je kan publiceren op
-het publicatieplatform. Als je inlogt in het uploadportaal kom je terecht in het overzicht 'Alle publicaties'. Om een nieuwe publicatie
+het Woo Publicatieplatform. Als je inlogt in het uploadportaal kom je terecht in het overzicht 'Alle publicaties'. Om een nieuwe publicatie
 aan te maken, klik je rechtsboven op de knop ‘Nieuwe publicatie’ en selecteer je ‘Woo-besluit’. Het proces voor het aanmaken
 van een nieuw Woo-besluit bestaat uit vier stappen:
 
@@ -60,7 +60,7 @@ ingewikkeld te maken op dit moment zijn een aantal niet verplichte kolommen buit
 :class: warning
 Werken met een dergelijk productierapport sluit aan bij de werkwijze van de Programmadirectie Openbaarheid (PDO)
 met betrekking tot het openbaar maken van COVID-19 gerelateerde Woo-besluiten. Indien er concernorganisaties zijn die Woo-besluiten
-willen gaan publiceren op het publicatieplatform dan bespreken we graag of deze werkwijze werkbaar is of dat we een nieuwe uploadstraat
+willen gaan publiceren op het Woo Publicatieplatform dan bespreken we graag of deze werkwijze werkbaar is of dat we een nieuwe uploadstraat
 moeten toevoegen in dezelfde structuur als de uploadstraten van de andere informatiecategorieën.
 :::
 

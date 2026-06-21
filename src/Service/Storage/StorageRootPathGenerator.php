@@ -24,7 +24,7 @@ class StorageRootPathGenerator
 
     public function fromUuid(Uuid $id): string
     {
-        $hash = hash('sha256', $id->__toString());
+        $hash = hash('sha256', $id->toString());
 
         $prefix = substr($hash, 0, 2);
         $suffix = substr($hash, 2);

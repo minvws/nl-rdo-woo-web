@@ -48,7 +48,7 @@ final class DocumentUploadHandlerTest extends UnitTestCase
 
         $this->dispatcher
             ->expects('dispatchProcessUploadedDocumentsCommand')
-            ->withArgs(function (Uuid $wooDecisionIdArg, Uuid $uploadEntityIdArg) use ($wooDecisionId, $uploadEntityId) {
+            ->withArgs(static function (Uuid $wooDecisionIdArg, Uuid $uploadEntityIdArg) use ($wooDecisionId, $uploadEntityId) {
                 return $wooDecisionIdArg->equals($wooDecisionId) && $uploadEntityIdArg->equals($uploadEntityId);
             })
             ->andReturnNull();

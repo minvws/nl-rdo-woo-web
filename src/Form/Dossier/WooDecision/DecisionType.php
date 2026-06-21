@@ -7,14 +7,17 @@ namespace Shared\Form\Dossier\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType as DecisionTypeEnum;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Form\Dossier\AbstractDossierStepType;
-use Shared\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Form\Dossier\DossierFormFactory;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class DecisionType extends AbstractDossierStepType
 {
-    use DossierFormBuilderTrait;
+    public function __construct(
+        private readonly DossierFormFactory $dossierFormFactory,
+    ) {
+    }
 
     public function getDataClass(): string
     {
@@ -23,8 +26,8 @@ class DecisionType extends AbstractDossierStepType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var WooDecision $dossier */
-        $dossier = $builder->getData();
+        $dossierForm = $this->dossierFormFactory->for($builder);
+        $dossier = $dossierForm->getDossier();
 
         if ($dossier->getStatus()->isConcept()) {
             $builder->add('decision', EnumType::class, [
@@ -45,8 +48,8 @@ class DecisionType extends AbstractDossierStepType
                 'empty_data' => '',
             ]);
 
-        $this->addDocumentField($builder);
+        $dossierForm->addDocumentField();
 
-        $this->addSubmits($builder);
+        $dossierForm->addSubmits();
     }
 }

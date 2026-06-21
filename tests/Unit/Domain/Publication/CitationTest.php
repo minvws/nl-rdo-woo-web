@@ -140,8 +140,16 @@ final class CitationTest extends UnitTestCase
                 'input' => '10.1c',
                 'expected' => 'Vertrouwelijk verstrekte bedrijfs- en fabricagegegevens',
             ],
+            'wob-with-whitespace-and-casing' => [
+                'input' => ' 10.1 C ',
+                'expected' => 'Vertrouwelijk verstrekte bedrijfs- en fabricagegegevens',
+            ],
             'woo' => [
                 'input' => '5.1.2i',
+                'expected' => 'Het goed functioneren van de staat, andere publiekrechtelijke lichamen of bestuursorganen',
+            ],
+            'woo-with-whitespace-and-casing' => [
+                'input' => ' 5.1.2  I ',
                 'expected' => 'Het goed functioneren van de staat, andere publiekrechtelijke lichamen of bestuursorganen',
             ],
             'non-existing' => [

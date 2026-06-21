@@ -12,7 +12,7 @@ Test Tags           ci  documentation
 *** Test Cases ***
 Validate Documentation
   Click Documentation Link In Footer
-  Get Text  //section//h1  contains  Welkom bij de documentatie van het publicatieplatform
+  Get Text  //section//h1  contains  Welkom bij de documentatie van het Woo Publicatieplatform
   Verify Index Item  Publiceren
   Verify Image  (//section//img)[1]
 

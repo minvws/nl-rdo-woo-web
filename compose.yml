@@ -17,12 +17,10 @@ networks:
 services:
 
   public:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.12.0}
+    image: &PHP_IMAGE "ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.16.0}"
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: public-minvws.local,public-minfin.local
-      dev.orbstack.http-port: 80
     volumes:
       - ./:/var/www/html
       - ./docker/php/files/usr/local/etc/php/conf.d/zzz-custom.ini:/usr/local/etc/php/conf.d/zzz-custom.ini
@@ -41,14 +39,15 @@ services:
       - host.docker.internal:host-gateway
     environment:
       APP_ID: PUBLIC
+    ports:
+      - ${DOCKER_MINVWS_PUBLIC_PORT:-8000}:80
+      - ${DOCKER_MINFIN_PUBLIC_PORT:-8100}:81
 
   admin:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.12.0}
+    image: *PHP_IMAGE
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: admin-minvws.local,admin-minfin.local
-      dev.orbstack.http-port: 80
     volumes:
       - ./:/var/www/html
       - ./docker/php/files/usr/local/etc/php/conf.d/zzz-custom.ini:/usr/local/etc/php/conf.d/zzz-custom.ini
@@ -69,9 +68,12 @@ services:
       APP_ID: ADMIN
       MC_CONFIG_DIR: /tmp/mc
       MC_HOST_local: http://root:password@minio:9000
+    ports:
+      - ${DOCKER_MINVWS_ADMIN_PORT:-8001}:80
+      - ${DOCKER_MINFIN_ADMIN_PORT:-8101}:81
 
   publication_api:
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.12.0}
+    image: *PHP_IMAGE
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -102,7 +104,7 @@ services:
   worker_minvws:
     depends_on:
       - rabbitmq
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.12.0}
+    image: *PHP_IMAGE
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -126,7 +128,7 @@ services:
   worker_minfin:
     depends_on:
       - rabbitmq
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.12.0}
+    image: *PHP_IMAGE
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -148,11 +150,9 @@ services:
       ]
 
   tika:
-    image: apache/tika:2.9.2.1
-    platform: linux/amd64
+    image: apache/tika:3.3.1.0
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: tika-woo.local
     networks:
       - woopie
 
@@ -160,52 +160,50 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.29
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: elasticsearch-woo.local
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true
       - http.cors.enabled=true
-      - http.cors.allow-origin=/localhost:9200|https:\/\/elasticvue-woo\.local/
+      - ELASTIC_PASSWORD=secret
+      - http.cors.allow-origin=/localhost:9400|https:\/\/app\.elasticvue\.com/
+      - http.cors.allow-credentials=true
+      - http.cors.allow-headers=X-Requested-With,Content-Type,Content-Length,Authorization
     volumes:
       - es_data:/usr/share/elasticsearch/data
+      - ./docker/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./docker/elasticsearch/init:/init
     networks:
       - woopie
-
-  elasticvue:
-    image: cars10/elasticvue:1.13.0
-    labels:
-      com.symfony.server.service-ignore: true
-      dev.orbstack.domains: elasticvue-woo.local
-    networks:
-      - woopie
-    volumes:
-      - ./docker/elasticvue/default_clusters.json:/usr/share/nginx/html/api/default_clusters.json
+    ports:
+      - ${DOCKER_ELASTICSEARCH_PORT:-9200}:9200
 
   redis:
     image: ghcr.io/minvws/keydb:6.3.4-multi
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: redis-woo.local
     networks:
       - woopie
+    ports:
+      - ${DOCKER_REDIS_PORT:-6379}:6379
 
   rabbitmq:
     image: rabbitmq:3-management
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: rabbitmq-woo.local
     networks:
       - woopie
     volumes:
       - ./docker/rabbitmq/10-definitions.conf:/etc/rabbitmq/conf.d/10-definitions.conf:ro
       - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+    ports:
+      - ${DOCKER_RABBITMQ_PORT:-5672}:5672
+      - ${DOCKER_RABIITMQ_MANAGEMENT_PORT:-15672}:15672
 
   postgres:
     image: postgres:15.14-bookworm
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: postgres-woo.local
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -214,6 +212,8 @@ services:
     networks:
       - woopie
     command: ["postgres", "-c", "log_statement=all"]
+    ports:
+      - ${DOCKER_POSTGRES_PORT:-5432}:5432
 
   clamav:
     build:
@@ -221,7 +221,6 @@ services:
       dockerfile: docker/clamav/Dockerfile
     labels:
       com.symfony.server.service-ignore: true
-      dev.orbstack.domains: clamav-woo.local
     networks:
       - woopie
 
@@ -269,7 +268,7 @@ services:
       context: .
       dockerfile: docker/certs/Dockerfile
       args:
-        G4_TRIAL_VERSION: ${G4_TRAIL_VERSION:-v2.2}
+        G4_TRIAL_VERSION: ${G4_TRAIL_VERSION:-v2.4}
     labels:
       com.symfony.server.service-ignore: true
     volumes:
@@ -279,7 +278,7 @@ services:
 
   robot:
     profiles: [run-only]
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/robot:0.3.0
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/robot:2026.06.25
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     networks:
       - woopie

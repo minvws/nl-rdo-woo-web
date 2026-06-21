@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Unit\Api\Dossier;
 
 use ApiPlatform\Validator\Exception\ValidationException;
-use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use PublicationApi\Api\Dossier\AbstractDossierRequestDto;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use Shared\Domain\Department\Department;
 use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
@@ -23,6 +23,8 @@ use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\Validator\Violation\ConstraintViolationBuilder;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\ExternalId;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Uid\Uuid;
@@ -36,6 +38,7 @@ class DossierSupportServiceTest extends UnitTestCase
     private DossierService&MockInterface $dossierService;
     private MainDocumentService&MockInterface $mainDocumentService;
     private SubjectRepository&MockInterface $subjectRepository;
+    private DepartmentRepository&MockInterface $departmentRepository;
     private Security&MockInterface $security;
     private DossierSupportService $dossierSupportService;
 
@@ -45,11 +48,12 @@ class DossierSupportServiceTest extends UnitTestCase
         $this->dossierService = Mockery::mock(DossierService::class);
         $this->mainDocumentService = Mockery::mock(MainDocumentService::class);
         $this->subjectRepository = Mockery::mock(SubjectRepository::class);
+        $this->departmentRepository = Mockery::mock(DepartmentRepository::class);
         $this->security = Mockery::mock(Security::class);
 
         $this->dossierSupportService = new DossierSupportService(
             $this->attachmentService,
-            Mockery::mock(DepartmentRepository::class),
+            $this->departmentRepository,
             Mockery::mock(DossierDispatcher::class),
             $this->dossierService,
             $this->mainDocumentService,
@@ -96,9 +100,49 @@ class DossierSupportServiceTest extends UnitTestCase
             ->with($organisation, $subjectId)
             ->andReturn(null);
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionObject(
+            new ValidationException(
+                ConstraintViolationBuilder::createList(
+                    ConstraintViolationBuilder::forMissingEntity('subject', 'subjectId'),
+                ),
+            ),
+        );
 
         $this->dossierSupportService->getSubject($data, $organisation);
+    }
+
+    public function testGetDepartmentReturnsDepartment(): void
+    {
+        $organisation = Mockery::mock(Organisation::class);
+        $departmentId = Uuid::v6();
+        $department = Mockery::mock(Department::class);
+
+        $this->departmentRepository->expects('findByOrganisationAndId')
+            ->with($organisation, $departmentId)
+            ->andReturn($department);
+
+        $result = $this->dossierSupportService->getDepartment($organisation, $departmentId);
+
+        self::assertSame($department, $result);
+    }
+
+    public function testGetDepartmentThrowsWhenNotFound(): void
+    {
+        $organisation = Mockery::mock(Organisation::class);
+        $departmentId = Uuid::v6();
+
+        $this->departmentRepository->expects('findByOrganisationAndId')
+            ->with($organisation, $departmentId)
+            ->andReturnNull();
+
+        try {
+            $this->dossierSupportService->getDepartment($organisation, $departmentId);
+        } catch (ValidationException $exception) {
+            $violation = $exception->getConstraintViolationList()->get(0);
+
+            self::assertEquals(ConstraintViolationBuilder::ENTITY_MISSING_ERROR, $violation->getCode());
+            self::assertEquals('departmentId', $violation->getPropertyPath());
+        }
     }
 
     public function testValidateDossierThrowsWhenSecurityDenied(): void
@@ -192,7 +236,7 @@ class DossierSupportServiceTest extends UnitTestCase
         $this->attachmentService->expects('refreshAttachments')->with([$attachment]);
 
         self::expectException(ValidationException::class);
-        self::expectExceptionMessage('attachments.fileName: must not be blank');
+        self::expectExceptionMessageIs('attachments.fileName: must not be blank');
 
         $this->dossierSupportService->validateAttachments([$attachment]);
     }
@@ -221,7 +265,7 @@ class DossierSupportServiceTest extends UnitTestCase
         $this->mainDocumentService->expects('refreshMainDocument')->with($mainDocument);
 
         self::expectException(ValidationException::class);
-        self::expectExceptionMessage('mainDocument.fileName: must not be blank');
+        self::expectExceptionMessageIs('mainDocument.fileName: must not be blank');
 
         $this->dossierSupportService->validateMainDocument($mainDocument);
     }
@@ -274,7 +318,7 @@ class DossierSupportServiceTest extends UnitTestCase
                     dossierNumber: 'DOS-001',
                     subjectId: $subjectId,
                     summary: 'Summary',
-                    title: 'Title',
+                    title: DossierTitle::create('Title'),
                 );
             }
         };

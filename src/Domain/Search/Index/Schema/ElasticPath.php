@@ -119,11 +119,11 @@ readonly class ElasticPath
         );
     }
 
-    public static function dossiersInquiryCaseNrs(): self
+    public static function dossiersInquiryNumbers(): self
     {
         return new self(
             ElasticNestedField::DOSSIERS,
-            ElasticField::INQUIRY_CASE_NRS,
+            ElasticField::INQUIRY_NUMBERS,
         );
     }
 }

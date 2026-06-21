@@ -25,6 +25,6 @@ readonly class BrowseMainAggregationsQueryDefinition implements QueryDefinitionI
 
         $this->conditionHelper->addAccessConditionsForPublicSite($facetList, $queryBuilder, $searchParameters);
 
-        $this->componentHelper->addAggregations($facetList, $queryBuilder, $searchParameters, 5);
+        $this->componentHelper->addAggregations($facetList, $queryBuilder, $searchParameters, 7);
     }
 }

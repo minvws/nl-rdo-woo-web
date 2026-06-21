@@ -1,6 +1,6 @@
 # Inloggen
 
-Om in te kunnen loggen in het uploadportaal van het publicatieplatform heb je een account nodig. De organisatie-beheerder
+Om in te kunnen loggen in het uploadportaal van het Woo Publicatieplatform heb je een account nodig. De organisatie-beheerder
 van jouw organisatie kan dit account voor je aanmaken. Aan een account zijn één of meerdere gebruikersrollen gekoppeld,
 die bepalen welke informatie je mag inzien en welke acties je mag uitvoeren.
 

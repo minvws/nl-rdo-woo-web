@@ -15,8 +15,10 @@ when@dev:
                 level: '%log_level%'
                 channels: ["!event", "!deprecation"]
             deprecation:
-                type: "null"
-                channels: [ 'deprecation' ]
+                type: stream
+                path: "%kernel.logs_dir%/deprecations.log"
+                level: debug
+                channels: [ deprecation ]
             # uncomment to log all queries that are executed by doctrine
             #doctrine:
             #    action_level: debug

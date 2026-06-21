@@ -14,7 +14,7 @@ enum MetadataField: string
     case ID = 'id';
     case JUDGEMENT = 'judgement';
     case THREADID = 'threadid';
-    case CASENR = 'casenr';
+    case INQUIRY_NUMBER = 'inquiry_number';
     case SUSPENDED = 'suspended';
     case LINK = 'link';
     case REMARK = 'remark';

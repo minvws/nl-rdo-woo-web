@@ -49,7 +49,7 @@ class InquiryDossierBatchDownloadTest extends UnitTestCase
     public function testGetFileBasename(): void
     {
         $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->expects('getCaseNr')->andReturn('CASE-X');
+        $inquiry->expects('getInquiryNumber')->andReturn('CASE-X');
 
         $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->expects('getDocumentPrefix')->andReturn('FOO');

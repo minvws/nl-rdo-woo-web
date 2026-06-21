@@ -138,15 +138,15 @@ class DepartmentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getSingleResult();
     }
 
-    public function findByOrganisationAndId(Organisation $organisation, Uuid $departmentId): Department
+    public function findByOrganisationAndId(Organisation $organisation, Uuid $departmentId): ?Department
     {
         $department = $this->getDepartmentsQueryBuilder($organisation)
             ->andWhere('d.id = :departmentId')
             ->setParameter('departmentId', $departmentId)
             ->getQuery()
-            ->getSingleResult();
+            ->getOneOrNullResult();
 
-        Assert::isInstanceOf($department, Department::class);
+        Assert::nullOrIsInstanceOf($department, Department::class);
 
         return $department;
     }

@@ -11,7 +11,18 @@ import os
 from pathlib import Path
 
 _RF_DIR = Path(__file__).parent.parent
+_REPO_ROOT = _RF_DIR.parent.parent
+# In Docker, certs are mounted relative to _RF_DIR (/home/pwuser/certs).
+# Locally, certs live at the repo root. Detect by checking which base has a certs/ dir.
+_BASE_PATH = _RF_DIR if (_RF_DIR / "certs").is_dir() else _REPO_ROOT
 _KNOWN_TENANTS = ["minvws", "minfin"]
+
+
+def _resolve_value(value: str) -> str:
+    """Resolve relative file paths to absolute paths."""
+    if value.startswith("./") or value.startswith("../"):
+        return str((_BASE_PATH / value).resolve())
+    return value
 
 
 def _load_env_file(path: Path) -> dict:
@@ -23,7 +34,7 @@ def _load_env_file(path: Path) -> dict:
             if not line or line.startswith("#") or "=" not in line:
                 continue
             key, _, value = line.partition("=")
-            config[key.strip()] = value.strip()
+            config[key.strip()] = _resolve_value(value.strip())
     except FileNotFoundError:
         pass
     return config

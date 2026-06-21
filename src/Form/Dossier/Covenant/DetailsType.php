@@ -6,18 +6,14 @@ namespace Shared\Form\Dossier\Covenant;
 
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Form\Dossier\AbstractDossierStepType;
-use Shared\Form\Dossier\DossierFormBuilderTrait;
+use Shared\Form\Dossier\DossierFormFactory;
 use Shared\Form\YearMonthType;
-use Shared\Service\Security\Roles;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class DetailsType extends AbstractDossierStepType
 {
-    use DossierFormBuilderTrait;
-
     public function __construct(
-        private readonly Security $security,
+        private readonly DossierFormFactory $dossierFormFactory,
     ) {
     }
 
@@ -28,10 +24,10 @@ class DetailsType extends AbstractDossierStepType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $this->addTitleField($builder);
+        $dossierForm = $this->dossierFormFactory->for($builder);
+        $dossierForm->addTitleField();
 
-        /** @var Covenant $dossier */
-        $dossier = $builder->getData();
+        $dossier = $dossierForm->getDossier();
 
         $builder
             ->add('date_from', YearMonthType::class, [
@@ -58,11 +54,11 @@ class DetailsType extends AbstractDossierStepType
                 'property_path' => 'dateTo',
             ]);
 
-        $this->addInternalReferenceField($builder);
-        $this->addDepartmentsField($builder);
-        $this->addSubjectField($builder);
-        $this->addDossierNrField($builder, $this->security->isGranted(Roles::ROLE_ORGANISATION_ADMIN));
-        $this->addDocumentPrefixField($builder);
-        $this->addSubmits($builder);
+        $dossierForm->addInternalReferenceField();
+        $dossierForm->addDepartmentsField();
+        $dossierForm->addSubjectField();
+        $dossierForm->addDossierNrField();
+        $dossierForm->addDocumentPrefixField();
+        $dossierForm->addSubmits();
     }
 }

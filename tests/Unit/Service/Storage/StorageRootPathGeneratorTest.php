@@ -35,7 +35,7 @@ final class StorageRootPathGeneratorTest extends UnitTestCase
         $generator = new StorageRootPathGenerator();
 
         $mapped = array_map(
-            fn (string $uuid): array => [
+            static fn (string $uuid): array => [
                 'input' => $uuid,
                 'output' => $generator->fromUuid(Uuid::fromString($uuid)),
             ],

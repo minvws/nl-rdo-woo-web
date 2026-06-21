@@ -7,6 +7,8 @@ namespace Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\ValueObject\DossierTitle;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
@@ -23,9 +25,9 @@ final class OtherPublicationFactory extends PersistentObjectFactory
 
         return [
             'dossierNr' => self::faker()->bothify('DOSSIER-####-#####'),
-            'title' => self::faker()->sentence(),
+            'title' => DossierTitle::create(self::faker()->sentence()),
             'summary' => self::faker()->sentences(4, true),
-            'documentPrefix' => 'PREF',
+            'documentPrefix' => WooDecisionFactory::DEFAULT_PREFIX,
             'status' => DossierStatus::PUBLISHED,
             'organisation' => OrganisationFactory::new(),
             'publicationDate' => $publicationDate,

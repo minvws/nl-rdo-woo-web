@@ -64,6 +64,18 @@ class SubjectRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function isInUse(Subject $subject): bool
+    {
+        return (bool) $this->createQueryBuilder('subject')
+            ->select('1')
+            ->join('subject.dossiers', 'dossier')
+            ->where('subject = :subject')
+            ->setParameter('subject', $subject)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     /**
      * @return list<Subject>
      */

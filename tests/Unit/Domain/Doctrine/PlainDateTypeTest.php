@@ -6,11 +6,11 @@ namespace Shared\Tests\Unit\Doctrine;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Mockery;
-use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Shared\Doctrine\PlainDateType;
+use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\PlainDate;
 
-final class PlainDateTypeTest extends MockeryTestCase
+final class PlainDateTypeTest extends UnitTestCase
 {
     public function testItReturnsTheCorrectSqlDeclaration(): void
     {

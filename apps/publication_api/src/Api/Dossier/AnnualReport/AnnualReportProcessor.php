@@ -10,6 +10,7 @@ use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use PublicationApi\Api\Dossier\DossierNrValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
 use Shared\Domain\Department\Department;
@@ -53,10 +54,8 @@ final readonly class AnnualReportProcessor implements ProcessorInterface
         }
 
         Assert::isInstanceOf($data, AnnualReportRequestDto::class);
-
-        $dossierExternalId = $uriVariables['dossierExternalId'];
-        Assert::string($dossierExternalId);
-        $dossierExternalId = ExternalId::create($dossierExternalId);
+        Assert::string($uriVariables['dossierExternalId']);
+        $dossierExternalId = ExternalIdFactory::create($uriVariables['dossierExternalId']);
 
         $organisation = $this->organisationResolver->resolve($uriVariables);
         $subject = $this->dossierSupportService->getSubject($data, $organisation);
@@ -136,7 +135,7 @@ final readonly class AnnualReportProcessor implements ProcessorInterface
      */
     private function getAttachments(AnnualReport $annualReport, array $attachments): array
     {
-        return array_values(array_map(fn (AttachmentRequestDto $attachment): AnnualReportAttachment => AnnualReportAttachmentMapper::create(
+        return array_values(array_map(static fn (AttachmentRequestDto $attachment): AnnualReportAttachment => AnnualReportAttachmentMapper::create(
             $annualReport,
             $attachment,
         ), $attachments));

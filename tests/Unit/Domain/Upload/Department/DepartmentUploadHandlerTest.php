@@ -58,7 +58,7 @@ final class DepartmentUploadHandlerTest extends UnitTestCase
 
         $this->departmentRepository
             ->expects('findOne')
-            ->with(Mockery::on(fn (Uuid $uuid): bool => $uuid->toRfc4122() === $departmentIdString))
+            ->with(Mockery::on(static fn (Uuid $uuid): bool => $uuid->toRfc4122() === $departmentIdString))
             ->andReturn($department);
 
         $this->entityUploadStorer

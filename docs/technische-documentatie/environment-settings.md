@@ -21,23 +21,23 @@ The following environment variables are used by the application:
 
 ### Global settings
 
-| Variable                  | Description                                                   | Default value           |
-|---------------------------|---------------------------------------------------------------|-------------------------|
-| `APP_ENV`                 | The application environment.                                  | `prod`                  |
-| `APP_DEBUG`               | Whether the application is in debug mode.                     | `false`                 |
-| `MINVWS_APP_SECRET`       | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                  |
-| `MINFIN_APP_SECRET`       | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                  |
-| `MINVWS_SITE_NAME`        | The name of the site. Used only for displaying purposes.      | het publicatieplatform  |
-| `MINFIN_SITE_NAME`        | The name of the site. Used only for displaying purposes.      | het publicatieplatform  |
-| `MINVWS_COOKIE_NAME`      | The name of session cookie to use.                            | `MINVWS_WOOPID`         |
-| `MINFIN_COOKIE_NAME`      | The name of session cookie to use.                            | `MINFIN_WOOPID`         |
-| `SESSION_COOKIE_LIFETIME` | The lifetime of session cookies.                              | `86400`                 |
-| `MINVWS_TOTP_ISSUER`      | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`             |
-| `MINFIN_TOTP_ISSUER`      | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`             |
-| `APP_MODE`                | Application mode (see below)                                  | `ALL`                   |
-| `MINVWS_PUBLIC_BASE_URL`  | The url of the PUBLIC site                                    | `http://localhost:8000` |
-| `MINFIN_PUBLIC_BASE_URL`  | The url of the PUBLIC site                                    | `http://localhost:8100` |
-| `PIWIK_ANALYTICS_ID`      | Identification number for Piwik analytics                     | `0`                     |
+| Variable                  | Description                                                   | Default value               |
+|---------------------------|---------------------------------------------------------------|---------------------------- |
+| `APP_ENV`                 | The application environment.                                  | `prod`                      |
+| `APP_DEBUG`               | Whether the application is in debug mode.                     | `false`                     |
+| `MINVWS_APP_SECRET`       | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                      |
+| `MINFIN_APP_SECRET`       | Unique secret for creating signatures (rememberme, CSRF etc). | `null`                      |
+| `MINVWS_SITE_NAME`        | The name of the site. Used only for displaying purposes.      | het Woo Publicatieplatform  |
+| `MINFIN_SITE_NAME`        | The name of the site. Used only for displaying purposes.      | het Woo Publicatieplatform  |
+| `MINVWS_COOKIE_NAME`      | The name of session cookie to use.                            | `MINVWS_WOOPID`             |
+| `MINFIN_COOKIE_NAME`      | The name of session cookie to use.                            | `MINFIN_WOOPID`             |
+| `SESSION_COOKIE_LIFETIME` | The lifetime of session cookies.                              | `86400`                     |
+| `MINVWS_TOTP_ISSUER`      | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`                 |
+| `MINFIN_TOTP_ISSUER`      | Issuer of the TOTP tokens, used in 2fa for the totp URI       | `localhost`                 |
+| `APP_MODE`                | Application mode (see below)                                  | `ALL`                       |
+| `MINVWS_PUBLIC_BASE_URL`  | The url of the PUBLIC site                                    | `http://localhost:8000`     |
+| `MINFIN_PUBLIC_BASE_URL`  | The url of the PUBLIC site                                    | `http://localhost:8100`     |
+| `PIWIK_ANALYTICS_ID`      | Identification number for Piwik analytics                     | `0`                         |
 
 Cookie names should be prefixed with `__Host-` when running on HTTPS. However, this will break the application when running on
 HTTP, for instance, during development.

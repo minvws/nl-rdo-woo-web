@@ -71,8 +71,9 @@ class Covenant extends AbstractDossier implements EntityWithAttachments, EntityW
     )]
     #[Assert\All(
         constraints: [
-            new Assert\NotBlank(),
-            new Assert\Length(min: 2, max: 100),
+            new Assert\NotBlank(normalizer: 'trim'),
+            new Assert\Length(min: 2, normalizer: 'trim'),
+            new Assert\Length(max: 100),
         ],
         groups: [
             DossierValidationGroup::CONTENT->value,

@@ -7,6 +7,10 @@ namespace Shared\Domain\Publication\Dossier\Type;
 use Shared\Domain\Publication\Dossier\Step\StepName;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 
+use function array_filter;
+use function array_values;
+use function str_starts_with;
+
 enum DossierValidationGroup: string
 {
     // Based on StepName values for multiple dossier types
@@ -46,5 +50,16 @@ enum DossierValidationGroup: string
             DossierStatusTransition::SCHEDULE_PUBLISH => [self::WORKFLOW_SCHEDULE_PUBLISH],
             default => [],
         };
+    }
+
+    /**
+     * @return list<self::*>
+     */
+    public static function allNonWorkflowGroups(): array
+    {
+        return array_values(array_filter(
+            self::cases(),
+            static fn (self $group): bool => ! str_starts_with($group->value, 'workflow_'),
+        ));
     }
 }

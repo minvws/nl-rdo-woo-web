@@ -57,13 +57,11 @@ Verify Document History
 Click Search Through Documents In Inquiry
   Click  //a[@data-e2e-name="search-through-documents"]
 
-Verify Symfony Error
-  [Arguments]  ${error_message}
-  Get Text  //div[@class="exception-summary "]  contains  ${error_message}
-
-Click Dossier In Inquiry
-  [Arguments]  ${dossier_text}
-  Click  //*[@data-e2e-name="inquiry-dossiers"]//a[contains(., ${dossier_text})]
+Navigate To Dossier On Public
+  [Documentation]  Searches for a dossier by reference and navigates to its detail page. Usable for any dossier type.
+  [Arguments]  ${dossier_reference}
+  Search On Public For  ${dossier_reference}  1
+  Click  css=a[data-e2e-name="main-link"]:has-text("${dossier_reference}")
 
 Select Filter Options - Dossier
   [Arguments]
@@ -123,7 +121,7 @@ Select Filter Options - Dossier
   ${publication_count} =  Get Text  //span[@data-e2e-name="${id}.publication_count"]
   ${publication_count} =  Remove String Using Regexp  ${publication_count}  [()]
   Sleep  2s  # Wait for page update
-  RETURN  ${total_count}  ${publication_count}  #  ${document_count}  ${attachment_count}
+  RETURN  ${total_count}  ${publication_count}
 
 Get Search Result Count
   ${text} =  Get Text  //span[@data-e2e-name="result-count"]

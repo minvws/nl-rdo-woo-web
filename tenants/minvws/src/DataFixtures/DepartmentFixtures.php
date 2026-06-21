@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+namespace WooMinVWS\DataFixtures;
+
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Persistence\ObjectManager;
+use Shared\Domain\Department\Department;
+
+/**
+ * This is a set of fixtures for the Department entities. It is not meant to be used in production.
+ */
+class DepartmentFixtures extends Fixture
+{
+    public const string REFERENCE = 'vws-department-fixture-reference';
+
+    public function load(ObjectManager $manager): void
+    {
+        $entity = new Department();
+        $entity->setName('ministerie van Volksgezondheid, Welzijn en Sport');
+        $entity->setSlug('VWS');
+        $entity->setShortTag('VWS');
+        $manager->persist($entity);
+        $this->addReference(self::REFERENCE, $entity);
+
+        $manager->flush();
+    }
+}

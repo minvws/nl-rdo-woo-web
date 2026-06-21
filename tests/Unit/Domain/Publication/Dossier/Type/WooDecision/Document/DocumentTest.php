@@ -13,6 +13,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\PlainDate;
 
 final class DocumentTest extends UnitTestCase
@@ -55,10 +56,11 @@ final class DocumentTest extends UnitTestCase
 
     public function testSetAndGetDocumentId(): void
     {
+        $documentId = DocumentId::create('foo.123');
         $document = new Document();
 
-        $document->setDocumentId($id = 'foo-123');
-        self::assertEquals($id, $document->getDocumentId());
+        $document->setDocumentId($documentId);
+        self::assertEquals($documentId, $document->getDocumentId());
     }
 
     public function testSetAndGetThreadId(): void

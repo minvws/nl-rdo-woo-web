@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
+use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
@@ -252,5 +253,30 @@ class ProductionReportStatusTest extends UnitTestCase
         $this->processRun->expects('hasErrors')->andReturnTrue();
 
         self::assertTrue($this->status->hasErrors());
+    }
+
+    public function testGetRunDateReturnsNullWhenThereIsNoProcessRun(): void
+    {
+        $this->dossier->expects('getProcessRun')->andReturnNull();
+
+        self::assertNull($this->status->getRunDate());
+    }
+
+    public function testGetRunDateReturnsNullWhenThereIsNoProcessRunEndDate(): void
+    {
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+        $this->processRun->expects('getEndedAt')->andReturnNull();
+
+        self::assertNull($this->status->getRunDate());
+    }
+
+    public function testGetRunDateReturnsProcessRunEndDate(): void
+    {
+        $endDate = new DateTimeImmutable('2026-01-01 02:12:56');
+
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+        $this->processRun->expects('getEndedAt')->andReturn($endDate);
+
+        self::assertEquals($endDate, $this->status->getRunDate());
     }
 }

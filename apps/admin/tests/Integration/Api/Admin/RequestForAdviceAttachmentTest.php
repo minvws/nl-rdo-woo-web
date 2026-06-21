@@ -127,7 +127,7 @@ final class RequestForAdviceAttachmentTest extends AdminApiTestCase
         $this->uploadHandler
             ->expects('moveUploadedFileToStorage')
             ->with(
-                Mockery::on(fn (UploadEntity $uploadEntity) => $uploadEntity->getId() == $upload->getId()),
+                Mockery::on(static fn (UploadEntity $uploadEntity) => $uploadEntity->getId() == $upload->getId()),
                 Mockery::type(FilesystemOperator::class),
                 Mockery::type('string'),
             );

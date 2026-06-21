@@ -23,6 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webmozart\Assert\Assert;
 
 class DossierActionController extends AbstractController
 {
@@ -89,11 +90,11 @@ class DossierActionController extends AbstractController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var DocumentWithdrawReason $reason */
             $reason = $form->get('reason')->getData();
+            Assert::isInstanceOf($reason, DocumentWithdrawReason::class);
 
-            /** @var string $explanation */
             $explanation = $form->get('explanation')->getData();
+            Assert::string($explanation);
 
             $this->wooDecisionDispatcher->dispatchWithDrawAllDocumentsCommand($wooDecision, $reason, $explanation);
 

@@ -6,7 +6,9 @@ namespace Shared\Service\Inventory;
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\SourceType;
-use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\InquiryNumbers;
+use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\PlainDate;
 
 readonly class DocumentMetadata
@@ -18,16 +20,16 @@ readonly class DocumentMetadata
         private SourceType $sourceType,
         /** @var array<string> */
         private array $grounds,
-        private string $id,
+        private DocumentId $id,
         private Judgement $judgement,
         private ?string $period,
         private ?int $threadId,
-        private CaseNumbers $caseNumbers,
+        private InquiryNumbers $inquiryNumbers,
         private bool $suspended,
         /** @var array<string> */
         private array $links,
         private ?string $remark,
-        private string $matter,
+        private ?DocumentMatter $matter,
         /** @var array<string> */
         private array $refersTo,
     ) {
@@ -66,7 +68,7 @@ readonly class DocumentMetadata
         return $this->grounds;
     }
 
-    public function getId(): string
+    public function getId(): DocumentId
     {
         return $this->id;
     }
@@ -86,9 +88,9 @@ readonly class DocumentMetadata
         return $this->threadId;
     }
 
-    public function getCaseNumbers(): CaseNumbers
+    public function getInquiryNumbers(): InquiryNumbers
     {
-        return $this->caseNumbers;
+        return $this->inquiryNumbers;
     }
 
     public function isSuspended(): bool
@@ -109,7 +111,7 @@ readonly class DocumentMetadata
         return $this->remark;
     }
 
-    public function getMatter(): string
+    public function getMatter(): ?DocumentMatter
     {
         return $this->matter;
     }

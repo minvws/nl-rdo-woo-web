@@ -34,7 +34,7 @@ readonly class UploadValidationService
             return [];
         }
 
-        return array_map(function (string $error) {
+        return array_map(static function (string $error) {
             return new ConstraintViolation($error, '', [], null, '', null);
         }, $uploadEntity->getError() ?? []);
     }

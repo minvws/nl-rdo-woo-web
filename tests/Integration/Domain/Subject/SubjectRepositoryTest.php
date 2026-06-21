@@ -7,6 +7,8 @@ namespace Shared\Tests\Integration\Domain\Subject;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
 
 class SubjectRepositoryTest extends SharedWebTestCase
@@ -51,5 +53,22 @@ class SubjectRepositoryTest extends SharedWebTestCase
         $result = $query->getResult();
 
         self::assertEquals([$subjectA], $result);
+    }
+
+    public function testIsInUseReturnsFalseForUnusedSubject(): void
+    {
+        $subject = SubjectFactory::createOne();
+        $subjectRepository = self::fromContainer(SubjectRepository::class);
+
+        self::assertFalse($subjectRepository->isInUse($subject));
+    }
+
+    public function testIsInUseReturnsTrueForSubjectLinkedToDossier(): void
+    {
+        $subject = SubjectFactory::createOne();
+        WooDecisionFactory::createOne(['subject' => $subject]);
+
+        $subjectRepository = self::fromContainer(SubjectRepository::class);
+        self::assertTrue($subjectRepository->isInUse($subject));
     }
 }

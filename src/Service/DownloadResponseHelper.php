@@ -45,7 +45,7 @@ readonly class DownloadResponseHelper
         $response->headers->set('Last-Modified', $entity->getUpdatedAt()->format('D, d M Y H:i:s') . ' GMT');
         $response->headers->set('Content-Disposition', sprintf('%s; filename="%s"', $contentDisposition, $filename));
 
-        $response->setCallback(function () use ($stream) {
+        $response->setCallback(static function () use ($stream) {
             fpassthru($stream);
         });
 
@@ -75,7 +75,7 @@ readonly class DownloadResponseHelper
         $response->headers->set('Content-Length', (string) $batch->getSize());
         $response->headers->set('Content-Disposition', 'attachment; filename="' . $batch->getFilename() . '"');
         $response->headers->set('Cache-Control', 'no-store');
-        $response->setCallback(function () use ($stream) {
+        $response->setCallback(static function () use ($stream) {
             fpassthru($stream);
         });
 

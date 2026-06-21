@@ -28,13 +28,13 @@ class InquiryLinkImportException extends TranslatableException
     }
 
     /**
-     * @param array<array-key, string> $caseNumberValues
+     * @param array<array-key, string> $inquiryNumberValues
      */
-    public static function forInvalidCaseNumber(int $rowNumber, array $caseNumberValues): self
+    public static function forInvalidInquiryNumber(int $rowNumber, array $inquiryNumberValues): self
     {
         return new self(
-            'Invalid casenumbers value(s): ' . implode(', ', $caseNumberValues),
-            'publication.inquiry.error.casenumbers_invalid',
+            'Invalid inquiry numbers value(s): ' . implode(', ', $inquiryNumberValues),
+            'publication.inquiry.error.inquiryNumbers_invalid',
             [
                 '{rownumber}' => (string) $rowNumber,
             ],

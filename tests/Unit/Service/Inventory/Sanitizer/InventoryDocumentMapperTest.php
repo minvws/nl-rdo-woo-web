@@ -12,6 +12,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inventory\Sanitizer\InventoryDocumentMapper;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DossierTitle;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -43,16 +45,16 @@ class InventoryDocumentMapperTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getDossierNr')->times(3)->andReturn('tst-123');
         $dossier->expects('getDocumentPrefix')->times(9)->andReturn('PREFIX');
-        $dossier->expects('getTitle')->andReturn('Foo Bar');
+        $dossier->expects('getTitle')->andReturn(DossierTitle::create('Foo Bar'));
 
         $referredDocA = Mockery::mock(Document::class);
-        $referredDocA->expects('getDocumentNr')->times(2)->andReturn($refDocIdA = 'PREFIX-matterA-A');
-        $referredDocA->expects('getDocumentId')->times(3)->andReturn('A');
+        $referredDocA->expects('getDocumentNr')->times(2)->andReturn($refDocIdA = 'PREFIX-matterA-a');
+        $referredDocA->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('a'));
         $referredDocA->expects('getDossiers')->times(2)->andReturn(new ArrayCollection([$dossier]));
 
         $referredDocB = Mockery::mock(Document::class);
-        $referredDocB->expects('getDocumentNr')->times(2)->andReturn($refDocIdB = 'PREFIX-matterB-B');
-        $referredDocB->expects('getDocumentId')->times(3)->andReturn('B');
+        $referredDocB->expects('getDocumentNr')->times(2)->andReturn($refDocIdB = 'PREFIX-matterB-b');
+        $referredDocB->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('b'));
         $referredDocB->expects('getDossiers')->times(2)->andReturn(new ArrayCollection([$dossier]));
 
         $this->urlGenerator
@@ -66,7 +68,7 @@ class InventoryDocumentMapperTest extends UnitTestCase
             ->andReturn('test-url-B');
 
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentId')->times(4)->andReturn(123);
+        $document->expects('getDocumentId')->times(4)->andReturn(DocumentId::create('123'));
         $document->expects('getDocumentNr')->times(3)->andReturn($docNr = 'PREFIX-matterA-123');
         $document->expects('getFileInfo->getName')->andReturn('test-doc-name');
         $document->expects('getJudgement')->times(2)->andReturn(Judgement::PARTIAL_PUBLIC);

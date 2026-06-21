@@ -40,7 +40,7 @@
     {% endif %}
 </div>
 
-{% if inventoryStatus.isReadyForDocumentUpload and app.request.get('replace') is null %}
+{% if inventoryStatus.isReadyForDocumentUpload and app.request.query.get('replace') is null %}
 <div class="bhr-card mt-10">
     <div class="text-lg pb-2">
         <h2 class="bhr-form-help">Stap 2</h2>

@@ -43,7 +43,7 @@ abstract class ApiPublicationV1UploadTestCase extends ApiPublicationV1TestCase
         self::getContainer()->set(UploadService::class, $uploadService);
 
         $uploadService->expects('handleUpload')->with(
-            Mockery::on(function (StreamUpload $streamUpload) use (
+            Mockery::on(static function (StreamUpload $streamUpload) use (
                 $dossierId,
                 $entityId,
                 $entityFileName,

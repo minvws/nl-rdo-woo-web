@@ -27,11 +27,11 @@ readonly class InventoryDocumentMapper
      */
     public function map(Document $document): array
     {
-        /** @var WooDecision $dossier */
         $dossier = $document->getDossiers()->first();
+        Assert::isInstanceOf($dossier, WooDecision::class);
 
         return [
-            $document->getDocumentId() ?: '',
+            $document->getDocumentId()?->toString() ?? '',
             $document->getDocumentNr(),
             $document->getFileInfo()->getName() ?: '',
             $document->getJudgement() ? $this->translator->trans('public.documents.judgment.short.' . $document->getJudgement()->value) : '',
@@ -49,12 +49,12 @@ readonly class InventoryDocumentMapper
             $document->isSuspended() ? 'ja' : '',
             implode(';', $this->getRelatedDocumentIds($document)),
             implode(';', $this->getRelatedDocumentUrls($document)),
-            $dossier->getTitle() ?? '',
+            (string) $dossier->getTitle(),
         ];
     }
 
     /**
-     * @return array<array-key, string>
+     * @return array<array-key,string>
      */
     private function getRelatedDocumentIds(Document $document): array
     {
@@ -63,17 +63,17 @@ readonly class InventoryDocumentMapper
         $documentNumber = DocumentNumber::fromDossierAndDocument($dossier, $document);
 
         return $document->getRefersTo()->map(
-            function (Document $referredDocument) use ($documentNumber): string {
+            static function (Document $referredDocument) use ($documentNumber): string {
                 $referredDossier = $referredDocument->getDossiers()->first();
                 Assert::isInstanceOf($referredDossier, WooDecision::class);
 
                 $referredDocumentNumber = DocumentNumber::fromDossierAndDocument($referredDossier, $referredDocument);
 
-                if ($documentNumber->getMatter() !== $referredDocumentNumber->getMatter()) {
-                    return $referredDocumentNumber->matter . '_' . $referredDocumentNumber->id;
+                if ($documentNumber->getMatter()?->toString() !== $referredDocumentNumber->getMatter()?->toString()) {
+                    return $referredDocumentNumber->matter?->toString() . '_' . $referredDocumentNumber->id->toString();
                 }
 
-                return $referredDocumentNumber->id;
+                return $referredDocumentNumber->id->toString();
             },
         )->toArray();
     }

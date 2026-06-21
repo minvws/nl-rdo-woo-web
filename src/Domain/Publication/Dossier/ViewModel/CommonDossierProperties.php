@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\ViewModel;
 
 use Shared\Domain\Publication\Dossier\Type\DossierType as DossierTypeEnum;
+use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 
 final readonly class CommonDossierProperties
@@ -14,8 +15,7 @@ final readonly class CommonDossierProperties
         public string $dossierNr,
         public string $documentPrefix,
         public bool $isPreview,
-        public string $title,
-        public string $pageTitle,
+        public DossierTitle $title,
         public PlainDate $publicationDate,
         public Department $mainDepartment,
         public string $summary,

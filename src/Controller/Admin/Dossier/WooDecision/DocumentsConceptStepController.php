@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\Step\StepName;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\ProductionReportStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Form\Dossier\WooDecision\InventoryType;
 use Shared\Service\DossierWizard\DossierWizardStatus;
 use Shared\Service\Uploader\UploadGroupId;
@@ -27,7 +28,8 @@ class DocumentsConceptStepController extends AbstractController
     public function __construct(
         private readonly StepActionHelper $stepHelper,
         private readonly DocumentsStepHelper $documentsHelper,
-        private readonly ProductionReportDispatcher $dispatcher,
+        private readonly ProductionReportDispatcher $productionReportDispatcher,
+        private readonly WooDecisionDispatcher $wooDecisionDispatcher,
     ) {
     }
 
@@ -47,11 +49,15 @@ class DocumentsConceptStepController extends AbstractController
         }
 
         if ($request->query->has('confirm')) {
-            $this->dispatcher->dispatchConfirmProductionReportUpdateCommand($dossier);
+            $this->productionReportDispatcher->dispatchConfirmProductionReportUpdateCommand($dossier);
         }
 
         if ($request->query->has('reject')) {
             return $this->rejectProductionReport($dossier);
+        }
+
+        if ($request->query->has('remove')) {
+            return $this->removeInventoryAndDocuments($dossier);
         }
 
         $inventoryForm = $this->createForm(InventoryType::class, $dossier);
@@ -93,7 +99,7 @@ class DocumentsConceptStepController extends AbstractController
         $uploadedFile = $inventoryForm->get('inventory')->getData();
 
         if ($uploadedFile instanceof UploadedFile) {
-            $this->dispatcher->dispatchInitiateProductionReportUpdateCommand($dossier, $uploadedFile);
+            $this->productionReportDispatcher->dispatchInitiateProductionReportUpdateCommand($dossier, $uploadedFile);
 
             return null;
         } elseif ($dossier->isInventoryRequired()) {
@@ -105,7 +111,17 @@ class DocumentsConceptStepController extends AbstractController
 
     private function rejectProductionReport(WooDecision $dossier): Response
     {
-        $this->dispatcher->dispatchRejectProductionReportUpdateCommand($dossier);
+        $this->productionReportDispatcher->dispatchRejectProductionReportUpdateCommand($dossier);
+
+        return $this->redirectToRoute(
+            'app_admin_dossier_woodecision_documents_concept',
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+        );
+    }
+
+    private function removeInventoryAndDocuments(WooDecision $dossier): Response
+    {
+        $this->wooDecisionDispatcher->dispatchRemoveInventoryAndDocumentsCommand($dossier->getId());
 
         return $this->redirectToRoute(
             'app_admin_dossier_woodecision_documents_concept',

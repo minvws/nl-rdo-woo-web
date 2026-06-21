@@ -16,6 +16,7 @@ class FakerFactory
         FileFakerProvider::class,
         GroundsFakerProvider::class,
         UuidFakerProvider::class,
+        DocumentIdFakerProvider::class,
     ];
 
     public static function addProviders(Generator $faker): Generator

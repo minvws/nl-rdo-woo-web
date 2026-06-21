@@ -50,4 +50,12 @@ class PrefixedDossierNrTest extends UnitTestCase
             PrefixedDossierNr::withoutPrefix('foo-123'),
         );
     }
+
+    public function testWithoutPrefixKeepsMultibyteTailIntact(): void
+    {
+        self::assertEquals(
+            'föö-123',
+            PrefixedDossierNr::withoutPrefix('prefix|föö-123'),
+        );
+    }
 }

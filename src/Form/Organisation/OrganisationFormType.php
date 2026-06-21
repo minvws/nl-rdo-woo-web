@@ -30,12 +30,12 @@ class OrganisationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var Organisation|null $organisation */
         $organisation = $builder->getData();
-        if ($organisation === null) {
-            $documentPrefixes = [];
-        } else {
+
+        if ($organisation instanceof Organisation) {
             $documentPrefixes = $organisation->getDocumentPrefixes();
+        } else {
+            $documentPrefixes = [];
         }
 
         $builder

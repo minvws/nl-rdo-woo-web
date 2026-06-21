@@ -13,12 +13,13 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\SourceType;
-use Shared\Service\Inquiry\CaseNumbers;
+use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inventory\DocumentComparator;
 use Shared\Service\Inventory\DocumentMetadata;
 use Shared\Service\Inventory\DocumentNumber;
 use Shared\Service\Inventory\MetadataField;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 
 class DocumentComparatorTest extends UnitTestCase
 {
@@ -67,7 +68,7 @@ class DocumentComparatorTest extends UnitTestCase
         $metadata->expects('getDate')->times(2)->andReturnNull();
         $metadata->expects('getSourceType')->times(2)->andReturn(SourceType::EMAIL);
         $metadata->expects('getFilename')->times(2)->andReturn('foo.txt');
-        $metadata->expects('getCaseNumbers')->times(2)->andReturn(CaseNumbers::empty());
+        $metadata->expects('getInquiryNumbers')->times(2)->andReturn(InquiryNumbers::empty());
         $metadata->expects('getRefersTo')->times(2)->andReturn([]);
 
         $changeset = $this->documentComparator->getChangeset($this->dossier, $document, $metadata);
@@ -78,11 +79,11 @@ class DocumentComparatorTest extends UnitTestCase
         self::assertTrue($this->documentComparator->needsUpdate($this->dossier, $document, $metadata));
     }
 
-    public function testDocumentCompareIgnoresCaseNrRemoval(): void
+    public function testDocumentCompareIgnoresInquiryNumberRemoval(): void
     {
         $documentNr = Mockery::mock(DocumentNumber::class);
         $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->expects('getCaseNr')->times(2)->andReturn('foo-123');
+        $inquiry->expects('getInquiryNumber')->times(2)->andReturn('foo-123');
 
         $document = Mockery::mock(Document::class);
         $document->expects('getJudgement')->times(2)->andReturn(Judgement::NOT_PUBLIC);
@@ -112,12 +113,12 @@ class DocumentComparatorTest extends UnitTestCase
         $metadata->expects('getDate')->times(2)->andReturnNull();
         $metadata->expects('getSourceType')->times(2)->andReturn(SourceType::EMAIL);
         $metadata->expects('getFilename')->times(2)->andReturn('foo.txt');
-        $metadata->expects('getCaseNumbers')->times(2)->andReturn(CaseNumbers::empty());
+        $metadata->expects('getInquiryNumbers')->times(2)->andReturn(InquiryNumbers::empty());
         $metadata->expects('getRefersTo')->times(2)->andReturn([]);
 
         $changeset = $this->documentComparator->getChangeset($this->dossier, $document, $metadata);
         self::assertFalse($changeset->hasChanges());
-        self::assertFalse($changeset->isChanged(MetadataField::CASENR->value));
+        self::assertFalse($changeset->isChanged(MetadataField::INQUIRY_NUMBER->value));
 
         self::assertFalse($this->documentComparator->needsUpdate($this->dossier, $document, $metadata));
     }
@@ -142,7 +143,7 @@ class DocumentComparatorTest extends UnitTestCase
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
         $document->expects('getDocumentNr')->andReturn('bar-123');
-        $document->expects('getDocumentId')->times(3)->andReturn('123');
+        $document->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('123'));
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123']);
@@ -164,7 +165,7 @@ class DocumentComparatorTest extends UnitTestCase
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
         $document->expects('getDocumentNr')->times(2)->andReturn('bar-123');
-        $document->expects('getDocumentId')->times(6)->andReturn('123');
+        $document->expects('getDocumentId')->times(6)->andReturn(DocumentId::create('123'));
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123', 'invalid-456']);

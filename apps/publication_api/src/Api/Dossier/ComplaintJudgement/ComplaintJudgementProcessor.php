@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Dossier\DossierNrValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
@@ -45,10 +46,8 @@ final readonly class ComplaintJudgementProcessor implements ProcessorInterface
             return null;
         }
 
-        $dossierExternalId = $uriVariables['dossierExternalId'];
-        Assert::string($dossierExternalId);
-        $dossierExternalId = ExternalId::create($dossierExternalId);
-
+        Assert::string($uriVariables['dossierExternalId']);
+        $dossierExternalId = ExternalIdFactory::create($uriVariables['dossierExternalId']);
         Assert::isInstanceOf($data, ComplaintJudgementRequestDto::class);
 
         $organisation = $this->organisationResolver->resolve($uriVariables);

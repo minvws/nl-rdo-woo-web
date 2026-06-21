@@ -70,7 +70,7 @@ final readonly class UploadStatusDtoFactory
 
         $result = $documentFileSet
             ->getUpdates()
-            ->reduce(function (array $carry, DocumentFileUpdate $update): array {
+            ->reduce(static function (array $carry, DocumentFileUpdate $update): array {
                 /** @var array<value-of<DocumentFileUpdateType>,int> $carry */
                 $carry[$update->getType()->value]++;
 

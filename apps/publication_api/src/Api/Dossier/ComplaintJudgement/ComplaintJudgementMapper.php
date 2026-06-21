@@ -5,14 +5,21 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\ComplaintJudgement;
 
 use PublicationApi\Api\Department\DepartmentMapper;
+use PublicationApi\Api\Dossier\ComplaintJudgement\Uploads\MainDocument\ComplaintJudgementUploadMainDocumentResource;
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Organisation\OrganisationMapper;
+use PublicationApi\Api\Subject\SubjectMapper;
+use PublicationApi\Domain\OpenApi\Links\Link;
+use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
+use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\Url;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -21,7 +28,9 @@ use function array_values;
 readonly class ComplaintJudgementMapper
 {
     public function __construct(
+        private DossierPathHelper $dossierPathHelper,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
+        private PublicUrlGenerator $publicUrlGenerator,
     ) {
     }
 
@@ -43,8 +52,6 @@ readonly class ComplaintJudgementMapper
         $mainDocument = $complaintJudgement->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $mainDocumentDto = $this->mainDocumentResponseDtoFactory->fromEntity($mainDocument);
-
         $dateFrom = $complaintJudgement->getDateFrom();
         Assert::notNull($dateFrom);
 
@@ -58,12 +65,17 @@ readonly class ComplaintJudgementMapper
             $complaintJudgement->getDossierNr(),
             $complaintJudgement->getTitle(),
             $complaintJudgement->getSummary(),
-            $complaintJudgement->getSubject()?->getName(),
+            SubjectMapper::fromNullableEntity($complaintJudgement->getSubject()),
             DepartmentMapper::fromEntity($department),
             $complaintJudgement->getPublicationDate(),
             $complaintJudgement->getStatus(),
-            $mainDocumentDto,
+            $this->mainDocumentResponseDtoFactory->fromEntity(
+                $mainDocument,
+                ComplaintJudgementUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                ComplaintJudgementMainDocumentResponseDto::class,
+            ),
             $dateFrom,
+            $this->getHalLinks($complaintJudgement),
         );
     }
 
@@ -102,5 +114,26 @@ readonly class ComplaintJudgementMapper
         $complaintJudgement->setSubject($subject);
 
         return $complaintJudgement;
+    }
+
+    private function getHalLinks(ComplaintJudgement $complaintJudgement): LinkCollection
+    {
+        $linkCollection = new LinkCollection();
+        $linkCollection->set(
+            LinkCollection::SELF,
+            new Link($this->publicUrlGenerator->buildUrlFromRoute(ComplaintJudgementResource::ROUTE_NAME_GET_COMPLAINT_JUDGEMENT, [
+                'organisationId' => $complaintJudgement->getOrganisation()->getId(),
+                'dossierExternalId' => $complaintJudgement->getExternalId(),
+            ])),
+        );
+
+        if ($complaintJudgement->getStatus()->isPublished()) {
+            $linkCollection->set(
+                LinkCollection::PUBLIC,
+                new Link(Url::create($this->dossierPathHelper->getAbsoluteDetailsPath($complaintJudgement))),
+            );
+        }
+
+        return $linkCollection;
     }
 }

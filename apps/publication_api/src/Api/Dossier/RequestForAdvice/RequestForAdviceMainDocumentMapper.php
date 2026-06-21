@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\RequestForAdvice;
 
-use PublicationApi\Api\MainDocument\MainDocumentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
 use Shared\Domain\Publication\FileInfo;
@@ -14,7 +13,7 @@ class RequestForAdviceMainDocumentMapper
 {
     public static function create(
         RequestForAdvice $requestForAdvice,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        RequestForAdviceMainDocumentRequestDto $mainDocumentRequestDto,
     ): RequestForAdviceMainDocument {
         $mainDocument = new RequestForAdviceMainDocument(
             $requestForAdvice,
@@ -34,7 +33,7 @@ class RequestForAdviceMainDocumentMapper
 
     public static function update(
         RequestForAdvice $requestForAdvice,
-        MainDocumentRequestDto $mainDocumentRequestDto,
+        RequestForAdviceMainDocumentRequestDto $mainDocumentRequestDto,
     ): RequestForAdviceMainDocument {
         $mainDocument = $requestForAdvice->getMainDocument();
         Assert::notNull($mainDocument);
@@ -46,7 +45,6 @@ class RequestForAdviceMainDocumentMapper
         $mainDocument->setFormalDate($mainDocumentRequestDto->formalDate);
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
         $mainDocument->setLanguage($mainDocumentRequestDto->language);
-        $mainDocument->setType($mainDocumentRequestDto->type);
 
         return $mainDocument;
     }

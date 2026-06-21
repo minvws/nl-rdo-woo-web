@@ -10,6 +10,7 @@ use Shared\Exception\InventoryReaderException;
 use Shared\Service\FileReader\ExcelReaderFactory;
 use Shared\Service\Inventory\Reader\InventoryReaderFactory;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
+use Shared\Service\Inventory\Reader\InventoryReadItem;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\PlainDate;
 
@@ -89,14 +90,26 @@ class InventoryReaderTest extends UnitTestCase
         self::assertEquals(SourceType::UNKNOWN, $documentMetadata2->getSourceType());
     }
 
-    public function testInventoryReaderAddsExceptionsForEmptyMatterCells(): void
+    public function testInventoryReaderTreatsBlankMatterCellsAsNull(): void
     {
         $this->reader->open(__DIR__ . '/inventory-empty-matter.xlsx');
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
-        self::assertEquals(InventoryReaderException::forInvalidMatterInRow(2, 2, 50), $result[0]->getException());
-        self::assertEquals(InventoryReaderException::forInvalidMatterInRow(3, 2, 50), $result[1]->getException());
+        self::assertNull($result[0]->getException());
+        self::assertNull($result[0]->getDocumentMetadata()?->getMatter());
+        self::assertNull($result[1]->getException());
+        self::assertNull($result[1]->getDocumentMetadata()?->getMatter());
+    }
+
+    public function testInventoryReaderWithoutMatterCellsDefaultsToNull(): void
+    {
+        $this->reader->open(__DIR__ . '/inventory-missing-matter.xlsx');
+
+        $result = $this->reader->getDocumentMetadataGenerator(new WooDecision())->current();
+
+        self::assertInstanceOf(InventoryReadItem::class, $result);
+        self::assertNull($result->getDocumentMetadata()?->getMatter());
     }
 
     public function testInventoryReaderAddsExceptionsForTooLongRemark(): void
@@ -126,14 +139,14 @@ class InventoryReaderTest extends UnitTestCase
         self::assertEquals(InventoryReaderException::forInvalidThreadId(3), $result[1]->getException());
     }
 
-    public function testInventoryReaderAddsExceptionsForSingleCharacterMatterCells(): void
+    public function testInventoryReaderAllowsSingleCharacterMatterCells(): void
     {
         $this->reader->open(__DIR__ . '/inventory-single-character-matter.xlsx');
 
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
-        self::assertEquals(InventoryReaderException::forInvalidMatterInRow(2, 2, 50), $result[0]->getException());
-        self::assertEquals(InventoryReaderException::forInvalidMatterInRow(3, 2, 50), $result[1]->getException());
+        self::assertNull($result[0]->getException());
+        self::assertNull($result[1]->getException());
     }
 
     public function testInventoryWithEmptyDates(): void
@@ -159,5 +172,38 @@ class InventoryReaderTest extends UnitTestCase
 
         self::assertNull($result[0]->getException());
         self::assertEquals(InventoryReaderException::forInvalidDocumentId(3), $result[1]->getException());
+    }
+
+    public function testInventoryReaderSplitsRemarkWithMultipleUrls(): void
+    {
+        $this->reader->open(__DIR__ . '/inventory-link-remark-6.xlsx');
+
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
+
+        self::assertNull($result[0]->getException());
+        self::assertNotNull($result[0]->getDocumentMetaData());
+        self::assertEquals(
+            ['https://example.org', 'https://test.org'],
+            $result[0]->getDocumentMetaData()->getLinks(),
+        );
+        self::assertNull($result[0]->getDocumentMetaData()->getRemark());
+    }
+
+    public function testInventoryReaderAddsExceptionForInvalidLinkInLinkColumn(): void
+    {
+        $this->reader->open(__DIR__ . '/inventory-invalid-link.xlsx');
+
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
+
+        self::assertEquals(InventoryReaderException::forInvalidLink('not-a-valid-url', 2), $result[0]->getException());
+    }
+
+    public function testInventoryReaderAddsExceptionForInvalidLinkInRemarkColumn(): void
+    {
+        $this->reader->open(__DIR__ . '/inventory-invalid-link-in-remark.xlsx');
+
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
+
+        self::assertEquals(InventoryReaderException::forInvalidLink('http://invalid link because of spaces', 2), $result[0]->getException());
     }
 }

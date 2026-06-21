@@ -16,9 +16,8 @@ use Shared\ValueObject\ExternalId;
 
 use function array_diff;
 use function array_map;
-use function is_null;
-use function strlen;
-use function substr;
+use function grapheme_strlen;
+use function grapheme_substr;
 
 /**
  * This class will process updates to documents based on DocumentMetadata parsed from an inventory.
@@ -95,7 +94,7 @@ readonly class DocumentUpdater
 
         $file = $document->getFileInfo();
         $file->setSourceType($documentMetadata->getSourceType());
-        $file->setName($this->maxLen($fileName, 1024) ?? '');
+        $file->setName($this->buildName($fileName));
     }
 
     private function removeObsoleteUpload(Document $document): void
@@ -107,14 +106,18 @@ readonly class DocumentUpdater
         }
     }
 
-    protected function maxLen(?string $subject, int $maxSize): ?string
+    private function buildName(?string $subject): string
     {
-        if (is_null($subject)) {
-            return $subject;
+        if ($subject === null) {
+            return '';
         }
 
-        if (strlen($subject) > $maxSize) {
-            return substr($subject, 0, $maxSize);
+        $maxLength = 1024;
+        if (grapheme_strlen($subject) > $maxLength) {
+            $subject = grapheme_substr($subject, 0, $maxLength);
+            if ($subject === false) {
+                $subject = '';
+            }
         }
 
         return $subject;
@@ -132,7 +135,7 @@ readonly class DocumentUpdater
         );
 
         $currentReferrals = $document->getRefersTo()->map(
-            fn (Document $doc): DocumentNumber => DocumentNumber::fromDossierAndDocument($dossier, $doc),
+            static fn (Document $doc): DocumentNumber => DocumentNumber::fromDossierAndDocument($dossier, $doc),
         )->toArray();
 
         foreach (array_diff($currentReferrals, $newReferrals) as $refersToRemove) {

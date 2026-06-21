@@ -27,7 +27,7 @@ final readonly class OrganisationProvider implements ProviderInterface
     /**
      * @param array<array-key,string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|OrganisationResponseDto
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|OrganisationDetailResponseDto
     {
         if ($operation instanceof CollectionOperationInterface) {
             return $this->provideCollection($context);
@@ -52,16 +52,16 @@ final readonly class OrganisationProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(OrganisationMapper::fromEntities($organisations), 0, count($organisations));
+        return new ArrayPaginator(OrganisationMapper::fromEntitiesWithDetail($organisations), 0, count($organisations));
     }
 
-    private function provideSingle(Uuid $organisationId): OrganisationResponseDto
+    private function provideSingle(Uuid $organisationId): OrganisationDetailResponseDto
     {
         $organisation = $this->organisationRepository->find($organisationId);
         if ($organisation === null) {
             throw EntityNotFoundException::for('Organisation', $organisationId);
         }
 
-        return OrganisationMapper::fromEntity($organisation);
+        return OrganisationMapper::fromEntityWithDetail($organisation);
     }
 }

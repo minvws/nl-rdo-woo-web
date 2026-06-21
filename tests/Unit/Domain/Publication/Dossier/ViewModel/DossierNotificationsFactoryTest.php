@@ -11,12 +11,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
 use Shared\Tests\Unit\UnitTestCase;
-use Spatie\Snapshots\MatchesSnapshots;
 
 class DossierNotificationsFactoryTest extends UnitTestCase
 {
-    use MatchesSnapshots;
-
     private WooDecisionRepository&MockInterface $wooDecisionRepository;
     private DossierNotificationsFactory $factory;
 

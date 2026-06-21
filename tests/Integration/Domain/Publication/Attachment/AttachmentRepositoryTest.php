@@ -41,7 +41,7 @@ final class AttachmentRepositoryTest extends SharedWebTestCase
         $attachments = WooIndexAnnualReportStory::getPool('attachments');
 
         $expectedAttachmentUuids = array_map(
-            fn (AbstractAttachment $attachment): string => $attachment->getId()->toRfc4122(),
+            static fn (AbstractAttachment $attachment): string => $attachment->getId()->toRfc4122(),
             $attachments,
         );
 

@@ -19,8 +19,10 @@ use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
+use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Shared\ValueObject\ExternalId;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints\Unique;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -43,6 +45,8 @@ final readonly class DossierSupportService
         private MainDocumentService $mainDocumentService,
         private SubjectRepository $subjectRepository,
         private Security $security,
+        #[Autowire(param: 'enable_update_published_dossier_via_api')]
+        private bool $enableUpdatePublishedDossierViaApi = false,
     ) {
     }
 
@@ -53,14 +57,29 @@ final readonly class DossierSupportService
         }
 
         $subject = $this->subjectRepository->findByOrganisationAndId($organisation, $data->subjectId);
-        Assert::isInstanceOf($subject, Subject::class);
+        if (! $subject instanceof Subject) {
+            throw new ValidationException(
+                ConstraintViolationBuilder::createList(
+                    ConstraintViolationBuilder::forMissingEntity('subject', 'subjectId'),
+                ),
+            );
+        }
 
         return $subject;
     }
 
     public function getDepartment(Organisation $organisation, Uuid $departmentId): Department
     {
-        return $this->departmentRepository->findByOrganisationAndId($organisation, $departmentId);
+        $department = $this->departmentRepository->findByOrganisationAndId($organisation, $departmentId);
+        if (! $department instanceof Department) {
+            throw new ValidationException(
+                ConstraintViolationBuilder::createList(
+                    ConstraintViolationBuilder::forMissingEntity('department', 'departmentId'),
+                ),
+            );
+        }
+
+        return $department;
     }
 
     /**
@@ -90,18 +109,14 @@ final readonly class DossierSupportService
 
     public function validateDossier(AbstractDossier $dossier): void
     {
-        if (! $this->security->isGranted('AuthMatrix.dossier.update', $dossier)) {
-            throw new ValidationException(ConstraintViolationList::createFromMessage('dossier update is not allowed in non-concept state'));
+        if (! $this->enableUpdatePublishedDossierViaApi) {
+            if (! $this->security->isGranted('AuthMatrix.dossier.update', $dossier)) {
+                throw new ValidationException(ConstraintViolationList::createFromMessage('dossier update is not allowed in non-concept state'));
+            }
         }
 
         try {
-            $this->dossierService->validate($dossier, [
-                DossierValidationGroup::DETAILS,
-                DossierValidationGroup::DECISION,
-                DossierValidationGroup::DOCUMENTS,
-                DossierValidationGroup::PUBLICATION,
-                DossierValidationGroup::CONTENT,
-            ]);
+            $this->dossierService->validate($dossier, DossierValidationGroup::allNonWorkflowGroups());
         } catch (ValidationFailedException $validationFailedException) {
             $this->dossierService->refreshDossier($dossier);
             throw new ValidationException($validationFailedException->getViolations(), previous: $validationFailedException);
@@ -137,7 +152,7 @@ final readonly class DossierSupportService
                 $externalId = $abstractAttachment->getExternalId();
                 Assert::isInstanceOf($externalId, ExternalId::class);
 
-                return $externalId->__toString();
+                return $externalId->toString();
             },
             $attachments,
         );
@@ -178,21 +193,11 @@ final readonly class DossierSupportService
 
     public function prefixViolationsPropertyPath(ConstraintViolationListInterface $violations, string $prefix): ConstraintViolationList
     {
-        $constraintViolationList = new ConstraintViolationList();
+        $constraintViolationList = ConstraintViolationBuilder::createList();
         foreach ($violations as $violation) {
-            $constraintViolation = new ConstraintViolation(
-                $violation->getMessage(),
-                $violation->getMessageTemplate(),
-                $violation->getParameters(),
-                $violation->getRoot(),
-                $prefix . $violation->getPropertyPath(),
-                $violation->getInvalidValue(),
-                $violation->getPlural(),
-                $violation->getCode(),
-                $violation->getConstraint(),
-                $violation->getCause(),
+            $constraintViolationList->add(
+                ConstraintViolationBuilder::forViolation($violation, $prefix . $violation->getPropertyPath()),
             );
-            $constraintViolationList->add($constraintViolation);
         }
 
         return $constraintViolationList;

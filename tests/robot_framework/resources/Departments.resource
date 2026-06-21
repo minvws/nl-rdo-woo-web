@@ -45,7 +45,6 @@ Create New Department
     Uncheck Checkbox  id=department_public
   END
   Click Save Department
-  Success Alert Is Visible  Het bestuursorgaan is aangemaakt
   RETURN  ${short_tag}
 
 Update Department
@@ -78,18 +77,15 @@ Update Department
     Uncheck Checkbox  id=department_public
   END
   Click Save Department
-  Success Alert Is Visible  Het bestuursorgaan is aangepast
 
 Click Save Department
   Click  id=department_submit
+  Success Alert Is Visible  Het bestuursorgaan is
 
 Click Edit Department Landingpage
   [Arguments]  ${abbreviation}
   Click
   ...  //*[@data-e2e-name="departments-table"]//tr[contains(.,'${abbreviation}')]//a[@data-e2e-name="update-landing-page"]
-
-Click Title And Description Tab
-  Click  //*[@data-e2e-name="tabs-landingspagina-button-1"]
 
 Click Logo Tab
   Wait Until Keyword Succeeds  3x  1s  Inner Keyword Click Logo Tab

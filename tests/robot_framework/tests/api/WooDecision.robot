@@ -13,7 +13,8 @@ Test Tags           api  api-woodecision
 
 
 *** Variables ***
-${EXTERNAL_ID}  ${EMPTY}
+${EXTERNAL_ID}                  ${EMPTY}
+${STORED_DOCUMENT_EXTERNAL_ID}  ${EMPTY}
 
 
 *** Test Cases ***
@@ -27,7 +28,6 @@ Suite Setup
 WooDecision Test Case
   [Arguments]  ${steps}
   FOR  ${step}  IN  @{steps}
-    Log  ${step}[name]
     IF  '${step}[type]' == 'request'
       Create WooDecision
       ...  ${step}[expected_response_status]
@@ -96,6 +96,7 @@ Parse And Randomize Dossier Data
   Parse Dates  ${body}
   Generate Unique Document IDs  ${body}
   Set Random Grounds  ${body}  include_documents=${TRUE}
+  Resolve Stored External Id References  ${body}
 
 Parse Dates
   [Arguments]  ${body}
@@ -139,11 +140,6 @@ Send Put Request WooDecision
   ...  msg=WooDecision PUT returned ${put_response.status_code} while expecting ${expected_response_status}
   RETURN  ${put_response.json()}
 
-Verify WooDecision On Public
-  [Documentation]    This is not unused, it's referenced from the YAML file.
-  Suite Setup Generic
-  Search On Public For  ${DOSSIER_REFERENCE}  1
-
 Verify WooDecision In Admin
   [Documentation]    This is not unused, it's referenced from the YAML file.
   Suite Setup Generic
@@ -177,3 +173,93 @@ All WooDecision Documents Have Upload Status
 Change Document Date
   [Documentation]    This is not unused, it's referenced from the YAML file.
   Set To Dictionary  ${PREVIOUS_REQUEST_BODY}[documents][0]  documentDate  2000-01-01
+
+Store WooDecision Document Nr
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  ${get_response} =  GET On Session
+  ...  alias=publication_api
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/external/${EXTERNAL_ID}
+  VAR  ${STORED_DOCUMENT_NR} =  ${get_response.json()}[documents][0][documentNr]  scope=test
+
+Change Document ID
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  ${new_document_id} =  FakerLibrary.Random Int  min=1  max=99999
+  ${new_document_id} =  Convert To String  ${new_document_id}
+  Set To Dictionary  ${PREVIOUS_REQUEST_BODY}[documents][0]  documentId  ${new_document_id}
+
+Verify WooDecision Document Nr Changed
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  ${get_response} =  GET On Session
+  ...  alias=publication_api
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/external/${EXTERNAL_ID}
+  VAR  ${document_nr} =  ${get_response.json()}[documents][0][documentNr]
+  Should Not Be Equal  ${document_nr}  ${STORED_DOCUMENT_NR}
+
+Store WooDecision Document External Id
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  ${get_response} =  GET On Session
+  ...  alias=publication_api
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/external/${EXTERNAL_ID}
+  VAR  ${STORED_DOCUMENT_EXTERNAL_ID} =  ${get_response.json()}[documents][0][externalId]  scope=test
+
+Resolve Stored External Id References
+  [Documentation]    It replaces any occurrence of <STORED DOCUMENT EXTERNAL ID> in the refersTo lists with the actual stored external id from the previous request,
+  ...    allowing to link documents together across multiple requests.
+  [Arguments]  ${body}
+  IF  ${body}[documents]
+    FOR  ${document}  IN  @{body}[documents]
+      VAR  ${refers_to} =  ${document}[refersTo]
+      IF  $refers_to and '<STORED DOCUMENT EXTERNAL ID>' in $refers_to
+        ${new_refers_to} =  Evaluate
+        ...  [$STORED_DOCUMENT_EXTERNAL_ID if v == '<STORED DOCUMENT EXTERNAL ID>' else v for v in $refers_to]
+        Set To Dictionary  ${document}  refersTo  ${new_refers_to}
+      END
+    END
+  END
+
+Verify HAL Links Are Reachable
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  Verify HAL Links Are Reachable For Dossier  woo-decision  has_documents=${TRUE}
+
+Deeply Validate WooDecision On Public
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  Suite Setup Generic
+  Navigate To Dossier On Public  ${DOSSIER_REFERENCE}
+  Verify WooDecision Dossier Metadata On Public
+  Download WooDecision Inventory
+  Download WooDecision Main Document
+  Download WooDecision Documents
+  Bulk Download WooDecision Documents
+
+Verify WooDecision Dossier Metadata On Public
+  ${reference_lower} =  Convert To Lower Case  ${DOSSIER_REFERENCE}
+  Get Text  //*[@data-e2e-name="dossier-metadata-title"]  contains  ${DOSSIER_REFERENCE}
+  Get Text  //*[@data-e2e-name="dossier-metadata-number"]  contains  ${reference_lower}
+
+Download WooDecision Inventory
+  Generic Download Click  //*[@data-e2e-name="download-inventory-file-link"]
+
+Download WooDecision Main Document
+  Click  //*[@data-e2e-name="main-document-detail-link"]
+  Generic Download Click  //a[@data-e2e-name="download-file-link"]
+  Go Back
+
+Download WooDecision Documents
+  ${doc_count} =  Get Element Count  //*[@data-e2e-name="tabs-documenten-content-1"]//tbody//tr
+  FOR  ${i}  IN RANGE  ${doc_count}
+    ${index} =  Evaluate  ${i} + 1
+    Click  (//*[@data-e2e-name="tabs-documenten-content-1"]//tbody//tr)[${index}]//td[3]//a
+    Generic Download Click  //a[@data-e2e-name="download-file-link"]
+    Go Back
+  END
+
+Bulk Download WooDecision Documents
+  ${dossier_url} =  Get Url
+  Click  //*[@data-e2e-name="download-documents-button"]
+  Wait Until Keyword Succeeds  5x  2s  Get Element  //a[@data-e2e-name="download-file-link"]
+  Generic Download Click  //a[@data-e2e-name="download-file-link"]  zip
+  Go To  ${dossier_url}
+
+UploadStatus Is No Upload Required
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  Verify WooDecision Document Processing  no_upload_required

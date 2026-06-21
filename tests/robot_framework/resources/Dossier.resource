@@ -7,13 +7,14 @@ Documentation       Resource file containing custom keywords for Decision Dossie
 Library             DateTime
 Library             Browser
 Library             DebugLibrary
+Library             FakerLibrary
 Resource            Admin.resource
 Resource            Public.resource
-Resource            WooDecision.resource
 
 
 *** Variables ***
 ${CURRENT_DATE}     ${EMPTY}
+${ENVIRONMENT}      ${EMPTY}
 
 
 *** Keywords ***
@@ -22,6 +23,7 @@ Fill Out Basic Details
   ...  ${date_to}=2023-01-31
   ...  ${type}=${EMPTY}
   ...  ${prefix}=E2E-A
+  ...  ${department}=${EMPTY}
   Generate Dossier Reference Number
   Fill Text  id=details_title  Robot Admin ${DOSSIER_REFERENCE}
   IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement' or '${type}' == 'other-publication' or '${type}' == 'advice' or '${type}' == 'request-for-advice'
@@ -32,7 +34,11 @@ Fill Out Basic Details
     Select Options By  id=details_date_from  value  ${date_from}
     Select Options By  id=details_date_to  value  ${date_to}
   END
-  Select Options By  //select[@name="details[departments][0]"]  index  1
+  IF  '${department}' != '${EMPTY}'
+    Select Options By  //select[@name="details[departments][0]"]  text  ${department}
+  ELSE
+    Select Random Department
+  END
   IF  '${type}' == 'woo-decision'
     Check Checkbox  id=details_publication_reason_1
   END
@@ -40,11 +46,22 @@ Fill Out Basic Details
   Select Options By  id=details_documentPrefix_documentPrefix  text  ${prefix}
   Fill Text  id=details_dossierNr  robot-admin-${DOSSIER_REFERENCE}
   Click  "Opslaan en verder"
+  Assert No Input Errors
+
+Select Random Department
+  ${nr_of_departments} =  Wait Until Keyword Succeeds  3s  250ms  Get Element Count  //select[@name="details[departments][0]"]/option  >  0
+  ${max_index} =  Evaluate  max(0, ${nr_of_departments} - 1)
+  ${min_index} =  Evaluate  min(1, ${max_index})
+  ${random_index} =  Evaluate  # index 0 is a placeholder, skipped when possible
+  ...  random.randint(${min_index}, ${max_index})
+  Select Options By  //select[@name="details[departments][0]"]  index  ${random_index}
 
 Select Random Subject
   ${nr_of_subjects} =  Get Element Count  //select[@name="details[subject]"]/option
-  ${random_number} =  Evaluate  random.randint(1, ${nr_of_subjects})  random
-  ${random_index} =  Evaluate  ${random_number} - 1
+  ${max_index} =  Evaluate  max(0, ${nr_of_subjects} - 1)
+  ${min_index} =  Evaluate  min(1, ${max_index})
+  ${random_index} =  Evaluate  # index 0 is a placeholder, skipped when possible
+  ...  random.randint(${min_index}, ${max_index})
   Select Options By  //select[@name="details[subject]"]  index  ${random_index}
 
 Generate Dossier Reference Number
@@ -96,6 +113,13 @@ Publish Dossier And Return To Admin Home
   ELSE IF  "${publication_status}" == "Concept"
     Click Publications
   END
+
+Fill Publication Date
+  [Arguments]  ${date}
+  ${day} =  Convert Date  ${date}  result_format=%d
+  ${month} =  Convert Date  ${date}  result_format=%m
+  ${year} =  Convert Date  ${date}  result_format=%Y
+  Type Text  id=publish_publication_date  ${day}${month}${year}
 
 Click Publications
   Click  //*[@data-e2e-name="nav-publications"]
@@ -165,3 +189,6 @@ Verify Dossier Document Count
   Get Text  //*[@data-e2e-name="tabs-documenten-button-2"]  contains  (${nr_of_partially_published_docs})
   Get Text  //*[@data-e2e-name="tabs-documenten-button-3"]  contains  (${nr_of_unpublished_docs})
   Get Text  //*[@data-e2e-name="tabs-documenten-button-4"]  contains  (${nr_of_not_yet_online_docs})
+
+Assert No Input Errors
+  Get Element Count  //*[contains(@class,"js-input-errors")]  should be  0

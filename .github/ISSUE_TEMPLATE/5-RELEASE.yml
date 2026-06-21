@@ -17,6 +17,13 @@ body:
       label: ElasticSearch rollover required?
       options:
       - label: 'Yes'
+      - label: 'No'
+  - type: checkboxes
+    attributes:
+      label: Database updates required?
+      options:
+      - label: 'Yes'
+      - label: 'No'
   - type: textarea
     attributes:
       label: 'Actions required before, during or right after deployment:'
@@ -32,7 +39,6 @@ body:
         - label: Create release notes and a release summary
         - label: 'Check: are there any changes that may have an effect on the DPIA or otherwise on privacy? If so: discuss with privacy and discuss changes/implications?'
         - label: 'Check: will the release trigger additional cost? If so: confirm budget availability or request additional budget.'
-        - label: 'Check: are there any changes that may have an effect on security? If so: discuss with security and get **approval**'
         - label: 'Check: have any new features been checked against accessibility guidelines?'
   - type: checkboxes
     id: communication
@@ -40,10 +46,10 @@ body:
       label: Communication
       description: Communication checks for this release
       options:
-        - label: Notify relevant stakeholders
+        - label: 'Notify relevant stakeholders (open: we will notify relevant stakeholders after IBMF approval)'
         - label: 'Check: is any public notification needed? If so: communication requested?'
         - label: Adjust the software manual
-        - label: Inform the helpdesk
+        - label: 'Inform the helpdesk (open: we will inform the helpdesk after IBMF approval)'
   - type: checkboxes
     id: qa
     attributes:
@@ -55,6 +61,14 @@ body:
         - label: Discuss changes/issues with QA to ensure accurate/rapid testing
         - label: Test report created ([See template](https://github.com/minvws/nl-rdo-quality-coordination/blob/main/Kwaliteitsmanagement/Kwaliteitsaanpak/Testrapport/Testrapport.md))
         - label: Arrange any required post-release tests and/or monitoring.
+  - type: checkboxes
+    id: security
+    attributes:
+      label: Security
+      description: Security (liaison) checks for this release
+      options:
+        - label: If it is a patch release, discuss changes with liaison
+        - label: If it is a minor or major release, liaison must comment if pentest, SCSA or nothing is needed
   - type: checkboxes
     id: dependencies
     attributes:
@@ -72,7 +86,7 @@ body:
       description: Roll-out checks for this release
       options:
         - label: Rollback procedure present?
-        - label: Is a release date present?
+        - label: 'Is a release date present? (open: we will set a release date after IBMF approval)'
         - label: Are there any dependencies and/or is a specific release order required?
         - label: '*Approval PO*'
         - label: '*Approval IBMF*, add screenshot of checklist and explanation of any unchecked or striked out items'

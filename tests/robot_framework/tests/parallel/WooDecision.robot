@@ -3,6 +3,7 @@ Documentation       Tests for the WooDecision information category.
 Resource            ../../resources/Dossier.resource
 Resource            ../../resources/Organisations.resource
 Resource            ../../resources/Setup.resource
+Resource            ../../resources/WooDecision.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
 Test Setup          Go To Admin
@@ -115,7 +116,7 @@ In A Public Dossier With N Public And M Non-public Documents, Replace The Produc
   ...  files/woodecision/productierapport - 9 openbaar 1 niet openbaar.xlsx
   ...  1 bestaand document wordt aangepast.
   Verify Document Upload Remaining  Nog te uploaden: 1 van 9 documenten.
-  Check if public page has notification  1008
+  Check If Public Page Has Notification  1008
   Upload And Process Documents  files/woodecision/1008.pdf
   Wait For Elements State  //div[@data-e2e-name="has-changes"]  attached  timeout=30s
   Get Text  //div[@data-e2e-name="has-changes"]  contains  1 document toevoegen
@@ -340,10 +341,13 @@ Replace Production Report
   Verify Production Report Replace  Het productierapport is succesvol vervangen.
   Click Continue To Documents
 
-Check if public page has notification
+Check If Public Page Has Notification
   [Arguments]  ${document_id}
-  ${location}  Get Url
+  ${location} =  Get Url
   Open Document In Dossier  ${document_id}
   Click Public URL
-  Get Text  //*[@data-e2e-name="main-content"]  contains  Dit bestand zal spoedig aangeleverd worden: probeert u later nog eens.
+  Get Text
+  ...  //*[@data-e2e-name="main-content"]
+  ...  contains
+  ...  Dit bestand zal spoedig aangeleverd worden: probeert u later nog eens.
   Go To  ${location}

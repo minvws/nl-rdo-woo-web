@@ -19,10 +19,10 @@ class PlainDateType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addModelTransformer(new CallbackTransformer(
-            function (?PlainDate $date): string {
+            static function (?PlainDate $date): string {
                 return $date ? $date->toString() : '';
             },
-            function (?string $value): ?PlainDate {
+            static function (?string $value): ?PlainDate {
                 return is_string($value) && $value !== '' ? PlainDate::create($value) : null;
             },
         ));
