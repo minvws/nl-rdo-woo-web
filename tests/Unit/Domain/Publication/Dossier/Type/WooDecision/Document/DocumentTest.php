@@ -30,12 +30,12 @@ final class DocumentTest extends UnitTestCase
         self::assertTrue($document->getDossiers()->isEmpty());
     }
 
-    public function testSetAndGetDocumentNr(): void
+    public function testSetAndGetDocumentNumber(): void
     {
         $document = new Document();
 
-        $document->setDocumentNr($nr = 'foo');
-        self::assertEquals($nr, $document->getDocumentNr());
+        $document->setDocumentNumber($nr = 'foo');
+        self::assertEquals($nr, $document->getDocumentNumber());
     }
 
     public function testSetAndGetDocumentDate(): void

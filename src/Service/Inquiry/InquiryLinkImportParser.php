@@ -45,9 +45,9 @@ class InquiryLinkImportParser
                 [',', ';'],
             );
 
-            $documentNr = sprintf('%s-%s-%s', $prefix->getPrefix(), $matter, $documentId);
+            $documentNumber = sprintf('%s-%s-%s', $prefix->getPrefix(), $matter, $documentId);
 
-            yield $documentNr => $inquiryNumbers;
+            yield $documentNumber => $inquiryNumbers;
         }
     }
 

@@ -271,8 +271,7 @@ testcases:
           decision: not_public
         expected_publication_status: published
 
-- title: Non-unique document IDs  # https://github.com/minvws/nl-rdo-woo-web-private/issues/6183
-  tags: [failing]
+- title: Non-unique document IDs
   steps:
     - name: Create dossier A
       request:
@@ -281,7 +280,7 @@ testcases:
             - externalId: <PYTHON GUID>
               inquiryNumbers: [E2E-CASE-001]
               documentDate: "2020-06-01"
-              documentId: DOCUMENT-A
+              documentId: <ROBOT RANDOM INT>
               familyId: 111
               fileName: quality.doc
               grounds: [<ROBOT RANDOMIZE>]
@@ -298,7 +297,11 @@ testcases:
           documents:
             - externalId: <PYTHON GUID>
               file: files/dummy.txt
+              expected_response_status: 204
         expected_response_status: 200
+    - name: Store documentId from dossier A
+      keyword:
+        name: Store WooDecision Document ID
     - name: Create dossier B
       request:
         body:
@@ -306,7 +309,7 @@ testcases:
             - externalId: <PYTHON GUID>
               inquiryNumbers: [E2E-CASE-001]
               documentDate: "2020-06-01"
-              documentId: DOCUMENT-A
+              documentId: <STORED DOCUMENT ID>
               familyId: 111
               fileName: quality.doc
               grounds: [<ROBOT RANDOMIZE>]
@@ -515,7 +518,7 @@ testcases:
           documents: []
         expected_publication_status: concept
 
-- title: Changing document ID updates documentNr
+- title: Changing document ID updates documentNumber
   steps:
     - name: Create dossier and upload document
       request:
@@ -550,7 +553,7 @@ testcases:
         name: Wait For WooDecision Document Processing
         args:
           - processed
-    - name: Store current documentNr
+    - name: Store current documentNumber
       keyword:
         name: Store WooDecision Document Nr
     - name: Change document ID in metadata
@@ -564,7 +567,7 @@ testcases:
           attachments: []
           documents: []
         expected_publication_status: concept
-    - name: Verify documentNr changed after updating documentId
+    - name: Verify documentNumber changed after updating documentId
       keyword:
         name: Verify WooDecision Document Nr Changed
 
@@ -679,7 +682,6 @@ testcases:
         expected_response_status: 422
 
 - title: Document links contains an invalid URL
-  tags: [failing]  #  https://github.com/minvws/nl-rdo-woo-web-private/issues/7140
   steps:
     - name: Create dossier
       request:

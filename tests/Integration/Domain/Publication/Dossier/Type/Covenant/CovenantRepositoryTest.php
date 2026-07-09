@@ -23,7 +23,7 @@ final class CovenantRepositoryTest extends SharedWebTestCase
         $result = self::fromContainer(CovenantRepository::class)
             ->getSearchResultViewModel(
                 $covenant->getDocumentPrefix(),
-                $covenant->getDossierNr(),
+                $covenant->getDossierNumber(),
                 ApplicationMode::PUBLIC,
             );
 

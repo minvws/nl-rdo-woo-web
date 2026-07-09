@@ -57,12 +57,12 @@ readonly class InquiryLinkImporter
         InquiryLinkImportResult $result,
     ): void {
         $rowNr = 0;
-        foreach ($this->parser->parse($uploadedFile, $prefix) as $documentNr => $inquiryNumberValues) {
+        foreach ($this->parser->parse($uploadedFile, $prefix) as $documentNumber => $inquiryNumberValues) {
             $rowNr++;
             try {
-                $documentInquiryNumbers = $this->documentRepository->getDocumentInquiryNumbers($documentNr);
+                $documentInquiryNumbers = $this->documentRepository->getDocumentInquiryNumbers($documentNumber);
                 if ($documentInquiryNumbers->isDocumentNotFound()) {
-                    throw InquiryLinkImportException::forMissingDocument($documentNr);
+                    throw InquiryLinkImportException::forMissingDocument($documentNumber);
                 }
 
                 try {

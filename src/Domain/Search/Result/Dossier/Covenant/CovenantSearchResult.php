@@ -12,7 +12,7 @@ readonly class CovenantSearchResult extends AbstractDossierTypeSearchResult
 {
     public function __construct(
         Uuid $id,
-        string $dossierNr,
+        string $dossierNumber,
         string $documentPrefix,
         string $title,
         public ?string $summary,
@@ -22,6 +22,6 @@ readonly class CovenantSearchResult extends AbstractDossierTypeSearchResult
         public ?PlainDate $dateFrom,
         public ?PlainDate $dateTo,
     ) {
-        parent::__construct($id, $dossierNr, $documentPrefix, $title);
+        parent::__construct($id, $dossierNumber, $documentPrefix, $title);
     }
 }

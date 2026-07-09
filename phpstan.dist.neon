@@ -25,6 +25,7 @@ parameters:
         containerXmlPath: var/cache/minvws/shared/dev/Shared_KernelMinvwsSharedDevDebugContainer.xml
     faker:
         providerClasses:
+            - Shared\Tests\Faker\BaseFakerProvider
             - Shared\Tests\Faker\GroundsFakerProvider
             - Shared\Tests\Faker\DateTimeFakerProvider
             - Shared\Tests\Faker\FileFakerProvider

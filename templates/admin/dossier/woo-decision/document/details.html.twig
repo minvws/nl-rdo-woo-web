@@ -9,11 +9,11 @@
             {% include 'admin/shared/flash-messages.html.twig' %}
 
             <twig:Admin:LeftAndRight>
-                <h2 class="bhr-title" data-e2e-name="document-nr">{{ document.documentNr }}</h2>
+                <h2 class="bhr-title" data-e2e-name="document-nr">{{ document.documentNumber }}</h2>
 
                 <twig:block name="right">
                     {% if workflow.canWithdraw %}
-                        <a href="{{ path('app_admin_dossier_woodecision_document_withdraw', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) }}" class="bhr-btn-bordered-primary" data-e2e-name="retract">Intrekken</a>
+                        <a href="{{ path('app_admin_dossier_woodecision_document_withdraw', {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, documentNumber: document.documentNumber}) }}" class="bhr-btn-bordered-primary" data-e2e-name="retract">Intrekken</a>
                     {% endif %}
                 </twig:block>
             </twig:Admin:LeftAndRight>
@@ -40,7 +40,7 @@
                         <th scope="row">Publieke url</th>
                         <td>
                             {% if dossier.status.isPublished %}
-                                {% set url = PUBLIC_BASE_URL ~ path('app_document_detail', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr, documentId: document.documentNr}) %}
+                                {% set url = PUBLIC_BASE_URL ~ path('app_document_detail', {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, documentNumber: document.documentNumber}) %}
                                 <a class="bhr-a" href="{{ url }}" data-e2e-name="public-url">{{ url }}</a>
                             {% else %}
                                 Nog niet beschikbaar

@@ -34,14 +34,14 @@ final class DossierViewFactoryTest extends UnitTestCase
     public function testGetRecentDossiers(): void
     {
         $dossierA = Mockery::mock(AbstractDossier::class);
-        $dossierA->expects('getDossierNr')->andReturn('foo-123');
+        $dossierA->expects('getDossierNumber')->andReturn('foo-123');
         $dossierA->expects('getDocumentPrefix')->andReturn('BAR');
         $dossierA->expects('getTitle')->andReturn(DossierTitle::create('foo bar baz'));
         $dossierA->expects('getType')->andReturn($typeA = DossierType::COVENANT);
         $dossierA->expects('getPublicationDate')->times(2)->andReturn(PlainDate::today());
 
         $dossierB = Mockery::mock(AbstractDossier::class);
-        $dossierB->expects('getDossierNr')->andReturn('foo-123');
+        $dossierB->expects('getDossierNumber')->andReturn('foo-123');
         $dossierB->expects('getDocumentPrefix')->andReturn('BAR');
         $dossierB->expects('getTitle')->andReturn(DossierTitle::create('foo bar baz'));
         $dossierB->expects('getType')->andReturn($typeB = DossierType::WOO_DECISION);
@@ -62,14 +62,14 @@ final class DossierViewFactoryTest extends UnitTestCase
     public function testGetRecentDossiersForDepartment(): void
     {
         $dossierA = Mockery::mock(AbstractDossier::class);
-        $dossierA->expects('getDossierNr')->andReturn('foo-123');
+        $dossierA->expects('getDossierNumber')->andReturn('foo-123');
         $dossierA->expects('getDocumentPrefix')->andReturn('BAR');
         $dossierA->expects('getTitle')->andReturn(DossierTitle::create('foo bar baz'));
         $dossierA->expects('getType')->andReturn($typeA = DossierType::COVENANT);
         $dossierA->expects('getPublicationDate')->times(2)->andReturn(PlainDate::today());
 
         $dossierB = Mockery::mock(AbstractDossier::class);
-        $dossierB->expects('getDossierNr')->andReturn('foo-123');
+        $dossierB->expects('getDossierNumber')->andReturn('foo-123');
         $dossierB->expects('getDocumentPrefix')->andReturn('BAR');
         $dossierB->expects('getTitle')->andReturn(DossierTitle::create('foo bar baz'));
         $dossierB->expects('getType')->andReturn($typeB = DossierType::WOO_DECISION);

@@ -2,9 +2,9 @@
     "body": {
         "docvalue_fields": [
             "type",
-            "document_nr",
+            "document_number",
             "document_prefix",
-            "dossier_nr"
+            "dossier_number"
         ],
         "_source": false,
         "sort": [
@@ -62,7 +62,7 @@
                                 },
                                 {
                                     "term": {
-                                        "document_nr": {
+                                        "document_number": {
                                             "value": "foo",
                                             "boost": 5,
                                             "case_insensitive": true
@@ -139,7 +139,7 @@
                                 },
                                 {
                                     "term": {
-                                        "prefixed_dossier_nr": {
+                                        "prefixed_dossier_number": {
                                             "value": "foo",
                                             "boost": 5,
                                             "case_insensitive": true
@@ -148,7 +148,7 @@
                                 },
                                 {
                                     "term": {
-                                        "dossier_nr": {
+                                        "dossier_number": {
                                             "value": "foo",
                                             "boost": 5,
                                             "case_insensitive": true
@@ -227,7 +227,7 @@
                                                                         "filter": [
                                                                             {
                                                                                 "terms": {
-                                                                                    "dossiers.prefixed_dossier_nr": [
+                                                                                    "dossiers.prefixed_dossier_number": [
                                                                                         "foo-123"
                                                                                     ]
                                                                                 }
@@ -263,7 +263,7 @@
                                                                 "filter": [
                                                                     {
                                                                         "terms": {
-                                                                            "prefixed_dossier_nr": [
+                                                                            "prefixed_dossier_number": [
                                                                                 "foo-123"
                                                                             ]
                                                                         }

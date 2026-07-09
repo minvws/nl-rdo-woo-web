@@ -38,7 +38,7 @@ class DocumentComparatorTest extends UnitTestCase
 
     public function testDocumentCompare(): void
     {
-        $documentNr = Mockery::mock(DocumentNumber::class);
+        $documentNumber = Mockery::mock(DocumentNumber::class);
 
         $document = Mockery::mock(Document::class);
         $document->expects('getJudgement')->times(2)->andReturn(Judgement::NOT_PUBLIC);
@@ -54,7 +54,7 @@ class DocumentComparatorTest extends UnitTestCase
         $document->expects('getFileInfo->getName')->times(2)->andReturn('foo.txt');
         $document->expects('getInquiries')->times(2)->andReturn(new ArrayCollection());
         $document->expects('getRefersTo')->times(2)->andReturn(new ArrayCollection());
-        $document->expects('getDocumentNr')->times(2)->andReturn($documentNr);
+        $document->expects('getDocumentNumber')->times(2)->andReturn($documentNumber);
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getJudgement')->times(2)->andReturn(Judgement::ALREADY_PUBLIC);
@@ -81,7 +81,7 @@ class DocumentComparatorTest extends UnitTestCase
 
     public function testDocumentCompareIgnoresInquiryNumberRemoval(): void
     {
-        $documentNr = Mockery::mock(DocumentNumber::class);
+        $documentNumber = Mockery::mock(DocumentNumber::class);
         $inquiry = Mockery::mock(Inquiry::class);
         $inquiry->expects('getInquiryNumber')->times(2)->andReturn('foo-123');
 
@@ -99,7 +99,7 @@ class DocumentComparatorTest extends UnitTestCase
         $document->expects('getFileInfo->getName')->times(2)->andReturn('foo.txt');
         $document->expects('getInquiries')->times(2)->andReturn(new ArrayCollection([$inquiry]));
         $document->expects('getRefersTo')->times(2)->andReturn(new ArrayCollection());
-        $document->expects('getDocumentNr')->times(2)->andReturn($documentNr);
+        $document->expects('getDocumentNumber')->times(2)->andReturn($documentNumber);
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getJudgement')->times(2)->andReturn(Judgement::NOT_PUBLIC);
@@ -142,14 +142,14 @@ class DocumentComparatorTest extends UnitTestCase
 
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
-        $document->expects('getDocumentNr')->andReturn('bar-123');
+        $document->expects('getDocumentNumber')->andReturn('bar-123');
         $document->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('123'));
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123']);
 
         $referredDocument = Mockery::mock(Document::class);
-        $referredDocument->expects('getDocumentNr')->andReturn('foo-123');
+        $referredDocument->expects('getDocumentNumber')->andReturn('foo-123');
 
         $this->repository->expects('findByDocumentNumber')->andReturn($referredDocument);
 
@@ -164,14 +164,14 @@ class DocumentComparatorTest extends UnitTestCase
 
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
-        $document->expects('getDocumentNr')->times(2)->andReturn('bar-123');
+        $document->expects('getDocumentNumber')->times(2)->andReturn('bar-123');
         $document->expects('getDocumentId')->times(6)->andReturn(DocumentId::create('123'));
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123', 'invalid-456']);
 
         $referredDocument = Mockery::mock(Document::class);
-        $referredDocument->expects('getDocumentNr')->andReturn('foo-123');
+        $referredDocument->expects('getDocumentNumber')->andReturn('foo-123');
 
         $this->repository->expects('findByDocumentNumber')->andReturn($referredDocument);
         $this->repository->expects('findByDocumentNumber')->andReturnNull();

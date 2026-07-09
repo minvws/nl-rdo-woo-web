@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Department\Department;
+use Shared\Domain\HasId;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
@@ -26,7 +27,7 @@ use function array_map;
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['name'], message: 'This organisation already exists.')]
-class Organisation
+class Organisation implements HasId
 {
     use TimestampableTrait;
 

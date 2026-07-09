@@ -33,7 +33,7 @@ final readonly class UrlMapper
             name: 'app_dossier_file_download',
             parameters: [
                 'prefix' => $rawUrl->documentPrefix,
-                'dossierId' => $rawUrl->dossierNr,
+                'dossierNumber' => $rawUrl->dossierNumber,
                 'type' => $rawUrl->source->value,
                 'id' => $rawUrl->id,
             ],

@@ -37,7 +37,7 @@ final class WooDecisionFactory extends PersistentObjectFactory
         }
 
         return [
-            'dossierNr' => self::faker()->bothify('DOSSIER-####-#####'),
+            'dossierNumber' => self::faker()->bothify('DOSSIER-####-#####'),
             'title' => DossierTitle::create(self::faker()->sentence()),
             'summary' => self::faker()->sentences(4, true),
             'documentPrefix' => self::DEFAULT_PREFIX,

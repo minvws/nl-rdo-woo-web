@@ -1,5 +1,5 @@
 # https://taskfile.dev
-version: "3.48.0"
+version: '3.50.0'
 
 vars:
   MINIO_ALIAS: local
@@ -11,30 +11,30 @@ vars:
     - assets-bucket
 
 tasks:
-  minio:create-buckets:
+  create-buckets:
     desc: Create the default buckets
     cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin mc ready local" }
+      - task: :dc:exec:admin
+        vars: { SUB_CMD: 'mc ready local' }
       - for:
           matrix:
-            TENANT: { ref: .TENANTS }
+            TENANT: { ref: .LOCAL_TENANTS }
             BUCKET: { ref: .MINIO_BUCKETS }
-        task: dc:shell
-        vars: { SUB_CMD: "admin mc mb {{.MINIO_ALIAS}}/{{.ITEM.TENANT}}-{{.ITEM.BUCKET}} --ignore-existing" }
+        task: :dc:exec:admin
+        vars: { SUB_CMD: 'mc mb {{ .MINIO_ALIAS }}/{{ .ITEM.TENANT }}-{{ .ITEM.BUCKET }} --ignore-existing' }
     requires:
-      vars: [TENANTS, MINIO_BUCKETS]
+      vars: [LOCAL_TENANTS, MINIO_BUCKETS]
 
-  minio:clear-buckets:
+  clear-buckets:
     desc: Clear the default buckets
     cmds:
-      - echo "Clearing Minio buckets... "
+      - echo 'Clearing Minio buckets...'
       - for:
           matrix:
-            TENANT: { ref: .TENANTS }
+            TENANT: { ref: .LOCAL_TENANTS }
             BUCKET: { ref: .MINIO_BUCKETS }
-        task: dc:shell
-        vars: { SUB_CMD: "admin mc rm {{.MINIO_ALIAS}}/{{.ITEM.TENANT}}-{{.ITEM.BUCKET}} --recursive --force" }
-      - echo "Done clearing Minio buckets."
+        task: :dc:exec:admin
+        vars: { SUB_CMD: 'mc rm {{ .MINIO_ALIAS }}/{{ .ITEM.TENANT }}-{{ .ITEM.BUCKET }} --recursive --force' }
+      - echo 'Done clearing Minio buckets.'
     requires:
-      vars: [TENANTS, MINIO_BUCKETS]
+      vars: [LOCAL_TENANTS, MINIO_BUCKETS]

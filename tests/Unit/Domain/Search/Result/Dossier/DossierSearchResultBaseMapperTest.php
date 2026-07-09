@@ -32,7 +32,7 @@ class DossierSearchResultBaseMapperTest extends UnitTestCase
     public function testMapReturnsNullWhenPrefixIsMissing(): void
     {
         $this->hit->expects('getStringOrNull')->with('[fields][document_prefix][0]')->andReturnNull();
-        $this->hit->expects('getStringOrNull')->with('[fields][dossier_nr][0]')->andReturnNull();
+        $this->hit->expects('getStringOrNull')->with('[fields][dossier_number][0]')->andReturnNull();
 
         $this->assertNull($this->mapper->map($this->hit, $this->repository, ElasticDocumentType::ANNUAL_REPORT));
     }
@@ -40,7 +40,7 @@ class DossierSearchResultBaseMapperTest extends UnitTestCase
     public function testMapReturnsNullWhenViewModelCannotBeLoaded(): void
     {
         $this->hit->expects('getStringOrNull')->with('[fields][document_prefix][0]')->andReturn('foo');
-        $this->hit->expects('getStringOrNull')->with('[fields][dossier_nr][0]')->andReturn('bar');
+        $this->hit->expects('getStringOrNull')->with('[fields][dossier_number][0]')->andReturn('bar');
 
         $this->repository
             ->expects('getSearchResultViewModel')
@@ -62,7 +62,7 @@ class DossierSearchResultBaseMapperTest extends UnitTestCase
     {
         $this->hit = Mockery::mock(TypeArray::class);
         $this->hit->expects('getStringOrNull')->with('[fields][document_prefix][0]')->andReturn('foo');
-        $this->hit->expects('getStringOrNull')->with('[fields][dossier_nr][0]')->andReturn('bar');
+        $this->hit->expects('getStringOrNull')->with('[fields][dossier_number][0]')->andReturn('bar');
         $this->hit->expects('exists')->with('[highlight][title]')->andReturnTrue();
         $this->hit->expects('getTypeArray->toArray')->andReturn(['x', 'y']);
         $this->hit->expects('exists')->with('[highlight][summary]')->andReturnFalse();

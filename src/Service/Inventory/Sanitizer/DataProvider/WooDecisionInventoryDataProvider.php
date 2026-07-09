@@ -38,6 +38,6 @@ readonly class WooDecisionInventoryDataProvider implements InventoryDataProvider
 
     public function getFilename(): string
     {
-        return 'inventarislijst-' . $this->dossier->getDossierNr();
+        return 'inventarislijst-' . $this->dossier->getDossierNumber();
     }
 }

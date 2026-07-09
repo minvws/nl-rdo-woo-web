@@ -119,7 +119,7 @@ To set up an initial user, you can use one of the following methods:
 Run this command:
 
 ```shell
-task app:user:create -- "email@example.org" "full name" --super-admin
+task console:user:create -- "email@example.org" "full name" --super-admin
 ```
 
 ### b. Using the shell

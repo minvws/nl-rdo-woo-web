@@ -17,7 +17,7 @@ readonly class DownloadFilenameGenerator
         if ($entity instanceof Document) {
             return sprintf(
                 '%s.%s',
-                $entity->getDocumentNr(),
+                $entity->getDocumentNumber(),
                 $entity->getFileInfo()->getType(),
             );
         }

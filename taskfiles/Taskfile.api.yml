@@ -1,31 +1,30 @@
 # https://taskfile.dev
-version: "3.48.0"
+version: '3.50.0'
 
 vars:
   SPECTRAL_RULE_FILE: API-Design-Rules.spectral.yml
+  OPENAPI_SPEC: public/api/publication/v1/openapi.json
 
 tasks:
   lint:download-ruleset:
     desc: Download the Spectral lint ruleset
     prompt: >
-      This will download and overwrite the current "./{{.SPECTRAL_RULE_FILE}}". The currently committed versio might
+      This will download and overwrite the current "./{{.SPECTRAL_RULE_FILE}}". The currently committed version might
       contain manuall changes. Make sure to run the api lint after downloading a new version and optionally re-apply
       some or all of the manual fixes!
     cmds:
       - curl -fL
-        https://logius-standaarden.github.io/API-Design-Rules/media/linter.yaml
+        https://gitdocumentatie.logius.nl/publicatie/api/adr/2.2.1/media/linter.yaml
         -o {{.SPECTRAL_RULE_FILE}}
 
-  lint:
-    desc: Lint the Publication OpenAPI specification using Spectral
+  openapi:export:
+    desc: Generate the Publication OpenAPI specification file
     cmds:
-      - task: :dc
-        vars:
-          SUB_CMD: run --rm spectral lint http://public-minvws.local/api/publication/v1/openapi.json {{.CLI_ARGS}}
+      - task: :composer:script:openapi:export
 
-  lint:shell:
-    desc: Open a shell within the Spectral container
+  lint:
+    desc: Lint the generated Publication OpenAPI specification using Spectral
     cmds:
-      - task: :dc
+      - task: :dc:run:spectral
         vars:
-          SUB_CMD: run --rm --entrypoint='' spectral /bin/sh
+          SUB_CMD: lint api/publication/v1/openapi.json {{.CLI_ARGS}}

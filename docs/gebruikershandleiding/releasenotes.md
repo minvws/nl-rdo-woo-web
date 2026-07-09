@@ -2,6 +2,45 @@
 
 # Release notes
 
+## v3.1.0
+
+### Balie
+
+- **Adviesaanvraag weer beschikbaar voor alle gebruikers**: Het aanmaken van een publicatie van het type 'Adviesaanvraag' was beperkt tot slechts super-admins; dit is hersteld en is nu voor alle gebruikers toegestaan.
+- **Periode zonder startdatum weer mogelijk**: Een Woo-besluit met alleen een 'tot en met'-datum (bijvoorbeeld "Tot januari 2026") gaf ten onrechte een foutmelding bij het opslaan; dit is opgelost.
+- **Geschiedenisrij toont juiste zaaknummers**: In de geschiedenistabel van een publicatie werd de placeholdertekst `{inquiry_numbers}` getoond in plaats van de daadwerkelijke zaaknummers; bij nieuwe publicaties zal het nu correct getoond worden
+- **Productierapport wordt correct opgeruimd**: Wanneer het besluittype van een conceptpublicatie wordt gewijzigd naar 'Geen documenten aangetroffen', wordt een eerder geüpload productierapport (en de bijbehorende documenten) nu ook daadwerkelijk verwijderd.
+
+### Publication API
+
+#### Naamgeving en consistentie
+
+- **documentNumber & dossierNumber**: De velden `documentNr` en `dossierNr` zijn hernoemd naar `documentNumber` en `dossierNumber` voor consistente naamgeving in de gehele API.
+- **Validatie van dossierId/documentId parameters**: Ongeldige waarden voor `dossierId`- en `documentId`-padparameters worden nu correct afgewezen.
+- **Validatie van organisationId**: Padparameters die niet aan het verwachte UUID-formaat voldoen geven nu een 404 in plaats van een onverwachte serverfout.
+
+#### Validatie en foutafhandeling
+
+- **Lege documentId niet meer toegestaan**: Een leeg documentId bij een WooDecision-document werd onterecht geaccepteerd; dit geeft nu een 422-foutresponse.
+- **Matter accepteert alleen toegestane tekens**: Het `matter`-veld accepteerde voorheen elk teken, inclusief regeleinden; nu wordt gevalideerd op het toegestane tekenformaat (`[a-zA-Z0-9-._~]`).
+- **documentMatter-formaat gedocumenteerd**: Het verwachte formaat van `documentMatter` is toegevoegd aan de API-documentatie.
+- **500-fout op JSON-sleutels met `[` opgelost**: Een JSON request body met een property key die begint met `[` veroorzaakte een onverwachte 500-fout; dit geeft nu een correcte 400/422-foutresponse.
+- **Paginering: ongeldige typen worden afgewezen**: Het `pagination`-queryparameter accepteerde eerder ook ongeldige typen (zoals arrays of losse getallen) zonder foutmelding; dit wordt nu correct gevalideerd.
+
+#### Paginering
+
+- **Cursor en metadata in collectie-responses**: Collectie-endpoints geven nu een `_links.next` cursor en `hasNextPage` mee in de response, zodat clients correct kunnen doorpagineren.
+
+### Publieke website
+
+- **Alle onderwerpen zichtbaar op homepage**: Op de homepage werden onder 'Zoek per categorie' > 'Onderwerpen' altijd maar 5 onderwerpen getoond, zonder link naar de rest.
+Nu worden de zes meest gebruikte onderwerpen getoond met een link naar de volledige lijst, net als bij informatiecategorieën.
+
+### Overig
+
+- **Bruno-collectie vermeld in API-documentatie**: De gebruikershandleiding verwijst nu naar de Bruno-collectie in de public repo, inclusief uitleg voor afnemers zoals Minfin.
+- **Sitemap-crash door ongeldige documentId's opgelost**: Documenten met komma's of regeleinden in het `document_id` veroorzaakten een crash bij het genereren van de sitemap; dit is verholpen.
+
 ## v3.0.0
 
 ### Publication API

@@ -7,7 +7,6 @@ namespace PublicationApi\Api\Dossier\AnnualReport;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
-use Shared\Domain\Publication\FileInfo;
 
 class AnnualReportAttachmentMapper
 {
@@ -21,10 +20,8 @@ class AnnualReportAttachmentMapper
             $attachmentRequestDto->type,
             $attachmentRequestDto->language,
         );
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($attachmentRequestDto->fileName->toString());
 
-        $attachment->setFileInfo($fileInfo);
+        $attachment->getFileInfo()->setName($attachmentRequestDto->fileName->toString());
         $attachment->setGrounds($attachmentRequestDto->grounds);
         $attachment->setExternalId($attachmentRequestDto->externalId);
 

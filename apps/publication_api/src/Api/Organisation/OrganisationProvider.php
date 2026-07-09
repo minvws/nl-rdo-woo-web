@@ -6,31 +6,32 @@ namespace PublicationApi\Api\Organisation;
 
 use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\Pagination\ArrayPaginator;
 use ApiPlatform\State\ProviderInterface;
+use PublicationApi\Api\Pagination\CursorPage;
+use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
+use Shared\Domain\HasId;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Service\ApiPlatformService;
 use Symfony\Component\Uid\Exception\InvalidArgumentException;
 use Symfony\Component\Uid\Uuid;
 
-use function count;
-
 final readonly class OrganisationProvider implements ProviderInterface
 {
     public function __construct(
         private OrganisationRepository $organisationRepository,
+        private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
     }
 
     /**
-     * @param array<array-key,string> $uriVariables
+     * @param array<array-key, string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|OrganisationDetailResponseDto
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|OrganisationDetailResponseDto
     {
         if ($operation instanceof CollectionOperationInterface) {
-            return $this->provideCollection($context);
+            return $this->provideCollection($operation, $context);
         }
 
         try {
@@ -45,14 +46,25 @@ final readonly class OrganisationProvider implements ProviderInterface
     /**
      * @param array<array-key,mixed> $context
      */
-    private function provideCollection(array $context): ArrayPaginator
-    {
+    private function provideCollection(
+        Operation $operation,
+        array $context,
+    ): CursorPage {
         $organisations = $this->organisationRepository->getPaginated(
             $this->itemsPerPage,
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator(OrganisationMapper::fromEntitiesWithDetail($organisations), 0, count($organisations));
+        $mappedDtos = OrganisationMapper::fromEntitiesWithDetail($organisations);
+
+        /** @var list<HasId> $organisations */
+        return $this->cursorPageFactory->create(
+            $organisations,
+            $mappedDtos,
+            $this->itemsPerPage,
+            $operation,
+            [],
+        );
     }
 
     private function provideSingle(Uuid $organisationId): OrganisationDetailResponseDto

@@ -64,9 +64,9 @@ class ElasticQueryParameters
             '[body][docvalue_fields]',
             [
                 ElasticField::TYPE->value,
-                ElasticField::DOCUMENT_NR->value,
+                ElasticField::DOCUMENT_NUMBER->value,
                 ElasticField::DOCUMENT_PREFIX->value,
-                ElasticField::DOSSIER_NR->value,
+                ElasticField::DOSSIER_NUMBER->value,
             ],
         );
 

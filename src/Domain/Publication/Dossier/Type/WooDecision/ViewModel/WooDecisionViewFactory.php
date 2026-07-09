@@ -9,7 +9,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
-use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
 use Shared\Service\Search\Model\FacetKey;
 use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
@@ -57,7 +57,7 @@ final readonly class WooDecisionViewFactory
             documentSearchUrl: $this->router->generate(
                 'app_search',
                 [
-                    FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
+                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($dossier)],
                 ],
             ),
         );

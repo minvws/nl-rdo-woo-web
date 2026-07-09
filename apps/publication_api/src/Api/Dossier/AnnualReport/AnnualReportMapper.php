@@ -9,8 +9,10 @@ use PublicationApi\Api\Department\DepartmentMapper;
 use PublicationApi\Api\Dossier\AnnualReport\Uploads\Attachment\AnnualReportUploadAttachmentResource;
 use PublicationApi\Api\Dossier\AnnualReport\Uploads\MainDocument\AnnualReportUploadMainDocumentResource;
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicResponseDtoFactory;
 use PublicationApi\Api\Organisation\OrganisationMapper;
 use PublicationApi\Api\Subject\SubjectMapper;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
@@ -18,7 +20,6 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
@@ -32,10 +33,11 @@ use function sprintf;
 readonly class AnnualReportMapper
 {
     public function __construct(
+        private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
         private DossierPathHelper $dossierPathHelper,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
-        private PublicUrlGenerator $publicUrlGenerator,
+        private NoticeNotPublicResponseDtoFactory $noticeNotPublicResponseDtoFactory,
     ) {
     }
 
@@ -52,7 +54,7 @@ readonly class AnnualReportMapper
     public function fromEntity(AnnualReport $annualReport): AnnualReportResponseDto
     {
         $mainDocument = $annualReport->getMainDocument();
-        Assert::notNull($mainDocument);
+        $noticeNotPublic = $annualReport->getNoticeNotPublic();
 
         $dateFrom = $annualReport->getDateFrom();
         Assert::notNull($dateFrom);
@@ -60,22 +62,31 @@ readonly class AnnualReportMapper
         $department = $annualReport->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
+        $mainDocumentDto = $mainDocument !== null
+            ? $this->mainDocumentResponseDtoFactory->fromEntity(
+                $mainDocument,
+                AnnualReportUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                AnnualReportMainDocumentResponseDto::class,
+            )
+            : null;
+
+        $noticeNotPublicDto = $noticeNotPublic !== null
+            ? $this->noticeNotPublicResponseDtoFactory->fromEntity($noticeNotPublic)
+            : null;
+
         return new AnnualReportResponseDto(
             $annualReport->getId(),
             $annualReport->getExternalId(),
             OrganisationMapper::fromEntity($annualReport->getOrganisation()),
-            $annualReport->getDossierNr(),
+            $annualReport->getDossierNumber(),
             $annualReport->getTitle(),
             $annualReport->getSummary(),
             SubjectMapper::fromNullableEntity($annualReport->getSubject()),
             DepartmentMapper::fromEntity($department),
             $annualReport->getPublicationDate(),
             $annualReport->getStatus(),
-            $this->mainDocumentResponseDtoFactory->fromEntity(
-                $mainDocument,
-                AnnualReportUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
-                AnnualReportMainDocumentResponseDto::class,
-            ),
+            $mainDocumentDto,
+            $noticeNotPublicDto,
             $this->attachmentResponseDtoFactory->fromDossier($annualReport, AnnualReportUploadAttachmentResource::ROUTE_NAME_UPLOAD),
             (int) $dateFrom->format('Y'),
             $this->getHalLinks($annualReport),
@@ -109,7 +120,7 @@ readonly class AnnualReportMapper
     ): AnnualReport {
         $annualReport->setDateFrom(PlainDate::createFromFormat('Y-m-d', sprintf('%d-01-01', $annualReportRequestDto->year)));
         $annualReport->setDepartments([$department]);
-        $annualReport->setDossierNr($annualReportRequestDto->dossierNumber);
+        $annualReport->setDossierNumber($annualReportRequestDto->dossierNumber);
         $annualReport->setOrganisation($organisation);
         $annualReport->setPublicationDate($annualReportRequestDto->publicationDate);
         $annualReport->setSubject($subject);
@@ -124,7 +135,7 @@ readonly class AnnualReportMapper
         $linkCollection = new LinkCollection();
         $linkCollection->set(
             LinkCollection::SELF,
-            new Link($this->publicUrlGenerator->buildUrlFromRoute(AnnualReportResource::ROUTE_NAME_GET_ANNUAL_REPORT, [
+            new Link($this->apiUrlGenerator->buildUrlFromRoute(AnnualReportResource::ROUTE_NAME_GET_ANNUAL_REPORT, [
                 'organisationId' => $annualReport->getOrganisation()->getId(),
                 'dossierExternalId' => $annualReport->getExternalId(),
             ])),

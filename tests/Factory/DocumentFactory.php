@@ -82,17 +82,17 @@ final class DocumentFactory extends PersistentObjectFactory
                     $attributes['documentId'] = DocumentId::create((string) $attributes['documentId']);
                 }
 
-                if (! array_key_exists('documentNr', $attributes) && $attributes['documentId'] instanceof DocumentId) {
-                    $attributes['documentNr'] = DocumentNumber::fromString(
+                if (! array_key_exists('documentNumber', $attributes) && $attributes['documentId'] instanceof DocumentId) {
+                    $attributes['documentNumber'] = DocumentNumber::fromString(
                         WooDecisionFactory::DEFAULT_PREFIX,
                         DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
                         (string) $attributes['documentId'],
                     )->getValue();
                 }
 
-                if (! array_key_exists('fileInfo', $attributes) && is_scalar($attributes['documentNr'])) {
+                if (! array_key_exists('fileInfo', $attributes) && is_scalar($attributes['documentNumber'])) {
                     $attributes['fileInfo'] = FileInfoFactory::new([
-                        'name' => 'document-' . $attributes['documentNr'] . '.pdf',
+                        'name' => 'document-' . $attributes['documentNumber'] . '.pdf',
                         'mimetype' => 'application/pdf',
                         'type' => 'pdf',
                         'uploaded' => in_array($attributes['judgement'], [Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC], true),

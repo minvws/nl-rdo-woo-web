@@ -46,7 +46,7 @@ class RevokedUrlServiceTest extends UnitTestCase
         $publishedDossier = Mockery::mock(WooDecision::class);
         $publishedDossier->expects('getStatus')->times(2)->andReturn(DossierStatus::PUBLISHED);
         $publishedDossier->expects('getDocumentPrefix')->times(2)->andReturn($docPrefix = 'FOO');
-        $publishedDossier->expects('getDossierNr')->times(2)->andReturn($dossierNr = '123');
+        $publishedDossier->expects('getDossierNumber')->times(2)->andReturn($dossierNumber = '123');
 
         $documentInConceptDossier = Mockery::mock(Document::class);
         $documentInConceptDossier->expects('getDossiers')
@@ -55,27 +55,27 @@ class RevokedUrlServiceTest extends UnitTestCase
         $documentInPublishedDossier = Mockery::mock(Document::class);
         $documentInPublishedDossier->expects('getDossiers')
             ->andReturn(new ArrayCollection([$publishedDossier]));
-        $documentInPublishedDossier->expects('getDocumentNr')->andReturn($docNrA = 'D1');
+        $documentInPublishedDossier->expects('getDocumentNumber')->andReturn($docNrA = 'D1');
 
         $documentInConceptAndPublishedDossier = Mockery::mock(Document::class);
         $documentInConceptAndPublishedDossier->expects('getDossiers')
             ->andReturn(new ArrayCollection([$conceptDossier, $publishedDossier]));
-        $documentInConceptAndPublishedDossier->expects('getDocumentNr')->andReturn($docNrB = 'D2');
+        $documentInConceptAndPublishedDossier->expects('getDocumentNumber')->andReturn($docNrB = 'D2');
 
         $this->router->expects('generate')->with(
             'app_document_detail',
             [
                 'prefix' => $docPrefix,
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrA,
+                'dossierNumber' => $dossierNumber,
+                'documentNumber' => $docNrA,
             ],
         )->andReturn('link_A');
 
         $this->router->expects('generate')->with(
             'app_legacy_document_detail',
             [
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrA,
+                'dossierNumber' => $dossierNumber,
+                'documentNumber' => $docNrA,
             ],
         )->andReturn('link_B');
 
@@ -83,16 +83,16 @@ class RevokedUrlServiceTest extends UnitTestCase
             'app_document_detail',
             [
                 'prefix' => $docPrefix,
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
+                'dossierNumber' => $dossierNumber,
+                'documentNumber' => $docNrB,
             ],
         )->andReturn('link_C');
 
         $this->router->expects('generate')->with(
             'app_legacy_document_detail',
             [
-                'dossierId' => $dossierNr,
-                'documentId' => $docNrB,
+                'dossierNumber' => $dossierNumber,
+                'documentNumber' => $docNrB,
             ],
         )->andReturn('link_D');
 

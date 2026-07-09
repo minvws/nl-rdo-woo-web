@@ -9,7 +9,6 @@ use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\Security\User;
@@ -70,7 +69,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
             $dossier,
             $document,
             DossierFileType::DOCUMENT,
-            expectedDownloadFileName: $document->getDocumentNr() . '.pdf',
+            expectedDownloadFileName: $document->getDocumentNumber() . '.pdf',
         );
     }
 
@@ -99,7 +98,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
             $dossier,
             $document,
             DossierFileType::DOCUMENT,
-            expectedDownloadFileName: $document->getDocumentNr() . '.pdf',
+            expectedDownloadFileName: $document->getDocumentNumber() . '.pdf',
         );
     }
 
@@ -111,7 +110,6 @@ final class DossierFileControllerTest extends SharedWebTestCase
             'organisation' => $user->getOrganisation(),
         ]);
 
-        /** @var CovenantAttachment $attachment */
         $attachment = CovenantAttachmentFactory::createOne(['dossier' => $dossier]);
 
         $dossier->addAttachment($attachment);
@@ -198,7 +196,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
                 sprintf(
                     '/balie/dossier/%s/%s/file/download/%s/%s',
                     $dossier->getDocumentPrefix(),
-                    $dossier->getDossierNr(),
+                    $dossier->getDossierNumber(),
                     $dossierFileType->value,
                     $entityWithFileInfo->getId(),
                 ),

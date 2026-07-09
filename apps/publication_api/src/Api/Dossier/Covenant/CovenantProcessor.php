@@ -8,19 +8,25 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Dossier\DossierNrValidator;
+use PublicationApi\Api\Dossier\DossierNumberValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\ExternalIdFactory;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicService;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
+use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantRepository;
+use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -32,13 +38,16 @@ use function array_values;
 final readonly class CovenantProcessor implements ProcessorInterface
 {
     public function __construct(
-        private DossierNrValidator $dossierNrValidator,
+        private DossierNumberValidator $dossierNumberValidator,
         private DossierSupportService $dossierSupportService,
-        private CovenantRepository $covenantRepository,
+        private DossierUpdateGuard $dossierUpdateGuard,
+        private DossierRepository $dossierRepository,
         private CovenantMapper $covenantMapper,
         private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
         private OrganisationResolver $organisationResolver,
+        private NoticeNotPublicService $noticeNotPublicService,
+        private MessageBusInterface $messageBus,
     ) {
     }
 
@@ -60,20 +69,26 @@ final readonly class CovenantProcessor implements ProcessorInterface
         $organisation = $this->organisationResolver->resolve($uriVariables);
         $subject = $this->dossierSupportService->getSubject($data, $organisation);
         $department = $this->dossierSupportService->getDepartment($organisation, $data->departmentId);
-        $covenant = $this->covenantRepository->findByOrganisationAndExternalId($organisation, $covenantExternalId);
+        $dossier = $this->dossierRepository->findByOrganisationAndExternalId($organisation, $covenantExternalId);
 
-        if ($covenant === null) {
-            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
-            $this->dossierNrValidator->validate($data->dossierNumber, $documentPrefix);
-            $covenant = $this->create($organisation, $department, $subject, $data, $covenantExternalId, $documentPrefix);
-
-            return $this->covenantMapper->fromEntity($covenant);
+        if ($dossier !== null && ! $dossier instanceof Covenant) {
+            throw ExternalIdInUseException::forExternalIdAlreadyUsed($dossier->getType());
         }
 
-        $this->dossierNrValidator->validate($data->dossierNumber, $covenant->getDocumentPrefix(), $covenant->getId());
-        $this->update($covenant, $organisation, $department, $subject, $data);
+        if ($dossier === null) {
+            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
+            $dossier = $this->create($organisation, $department, $subject, $data, $covenantExternalId, $documentPrefix);
 
-        return $this->covenantMapper->fromEntity($covenant);
+            return $this->covenantMapper->fromEntity($dossier);
+        }
+
+        $this->dossierUpdateGuard->assertDossierIsEditable($dossier);
+
+        $this->dossierNumberValidator->validate($data->dossierNumber, $dossier->getDocumentPrefix(), $dossier->getId());
+        $this->update($dossier, $organisation, $department, $subject, $data);
+
+        return $this->covenantMapper->fromEntity($dossier);
     }
 
     private function create(
@@ -92,13 +107,22 @@ final readonly class CovenantProcessor implements ProcessorInterface
             $covenantExternalId,
             $documentPrefix,
         );
-        $mainDocument = CovenantMainDocumentMapper::create($covenant, $covenantRequestDto->mainDocument);
+
+        if ($covenantRequestDto->mainDocument !== null) {
+            $mainDocument = CovenantMainDocumentMapper::create($covenant, $covenantRequestDto->mainDocument);
+            $covenant->setMainDocument($mainDocument);
+            $this->dossierSupportService->validateMainDocument($mainDocument);
+        } else {
+            $noticeNotPublic = $covenantRequestDto->noticeNotPublic;
+            Assert::notNull($noticeNotPublic);
+
+            $covenant->setNoticeNotPublic(
+                NoticeNotPublicMapper::create($covenant, $noticeNotPublic),
+            );
+        }
+
         $attachments = $this->getAttachments($covenant, $covenantRequestDto->attachments);
-
-        $this->dossierSupportService->validateMainDocument($mainDocument);
         $this->dossierSupportService->validateAttachments($attachments);
-
-        $covenant->setMainDocument($mainDocument);
         $this->dossierSupportService->addAttachments($covenant, $attachments);
 
         $this->dossierSupportService->validateDossier($covenant);
@@ -115,13 +139,33 @@ final readonly class CovenantProcessor implements ProcessorInterface
         CovenantRequestDto $covenantRequestDto,
     ): void {
         $covenant = CovenantMapper::update($covenant, $covenantRequestDto, $organisation, $department, $subject);
-        $mainDocument = CovenantMainDocumentMapper::update($covenant, $covenantRequestDto->mainDocument);
+
+        if ($covenantRequestDto->mainDocument !== null) {
+            if ($covenant->getNoticeNotPublic() !== null) {
+                $this->noticeNotPublicService->deleteFromDossier($covenant);
+            }
+
+            $mainDocument = $covenant->getMainDocument() !== null
+                ? CovenantMainDocumentMapper::update($covenant, $covenantRequestDto->mainDocument)
+                : CovenantMainDocumentMapper::create($covenant, $covenantRequestDto->mainDocument);
+            $covenant->setMainDocument($mainDocument);
+            $this->dossierSupportService->validateMainDocument($mainDocument);
+        } else {
+            if ($covenant->getMainDocument() !== null) {
+                $this->messageBus->dispatch(new DeleteMainDocumentCommand($covenant->getId()));
+            }
+
+            $noticeNotPublicDto = $covenantRequestDto->noticeNotPublic;
+            Assert::notNull($noticeNotPublicDto);
+
+            $notice = $covenant->getNoticeNotPublic() !== null
+                ? $this->noticeNotPublicService->updateForDossier($covenant, $noticeNotPublicDto)
+                : $this->noticeNotPublicService->createForDossier($covenant, $noticeNotPublicDto);
+            $covenant->setNoticeNotPublic($notice);
+        }
+
         $attachments = $this->getAttachments($covenant, $covenantRequestDto->attachments);
-
-        $this->dossierSupportService->validateMainDocument($mainDocument);
         $this->dossierSupportService->validateAttachments($attachments);
-
-        $covenant->setMainDocument($mainDocument);
         $this->attachmentSynchronizer->sync($covenant, $covenantRequestDto->attachments);
 
         $this->dossierSupportService->validateDossier($covenant);

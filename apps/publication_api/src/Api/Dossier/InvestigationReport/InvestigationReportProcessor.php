@@ -8,19 +8,25 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Dossier\DossierNrValidator;
+use PublicationApi\Api\Dossier\DossierNumberValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\ExternalIdFactory;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicService;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
+use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
-use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportRepository;
+use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -32,13 +38,16 @@ use function array_values;
 final readonly class InvestigationReportProcessor implements ProcessorInterface
 {
     public function __construct(
-        private DossierNrValidator $dossierNrValidator,
+        private DossierNumberValidator $dossierNumberValidator,
         private DossierSupportService $dossierSupportService,
-        private InvestigationReportRepository $investigationReportRepository,
+        private DossierUpdateGuard $dossierUpdateGuard,
+        private DossierRepository $dossierRepository,
         private InvestigationReportMapper $investigationReportMapper,
         private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
         private OrganisationResolver $organisationResolver,
+        private NoticeNotPublicService $noticeNotPublicService,
+        private MessageBusInterface $messageBus,
     ) {
     }
 
@@ -60,20 +69,26 @@ final readonly class InvestigationReportProcessor implements ProcessorInterface
         $organisation = $this->organisationResolver->resolve($uriVariables);
         $subject = $this->dossierSupportService->getSubject($data, $organisation);
         $department = $this->dossierSupportService->getDepartment($organisation, $data->departmentId);
-        $investigationReport = $this->investigationReportRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
+        $dossier = $this->dossierRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
 
-        if ($investigationReport === null) {
-            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
-            $this->dossierNrValidator->validate($data->dossierNumber, $documentPrefix);
-            $investigationReport = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
-
-            return $this->investigationReportMapper->fromEntity($investigationReport);
+        if ($dossier !== null && ! $dossier instanceof InvestigationReport) {
+            throw ExternalIdInUseException::forExternalIdAlreadyUsed($dossier->getType());
         }
 
-        $this->dossierNrValidator->validate($data->dossierNumber, $investigationReport->getDocumentPrefix(), $investigationReport->getId());
-        $this->update($investigationReport, $organisation, $department, $subject, $data);
+        if ($dossier === null) {
+            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
+            $dossier = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
 
-        return $this->investigationReportMapper->fromEntity($investigationReport);
+            return $this->investigationReportMapper->fromEntity($dossier);
+        }
+
+        $this->dossierUpdateGuard->assertDossierIsEditable($dossier);
+
+        $this->dossierNumberValidator->validate($data->dossierNumber, $dossier->getDocumentPrefix(), $dossier->getId());
+        $this->update($dossier, $organisation, $department, $subject, $data);
+
+        return $this->investigationReportMapper->fromEntity($dossier);
     }
 
     private function create(
@@ -92,13 +107,22 @@ final readonly class InvestigationReportProcessor implements ProcessorInterface
             $dossierExternalId,
             $documentPrefix,
         );
-        $mainDocument = InvestigationReportMainDocumentMapper::create($investigationReport, $investigationReportRequestDto->mainDocument);
+
+        if ($investigationReportRequestDto->mainDocument !== null) {
+            $mainDocument = InvestigationReportMainDocumentMapper::create($investigationReport, $investigationReportRequestDto->mainDocument);
+            $investigationReport->setMainDocument($mainDocument);
+            $this->dossierSupportService->validateMainDocument($mainDocument);
+        } else {
+            $noticeNotPublic = $investigationReportRequestDto->noticeNotPublic;
+            Assert::notNull($noticeNotPublic);
+
+            $investigationReport->setNoticeNotPublic(
+                NoticeNotPublicMapper::create($investigationReport, $noticeNotPublic),
+            );
+        }
+
         $attachments = $this->getAttachments($investigationReport, $investigationReportRequestDto->attachments);
-
-        $this->dossierSupportService->validateMainDocument($mainDocument);
         $this->dossierSupportService->validateAttachments($attachments);
-
-        $investigationReport->setMainDocument($mainDocument);
         $this->dossierSupportService->addAttachments($investigationReport, $attachments);
 
         $this->dossierSupportService->validateDossier($investigationReport);
@@ -121,13 +145,33 @@ final readonly class InvestigationReportProcessor implements ProcessorInterface
             $department,
             $subject,
         );
-        $mainDocument = InvestigationReportMainDocumentMapper::update($investigationReport, $investigationReportRequestDto->mainDocument);
+
+        if ($investigationReportRequestDto->mainDocument !== null) {
+            if ($investigationReport->getNoticeNotPublic() !== null) {
+                $this->noticeNotPublicService->deleteFromDossier($investigationReport);
+            }
+
+            $mainDocument = $investigationReport->getMainDocument() !== null
+                ? InvestigationReportMainDocumentMapper::update($investigationReport, $investigationReportRequestDto->mainDocument)
+                : InvestigationReportMainDocumentMapper::create($investigationReport, $investigationReportRequestDto->mainDocument);
+            $investigationReport->setMainDocument($mainDocument);
+            $this->dossierSupportService->validateMainDocument($mainDocument);
+        } else {
+            if ($investigationReport->getMainDocument() !== null) {
+                $this->messageBus->dispatch(new DeleteMainDocumentCommand($investigationReport->getId()));
+            }
+
+            $noticeNotPublicDto = $investigationReportRequestDto->noticeNotPublic;
+            Assert::notNull($noticeNotPublicDto);
+
+            $notice = $investigationReport->getNoticeNotPublic() !== null
+                ? $this->noticeNotPublicService->updateForDossier($investigationReport, $noticeNotPublicDto)
+                : $this->noticeNotPublicService->createForDossier($investigationReport, $noticeNotPublicDto);
+            $investigationReport->setNoticeNotPublic($notice);
+        }
+
         $attachments = $this->getAttachments($investigationReport, $investigationReportRequestDto->attachments);
-
-        $this->dossierSupportService->validateMainDocument($mainDocument);
         $this->dossierSupportService->validateAttachments($attachments);
-
-        $investigationReport->setMainDocument($mainDocument);
         $this->attachmentSynchronizer->sync($investigationReport, $investigationReportRequestDto->attachments);
 
         $this->dossierSupportService->validateDossier($investigationReport);

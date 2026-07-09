@@ -115,6 +115,7 @@ describe('The "PublicationFileForm" component', () => {
 
   test('should allow the user to provide grounds for this file', () => {
     expect(getGroundsComponent().props()).toMatchObject({
+      minLength: 0,
       options: [{ citation: 'mocked-citation', label: 'mocked-label' }],
       values: ['mocked-ground-1', 'mocked-ground-2'],
     });

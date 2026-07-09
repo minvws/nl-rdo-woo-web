@@ -7,7 +7,6 @@ namespace PublicationApi\Api\Dossier\OtherPublication;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
-use Shared\Domain\Publication\FileInfo;
 
 class OtherPublicationAttachmentMapper
 {
@@ -21,10 +20,8 @@ class OtherPublicationAttachmentMapper
             $attachmentRequestDto->type,
             $attachmentRequestDto->language,
         );
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($attachmentRequestDto->fileName->toString());
 
-        $attachment->setFileInfo($fileInfo);
+        $attachment->getFileInfo()->setName($attachmentRequestDto->fileName->toString());
         $attachment->setGrounds($attachmentRequestDto->grounds);
         $attachment->setExternalId($attachmentRequestDto->externalId);
 

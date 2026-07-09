@@ -9,7 +9,6 @@ use Shared\Service\Security\OrganisationSwitcher;
 use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 use function array_any;
 use function array_key_exists;
@@ -41,7 +40,7 @@ class AuthorizationMatrix
 
     public function isAuthorized(string $prefix, string $permission): bool
     {
-        return $this->security->getUser() instanceof UserInterface && count($this->findMatches($prefix, $permission)) > 0;
+        return $this->security->getUser() instanceof User && count($this->findMatches($prefix, $permission)) > 0;
     }
 
     /**

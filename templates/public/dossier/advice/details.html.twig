@@ -4,13 +4,14 @@
 {% set description = 'public.dossiers.advice.description' | trans %}
 
 {% block attachments %}
-    {% include 'public/dossier/shared/attachments.html.twig' with {'title': 'public.dossiers.advice.attachments_for' | trans} %}
+	{% include 'public/dossier/shared/attachments.html.twig' with {'title': 'public.dossiers.advice.attachments_for' | trans} %}
 {% endblock %}
 
 {% block about %}
-    <twig:Public:Publication:About
+	<twig:Public:Publication:About
         document="{{ document }}"
         dossier="{{ dossier }}"
+        noticeNotPublic="{{ noticeNotPublic }}"
         title="{{ 'public.dossiers.advice.about' | trans }}"
     />
 {% endblock %}

@@ -29,20 +29,20 @@ class ContentStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/complaint-judgement/content/concept/{prefix}/{dossierId}',
+        path: '/balie/dossier/complaint-judgement/content/concept/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_complaintjudgement_content_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] ComplaintJudgement $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] ComplaintJudgement $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem(
             (string) $dossier->getTitle(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addItem('admin.dossiers.complaint-judgement.step.content');
 
@@ -63,6 +63,7 @@ class ContentStepController extends AbstractController
             'admin/dossier/complaint-judgement/content/concept.html.twig',
             $this->stepHelper->getParamsBuilder($dossier)
                 ->withMainDocumentParams($dossier)
+                ->withNoticeNotPublicParams($dossier)
                 ->withForm($form)
                 ->withWizardStatus($wizardStatus)
                 ->withBreadCrumbs($breadcrumbs)
@@ -72,13 +73,13 @@ class ContentStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/complaint-judgement/content/edit/{prefix}/{dossierId}',
+        path: '/balie/dossier/complaint-judgement/content/edit/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_complaintjudgement_content_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] ComplaintJudgement $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] ComplaintJudgement $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -106,6 +107,7 @@ class ContentStepController extends AbstractController
             'admin/dossier/complaint-judgement/content/edit.html.twig',
             $this->stepHelper->getParamsBuilder($dossier)
                 ->withMainDocumentParams($dossier)
+                ->withNoticeNotPublicParams($dossier)
                 ->withForm($form)
                 ->withWizardStatus($wizardStatus)
                 ->withBreadCrumbs($breadcrumbs)

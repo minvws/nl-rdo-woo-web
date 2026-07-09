@@ -55,7 +55,7 @@ class WooDecisionMapperTest extends UnitTestCase
         $inquiry->expects('getId')->andReturn($inquiryId);
         $inquiry->expects('getInquiryNumber')->andReturn($inquiryNumber);
 
-        $dossierNr = 'test-123';
+        $dossierNumber = 'test-123';
 
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getInquiries')->times(2)->andReturn(new ArrayCollection([$inquiry]));
@@ -66,7 +66,7 @@ class WooDecisionMapperTest extends UnitTestCase
         $this->defaultMapper
             ->expects('map')
             ->with($dossier)
-            ->andReturn(new ElasticDocument($dossierNr, ElasticDocumentType::WOO_DECISION, null, ['foo' => 'bar']));
+            ->andReturn(new ElasticDocument($dossierNumber, ElasticDocumentType::WOO_DECISION, null, ['foo' => 'bar']));
 
         $doc = $this->mapper->map($dossier);
 
@@ -86,6 +86,6 @@ class WooDecisionMapperTest extends UnitTestCase
             $doc->getFields(),
         );
 
-        self::assertEquals($dossierNr, $doc->getId());
+        self::assertEquals($dossierNumber, $doc->getId());
     }
 }

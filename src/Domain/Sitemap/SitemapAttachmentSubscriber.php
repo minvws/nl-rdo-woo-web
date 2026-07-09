@@ -36,7 +36,7 @@ readonly class SitemapAttachmentSubscriber
                         sprintf('app_%s_attachment_detail', $dossier->getType()->getValueForRouteName()),
                         [
                             'prefix' => $dossier->getDocumentPrefix(),
-                            'dossierId' => $dossier->getDossierNr(),
+                            'dossierNumber' => $dossier->getDossierNumber(),
                             'attachmentId' => $attachment->getId(),
                         ],
                         UrlGeneratorInterface::ABSOLUTE_URL,

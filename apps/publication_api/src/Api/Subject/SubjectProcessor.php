@@ -9,10 +9,10 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
+use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Exception\ResourceInUseException;
 use PublicationApi\Domain\Validator\EntityValidator;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Domain\Publication\Subject\SubjectService;
@@ -24,7 +24,7 @@ use Webmozart\Assert\Assert;
 final readonly class SubjectProcessor implements ProcessorInterface
 {
     public function __construct(
-        private OrganisationRepository $organisationRepository,
+        private OrganisationResolver $organisationResolver,
         private SubjectRepository $subjectRepository,
         private SubjectService $subjectService,
         private EntityValidator $validator,
@@ -35,8 +35,7 @@ final readonly class SubjectProcessor implements ProcessorInterface
     {
         unset($context);
 
-        $organisation = $this->organisationRepository->find($uriVariables['organisationId']);
-        Assert::isInstanceOf($organisation, Organisation::class);
+        $organisation = $this->organisationResolver->resolve($uriVariables);
 
         if ($operation instanceof Post) {
             Assert::isInstanceOf($data, SubjectCreateDto::class);

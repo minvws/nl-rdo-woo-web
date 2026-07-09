@@ -48,7 +48,7 @@ readonly class AttachmentViewFactory
             sprintf('app_%s_attachment_detail', $dossier->getType()->getValueForRouteName()),
             [
                 'prefix' => $dossier->getDocumentPrefix(),
-                'dossierId' => $dossier->getDossierNr(),
+                'dossierNumber' => $dossier->getDossierNumber(),
                 'attachmentId' => $attachment->getId(),
             ],
         );
@@ -59,7 +59,7 @@ readonly class AttachmentViewFactory
 
         $downloadRouteParameters = [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
             'type' => DossierFileType::ATTACHMENT->value,
             'id' => $attachment->getId(),
         ];

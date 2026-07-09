@@ -1,0 +1,21 @@
+# https://taskfile.dev
+version: '3.50.0'
+
+tasks:
+
+  test:
+    desc: Run PHPUnit for CI
+    vars:
+      EXEC_FLAGS: '--env CREATE_SNAPSHOTS=false'
+    cmds:
+      - task: :dc:exec:admin
+        vars:
+          SUB_CMD: >
+            php
+            -d pcov.enabled=1
+            -d pcov.directory=.
+            -d xdebug.mode=off
+            vendor/bin/phpunit
+            --log-junit=reports/phpunit/report-phpunit.xml
+            --coverage-clover=reports/phpunit/coverage-phpunit.xml
+            -- {{ .CLI_ARGS }}

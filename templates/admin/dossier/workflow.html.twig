@@ -9,10 +9,10 @@
             {% set stepIndicationClass = '' %}
             {% set stepTextClass = '' %}
 
-            {% if not step.accessible or dossier.dossierNr is empty  or dossier.documentPrefix is empty %}
+            {% if not step.accessible or dossier.dossierNumber is empty  or dossier.documentPrefix is empty %}
                 {% set stepUrl = '' %}
             {% else %}
-                {% set stepUrl = dossier.dossierNr ? path(step.routeName, { prefix: dossier.documentPrefix, dossierId: dossier.dossierNr }) : '' %}
+                {% set stepUrl = dossier.dossierNumber ? path(step.routeName, { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) : '' %}
             {% endif %}
 
             {% if isCurrentStep %}

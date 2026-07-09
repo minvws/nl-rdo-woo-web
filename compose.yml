@@ -260,7 +260,9 @@ services:
     networks:
       - woopie
     volumes:
-      - ./API-Design-Rules.spectral.yml:/usr/src/spectral/.spectral.yml
+      - ./WOO-API-Rules.spectral.yml:/usr/src/spectral/.spectral.yml:ro
+      - ./API-Design-Rules.spectral.yml:/usr/src/spectral/API-Design-Rules.spectral.yml:ro
+      - ./public/api:/usr/src/spectral/api:ro
 
   certs:
     profiles: [build-only]
@@ -292,3 +294,12 @@ services:
       - ./tests/robot_framework/envs:/home/pwuser/envs
       - ./tests/robot_framework/order.txt:/home/pwuser/order.txt
       - ./certs:/home/pwuser/certs
+
+  schemathesis:
+    profiles: [schemathesis]
+    image: schemathesis/schemathesis:${SCHEMATHESIS_TAG:-4.21.8-trixie}
+    networks:
+      - woopie
+    volumes:
+      - ./certs/dev:/certs:ro
+      - ./tests/schemathesis/reports:/reports

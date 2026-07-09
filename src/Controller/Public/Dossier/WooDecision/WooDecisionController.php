@@ -47,7 +47,7 @@ class WooDecisionController extends AbstractController
     }
 
     #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
-    #[Route('/dossier/{prefix}/{dossierId}', name: 'app_woodecision_detail', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierNumber}', name: 'app_woodecision_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
         Breadcrumbs $breadcrumbs,
@@ -100,7 +100,7 @@ class WooDecisionController extends AbstractController
         ]);
     }
 
-    #[Route('/dossier/{prefix}/{dossierId}/batch', name: 'app_woodecision_batch', methods: ['POST'])]
+    #[Route('/dossier/{prefix}/{dossierNumber}/batch', name: 'app_woodecision_batch', methods: ['POST'])]
     public function createBatch(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
     ): Response {
@@ -110,12 +110,12 @@ class WooDecisionController extends AbstractController
 
         return $this->redirectToRoute('app_woodecision_batch_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
             'batchId' => $batch->getId(),
         ]);
     }
 
-    #[Route('/dossier/{prefix}/{dossierId}/batch/{batchId}', name: 'app_woodecision_batch_detail', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierNumber}/batch/{batchId}', name: 'app_woodecision_batch_detail', methods: ['GET'])]
     public function batch(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
@@ -124,7 +124,7 @@ class WooDecisionController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('global.decision', 'app_woodecision_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
         ]);
         $breadcrumbs->addItem('public.global.download');
 
@@ -138,14 +138,14 @@ class WooDecisionController extends AbstractController
                 'app_woodecision_batch_download',
                 [
                     'prefix' => $dossier->getDocumentPrefix(),
-                    'dossierId' => $dossier->getDossierNr(),
+                    'dossierNumber' => $dossier->getDossierNumber(),
                     'batchId' => $batch->getId(),
                 ],
             ),
         ]);
     }
 
-    #[Route('/dossier/{prefix}/{dossierId}/batch/{batchId}/download', name: 'app_woodecision_batch_download', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierNumber}/batch/{batchId}/download', name: 'app_woodecision_batch_download', methods: ['GET'])]
     public function batchDownload(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
@@ -157,7 +157,7 @@ class WooDecisionController extends AbstractController
         if (! $batch->getStatus()->isDownloadable()) {
             return $this->redirectToRoute('app_woodecision_batch_detail', [
                 'prefix' => $dossier->getDocumentPrefix(),
-                'dossierId' => $dossier->getDossierNr(),
+                'dossierNumber' => $dossier->getDossierNumber(),
                 'batchId' => $batch->getId(),
             ]);
         }
@@ -167,13 +167,13 @@ class WooDecisionController extends AbstractController
 
     #[Cache(public: true, maxage: 600, mustRevalidate: true)]
     #[Route(
-        '/dossier/{prefix}/{dossierId}/bijlage/{attachmentId}',
+        '/dossier/{prefix}/{dossierNumber}/bijlage/{attachmentId}',
         name: 'app_woodecision_attachment_detail',
         methods: ['GET'],
     )]
     public function decisionAttachmentDetail(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber, attachmentId)')]
         WooDecisionAttachment $attachment,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -182,7 +182,7 @@ class WooDecisionController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('global.decision', 'app_woodecision_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
         ]);
         $breadcrumbs->addItem($attachmentView->name ?? '');
 
@@ -200,13 +200,13 @@ class WooDecisionController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/dossier/{prefix}/{dossierId}/document',
+        '/dossier/{prefix}/{dossierNumber}/document',
         name: 'app_woodecision_document_detail',
         methods: ['GET'],
     )]
     public function mainDocumentDetail(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $wooDecision,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber)')]
         WooDecisionMainDocument $mainDocument,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -215,7 +215,7 @@ class WooDecisionController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('global.decision', 'app_woodecision_detail', [
             'prefix' => $wooDecision->getDocumentPrefix(),
-            'dossierId' => $wooDecision->getDossierNr(),
+            'dossierNumber' => $wooDecision->getDossierNumber(),
         ]);
         $breadcrumbs->addItem($mainDocumentViewModel->name ?? '');
 

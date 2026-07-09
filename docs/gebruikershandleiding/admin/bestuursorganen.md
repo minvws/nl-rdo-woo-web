@@ -36,7 +36,7 @@ Optioneel kan je een afkorting meegeven. Deze wordt getoond bij de zoekfilters e
 
 ### URL landingspagina
 
-Deze naam wordt gebruikt om de volledige URL van de landingspagina te maken. Als je hier bijv `abc` invult, zal de URL worden `open.minvws.nl/abc`.
+Deze naam wordt gebruikt om de volledige URL van de landingspagina te maken. Als je hier bijv `abc` invult, zal de URL worden {{ portal_name }}/abc.
 Let er op dat de URL pas werkt als het vinkje 'Zichtbaar op de website' is aangevinkt.
 
 ### Zichtbaar op de website

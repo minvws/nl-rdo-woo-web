@@ -85,7 +85,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $dateTo = $expectedDateTo = $this->getRandomDate();
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDossierNr')->andReturn('my dossier nr');
+        $dossier->expects('getDossierNumber')->andReturn('my dossier number');
         $dossier->expects('getDocumentPrefix')->andReturn('my document prefix');
         $dossier->expects('getDepartments')->andReturn($departments);
         $dossier->expects('isInventoryRequired')->andReturn($isInventoryRequired);
@@ -107,7 +107,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
             ->expects('make')
             ->andReturn(new CommonDossierProperties(
                 dossierId: $expectedUuid = 'my uuid',
-                dossierNr: $expectedDossierNr = 'my dossier nr',
+                dossierNumber: $expectedDossierNumber = 'my dossier number',
                 documentPrefix: $expectedDocumentPrefix = 'my document prefix',
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = DossierTitle::create('my title'),
@@ -124,7 +124,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
 
         $this->router
             ->expects('generate')
-            ->with('app_search', ['dnr' => ['my document prefix|my dossier nr']])
+            ->with('app_search', ['dnr' => ['my document prefix|my dossier number']])
             ->andReturn($expectedDocumentSearchUrl = '/foo/var');
 
         $result = $this->factory->make($dossier);
@@ -138,7 +138,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedDateTo, $result->dateTo);
         $this->assertSame(PublicationReason::WOO_REQUEST, $result->publicationReason);
         $this->assertSame($expectedUuid, $result->getDossierId());
-        $this->assertSame($expectedDossierNr, $result->getDossierNr());
+        $this->assertSame($expectedDossierNumber, $result->getDossierNumber());
         $this->assertSame($expectedDocumentPrefix, $result->getDocumentPrefix());
         $this->assertSame($expectedIsPreview, $result->isPreview());
         $this->assertSame($expectedTitle, $result->getTitle());
@@ -173,7 +173,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
             ->expects('make')
             ->andReturn(new CommonDossierProperties(
                 dossierId: $expectedUuid = 'my uuid',
-                dossierNr: $expectedDossierNr = 'my dossier nr',
+                dossierNumber: $expectedDossierNumber = 'my dossier number',
                 documentPrefix: $expectedDocumentPrefix = 'my document prefix',
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = DossierTitle::create('my title'),
@@ -197,7 +197,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $dateTo = $expectedDateTo = $this->getRandomDate();
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDossierNr')->andReturn('my dossier nr');
+        $dossier->expects('getDossierNumber')->andReturn('my dossier number');
         $dossier->expects('getDocumentPrefix')->andReturn('my document prefix');
         $dossier->expects('getDepartments')->andReturn($departments);
         $dossier->expects('isInventoryRequired')->andReturn($isInventoryRequired);
@@ -217,7 +217,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
 
         $this->router
             ->expects('generate')
-            ->with('app_search', ['dnr' => ['my document prefix|my dossier nr']])
+            ->with('app_search', ['dnr' => ['my document prefix|my dossier number']])
             ->andReturn($expectedDocumentSearchUrl = '/foo/var');
 
         $result = $this->factory->make($dossier);
@@ -234,7 +234,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->assertSame(PublicationReason::WOO_REQUEST, $result->publicationReason);
         $this->assertTrue($result->hasSubject());
         $this->assertSame($expectedUuid, $result->getDossierId());
-        $this->assertSame($expectedDossierNr, $result->getDossierNr());
+        $this->assertSame($expectedDossierNumber, $result->getDossierNumber());
         $this->assertSame($expectedDocumentPrefix, $result->getDocumentPrefix());
         $this->assertSame($expectedIsPreview, $result->isPreview());
         $this->assertSame($expectedTitle, $result->getTitle());

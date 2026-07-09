@@ -16,7 +16,7 @@ class DocumentViewModelTest extends TestCase
     {
         $viewmodel = new DocumentViewModel(
             $documentId = '123',
-            $documentNr = 'foo-123',
+            $documentNumber = 'foo-123',
             $filename = 'foo.txt',
             $sourceType = SourceType::PDF,
             $fileUploaded = true,
@@ -27,7 +27,7 @@ class DocumentViewModelTest extends TestCase
         );
 
         self::assertEquals($documentId, $viewmodel->documentId);
-        self::assertEquals($documentNr, $viewmodel->documentNr);
+        self::assertEquals($documentNumber, $viewmodel->documentNumber);
         self::assertEquals($filename, $viewmodel->fileInfo->getName());
         self::assertEquals($sourceType->value, $viewmodel->fileInfo->getSourceType());
         self::assertEquals($fileUploaded, $viewmodel->fileInfo->isUploaded());

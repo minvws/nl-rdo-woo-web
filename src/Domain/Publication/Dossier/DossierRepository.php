@@ -11,6 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -48,13 +49,13 @@ class DossierRepository extends ServiceEntityRepository
         return $qb->getQuery()->getSingleResult();
     }
 
-    public function findOneByPrefixAndDossierNr(string $prefix, string $dossierNr): AbstractDossier
+    public function findOneByPrefixAndDossierNumber(string $prefix, string $dossierNumber): AbstractDossier
     {
         $qb = $this->createQueryBuilder('d')
             ->where('d.documentPrefix = :prefix')
-            ->andWhere('d.dossierNr = :dossierNr')
+            ->andWhere('d.dossierNumber = :dossierNumber')
             ->setParameter('prefix', $prefix)
-            ->setParameter('dossierNr', $dossierNr);
+            ->setParameter('dossierNumber', $dossierNumber);
 
         /** @var AbstractDossier */
         return $qb->getQuery()->getSingleResult();
@@ -107,5 +108,17 @@ class DossierRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('d')
             ->select('d.id')
             ->getQuery();
+    }
+
+    public function findByOrganisationAndExternalId(Organisation $organisation, ExternalId $externalId): ?AbstractDossier
+    {
+        /** @var ?AbstractDossier */
+        return $this->createQueryBuilder('dossier')
+            ->where('dossier.organisation = :organisation')
+            ->setParameter('organisation', $organisation)
+            ->andWhere('dossier.externalId = :externalId')
+            ->setParameter('externalId', $externalId)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

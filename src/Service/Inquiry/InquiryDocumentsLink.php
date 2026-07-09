@@ -10,14 +10,14 @@ class InquiryDocumentsLink
      * @param array<array-key, string> $inquiryNumbers
      */
     public function __construct(
-        private readonly string $documentNr,
+        private readonly string $documentNumber,
         private readonly array $inquiryNumbers,
     ) {
     }
 
-    public function getDocumentNr(): string
+    public function getDocumentNumber(): string
     {
-        return $this->documentNr;
+        return $this->documentNumber;
     }
 
     /**

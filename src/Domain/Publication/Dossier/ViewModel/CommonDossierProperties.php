@@ -12,7 +12,7 @@ final readonly class CommonDossierProperties
 {
     public function __construct(
         public string $dossierId,
-        public string $dossierNr,
+        public string $dossierNumber,
         public string $documentPrefix,
         public bool $isPreview,
         public DossierTitle $title,

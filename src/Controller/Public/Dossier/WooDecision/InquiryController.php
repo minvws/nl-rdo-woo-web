@@ -12,7 +12,7 @@ use Shared\Domain\Publication\BatchDownload\OnDemandZipGenerator;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
 use Shared\Service\DownloadResponseHelper;
 use Shared\Service\Inquiry\InquirySessionService;
 use Shared\Service\Search\Model\FacetKey;
@@ -74,7 +74,7 @@ class InquiryController extends AbstractController
         return $this->downloadHelper->getResponseForEntityWithFileInfo($inquiry->getInventory());
     }
 
-    #[Route('/zaak/{token}/download/{prefix}/{dossierId}', name: 'app_inquiry_download_zip', methods: ['GET', 'POST'])]
+    #[Route('/zaak/{token}/download/{prefix}/{dossierNumber}', name: 'app_inquiry_download_zip', methods: ['GET', 'POST'])]
     public function downloadZip(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
@@ -125,7 +125,7 @@ class InquiryController extends AbstractController
         ]);
     }
 
-    #[Route('/zaak/{token}/dossier/{prefix}/{dossierId}', name: 'app_inquiry_dossier', methods: ['GET'])]
+    #[Route('/zaak/{token}/dossier/{prefix}/{dossierNumber}', name: 'app_inquiry_dossier', methods: ['GET'])]
     public function dossier(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
@@ -151,7 +151,7 @@ class InquiryController extends AbstractController
             [
                 'token' => $inquiry->getToken(),
                 'prefix' => $dossier->getDocumentPrefix(),
-                'dossierId' => $dossier->getDossierNr(),
+                'dossierNumber' => $dossier->getDossierNumber(),
             ],
         );
 
@@ -159,7 +159,7 @@ class InquiryController extends AbstractController
             'app_search',
             [
                 FacetKey::INQUIRY_DOCUMENTS->getParamName() => [$inquiry->getId()],
-                FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
+                FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($dossier)],
             ],
         );
 

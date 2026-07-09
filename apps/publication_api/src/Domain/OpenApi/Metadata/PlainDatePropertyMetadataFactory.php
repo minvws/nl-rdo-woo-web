@@ -41,7 +41,7 @@ final readonly class PlainDatePropertyMetadataFactory implements PropertyMetadat
         ];
 
         if ($nullable) {
-            $schema = ['anyOf' => [$schema, ['type' => 'null']]];
+            $schema['type'] = ['string', 'null'];
         }
 
         return $propertyMetadata->withSchema($schema);

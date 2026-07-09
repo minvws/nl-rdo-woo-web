@@ -34,7 +34,7 @@ class DossierFileController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/dossier/{prefix}/{dossierId}/file/download/{type}/{id?""}', name: self::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierNumber}/file/download/{type}/{id?""}', name: self::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, methods: ['GET'])]
     public function download(
         #[ValueResolver('dossierWithAccessCheck')] AbstractDossier $dossier,
         DossierFileType $type,
@@ -47,7 +47,7 @@ class DossierFileController extends AbstractController
 
     #[Cache(maxage: 600, smaxage: 600, public: true)]
     #[Route(
-        '/dossier/{prefix}/{dossierId}/file/thumbnail/{type}/{id}/{pageNr}/{hash}',
+        '/dossier/{prefix}/{dossierNumber}/file/thumbnail/{type}/{id}/{pageNr}/{hash}',
         name: 'app_dossier_file_thumbnail',
         requirements: ['pageNr' => '\d+'],
         defaults: ['hash' => ''],

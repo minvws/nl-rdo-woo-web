@@ -37,7 +37,7 @@ readonly class TikaService
                         'headers' => [
                             'Accept' => 'application/json',
                             'Content-Type' => $contentType,
-                            'X-Tika-OCRmaxFileSizeToOcr' => 0,
+                            'X-Tika-OCRmaxFileSizeToOcr' => '0',
                         ],
                         'body' => file_get_contents($sourcePath),
                     ],

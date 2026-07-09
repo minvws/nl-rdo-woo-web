@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Attachment;
 
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use PublicationApi\Domain\Upload\AttachmentUploadStatusService;
@@ -22,6 +23,7 @@ use function array_values;
 readonly class AttachmentResponseDtoFactory
 {
     public function __construct(
+        private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentUploadStatusService $attachmentUploadStatusService,
         private DossierPathHelper $dossierPathHelper,
         private PublicUrlGenerator $publicUrlGenerator,
@@ -61,7 +63,7 @@ readonly class AttachmentResponseDtoFactory
         $linkCollection = new LinkCollection();
         $linkCollection->set(
             LinkCollection::UPLOAD,
-            new Link($this->publicUrlGenerator->buildUrlFromRoute($routeNameUpload, [
+            new Link($this->apiUrlGenerator->buildUrlFromRoute($routeNameUpload, [
                 'organisationId' => $dossier->getOrganisation()->getId(),
                 'dossierExternalId' => $dossier->getExternalId(),
                 'attachmentExternalId' => $attachment->getExternalId(),
@@ -74,7 +76,7 @@ readonly class AttachmentResponseDtoFactory
                 LinkCollection::FILE,
                 new Link($this->publicUrlGenerator->buildUrlFromRoute(DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, [
                     'prefix' => $dossier->getDocumentPrefix(),
-                    'dossierId' => $dossier->getDossierNr(),
+                    'dossierNumber' => $dossier->getDossierNumber(),
                     'type' => DossierFileType::ATTACHMENT->value,
                     'id' => $attachment->getId(),
                 ])),

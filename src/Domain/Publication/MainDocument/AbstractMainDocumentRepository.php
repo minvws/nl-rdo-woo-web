@@ -57,13 +57,13 @@ abstract class AbstractMainDocumentRepository extends ServiceEntityRepository
     /**
      * @return ?T
      */
-    public function findForDossierByPrefixAndNr(string $prefix, string $dossierNr): ?AbstractMainDocument
+    public function findForDossierByPrefixAndDossierNumber(string $prefix, string $dossierNumber): ?AbstractMainDocument
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossier', 'dos')
-            ->where('dos.dossierNr = :dossierNr')
+            ->where('dos.dossierNumber = :dossierNumber')
             ->andWhere('dos.documentPrefix = :prefix')
-            ->setParameter('dossierNr', $dossierNr)
+            ->setParameter('dossierNumber', $dossierNumber)
             ->setParameter('prefix', $prefix);
 
         /** @var ?T */

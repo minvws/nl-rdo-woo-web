@@ -93,10 +93,10 @@ readonly class DocumentNumber implements Stringable
             throw new RuntimeException('Document has no documentId');
         }
 
-        // Cut prefix and it's separator from the documentNr start, leaving matter and documentId
-        $matterAndDocId = substr($document->getDocumentNr(), strlen($dossier->getDocumentPrefix()) + 1);
+        // Cut prefix and it's separator from the documentNumber start, leaving matter and documentId
+        $matterAndDocId = substr($document->getDocumentNumber(), strlen($dossier->getDocumentPrefix()) + 1);
 
-        // Cut documentId and it's separator from the documentNr end, leaving just matter
+        // Cut documentId and it's separator from the documentNumber end, leaving just matter
         $matterStr = substr($matterAndDocId, 0, -(strlen($document->getDocumentId()->toString()) + 1));
         $matter = DocumentMatter::create($matterStr ?: '0');
 

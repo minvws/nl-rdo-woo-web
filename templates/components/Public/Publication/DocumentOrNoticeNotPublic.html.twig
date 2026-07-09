@@ -1,0 +1,7 @@
+{% if document %}
+    <a class="woo-a" href="{{ document.detailsUrl }}">{{ document.name }}</a>
+    <span>({{ document.sourceType | trans }},
+        {{ document.size | size }})</span>
+{% elseif noticeNotPublic %}
+    <a class="woo-a" href="{{ noticeNotPublic.detailsUrl }}">{{ noticeNotPublic.title }}</a>{% if noticeNotPublic.documentName is not empty %} ({{ 'public.documents.not_public' | trans | lower }}){% endif %}
+{% endif %}

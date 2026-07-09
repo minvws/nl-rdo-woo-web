@@ -3,6 +3,7 @@ import Alert from '@admin-fe/component/Alert.vue';
 import Dialog from '@admin-fe/component/Dialog.vue';
 import { UPLOAD_AREA_ENDPOINT } from '@admin-fe/component/file/upload/static';
 import Icon from '@admin-fe/component/Icon.vue';
+import { usePublicationFilesStore } from '@admin-fe/composables';
 import type { SelectOptions } from '@admin-fe/form/interface';
 import { validateResponse } from '@js/admin/utils';
 import type { FileUploadLimit } from '@js/admin/utils/file/interface';
@@ -30,6 +31,8 @@ interface Props {
   fileLimits: FileUploadLimit[];
   fileTypeOptions: PublicationFileTypes;
   groundOptions: GroundOptions;
+  hasNoticeNotPublic?: boolean;
+  isMainDocument?: boolean;
   languageOptions: SelectOptions;
   maxLength?: number;
   readableFileType?: string;
@@ -42,9 +45,16 @@ const props = withDefaults(defineProps<Props>(), {
   fileLimits: () => [],
   fileTypeOptions: () => [],
   groundOptions: () => [],
+  hasNoticeNotPublic: false,
+  isMainDocument: false,
   languageOptions: () => [],
   maxLength: 1,
 });
+
+const store = usePublicationFilesStore();
+if (props.isMainDocument) {
+  store.setHasNotice(props.hasNoticeNotPublic);
+}
 
 const createEmptyPublicationFile = (): PublicationFile => ({
   dossier: {
@@ -95,9 +105,13 @@ const updatedFile = ref<{
 }>({ action: null, file: null });
 
 const hasFiles = computed(() => files.value.size > 0);
-const isAddFileButtonVisible = computed(
-  () => files.value.size < props.maxLength,
+const canAddDocument = computed(() =>
+  props.isMainDocument ? !store.state.hasNotice : true,
 );
+const isAddFileButtonVisible = computed(
+  () => files.value.size < props.maxLength && canAddDocument.value,
+);
+const isAddButtonDisabled = computed(() => !canAddDocument.value);
 const isEditMode = computed(() => Boolean(currentFile.value.id));
 const dialogTitle = computed(() =>
   isEditMode.value ? `${fileTypeLabel} bewerken` : `${fileTypeLabel} toevoegen`,
@@ -109,6 +123,12 @@ const resetUpdatedFile = () => {
   updatedFile.value = { action: null, file: null };
 };
 
+const syncMainDocumentState = () => {
+  if (props.isMainDocument) {
+    store.setHasMainDocument(files.value.size > 0);
+  }
+};
+
 const onCancel = () => {
   isDialogOpen.value = false;
 };
@@ -116,6 +136,7 @@ const onCancel = () => {
 const onDeleted = (id: string) => {
   const deletedFile = { ...getFileById(id) };
   files.value.delete(id);
+  syncMainDocumentState();
   updatedFile.value = {
     action: 'deleted',
     file: deletedFile,
@@ -143,6 +164,7 @@ const onSaved = (file: PublicationFile) => {
   };
   currentFile.value = { ...file };
   files.value.set(file.id as string, file);
+  syncMainDocumentState();
   isDialogOpen.value = false;
 
   resetFocus();
@@ -182,6 +204,7 @@ const retrieveFiles = async () => {
       }
       files.value.set(file.id as string, file);
     });
+    syncMainDocumentState();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
   } catch (error) {}
 };
@@ -216,8 +239,10 @@ retrieveFiles();
     </div>
 
     <button
-      v-if="isAddFileButtonVisible"
+      v-if="isAddFileButtonVisible || isAddButtonDisabled"
       @click="onAddFile"
+      :disabled="isAddButtonDisabled"
+      :class="{ 'opacity-50 cursor-not-allowed': isAddButtonDisabled }"
       aria-haspopup="dialog"
       class="bhr-btn-ghost-primary mt-1"
       data-e2e-name="add-file"

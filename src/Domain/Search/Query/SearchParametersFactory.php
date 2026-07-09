@@ -8,7 +8,7 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
 use Shared\Domain\Search\Index\ElasticDocumentType;
-use Shared\Domain\Search\Query\Facet\Definition\PrefixedDossierNrFacet;
+use Shared\Domain\Search\Query\Facet\Definition\PrefixedDossierNumberFacet;
 use Shared\Domain\Search\Query\Facet\Definition\TypeFacet;
 use Shared\Domain\Search\Query\Facet\Input\FacetInputFactory;
 use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
@@ -98,17 +98,17 @@ readonly class SearchParametersFactory
     public function forAdminSearch(
         string $searchTerm,
         ?DossierType $dossierType,
-        ?string $dossierNr,
+        ?string $dossierNumber,
         ?SearchResultType $resultType,
     ): SearchParameters {
         $facetInputs = $this->facetInputFactory->createEmpty();
 
-        if ($dossierNr !== null) {
+        if ($dossierNumber !== null) {
             $facetInputs = $facetInputs->withFacetInput(
-                FacetKey::PREFIXED_DOSSIER_NR,
+                FacetKey::PREFIXED_DOSSIER_NUMBER,
                 new StringValuesFacetInput(
-                    new PrefixedDossierNrFacet(),
-                    [$dossierNr],
+                    new PrefixedDossierNumberFacet(),
+                    [$dossierNumber],
                 ),
             );
         }

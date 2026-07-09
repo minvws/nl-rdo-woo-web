@@ -15,7 +15,7 @@ class DownloadFilenameGeneratorTest extends UnitTestCase
     public function testGetFileNameForDocument(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentNr')->andReturn('123');
+        $document->expects('getDocumentNumber')->andReturn('123');
         $document->expects('getFileInfo->getType')->andReturn('csv');
 
         $generator = new DownloadFilenameGenerator();

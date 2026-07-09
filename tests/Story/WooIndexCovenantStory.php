@@ -31,7 +31,7 @@ final class WooIndexCovenantStory extends Story
     public function build(): void
     {
         $covenant = CovenantFactory::createOne([
-            'dossierNr' => 'my-covenant-1',
+            'dossierNumber' => 'my-covenant-1',
             'createdAt' => CarbonImmutable::parse('2023-03-01 13:37:42'),
             'updatedAt' => CarbonImmutable::parse('2023-03-01 13:37:42'),
         ]);
@@ -39,7 +39,7 @@ final class WooIndexCovenantStory extends Story
 
         $unpublishedCovenant = CovenantFactory::createOne([
             'status' => DossierStatus::NEW,
-            'dossierNr' => 'my-unpublished-covenant-2',
+            'dossierNumber' => 'my-unpublished-covenant-2',
             'createdAt' => CarbonImmutable::parse('2025-01-01'),
             'updatedAt' => CarbonImmutable::parse('2025-01-01'),
         ]);

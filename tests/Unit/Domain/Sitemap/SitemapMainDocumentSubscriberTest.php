@@ -40,7 +40,7 @@ class SitemapMainDocumentSubscriberTest extends UnitTestCase
     {
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'foo');
-        $dossier->expects('getDossierNr')->andReturn($dossierNr = 'bar');
+        $dossier->expects('getDossierNumber')->andReturn($dossierNumber = 'bar');
         $dossier->expects('getType')->andReturn(DossierType::COVENANT);
 
         $mainDocument = Mockery::mock(AbstractMainDocument::class);
@@ -59,7 +59,7 @@ class SitemapMainDocumentSubscriberTest extends UnitTestCase
             'app_covenant_document_detail',
             [
                 'prefix' => $prefix,
-                'dossierId' => $dossierNr,
+                'dossierNumber' => $dossierNumber,
             ],
             0,
         )->andReturn($attachmentUrl = '/foo/bar/attachment-123');

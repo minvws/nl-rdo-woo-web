@@ -13,11 +13,14 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\EntityWithNoticeNotPublic;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\HasNoticeNotPublicTrait;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
+use Shared\Validator\ExactlyOneOf\ExactlyOneOf;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -33,7 +36,18 @@ use function array_values;
     DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
     DossierValidationGroup::WORKFLOW_PUBLISH->value,
 ])]
-class RequestForAdvice extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument
+#[ExactlyOneOf(
+    properties: ['mainDocument', 'noticeNotPublic'],
+    errorPaths: ['document', 'noticeNotPublic'],
+    noneMessage: 'dossier.document_or_notice_required',
+    multipleMessage: 'dossier.document_and_notice_not_allowed',
+    groups: [
+        DossierValidationGroup::CONTENT->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ],
+)]
+class RequestForAdvice extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument, EntityWithNoticeNotPublic
 {
     /** @use HasAttachments<RequestForAdviceAttachment> */
     use HasAttachments;
@@ -41,12 +55,9 @@ class RequestForAdvice extends AbstractDossier implements EntityWithAttachments,
     /** @use HasMainDocument<RequestForAdviceMainDocument> */
     use HasMainDocument;
 
+    use HasNoticeNotPublicTrait;
+
     #[ORM\OneToOne(targetEntity: RequestForAdviceMainDocument::class, mappedBy: 'dossier', cascade: ['remove', 'persist'])]
-    #[Assert\NotBlank(groups: [
-        DossierValidationGroup::CONTENT->value,
-        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
-        DossierValidationGroup::WORKFLOW_PUBLISH->value,
-    ])]
     #[Assert\Valid(groups: [
         DossierValidationGroup::CONTENT->value,
         DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,

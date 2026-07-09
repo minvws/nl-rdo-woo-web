@@ -12,7 +12,7 @@ baseline:
         formalDate: <ROBOT DATE -7>
         grounds: [<ROBOT RANDOMIZE>]
         language: NLD
-        type: c_38ba44de
+        type: c_386e74cb
       parties:
         - <ROBOT RANDOM DEPARTMENT ID>
         - <ROBOT RANDOM DEPARTMENT ID>

@@ -35,7 +35,7 @@ readonly class DossierPathHelper
             $routeName,
             [
                 'prefix' => $dossier->getDocumentPrefix(),
-                'dossierId' => $dossier->getDossierNr(),
+                'dossierNumber' => $dossier->getDossierNumber(),
             ],
         );
     }

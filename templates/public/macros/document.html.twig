@@ -4,8 +4,10 @@
     ground: a list of documents to display
 #}
 {% macro document_ground(ground) %}
-    {% if get_citation_type(ground) == "woo" or get_citation_type(ground) == "wob" %}
+    {% if get_citation_type(ground) == constant('Shared\\Domain\\Publication\\Citation::TYPE_WOO') %}
         <a class="woo-a" href="https://wetten.overheid.nl/BWBR0045754/#Hoofdstuk5">{{ ground }} {{ ground|classification }}</a>
+    {% elseif get_citation_type(ground) == constant('Shared\\Domain\\Publication\\Citation::TYPE_WOB') %}
+        <a class="woo-a" href="https://wetten.overheid.nl/BWBR0005252/#HoofdstukV">{{ ground }} {{ ground|classification }}</a>
     {% else %}
         {{ ground }}
     {% endif %}
@@ -79,7 +81,7 @@
 {% endmacro %}
 
 {% macro document_url(document) %}
-    <a class="woo-a" href="{{ path('app_document_detail', { prefix: document.dossiers.first.documentPrefix, dossierId: document.dossiers.first.dossierNr, documentId: document.documentNr }) }}">{{ document.fileInfo.name }}</a>
+    <a class="woo-a" href="{{ path('app_document_detail', { prefix: document.dossiers.first.documentPrefix, dossierNumber: document.dossiers.first.dossierNumber, documentNumber: document.documentNumber }) }}">{{ document.fileInfo.name }}</a>
 {% endmacro %}
 
 {% macro withdrawn_and_suspended_count(withdrawnCount, suspendedCount) %}

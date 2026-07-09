@@ -42,7 +42,7 @@ readonly class DocumentUpdater
      */
     public function databaseUpdate(DocumentMetadata $documentMetadata, WooDecision $dossier, Document $document): Document
     {
-        $this->mapMetadataToDocument($documentMetadata, $document, $document->getDocumentNr());
+        $this->mapMetadataToDocument($documentMetadata, $document, $document->getDocumentNumber());
 
         $document->addDossier($dossier);
 
@@ -77,7 +77,7 @@ readonly class DocumentUpdater
         $this->documentDispatcher->dispatchRemoveDocumentCommand($dossier->getId(), $document->getId());
     }
 
-    private function mapMetadataToDocument(DocumentMetadata $documentMetadata, Document $document, string $documentNr): void
+    private function mapMetadataToDocument(DocumentMetadata $documentMetadata, Document $document, string $documentNumber): void
     {
         $document->setJudgement($documentMetadata->getJudgement());
         $document->setDocumentDate($documentMetadata->getDate());
@@ -90,7 +90,7 @@ readonly class DocumentUpdater
         $document->setLinks($documentMetadata->getLinks());
         $document->setRemark($documentMetadata->getRemark());
 
-        $fileName = $documentMetadata->getFilename($documentNr);
+        $fileName = $documentMetadata->getFilename($documentNumber);
 
         $file = $document->getFileInfo();
         $file->setSourceType($documentMetadata->getSourceType());

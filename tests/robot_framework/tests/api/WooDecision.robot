@@ -15,6 +15,7 @@ Test Tags           api  api-woodecision
 *** Variables ***
 ${EXTERNAL_ID}                  ${EMPTY}
 ${STORED_DOCUMENT_EXTERNAL_ID}  ${EMPTY}
+${STORED_DOCUMENT_ID}           ${EMPTY}
 
 
 *** Test Cases ***
@@ -125,8 +126,15 @@ Generate Unique Document IDs
       IF  '${document}[documentId]' == '<ROBOT RANDOM INT>'
         Set To Dictionary  ${document}  documentId  ${document_id}
       END
+      IF  '${document}[documentId]' == '<STORED DOCUMENT ID>'
+        Set To Dictionary  ${document}  documentId  ${STORED_DOCUMENT_ID}
+      END
     END
   END
+
+Store WooDecision Document ID
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  VAR  ${STORED_DOCUMENT_ID} =  ${PREVIOUS_REQUEST_BODY}[documents][0][documentId]  scope=test
 
 Send Put Request WooDecision
   [Arguments]  ${external_id}  ${body}  ${expected_response_status}
@@ -179,7 +187,7 @@ Store WooDecision Document Nr
   ${get_response} =  GET On Session
   ...  alias=publication_api
   ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/external/${EXTERNAL_ID}
-  VAR  ${STORED_DOCUMENT_NR} =  ${get_response.json()}[documents][0][documentNr]  scope=test
+  VAR  ${STORED_DOCUMENT_NUMBER} =  ${get_response.json()}[documents][0][documentNumber]  scope=test
 
 Change Document ID
   [Documentation]    This is not unused, it's referenced from the YAML file.
@@ -192,8 +200,8 @@ Verify WooDecision Document Nr Changed
   ${get_response} =  GET On Session
   ...  alias=publication_api
   ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/external/${EXTERNAL_ID}
-  VAR  ${document_nr} =  ${get_response.json()}[documents][0][documentNr]
-  Should Not Be Equal  ${document_nr}  ${STORED_DOCUMENT_NR}
+  VAR  ${document_number} =  ${get_response.json()}[documents][0][documentNumber]
+  Should Not Be Equal  ${document_number}  ${STORED_DOCUMENT_NUMBER}
 
 Store WooDecision Document External Id
   [Documentation]    This is not unused, it's referenced from the YAML file.

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier;
 
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -14,7 +15,7 @@ use function strtoupper;
 
 #[ORM\Entity(repositoryClass: DocumentPrefixRepository::class)]
 #[UniqueEntity('prefix')]
-class DocumentPrefix
+class DocumentPrefix implements HasId
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true, nullable: false)]

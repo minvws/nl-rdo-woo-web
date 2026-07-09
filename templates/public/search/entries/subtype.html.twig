@@ -45,7 +45,7 @@
             <li>
                 <twig:Public:Icon name="part-of" size="20" />
                 <span>{{ 'global.part_of' | trans | capitalize }}</span> <a class="woo-a woo-a--search-result" href="{{ dossier_details_path(dossier) }}">{{ dossier.title }}</a>
-                {{dossier.dossierNr}}
+                {{dossier.dossierNumber}}
             </li>
             {% endfor %}
         </ul>

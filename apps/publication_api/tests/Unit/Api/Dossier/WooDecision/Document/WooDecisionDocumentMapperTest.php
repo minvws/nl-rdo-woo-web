@@ -118,6 +118,6 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
         $document = $wooDecisionDocumentMapper->update(WooDecisionFactory::DEFAULT_PREFIX, $document, $updateDto);
 
         $this->assertEquals($sourceType, $document->getFileInfo()->getSourceType());
-        $this->assertStringContainsString('doc.123', $document->getDocumentNr());
+        $this->assertStringContainsString('doc.123', $document->getDocumentNumber());
     }
 }

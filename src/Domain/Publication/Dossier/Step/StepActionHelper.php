@@ -97,7 +97,7 @@ readonly class StepActionHelper
             $name,
             [
                 'prefix' => $dossier->getDocumentPrefix(),
-                'dossierId' => $dossier->getDossierNr(),
+                'dossierNumber' => $dossier->getDossierNumber(),
             ],
         );
 
@@ -121,7 +121,7 @@ readonly class StepActionHelper
         $breadcrumbs->addRouteItem(
             (string) $dossier->getTitle(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
 
         if ($item !== null) {

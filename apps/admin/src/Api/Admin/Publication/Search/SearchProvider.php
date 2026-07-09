@@ -10,7 +10,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
-use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Domain\Search\Query\SearchParametersFactory;
 use Shared\Domain\Search\Query\SearchResultType;
@@ -55,10 +55,10 @@ readonly class SearchProvider implements ProviderInterface
 
         /** @var ?Uuid $dossierId */
         $dossierId = $attributes->get('dossierIdQuery');
-        $dossierNr = null;
+        $dossierNumber = null;
         if ($dossierId !== null) {
             $dossier = $this->dossierRepository->findOneByDossierId($dossierId);
-            $dossierNr = PrefixedDossierNr::forDossier($dossier);
+            $dossierNumber = PrefixedDossierNumber::forDossier($dossier);
         }
 
         /** @var ?SearchResultType $resultType */
@@ -67,7 +67,7 @@ readonly class SearchProvider implements ProviderInterface
         return $this->searchParametersFactory->forAdminSearch(
             searchTerm: $searchTerm,
             dossierType: $dossierType,
-            dossierNr: $dossierNr,
+            dossierNumber: $dossierNumber,
             resultType: $resultType,
         );
     }

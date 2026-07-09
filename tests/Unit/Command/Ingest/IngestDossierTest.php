@@ -18,7 +18,7 @@ class IngestDossierTest extends UnitTestCase
     public function testExecute(): void
     {
         $prefix = $this->getFaker()->word();
-        $dossierNr = $this->getFaker()->word();
+        $dossierNumber = $this->getFaker()->word();
         $forceRefresh = $this->getFaker()->boolean();
 
         $dossier = new WooDecision();
@@ -27,7 +27,7 @@ class IngestDossierTest extends UnitTestCase
         $dossierRepository->expects('findOneBy')
             ->with([
                 'documentPrefix' => $prefix,
-                'dossierNr' => $dossierNr,
+                'dossierNumber' => $dossierNumber,
             ])
             ->andReturn($dossier);
 
@@ -43,7 +43,7 @@ class IngestDossierTest extends UnitTestCase
 
         $commandTester->execute([
             'prefix' => $prefix,
-            'dossierNr' => $dossierNr,
+            'dossierNumber' => $dossierNumber,
             '--force-refresh' => $forceRefresh,
         ]);
 

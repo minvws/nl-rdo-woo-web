@@ -14,7 +14,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\Docume
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
-use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Security\DossierVoter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -37,10 +37,10 @@ class DocumentController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/dossier/{prefix}/{dossierId}/document/{documentId}', name: 'app_document_detail', methods: ['GET'])]
+    #[Route('/dossier/{prefix}/{dossierNumber}/document/{documentNumber}', name: 'app_document_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
-        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId, documentId)')] Document $document,
+        #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(prefix, dossierNumber, documentNumber)')] Document $document,
         Breadcrumbs $breadcrumbs,
         Request $request,
     ): Response {
@@ -49,7 +49,7 @@ class DocumentController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('global.decision', 'app_woodecision_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
         ]);
         $breadcrumbs->addItem('global.document');
 
@@ -90,22 +90,22 @@ class DocumentController extends AbstractController
             'family_search_url' => $this->generateUrl(
                 'app_search',
                 [
-                    FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
+                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($dossier)],
                     FacetKey::FAMILY->getParamName() => [$document->getFamilyId()],
                 ],
             ),
             'thread_search_url' => $this->generateUrl(
                 'app_search',
                 [
-                    FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
+                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($dossier)],
                     FacetKey::THREAD->getParamName() => [$document->getThreadId()],
                 ],
             ),
             'referred_search_url' => $this->generateUrl(
                 'app_search',
                 [
-                    FacetKey::PREFIXED_DOSSIER_NR->getParamName() => [PrefixedDossierNr::forDossier($dossier)],
-                    FacetKey::REFERRED_DOCUMENT_NR->getParamName() => [$document->getDocumentNr()],
+                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($dossier)],
+                    FacetKey::REFERRED_DOCUMENT_NUMBER->getParamName() => [$document->getDocumentNumber()],
                 ],
             ),
         ]);

@@ -65,20 +65,20 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/request-for-advice/details/concept/{prefix}/{dossierId}',
+        path: '/balie/dossier/request-for-advice/details/concept/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_requestforadvice_details_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] RequestForAdvice $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] RequestForAdvice $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem(
             (string) $dossier->getTitle(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addItem('admin.dossiers.request-for-advice.step.details');
 
@@ -104,13 +104,13 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/request-for-advice/details/edit/{prefix}/{dossierId}',
+        path: '/balie/dossier/request-for-advice/details/edit/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_requestforadvice_details_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] RequestForAdvice $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] RequestForAdvice $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {

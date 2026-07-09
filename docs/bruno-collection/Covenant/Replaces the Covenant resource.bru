@@ -61,10 +61,10 @@ script:pre-request {
   const crypto = require('crypto');
 
   if (!bru.getEnvVar("covenantDossierExternalId")) {
-    bru.setEnvVar("covenantDossierExternalId", crypto.randomUUID());
+    bru.setVar("covenantDossierExternalId", crypto.randomUUID());
   }
   if (!bru.getEnvVar("covenantAttachmentExternalId")) {
-    bru.setEnvVar("covenantAttachmentExternalId", crypto.randomUUID());
+    bru.setVar("covenantAttachmentExternalId", crypto.randomUUID());
   }
 }
 

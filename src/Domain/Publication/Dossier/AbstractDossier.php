@@ -14,6 +14,7 @@ use Shared\Doctrine\ExternalIdType;
 use Shared\Doctrine\PlainDateType;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Department\Department;
+use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
@@ -56,10 +57,10 @@ use function strtolower;
     DossierType::ADVICE->value => Advice::class,
     DossierType::REQUEST_FOR_ADVICE->value => RequestForAdvice::class,
 ])]
-#[ORM\UniqueConstraint(name: 'dossier_unique_index', columns: ['dossier_nr', 'document_prefix'])]
+#[ORM\UniqueConstraint(name: 'dossier_unique_index', columns: ['dossier_number', 'document_prefix'])]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(
-    fields: ['dossierNr', 'documentPrefix'],
+    fields: ['dossierNumber', 'documentPrefix'],
     entityClass: AbstractDossier::class,
 )]
 #[ORM\UniqueConstraint(name: 'dossier_unique_external_id', columns: ['external_id', 'organisation_id'])]
@@ -68,7 +69,7 @@ use function strtolower;
     entityClass: AbstractDossier::class,
     ignoreNull: true,
 )]
-abstract class AbstractDossier
+abstract class AbstractDossier implements HasId
 {
     use TimestampableTrait;
 
@@ -96,7 +97,7 @@ abstract class AbstractDossier
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
-    protected string $dossierNr = '';
+    protected string $dossierNumber = '';
 
     #[ORM\Column(type: DossierTitleType::NAME, length: 500)]
     #[Assert\NotNull(groups: [
@@ -130,14 +131,19 @@ abstract class AbstractDossier
     protected ?PlainDate $dateFrom = null;
 
     #[ORM\Column(type: PlainDateType::NAME, nullable: true)]
-    #[PlainDateAfterOrEqual(
-        message: 'date_to_before_date_from',
-        propertyPath: 'dateFrom',
-        groups: [
-            DossierValidationGroup::DETAILS->value,
-            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
-            DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
-            DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    #[Assert\When(
+        expression: 'this.getDateFrom() !== null',
+        constraints: [
+            new PlainDateAfterOrEqual(
+                message: 'date_to_before_date_from',
+                propertyPath: 'dateFrom',
+                groups: [
+                    DossierValidationGroup::DETAILS->value,
+                    DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+                    DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+                    DossierValidationGroup::WORKFLOW_PUBLISH->value,
+                ],
+            ),
         ],
     )]
     #[PlainDateBeforeOrEqual(
@@ -230,14 +236,14 @@ abstract class AbstractDossier
         return $this;
     }
 
-    public function getDossierNr(): string
+    public function getDossierNumber(): string
     {
-        return $this->dossierNr;
+        return $this->dossierNumber;
     }
 
-    public function setDossierNr(string $dossierNr): self
+    public function setDossierNumber(string $dossierNumber): self
     {
-        $this->dossierNr = strtolower($dossierNr);
+        $this->dossierNumber = strtolower($dossierNumber);
 
         return $this;
     }

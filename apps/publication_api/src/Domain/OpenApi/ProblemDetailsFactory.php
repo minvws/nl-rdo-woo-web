@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace PublicationApi\Domain\OpenApi;
 
+use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
 use PublicationApi\Domain\Exception\ResourceInUseException;
 use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\PropertyAccess\Exception\InvalidPropertyPathException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Throwable;
@@ -26,8 +28,10 @@ class ProblemDetailsFactory
             $exception instanceof EntityNotFoundException => $this->buildEntityNotFoundProblem($exception),
             $exception instanceof NotFoundHttpException => $this->buildNotFoundProblem($exception),
             $exception instanceof ValidationException => $this->buildValidationProblem($exception),
+            $exception instanceof InvalidPropertyPathException => $this->buildPropertyPathProblem($exception),
             $exception instanceof NotEncodableValueException => $this->buildInvalidRequestBodyProblem(),
             $exception instanceof ResourceInUseException => $this->buildResourceInUseProblem(),
+            $exception instanceof ExternalIdInUseException => $this->externalIdInUseProblem($exception),
             default => null,
         };
     }
@@ -72,6 +76,16 @@ class ProblemDetailsFactory
         );
     }
 
+    private function buildPropertyPathProblem(InvalidPropertyPathException $exception): ProblemDetails
+    {
+        return new ProblemDetails(
+            type: self::BASE_URI . 'openapi-validation',
+            title: 'Invalid API Request',
+            status: Response::HTTP_UNPROCESSABLE_ENTITY,
+            detail: $exception->getMessage(),
+        );
+    }
+
     private function buildInvalidRequestBodyProblem(): ProblemDetails
     {
         return new ProblemDetails(
@@ -89,6 +103,16 @@ class ProblemDetailsFactory
             title: 'Method Not Allowed',
             status: Response::HTTP_METHOD_NOT_ALLOWED,
             detail: 'Resource is still linked to one or more dossiers and cannot be deleted',
+        );
+    }
+
+    private function externalIdInUseProblem(ExternalIdInUseException $exception): ProblemDetails
+    {
+        return new ProblemDetails(
+            type: self::BASE_URI . 'external-id-in-use',
+            title: 'ExternalId already in use',
+            status: Response::HTTP_CONFLICT,
+            detail: $exception->getMessage(),
         );
     }
 }

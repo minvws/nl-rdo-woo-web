@@ -10,7 +10,7 @@ readonly class AbstractDossierTypeSearchResult implements DossierTypeSearchResul
 {
     public function __construct(
         public Uuid $id,
-        public string $dossierNr,
+        public string $dossierNumber,
         public string $documentPrefix,
         public string $title,
     ) {

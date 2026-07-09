@@ -59,11 +59,11 @@ class InventoryChangeset
         return count($changes) === 0;
     }
 
-    public function getStatus(DocumentNumber $documentNr): string
+    public function getStatus(DocumentNumber $documentNumber): string
     {
-        $key = strtolower($documentNr->getValue());
+        $key = strtolower($documentNumber->getValue());
         if (! array_key_exists($key, $this->documentStatus)) {
-            throw new OutOfBoundsException("DocumentNr $key not found in InventoryChangeset");
+            throw new OutOfBoundsException("documentNumber $key not found in InventoryChangeset");
         }
 
         return $this->documentStatus[$key];
@@ -127,7 +127,7 @@ class InventoryChangeset
     private function setDocumentStatus(string $documentNumber, string $status): void
     {
         if (key_exists($documentNumber, $this->documentStatus)) {
-            throw ProcessInventoryException::forDuplicateDocumentNr($documentNumber);
+            throw ProcessInventoryException::forDuplicateDocumentNumber($documentNumber);
         }
 
         $this->documentStatus[strtolower($documentNumber)] = $status;

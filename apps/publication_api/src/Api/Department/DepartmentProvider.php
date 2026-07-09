@@ -6,32 +6,33 @@ namespace PublicationApi\Api\Department;
 
 use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\Pagination\ArrayPaginator;
 use ApiPlatform\State\ProviderInterface;
+use PublicationApi\Api\Pagination\CursorPage;
+use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
 use Shared\Domain\Department\DepartmentRepository;
+use Shared\Domain\HasId;
 use Shared\Service\ApiPlatformService;
 use Symfony\Component\Uid\Exception\InvalidArgumentException;
 use Symfony\Component\Uid\Uuid;
-
-use function count;
 
 final readonly class DepartmentProvider implements ProviderInterface
 {
     public function __construct(
         private DepartmentRepository $departmentRepository,
         private DepartmentMapper $departmentMapper,
+        private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
     }
 
     /**
-     * @param array<array-key,string> $uriVariables
+     * @param array<array-key, string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|DepartmentDetailResponseDto
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|DepartmentDetailResponseDto
     {
         if ($operation instanceof CollectionOperationInterface) {
-            return $this->provideCollection($context);
+            return $this->provideCollection($operation, $uriVariables, $context);
         }
 
         try {
@@ -44,16 +45,26 @@ final readonly class DepartmentProvider implements ProviderInterface
     }
 
     /**
+     * @param array<array-key, string> $uriVariables
      * @param array<array-key,mixed> $context
      */
-    private function provideCollection(array $context): ArrayPaginator
+    private function provideCollection(Operation $operation, array $uriVariables, array $context): CursorPage
     {
         $departments = $this->departmentRepository->getPaginated(
             $this->itemsPerPage,
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator($this->departmentMapper->fromEntitiesWithDetail($departments), 0, count($departments));
+        $mappedDtos = $this->departmentMapper->fromEntitiesWithDetail($departments);
+
+        /** @var list<HasId> $departments */
+        return $this->cursorPageFactory->create(
+            $departments,
+            $mappedDtos,
+            $this->itemsPerPage,
+            $operation,
+            $uriVariables,
+        );
     }
 
     private function provideSingle(Uuid $departmentId): DepartmentDetailResponseDto

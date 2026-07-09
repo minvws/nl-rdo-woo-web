@@ -23,7 +23,7 @@ te krijgen tot een account.
 
 Om in te loggen in het uploadportaal volg je onderstaande stappen:
 
-- Ga naar <https://balie.woo.irealisatie.nl>
+- Ga naar {{ balie_link }}
 - Het inlogscherm opent, je vult hier jouw e-mailadres in en het tijdelijke wachtwoord dat in het PDF-bestand staat en kiest voor ‘Inloggen’.
 - Open de authenticator app, voer de gegenereerde code in en kies voor ‘Controleren’.
 

@@ -1,6 +1,6 @@
 {% extends 'public/search/entries/base.html.twig' %}
 
-{% set resultUrl = path('app_woodecision_detail', { prefix: entry.dossier.documentPrefix, dossierId: entry.dossier.dossierNr }) %}
+{% set resultUrl = path('app_woodecision_detail', { prefix: entry.dossier.documentPrefix, dossierNumber: entry.dossier.dossierNumber }) %}
 {% set resultType = entry.dossier.publicationReason | trans %}
 
 {% block resultTypeSpecs %}

@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Subject;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -14,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SubjectRepository::class)]
 #[UniqueEntity(fields: ['name', 'organisation'], message: 'subject_already_exists')]
-class Subject
+class Subject implements HasId
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]

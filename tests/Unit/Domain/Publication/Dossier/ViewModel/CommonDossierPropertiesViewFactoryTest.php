@@ -59,7 +59,7 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
             ));
         $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->expects('getId')->andReturn($uuid);
-        $dossier->expects('getDossierNr')->andReturn($expectedDossierNr = 'my dossier nr');
+        $dossier->expects('getDossierNumber')->andReturn($expectedDossierNumber = 'my dossier number');
         $dossier->expects('getDocumentPrefix')->andReturn($expectedDocumentPrefix = 'my document prefix');
         $dossier->expects('getStatus')->times(1)->andReturn($expectedStatus = DossierStatus::PUBLISHED);
         $dossier->expects('getTitle')->andReturn($expectedTitle = DossierTitle::create('my title'));
@@ -76,7 +76,7 @@ final class CommonDossierPropertiesViewFactoryTest extends UnitTestCase
         $result = $this->factory->make($dossier);
 
         $this->assertSame($expectedUuid, $result->dossierId);
-        $this->assertSame($expectedDossierNr, $result->dossierNr);
+        $this->assertSame($expectedDossierNumber, $result->dossierNumber);
         $this->assertSame($expectedDocumentPrefix, $result->documentPrefix);
         $this->assertSame($expectedStatus->isPreview(), $result->isPreview);
         $this->assertSame($expectedTitle, $result->title);

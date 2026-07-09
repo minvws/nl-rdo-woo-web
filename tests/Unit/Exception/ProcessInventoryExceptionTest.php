@@ -69,11 +69,11 @@ final class ProcessInventoryExceptionTest extends TestCase
         );
     }
 
-    public function testForDuplicateDocumentNr(): void
+    public function testForDuplicateDocumentNumber(): void
     {
         self::assertStringContainsString(
             'foo-123',
-            ProcessInventoryException::forDuplicateDocumentNr('foo-123')->getMessage(),
+            ProcessInventoryException::forDuplicateDocumentNumber('foo-123')->getMessage(),
         );
     }
 

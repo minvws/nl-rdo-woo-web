@@ -70,7 +70,7 @@ final class TikaServiceTest extends UnitTestCase
                     'headers' => [
                         'Accept' => 'application/json',
                         'Content-Type' => 'application/pdf',
-                        'X-Tika-OCRmaxFileSizeToOcr' => 0,
+                        'X-Tika-OCRmaxFileSizeToOcr' => '0',
                     ],
                     'body' => $body,
                 ],
@@ -105,7 +105,7 @@ final class TikaServiceTest extends UnitTestCase
                     'headers' => [
                         'Accept' => 'application/json',
                         'Content-Type' => 'application/pdf',
-                        'X-Tika-OCRmaxFileSizeToOcr' => 0,
+                        'X-Tika-OCRmaxFileSizeToOcr' => '0',
                     ],
                     'body' => $body,
                 ],

@@ -6,6 +6,7 @@ namespace PublicationApi\Api\Dossier\Advice;
 
 use PublicationApi\Api\Attachment\AttachmentResponseDto;
 use PublicationApi\Api\Department\DepartmentResponseDto;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicResponseDto;
 use PublicationApi\Api\Organisation\OrganisationResponseDto;
 use PublicationApi\Api\Subject\SubjectResponse;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
@@ -32,7 +33,8 @@ final class AdviceResponseDto
         public DepartmentResponseDto $department,
         public ?PlainDate $publicationDate,
         public DossierStatus $status,
-        public AdviceMainDocumentResponseDto $mainDocument,
+        public ?AdviceMainDocumentResponseDto $mainDocument,
+        public ?NoticeNotPublicResponseDto $noticeNotPublic,
         public array $attachments,
         public PlainDate $dossierDate,
         #[SerializedName('_links')]

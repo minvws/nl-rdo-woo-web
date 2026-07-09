@@ -53,17 +53,17 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
     /**
      * @return array<array-key, DossierReference>
      */
-    public function getDossierReferencesForDocument(string $documentNr): array
+    public function getDossierReferencesForDocument(string $documentNumber): array
     {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
-                'new %s(dos.dossierNr, dos.documentPrefix, dos.title, :type)',
+                'new %s(dos.dossierNumber, dos.documentPrefix, dos.title, :type)',
                 DossierReference::class,
             ))
-            ->where('doc.documentNr = :documentNr')
+            ->where('doc.documentNumber = :documentNumber')
             ->andWhere('dos.status IN (:statuses)')
             ->innerJoin('dos.documents', 'doc')
-            ->setParameter('documentNr', $documentNr)
+            ->setParameter('documentNumber', $documentNumber)
             ->setParameter('type', DossierType::WOO_DECISION)
             ->setParameter('statuses', DossierStatus::publiclyAvailableCases());
 
@@ -72,14 +72,14 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
 
     public function getSearchResultViewModel(
         string $prefix,
-        string $dossierNr,
+        string $dossierNumber,
         ApplicationMode $mode,
     ): ?WooDecisionSearchResult {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
                 'new %s(
                     dos.id,
-                    dos.dossierNr,
+                    dos.dossierNumber,
                     dos.documentPrefix,
                     dos.title,
                     dos.decision,
@@ -92,12 +92,12 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
                 WooDecisionSearchResult::class,
             ))
             ->where('dos.documentPrefix = :prefix')
-            ->andWhere('dos.dossierNr = :dossierNr')
+            ->andWhere('dos.dossierNumber = :dossierNumber')
             ->andWhere('dos.status IN (:statuses)')
             ->leftJoin('dos.documents', 'doc')
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
-            ->setParameter('dossierNr', $dossierNr)
+            ->setParameter('dossierNumber', $dossierNumber)
             ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
 
         /** @var ?WooDecisionSearchResult */

@@ -104,7 +104,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ->expects('generate')
             ->with('app_admin_dossier', [
                 'prefix' => $wooDecisionPrefix,
-                'dossierId' => $wooDecisionNr,
+                'dossierNumber' => $wooDecisionNr,
             ])
             ->andReturn('/link/to/woo-decision');
 
@@ -118,7 +118,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
         $entry = new SubTypeSearchResultEntry(
             new DocumentViewModel(
                 'document123',
-                $documentNr = '123',
+                $documentNumber = '123',
                 '123.pdf',
                 SourceType::PDF,
                 true,
@@ -143,8 +143,8 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ->expects('generate')
             ->with('app_admin_dossier_woodecision_document', [
                 'prefix' => $wooDecisionPrefix,
-                'dossierId' => $wooDecisionNr,
-                'documentId' => $documentNr,
+                'dossierNumber' => $wooDecisionNr,
+                'documentNumber' => $documentNumber,
             ])
             ->andReturn('/link/to/woo-decision-document');
 
@@ -193,7 +193,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ->andReturn($attachmentRouteName = 'attachment_route');
 
         $this->dossierRepository
-            ->expects('findOneByPrefixAndDossierNr')
+            ->expects('findOneByPrefixAndDossierNumber')
             ->with($wooDecisionPrefix, $wooDecisionNr)
             ->andReturn($wooDecisionEntity);
 
@@ -206,7 +206,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ->expects('generate')
             ->with($attachmentRouteName, [
                 'prefix' => $wooDecisionPrefix,
-                'dossierId' => $wooDecisionNr,
+                'dossierNumber' => $wooDecisionNr,
             ])
             ->andReturn('/link/to/woo-decision-attachment');
 
@@ -253,7 +253,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ->andReturn($mainDocumentRouteName = 'attachment_route');
 
         $this->dossierRepository
-            ->expects('findOneByPrefixAndDossierNr')
+            ->expects('findOneByPrefixAndDossierNumber')
             ->with($wooDecisionPrefix, $wooDecisionNr)
             ->andReturn($wooDecisionEntity);
 
@@ -266,7 +266,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ->expects('generate')
             ->with($mainDocumentRouteName, [
                 'prefix' => $wooDecisionPrefix,
-                'dossierId' => $wooDecisionNr,
+                'dossierNumber' => $wooDecisionNr,
             ])
             ->andReturn('/link/to/woo-decision-main-document');
 

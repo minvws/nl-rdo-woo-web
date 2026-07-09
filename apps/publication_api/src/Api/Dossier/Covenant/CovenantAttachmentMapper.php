@@ -7,7 +7,6 @@ namespace PublicationApi\Api\Dossier\Covenant;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
-use Shared\Domain\Publication\FileInfo;
 
 class CovenantAttachmentMapper
 {
@@ -21,10 +20,8 @@ class CovenantAttachmentMapper
             $attachmentRequestDto->type,
             $attachmentRequestDto->language,
         );
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($attachmentRequestDto->fileName->toString());
 
-        $attachment->setFileInfo($fileInfo);
+        $attachment->getFileInfo()->setName($attachmentRequestDto->fileName->toString());
         $attachment->setGrounds($attachmentRequestDto->grounds);
         $attachment->setExternalId($attachmentRequestDto->externalId);
 

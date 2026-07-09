@@ -34,17 +34,17 @@ readonly class DocumentSearchResultMapper implements SearchResultMapperInterface
 
     public function map(TypeArray $hit, ApplicationMode $mode = ApplicationMode::PUBLIC): ?ResultEntryInterface
     {
-        $documentNr = $hit->getStringOrNull('[fields][document_nr][0]');
-        if (is_null($documentNr)) {
+        $documentNumber = $hit->getStringOrNull('[fields][document_number][0]');
+        if (is_null($documentNumber)) {
             return null;
         }
 
-        $document = $this->documentRepository->getDocumentSearchEntry($documentNr);
+        $document = $this->documentRepository->getDocumentSearchEntry($documentNumber);
         if (! $document) {
             return null;
         }
 
-        $dossiers = $this->wooDecisionRepository->getDossierReferencesForDocument($documentNr);
+        $dossiers = $this->wooDecisionRepository->getDossierReferencesForDocument($documentNumber);
 
         $highlightData = $this->getHighlightData($hit, ElasticHighlights::getPaths());
 

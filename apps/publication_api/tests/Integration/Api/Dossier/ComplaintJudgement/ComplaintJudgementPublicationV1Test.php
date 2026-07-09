@@ -8,6 +8,7 @@ use Carbon\CarbonImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementResource;
 use PublicationApi\Api\Dossier\ComplaintJudgement\Uploads\MainDocument\ComplaintJudgementUploadMainDocumentResource;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Controller\Public\Dossier\DossierFileController;
@@ -15,8 +16,10 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
@@ -26,6 +29,8 @@ use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
+use Shared\Tests\Factory\Publication\Dossier\NoticeNotPublic\NoticeNotPublicFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\Advice\AdviceFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocumentFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
@@ -63,8 +68,13 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
 
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
-        self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $complaintJudgement->getExternalId()?->toString()]]);
+        $data = $result->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(1, $items);
+        self::assertJsonContains(['items' => [['externalId' => $complaintJudgement->getExternalId()?->toString()]]]);
     }
 
     public function testGetComplaintJudgement(): void
@@ -85,6 +95,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
 
         self::assertResponseIsSuccessful();
 
+        $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
         $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
@@ -94,7 +105,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                 'id' => $organisation->getId()->toString(),
                 'name' => $organisation->getName(),
             ],
-            'dossierNumber' => $complaintJudgement->getDossierNr(),
+            'dossierNumber' => $complaintJudgement->getDossierNumber(),
             'title' => (string) $complaintJudgement->getTitle(),
             'summary' => $complaintJudgement->getSummary(),
             'subject' => [
@@ -117,7 +128,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                 'uploadStatus' => UploadStatus::PROCESSED->value,
                 '_links' => [
                     'upload' => [
-                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                        'href' => $apiUrlGenerator->buildUrlFromRoute(
                             ComplaintJudgementUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
                             [
                                 'organisationId' => $complaintJudgement->getOrganisation()->getId(),
@@ -131,7 +142,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                             [
                                 'prefix' => $complaintJudgement->getDocumentPrefix(),
-                                'dossierId' => $complaintJudgement->getDossierNr(),
+                                'dossierNumber' => $complaintJudgement->getDossierNumber(),
                                 'type' => DossierFileType::MAIN_DOCUMENT->value,
                                 'id' => $complaintJudgementMainDocument->getId(),
                             ],
@@ -139,9 +150,10 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                     ],
                 ],
             ],
+            'noticeNotPublic' => null,
             'dossierDate' => $complaintJudgement->getDateFrom()?->format('Y-m-d'),
             '_links' => [
-                'self' => ['href' => $this->buildPublicUrl($organisation, $complaintJudgement)],
+                'self' => ['href' => $this->buildApiUrl($organisation, $complaintJudgement)],
                 'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($complaintJudgement)],
             ],
         ];
@@ -222,11 +234,12 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         self::assertDatabaseCount(ComplaintJudgement::class, 1);
     }
 
-    public function testCreateComplaintJudgementWithoutMainDocument(): void
+    public function testCreateComplaintJudgementWithoutMainDocumentNorNotice(): void
     {
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(ComplaintJudgement::class, 0);
 
@@ -237,8 +250,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildComplaintJudgementUrl($organisation, $externalId), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => [[
-            'code' => Type::INVALID_TYPE_ERROR,
-            'propertyPath' => 'mainDocument',
+            'message' => 'A dossier must contain at least a main document or a notice not public',
         ], ]]);
     }
 
@@ -252,6 +264,32 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
 
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, str_repeat('x', 129)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testCreateComplaintJudgementWithExternalIdAlreadyUsedByAdviceReturnsConflict(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        $data = $this->createValidComplaintJudgementDataPayload($department, $subject);
+        $externalId = $this->getFaker()->externalId();
+        $data['externalId'] = $externalId->toString();
+        AdviceFactory::createOne([
+            'externalId' => $externalId,
+            'organisation' => $organisation,
+            'departments' => [$department],
+            'subject' => $subject,
+        ]);
+
+        self::createPublicationApiRequest(
+            Request::METHOD_PUT,
+            $this->buildComplaintJudgementUrl($organisation, $externalId->toString()),
+            ['json' => $data],
+        );
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertJsonContains(['detail' => 'ExternalId already in use by type advice']);
     }
 
     /**
@@ -363,7 +401,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         self::assertMatchesResourceItemJsonSchema(ComplaintJudgementResource::class);
 
         self::assertDatabaseHas(ComplaintJudgement::class, [
-            'dossierNr' => $data['dossierNumber'],
+            'dossierNumber' => $data['dossierNumber'],
             'documentPrefix' => $complaintJudgement->getDocumentPrefix(),
             'summary' => $data['summary'],
             'title' => $data['title'],
@@ -484,6 +522,168 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                 'language' => $this->getFaker()->randomElement(AttachmentLanguage::cases()),
             ],
         ];
+    }
+
+    public function testCreateComplaintJudgementWithBothMainDocumentAndNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(ComplaintJudgement::class, 0);
+
+        $data = $this->createValidComplaintJudgementDataPayload($department, $subject);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'message' => 'A dossier cannot have both a main document and a notice not public',
+        ]]]);
+
+        self::assertDatabaseCount(ComplaintJudgement::class, 0);
+    }
+
+    public function testCreateComplaintJudgementWithNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(ComplaintJudgement::class, 0);
+
+        $data = $this->createValidComplaintJudgementDataPayload($department, $subject);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'documentName' => $this->getFaker()->sentence(),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'explanation' => $this->getFaker()->sentence(),
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+        self::assertMatchesResourceItemJsonSchema(ComplaintJudgementResource::class);
+        self::assertDatabaseCount(ComplaintJudgement::class, 1);
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+    }
+
+    public function testCreateComplaintJudgementWithNoticeNotPublicAndEmptyGrounds(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(ComplaintJudgement::class, 0);
+
+        $data = $this->createValidComplaintJudgementDataPayload($department, $subject);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'grounds' => [],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        self::assertDatabaseCount(ComplaintJudgement::class, 0);
+    }
+
+    public function testCreateComplaintJudgementWithNoticeNotPublicAndMissingFormalDate(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(ComplaintJudgement::class, 0);
+
+        $data = $this->createValidComplaintJudgementDataPayload($department, $subject);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        self::assertDatabaseCount(ComplaintJudgement::class, 0);
+    }
+
+    public function testUpdateComplaintJudgementTransitionsFromMainDocumentToNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $complaintJudgement = ComplaintJudgementFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        $mainDocument = ComplaintJudgementMainDocumentFactory::createOne(['dossier' => $complaintJudgement]);
+        $mainDocumentId = $mainDocument->getId();
+
+        self::assertDatabaseHas(ComplaintJudgementMainDocument::class, [
+            'id' => $mainDocumentId,
+        ]);
+        self::assertDatabaseCount(NoticeNotPublic::class, 0);
+
+        $data = $this->createValidComplaintJudgementDataPayload($department, null);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'documentName' => $this->getFaker()->sentence(),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'explanation' => $this->getFaker()->sentence(),
+        ];
+
+        $response = self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $complaintJudgement), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        $responseData = $response->toArray();
+        self::assertNull($responseData['mainDocument']);
+        self::assertNotNull($responseData['noticeNotPublic']);
+        $responseNoticeNotPublic = $responseData['noticeNotPublic'];
+        self::assertIsArray($responseNoticeNotPublic);
+        self::assertEquals($data['noticeNotPublic']['formalDate'], $responseNoticeNotPublic['formalDate']);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+        self::assertDatabaseMissing(ComplaintJudgementMainDocument::class, [
+            'id' => $mainDocumentId,
+        ]);
+    }
+
+    public function testUpdateComplaintJudgementTransitionsFromNoticeNotPublicToMainDocument(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $complaintJudgement = ComplaintJudgementFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        NoticeNotPublicFactory::createOne(['dossier' => $complaintJudgement]);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+        self::assertDatabaseCount(ComplaintJudgementMainDocument::class, 0);
+
+        $data = $this->createValidComplaintJudgementDataPayload($department, null);
+        unset($data['noticeNotPublic']);
+
+        $response = self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $complaintJudgement), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        $responseData = $response->toArray();
+        self::assertNotNull($responseData['mainDocument']);
+        self::assertNull($responseData['noticeNotPublic']);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 0);
+        self::assertDatabaseCount(ComplaintJudgementMainDocument::class, 1);
     }
 
     protected function buildComplaintJudgementUrl(Uuid|Organisation $organisation, string|ComplaintJudgement|null $dossier = null): string

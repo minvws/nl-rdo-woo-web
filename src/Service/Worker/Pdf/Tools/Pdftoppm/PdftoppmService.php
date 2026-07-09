@@ -37,7 +37,7 @@ class PdftoppmService
     }
 
     /**
-     * @param array<int,string|int> $params
+     * @param array<int,string> $params
      *
      * @codeCoverageIgnore
      */

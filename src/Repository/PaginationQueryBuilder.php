@@ -10,6 +10,7 @@ use Doctrine\ORM\QueryBuilder;
 use function array_key_exists;
 use function base64_decode;
 use function is_array;
+use function is_string;
 use function json_decode;
 
 readonly class PaginationQueryBuilder
@@ -33,13 +34,17 @@ readonly class PaginationQueryBuilder
             if (is_array($decodedCursor) && array_key_exists('id', $decodedCursor)) {
                 $id = $decodedCursor['id'];
 
-                $queryBuilder->andWhere('entity.id > :id')
-                    ->setParameter('id', $id);
+                // Defensive type-check: cursor.id must be a non-empty string
+                // If id is missing or not a string, silently ignore and fall back to first page
+                if (is_string($id) && $id !== '') {
+                    $queryBuilder->andWhere('entity.id < :id')
+                        ->setParameter('id', $id);
+                }
             }
         }
 
         return $queryBuilder
-            ->orderBy('entity.id', 'ASC')
+            ->orderBy('entity.id', 'DESC')
             ->setMaxResults($itemsPerPage + 1);
     }
 }

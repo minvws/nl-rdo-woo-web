@@ -50,10 +50,10 @@ class DossierAdministrationController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/admin/dossiers/{prefix}/{dossierId}', name: 'app_admin_dossier_administration_details', methods: ['GET', 'POST'])]
+    #[Route('/balie/admin/dossiers/{prefix}/{dossierNumber}', name: 'app_admin_dossier_administration_details', methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.dossier.administration')]
     public function dossier(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] AbstractDossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -73,7 +73,7 @@ class DossierAdministrationController extends AbstractController
 
         $breadcrumbs->addRouteItem('global.admin', 'app_admin');
         $breadcrumbs->addRouteItem('global.publication', 'app_admin_dossier_administration');
-        $breadcrumbs->addItem($dossier->getDossierNr());
+        $breadcrumbs->addItem($dossier->getDossierNumber());
 
         return $this->render('admin/dossier/administration/details.html.twig', [
             'dossier' => $dossier,
@@ -105,7 +105,7 @@ class DossierAdministrationController extends AbstractController
 
             $list[] = [
                 'prefix' => $dossier->getDocumentPrefix(),
-                'dossierNr' => $dossier->getDossierNr(),
+                'dossierNumber' => $dossier->getDossierNumber(),
                 'expectedDownloadCount' => $expectedDownloadCount,
                 'downloadFileCount' => $download?->getFileCount(),
                 'downloadStatus' => $download?->getStatus(),

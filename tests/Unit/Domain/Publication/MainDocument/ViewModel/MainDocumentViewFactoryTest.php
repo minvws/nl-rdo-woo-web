@@ -91,7 +91,7 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
 
         $dossier = Mockery::mock(Disposition::class);
         $dossier->expects('getDocumentPrefix')->times(2)->andReturn($expectedDocumentPrefix);
-        $dossier->expects('getDossierNr')->times(2)->andReturn($expectedDossierId);
+        $dossier->expects('getDossierNumber')->times(2)->andReturn($expectedDossierId);
         $dossier->expects('getType')->andReturn($dossierType);
 
         $result = new MainDocumentViewFactory($urlGenerator)->make($dossier, $mainDocument, $applicationMode);
@@ -130,18 +130,18 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
                 'mainDocumentClass' => CovenantMainDocument::class,
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedDownloadRouteName' => 'app_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_covenant_document_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber'],
             ],
             'CovenantDocument in admin mode' => [
                 'dossierType' => DossierType::COVENANT,
                 'mainDocumentClass' => CovenantMainDocument::class,
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedDownloadRouteName' => 'app_admin_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_covenant_document_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber'],
             ],
 
             'AnnualReportDocument in public mode' => [
@@ -149,18 +149,18 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
                 'mainDocumentClass' => AnnualReportMainDocument::class,
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedDownloadRouteName' => 'app_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_annualreport_document_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber'],
             ],
             'AnnualReportDocument in admin mode' => [
                 'dossierType' => DossierType::ANNUAL_REPORT,
                 'mainDocumentClass' => AnnualReportMainDocument::class,
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedDownloadRouteName' => 'app_admin_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_annualreport_document_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber'],
             ],
 
             'InvestigationReportDocument in public mode' => [
@@ -168,18 +168,18 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
                 'mainDocumentClass' => InvestigationReportMainDocument::class,
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedDownloadRouteName' => 'app_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_investigationreport_document_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber'],
             ],
             'InvestigationReportDocument in admin mode' => [
                 'dossierType' => DossierType::INVESTIGATION_REPORT,
                 'mainDocumentClass' => InvestigationReportMainDocument::class,
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedDownloadRouteName' => 'app_admin_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_investigationreport_document_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber'],
             ],
 
             'DispositionDocument in public mode' => [
@@ -187,18 +187,18 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
                 'mainDocumentClass' => DispositionMainDocument::class,
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedDownloadRouteName' => 'app_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_disposition_document_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber'],
             ],
             'DispositionDocument in admin mode' => [
                 'dossierType' => DossierType::DISPOSITION,
                 'mainDocumentClass' => DispositionMainDocument::class,
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedDownloadRouteName' => 'app_admin_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_disposition_document_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber'],
             ],
 
             'ComplaintJudgementDocument in public mode' => [
@@ -206,18 +206,18 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
                 'mainDocumentClass' => ComplaintJudgementMainDocument::class,
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedDownloadRouteName' => 'app_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_complaintjudgement_document_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber'],
             ],
             'ComplaintJudgementDocument in admin mode' => [
                 'dossierType' => DossierType::COMPLAINT_JUDGEMENT,
                 'mainDocumentClass' => ComplaintJudgementMainDocument::class,
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedDownloadRouteName' => 'app_admin_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_complaintjudgement_document_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber'],
             ],
         ];
     }

@@ -49,7 +49,7 @@
 {%- endblock choice_widget_collapsed -%}
 
 {%- block form_errors -%}
-    <twig:Admin:InputErrors id="{{ id ~ "-error" }}" errors="{{ errors }}" />
+    <twig:Admin:InputErrors id="{{ id ~ "-error" }}" dataE2eName="{{ 'input-errors-' ~ name }}" errors="{{ errors }}" />
 {%- endblock form_errors -%}
 
 {%- block form_help -%}

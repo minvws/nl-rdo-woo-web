@@ -1,0 +1,18 @@
+<div class="bhr-form-row">
+    <h2 class="bhr-label">Mededeling niet-openbaar</h2>
+    {% if formField is defined %}
+        {{ form_errors(formField) }}
+        {% do formField.setRendered %}
+    {% endif %}
+    <p class="bhr-form-help">Geeft aan dat dit document in zijn geheel niet openbaar gemaakt kan worden.</p>
+
+    <div data-e2e-name="notice-not-public" {{ vue_component('GenericController', {
+        componentName: 'PublicationNoticeNotPublic',
+        canDelete: canDelete,
+        endpoint: endpoint,
+        groundOptions: grounds,
+        hasMainDocument: hasMainDocument,
+    }) }}>
+        <div class="min-h-14"></div>
+    </div>
+</div>

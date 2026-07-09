@@ -9,8 +9,10 @@ use PublicationApi\Api\Department\DepartmentMapper;
 use PublicationApi\Api\Dossier\OtherPublication\Uploads\Attachment\OtherPublicationUploadAttachmentResource;
 use PublicationApi\Api\Dossier\OtherPublication\Uploads\MainDocument\OtherPublicationUploadMainDocumentResource;
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicResponseDtoFactory;
 use PublicationApi\Api\Organisation\OrganisationMapper;
 use PublicationApi\Api\Subject\SubjectMapper;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
@@ -18,7 +20,6 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\Url;
@@ -30,10 +31,11 @@ use function array_values;
 readonly class OtherPublicationMapper
 {
     public function __construct(
+        private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
         private DossierPathHelper $dossierPathHelper,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
-        private PublicUrlGenerator $publicUrlGenerator,
+        private NoticeNotPublicResponseDtoFactory $noticeNotPublicResponseDtoFactory,
     ) {
     }
 
@@ -53,7 +55,7 @@ readonly class OtherPublicationMapper
     public function fromEntity(OtherPublication $otherPublication): OtherPublicationResponseDto
     {
         $mainDocument = $otherPublication->getMainDocument();
-        Assert::notNull($mainDocument);
+        $noticeNotPublic = $otherPublication->getNoticeNotPublic();
 
         $dateFrom = $otherPublication->getDateFrom();
         Assert::notNull($dateFrom);
@@ -61,22 +63,31 @@ readonly class OtherPublicationMapper
         $department = $otherPublication->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
+        $mainDocumentDto = $mainDocument !== null
+            ? $this->mainDocumentResponseDtoFactory->fromEntity(
+                $mainDocument,
+                OtherPublicationUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                OtherPublicationMainDocumentResponseDto::class,
+            )
+            : null;
+
+        $noticeNotPublicDto = $noticeNotPublic !== null
+            ? $this->noticeNotPublicResponseDtoFactory->fromEntity($noticeNotPublic)
+            : null;
+
         return new OtherPublicationResponseDto(
             $otherPublication->getId(),
             $otherPublication->getExternalId(),
             OrganisationMapper::fromEntity($otherPublication->getOrganisation()),
-            $otherPublication->getDossierNr(),
+            $otherPublication->getDossierNumber(),
             $otherPublication->getTitle(),
             $otherPublication->getSummary(),
             SubjectMapper::fromNullableEntity($otherPublication->getSubject()),
             DepartmentMapper::fromEntity($department),
             $otherPublication->getPublicationDate(),
             $otherPublication->getStatus(),
-            $this->mainDocumentResponseDtoFactory->fromEntity(
-                $mainDocument,
-                OtherPublicationUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
-                OtherPublicationMainDocumentResponseDto::class,
-            ),
+            $mainDocumentDto,
+            $noticeNotPublicDto,
             $this->attachmentResponseDtoFactory->fromDossier($otherPublication, OtherPublicationUploadAttachmentResource::ROUTE_NAME_UPLOAD),
             $dateFrom,
             $this->getHalLinks($otherPublication),
@@ -110,7 +121,7 @@ readonly class OtherPublicationMapper
     ): OtherPublication {
         $otherPublication->setDateFrom($otherPublicationRequestDto->dossierDate);
         $otherPublication->setDepartments([$department]);
-        $otherPublication->setDossierNr($otherPublicationRequestDto->dossierNumber);
+        $otherPublication->setDossierNumber($otherPublicationRequestDto->dossierNumber);
         $otherPublication->setOrganisation($organisation);
         $otherPublication->setPublicationDate($otherPublicationRequestDto->publicationDate);
         $otherPublication->setSubject($subject);
@@ -125,7 +136,7 @@ readonly class OtherPublicationMapper
         $linkCollection = new LinkCollection();
         $linkCollection->set(
             LinkCollection::SELF,
-            new Link($this->publicUrlGenerator->buildUrlFromRoute(OtherPublicationResource::ROUTE_NAME_GET_OTHER_PUBLICATION, [
+            new Link($this->apiUrlGenerator->buildUrlFromRoute(OtherPublicationResource::ROUTE_NAME_GET_OTHER_PUBLICATION, [
                 'organisationId' => $otherPublication->getOrganisation()->getId(),
                 'dossierExternalId' => $otherPublication->getExternalId(),
             ])),

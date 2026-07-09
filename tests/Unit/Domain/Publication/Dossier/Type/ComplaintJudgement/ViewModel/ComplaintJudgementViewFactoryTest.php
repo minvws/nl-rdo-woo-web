@@ -36,7 +36,7 @@ final class ComplaintJudgementViewFactoryTest extends UnitTestCase
             ->expects('make')
             ->andReturn(new CommonDossierProperties(
                 dossierId: $expectedUuid = 'my uuid',
-                dossierNr: $expectedDossierNr = 'my dossier nr',
+                dossierNumber: $expectedDossierNumber = 'my dossier number',
                 documentPrefix: $expectedDocumentPrefix = 'my document prefix',
                 isPreview: $expectedIsPreview = true,
                 title: $expectedTitle = DossierTitle::create('my title'),
@@ -53,7 +53,7 @@ final class ComplaintJudgementViewFactoryTest extends UnitTestCase
         $result = new ComplaintJudgementViewFactory($this->commonDossierViewFactory)->make($dossier);
 
         $this->assertSame($expectedUuid, $result->getDossierId());
-        $this->assertSame($expectedDossierNr, $result->getDossierNr());
+        $this->assertSame($expectedDossierNumber, $result->getDossierNumber());
         $this->assertSame($expectedDocumentPrefix, $result->getDocumentPrefix());
         $this->assertSame($expectedIsPreview, $result->isPreview());
         $this->assertSame($expectedTitle, $result->getTitle());

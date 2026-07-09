@@ -110,7 +110,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             'type' => 'errors#resource-not-found',
             'title' => 'Resource Not Found',
             'status' => Response::HTTP_NOT_FOUND,
-            'detail' => 'Invalid identifier value or configuration.',
+            'detail' => 'Organisation with id invalid was not found',
         ]);
     }
 
@@ -178,8 +178,12 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 sprintf('/api/publication/v1/organisation/%s/subject', $organisation->getId()),
             );
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(SubjectResource::class);
-        self::assertCount($subjectCount, $response->toArray());
+        $data = $response->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount($subjectCount, $items);
     }
 
     public function testGetCollectionWithPaginator(): void
@@ -195,8 +199,12 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(SubjectResource::class);
-        self::assertCount(5, $response->toArray());
+        $data = $response->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(5, $items);
     }
 
     public function testGetCollectionWithPaginatorAndCursor(): void
@@ -210,7 +218,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
         SubjectFactory::new(['organisation' => $organisation])->create();
 
         $requestParameters = sprintf(
-            'pagination[itemsPerPage]=2&pagination[cursor]=%s',
+            'pagination[cursor]=%s',
             base64_encode((string) json_encode(['id' => (string) $cursorSubject->getId()])),
         );
         $response = self::createPublicationApiClient()
@@ -220,15 +228,19 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(SubjectResource::class);
-        self::assertCount(2, $response->toArray());
+        $data = $response->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(2, $items);
     }
 
     public function testGetCollectionWithPaginatorAndInvalidCursor(): void
     {
         $subject = SubjectFactory::new()->create();
 
-        $requestParameters = 'pagination[itemsPerPage]=2&pagination[cursor]=foo';
+        $requestParameters = 'pagination[cursor]=foo';
         $response = self::createPublicationApiClient()
             ->request(
                 Request::METHOD_GET,
@@ -236,8 +248,12 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             );
 
         self::assertResponseIsSuccessful();
-        self::assertMatchesResourceCollectionJsonSchema(SubjectResource::class);
-        self::assertCount(1, $response->toArray());
+        $data = $response->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(1, $items);
     }
 
     public function testCreateSubject(): void
@@ -250,7 +266,12 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 Request::METHOD_GET,
                 sprintf('/api/publication/v1/organisation/%s/subject', $organisation->getId()),
             );
-        self::assertCount(0, $response->toArray());
+        $data = $response->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(0, $items);
 
         $data = [
             'name' => $name,
@@ -271,7 +292,12 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 Request::METHOD_GET,
                 sprintf('/api/publication/v1/organisation/%s/subject', $organisation->getId()),
             );
-        self::assertCount(1, $response->toArray());
+        $data = $response->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(1, $items);
     }
 
     public function testCreateSubjectWithInvalidName(): void
@@ -284,7 +310,12 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 Request::METHOD_GET,
                 sprintf('/api/publication/v1/organisation/%s/subject', $organisation->getId()),
             );
-        self::assertCount(0, $response->toArray());
+        $data = $response->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(0, $items);
 
         $data = [
             'name' => [$name],

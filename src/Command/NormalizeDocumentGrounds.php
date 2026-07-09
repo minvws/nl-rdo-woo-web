@@ -105,7 +105,7 @@ class NormalizeDocumentGrounds extends Command
 
             $output->writeln(sprintf(
                 '<info>%s: updated [%s] to [%s]</info>',
-                $document->getDocumentNr(),
+                $document->getDocumentNumber(),
                 implode(';', $currentGrounds),
                 implode(';', $normalizedGrounds),
             ));

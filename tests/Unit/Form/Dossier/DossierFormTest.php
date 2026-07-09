@@ -17,7 +17,7 @@ use Symfony\Component\Uid\Uuid;
 
 class DossierFormTest extends UnitTestCase
 {
-    public function testDossierNrFieldAddedWhenSecurityGrantsAdmin(): void
+    public function testDossierNumberFieldAddedWhenSecurityGrantsAdmin(): void
     {
         $dossier = Mockery::mock(RequestForAdvice::class);
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
@@ -26,17 +26,17 @@ class DossierFormTest extends UnitTestCase
 
         $builder = Mockery::mock(FormBuilderInterface::class);
         $builder->expects('getData')->andReturn($dossier);
-        $builder->expects('add')->with('dossierNr', TextType::class, Mockery::any());
+        $builder->expects('add')->with('dossierNumber', TextType::class, Mockery::any());
 
         $security = Mockery::mock(Security::class);
         $security->expects('isGranted')->with(Roles::ROLE_ORGANISATION_ADMIN)->andReturn(true);
 
         $dossierFormFactory = new DossierFormFactory($security);
         $dossierForm = $dossierFormFactory->for($builder);
-        $dossierForm->addDossierNrField();
+        $dossierForm->addDossierNumberField();
     }
 
-    public function testDossierNrFieldNotAddedWhenSecurityDeniesAndDossierIsPublished(): void
+    public function testDossierNumberFieldNotAddedWhenSecurityDeniesAndDossierIsPublished(): void
     {
         $dossier = Mockery::mock(RequestForAdvice::class);
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
@@ -49,10 +49,10 @@ class DossierFormTest extends UnitTestCase
 
         $dossierFormFactory = new DossierFormFactory($security);
         $dossierForm = $dossierFormFactory->for($builder);
-        $dossierForm->addDossierNrField();
+        $dossierForm->addDossierNumberField();
     }
 
-    public function testDossierNrFieldAddedForNewOrConceptDossier(): void
+    public function testDossierNumberFieldAddedForNewOrConceptDossier(): void
     {
         $dossier = Mockery::mock(RequestForAdvice::class);
         $dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
@@ -61,16 +61,16 @@ class DossierFormTest extends UnitTestCase
 
         $builder = Mockery::mock(FormBuilderInterface::class);
         $builder->expects('getData')->andReturn($dossier);
-        $builder->expects('add')->with('dossierNr', TextType::class, Mockery::any());
+        $builder->expects('add')->with('dossierNumber', TextType::class, Mockery::any());
 
         $security = Mockery::mock(Security::class);
 
         $dossierFormFactory = new DossierFormFactory($security);
         $dossierForm = $dossierFormFactory->for($builder);
-        $dossierForm->addDossierNrField();
+        $dossierForm->addDossierNumberField();
     }
 
-    public function testDossierNrFieldAddedForNonNewOrConceptDossier(): void
+    public function testDossierNumberFieldAddedForNonNewOrConceptDossier(): void
     {
         $dossier = Mockery::mock(RequestForAdvice::class);
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
@@ -79,17 +79,17 @@ class DossierFormTest extends UnitTestCase
 
         $builder = Mockery::mock(FormBuilderInterface::class);
         $builder->expects('getData')->andReturn($dossier);
-        $builder->expects('add')->with('dossierNr', TextType::class, Mockery::any());
+        $builder->expects('add')->with('dossierNumber', TextType::class, Mockery::any());
 
         $security = Mockery::mock(Security::class);
         $security->expects('isGranted')->with(Roles::ROLE_ORGANISATION_ADMIN)->andReturn(true);
 
         $dossierFormFactory = new DossierFormFactory($security);
         $dossierForm = $dossierFormFactory->for($builder);
-        $dossierForm->addDossierNrField();
+        $dossierForm->addDossierNumberField();
     }
 
-    public function testDossierNrFieldAddedForNonNewOrConceptDossierAndNoOrganistionAdmin(): void
+    public function testDossierNumberFieldAddedForNonNewOrConceptDossierAndNoOrganistionAdmin(): void
     {
         $dossier = Mockery::mock(RequestForAdvice::class);
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
@@ -102,6 +102,6 @@ class DossierFormTest extends UnitTestCase
 
         $dossierFormFactory = new DossierFormFactory($security);
         $dossierForm = $dossierFormFactory->for($builder);
-        $dossierForm->addDossierNrField();
+        $dossierForm->addDossierNumberField();
     }
 }

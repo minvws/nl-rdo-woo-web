@@ -23,7 +23,7 @@ abstract readonly class AbstractAttachmentProvider implements ProviderInterface
     abstract protected function getAttachmentRepository(): AttachmentRepositoryInterface;
 
     /**
-     * @param array<array-key,string> $uriVariables
+     * @param array<array-key, string> $uriVariables
      * @param array<array-key,mixed> $context
      *
      * @return array<array-key, AbstractAttachmentDto>|AbstractAttachmentDto|array<array-key, object>|null

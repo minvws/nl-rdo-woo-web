@@ -70,7 +70,7 @@ class AttachmentSearchResultMapperTest extends UnitTestCase
         $hit->expects('exists')->with('[highlight][dossiers.summary]')->andReturnFalse();
 
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->expects('getDossierNr')->andReturn($dossierNr = '123');
+        $dossier->expects('getDossierNumber')->andReturn($dossierNumber = '123');
         $dossier->expects('getDocumentPrefix')->andReturn($documentPrefix = 'foo');
         $dossier->expects('getTitle')->andReturn($title = DossierTitle::create('bar'));
         $dossier->expects('getType')->andReturn($dossierType = DossierType::COVENANT);
@@ -91,7 +91,7 @@ class AttachmentSearchResultMapperTest extends UnitTestCase
 
         $this->assertInstanceOf(SubTypeSearchResultEntry::class, $entry);
         $this->assertSame($viewModel, $entry->getViewModel());
-        $this->assertSame($dossierNr, $dossierReference->getDossierNr());
+        $this->assertSame($dossierNumber, $dossierReference->getDossierNumber());
         $this->assertSame($documentPrefix, $dossierReference->getDocumentPrefix());
         $this->assertSame($dossierType, $dossierReference->getType());
         $this->assertSame($title, $dossierReference->getTitle());

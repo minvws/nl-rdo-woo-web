@@ -86,7 +86,7 @@ Get Random Department ID
 Get Random Department IDs
   [Arguments]  ${count}=1
   ${response} =  GET On Session  alias=${API_ALIAS}  url=${URL_API}/api/publication/v1/department
-  ${departments} =  Set Variable  ${response.json()}
+  ${departments} =  Set Variable  ${response.json()}[items]
   @{random_departments} =  FakerLibrary.Random Elements  ${departments}  ${count}  unique=True
   @{department_ids} =  Create List
   FOR  ${department}  IN  @{random_departments}
@@ -103,7 +103,7 @@ Get Subject ID
 
 Get Object From Json By Attribute
   [Arguments]  ${json}  ${attribute_name}  ${attribute_value}
-  FOR  ${element}  IN  @{json}
+  FOR  ${element}  IN  @{json}[items]
     VAR  ${value} =  ${element}[${attribute_name}]
     IF  $value == $attribute_value  RETURN  ${element}
   END
@@ -175,7 +175,7 @@ Get Random Grounds
   ...  10.2e
   ...  10.2g
   ...  11.1
-  ${count} =  FakerLibrary.Random Int  0  5
+  ${count} =  FakerLibrary.Random Int  1  ${{len($grounds)}}
   @{random_grounds} =  FakerLibrary.Random Elements  ${grounds}  ${count}  unique=True
   RETURN  @{random_grounds}
 
@@ -307,16 +307,20 @@ Verify HAL Links Are Reachable For Dossier
   ...  alias=publication_api
   ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/${dossier_type}/external/${EXTERNAL_ID}
   VAR  ${body} =  ${response.json()}
+  Verify HAL Link  publication_api  ${body}[_links][self][href]
   Verify HAL Link  public  ${body}[_links][public][href]
-  Verify HAL Link  public  ${body}[mainDocument][_links][public][href]
-  Verify HAL Link  public  ${body}[mainDocument][_links][file][href]
-  Verify HAL Upload Link  ${body}[mainDocument][_links][upload][href]
+  ${has_main_document} =  Run Keyword And Return Status  Dictionary Should Contain Key  ${body}  mainDocument
+  IF  ${has_main_document} and $body['mainDocument'] is not None
+    Verify HAL Link  public  ${body}[mainDocument][_links][public][href]
+    Verify HAL Link  public  ${body}[mainDocument][_links][file][href]
+    Verify HAL Link  public  ${body}[mainDocument][_links][upload][href]
+  END
   ${has_attachments} =  Run Keyword And Return Status  Dictionary Should Contain Key  ${body}  attachments
   IF  ${has_attachments}
     FOR  ${attachment}  IN  @{body}[attachments]
       Verify HAL Link  public  ${attachment}[_links][public][href]
       Verify HAL Link  public  ${attachment}[_links][file][href]
-      Verify HAL Upload Link  ${attachment}[_links][upload][href]
+      Verify HAL Link  public  ${attachment}[_links][upload][href]
     END
   END
   IF  ${has_documents}
@@ -325,28 +329,16 @@ Verify HAL Links Are Reachable For Dossier
       FOR  ${document}  IN  @{body}[documents]
         Verify HAL Link  public  ${document}[_links][public][href]
         Verify HAL Link  public  ${document}[_links][file][href]
-        Verify HAL Upload Link  ${document}[_links][upload][href]
+        Verify HAL Link  public  ${document}[_links][upload][href]
       END
     END
   END
 
 Verify HAL Link
   [Arguments]  ${session_alias}  ${href}
-  Log  Verifying HAL link: ${href}
   ${path} =  Remove String Using Regexp  ${href}  ^https?://[^/]+
   ${link_response} =  GET On Session  alias=${session_alias}  url=${path}  expected_status=any
   Should Be Equal As Integers
   ...  ${link_response.status_code}
   ...  200
   ...  msg=HAL link ${href} returned ${link_response.status_code}
-
-Verify HAL Upload Link
-  [Arguments]  ${href}
-  Log  Verifying upload HAL link: ${href}
-  ${path} =  Remove String Using Regexp  ${href}  ^https?://[^/]+
-  VAR  &{headers} =  Content-Type=application/octet-stream
-  ${link_response} =  PUT On Session  alias=publication_api  url=${path}  headers=${headers}  expected_status=any
-  Should Be Equal As Integers
-  ...  ${link_response.status_code}
-  ...  422
-  ...  msg=Upload HAL link ${href} returned ${link_response.status_code}, expected 422

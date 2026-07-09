@@ -47,7 +47,7 @@ final readonly class UrlRepository
                 'new %s(
                     d.id,
                     d.documentPrefix,
-                    d.dossierNr,
+                    d.dossierNumber,
                     d.publicationDate,
                     new %s(
                         :dossier_file_type,
@@ -91,7 +91,7 @@ final readonly class UrlRepository
                     md.fileInfo.name AS documentFileName,
                     dos.id AS dossierId,
                     dos.documentPrefix AS documentPrefix,
-                    dos.dossierNr AS dossierNr,
+                    dos.dossierNumber AS dossierNumber,
                     TYPE(dos) AS dossierType
                 )',
                 RawUrlDto::class,
@@ -217,7 +217,7 @@ final readonly class UrlRepository
                     a.fileInfo.name AS documentFileName,
                     dos.id AS dossierId,
                     dos.documentPrefix AS documentPrefix,
-                    dos.dossierNr AS dossierNr,
+                    dos.dossierNumber AS dossierNumber,
                     TYPE(dos) AS dossierType
                 )',
                 RawUrlDto::class,
@@ -301,7 +301,7 @@ final readonly class UrlRepository
                 documentFileName: $document['documentFileName'],
                 dossierId: $dto->id,
                 documentPrefix: $dto->documentPrefix,
-                dossierNr: $dto->dossierNr,
+                dossierNumber: $dto->dossierNumber,
                 dossierType: DossierType::WOO_DECISION,
                 mainDocumentReference: $dto->mainDocumentReference,
             );

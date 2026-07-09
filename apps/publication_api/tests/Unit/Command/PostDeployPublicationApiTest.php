@@ -16,12 +16,14 @@ use Webmozart\Assert\Assert;
 
 class PostDeployPublicationApiTest extends UnitTestCase
 {
+    private string $publicDir = '/foobar/public';
+
     public function testOpenApiSpecFilesAreCreated(): void
     {
         $exportedOutputs = [];
 
         $application = new Application();
-        $application->addCommand(new PostDeployPublicationApi());
+        $application->addCommand(new PostDeployPublicationApi($this->publicDir));
         $application->addCommand(new class($exportedOutputs) extends Command {
             /**
              * @param array<int, string> $exportedOutputs
@@ -55,7 +57,10 @@ class PostDeployPublicationApiTest extends UnitTestCase
 
         self::assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
         self::assertEquals(
-            ['public/api/publication/v1/openapi.json', 'public/api/publication/v1/openapi.yaml'],
+            [
+                $this->publicDir . '/api/publication/v1/openapi.json',
+                $this->publicDir . '/api/publication/v1/openapi.yaml',
+            ],
             $exportedOutputs,
         );
     }

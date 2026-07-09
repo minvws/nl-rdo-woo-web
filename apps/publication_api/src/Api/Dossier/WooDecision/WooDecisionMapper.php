@@ -13,6 +13,7 @@ use PublicationApi\Api\Dossier\WooDecision\Uploads\MainDocument\WooDecisionUploa
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
 use PublicationApi\Api\Organisation\OrganisationMapper;
 use PublicationApi\Api\Subject\SubjectMapper;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
@@ -20,7 +21,6 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\Url;
@@ -32,10 +32,10 @@ use function array_values;
 readonly class WooDecisionMapper
 {
     public function __construct(
+        private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
         private DossierPathHelper $dossierPathHelper,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
-        private PublicUrlGenerator $publicUrlGenerator,
         private WooDecisionDocumentResponseDtoFactory $wooDecisionDocumentResponseDtoFactory,
     ) {
     }
@@ -68,7 +68,7 @@ readonly class WooDecisionMapper
             $wooDecision->getId(),
             $wooDecision->getExternalId(),
             OrganisationMapper::fromEntity($wooDecision->getOrganisation()),
-            $wooDecision->getDossierNr(),
+            $wooDecision->getDossierNumber(),
             $wooDecision->getTitle(),
             $wooDecision->getSummary(),
             SubjectMapper::fromNullableEntity($wooDecision->getSubject()),
@@ -120,7 +120,7 @@ readonly class WooDecisionMapper
         }
         $wooDecision->setDecision($wooDecisionRequestDto->decision);
         $wooDecision->setDepartments([$department]);
-        $wooDecision->setDossierNr($wooDecisionRequestDto->dossierNumber);
+        $wooDecision->setDossierNumber($wooDecisionRequestDto->dossierNumber);
         $wooDecision->setOrganisation($organisation);
         $wooDecision->setPreviewDate($wooDecisionRequestDto->previewDate);
         $wooDecision->setPublicationDate($wooDecisionRequestDto->publicationDate);
@@ -137,7 +137,7 @@ readonly class WooDecisionMapper
         $linkCollection = new LinkCollection();
         $linkCollection->set(
             LinkCollection::SELF,
-            new Link($this->publicUrlGenerator->buildUrlFromRoute(WooDecisionResource::ROUTE_NAME_GET_WOO_DECISION, [
+            new Link($this->apiUrlGenerator->buildUrlFromRoute(WooDecisionResource::ROUTE_NAME_GET_WOO_DECISION, [
                 'organisationId' => $wooDecision->getOrganisation()->getId(),
                 'dossierExternalId' => $wooDecision->getExternalId(),
             ])),

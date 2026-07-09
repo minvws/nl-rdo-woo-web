@@ -10,6 +10,8 @@ use Mockery\MockInterface;
 use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
@@ -20,6 +22,7 @@ use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Service\DossierWizard\DossierWizardStatus;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Uid\Uuid;
 
 final class DossierViewParamsBuilderTest extends UnitTestCase
 {
@@ -30,6 +33,7 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
     private AttachmentLanguageFactory&MockInterface $attachmentLanguageFactory;
     private GroundViewFactory&MockInterface $groundViewFactory;
     private DepartmentRepository&MockInterface $departmentRepository;
+    private NoticeNotPublicRepository&MockInterface $noticeNotPublicRepository;
 
     protected function setUp(): void
     {
@@ -39,6 +43,7 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
         $this->attachmentLanguageFactory = Mockery::mock(AttachmentLanguageFactory::class);
         $this->groundViewFactory = Mockery::mock(GroundViewFactory::class);
         $this->departmentRepository = Mockery::mock(DepartmentRepository::class);
+        $this->noticeNotPublicRepository = Mockery::mock(NoticeNotPublicRepository::class);
 
         $this->builder = new DossierViewParamsBuilder(
             $this->workflowManager,
@@ -46,6 +51,7 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
             $this->attachmentLanguageFactory,
             $this->groundViewFactory,
             $this->departmentRepository,
+            $this->noticeNotPublicRepository,
         );
 
         parent::setUp();
@@ -138,6 +144,31 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
                 'attachmentLanguages' => ['languages' => 'foo'],
                 'attachmentFileLimits' => CovenantMainDocument::getUploadGroupId()->getFileLimits(),
                 'grounds' => ['grounds' => 'foo'],
+            ],
+            $this->builder->getParams(),
+        );
+    }
+
+    public function testWithNoticeNotPublicParams(): void
+    {
+        $dossierId = Uuid::fromString($this->getFaker()->uuid());
+        $this->dossier->expects('getId')
+            ->andReturn($dossierId);
+
+        $noticeNotPublic = Mockery::mock(NoticeNotPublic::class);
+        $this->noticeNotPublicRepository
+            ->expects('findOneByDossierId')
+            ->with($dossierId)
+            ->andReturn($noticeNotPublic);
+
+        $this->builder->forDossier($this->dossier)
+            ->withNoticeNotPublicParams($this->dossier);
+
+        self::assertEquals(
+            [
+                'dossier' => $this->dossier,
+                'noticeNotPublic' => $noticeNotPublic,
+                'hasNoticeNotPublic' => true,
             ],
             $this->builder->getParams(),
         );

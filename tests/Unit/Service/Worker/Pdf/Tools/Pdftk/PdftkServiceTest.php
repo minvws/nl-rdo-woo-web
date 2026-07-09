@@ -35,7 +35,7 @@ final class PdftkServiceTest extends UnitTestCase
         $service = $this->getService();
         $result = $service->extractPage($sourcePdf = 'sourcePdf', $pageNr = 1337, $targetPath = 'targetPath');
 
-        $this->assertSame(['/usr/bin/pdftk', $sourcePdf, 'cat', $pageNr, 'output', $targetPath], $result->params);
+        $this->assertSame(['/usr/bin/pdftk', $sourcePdf, 'cat', (string) $pageNr, 'output', $targetPath], $result->params);
         $this->assertSame($exitCode, $result->exitCode);
         $this->assertNull($result->errorMessage);
         $this->assertSame($sourcePdf, $result->sourcePdf);

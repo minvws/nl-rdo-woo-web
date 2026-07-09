@@ -32,3 +32,8 @@
   @apply line-clamp-2
         max-w-md;
 }
+
+@utility bhr-responsive-table {
+  @apply overflow-x-auto;
+  @apply overflow-y-hidden; /* This doesn't do any harm (since there's no fixed height set) and prevents a bug with a scrollbar appearing on the right side of the table */
+}

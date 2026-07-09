@@ -65,20 +65,20 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/covenant/details/concept/{prefix}/{dossierId}',
+        path: '/balie/dossier/covenant/details/concept/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_covenant_details_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Covenant $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Covenant $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem(
             (string) $dossier->getTitle(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addItem('admin.dossiers.covenant.step.details');
 
@@ -104,13 +104,13 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/covenant/details/edit/{prefix}/{dossierId}',
+        path: '/balie/dossier/covenant/details/edit/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_covenant_details_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Covenant $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Covenant $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {

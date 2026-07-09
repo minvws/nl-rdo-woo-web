@@ -48,7 +48,7 @@ final class DossierPathHelperTest extends UnitTestCase
             'app_covenant_detail',
             [
                 'prefix' => 'doc-prefix',
-                'dossierId' => 'dos-nr',
+                'dossierNumber' => 'dos-nr',
             ],
         )->andReturn('foo-bar');
 
@@ -61,7 +61,7 @@ final class DossierPathHelperTest extends UnitTestCase
     public function testGetDetailsPathWithDossier(): void
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->expects('getDossierNr')->andReturn('dos-nr');
+        $dossier->expects('getDossierNumber')->andReturn('dos-nr');
         $dossier->expects('getDocumentPrefix')->andReturn('dos-prefix');
         $dossier->expects('getType')->andReturn(DossierType::COVENANT);
 
@@ -69,7 +69,7 @@ final class DossierPathHelperTest extends UnitTestCase
             'app_covenant_detail',
             [
                 'prefix' => 'dos-prefix',
-                'dossierId' => 'dos-nr',
+                'dossierNumber' => 'dos-nr',
             ],
         )->andReturn('foo-bar');
 
@@ -92,7 +92,7 @@ final class DossierPathHelperTest extends UnitTestCase
             'app_complaintjudgement_detail',
             [
                 'prefix' => 'doc-prefix',
-                'dossierId' => 'dos-nr',
+                'dossierNumber' => 'dos-nr',
             ],
         )->andReturn('/foo-bar');
 
@@ -105,7 +105,7 @@ final class DossierPathHelperTest extends UnitTestCase
     public function testGetDetailsPathWithOtherPublication(): void
     {
         $dossier = Mockery::mock(OtherPublication::class);
-        $dossier->expects('getDossierNr')->andReturn('dos-nr');
+        $dossier->expects('getDossierNumber')->andReturn('dos-nr');
         $dossier->expects('getDocumentPrefix')->andReturn('dos-prefix');
         $dossier->expects('getType')->andReturn(DossierType::OTHER_PUBLICATION);
 
@@ -113,7 +113,7 @@ final class DossierPathHelperTest extends UnitTestCase
             'app_otherpublication_detail',
             [
                 'prefix' => 'dos-prefix',
-                'dossierId' => 'dos-nr',
+                'dossierNumber' => 'dos-nr',
             ],
         )->andReturn('foo-bar');
 
@@ -126,7 +126,7 @@ final class DossierPathHelperTest extends UnitTestCase
     public function testGetDetailsPathWithAdvice(): void
     {
         $dossier = Mockery::mock(Advice::class);
-        $dossier->expects('getDossierNr')->andReturn('dos-nr');
+        $dossier->expects('getDossierNumber')->andReturn('dos-nr');
         $dossier->expects('getDocumentPrefix')->andReturn('dos-prefix');
         $dossier->expects('getType')->andReturn(DossierType::ADVICE);
 
@@ -134,7 +134,7 @@ final class DossierPathHelperTest extends UnitTestCase
             'app_advice_detail',
             [
                 'prefix' => 'dos-prefix',
-                'dossierId' => 'dos-nr',
+                'dossierNumber' => 'dos-nr',
             ],
         )->andReturn('foo-bar');
 
@@ -147,7 +147,7 @@ final class DossierPathHelperTest extends UnitTestCase
     public function testGetDetailsPathWithRequestForAdvice(): void
     {
         $dossier = Mockery::mock(RequestForAdvice::class);
-        $dossier->expects('getDossierNr')->andReturn('dos-nr');
+        $dossier->expects('getDossierNumber')->andReturn('dos-nr');
         $dossier->expects('getDocumentPrefix')->andReturn('dos-prefix');
         $dossier->expects('getType')->andReturn(DossierType::REQUEST_FOR_ADVICE);
 
@@ -155,7 +155,7 @@ final class DossierPathHelperTest extends UnitTestCase
             'app_requestforadvice_detail',
             [
                 'prefix' => 'dos-prefix',
-                'dossierId' => 'dos-nr',
+                'dossierNumber' => 'dos-nr',
             ],
         )->andReturn('foo-bar');
 

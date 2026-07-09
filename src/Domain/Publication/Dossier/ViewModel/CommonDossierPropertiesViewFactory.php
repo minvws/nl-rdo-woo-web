@@ -27,7 +27,7 @@ readonly class CommonDossierPropertiesViewFactory
 
         return new CommonDossierProperties(
             dossierId: $dossier->getId()->toRfc4122(),
-            dossierNr: $dossier->getDossierNr(),
+            dossierNumber: $dossier->getDossierNumber(),
             documentPrefix: $dossier->getDocumentPrefix(),
             isPreview: $dossier->getStatus()->isPreview(),
             title: $title,

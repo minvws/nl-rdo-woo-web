@@ -50,7 +50,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
 
     public function testResolverThrowsExceptionForMissingPrefix(): void
     {
-        $request = new Request(attributes: ['dossierId' => 'bar']);
+        $request = new Request(attributes: ['dossierNumber' => 'bar']);
 
         $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->expects('getType')
@@ -74,7 +74,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
 
     public function testResolverThrowsExceptionWhenDossierCannotBeFound(): void
     {
-        $request = new Request(attributes: ['prefix' => 'foo', 'dossierId' => 'bar']);
+        $request = new Request(attributes: ['prefix' => 'foo', 'dossierNumber' => 'bar']);
 
         $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->expects('getType')
@@ -84,7 +84,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
         $repository->expects('findOneBy')->with(
             [
                 'documentPrefix' => 'foo',
-                'dossierNr' => 'bar',
+                'dossierNumber' => 'bar',
             ],
         )->andReturnNull();
 
@@ -99,7 +99,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
 
     public function testResolverThrowsExceptionWhenDossierIsNotAccessible(): void
     {
-        $request = new Request(attributes: ['prefix' => 'foo', 'dossierId' => 'bar']);
+        $request = new Request(attributes: ['prefix' => 'foo', 'dossierNumber' => 'bar']);
 
         $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->expects('getType')
@@ -111,7 +111,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
         $repository->expects('findOneBy')->with(
             [
                 'documentPrefix' => 'foo',
-                'dossierNr' => 'bar',
+                'dossierNumber' => 'bar',
             ],
         )->andReturn($dossier);
 
@@ -128,7 +128,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
 
     public function testResolverReturnsDossierWhenFoundAndAccessible(): void
     {
-        $request = new Request(attributes: ['prefix' => 'foo', 'dossierId' => 'bar']);
+        $request = new Request(attributes: ['prefix' => 'foo', 'dossierNumber' => 'bar']);
 
         $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->expects('getType')
@@ -140,7 +140,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
         $repository->expects('findOneBy')
             ->with([
                 'documentPrefix' => 'foo',
-                'dossierNr' => 'bar',
+                'dossierNumber' => 'bar',
             ])
             ->andReturn($dossier);
 

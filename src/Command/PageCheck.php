@@ -47,8 +47,8 @@ class PageCheck extends Command
                     if (! $this->pageExists($esDocument, $i)) {
                         $output->writeln(sprintf(
                             'Dossier %s Document %s Page %d does not exist in elastic...',
-                            $dossier->getDossierNr(),
-                            $document->getDocumentNr(),
+                            $dossier->getDossierNumber(),
+                            $document->getDocumentNumber(),
                             $i,
                         ));
                         $failed = true;

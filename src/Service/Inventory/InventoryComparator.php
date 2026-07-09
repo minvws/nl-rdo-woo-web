@@ -31,7 +31,7 @@ class InventoryComparator
     ): InventoryChangeset {
         $dossier = $run->getDossier();
         $documentGenerator = $reader->getDocumentMetadataGenerator($dossier);
-        $tobeRemovedDocs = $this->getDocumentNrList($dossier);
+        $tobeRemovedDocs = $this->getDocumentNumberList($dossier);
 
         $changeset = new InventoryChangeset();
         foreach ($documentGenerator as $inventoryItem) {
@@ -52,11 +52,11 @@ class InventoryComparator
             }
 
             try {
-                $documentNr = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
-                $document = $this->documentRepository->findOneByDocumentNrCaseInsensitive($documentNr->getValue());
+                $documentNumber = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
+                $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber->getValue());
 
                 if ($document === null) {
-                    $changeset->markAsAdded($documentNr);
+                    $changeset->markAsAdded($documentNumber);
 
                     continue;
                 }
@@ -66,12 +66,12 @@ class InventoryComparator
                 }
 
                 // This document is still in the inventory, so remove it from the tobeRemovedDocs array
-                unset($tobeRemovedDocs[$document->getDocumentNr()]);
+                unset($tobeRemovedDocs[$document->getDocumentNumber()]);
 
                 if ($this->documentComparator->needsUpdate($dossier, $document, $documentMetadata)) {
-                    $changeset->markAsUpdated($documentNr);
+                    $changeset->markAsUpdated($documentNumber);
                 } else {
-                    $changeset->markAsUnchanged($documentNr);
+                    $changeset->markAsUnchanged($documentNumber);
                 }
             } catch (TranslatableException $exception) {
                 $run->addRowException($rowIndex, $exception);
@@ -102,13 +102,13 @@ class InventoryComparator
     /**
      * @return array<string, int>
      */
-    private function getDocumentNrList(WooDecision $dossier): array
+    private function getDocumentNumberList(WooDecision $dossier): array
     {
         // Important: don't use $dossier->getDocuments which loads all document entities into memory and the entitymanager
-        $documentNrs = $this->documentRepository->getAllDocumentNumbersForDossier($dossier);
+        $documentNumbers = $this->documentRepository->getAllDocumentNumbersForDossier($dossier);
 
         // Use values as keys for faster lookups
-        return array_fill_keys($documentNrs, 1);
+        return array_fill_keys($documentNumbers, 1);
     }
 
     /**
@@ -120,12 +120,12 @@ class InventoryComparator
         ProductionReportProcessRun $run,
         InventoryChangeset $changeset,
     ): void {
-        foreach (array_keys($tobeRemovedDocs) as $documentNr) {
+        foreach (array_keys($tobeRemovedDocs) as $documentNumber) {
             if (! $dossier->getStatus()->isConcept()) {
-                $run->addGenericException(ProcessInventoryException::forMissingDocument($documentNr));
+                $run->addGenericException(ProcessInventoryException::forMissingDocument($documentNumber));
             }
 
-            $changeset->markAsDeleted($documentNr);
+            $changeset->markAsDeleted($documentNumber);
         }
     }
 }

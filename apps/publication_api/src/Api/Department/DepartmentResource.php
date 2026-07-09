@@ -7,9 +7,8 @@ namespace PublicationApi\Api\Department;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use ApiPlatform\OpenApi\Model\Operation;
-use ApiPlatform\OpenApi\Model\Parameter;
+use PublicationApi\Api\Pagination\CursorPage;
 
 #[ApiResource(
     shortName: 'Department',
@@ -17,43 +16,24 @@ use ApiPlatform\OpenApi\Model\Parameter;
         new Get(
             uriTemplate: '/department/{departmentId}',
             name: 'get_department',
+            output: DepartmentDetailResponseDto::class,
         ),
         new GetCollection(
             uriTemplate: '/department',
-            uriVariables: [],
             paginationViaCursor: [['field' => 'id', 'direction' => 'DESC']],
             openapi: new Operation(
                 tags: ['Department'],
-                parameters: [
-                    new Parameter(
-                        name: 'pagination',
-                        in: 'query',
-                        description: 'The cursor to get the next page of results.',
-                        schema: [
-                            'type' => 'object',
-                            'properties' => [
-                                'cursor' => [
-                                    'type' => 'string',
-                                ],
-                            ],
-                        ],
-                        style: 'deepObject',
-                    ),
-                ],
             ),
             paginationEnabled: false,
             name: 'get_departments',
             itemUriTemplate: '/department/{departmentId}',
+            output: CursorPage::class,
         ),
-    ],
-    uriVariables: [
-        'departmentId' => new Link(fromClass: self::class),
     ],
     stateless: false,
     openapi: new Operation(
         tags: ['Department'],
     ),
-    output: DepartmentDetailResponseDto::class,
     provider: DepartmentProvider::class,
 )]
 final class DepartmentResource

@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication;
 
 use DateTimeImmutable;
-use Symfony\Component\Uid\Uuid;
+use Shared\Domain\HasId;
 
-interface EntityWithFileInfo
+interface EntityWithFileInfo extends HasId
 {
-    public function getId(): Uuid;
-
     public function getFileInfo(): FileInfo;
 
     public function setFileInfo(FileInfo $fileInfo): self;

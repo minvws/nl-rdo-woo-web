@@ -17,19 +17,19 @@ use function strtolower;
 
 final class WooDecisionDetailControllerTest extends MinVwsWebTestCase
 {
-    public function testDossierNrChangeHistoryIsDisplayedOnPublicPage(): void
+    public function testDossierNumberChangeHistoryIsDisplayedOnPublicPage(): void
     {
         $client = static::createClient();
 
-        $oldDossierNr = strtolower(self::getFaker()->uuid());
-        $newDossierNr = strtolower(self::getFaker()->uuid());
+        $oldDossierNumber = strtolower(self::getFaker()->uuid());
+        $newDossierNumber = strtolower(self::getFaker()->uuid());
 
         $dossier = WooDecisionFactory::createOne([
             'departments' => [DepartmentFactory::new([
                 'feedbackContent' => self::getFaker()->sentence(),
                 'responsibilityContent' => self::getFaker()->sentence(),
             ])],
-            'dossierNr' => $newDossierNr,
+            'dossierNumber' => $newDossierNumber,
             'status' => DossierStatus::PUBLISHED,
             'publicationDate' => self::getFaker()->plainDateBetween('-2 week', '-1 week'),
         ]);
@@ -42,14 +42,17 @@ final class WooDecisionDetailControllerTest extends MinVwsWebTestCase
 
         HistoryFactory::createOne([
             'identifier' => $dossier->getId(),
-            'context' => ['oldNr' => $oldDossierNr, 'newNr' => $newDossierNr],
+            'context' => [
+                'oldNr' => $oldDossierNumber,
+                'newNr' => $newDossierNumber,
+            ],
         ]);
 
-        $client->request('GET', sprintf('/dossier/%s/%s', $dossier->getDocumentPrefix(), $newDossierNr));
+        $client->request('GET', sprintf('/dossier/%s/%s', $dossier->getDocumentPrefix(), $newDossierNumber));
 
         $this->assertResponseIsSuccessful();
         $this->assertStringContainsString(
-            sprintf('Besluitnummer aangepast van %s naar %s', $oldDossierNr, $newDossierNr),
+            sprintf('Besluitnummer aangepast van %s naar %s', $oldDossierNumber, $newDossierNumber),
             (string) $client->getResponse()->getContent(),
         );
     }

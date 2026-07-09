@@ -50,15 +50,15 @@ readonly class DossierWithAccessCheckValueResolver implements ValueResolverInter
         }
 
         $prefix = $request->attributes->getString('prefix');
-        $dossierId = $request->attributes->getString('dossierId');
-        if ($prefix === '' || $dossierId === '') {
+        $dossierNumber = $request->attributes->getString('dossierNumber');
+        if ($prefix === '' || $dossierNumber === '') {
             return null;
         }
 
         /** @var ?AbstractDossier */
         return $this->entityManager->getRepository($argumentType)->findOneBy([
             'documentPrefix' => $prefix,
-            'dossierNr' => $dossierId,
+            'dossierNumber' => $dossierNumber,
         ]);
     }
 }

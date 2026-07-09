@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Dossier\RequestForAdvice\RequestForAdviceResource;
 use PublicationApi\Api\Dossier\RequestForAdvice\Uploads\Attachment\RequestForAdviceUploadAttachmentResource;
 use PublicationApi\Api\Dossier\RequestForAdvice\Uploads\MainDocument\RequestForAdviceUploadMainDocumentResource;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Controller\Public\Dossier\DossierFileController;
@@ -16,10 +17,13 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
+use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
@@ -28,6 +32,8 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
+use Shared\Tests\Factory\Publication\Dossier\NoticeNotPublic\NoticeNotPublicFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocumentFactory;
@@ -72,8 +78,13 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
 
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
-        self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $requestForAdvice->getExternalId()?->toString()]]);
+        $data = $result->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(1, $items);
+        self::assertJsonContains(['items' => [['externalId' => $requestForAdvice->getExternalId()?->toString()]]]);
     }
 
     public function testGetRequestForAdvice(): void
@@ -100,6 +111,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
 
         self::assertResponseIsSuccessful();
 
+        $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
         $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
@@ -109,7 +121,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                 'id' => $organisation->getId()->toString(),
                 'name' => $organisation->getName(),
             ],
-            'dossierNumber' => $requestForAdvice->getDossierNr(),
+            'dossierNumber' => $requestForAdvice->getDossierNumber(),
             'title' => (string) $requestForAdvice->getTitle(),
             'summary' => $requestForAdvice->getSummary(),
             'subject' => [
@@ -132,7 +144,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                 'uploadStatus' => UploadStatus::PROCESSED->value,
                 '_links' => [
                     'upload' => [
-                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                        'href' => $apiUrlGenerator->buildUrlFromRoute(
                             RequestForAdviceUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
                             [
                                 'organisationId' => $requestForAdvice->getOrganisation()->getId(),
@@ -146,7 +158,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                             [
                                 'prefix' => $requestForAdvice->getDocumentPrefix(),
-                                'dossierId' => $requestForAdvice->getDossierNr(),
+                                'dossierNumber' => $requestForAdvice->getDossierNumber(),
                                 'type' => DossierFileType::MAIN_DOCUMENT->value,
                                 'id' => $requestForAdviceMainDocument->getId(),
                             ],
@@ -154,6 +166,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                     ],
                 ],
             ],
+            'noticeNotPublic' => null,
             'attachments' => [
                 [
                     'id' => (string) $requestForAdviceAttachment->getId(),
@@ -166,7 +179,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                     '_links' => [
                         'upload' => [
-                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            'href' => $apiUrlGenerator->buildUrlFromRoute(
                                 RequestForAdviceUploadAttachmentResource::ROUTE_NAME_UPLOAD,
                                 [
                                     'organisationId' => $requestForAdvice->getOrganisation()->getId(),
@@ -181,7 +194,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                                 [
                                     'prefix' => $requestForAdvice->getDocumentPrefix(),
-                                    'dossierId' => $requestForAdvice->getDossierNr(),
+                                    'dossierNumber' => $requestForAdvice->getDossierNumber(),
                                     'type' => DossierFileType::ATTACHMENT->value,
                                     'id' => $requestForAdviceAttachment->getId(),
                                 ],
@@ -194,7 +207,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
             'link' => $requestForAdvice->getLink(),
             'advisoryBodies' => $requestForAdvice->getAdvisoryBodies(),
             '_links' => [
-                'self' => ['href' => $this->buildPublicUrl($organisation, $requestForAdvice)],
+                'self' => ['href' => $this->buildApiUrl($organisation, $requestForAdvice)],
                 'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($requestForAdvice)],
             ],
         ];
@@ -271,11 +284,12 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         self::assertDatabaseCount(RequestForAdvice::class, 1);
     }
 
-    public function testCreateRequestForAdviceWithoutMainDocument(): void
+    public function testCreateRequestForAdviceWithoutMainDocumentNorNotice(): void
     {
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(RequestForAdvice::class, 0);
 
@@ -284,8 +298,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => [[
-            'code' => Type::INVALID_TYPE_ERROR,
-            'propertyPath' => 'mainDocument',
+            'message' => 'A dossier must contain at least a main document or a notice not public',
         ], ]]);
     }
 
@@ -316,6 +329,27 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
 
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, str_repeat('x', 129)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testCreateRequestForAdviceWithExternalIdAlreadyUsedByComplaintJudgementReturnsConflict(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        $data = $this->createValidRequestForAdviceDataPayload($department, $subject, 1);
+        $externalId = $this->getFaker()->externalId();
+        ComplaintJudgementFactory::createOne([
+            'externalId' => $externalId,
+            'organisation' => $organisation,
+            'departments' => [$department],
+            'subject' => $subject,
+        ]);
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $externalId), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertJsonContains(['detail' => 'ExternalId already in use by type complaint-judgement']);
     }
 
     /**
@@ -456,7 +490,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         self::assertMatchesResourceItemJsonSchema(RequestForAdviceResource::class);
 
         self::assertDatabaseHas(RequestForAdvice::class, [
-            'dossierNr' => $data['dossierNumber'],
+            'dossierNumber' => $data['dossierNumber'],
             'documentPrefix' => $requestForAdvice->getDocumentPrefix(),
             'summary' => $data['summary'],
             'title' => $data['title'],
@@ -610,7 +644,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
 
         $data = [
             'title' => (string) $requestForAdvice->getTitle(),
-            'dossierNumber' => $requestForAdvice->getDossierNr(),
+            'dossierNumber' => $requestForAdvice->getDossierNumber(),
             'dossierDate' => $requestForAdvice->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $requestForAdvice->getPublicationDate()?->format('Y-m-d'),
             'summary' => $requestForAdvice->getSummary(),
@@ -668,7 +702,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
 
         $data = [
             'title' => (string) $requestForAdvice->getTitle(),
-            'dossierNumber' => $requestForAdvice->getDossierNr(),
+            'dossierNumber' => $requestForAdvice->getDossierNumber(),
             'dossierDate' => $requestForAdvice->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $requestForAdvice->getPublicationDate()?->format('Y-m-d'),
             'summary' => $requestForAdvice->getSummary(),
@@ -725,7 +759,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
 
         $data = [
             'title' => (string) $requestForAdvice->getTitle(),
-            'dossierNumber' => $requestForAdvice->getDossierNr(),
+            'dossierNumber' => $requestForAdvice->getDossierNumber(),
             'dossierDate' => $requestForAdvice->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $requestForAdvice->getPublicationDate()?->format('Y-m-d'),
             'summary' => $requestForAdvice->getSummary(),
@@ -798,7 +832,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
 
         $data = [
             'title' => (string) $requestForAdvice->getTitle(),
-            'dossierNumber' => $requestForAdvice->getDossierNr(),
+            'dossierNumber' => $requestForAdvice->getDossierNumber(),
             'dossierDate' => $requestForAdvice->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $requestForAdvice->getPublicationDate()?->format('Y-m-d'),
             'summary' => $requestForAdvice->getSummary(),
@@ -837,5 +871,167 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         self::assertDatabaseMissing(RequestForAdviceAttachment::class, [
             'id' => $attachment2->getId(),
         ]);
+    }
+
+    public function testCreateRequestForAdviceWithBothMainDocumentAndNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(RequestForAdvice::class, 0);
+
+        $data = $this->createValidRequestForAdviceDataPayload($department, $subject, 0);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'message' => 'A dossier cannot have both a main document and a notice not public',
+        ]]]);
+
+        self::assertDatabaseCount(RequestForAdvice::class, 0);
+    }
+
+    public function testCreateRequestForAdviceWithNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(RequestForAdvice::class, 0);
+
+        $data = $this->createValidRequestForAdviceDataPayload($department, $subject, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'documentName' => $this->getFaker()->sentence(),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'explanation' => $this->getFaker()->sentence(),
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+        self::assertMatchesResourceItemJsonSchema(RequestForAdviceResource::class);
+        self::assertDatabaseCount(RequestForAdvice::class, 1);
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+    }
+
+    public function testCreateRequestForAdviceWithNoticeNotPublicAndEmptyGrounds(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(RequestForAdvice::class, 0);
+
+        $data = $this->createValidRequestForAdviceDataPayload($department, $subject, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'grounds' => [],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        self::assertDatabaseCount(RequestForAdvice::class, 0);
+    }
+
+    public function testCreateRequestForAdviceWithNoticeNotPublicAndMissingFormalDate(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(RequestForAdvice::class, 0);
+
+        $data = $this->createValidRequestForAdviceDataPayload($department, $subject, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        self::assertDatabaseCount(RequestForAdvice::class, 0);
+    }
+
+    public function testUpdateRequestForAdviceTransitionsFromMainDocumentToNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $requestForAdvice = RequestForAdviceFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        $mainDocument = RequestForAdviceMainDocumentFactory::createOne(['dossier' => $requestForAdvice]);
+        $mainDocumentId = $mainDocument->getId();
+
+        self::assertDatabaseHas(RequestForAdviceMainDocument::class, [
+            'id' => $mainDocumentId,
+        ]);
+        self::assertDatabaseCount(NoticeNotPublic::class, 0);
+
+        $data = $this->createValidRequestForAdviceDataPayload($department, null, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'documentName' => $this->getFaker()->sentence(),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'explanation' => $this->getFaker()->sentence(),
+        ];
+
+        $response = self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $requestForAdvice), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        $responseData = $response->toArray();
+        self::assertNull($responseData['mainDocument']);
+        self::assertNotNull($responseData['noticeNotPublic']);
+        $responseNoticeNotPublic = $responseData['noticeNotPublic'];
+        self::assertIsArray($responseNoticeNotPublic);
+        self::assertEquals($data['noticeNotPublic']['formalDate'], $responseNoticeNotPublic['formalDate']);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+        self::assertDatabaseMissing(RequestForAdviceMainDocument::class, [
+            'id' => $mainDocumentId,
+        ]);
+    }
+
+    public function testUpdateRequestForAdviceTransitionsFromNoticeNotPublicToMainDocument(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $requestForAdvice = RequestForAdviceFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        NoticeNotPublicFactory::createOne(['dossier' => $requestForAdvice]);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+        self::assertDatabaseCount(RequestForAdviceMainDocument::class, 0);
+
+        $data = $this->createValidRequestForAdviceDataPayload($department, null, 0);
+        unset($data['noticeNotPublic']);
+
+        $response = self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $requestForAdvice), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        $responseData = $response->toArray();
+        self::assertNotNull($responseData['mainDocument']);
+        self::assertNull($responseData['noticeNotPublic']);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 0);
+        self::assertDatabaseCount(RequestForAdviceMainDocument::class, 1);
     }
 }

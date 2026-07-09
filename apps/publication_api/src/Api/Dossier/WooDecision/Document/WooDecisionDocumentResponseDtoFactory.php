@@ -6,6 +6,7 @@ namespace PublicationApi\Api\Dossier\WooDecision\Document;
 
 use Doctrine\Common\Collections\Collection;
 use PublicationApi\Api\Dossier\WooDecision\Uploads\Document\WooDecisionUploadDocumentResource;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use PublicationApi\Domain\Upload\DocumentUploadStatusService;
@@ -24,6 +25,7 @@ use function array_values;
 readonly class WooDecisionDocumentResponseDtoFactory
 {
     public function __construct(
+        private ApiUrlGenerator $apiUrlGenerator,
         private DossierPathHelper $dossierPathHelper,
         private DocumentUploadStatusService $documentUploadStatusService,
         private PublicUrlGenerator $publicUrlGenerator,
@@ -50,7 +52,7 @@ readonly class WooDecisionDocumentResponseDtoFactory
             $this->getInquiryNumbers($document->getInquiries()),
             $document->getDocumentDate(),
             $document->getDocumentId(),
-            $document->getDocumentNr(),
+            $document->getDocumentNumber(),
             $document->getExternalId(),
             $document->getFamilyId(),
             $document->getFileInfo()->getName(),
@@ -90,7 +92,7 @@ readonly class WooDecisionDocumentResponseDtoFactory
         if ($document->shouldBeUploaded()) {
             $linkCollection->set(
                 LinkCollection::UPLOAD,
-                new Link($this->publicUrlGenerator->buildUrlFromRoute(WooDecisionUploadDocumentResource::ROUTE_NAME_UPLOAD, [
+                new Link($this->apiUrlGenerator->buildUrlFromRoute(WooDecisionUploadDocumentResource::ROUTE_NAME_UPLOAD, [
                     'organisationId' => $wooDecision->getOrganisation()->getId(),
                     'dossierExternalId' => $wooDecision->getExternalId(),
                     'documentExternalId' => $document->getExternalId(),
@@ -104,7 +106,7 @@ readonly class WooDecisionDocumentResponseDtoFactory
                 LinkCollection::FILE,
                 new Link($this->publicUrlGenerator->buildUrlFromRoute(DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, [
                     'prefix' => $wooDecision->getDocumentPrefix(),
-                    'dossierId' => $wooDecision->getDossierNr(),
+                    'dossierNumber' => $wooDecision->getDossierNumber(),
                     'type' => DossierFileType::DOCUMENT->value,
                     'id' => $document->getId(),
                 ])),

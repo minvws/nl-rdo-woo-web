@@ -4,6 +4,7 @@ Library             Browser
 Library             DebugLibrary
 Resource            Admin.resource
 Library             FakerLibrary
+Resource            Dossier.resource
 
 
 *** Variables ***
@@ -13,11 +14,10 @@ ${FILE_LOCATION}    ${EMPTY}
 *** Keywords ***
 Fill Out Other Publication Details
   [Arguments]  ${has_attachment}
-  ${random_summary} =  Fakerlibrary.Text  200
-  Fill Text  id=content_form_summary  ${random_summary}
+  Fill Out Summary
   Upload Informatiestuk  ${FILE_LOCATION}
   IF  ${has_attachment}  Upload Attachment  brief
-  Click  "Opslaan en verder"
+  Click Save And Continue
 
 Upload Informatiestuk
   [Arguments]  ${other_publication_location}

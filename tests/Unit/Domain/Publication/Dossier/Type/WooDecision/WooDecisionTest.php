@@ -149,7 +149,7 @@ final class WooDecisionTest extends UnitTestCase
     }
 
     #[DataProvider('canRemoveInventoryDataProvider')]
-    public function testCanRemoveInventoryReturnsTrueOnlyWhenInventoryIsOptionalAndStatusIsConcept(
+    public function testCanRemoveInventoryReturnsTrueOnlyWhenInventoryIsNotRequiredAndStatusIsConcept(
         DecisionType $decisionType,
         DossierStatus $status,
         bool $expectedCanRemoveInventory,
@@ -169,6 +169,9 @@ final class WooDecisionTest extends UnitTestCase
             'optional inventory and concept status' => [DecisionType::NOT_PUBLIC, DossierStatus::CONCEPT, true],
             'optional inventory but non-concept status' => [DecisionType::NOT_PUBLIC, DossierStatus::NEW, false],
             'required inventory and concept status' => [DecisionType::PUBLIC, DossierStatus::CONCEPT, false],
+            'required inventory but non-concept status' => [DecisionType::PUBLIC, DossierStatus::NEW, false],
+            'no inventory and concept status' => [DecisionType::NOTHING_FOUND, DossierStatus::CONCEPT, true],
+            'no inventory but non-concept status' => [DecisionType::NOTHING_FOUND, DossierStatus::NEW, false],
         ];
     }
 

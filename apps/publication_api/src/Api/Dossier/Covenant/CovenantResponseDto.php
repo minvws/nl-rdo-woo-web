@@ -6,6 +6,7 @@ namespace PublicationApi\Api\Dossier\Covenant;
 
 use PublicationApi\Api\Attachment\AttachmentResponseDto;
 use PublicationApi\Api\Department\DepartmentResponseDto;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicResponseDto;
 use PublicationApi\Api\Organisation\OrganisationResponseDto;
 use PublicationApi\Api\Subject\SubjectResponse;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
@@ -33,7 +34,8 @@ final class CovenantResponseDto
         public DepartmentResponseDto $department,
         public ?PlainDate $publicationDate,
         public DossierStatus $status,
-        public CovenantMainDocumentResponseDto $mainDocument,
+        public ?CovenantMainDocumentResponseDto $mainDocument,
+        public ?NoticeNotPublicResponseDto $noticeNotPublic,
         public array $attachments,
         public PlainDate $dateFrom,
         public ?PlainDate $dateTo,

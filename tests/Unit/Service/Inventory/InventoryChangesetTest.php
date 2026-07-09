@@ -126,24 +126,24 @@ class InventoryChangesetTest extends UnitTestCase
     {
         $changeset = new InventoryChangeset();
 
-        $documentNr = DocumentNumber::fromString('test', DocumentMatter::create('x'), '123a');
-        $duplicateDocumentNr = DocumentNumber::fromString('test', DocumentMatter::create('x'), '123a');
+        $documentNumber = DocumentNumber::fromString('test', DocumentMatter::create('x'), '123a');
+        $duplicateDocumentNumber = DocumentNumber::fromString('test', DocumentMatter::create('x'), '123a');
 
-        $expectedException = ProcessInventoryException::forDuplicateDocumentNr($duplicateDocumentNr->getValue());
+        $expectedException = ProcessInventoryException::forDuplicateDocumentNumber($duplicateDocumentNumber->getValue());
 
-        $changeset->markAsAdded($documentNr);
-
-        $this->expectExceptionObject($expectedException);
-        $changeset->markAsAdded($duplicateDocumentNr);
+        $changeset->markAsAdded($documentNumber);
 
         $this->expectExceptionObject($expectedException);
-        $changeset->markAsUpdated($duplicateDocumentNr);
+        $changeset->markAsAdded($duplicateDocumentNumber);
 
         $this->expectExceptionObject($expectedException);
-        $changeset->markAsDeleted($duplicateDocumentNr->getValue());
+        $changeset->markAsUpdated($duplicateDocumentNumber);
 
         $this->expectExceptionObject($expectedException);
-        $changeset->markAsUnchanged($duplicateDocumentNr);
+        $changeset->markAsDeleted($duplicateDocumentNumber->getValue());
+
+        $this->expectExceptionObject($expectedException);
+        $changeset->markAsUnchanged($duplicateDocumentNumber);
 
         self::assertEquals([], $changeset->getAll());
     }

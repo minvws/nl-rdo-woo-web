@@ -1,0 +1,32 @@
+# https://taskfile.dev
+version: '3.50.0'
+
+tasks:
+
+  reset:
+    desc: Reset the application database including RabbitMQ queues and ElasticSearch indexes
+    prompt: Are you REALLY sure you want to clear the tenant "{{ .TENANT }}" data from the system?
+    vars:
+      TENANT: '{{ .TENANT | default "minvws" }}'
+    cmds:
+      - task: :cleansheet
+        vars:
+          TENANT: '{{ .TENANT }}'
+      - task: :console:cmd:doctrine:schema:drop
+        vars:
+          SUB_CMD: '--full-database --force'
+          TENANT: '{{ .TENANT }}'
+      - task: :console:migrate
+        vars:
+          TENANT: '{{ .TENANT }}'
+      - task: :console:loadfixtures
+        vars:
+          TENANT: '{{ .TENANT }}'
+
+  reset:all:
+    desc: Reset the application database for all tenants including RabbitMQ queues and ElasticSearch indexes
+    cmds:
+      - task: reset
+        vars:
+          TENANT: '{{ .ITEM }}'
+        for: { var: LOCAL_TENANTS }

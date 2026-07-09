@@ -30,7 +30,7 @@ readonly class MainDocumentViewFactory
             sprintf('app_%s_document_detail', $dossier->getType()->getValueForRouteName()),
             [
                 'prefix' => $dossier->getDocumentPrefix(),
-                'dossierId' => $dossier->getDossierNr(),
+                'dossierNumber' => $dossier->getDossierNumber(),
             ],
         );
 
@@ -40,7 +40,7 @@ readonly class MainDocumentViewFactory
 
         $downloadRouteParameters = [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
             'type' => DossierFileType::MAIN_DOCUMENT->value,
             'id' => $mainDocument->getId(),
         ];

@@ -35,7 +35,7 @@ readonly class InquiryDossierBatchDownload implements BatchDownloadTypeInterface
             '%s-%s-%s',
             $scope->inquiry->getInquiryNumber(),
             $scope->wooDecision->getDocumentPrefix(),
-            $scope->wooDecision->getDossierNr(),
+            $scope->wooDecision->getDossierNumber(),
         );
     }
 

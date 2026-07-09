@@ -10,6 +10,7 @@ use PublicationApi\Api\Dossier\WooDecision\Uploads\Attachment\WooDecisionUploadA
 use PublicationApi\Api\Dossier\WooDecision\Uploads\Document\WooDecisionUploadDocumentResource;
 use PublicationApi\Api\Dossier\WooDecision\Uploads\MainDocument\WooDecisionUploadMainDocumentResource;
 use PublicationApi\Api\Dossier\WooDecision\WooDecisionResource;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Controller\Public\Dossier\DossierFileController;
@@ -23,7 +24,7 @@ use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Validator\UniqueDocumentNr;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Validator\UniqueDocumentNumber;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
@@ -38,6 +39,7 @@ use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
@@ -93,9 +95,13 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
-        self::assertCount(1, $result->toArray());
-
-        self::assertJsonContains([['externalId' => $wooDecision->getExternalId()?->toString()]]);
+        $data = $result->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(1, $items);
+        self::assertJsonContains(['items' => [['externalId' => $wooDecision->getExternalId()?->toString()]]]);
     }
 
     public function testGetWooDecisionCollectionDoesNotContainWooDecisionWithoutExternalId(): void
@@ -129,8 +135,13 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
-        self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $wooDecision1->getExternalId()?->toString()]]);
+        $data = $result->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(1, $items);
+        self::assertJsonContains(['items' => [['externalId' => $wooDecision1->getExternalId()?->toString()]]]);
     }
 
     public function testGetWooDecision(): void
@@ -153,10 +164,10 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'externalId' => $this->getFaker()->externalId(),
         ]);
 
-        // watch it: documents are sorted by documentNr
+        // watch it: documents are sorted by documentNumber
         $wooDecisionDocument1 = DocumentFactory::createOne(
             [
-                'documentNr' => 'A',
+                'documentNumber' => 'A',
                 'judgement' => Judgement::PUBLIC,
                 'dossiers' => [$wooDecision],
                 'externalId' => $this->getFaker()->externalId(),
@@ -167,7 +178,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         );
         $wooDecisionDocument2 = DocumentFactory::createOne(
             [
-                'documentNr' => 'B',
+                'documentNumber' => 'B',
                 'judgement' => Judgement::PUBLIC,
                 'dossiers' => [$wooDecision],
                 'externalId' => $this->getFaker()->externalId(),
@@ -181,6 +192,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $response = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation, $wooDecision));
         self::assertResponseIsSuccessful();
 
+        $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
         $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
@@ -190,7 +202,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'id' => $organisation->getId()->toString(),
                 'name' => $organisation->getName(),
             ],
-            'dossierNumber' => $wooDecision->getDossierNr(),
+            'dossierNumber' => $wooDecision->getDossierNumber(),
             'title' => (string) $wooDecision->getTitle(),
             'summary' => $wooDecision->getSummary(),
             'subject' => [
@@ -213,7 +225,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'uploadStatus' => UploadStatus::PROCESSED->value,
                 '_links' => [
                     'upload' => [
-                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                        'href' => $apiUrlGenerator->buildUrlFromRoute(
                             WooDecisionUploadMainDocumentResource::ROUTE_NAME_UPLOAD,
                             [
                                 'organisationId' => $wooDecision->getOrganisation()->getId(),
@@ -227,7 +239,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                             [
                                 'prefix' => $wooDecision->getDocumentPrefix(),
-                                'dossierId' => $wooDecision->getDossierNr(),
+                                'dossierNumber' => $wooDecision->getDossierNumber(),
                                 'type' => DossierFileType::MAIN_DOCUMENT->value,
                                 'id' => $wooDecisionMainDocument->getId(),
                             ],
@@ -247,7 +259,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                     '_links' => [
                         'upload' => [
-                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            'href' => $apiUrlGenerator->buildUrlFromRoute(
                                 WooDecisionUploadAttachmentResource::ROUTE_NAME_UPLOAD,
                                 [
                                     'organisationId' => $wooDecision->getOrganisation()->getId(),
@@ -262,7 +274,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                                 [
                                     'prefix' => $wooDecision->getDocumentPrefix(),
-                                    'dossierId' => $wooDecision->getDossierNr(),
+                                    'dossierNumber' => $wooDecision->getDossierNumber(),
                                     'type' => DossierFileType::ATTACHMENT->value,
                                     'id' => $wooDecisionAttachment->getId(),
                                 ],
@@ -281,7 +293,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'inquiryNumbers' => [],
                     'documentDate' => $wooDecisionDocument1->getDocumentDate()?->format('Y-m-d'),
                     'documentId' => $wooDecisionDocument1->getDocumentId()?->toString(),
-                    'documentNr' => $wooDecisionDocument1->getDocumentNr(),
+                    'documentNumber' => $wooDecisionDocument1->getDocumentNumber(),
                     'externalId' => $wooDecisionDocument1->getExternalId()?->toString(),
                     'familyId' => $wooDecisionDocument1->getFamilyId(),
                     'filename' => $wooDecisionDocument2->getFileInfo()->getName(),
@@ -297,7 +309,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                     '_links' => [
                         'upload' => [
-                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            'href' => $apiUrlGenerator->buildUrlFromRoute(
                                 WooDecisionUploadDocumentResource::ROUTE_NAME_UPLOAD,
                                 [
                                     'organisationId' => $wooDecision->getOrganisation()->getId(),
@@ -312,7 +324,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                                 [
                                     'prefix' => $wooDecision->getDocumentPrefix(),
-                                    'dossierId' => $wooDecision->getDossierNr(),
+                                    'dossierNumber' => $wooDecision->getDossierNumber(),
                                     'type' => DossierFileType::DOCUMENT->value,
                                     'id' => $wooDecisionDocument1->getId(),
                                 ],
@@ -324,7 +336,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'inquiryNumbers' => [],
                     'documentDate' => $wooDecisionDocument2->getDocumentDate()?->format('Y-m-d'),
                     'documentId' => $wooDecisionDocument2->getDocumentId()?->toString(),
-                    'documentNr' => $wooDecisionDocument2->getDocumentNr(),
+                    'documentNumber' => $wooDecisionDocument2->getDocumentNumber(),
                     'externalId' => $wooDecisionDocument2->getExternalId()?->toString(),
                     'familyId' => $wooDecisionDocument2->getFamilyId(),
                     'filename' => $wooDecisionDocument2->getFileInfo()->getName(),
@@ -345,7 +357,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                     '_links' => [
                         'upload' => [
-                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            'href' => $apiUrlGenerator->buildUrlFromRoute(
                                 WooDecisionUploadDocumentResource::ROUTE_NAME_UPLOAD,
                                 [
                                     'organisationId' => $wooDecision->getOrganisation()->getId(),
@@ -360,7 +372,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                                 [
                                     'prefix' => $wooDecision->getDocumentPrefix(),
-                                    'dossierId' => $wooDecision->getDossierNr(),
+                                    'dossierNumber' => $wooDecision->getDossierNumber(),
                                     'type' => DossierFileType::DOCUMENT->value,
                                     'id' => $wooDecisionDocument2->getId(),
                                 ],
@@ -370,7 +382,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 ],
             ],
             '_links' => [
-                'self' => ['href' => $this->buildPublicUrl($organisation, $wooDecision)],
+                'self' => ['href' => $this->buildApiUrl($organisation, $wooDecision)],
                 'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
             ],
         ];
@@ -404,7 +416,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
         self::assertEquals([
-            'self' => ['href' => $this->buildPublicUrl($organisation, $wooDecision)],
+            'self' => ['href' => $this->buildApiUrl($organisation, $wooDecision)],
             'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
         ], $result->toArray()['_links']);
     }
@@ -433,7 +445,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertResponseIsSuccessful();
 
         self::assertEquals([
-            'self' => ['href' => $this->buildPublicUrl($organisation, $wooDecision)],
+            'self' => ['href' => $this->buildApiUrl($organisation, $wooDecision)],
         ], $result->toArray()['_links']);
     }
 
@@ -543,6 +555,27 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertCount(0, $document2->getRefersTo());
     }
 
+    public function testCreateWooDecisionWithExternalIdAlreadyUsedByComplaintJudgementReturnsConflict(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        $data = $this->createValidWooDecisionDataPayload($department, $subject);
+        $externalId = $this->getFaker()->externalId();
+        ComplaintJudgementFactory::createOne([
+            'externalId' => $externalId,
+            'organisation' => $organisation,
+            'departments' => [$department],
+            'subject' => $subject,
+        ]);
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $externalId), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertJsonContains(['detail' => 'ExternalId already in use by type complaint-judgement']);
+    }
+
     public function testCreateWooDecisionWithoutSubject(): void
     {
         $organisation = OrganisationFactory::createOne();
@@ -613,7 +646,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         );
 
         $data = $this->createValidWooDecisionDataPayload($department, $subject);
-        $data['dossierNumber'] = $wooDecision->getDossierNr();
+        $data['dossierNumber'] = $wooDecision->getDossierNumber();
 
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->externalId()), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -926,6 +959,34 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'code' => Type::INVALID_TYPE_ERROR,
                     'propertyPath' => 'documents[0].matter',
                     'hint' => 'DocumentMatter contains invalid characters',
+                ],
+            ],
+            'documentId is an empty string' => [
+                [
+                    'documents' => [
+                        [
+                            'inquiryNumbers' => [],
+                            'documentDate' => '2025-09-17',
+                            'documentId' => '',
+                            'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
+                            'familyId' => 838,
+                            'fileName' => 'document.pdf',
+                            'grounds' => [],
+                            'isSuspended' => true,
+                            'judgement' => Judgement::PUBLIC->value,
+                            'links' => [],
+                            'matter' => 'matter',
+                            'refersTo' => [],
+                            'remark' => 'Consequatur perferendis facere omnis.',
+                            'sourceType' => SourceType::VIDEO->value,
+                            'threadId' => 341,
+                        ],
+                    ],
+                ],
+                [
+                    'code' => Type::INVALID_TYPE_ERROR,
+                    'propertyPath' => 'documents[0].documentId',
+                    'hint' => 'Document ID cannot be empty',
                 ],
             ],
             'mainDocument grounds contains both valid & invalid values' => [
@@ -1376,7 +1437,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]]]);
     }
 
-    public function testCreateWooDecisionWithDocumentNrAlreadyExistsInAnotherDossier(): void
+    public function testCreateWooDecisionWithDocumentNumberAlreadyExistsInAnotherDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
@@ -1389,7 +1450,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $existingWooDecision = WooDecisionFactory::createOne(['departments' => [$department], 'organisation' => $organisation]);
         DocumentFactory::createOne([
             'dossiers' => [$existingWooDecision],
-            'documentNr' => sprintf('%s-%s-%s', $documentPrefix->getPrefix(), $matter, $documentId),
+            'documentNumber' => sprintf('%s-%s-%s', $documentPrefix->getPrefix(), $matter, $documentId),
         ]);
 
         $data = $this->createValidWooDecisionDataPayload($department, $subject, 0, 0);
@@ -1398,8 +1459,8 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => [[
-            'code' => UniqueDocumentNr::NOT_UNIQUE_ERROR,
-            'propertyPath' => 'documents.[0].documentNr',
+            'code' => UniqueDocumentNumber::NOT_UNIQUE_ERROR,
+            'propertyPath' => 'documents.[0].documentNumber',
         ]]]);
     }
 
@@ -1432,7 +1493,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]]]);
     }
 
-    public function testUpdateWooDecisionWithDocumentNrAlreadyExistsInAnotherDossier(): void
+    public function testUpdateWooDecisionWithDocumentNumberAlreadyExistsInAnotherDossier(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -1444,7 +1505,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $existingWooDecision = WooDecisionFactory::createOne(['departments' => [$department], 'organisation' => $organisation]);
         DocumentFactory::createOne([
             'dossiers' => [$existingWooDecision],
-            'documentNr' => sprintf('%s-%s-%s', $documentPrefix->getPrefix(), $matter, $documentId),
+            'documentNumber' => sprintf('%s-%s-%s', $documentPrefix->getPrefix(), $matter, $documentId),
         ]);
 
         $wooDecisionToUpdate = WooDecisionFactory::createOne([
@@ -1462,8 +1523,8 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecisionToUpdate), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => [[
-            'code' => UniqueDocumentNr::NOT_UNIQUE_ERROR,
-            'propertyPath' => 'documents.[0].documentNr',
+            'code' => UniqueDocumentNumber::NOT_UNIQUE_ERROR,
+            'propertyPath' => 'documents.[0].documentNumber',
         ]]]);
     }
 
@@ -1500,7 +1561,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseHas(
             WooDecision::class,
             [
-                'dossierNr' => $data['dossierNumber'],
+                'dossierNumber' => $data['dossierNumber'],
                 'documentPrefix' => $wooDecision->getDocumentPrefix(),
                 'summary' => $data['summary'],
                 'title' => $data['title'],
@@ -1678,7 +1739,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         );
 
         $data = $this->createValidWooDecisionDataPayload($department, $subject);
-        $data['dossierNumber'] = $existingWooDecision->getDossierNr();
+        $data['dossierNumber'] = $existingWooDecision->getDossierNumber();
 
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecisionToUpdate), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -1736,7 +1797,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
         $wooDecisionDocument = DocumentFactory::createOne(
             [
-                'documentNr' => 'A',
+                'documentNumber' => 'A',
                 'dossiers' => [$wooDecision],
                 'externalId' => $this->getFaker()->externalId(),
             ],
@@ -1811,7 +1872,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseHas(WooDecision::class, [
             'id' => $wooDecision->getId(),
             'externalId' => $wooDecision->getExternalId(),
-            'dossierNr' => $putData['dossierNumber'],
+            'dossierNumber' => $putData['dossierNumber'],
         ]);
         self::assertDatabaseHas(Document::class, [
             'id' => $wooDecisionDocument->getId(),
@@ -1866,7 +1927,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         // assert upload-status
         self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
-        self::assertJsonContains([['documents' => [0 => ['uploadStatus' => UploadStatus::UPLOAD_REQUIRED->value]]]]);
+        self::assertJsonContains(['items' => [['documents' => [0 => ['uploadStatus' => UploadStatus::UPLOAD_REQUIRED->value]]]]]);
     }
 
     public function testUpdateWooDecisionWithDifferentDocumentDataSetsUploadedToFalse(): void
@@ -1881,7 +1942,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]);
         WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
         $wooDecisionDocument = DocumentFactory::createOne([
-            'documentNr' => 'A',
+            'documentNumber' => 'A',
             'dossiers' => [$wooDecision],
             'externalId' => $this->getFaker()->externalId(),
             'judgement' => Judgement::PUBLIC, // force isUploaded = true
@@ -1916,7 +1977,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseHas(WooDecision::class, [
             'id' => $wooDecision->getId(),
             'externalId' => $wooDecision->getExternalId(),
-            'dossierNr' => $putData['dossierNumber'],
+            'dossierNumber' => $putData['dossierNumber'],
         ]);
         self::assertDatabaseHas(Document::class, [
             'id' => $wooDecisionDocument->getId(),
@@ -1953,7 +2014,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         $data = [
             'title' => (string) $wooDecision->getTitle(),
-            'dossierNumber' => $wooDecision->getDossierNr(),
+            'dossierNumber' => $wooDecision->getDossierNumber(),
             'dateFrom' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'decision' => $wooDecision->getDecision()?->value,
@@ -2018,7 +2079,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         $data = [
             'title' => (string) $wooDecision->getTitle(),
-            'dossierNumber' => $wooDecision->getDossierNr(),
+            'dossierNumber' => $wooDecision->getDossierNumber(),
             'dateFrom' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'decision' => $wooDecision->getDecision()?->value,
@@ -2085,7 +2146,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         $data = [
             'title' => (string) $wooDecision->getTitle(),
-            'dossierNumber' => $wooDecision->getDossierNr(),
+            'dossierNumber' => $wooDecision->getDossierNumber(),
             'dateFrom' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'decision' => $wooDecision->getDecision()?->value,
@@ -2169,7 +2230,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         $data = [
             'title' => (string) $wooDecision->getTitle(),
-            'dossierNumber' => $wooDecision->getDossierNr(),
+            'dossierNumber' => $wooDecision->getDossierNumber(),
             'dateFrom' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'dateTo' => $wooDecision->getDateFrom()?->format('Y-m-d'),
             'decision' => $wooDecision->getDecision()?->value,
@@ -2501,7 +2562,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'uploadStatus' => UploadStatus::NO_UPLOAD_REQUIRED->value,
             'isUploaded' => false,
             'isWithdrawn' => false,
-            'documentNr' => $documentEntity->getDocumentNr(),
+            'documentNumber' => $documentEntity->getDocumentNumber(),
             'filename' => $documentData['fileName'],
             '_links' => [],
         ];

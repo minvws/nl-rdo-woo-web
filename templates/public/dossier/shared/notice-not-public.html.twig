@@ -1,0 +1,89 @@
+{% extends 'public/base.html.twig' %}
+
+{% import 'public/macros/document.html.twig' as macro %}
+
+{% set page_title = noticeNotPublic.title %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    <h1 class="woo-h1">
+        {{ page_title }}
+    </h1>
+
+    <dl class="woo-muted">
+        <dt class="sr-only">{{ 'global.dossiers.notice_not_public.formal_date' | trans }}: </dt>
+        <dd>
+            <time datetime="{{ noticeNotPublic.formalDate | date('Y-m-d') }}">{{ noticeNotPublic.formalDate | format_date('long') }}</time>
+        </dd>
+    </dl>
+
+    <div class="mt-10" data-e2e-name="notifications">
+        <twig:Public:Notification>
+            {% import 'public/macros/document.html.twig' as macro %}
+            <h2 class="sr-only">{{ 'public.documents.not_public' | trans }}</h2>
+
+            <div class="woo-rich-text">
+                <p>{{ 'public.dossiers.notice_not_public.notification' | trans }} {{ 'public.documents.reasons_are' | trans({'count': noticeNotPublic.grounds | length }) }}:</p>
+
+                <ul>
+                    {% for ground in noticeNotPublic.grounds %}
+                        <li>
+                            {{ macro.document_ground(ground) }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </twig:Public:Notification>
+    </div>
+
+    <div class="mt-16">
+        <h2 class="woo-h2 woo-h2-spacing">{{ 'public.dossiers.notice_not_public.about' | trans }}</h2>
+
+        <div class="woo-responsive-table">
+            <table class="woo-table">
+                <caption class="sr-only">
+                    {{ 'public.dossiers.notice_not_public.about' | trans }}
+                </caption>
+                <tbody>
+                    <tr>
+                        <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ 'public.dossiers.notice_not_public.date_original_document' | trans }}</th>
+                        <td>
+                            <twig:Date date="{{ noticeNotPublic.formalDate }}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">
+                            {{ 'global.grounds' | trans }}
+                        </th>
+                        <td class="woo-table-cell--wrap">
+                            <ul>
+                                {% for ground in noticeNotPublic.grounds %}
+                                    <li class="not-last:pb-1">{{ macro.document_ground(ground) }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    {% if noticeNotPublic.explanation is not empty %}
+                    <tr>
+                        <th class="woo-table-cell-light" scope="row">
+                            {{ 'global.dossiers.notice_not_public.explanation' | trans }}
+                        </th>
+                        <td class="woo-table-cell--wrap">
+                            {{ noticeNotPublic.explanation }}
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% set dossierDateHtml %}{% block dossier_date %}<twig:Date date="{{ dossier.date }}" />{% endblock %}{% endset %}
+    {% include 'public/dossier/shared/snippets/dossier-background.html.twig' with {
+        dateLabel: dateLabel | default('global.date' | trans),
+        dossier: dossier,
+        dossierDateHtml: dossierDateHtml,
+        urlToDossierPage: urlToDossierPage,
+    } %}
+</div>
+{% endblock %}

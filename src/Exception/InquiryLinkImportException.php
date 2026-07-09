@@ -8,13 +8,13 @@ use function implode;
 
 class InquiryLinkImportException extends TranslatableException
 {
-    public static function forMissingDocument(string $documentNr): self
+    public static function forMissingDocument(string $documentNumber): self
     {
         return new self(
-            "Document $documentNr does not exist",
-            'public.global.no_doc_number',
+            "Document $documentNumber does not exist",
+            'public.global.no_document_number',
             [
-                '{documentNr}' => $documentNr,
+                '{documentNumber}' => $documentNumber,
             ],
         );
     }

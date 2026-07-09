@@ -12,7 +12,7 @@ use Shared\Form\PlainDateType;
 use Shared\Form\Transformer\StringToDossierTitleTransformer;
 use Shared\Service\Security\Roles;
 use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
-use Shared\Validator\UniqueDossierNr;
+use Shared\Validator\UniqueDossierNumber;
 use Shared\ValueObject\PlainDate;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -80,12 +80,12 @@ final readonly class DossierForm
         }
     }
 
-    public function addDossierNrField(): void
+    public function addDossierNumberField(): void
     {
         $dossier = $this->getDossier();
 
         if ($dossier->getStatus()->isNewOrConcept() || $this->security->isGranted(Roles::ROLE_ORGANISATION_ADMIN)) {
-            $this->formBuilder->add('dossierNr', TextType::class, [
+            $this->formBuilder->add('dossierNumber', TextType::class, [
                 'label' => 'global.ref_number',
                 'required' => true,
                 'help' => 'admin.dossiers.form.details.ref_nr_help',
@@ -95,7 +95,7 @@ final readonly class DossierForm
                     'class' => 'bhr-input-text w-full',
                 ],
                 'constraints' => [
-                    new UniqueDossierNr(
+                    new UniqueDossierNumber(
                         documentPrefix: $dossier->getDocumentPrefix(),
                         excludeId: $dossier->getId(),
                         groups: [
@@ -122,6 +122,11 @@ final readonly class DossierForm
             'empty_data' => '',
             'property_path' => 'internalReference',
         ]);
+    }
+
+    public function addNoticeNotPublicField(): void
+    {
+        $this->formBuilder->add('noticeNotPublic', NoticeNotPublicType::class);
     }
 
     public function addPublicationDateField(): void
@@ -179,6 +184,7 @@ final readonly class DossierForm
                 'label' => 'global.save_and_continue',
                 'attr' => [
                     'data-first-button' => true,
+                    'data-e2e-name' => 'save-and-continue',
                 ],
                 'row_attr' => [
                     'class' => 'pt-0',

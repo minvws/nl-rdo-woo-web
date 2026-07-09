@@ -12,7 +12,7 @@ readonly class DossierReference
     private DossierType $type;
 
     public function __construct(
-        private string $dossierNr,
+        private string $dossierNumber,
         private string $documentPrefix,
         private DossierTitle $title,
         DossierType|string $type,
@@ -23,16 +23,16 @@ readonly class DossierReference
     public static function fromEntity(AbstractDossier $dossier): self
     {
         return new self(
-            $dossier->getDossierNr(),
+            $dossier->getDossierNumber(),
             $dossier->getDocumentPrefix(),
             $dossier->getTitle(),
             $dossier->getType(),
         );
     }
 
-    public function getDossierNr(): string
+    public function getDossierNumber(): string
     {
-        return $this->dossierNr;
+        return $this->dossierNumber;
     }
 
     public function getDocumentPrefix(): string

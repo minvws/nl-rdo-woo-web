@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Dossier\OtherPublication\OtherPublicationResource;
 use PublicationApi\Api\Dossier\OtherPublication\Uploads\Attachment\OtherPublicationUploadAttachmentResource;
 use PublicationApi\Api\Dossier\OtherPublication\Uploads\MainDocument\OtherPublicationUploadMainDocumentResource;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Controller\Public\Dossier\DossierFileController;
@@ -16,8 +17,10 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
@@ -29,6 +32,8 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
+use Shared\Tests\Factory\Publication\Dossier\NoticeNotPublic\NoticeNotPublicFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication\OtherPublicationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocumentFactory;
@@ -71,8 +76,13 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
 
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
-        self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $otherPublication->getExternalId()?->toString()]]);
+        $data = $result->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(1, $items);
+        self::assertJsonContains(['items' => [['externalId' => $otherPublication->getExternalId()?->toString()]]]);
     }
 
     public function testGetOtherPublication(): void
@@ -97,6 +107,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
 
         self::assertResponseIsSuccessful();
 
+        $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
         $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
@@ -106,7 +117,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                 'id' => $organisation->getId()->toString(),
                 'name' => $organisation->getName(),
             ],
-            'dossierNumber' => $otherPublication->getDossierNr(),
+            'dossierNumber' => $otherPublication->getDossierNumber(),
             'title' => (string) $otherPublication->getTitle(),
             'summary' => $otherPublication->getSummary(),
             'subject' => [
@@ -129,7 +140,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                 'uploadStatus' => UploadStatus::PROCESSED->value,
                 '_links' => [
                     'upload' => [
-                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                        'href' => $apiUrlGenerator->buildUrlFromRoute(
                             OtherPublicationUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
                             [
                                 'organisationId' => $otherPublication->getOrganisation()->getId(),
@@ -143,7 +154,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                             [
                                 'prefix' => $otherPublication->getDocumentPrefix(),
-                                'dossierId' => $otherPublication->getDossierNr(),
+                                'dossierNumber' => $otherPublication->getDossierNumber(),
                                 'type' => DossierFileType::MAIN_DOCUMENT->value,
                                 'id' => $otherPublicationMainDocument->getId(),
                             ],
@@ -151,6 +162,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                     ],
                 ],
             ],
+            'noticeNotPublic' => null,
             'attachments' => [
                 [
                     'id' => (string) $otherPublicationAttachment->getId(),
@@ -163,7 +175,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                     '_links' => [
                         'upload' => [
-                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            'href' => $apiUrlGenerator->buildUrlFromRoute(
                                 OtherPublicationUploadAttachmentResource::ROUTE_NAME_UPLOAD,
                                 [
                                     'organisationId' => $otherPublication->getOrganisation()->getId(),
@@ -178,7 +190,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                                 [
                                     'prefix' => $otherPublication->getDocumentPrefix(),
-                                    'dossierId' => $otherPublication->getDossierNr(),
+                                    'dossierNumber' => $otherPublication->getDossierNumber(),
                                     'type' => DossierFileType::ATTACHMENT->value,
                                     'id' => $otherPublicationAttachment->getId(),
                                 ],
@@ -189,7 +201,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
             ],
             'dossierDate' => $otherPublication->getDateFrom()?->format('Y-m-d'),
             '_links' => [
-                'self' => ['href' => $this->buildPublicUrl($organisation, $otherPublication)],
+                'self' => ['href' => $this->buildApiUrl($organisation, $otherPublication)],
                 'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($otherPublication)],
             ],
         ];
@@ -266,11 +278,12 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         self::assertDatabaseCount(OtherPublication::class, 1);
     }
 
-    public function testCreateOtherPublicationWithoutMainDocument(): void
+    public function testCreateOtherPublicationWithoutMainDocumentNorNotice(): void
     {
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(OtherPublication::class, 0);
 
@@ -279,8 +292,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => [[
-            'code' => Type::INVALID_TYPE_ERROR,
-            'propertyPath' => 'mainDocument',
+            'message' => 'A dossier must contain at least a main document or a notice not public',
         ], ]]);
     }
 
@@ -311,6 +323,27 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
 
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, str_repeat('x', 129)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testCreateOtherPublicationWithExternalIdAlreadyUsedByComplaintJudgementReturnsConflict(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        $data = $this->createValidOtherPublicationDataPayload($department, $subject, 1);
+        $externalId = $this->getFaker()->externalId();
+        ComplaintJudgementFactory::createOne([
+            'externalId' => $externalId,
+            'organisation' => $organisation,
+            'departments' => [$department],
+            'subject' => $subject,
+        ]);
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $externalId), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertJsonContains(['detail' => 'ExternalId already in use by type complaint-judgement']);
     }
 
     /**
@@ -451,7 +484,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         self::assertMatchesResourceItemJsonSchema(OtherPublicationResource::class);
 
         self::assertDatabaseHas(OtherPublication::class, [
-            'dossierNr' => $data['dossierNumber'],
+            'dossierNumber' => $data['dossierNumber'],
             'documentPrefix' => $otherPublication->getDocumentPrefix(),
             'summary' => $data['summary'],
             'title' => $data['title'],
@@ -602,7 +635,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
 
         $data = [
             'title' => (string) $otherPublication->getTitle(),
-            'dossierNumber' => $otherPublication->getDossierNr(),
+            'dossierNumber' => $otherPublication->getDossierNumber(),
             'dossierDate' => $otherPublication->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $otherPublication->getPublicationDate()?->format('Y-m-d'),
             'summary' => $otherPublication->getSummary(),
@@ -658,7 +691,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
 
         $data = [
             'title' => (string) $otherPublication->getTitle(),
-            'dossierNumber' => $otherPublication->getDossierNr(),
+            'dossierNumber' => $otherPublication->getDossierNumber(),
             'dossierDate' => $otherPublication->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $otherPublication->getPublicationDate()?->format('Y-m-d'),
             'summary' => $otherPublication->getSummary(),
@@ -713,7 +746,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
 
         $data = [
             'title' => (string) $otherPublication->getTitle(),
-            'dossierNumber' => $otherPublication->getDossierNr(),
+            'dossierNumber' => $otherPublication->getDossierNumber(),
             'dossierDate' => $otherPublication->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $otherPublication->getPublicationDate()?->format('Y-m-d'),
             'summary' => $otherPublication->getSummary(),
@@ -784,7 +817,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
 
         $data = [
             'title' => (string) $otherPublication->getTitle(),
-            'dossierNumber' => $otherPublication->getDossierNr(),
+            'dossierNumber' => $otherPublication->getDossierNumber(),
             'dossierDate' => $otherPublication->getDateFrom()?->format('Y-m-d'),
             'publicationDate' => $otherPublication->getPublicationDate()?->format('Y-m-d'),
             'summary' => $otherPublication->getSummary(),
@@ -821,5 +854,167 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         self::assertDatabaseMissing(OtherPublicationAttachment::class, [
             'id' => $attachment2->getId(),
         ]);
+    }
+
+    public function testCreateOtherPublicationWithBothMainDocumentAndNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(OtherPublication::class, 0);
+
+        $data = $this->createValidOtherPublicationDataPayload($department, $subject, 0);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'message' => 'A dossier cannot have both a main document and a notice not public',
+        ]]]);
+
+        self::assertDatabaseCount(OtherPublication::class, 0);
+    }
+
+    public function testCreateOtherPublicationWithNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(OtherPublication::class, 0);
+
+        $data = $this->createValidOtherPublicationDataPayload($department, $subject, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'documentName' => $this->getFaker()->sentence(),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'explanation' => $this->getFaker()->sentence(),
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+        self::assertMatchesResourceItemJsonSchema(OtherPublicationResource::class);
+        self::assertDatabaseCount(OtherPublication::class, 1);
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+    }
+
+    public function testCreateOtherPublicationWithNoticeNotPublicAndEmptyGrounds(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(OtherPublication::class, 0);
+
+        $data = $this->createValidOtherPublicationDataPayload($department, $subject, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'grounds' => [],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        self::assertDatabaseCount(OtherPublication::class, 0);
+    }
+
+    public function testCreateOtherPublicationWithNoticeNotPublicAndMissingFormalDate(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(OtherPublication::class, 0);
+
+        $data = $this->createValidOtherPublicationDataPayload($department, $subject, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        self::assertDatabaseCount(OtherPublication::class, 0);
+    }
+
+    public function testUpdateOtherPublicationTransitionsFromMainDocumentToNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $otherPublication = OtherPublicationFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        $mainDocument = OtherPublicationMainDocumentFactory::createOne(['dossier' => $otherPublication]);
+        $mainDocumentId = $mainDocument->getId();
+
+        self::assertDatabaseHas(OtherPublicationMainDocument::class, [
+            'id' => $mainDocumentId,
+        ]);
+        self::assertDatabaseCount(NoticeNotPublic::class, 0);
+
+        $data = $this->createValidOtherPublicationDataPayload($department, null, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'documentName' => $this->getFaker()->sentence(),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'explanation' => $this->getFaker()->sentence(),
+        ];
+
+        $response = self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $otherPublication), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        $responseData = $response->toArray();
+        self::assertNull($responseData['mainDocument']);
+        self::assertNotNull($responseData['noticeNotPublic']);
+        $responseNoticeNotPublic = $responseData['noticeNotPublic'];
+        self::assertIsArray($responseNoticeNotPublic);
+        self::assertEquals($data['noticeNotPublic']['formalDate'], $responseNoticeNotPublic['formalDate']);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+        self::assertDatabaseMissing(OtherPublicationMainDocument::class, [
+            'id' => $mainDocumentId,
+        ]);
+    }
+
+    public function testUpdateOtherPublicationTransitionsFromNoticeNotPublicToMainDocument(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $otherPublication = OtherPublicationFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        NoticeNotPublicFactory::createOne(['dossier' => $otherPublication]);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+        self::assertDatabaseCount(OtherPublicationMainDocument::class, 0);
+
+        $data = $this->createValidOtherPublicationDataPayload($department, null, 0);
+        unset($data['noticeNotPublic']);
+
+        $response = self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $otherPublication), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        $responseData = $response->toArray();
+        self::assertNotNull($responseData['mainDocument']);
+        self::assertNull($responseData['noticeNotPublic']);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 0);
+        self::assertDatabaseCount(OtherPublicationMainDocument::class, 1);
     }
 }

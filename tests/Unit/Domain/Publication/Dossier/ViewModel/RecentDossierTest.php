@@ -17,7 +17,7 @@ final class RecentDossierTest extends UnitTestCase
     public function testCreate(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
-        $dossier->expects('getDossierNr')->andReturn($dossierNr = 'foo-123');
+        $dossier->expects('getDossierNumber')->andReturn($dossierNumber = 'foo-123');
         $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'BAR');
         $dossier->expects('getTitle')->andReturn($title = DossierTitle::create('foo bar baz'));
         $dossier->expects('getType')->andReturn($type = DossierType::COVENANT);
@@ -25,7 +25,7 @@ final class RecentDossierTest extends UnitTestCase
 
         $viewmodel = RecentDossier::create($dossier);
 
-        self::assertEquals($dossierNr, $viewmodel->reference->getDossierNr());
+        self::assertEquals($dossierNumber, $viewmodel->reference->getDossierNumber());
         self::assertEquals($title, $viewmodel->reference->getTitle());
         self::assertEquals($prefix, $viewmodel->reference->getDocumentPrefix());
         self::assertEquals($type, $viewmodel->reference->getType());

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Shared\Service\Inventory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -16,6 +19,8 @@ use Shared\Service\Inventory\Progress\ProgressUpdater;
 use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Shared\Service\Logging\LoggingHelper;
+use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 /**
  * This class will process an inventory and generates document entities from the given data.
@@ -27,6 +32,7 @@ readonly class InventoryRunProcessor
 
     public function __construct(
         private EntityManagerInterface $doctrine,
+        private ManagerRegistry $managerRegistry,
         private LoggerInterface $logger,
         private LoggingHelper $loggingHelper,
         private InventoryComparator $inventoryComparator,
@@ -40,10 +46,13 @@ readonly class InventoryRunProcessor
     /**
      * Process an initial inventory file and attach found documents to the dossier.
      *
-     * @throws RuntimeException
+     * @throws OptimisticLockException
+     * @throws ORMException
      */
     public function process(ProductionReportProcessRun $run): void
     {
+        $caughtException = null;
+
         try {
             $this->loggingHelper->disableAll();
 
@@ -61,6 +70,8 @@ readonly class InventoryRunProcessor
                 $exception = ProcessInventoryException::forOtherException($exception);
             }
 
+            $caughtException = $exception;
+
             $run->addGenericException($exception);
             $run->fail();
 
@@ -69,6 +80,7 @@ readonly class InventoryRunProcessor
                 'ProductionReportProcessRun failed. See the ProductionReportProcessRun table for more details on the failure including the exception.',
                 [
                     'uuid' => $run->getId(),
+                    'exception' => $exception,
                 ],
             );
         } finally {
@@ -79,8 +91,36 @@ readonly class InventoryRunProcessor
             if ($this->doctrine->isOpen()) {
                 $this->doctrine->persist($run);
                 $this->doctrine->flush();
+
+                return;
             }
+
+            $this->failRunWithFreshManager($run->getId(), $caughtException);
         }
+    }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    private function failRunWithFreshManager(Uuid $runId, ?TranslatableException $exception): void
+    {
+        $manager = $this->managerRegistry->resetManager();
+        Assert::isInstanceOf($manager, EntityManagerInterface::class);
+
+        $run = $manager->find(ProductionReportProcessRun::class, $runId);
+        if (! $run instanceof ProductionReportProcessRun) {
+            return;
+        }
+
+        if (! $exception instanceof TranslatableException) {
+            $exception = ProcessInventoryException::forProcessingFailed();
+        }
+
+        $run->addGenericException($exception);
+        $run->fail();
+
+        $manager->flush();
     }
 
     private function processComparison(ProductionReportProcessRun $run, InventoryReaderInterface $inventoryReader): void
@@ -130,7 +170,7 @@ readonly class InventoryRunProcessor
         $this->inventoryService->removeInventories($dossier);
         $this->doctrine->flush();
 
-        $this->inventoryUpdater->applyChangesetToDatabase($dossier, $inventoryReader, $changeset, $runProgress);
+        $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $inventoryReader, $changeset, $runProgress);
 
         $this->inventoryService->storeProductionReport($run);
         $this->doctrine->persist($dossier);

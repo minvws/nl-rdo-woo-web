@@ -12,7 +12,10 @@
                     {{ documentType | default(dossier.type | trans | capitalize) }}
                 </th>
                 <td>
-                    <a class="woo-a" href="{{ document.detailsUrl }}">{{ document.name }}</a> <span>({{ document.sourceType | trans }}, {{ document.size | size }})</span>
+                    <twig:Public:Publication:DocumentOrNoticeNotPublic
+                        document="{{ document }}"
+                        noticeNotPublic="{{ noticeNotPublic }}"
+                    />
                 </td>
             </tr>
             <tr>

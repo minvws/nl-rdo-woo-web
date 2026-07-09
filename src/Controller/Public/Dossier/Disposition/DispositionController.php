@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Shared\Controller\Public\Dossier\Disposition;
 
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
+use InvalidArgumentException;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\ViewModel\NoticeNotPublicViewFactory;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
+use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\Disposition\ViewModel\DispositionViewFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
@@ -29,45 +32,87 @@ class DispositionController extends AbstractController
         private readonly AttachmentViewFactory $attachmentViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
         private readonly DossierFileViewFactory $dossierFileViewFactory,
+        private readonly DispositionMainDocumentRepository $dispositionMainDocumentRepository,
+        private readonly NoticeNotPublicViewFactory $noticeNotPublicViewFactory,
     ) {
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/beschikking/{prefix}/{dossierId}', name: 'app_disposition_detail', methods: ['GET'])]
+    #[Route('/beschikking/{prefix}/{dossierNumber}', name: 'app_disposition_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] Disposition $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        DispositionMainDocument $document,
         Breadcrumbs $breadcrumbs,
+        string $prefix,
     ): Response {
-        $breadcrumbs->addRouteItem('Home', 'app_home');
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem(mb_ucfirst((string) $dossier->getTitle()));
 
-        return $this->render('public/dossier/disposition/details.html.twig', [
+        $parameters = [
             'dossier' => $this->viewFactory->make($dossier),
             'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
-            'document' => $this->mainDocumentViewFactory->make($dossier, $document),
+        ];
+
+        $document = $this->dispositionMainDocumentRepository->findForDossierByPrefixAndDossierNumber($prefix, $dossier->getDossierNumber());
+        $noticeNotPublic = $dossier->getNoticeNotPublic();
+
+        if ($document === null && $noticeNotPublic === null) {
+            throw new InvalidArgumentException('either mainDocument or NoticeNotPublic must be set');
+        }
+
+        if ($document !== null) {
+            $parameters['document'] = $this->mainDocumentViewFactory->make($dossier, $document);
+            $parameters['noticeNotPublic'] = null;
+        } else {
+            $parameters['document'] = null;
+            $parameters['noticeNotPublic'] = $this->noticeNotPublicViewFactory->make($dossier);
+        }
+
+        return $this->render('public/dossier/disposition/details.html.twig', $parameters);
+    }
+
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
+    #[Route(
+        '/beschikking/{prefix}/{dossierNumber}/mededeling-niet-openbaar',
+        name: 'app_disposition_notice_not_public_detail',
+        methods: ['GET'],
+    )]
+    public function noticeNotPublicDetail(
+        #[ValueResolver('dossierWithAccessCheck')] Disposition $dossier,
+        Breadcrumbs $breadcrumbs,
+    ): Response {
+        $noticeNotPublicViewModel = $this->noticeNotPublicViewFactory->make($dossier);
+
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
+        $breadcrumbs->addRouteItem('dossier.type.disposition', 'app_disposition_detail', [
+            'prefix' => $dossier->getDocumentPrefix(),
+            'dossierNumber' => $dossier->getDossierNumber(),
+        ]);
+        $breadcrumbs->addItem($noticeNotPublicViewModel->title);
+
+        return $this->render('public/dossier/disposition/notice-not-public.html.twig', [
+            'dossier' => $this->viewFactory->make($dossier),
+            'noticeNotPublic' => $noticeNotPublicViewModel,
         ]);
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/beschikking/{prefix}/{dossierId}/document',
+        '/beschikking/{prefix}/{dossierNumber}/document',
         name: 'app_disposition_document_detail',
         methods: ['GET'],
     )]
     public function documentDetail(
         #[ValueResolver('dossierWithAccessCheck')] Disposition $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber)')]
         DispositionMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $mainDocumentViewModel = $this->mainDocumentViewFactory->make($dossier, $document);
 
-        $breadcrumbs->addRouteItem('Home', 'app_home');
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('dossier.type.disposition', 'app_disposition_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
         ]);
         $breadcrumbs->addItem(mb_ucfirst((string) $dossier->getTitle()));
 
@@ -85,22 +130,22 @@ class DispositionController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/beschikking/{prefix}/{dossierId}/bijlage/{attachmentId}',
+        '/beschikking/{prefix}/{dossierNumber}/bijlage/{attachmentId}',
         name: 'app_disposition_attachment_detail',
         methods: ['GET'],
     )]
     public function attachmentDetail(
         #[ValueResolver('dossierWithAccessCheck')] Disposition $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber, attachmentId)')]
         DispositionAttachment $attachment,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $attachmentViewModel = $this->attachmentViewFactory->make($dossier, $attachment);
 
-        $breadcrumbs->addRouteItem('Home', 'app_home');
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('dossier.type.disposition', 'app_disposition_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
         ]);
         $breadcrumbs->addItem(mb_ucfirst((string) $dossier->getTitle()));
 

@@ -12,14 +12,15 @@ get {
 
 script:post-response {
   const data = res.getBody();
+  const items = data.items;
   
-  const dept = data.find(item => item.name === "E2E Test Department 1");
+  const dept = items.find(item => item.name === "E2E Test Department 1");
   
   if (dept) {
-    bru.setEnvVar("departmentId", dept.id);
-  } else if (data.length > 0) {
+    bru.setVar("departmentId", dept.id);
+  } else if (items.length > 0) {
     console.warn('Set the first department found instead of "E2E Test Department 1"');
-    bru.setEnvVar("departmentId", data[0].id);
+    bru.setVar("departmentId", items[0].id);
   } else {
     throw new Error("E2E Test Department 1 not found, variable could not be set");
   }

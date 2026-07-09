@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use Mockery;
 use Mockery\MockInterface;
+use PublicationApi\Api\Organisation\OrganisationResolver;
+use PublicationApi\Api\Organisation\OrganisationResolverInterface;
 use PublicationApi\Api\Subject\SubjectCreateDto;
 use PublicationApi\Api\Subject\SubjectDetailResponse;
 use PublicationApi\Api\Subject\SubjectProcessor;
@@ -16,7 +18,6 @@ use PublicationApi\Api\Subject\SubjectUpdateDto;
 use PublicationApi\Domain\Exception\ResourceInUseException;
 use PublicationApi\Domain\Validator\EntityValidator;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Domain\Publication\Subject\SubjectService;
@@ -25,7 +26,7 @@ use Symfony\Component\Uid\Uuid;
 
 class SubjectProcessorTest extends UnitTestCase
 {
-    private OrganisationRepository&MockInterface $organisationRepository;
+    private OrganisationResolverInterface&MockInterface $organisationResolver;
     private SubjectRepository&MockInterface $subjectRepository;
     private SubjectService&MockInterface $subjectService;
     private EntityValidator&MockInterface $validator;
@@ -33,13 +34,13 @@ class SubjectProcessorTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        $this->organisationRepository = Mockery::mock(OrganisationRepository::class);
         $this->subjectRepository = Mockery::mock(SubjectRepository::class);
         $this->subjectService = Mockery::mock(SubjectService::class);
         $this->validator = Mockery::mock(EntityValidator::class);
+        $this->organisationResolver = Mockery::mock(OrganisationResolver::class);
 
         $this->processor = new SubjectProcessor(
-            $this->organisationRepository,
+            $this->organisationResolver,
             $this->subjectRepository,
             $this->subjectService,
             $this->validator,
@@ -51,11 +52,12 @@ class SubjectProcessorTest extends UnitTestCase
     public function testCreateProcessesSuccessfully(): void
     {
         $organisationId = Uuid::v6();
+        $uriVariables = ['organisationId' => $organisationId];
         $organisation = Mockery::mock(Organisation::class);
         $organisation->expects('getId')->andReturn($organisationId);
         $organisation->expects('getName')->andReturn('Test organisation');
 
-        $this->organisationRepository->expects('find')->with($organisationId)->andReturn($organisation);
+        $this->organisationResolver->expects('resolve')->with($uriVariables)->andReturn($organisation);
 
         $dto = new SubjectCreateDto('Test subject');
 
@@ -70,10 +72,11 @@ class SubjectProcessorTest extends UnitTestCase
     public function testUpdateProcessesSuccessfully(): void
     {
         $organisationId = Uuid::v6();
+        $subjectId = Uuid::v6();
+        $uriVariables = ['organisationId' => $organisationId, 'subjectId' => $subjectId];
         $organisation = Mockery::mock(Organisation::class);
         $organisation->expects('getId')->andReturn($organisationId);
         $organisation->expects('getName')->andReturn('Test organisation');
-        $subjectId = Uuid::v6();
 
         $subject = Mockery::mock(Subject::class);
         $subject->expects('setName')->with('Updated name')->andReturnSelf();
@@ -81,7 +84,7 @@ class SubjectProcessorTest extends UnitTestCase
         $subject->expects('getId')->andReturn($subjectId);
         $subject->expects('getName')->andReturn('Updated name');
 
-        $this->organisationRepository->expects('find')->with($organisationId)->andReturn($organisation);
+        $this->organisationResolver->expects('resolve')->with($uriVariables)->andReturn($organisation);
         $this->subjectRepository->expects('find')->with($subjectId)->andReturn($subject);
 
         $this->validator->expects('throwExceptionIfNotValid')->with($subject);
@@ -98,10 +101,11 @@ class SubjectProcessorTest extends UnitTestCase
     {
         $organisationId = Uuid::v6();
         $subjectId = Uuid::v6();
+        $uriVariables = ['organisationId' => $organisationId, 'subjectId' => $subjectId];
 
         $subject = Mockery::mock(Subject::class);
 
-        $this->organisationRepository->expects('find')->with($organisationId)->andReturn(Mockery::mock(Organisation::class));
+        $this->organisationResolver->expects('resolve')->with($uriVariables)->andReturn(Mockery::mock(Organisation::class));
         $this->subjectRepository->expects('find')->with($subjectId)->andReturn($subject);
         $this->subjectRepository->expects('isInUse')->with($subject)->andReturn(false);
         $this->subjectRepository->expects('remove')->with($subject, true);
@@ -120,10 +124,11 @@ class SubjectProcessorTest extends UnitTestCase
     {
         $organisationId = Uuid::v6();
         $subjectId = Uuid::v6();
+        $uriVariables = ['organisationId' => $organisationId, 'subjectId' => $subjectId];
 
         $subject = Mockery::mock(Subject::class);
 
-        $this->organisationRepository->expects('find')->with($organisationId)->andReturn(Mockery::mock(Organisation::class));
+        $this->organisationResolver->expects('resolve')->with($uriVariables)->andReturn(Mockery::mock(Organisation::class));
         $this->subjectRepository->expects('find')->with($subjectId)->andReturn($subject);
         $this->subjectRepository->expects('isInUse')->with($subject)->andReturn(true);
         $this->subjectRepository->expects('remove')->never();

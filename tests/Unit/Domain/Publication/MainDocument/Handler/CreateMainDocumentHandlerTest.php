@@ -10,6 +10,9 @@ use Mockery\MockInterface;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicAlreadyExistsException;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentRepository;
@@ -39,6 +42,7 @@ class CreateMainDocumentHandlerTest extends UnitTestCase
     private DossierWorkflowManager&MockInterface $dossierWorkflowManager;
     private CreateMainDocumentHandler $handler;
     private DossierRepository&MockInterface $dossierRepository;
+    private NoticeNotPublicRepository&MockInterface $noticeNotPublicRepository;
     private ValidatorInterface&MockInterface $validator;
     private EntityUploadStorer&MockInterface $uploadStorer;
 
@@ -49,6 +53,7 @@ class CreateMainDocumentHandlerTest extends UnitTestCase
         $this->dossierRepository = Mockery::mock(DossierRepository::class);
         $this->messageBus = Mockery::mock(MessageBusInterface::class);
         $this->dossierWorkflowManager = Mockery::mock(DossierWorkflowManager::class);
+        $this->noticeNotPublicRepository = Mockery::mock(NoticeNotPublicRepository::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
         $this->uploadStorer = Mockery::mock(EntityUploadStorer::class);
 
@@ -57,6 +62,7 @@ class CreateMainDocumentHandlerTest extends UnitTestCase
             $this->dossierWorkflowManager,
             $this->entityManager,
             $this->dossierRepository,
+            $this->noticeNotPublicRepository,
             $this->validator,
             $this->uploadStorer,
         );
@@ -81,6 +87,7 @@ class CreateMainDocumentHandlerTest extends UnitTestCase
             ->andReturn($this->annualReportDocumentRepository);
 
         $this->dossierRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
+        $this->noticeNotPublicRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturnNull();
 
         $formalDate = PlainDate::today();
         $internalReference = 'foo bar';
@@ -168,6 +175,37 @@ class CreateMainDocumentHandlerTest extends UnitTestCase
         );
     }
 
+    public function testExceptionIsThrownWhenNoticeNotPublicExists(): void
+    {
+        $dossierId = Uuid::fromString($this->getFaker()->uuid());
+
+        $dossier = Mockery::mock(AnnualReport::class);
+        $dossier->expects('getMainDocument')
+            ->andReturnNull();
+
+        $noticeNotPublic = Mockery::mock(NoticeNotPublic::class);
+
+        $this->dossierRepository->expects('findOneByDossierId')
+            ->with($dossierId)
+            ->andReturn($dossier);
+        $this->noticeNotPublicRepository->expects('findOneByDossierId')
+            ->with($dossierId)
+            ->andReturn($noticeNotPublic);
+
+        $this->expectException(NoticeNotPublicAlreadyExistsException::class);
+        $this->handler->__invoke(
+            new CreateMainDocumentCommand(
+                $dossierId,
+                $this->getFaker()->plainDate(),
+                $this->getFaker()->word(),
+                $this->getFaker()->randomEnum(AttachmentType::class),
+                $this->getFaker()->randomEnum(AttachmentLanguage::class),
+                [$this->getFaker()->word(), $this->getFaker()->word()],
+                $this->getFaker()->uuid(),
+            ),
+        );
+    }
+
     public function testExceptionIsThrownWhenValidatorHasErrors(): void
     {
         $uploadFileReference = 'file-' . Uuid::v6();
@@ -205,6 +243,7 @@ class CreateMainDocumentHandlerTest extends UnitTestCase
         $this->annualReportDocumentRepository->expects('create')->with($dossier, $command)->andReturn($mainDocument);
 
         $this->dossierRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
+        $this->noticeNotPublicRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturnNull();
 
         $validatorList = Mockery::mock(ConstraintViolationListInterface::class);
         $validatorList->expects('count')->andReturn(2);

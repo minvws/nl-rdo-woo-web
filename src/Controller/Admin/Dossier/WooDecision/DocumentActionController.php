@@ -30,7 +30,7 @@ class DocumentActionController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/document/withdraw/{prefix}/{dossierId}/{documentId}',
+        path: '/balie/dossier/woodecision/document/withdraw/{prefix}/{dossierNumber}/{documentNumber}',
         name: 'app_admin_dossier_woodecision_document_withdraw',
         methods: ['GET', 'POST'],
     )]
@@ -38,24 +38,24 @@ class DocumentActionController extends AbstractController
     public function withdraw(
         Breadcrumbs $breadcrumbs,
         Request $request,
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
-        #[MapEntity(expr: 'repository.findOneByDossierNrAndDocumentNr(prefix, dossierId,documentId)')] Document $document,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
+        #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(prefix, dossierNumber, documentNumber)')] Document $document,
     ): Response {
         $breadcrumbs->addRouteItem(
-            $dossier->getDossierNr(),
+            $dossier->getDossierNumber(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addRouteItem(
             'Documenten',
             'app_admin_dossier_woodecision_documents_edit',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
-        $breadcrumbs->addRouteItem(
-            $document->getDocumentNr(),
-            'app_admin_dossier_woodecision_document',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr(), 'documentId' => $document->getDocumentNr()],
-        );
+        $breadcrumbs->addRouteItem($document->getDocumentNumber(), 'app_admin_dossier_woodecision_document', [
+            'prefix' => $dossier->getDocumentPrefix(),
+            'dossierNumber' => $dossier->getDossierNumber(),
+            'documentNumber' => $document->getDocumentNumber(),
+        ]);
         $breadcrumbs->addItem('admin.dossiers.woo-decision.step.withdraw_document');
 
         $form = $this->createForm(WithdrawDocumentFormType::class);
@@ -68,8 +68,8 @@ class DocumentActionController extends AbstractController
         if ($cancelButton->isClicked()) {
             return $this->redirectToRoute('app_admin_dossier_woodecision_document', [
                 'prefix' => $dossier->getDocumentPrefix(),
-                'dossierId' => $dossier->getDossierNr(),
-                'documentId' => $document->getDocumentNr(),
+                'dossierNumber' => $dossier->getDossierNumber(),
+                'documentNumber' => $document->getDocumentNumber(),
             ]);
         }
 
@@ -91,8 +91,8 @@ class DocumentActionController extends AbstractController
                 'app_admin_dossier_woodecision_document',
                 [
                     'prefix' => $dossier->getDocumentPrefix(),
-                    'dossierId' => $dossier->getDossierNr(),
-                    'documentId' => $document->getDocumentNr(),
+                    'dossierNumber' => $dossier->getDossierNumber(),
+                    'documentNumber' => $document->getDocumentNumber(),
                 ],
             );
         }

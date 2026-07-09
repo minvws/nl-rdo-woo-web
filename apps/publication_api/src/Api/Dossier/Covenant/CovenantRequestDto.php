@@ -6,12 +6,19 @@ namespace PublicationApi\Api\Dossier\Covenant;
 
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use PublicationApi\Api\Dossier\AbstractDossierRequestDto;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
+use Shared\Validator\ExactlyOneOf\ExactlyOneOf;
 use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ExactlyOneOf(
+    properties: ['mainDocument', 'noticeNotPublic'],
+    noneMessage: 'dossier.document_or_notice_required',
+    multipleMessage: 'dossier.document_and_notice_not_allowed',
+)]
 class CovenantRequestDto extends AbstractDossierRequestDto
 {
     /**
@@ -20,7 +27,6 @@ class CovenantRequestDto extends AbstractDossierRequestDto
      */
     public function __construct(
         public Uuid $departmentId,
-        public CovenantMainDocumentRequestDto $mainDocument,
         public ?Uuid $subjectId,
         public string $summary,
         public DossierTitle $title,
@@ -46,6 +52,10 @@ class CovenantRequestDto extends AbstractDossierRequestDto
         public array $parties,
         #[Assert\Url(requireTld: true)]
         public string $previousVersionLink = '',
+        #[Assert\Valid]
+        public ?CovenantMainDocumentRequestDto $mainDocument = null,
+        #[Assert\Valid]
+        public ?NoticeNotPublicRequestDto $noticeNotPublic = null,
     ) {
         parent::__construct(
             $departmentId,

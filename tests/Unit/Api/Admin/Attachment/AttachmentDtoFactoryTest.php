@@ -35,7 +35,7 @@ final class AttachmentDtoFactoryTest extends UnitTestCase
     {
         $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->expects('getDocumentPrefix')->andReturn($prefix = 'FOO');
-        $wooDecision->expects('getDossierNr')->andReturn($dossierNr = 'BAR-123');
+        $wooDecision->expects('getDossierNumber')->andReturn($dossierNumber = 'BAR-123');
         $wooDecision->expects('getId')->andReturn(Uuid::fromString('00000000-0000-0000-0000-000000000001'));
 
         $attachment = Mockery::mock(WooDecisionAttachment::class);
@@ -53,7 +53,7 @@ final class AttachmentDtoFactoryTest extends UnitTestCase
         $this->urlGenerator->expects('generate')
             ->with('app_admin_dossier_attachment_withdraw', [
                 'prefix' => $prefix,
-                'dossierId' => $dossierNr,
+                'dossierNumber' => $dossierNumber,
                 'attachmentId' => $attachmentId,
             ])
             ->andReturn('/foo/bar');

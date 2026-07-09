@@ -39,7 +39,7 @@ readonly class AttachmentDtoFactory
                 'app_admin_dossier_attachment_withdraw',
                 [
                     'prefix' => $entity->getDossier()->getDocumentPrefix(),
-                    'dossierId' => $entity->getDOssier()->getDossierNr(),
+                    'dossierNumber' => $entity->getDOssier()->getDossierNumber(),
                     'attachmentId' => $entity->getId(),
                 ],
             ),

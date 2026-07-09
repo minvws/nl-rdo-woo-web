@@ -17,12 +17,11 @@ Fill Out Covenant Details
   [Arguments]  ${has_attachment}=${FALSE}
   Select First Party, Option 1
   Select Second Party, Option 1
-  ${random_summary} =  Fakerlibrary.Text  200
-  Fill Text  id=content_form_summary  ${random_summary}
+  Fill Out Summary
   Click  " Convenant toevoegen... "
   Upload Covenant  ${FILE_LOCATION}
   IF  ${has_attachment}  Upload Attachment  staatsblad
-  Click  "Opslaan en verder"
+  Click Save And Continue
 
 Select First Party, Option 1
   Click  //input[@name="content_form[parties][0]"]

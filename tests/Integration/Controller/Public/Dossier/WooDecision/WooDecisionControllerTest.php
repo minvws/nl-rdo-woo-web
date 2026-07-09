@@ -15,18 +15,18 @@ use function sprintf;
 
 final class WooDecisionControllerTest extends SharedWebTestCase
 {
-    public function testDossierNrChangeHistoryIsDisplayedOnPublicPage(): void
+    public function testDossierNumberChangeHistoryIsDisplayedOnPublicPage(): void
     {
         $client = static::createClient();
 
-        $oldDossierNr = self::getFaker()->uuid();
-        $newDossierNr = self::getFaker()->uuid();
+        $oldDossierNumber = self::getFaker()->uuid();
+        $newDossierNumber = self::getFaker()->uuid();
 
         $department = DepartmentFactory::new();
         $mainDocument = WooDecisionMainDocumentFactory::createOne();
         $dossier = WooDecisionFactory::createOne([
             'departments' => [$department],
-            'dossierNr' => $newDossierNr,
+            'dossierNumber' => $newDossierNumber,
             'status' => DossierStatus::PUBLISHED,
             'publicationDate' => self::getFaker()->plainDateBetween('-2 week', '-1 week'),
             'mainDocument' => $mainDocument,
@@ -35,16 +35,16 @@ final class WooDecisionControllerTest extends SharedWebTestCase
         HistoryFactory::createOne([
             'identifier' => $dossier->getId(),
             'context' => [
-                'oldNr' => $oldDossierNr,
-                'newNr' => $newDossierNr,
+                'oldNr' => $oldDossierNumber,
+                'newNr' => $newDossierNumber,
             ],
         ]);
 
-        $client->request('GET', sprintf('/dossier/%s/%s', $dossier->getDocumentPrefix(), $newDossierNr));
+        $client->request('GET', sprintf('/dossier/%s/%s', $dossier->getDocumentPrefix(), $newDossierNumber));
 
         $this->assertResponseIsSuccessful();
         $this->assertStringContainsString(
-            sprintf('Besluitnummer aangepast van %s naar %s', $oldDossierNr, $newDossierNr),
+            sprintf('Besluitnummer aangepast van %s naar %s', $oldDossierNumber, $newDossierNumber),
             (string) $client->getResponse()->getContent(),
         );
     }

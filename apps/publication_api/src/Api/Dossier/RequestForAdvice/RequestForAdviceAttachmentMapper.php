@@ -7,7 +7,6 @@ namespace PublicationApi\Api\Dossier\RequestForAdvice;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
-use Shared\Domain\Publication\FileInfo;
 
 class RequestForAdviceAttachmentMapper
 {
@@ -21,10 +20,8 @@ class RequestForAdviceAttachmentMapper
             $attachmentRequestDto->type,
             $attachmentRequestDto->language,
         );
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($attachmentRequestDto->fileName->toString());
 
-        $attachment->setFileInfo($fileInfo);
+        $attachment->getFileInfo()->setName($attachmentRequestDto->fileName->toString());
         $attachment->setGrounds($attachmentRequestDto->grounds);
         $attachment->setExternalId($attachmentRequestDto->externalId);
 

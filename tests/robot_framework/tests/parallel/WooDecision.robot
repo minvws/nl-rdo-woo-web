@@ -262,6 +262,26 @@ Publish A WooDecision With Different Suspended And Withdrawn States
   Reload  # Extra reload to make sure the retraction has been processed and the tab text updated accordingly
   Verify Dossier Document Count  3  1  1  5
 
+WooDecision Period Configurations Are Displayed Correctly On Public
+  ${new_prefix} =  Add A Random Organisation Prefix
+  Click Publications
+  Create New Dossier  woo-decision
+  Fill Out Basic Details  date_from=2021-12-01  date_to=2023-01-31  prefix=${new_prefix}  type=woo-decision
+  Fill Out WooDecision Details  Openbaarmaking
+  Upload Production Report  files/woodecision/productierapport - 2 openbaar.xlsx
+  Verify Document Upload Remaining  Nog te uploaden: 2 van 2 document
+  Upload And Process Documents  files/woodecision/documenten - 2.zip
+  Verify Document Upload Completed
+  Click Continue To Publish
+  Publish Dossier And Return To Admin Home
+  Search For A Publication  ${DOSSIER_REFERENCE}
+  Click Public URL
+  Get Text  //*[@data-e2e-name="dossier-metadata-period"]  contains  December 2021 t/m januari 2023
+  Go Back
+  Update Period And Verify On Public  2021-12-01  ${EMPTY}  Vanaf december 2021
+  Update Period And Verify On Public  ${EMPTY}  2023-01-31  Tot januari 2023
+  Update Period And Verify On Public  ${EMPTY}  ${EMPTY}  Alles
+
 Create WooDecision With 101 Public Documents
   ${new_prefix} =  Add A Random Organisation Prefix
   Click Publications
@@ -351,3 +371,29 @@ Check If Public Page Has Notification
   ...  contains
   ...  Dit bestand zal spoedig aangeleverd worden: probeert u later nog eens.
   Go To  ${location}
+
+Verify Publication Action Status
+  [Arguments]  ${dossier_reference}  ${expected_action}
+  Click Publications
+  IF  '${expected_action}' != '${EMPTY}'
+    Get Text
+    ...  //table[@data-e2e-name="dossiers-table"]//tr[contains(.,'${dossier_reference}')]/td[7]
+    ...  contains
+    ...  ${expected_action}
+  ELSE
+    Get Text
+    ...  //table[@data-e2e-name="dossiers-table"]//tr[contains(.,'${dossier_reference}')]/td[7]
+    ...  equals
+    ...  ${EMPTY}
+  END
+
+Update Period And Verify On Public
+  [Arguments]  ${date_from}  ${date_to}  ${expected_period}
+  Click Edit Details
+  Select Options By  id=details_date_from  value  ${date_from}
+  Select Options By  id=details_date_to  value  ${date_to}
+  Click  "Bewerken en opslaan"
+  Click Public URL
+  Reload
+  Get Text  //*[@data-e2e-name="dossier-metadata-period"]  contains  ${expected_period}
+  Go Back

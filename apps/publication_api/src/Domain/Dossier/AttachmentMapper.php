@@ -26,7 +26,7 @@ class AttachmentMapper
         $attachment->getFileInfo()->setName($attachmentRequestDto->fileName->toString());
 
         if (self::getObjectHash($attachment) !== $currentHash) {
-            $attachment->getFileInfo()->setUploaded(false);
+            $attachment->getFileInfo()->removeFileProperties();
         }
 
         return $attachment;

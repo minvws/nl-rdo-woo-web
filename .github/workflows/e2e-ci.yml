@@ -34,7 +34,7 @@ jobs:
     if: ${{ inputs.test_tag != 'api' }}
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Setup Robot Framework test stack
         uses: ./.github/actions/setup-rf
         with:
@@ -65,7 +65,7 @@ jobs:
       inputs.test_tag == 'api' }}
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Setup Robot Framework test stack
         uses: ./.github/actions/setup-rf
         with:

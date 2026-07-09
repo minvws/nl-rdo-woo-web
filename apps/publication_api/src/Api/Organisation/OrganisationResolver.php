@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Organisation;
 
+use InvalidArgumentException;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
-final readonly class OrganisationResolver
+final readonly class OrganisationResolver implements OrganisationResolverInterface
 {
     public function __construct(
         private OrganisationRepository $organisationRepository,
@@ -23,9 +24,13 @@ final readonly class OrganisationResolver
     public function resolve(array $uriVariables): Organisation
     {
         Assert::keyExists($uriVariables, 'organisationId');
+        Assert::string($uriVariables['organisationId']);
 
-        $organisationId = $uriVariables['organisationId'];
-        Assert::isInstanceOf($organisationId, Uuid::class);
+        try {
+            $organisationId = Uuid::fromString($uriVariables['organisationId']);
+        } catch (InvalidArgumentException) {
+            throw EntityNotFoundException::for('Organisation', $uriVariables['organisationId']);
+        }
 
         $organisation = $this->organisationRepository->find($organisationId);
         if ($organisation === null) {

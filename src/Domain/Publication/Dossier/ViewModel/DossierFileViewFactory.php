@@ -27,7 +27,7 @@ readonly class DossierFileViewFactory
     ): DossierFile {
         $downloadUrl = $this->urlGenerator->generate('app_dossier_file_download', [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
             'type' => $type->value,
             'id' => $entity->getId(),
         ]);
@@ -68,7 +68,7 @@ readonly class DossierFileViewFactory
         if ($this->thumbnailStorage->exists($entity, $pageNr)) {
             $thumbUrl = $this->urlGenerator->generate('app_dossier_file_thumbnail', [
                 'prefix' => $dossier->getDocumentPrefix(),
-                'dossierId' => $dossier->getDossierNr(),
+                'dossierNumber' => $dossier->getDossierNumber(),
                 'type' => $type->value,
                 'id' => $entity->getId(),
                 'pageNr' => $pageNr,

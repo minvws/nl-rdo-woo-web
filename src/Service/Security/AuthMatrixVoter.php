@@ -38,8 +38,7 @@ class AuthMatrixVoter extends Voter
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
-        $user = $token->getUser();
-        if (! $this->isUserAllowed($user)) {
+        if (! $this->isUserAllowed($token->getUser())) {
             return false;
         }
 
@@ -60,15 +59,15 @@ class AuthMatrixVoter extends Voter
         $this->entryStore->storeEntries(...$this->authorizationMatrix->getAuthorizedMatches($prefix, $permission));
 
         if ($subject instanceof AbstractDossier) {
-            return $this->isDossierAllowedForUser($user, $subject);
+            return $this->isDossierAllowedForUser($subject);
         }
 
         return true;
     }
 
-    private function isDossierAllowedForUser(?UserInterface $user, AbstractDossier $dossier): bool
+    private function isDossierAllowedForUser(AbstractDossier $dossier): bool
     {
-        if ($user instanceof User && $dossier->getOrganisation() !== $this->authorizationMatrix->getActiveOrganisation()) {
+        if ($dossier->getOrganisation() !== $this->authorizationMatrix->getActiveOrganisation()) {
             return false;
         }
 
@@ -97,14 +96,10 @@ class AuthMatrixVoter extends Voter
             return false;
         }
 
-        if ($user instanceof User) {
-            return $user->isEnabled();
+        if (! $user instanceof User) {
+            return false;
         }
 
-        if ($user instanceof ApiUser) {
-            return true;
-        }
-
-        return false;
+        return $user->isEnabled();
     }
 }

@@ -1,36 +1,40 @@
 # https://taskfile.dev
-version: "3.48.0"
+version: '3.50.0'
 
 includes:
   docs:
-    taskfile: docs/Taskfile.docs.yml
-    dir: docs
+    taskfile: ./docs/Taskfile.docs.yml
+    dir: ./docs
+  minio: ./taskfiles/Taskfile.minio.yml
+  api: ./taskfiles/Taskfile.api.yml
+  certs: ./taskfiles/Taskfile.certs.yml
+  build: ./taskfiles/Taskfile.build.yml
+  composer: ./taskfiles/Taskfile.composer.yml
+  npm: ./taskfiles/Taskfile.npm.yml
+  ci: ./taskfiles/Taskfile.ci.yml
+  db: ./taskfiles/Taskfile.db.yml
+  console:
+    taskfile: ./taskfiles/Taskfile.console.yml
+    aliases: [ app ]
   rf:
-    taskfile: tests/robot_framework/Taskfile.rf.yml
-    dir: tests/robot_framework
-  minio:
-    taskfile: taskfiles/Taskfile.minio.yml
-    flatten: true
-  api:
-    taskfile: taskfiles/Taskfile.api.yml
-  certs:
-    taskfile: taskfiles/Taskfile.certs.yml
-  build:
-    taskfile: taskfiles/Taskfile.build.yml
-  curl:
-    taskfile: taskfiles/Taskfile.curl.yml
-    flatten: true
+    taskfile: ./tests/robot_framework/Taskfile.rf.yml
+    dir: ./tests/robot_framework
+  st:
+    taskfile: ./tests/schemathesis/Taskfile.schemathesis.yml
+    dir: ./tests/schemathesis
 
 vars:
   BASE_PATH:
     sh: pwd
   MINVWS_PUBLICATION_API_URL: https://localhost:8443
   MINFIN_PUBLICATION_API_URL: https://localhost:8444
-  # Latest version: https://hub.docker.com/r/maniator/gh/tags
-  GH_VERSION: v2.94.0
-  TENANTS:
+  LOCAL_TENANTS:
     - minvws
     - minfin
+  ALL_TENANTS:
+    - minvws
+    - minfin
+    - minbuza
   APPLICATION_IDS:
     - admin
     - public
@@ -45,6 +49,7 @@ env:
 silent: true
 
 tasks:
+
   dc:
     vars:
       FIXUID:
@@ -52,63 +57,55 @@ tasks:
       FIXGID:
         sh: echo ${FIXGID:-$(id -g)}
     cmds:
-      - FIXUID={{.FIXUID}} FIXGID={{.FIXGID}} docker compose {{.SUB_CMD}}
+      - FIXUID={{ .FIXUID }} FIXGID={{ .FIXGID }} docker compose {{ .SUB_CMD }}
 
-  dc:run:
+  dc:run:*:
     interactive: true
+    vars:
+      SERVICE: '{{ index .MATCH 0 }}'
+      USER_FLAG: '{{ (ne (.NON_ROOT | default "true") "false") | ternary " --user $(id -u):$(id -g)" "" }}'
+      RUN_FLAGS: '{{ .RUN_FLAGS | default "" }}'
+      COMPOSE_SERVICES:
+        sh: COMPOSE_PROFILES="*" docker compose config --services
     cmds:
       - task: dc
         vars:
-          SUB_CMD: "run --rm --user $(id -u):$(id -g) {{.SUB_CMD}}"
+          SUB_CMD: 'run --rm {{ .USER_FLAG }} {{ .RUN_FLAGS }} {{ .SERVICE }} {{ .SUB_CMD }} {{ .CLI_ARGS }}'
+    requires:
+      vars:
+        - name: SERVICE
+          enum:
+            ref: .COMPOSE_SERVICES | splitLines | compact
 
-  dc:shell:
+  dc:exec:*:
     interactive: true
+    vars:
+      SERVICE: '{{ index .MATCH 0 }}'
+      USER_FLAG: '{{ (ne (.NON_ROOT | default "true") "false") | ternary " --user $(id -u):$(id -g)" "" }}'
+      EXEC_FLAGS: '{{ .EXEC_FLAGS | default "" }}'
+      COMPOSE_SERVICES:
+        sh: COMPOSE_PROFILES="*" docker compose config --services
     cmds:
       - task: dc
         vars:
-          SUB_CMD: "exec --user $(id -u):$(id -g) {{.SUB_CMD}}"
+          SUB_CMD: 'exec {{ .USER_FLAG }} {{ .EXEC_FLAGS }} {{ .SERVICE }} {{ .SUB_CMD }}'
+    requires:
+      vars:
+        - name: SERVICE
+          enum:
+            ref: .COMPOSE_SERVICES | splitLines | compact
 
   dc:pull:
     desc: Pull all docker images
     cmds:
       - task: dc
-        vars: { SUB_CMD: "--profile '*' pull --include-deps --policy missing" }
-
-  dc:build:
-    desc: Build all docker images
-    cmds:
-      - task: dc
-        vars: { SUB_CMD: "--profile '*' build --build-arg USER_UID=$(id -u)" }
+        vars: { SUB_CMD: '--profile "*" pull --include-deps --policy missing' }
 
   dc:rebuild:
     desc: Rebuild all docker images
     cmds:
       - task: dc
-        vars: { SUB_CMD: "--profile '*' build --build-arg USER_UID=$(id -u) --no-cache" }
-
-  composer:install:
-    desc: Install composer dependencies
-    cmds:
-      - task: dc:run
-        vars: { SUB_CMD: "admin php -d xdebug.mode=off /usr/local/bin/composer install" }
-
-  npm:install:
-    desc: Install node dependencies
-    cmds:
-      - task: dc:run
-        vars: { SUB_CMD: "admin npm ci --no-fund" }
-
-  npm:build:
-    desc: Build assets
-    cmds:
-      - task: dc:run
-        vars: { SUB_CMD: "admin npm run build" }
-
-  npm:watch:
-    desc: Watch assets
-    cmds:
-      - task: dc:run
-        vars: { SUB_CMD: "admin npm run watch" }
+        vars: { SUB_CMD: '--profile "*" build --build-arg USER_UID=$(id -u) --no-cache' }
 
   setup:
     desc: Setup development environment
@@ -118,41 +115,42 @@ tasks:
       - task: env
       - task: dc:pull
       - task: certs:gen
-      - task: dc:build
       - task: composer:install
       - task: dc
-        vars: { SUB_CMD: "up -d" }
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bash -c 'wait-for-it postgres:5432 --timeout=0 --strict -- wait-for-it rabbitmq:5672 --timeout=0 --strict -- wait-for-it elasticsearch:9200 --timeout=0 --strict -- echo \"Done waiting\"'" }
+        vars: { SUB_CMD: 'up -d' }
+      - task: dc:exec:admin
+        vars: { SUB_CMD: 'bash -c "wait-for-it postgres:5432 --timeout=0 --strict -- wait-for-it rabbitmq:5672 --timeout=0 --strict -- wait-for-it elasticsearch:9200 --timeout=0 --strict -- echo \"Done waiting\""' }
       - task: minio:create-buckets
-      - task: app:migrate
-        vars: { TENANT: '{{.ITEM}}' }
-        for: { var: TENANTS }
-      - task: app:loadfixtures
-        vars: { TENANT: '{{.ITEM}}' }
-        for: { var: TENANTS }
-      - task: dc:run
-        vars: { SUB_CMD: "admin bash -c 'curl -u elastic:secret -X GET \"elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=30s\"'" }
-      - task: dc:run
-        vars: { SUB_CMD: "elasticsearch /init/init.sh" }
-      - task: dc:run
-        vars: { SUB_CMD: "admin bin/console --tenant={{.ITEM}} woopie:index:create {{.ITEM}}-initial latest --read --write" }
-        for: { var: TENANTS }
+      - task: console:migrate
+        vars: { TENANT: '{{ .ITEM }}' }
+        for: { var: LOCAL_TENANTS }
+      - task: console:loadfixtures
+        vars: { TENANT: '{{ .ITEM }}' }
+        for: { var: LOCAL_TENANTS }
+      - task: dc:run:admin
+        vars: { SUB_CMD: 'bash -c "curl -u elastic:secret -X GET \"elasticsearch:9200/_cluster/health?wait_for_status=yellow&timeout=30s\""' }
+      - task: dc:run:elasticsearch
+        vars: { SUB_CMD: '/init/init.sh' }
+      - task: console:cmd:woopie:index:create
+        vars:
+          TENANT: '{{ .ITEM }}'
+          SUB_CMD: '{{ .ITEM }}-initial latest --read --write'
+        for: { var: LOCAL_TENANTS }
       - task: npm:install
-      - task: npm:build
-      - task: docs:build:ci
+      - task: npm:script:build
+      - task: docs:build:all
 
   setup:if-not-exist:
     vars:
       PROJECT_EXISTS:
         sh: 'docker compose ps --all --services'
     status:
-      - test ! -z "{{.PROJECT_EXISTS}}"
+      - test ! -z "{{ .PROJECT_EXISTS }}"
     cmds:
       - task: setup
-      - task: app:migrate:test
-        vars: { TENANT: '{{.ITEM}}' }
-        for: { var: TENANTS }
+      - task: console:migrate:test
+        vars: { TENANT: '{{ .ITEM }}' }
+        for: { var: LOCAL_TENANTS }
 
   shell:
     desc: Open a shell in admin service
@@ -163,39 +161,30 @@ tasks:
   shell:*:
     desc: Open a shell in a running service
     vars:
-      SERVICE: "{{index .MATCH 0}}"
+      SERVICE: "{{ index .MATCH 0 }}"
+      COMPOSE_SERVICES:
+        sh: COMPOSE_PROFILES="*" docker compose config --services
     cmds:
       - task: dc
-        vars: { SUB_CMD: "exec {{.SERVICE}} bash" }
+        vars: { SUB_CMD: 'exec {{ .SERVICE }} bash' }
     requires:
       vars:
         - name: SERVICE
           enum:
-            - public
-            - admin
-            - publication_api
-            - worker
-            - tika
-            - elasticsearch
-            - redis
-            - rabbitmq
-            - postgres
-            - minio
-            - sphinx
-            - certs
+            ref: .COMPOSE_SERVICES | splitLines | compact
 
   up:
     desc: Start development environment
     cmds:
       - task: setup:if-not-exist
       - task: dc
-        vars: { SUB_CMD: "up -d" }
+        vars: { SUB_CMD: 'up -d' }
 
   stop:
     desc: Stop development environment
     cmds:
       - task: dc
-        vars: { SUB_CMD: "stop" }
+        vars: { SUB_CMD: 'stop' }
 
   restart:
     desc: Restart development environment
@@ -207,7 +196,7 @@ tasks:
     desc: Down the development environment
     cmds:
       - task: dc
-        vars: { SUB_CMD: "--profile '*' down --volumes --remove-orphans" }
+        vars: { SUB_CMD: '--profile "*" down --volumes --remove-orphans' }
 
   reset:
     desc: Reset the development environment
@@ -224,7 +213,7 @@ tasks:
     desc: Show all project containers
     cmds:
       - task: dc
-        vars: { SUB_CMD: "ps -a" }
+        vars: { SUB_CMD: 'ps -a' }
 
   env:
     desc: Manage dotenvs
@@ -234,228 +223,43 @@ tasks:
         if: test "$GITHUB_ACTIONS" = "true"
         platforms: [linux]
 
-  app:user:create:
-    desc: Create an user
-    vars:
-      TENANT: '{{.TENANT | default "minvws"}}'
+  env:e2e:enable:
+    internal: true
     cmds:
-      - task: dc:shell
-        vars:
-          SUB_CMD: 'admin bin/console --tenant={{.TENANT}} woopie:user:create {{.CLI_ARGS | default "\"email@example.org\" \"full name\" --super-admin"}}'
+      - cmd: '[ -f .env.dev.local ] && [ ! -f .env.dev.local.bak ] && mv .env.dev.local .env.dev.local.bak || true'
+        if: test "$GITHUB_ACTIONS" != "true"
+      - cmd: cp .env.e2e .env.dev.local
+        if: test "$GITHUB_ACTIONS" != "true"
 
-  app:migrate:
-    desc: Run (doctrine) database migrations
+  env:e2e:disable:
+    internal: true
     cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:database:create --if-not-exists --no-interaction" }
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:migrations:migrate --no-interaction" }
-    requires:
-      vars: [TENANT]
+      - cmd: rm -f .env.dev.local
+        if: test "$GITHUB_ACTIONS" != "true"
+      - cmd: '[ -f .env.dev.local.bak ] && mv .env.dev.local.bak .env.dev.local || true'
+        if: test "$GITHUB_ACTIONS" != "true"
 
-  app:loadfixtures:
-    desc: Load doctrine example fixtures
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:fixtures:load --no-interaction --append" }
-    requires:
-      vars: [TENANT]
-
-  app:migrate:diff:
-    desc: Run (doctrine) database migrations diff
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant=minvws doctrine:migrations:diff --no-interaction" }
-
-  app:migrate:dump:
-    desc: Dump doctrine migrations to plain SQL files
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant=minvws woopie:sql:dump" }
-
-  app:migrate:test:
-    desc: Run (doctrine) database migrations in test environment
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:database:create --if-not-exists --no-interaction --env=test" }
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:schema:drop --full-database --force --no-interaction --env=test" }
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant={{.TENANT}} doctrine:schema:create --no-interaction --env=test" }
-    requires:
-      vars: [TENANT]
-
-  app:cleansheet:
-    desc: Clears dossiers and inquiries (with related data) from the database. Also clears ES index and RabbitMq message queues.
-    vars:
-      TENANT: '{{.TENANT | default "minvws"}}'
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: 'admin bin/console --tenant={{.TENANT}} woopie:dev:clean-sheet --index {{.TENANT}}-inital --force --keep-prefixes {{.CLI_ARGS}}' }
-      - task: minio:clear-buckets
-
-  app:db:reset:
-    desc: Reset the application database including RabbitMQ queues and ElasticSearch indexes
-    prompt: Are you REALLY sure you want to clear data from the system?
-    vars:
-      TENANT: '{{.TENANT | default "minvws"}}'
-    cmds:
-      - task: app:cleansheet
-        vars: { TENANT: '{{.TENANT}}'}
-      - task: dc:shell
-        vars: { SUB_CMD: 'admin bin/console --tenant={{.TENANT}} doctrine:schema:drop --full-database --force' }
-      - task: app:migrate
-        vars: { TENANT: '{{.TENANT}}'}
-      - task: app:loadfixtures
-        vars: { TENANT: '{{.TENANT}}'}
-
-  app:db:reset:all:
-    desc: Reset the application database for all tenants including RabbitMQ queues and ElasticSearch indexes
-    cmds:
-      - task: app:db:reset
-        vars: { TENANT: minvws }
-      - task: app:db:reset
-        vars: { TENANT: minfin }
-
-  db:logs:
-    desc: Display last 30 lines of db query logs and follow the rest
-    cmds:
-      - task: dc
-        vars: { SUB_CMD: "logs postgres --tail 30 --follow" }
-
-  app:checkall:
-    desc: Run all checks
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer checkall" }
-      - task: docs:lint
-
-  app:checkstyle:
-    desc: Check code style using php_codesniffer and php-cs-fixer
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer checkstyle" }
-
-  app:fixstyle:
-    desc: Fix code style using php_codesniffer and php-cs-fixer
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer fixstyle" }
-
-  app:checktype:
-    desc: Check code type using PHPStan
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer checktype" }
-
-  app:update-type-baseline:
-    desc: Update PHPStan baseline
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer update-type-baseline" }
-
-  app:test:
-    desc: Run PHPUnit
-    cmds:
-      - task: dc:shell
-        vars:
-          SUB_CMD: "admin composer test -- {{.CLI_ARGS}}"
-
-  app:test:ci:
-    desc: Run PHPUnit for CI
-    cmds:
-      - task: dc:shell
-        vars:
-          SUB_CMD: >
-            --env CREATE_SNAPSHOTS=false
-            admin php
-            -d pcov.enabled=1
-            -d pcov.directory=.
-            -d xdebug.mode=off
-            vendor/bin/phpunit
-            --log-junit=reports/phpunit/report-phpunit.xml
-            --coverage-clover=reports/phpunit/coverage-phpunit.xml
-            -- {{.CLI_ARGS}}
-
-  app:test-report:
-    desc: Run PHPUnit tests with coverage test-report
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer test-report" }
-
-  app:update-test-snapshots:
-    desc: Update PHPUnit snapshots
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer update-test-snapshots" }
-
-  app:rector:
-    desc: Run Rector on the code base
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer rector" }
-
-  app:rector:preview:
-    desc: Preview Rector changes on the code base
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer rector-preview" }
-
-  app:checkarc:
-    desc: Check architecture rules using Arkitect
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer checkarc" }
-
-  app:checktranslations:
-    desc: Run YAML linting on translation files
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer checktranslations" }
-
-  app:checktemplates:
-    desc: Run Twig linting on templates
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin composer checktemplates" }
-
-  app:postdeploy:
-    desc: Run postdeploy script
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant=minvws --id={{.APPLICATION_ID}} woopie:post-deploy" }
-    requires:
-      vars:
-        - name: APPLICATION_ID
-          enum:
-            ref: .APPLICATION_IDS
-
-  app:openapi:export:
-    desc: Export all OpenAPI specifications
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: admin composer openapi:export }
-
-  app:update:
+  refresh:
     desc: (re) Pull dependencies, run migrations, build front-end and sync .env
-    aliases: [app:refresh]
+    aliases: [update]
     cmds:
+      - task: stop
       - rm -rf var
-      - task: up
       - task: d:create-cache-volumes
+      - task: up
       - task: composer:install
-      - task: app:migrate
-        vars: { TENANT: '{{.ITEM}}' }
-        for: { var: TENANTS }
-      - task: app:migrate:test
-        vars: { TENANT: '{{.ITEM}}' }
-        for: { var: TENANTS }
+      - task: console:migrate
+        vars: { TENANT: '{{ .ITEM }}' }
+        for: { var: LOCAL_TENANTS }
+      - task: console:migrate:test
+        vars: { TENANT: '{{ .ITEM }}' }
+        for: { var: LOCAL_TENANTS }
       - task: npm:install
-      - task: npm:build
-      - task: docs:build:ci
+      - task: npm:script:build
+      - task: docs:build:all
       - task: minio:create-buckets
-      - task: app:postdeploy
-        vars: { APPLICATION_ID: "{{.ITEM}}" }
+      - task: postdeploy
+        vars: { APPLICATION_ID: "{{ .ITEM }}" }
         for: [worker, publication_api, admin]
 
   d:create-cache-volumes:
@@ -463,52 +267,22 @@ tasks:
       - docker volume create woo_composer
       - docker volume create woo_npm
 
-  worker:start:
-    desc: Start the worker
-    vars:
-      TENANT: '{{.TENANT | default "minvws"}}'
+  postdeploy:
+    desc: Run postdeploy script
     cmds:
-      - task: dc
-        vars: { SUB_CMD: "up -d worker_{{.TENANT}}" }
-
-  worker:restart:
-    desc: Restart the worker
-    vars:
-      TENANT: '{{.TENANT | default "minvws"}}'
-    cmds:
-      - task: worker:stop
-        vars: { TENANT: '{{.TENANT}}'}
-      - task: worker:start
-        vars: { TENANT: '{{.TENANT}}'}
-
-  worker:stop:
-    desc: Stop the worker
-    vars:
-      TENANT: '{{.TENANT | default "minvws"}}'
-    cmds:
-      - task: dc
-        vars: { SUB_CMD: "stop worker_{{.TENANT}}" }
-
-  worker:logs:
-    desc: Display last 30 lines of worker logs and follow the rest
-    vars:
-      TENANT: '{{.TENANT | default "minvws"}}'
-    cmds:
-      - task: dc
-        vars: { SUB_CMD: "logs worker_{{.TENANT}} --tail 30 --follow" }
-
-  app:generate-sitemap:
-    desc: Generate the sitemap in one command
-    cmds:
-      - task: dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant=minvws Woo-index:generate {{.CLI_ARGS}}" }
-
-  gh:check-token:
-    desc: Check your $CR_PAT environment variable for valid GitHub token
-    cmds:
-      - docker run -it --rm
-        --env GITHUB_TOKEN="$CR_PAT"
-        maniator/gh:{{.GH_VERSION}}
-        auth status {{.CLI_ARGS}}
+      - task: dc:exec:admin
+        vars: { SUB_CMD: 'bin/console --tenant=minvws --id={{ .APPLICATION_ID }} woopie:post-deploy' }
     requires:
-      vars: [ CR_PAT ]
+      vars:
+        - name: APPLICATION_ID
+          enum:
+            ref: .APPLICATION_IDS
+
+  cleansheet:
+    desc: Clears dossiers and inquiries (with related data) from the database. Also clears ES index and RabbitMq message queues.
+    vars:
+      TENANT: '{{.TENANT | default "minvws"}}'
+    cmds:
+      - task: dc:exec:admin
+        vars: { SUB_CMD: 'bin/console --tenant={{ .TENANT }} woopie:dev:clean-sheet --index {{ .TENANT }}-initial --force --keep-prefixes {{ .CLI_ARGS }}' }
+      - task: minio:clear-buckets

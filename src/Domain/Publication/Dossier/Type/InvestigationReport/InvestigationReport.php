@@ -12,11 +12,14 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\EntityWithNoticeNotPublic;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\HasNoticeNotPublicTrait;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
+use Shared\Validator\ExactlyOneOf\ExactlyOneOf;
 use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\ValueObject\PlainDate;
@@ -30,8 +33,19 @@ use Symfony\Component\Validator\Constraints as Assert;
     DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
     DossierValidationGroup::WORKFLOW_PUBLISH->value,
 ])]
+#[ExactlyOneOf(
+    properties: ['mainDocument', 'noticeNotPublic'],
+    errorPaths: ['document', 'noticeNotPublic'],
+    noneMessage: 'dossier.document_or_notice_required',
+    multipleMessage: 'dossier.document_and_notice_not_allowed',
+    groups: [
+        DossierValidationGroup::CONTENT->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ],
+)]
 #[ORM\Entity(repositoryClass: InvestigationReportRepository::class)]
-class InvestigationReport extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument
+class InvestigationReport extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument, EntityWithNoticeNotPublic
 {
     /** @use HasAttachments<InvestigationReportAttachment> */
     use HasAttachments;
@@ -39,12 +53,9 @@ class InvestigationReport extends AbstractDossier implements EntityWithAttachmen
     /** @use HasMainDocument<InvestigationReportMainDocument> */
     use HasMainDocument;
 
+    use HasNoticeNotPublicTrait;
+
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: InvestigationReportMainDocument::class, cascade: ['persist', 'remove'])]
-    #[Assert\NotBlank(groups: [
-        DossierValidationGroup::DECISION->value,
-        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
-        DossierValidationGroup::WORKFLOW_PUBLISH->value,
-    ])]
     #[Assert\Valid(groups: [
         DossierValidationGroup::DECISION->value,
         DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,

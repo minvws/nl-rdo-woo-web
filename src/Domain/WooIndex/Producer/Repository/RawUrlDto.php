@@ -31,7 +31,7 @@ final class RawUrlDto
         public readonly string $documentFileName,
         public readonly Uuid $dossierId,
         public readonly string $documentPrefix,
-        public readonly string $dossierNr,
+        public readonly string $dossierNumber,
         DossierType|string $dossierType,
         public ?RawReferenceDto $mainDocumentReference = null,
         public ?ArrayCollection $hasParts = null,

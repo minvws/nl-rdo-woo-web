@@ -14,12 +14,12 @@ enum FacetKey: string
     case DEPARTMENT = 'department';
     case PERIOD = 'period';
     case DATE = 'date';
-    case PREFIXED_DOSSIER_NR = 'dnr';
+    case PREFIXED_DOSSIER_NUMBER = 'dnr';
     case INQUIRY_DOSSIERS = 'dsi';
     case INQUIRY_DOCUMENTS = 'dci';
     case FAMILY = 'fam';
     case THREAD = 'thread';
-    case REFERRED_DOCUMENT_NR = 'ref';
+    case REFERRED_DOCUMENT_NUMBER = 'ref';
 
     /**
      * @deprecated use FacetDefinition::$requestParameter instead, see WOO-6328
@@ -35,12 +35,12 @@ enum FacetKey: string
             self::DEPARTMENT => 'dep',
             self::PERIOD => 'prd',
             self::DATE => 'dt',
-            self::PREFIXED_DOSSIER_NR => 'dnr',
+            self::PREFIXED_DOSSIER_NUMBER => 'dnr',
             self::INQUIRY_DOSSIERS => 'dsi',
             self::INQUIRY_DOCUMENTS => 'dci',
             self::FAMILY => 'fam',
             self::THREAD => 'thread',
-            self::REFERRED_DOCUMENT_NR => 'ref',
+            self::REFERRED_DOCUMENT_NUMBER => 'ref',
         };
     }
 }

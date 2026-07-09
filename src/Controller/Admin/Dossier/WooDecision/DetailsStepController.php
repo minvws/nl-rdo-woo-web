@@ -65,13 +65,13 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/details/concept/{prefix}/{dossierId}',
+        path: '/balie/dossier/woodecision/details/concept/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_woodecision_details_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
         Request $request,
     ): Response {
         $stepName = StepName::DETAILS;
@@ -99,13 +99,13 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/details/edit/{prefix}/{dossierId}',
+        path: '/balie/dossier/woodecision/details/edit/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_woodecision_details_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] WooDecision $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {

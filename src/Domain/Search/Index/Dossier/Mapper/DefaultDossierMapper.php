@@ -33,8 +33,8 @@ readonly class DefaultDossierMapper implements ElasticDossierMapperInterface
             null,
             [
                 ElasticField::ID->value => $id,
-                ElasticField::DOSSIER_NR->value => $dossier->getDossierNr(),
-                ElasticField::PREFIXED_DOSSIER_NR->value => PrefixedDossierNr::forDossier($dossier),
+                ElasticField::DOSSIER_NUMBER->value => $dossier->getDossierNumber(),
+                ElasticField::PREFIXED_DOSSIER_NUMBER->value => PrefixedDossierNumber::forDossier($dossier),
                 ElasticField::TITLE->value => (string) $dossier->getTitle(),
                 ElasticField::STATUS->value => $dossier->getStatus(),
                 ElasticField::SUMMARY->value => $dossier->getSummary(),

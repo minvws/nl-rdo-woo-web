@@ -9,8 +9,10 @@ use PublicationApi\Api\Department\DepartmentMapper;
 use PublicationApi\Api\Dossier\InvestigationReport\Uploads\Attachment\InvestigationReportUploadAttachmentResource;
 use PublicationApi\Api\Dossier\InvestigationReport\Uploads\MainDocument\InvestigationReportUploadMainDocumentResource;
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicResponseDtoFactory;
 use PublicationApi\Api\Organisation\OrganisationMapper;
 use PublicationApi\Api\Subject\SubjectMapper;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
@@ -18,7 +20,6 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\Url;
@@ -30,10 +31,11 @@ use function array_values;
 readonly class InvestigationReportMapper
 {
     public function __construct(
+        private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
         private DossierPathHelper $dossierPathHelper,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
-        private PublicUrlGenerator $publicUrlGenerator,
+        private NoticeNotPublicResponseDtoFactory $noticeNotPublicResponseDtoFactory,
     ) {
     }
 
@@ -53,7 +55,7 @@ readonly class InvestigationReportMapper
     public function fromEntity(InvestigationReport $investigationReport): InvestigationReportResponseDto
     {
         $mainDocument = $investigationReport->getMainDocument();
-        Assert::notNull($mainDocument);
+        $noticeNotPublic = $investigationReport->getNoticeNotPublic();
 
         $dateFrom = $investigationReport->getDateFrom();
         Assert::notNull($dateFrom);
@@ -61,22 +63,31 @@ readonly class InvestigationReportMapper
         $department = $investigationReport->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
+        $mainDocumentDto = $mainDocument !== null
+            ? $this->mainDocumentResponseDtoFactory->fromEntity(
+                $mainDocument,
+                InvestigationReportUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                InvestigationReportMainDocumentResponseDto::class,
+            )
+            : null;
+
+        $noticeNotPublicDto = $noticeNotPublic !== null
+            ? $this->noticeNotPublicResponseDtoFactory->fromEntity($noticeNotPublic)
+            : null;
+
         return new InvestigationReportResponseDto(
             $investigationReport->getId(),
             $investigationReport->getExternalId(),
             OrganisationMapper::fromEntity($investigationReport->getOrganisation()),
-            $investigationReport->getDossierNr(),
+            $investigationReport->getDossierNumber(),
             $investigationReport->getTitle(),
             $investigationReport->getSummary(),
             SubjectMapper::fromNullableEntity($investigationReport->getSubject()),
             DepartmentMapper::fromEntity($department),
             $investigationReport->getPublicationDate(),
             $investigationReport->getStatus(),
-            $this->mainDocumentResponseDtoFactory->fromEntity(
-                $mainDocument,
-                InvestigationReportUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
-                InvestigationReportMainDocumentResponseDto::class,
-            ),
+            $mainDocumentDto,
+            $noticeNotPublicDto,
             $this->attachmentResponseDtoFactory->fromDossier($investigationReport, InvestigationReportUploadAttachmentResource::ROUTE_NAME_UPLOAD),
             $dateFrom,
             $this->getHalLinks($investigationReport),
@@ -110,7 +121,7 @@ readonly class InvestigationReportMapper
     ): InvestigationReport {
         $investigationReport->setDateFrom($investigationReportRequestDto->dossierDate);
         $investigationReport->setDepartments([$department]);
-        $investigationReport->setDossierNr($investigationReportRequestDto->dossierNumber);
+        $investigationReport->setDossierNumber($investigationReportRequestDto->dossierNumber);
         $investigationReport->setOrganisation($organisation);
         $investigationReport->setPublicationDate($investigationReportRequestDto->publicationDate);
         $investigationReport->setSubject($subject);
@@ -125,7 +136,7 @@ readonly class InvestigationReportMapper
         $linkCollection = new LinkCollection();
         $linkCollection->set(
             LinkCollection::SELF,
-            new Link($this->publicUrlGenerator->buildUrlFromRoute(InvestigationReportResource::ROUTE_NAME_GET_INVESTIGATION_REPORT, [
+            new Link($this->apiUrlGenerator->buildUrlFromRoute(InvestigationReportResource::ROUTE_NAME_GET_INVESTIGATION_REPORT, [
                 'organisationId' => $investigationReport->getOrganisation()->getId(),
                 'dossierExternalId' => $investigationReport->getExternalId(),
             ])),

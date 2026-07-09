@@ -13,7 +13,7 @@ use function strtolower;
 
 final readonly class DocumentId implements Stringable
 {
-    public const string PATTERN = '/^[a-zA-Z0-9.-]*$/';
+    public const string PATTERN = '/^[a-zA-Z0-9.\-]*$/';
     public const int MIN_LENGTH = 1;
     public const int MAX_LENGTH = 170;
 

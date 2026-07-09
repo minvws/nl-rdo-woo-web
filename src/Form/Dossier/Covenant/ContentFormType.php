@@ -35,6 +35,7 @@ class ContentFormType extends AbstractDossierStepType
 
         $dossierForm = $this->dossierFormFactory->for($builder);
         $dossierForm->addSummaryField();
+        $dossierForm->addNoticeNotPublicField();
         $dossierForm->addDocumentField();
 
         $builder

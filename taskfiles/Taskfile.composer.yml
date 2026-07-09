@@ -1,0 +1,31 @@
+# https://taskfile.dev
+version: '3.50.0'
+
+tasks:
+
+  install:
+    desc: Install composer dependencies
+    cmds:
+      - task: :dc:run:admin
+        vars:
+          SUB_CMD: "php -d xdebug.mode=off /usr/local/bin/composer install"
+
+  cmd:*:
+    desc: Run a composer command inside the admin service
+    vars:
+      COMPOSER_CMD: '{{ index .MATCH 0 }}'
+    cmds:
+      - task: :dc:run:admin
+        vars:
+          SUB_CMD: 'composer {{ .COMPOSER_CMD }} {{ .SUB_CMD }}'
+          CLI_ARGS: '{{ .CLI_ARGS }}'
+
+  script:*:
+    desc: Run a composer script
+    vars:
+      SCRIPT: '{{ index .MATCH 0 }}'
+    cmds:
+      - task: cmd:run
+        vars:
+          SUB_CMD: '{{ .SCRIPT }}'
+          CLI_ARGS: '-- {{ .CLI_ARGS }}'

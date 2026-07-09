@@ -75,7 +75,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
 
     /** @var Collection<array-key, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'dossiers', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
-    #[ORM\OrderBy(['documentNr' => 'ASC'])]
+    #[ORM\OrderBy(['documentNumber' => 'ASC'])]
     protected Collection $documents;
 
     #[ORM\Column(length: 255, nullable: true, enumType: PublicationReason::class)]
@@ -236,7 +236,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
 
     public function canRemoveInventory(): bool
     {
-        return $this->isInventoryOptional() && $this->status->isConcept();
+        return ! $this->isInventoryRequired() && $this->status->isConcept();
     }
 
     public function hasProductionReport(): bool

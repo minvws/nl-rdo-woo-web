@@ -10,6 +10,7 @@ use PublicationApi\Domain\OpenApi\ProblemDetailsFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\PropertyAccess\Exception\InvalidPropertyPathException;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
 final class ProblemDetailsFactoryTest extends UnitTestCase
@@ -71,6 +72,23 @@ final class ProblemDetailsFactoryTest extends UnitTestCase
                 'title' => 'Invalid Request Body',
                 'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
                 'detail' => 'Request body must be a valid JSON object',
+            ],
+            $result->jsonSerialize(),
+        );
+    }
+
+    public function testBuildFromInvalidPropertyPathException(): void
+    {
+        $factory = new ProblemDetailsFactory();
+        $result = $factory->build(new InvalidPropertyPathException('Invalid property path'));
+
+        self::assertNotNull($result);
+        self::assertSame(
+            [
+                'type' => 'errors#openapi-validation',
+                'title' => 'Invalid API Request',
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+                'detail' => 'Invalid property path',
             ],
             $result->jsonSerialize(),
         );

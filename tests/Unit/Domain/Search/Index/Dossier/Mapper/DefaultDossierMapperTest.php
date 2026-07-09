@@ -62,7 +62,7 @@ class DefaultDossierMapperTest extends UnitTestCase
 
         $dossier = Mockery::mock(Covenant::class);
         $dossier->expects('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
-        $dossier->expects('getDossierNr')->times(2)->andReturn('dos-123');
+        $dossier->expects('getDossierNumber')->times(2)->andReturn('dos-123');
         $dossier->expects('getTitle')->andReturn(DossierTitle::create('test-title'));
         $dossier->expects('getSummary')->andReturn('test-summary');
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
@@ -85,8 +85,8 @@ class DefaultDossierMapperTest extends UnitTestCase
                 'type' => ElasticDocumentType::COVENANT,
                 'toplevel_type' => ElasticDocumentType::COVENANT,
                 'sublevel_type' => null,
-                'dossier_nr' => 'dos-123',
-                'prefixed_dossier_nr' => 'foo|dos-123',
+                'dossier_number' => 'dos-123',
+                'prefixed_dossier_number' => 'foo|dos-123',
                 'title' => 'test-title',
                 'status' => DossierStatus::PUBLISHED,
                 'summary' => 'test-summary',
@@ -135,7 +135,7 @@ class DefaultDossierMapperTest extends UnitTestCase
 
         $dossier = Mockery::mock(Covenant::class);
         $dossier->expects('getId->toRfc4122')->andReturn($dossierId = 'foo-123');
-        $dossier->expects('getDossierNr')->times(2)->andReturn('dos-123');
+        $dossier->expects('getDossierNumber')->times(2)->andReturn('dos-123');
         $dossier->expects('getTitle')->andReturn(DossierTitle::create('test-title'));
         $dossier->expects('getSummary')->andReturn('test-summary');
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
@@ -158,8 +158,8 @@ class DefaultDossierMapperTest extends UnitTestCase
                 'type' => ElasticDocumentType::COVENANT,
                 'toplevel_type' => ElasticDocumentType::COVENANT,
                 'sublevel_type' => null,
-                'dossier_nr' => 'dos-123',
-                'prefixed_dossier_nr' => 'foo|dos-123',
+                'dossier_number' => 'dos-123',
+                'prefixed_dossier_number' => 'foo|dos-123',
                 'title' => 'test-title',
                 'status' => DossierStatus::PUBLISHED,
                 'summary' => 'test-summary',

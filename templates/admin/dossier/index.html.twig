@@ -56,7 +56,7 @@
                 <caption class="sr-only">Alle dossiers. Kolomkoppen met links zijn sorteerbaar.</caption>
                 <thead>
                     <tr>
-                        {{ knp_pagination_sortable(pagination, 'admin.publications.organisation_and_reference' | trans, ['dos.documentPrefix','dos.dossierNr'], {}, {}, 'admin/layout/sort.html.twig') }}
+                        {{ knp_pagination_sortable(pagination, 'admin.publications.organisation_and_reference' | trans, ['dos.documentPrefix','dos.dossierNumber'], {}, {}, 'admin/layout/sort.html.twig') }}
                         {{ knp_pagination_sortable(pagination, 'admin.publications.status' | trans, 'dos.status', {}, {}, 'admin/layout/sort.html.twig') }}
                         <th scope="col">{{ "admin.dossiers.category" | trans() }}</th>
                         {{ knp_pagination_sortable(pagination, 'global.created_at' | trans, 'dos.createdAt', {}, {}, 'admin/layout/sort.html.twig') }}
@@ -69,8 +69,8 @@
                     {% for dossier in pagination %}
                         <tr>
                             <td>
-                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">
-                                    <span class="break-all">{{ dossier.documentPrefix }} / {{ dossier.dossierNr }}</span>
+                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier', {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}">
+                                    <span class="break-all">{{ dossier.documentPrefix }} / {{ dossier.dossierNumber }}</span>
                                 </a>
                             </td>
                             <td>

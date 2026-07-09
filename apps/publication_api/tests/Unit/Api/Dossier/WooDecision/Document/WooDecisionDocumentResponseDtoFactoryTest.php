@@ -8,6 +8,7 @@ use Mockery;
 use Mockery\MockInterface;
 use PublicationApi\Api\Dossier\WooDecision\Document\WooDecisionDocumentResponseDtoFactory;
 use PublicationApi\Api\Dossier\WooDecision\Document\WooDecisionRelatedDocumentResponseDtoFactory;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use PublicationApi\Domain\Upload\DocumentUploadStatusService;
 use PublicationApi\Domain\Upload\UploadStatus;
@@ -24,6 +25,7 @@ use Shared\ValueObject\Url;
 
 final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
 {
+    private ApiUrlGenerator&MockInterface $apiUrlGenerator;
     private DossierPathHelper&MockInterface $dossierPathHelper;
     private DocumentUploadStatusService&MockInterface $documentUploadStatusService;
     private PublicUrlGenerator&MockInterface $publicUrlGenerator;
@@ -34,12 +36,14 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
     {
         parent::setUp();
 
+        $this->apiUrlGenerator = Mockery::mock(ApiUrlGenerator::class);
         $this->dossierPathHelper = Mockery::mock(DossierPathHelper::class);
         $this->documentUploadStatusService = Mockery::mock(DocumentUploadStatusService::class);
         $this->publicUrlGenerator = Mockery::mock(PublicUrlGenerator::class);
         $this->relatedDocumentResponseDtoFactory = Mockery::mock(WooDecisionRelatedDocumentResponseDtoFactory::class);
 
         $this->factory = new WooDecisionDocumentResponseDtoFactory(
+            $this->apiUrlGenerator,
             $this->dossierPathHelper,
             $this->documentUploadStatusService,
             $this->publicUrlGenerator,
@@ -52,12 +56,16 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         $wooDecision = $this->createWooDecision(DossierStatus::PREVIEW);
         $document = new Document();
         $document->setJudgement(Judgement::PUBLIC);
-        $document->setDocumentNr('PREFIX-1-1');
+        $document->setDocumentNumber('PREFIX-1-1');
         $wooDecision->addDocument($document);
+
+        $this->apiUrlGenerator
+            ->expects('buildUrlFromRoute')
+            ->andReturn(Url::create('https://example.com/upload'));
 
         $this->publicUrlGenerator
             ->expects('buildUrlFromRoute')
-            ->andReturn(Url::create('https://example.com/upload'));
+            ->never();
 
         $this->dossierPathHelper
             ->expects('getAbsoluteDetailsPath')
@@ -77,7 +85,6 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
 
         $this->assertCount(1, $result);
 
-        /** @var LinkCollection $halLinks */
         $halLinks = $result[0]->halLinks;
         $links = $halLinks->jsonSerialize();
 
@@ -91,16 +98,18 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         $wooDecision = $this->createWooDecision(DossierStatus::PUBLISHED);
         $document = new Document();
         $document->setJudgement(Judgement::PUBLIC);
-        $document->setDocumentNr('PREFIX-1-1');
+        $document->setDocumentNumber('PREFIX-1-1');
         $wooDecision->addDocument($document);
+
+        $this->apiUrlGenerator
+            ->expects('buildUrlFromRoute')
+            ->once()
+            ->andReturn(Url::create('https://example.com/upload'));
 
         $this->publicUrlGenerator
             ->expects('buildUrlFromRoute')
-            ->twice()
-            ->andReturn(
-                Url::create('https://example.com/upload'),
-                Url::create('https://example.com/file'),
-            );
+            ->once()
+            ->andReturn(Url::create('https://example.com/file'));
 
         $this->dossierPathHelper
             ->expects('getAbsoluteDetailsPath')
@@ -121,7 +130,6 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
 
         $this->assertCount(1, $result);
 
-        /** @var LinkCollection $halLinks */
         $halLinks = $result[0]->halLinks;
         $links = $halLinks->jsonSerialize();
 
@@ -138,7 +146,7 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         $wooDecision->setExternalId(ExternalId::create('ext-123'));
         $wooDecision->setStatus($status);
         $wooDecision->setDocumentPrefix('PREFIX');
-        $wooDecision->setDossierNr('DOSSIER-123');
+        $wooDecision->setDossierNumber('DOSSIER-123');
 
         return $wooDecision;
     }

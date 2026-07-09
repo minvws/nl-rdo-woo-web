@@ -73,7 +73,7 @@ all documents, it can be published.
 | id                 | UUID     | The internal ID of the dossier                                                          |
 | created_at         | DateTime | Date/time when this record was created                                                  |
 | updated_at         | DateTime | Date/time this record was last updated. Same as createdDate when not modified.          |
-| dossier_nr         | string   | The generated dossier number. Normally prefixed with department code (eg: VWS-xxx-xxxx) |
+| dossier_number     | string   | The generated dossier number. Normally prefixed with department code (eg: VWS-xxx-xxxx) |
 | title              | string   | The title of the dossier                                                                |
 | status             | string   | The status of the dossier (draft, published, etc)                                       |
 | date_from          | Date     | The start of the period for this dossier (or null)                                      |

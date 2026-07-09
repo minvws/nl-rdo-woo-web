@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\MainDocument;
 
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use PublicationApi\Domain\Upload\MainDocumentUploadStatusService;
@@ -17,6 +18,7 @@ use Shared\ValueObject\Url;
 readonly class MainDocumentResponseDtoFactory
 {
     public function __construct(
+        private ApiUrlGenerator $apiUrlGenerator,
         private DossierPathHelper $dossierPathHelper,
         private MainDocumentUploadStatusService $mainDocumentUploadStatusService,
         private PublicUrlGenerator $publicUrlGenerator,
@@ -53,7 +55,7 @@ readonly class MainDocumentResponseDtoFactory
         $linkCollection = new LinkCollection();
         $linkCollection->set(
             LinkCollection::UPLOAD,
-            new Link($this->publicUrlGenerator->buildUrlFromRoute($routeNameUpload, [
+            new Link($this->apiUrlGenerator->buildUrlFromRoute($routeNameUpload, [
                 'organisationId' => $dossier->getOrganisation()->getId(),
                 'dossierExternalId' => $dossier->getExternalId(),
             ])),
@@ -65,7 +67,7 @@ readonly class MainDocumentResponseDtoFactory
                 LinkCollection::FILE,
                 new Link($this->publicUrlGenerator->buildUrlFromRoute(DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, [
                     'prefix' => $dossier->getDocumentPrefix(),
-                    'dossierId' => $dossier->getDossierNr(),
+                    'dossierNumber' => $dossier->getDossierNumber(),
                     'type' => DossierFileType::MAIN_DOCUMENT->value,
                     'id' => $mainDocument->getId(),
                 ])),

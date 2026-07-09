@@ -68,12 +68,12 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
             'dossiers' => [$wooDecision],
         ]);
 
-        $result = $this->wooDecisionRepository->getDossierReferencesForDocument($doc->getDocumentNr());
+        $result = $this->wooDecisionRepository->getDossierReferencesForDocument($doc->getDocumentNumber());
         $dossierReference = reset($result);
 
         self::assertInstanceOf(DossierReference::class, $dossierReference);
         self::assertEquals($wooDecision->getType(), $dossierReference->getType());
-        self::assertEquals($wooDecision->getDossierNr(), $dossierReference->getDossierNr());
+        self::assertEquals($wooDecision->getDossierNumber(), $dossierReference->getDossierNumber());
         self::assertEquals($wooDecision->getTitle(), $dossierReference->getTitle());
         self::assertEquals($wooDecision->getDocumentPrefix(), $dossierReference->getDocumentPrefix());
     }
@@ -111,7 +111,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
 
         $result = $this->wooDecisionRepository->getSearchResultViewModel(
             $wooDecision->getDocumentPrefix(),
-            $wooDecision->getDossierNr(),
+            $wooDecision->getDossierNumber(),
             ApplicationMode::PUBLIC,
         );
 
@@ -145,12 +145,12 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
         $this->assertCount(2, $result);
 
         $dosserNrResults = array_map(
-            static fn (WooDecision $decision): string => $decision->getDossierNr(),
+            static fn (WooDecision $decision): string => $decision->getDossierNumber(),
             $result,
         );
 
-        $this->assertContains($wooDecisionA->getDossierNr(), $dosserNrResults);
-        $this->assertContains($wooDecisionC->getDossierNr(), $dosserNrResults);
+        $this->assertContains($wooDecisionA->getDossierNumber(), $dosserNrResults);
+        $this->assertContains($wooDecisionC->getDossierNumber(), $dosserNrResults);
     }
 
     public function testFindOne(): void
@@ -230,12 +230,12 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
         $result = $this->wooDecisionRepository->getPubliclyAvailable();
 
         $dosserNrResults = array_map(
-            static fn (WooDecision $decision): string => $decision->getDossierNr(),
+            static fn (WooDecision $decision): string => $decision->getDossierNumber(),
             $result,
         );
 
-        $this->assertNotContains($wooDecisionA->getDossierNr(), $dosserNrResults);
-        $this->assertContains($wooDecisionB->getDossierNr(), $dosserNrResults);
+        $this->assertNotContains($wooDecisionA->getDossierNumber(), $dosserNrResults);
+        $this->assertContains($wooDecisionB->getDossierNumber(), $dosserNrResults);
     }
 
     public function testGetNotificationCounts(): void

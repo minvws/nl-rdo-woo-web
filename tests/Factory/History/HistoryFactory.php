@@ -24,7 +24,7 @@ final class HistoryFactory extends PersistentObjectFactory
             'type' => HistoryService::TYPE_DOSSIER,
             'identifier' => Uuid::v6(),
             'createdDt' => new DateTimeImmutable(),
-            'contextKey' => 'dossier_update_dossier_nr',
+            'contextKey' => 'dossier_update_dossier_number',
             'context' => [],
             'site' => HistoryService::MODE_BOTH,
         ];

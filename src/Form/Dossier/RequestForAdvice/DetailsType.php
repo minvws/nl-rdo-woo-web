@@ -29,7 +29,7 @@ class DetailsType extends AbstractDossierStepType
         $dossierForm->addInternalReferenceField();
         $dossierForm->addDepartmentsField();
         $dossierForm->addSubjectField('admin.dossiers.request-for-advice.form.details.subject_help');
-        $dossierForm->addDossierNrField();
+        $dossierForm->addDossierNumberField();
         $dossierForm->addDocumentPrefixField();
         $dossierForm->addSubmits();
     }

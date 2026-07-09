@@ -8,5 +8,5 @@ use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 interface ProvidesDossierTypeSearchResultInterface
 {
-    public function getSearchResultViewModel(string $prefix, string $dossierNr, ApplicationMode $mode): ?DossierTypeSearchResultInterface;
+    public function getSearchResultViewModel(string $prefix, string $dossierNumber, ApplicationMode $mode): ?DossierTypeSearchResultInterface;
 }

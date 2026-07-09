@@ -1,0 +1,17 @@
+<div class="mb-4" data-e2e-name="notice-not-public-section">
+    <twig:Admin:Definition term="{{ 'global.dossiers.notice_not_public' | trans }}">
+        <div class="bhr-file">
+            <div class="bhr-file__left">
+                <div class="bhr-file__info-area">
+                    <div>
+                        {{ noticeNotPublic.documentName is not empty ? noticeNotPublic.documentName : 'Documentnaam niet opgegeven' }} (<twig:Date date="{{ noticeNotPublic.formalDate }}" />)
+                    </div>
+                    <span class="text-sm text-bhr-gray-700">
+                        {% set numberOfGrounds = noticeNotPublic.grounds | length %}
+                        {{ 'global.number_of_grounds' | trans({'%count%': numberOfGrounds}) }} {{ 'global.and' | trans }} {{ noticeNotPublic.explanation is not empty ? 'global.one' | trans : 'global.none' | trans }} {{ 'global.dossiers.notice_not_public.explanation' | trans | lower }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </twig:Admin:Definition>
+</div>

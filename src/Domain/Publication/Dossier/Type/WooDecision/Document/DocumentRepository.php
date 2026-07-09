@@ -169,15 +169,15 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findOneByDossierNrAndDocumentNr(string $prefix, string $dossierNr, string $documentNr): ?Document
+    public function findOneByDossierNumberAndDocumentNumber(string $prefix, string $dossierNumber, string $documentNumber): ?Document
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds')
-            ->where('d.documentNr = :documentNr')
-            ->andWhere('ds.dossierNr = :dossierNr')
+            ->where('d.documentNumber = :documentNumber')
+            ->andWhere('ds.dossierNumber = :dossierNumber')
             ->andWhere('ds.documentPrefix = :prefix')
-            ->setParameter('documentNr', $documentNr)
-            ->setParameter('dossierNr', $dossierNr)
+            ->setParameter('documentNumber', $documentNumber)
+            ->setParameter('dossierNumber', $dossierNumber)
             ->setParameter('prefix', $prefix);
 
         /** @var ?Document */
@@ -216,7 +216,7 @@ class DocumentRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds', Join::WITH, 'ds.id = :dossierId')
             ->where('ILIKE(d.fileInfo.name, :searchTerm) = true')
-            ->orWhere('ILIKE(d.documentNr, :searchTerm) = true')
+            ->orWhere('ILIKE(d.documentNumber, :searchTerm) = true')
             ->orderBy('d.updatedAt', 'DESC')
             ->setMaxResults($limit)
             ->setParameter('searchTerm', '%' . $searchTerm . '%')
@@ -260,7 +260,7 @@ class DocumentRepository extends ServiceEntityRepository
     {
         /** @var array<array-key, string> $docNumbers */
         $docNumbers = $this->getDossierDocumentsQueryBuilder($dossier)
-            ->select('doc.documentNr')
+            ->select('doc.documentNumber')
             ->getQuery()
             ->getSingleColumnResult();
 
@@ -269,7 +269,7 @@ class DocumentRepository extends ServiceEntityRepository
 
     public function findByDocumentNumber(DocumentNumber $documentNumber): ?Document
     {
-        return $this->findOneBy(['documentNr' => $documentNumber->getValue()]);
+        return $this->findOneBy(['documentNumber' => $documentNumber->getValue()]);
     }
 
     /**
@@ -292,13 +292,13 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->toIterable();
     }
 
-    public function getDocumentSearchEntry(string $documentNr): ?DocumentViewModel
+    public function getDocumentSearchEntry(string $documentNumber): ?DocumentViewModel
     {
         $qb = $this->createQueryBuilder('doc')
             ->select(sprintf(
                 'new %s(
                     doc.documentId,
-                    doc.documentNr,
+                    doc.documentNumber,
                     doc.fileInfo.name,
                     doc.fileInfo.sourceType,
                     doc.fileInfo.uploaded,
@@ -309,11 +309,11 @@ class DocumentRepository extends ServiceEntityRepository
                 )',
                 DocumentViewModel::class,
             ))
-            ->where('doc.documentNr = :documentNr')
+            ->where('doc.documentNumber = :documentNumber')
             ->andWhere('dos.status IN (:statuses)')
             ->innerJoin('doc.dossiers', 'dos')
             ->groupBy('doc.id')
-            ->setParameter('documentNr', $documentNr)
+            ->setParameter('documentNumber', $documentNumber)
             ->setParameter('statuses', [DossierStatus::PREVIEW, DossierStatus::PUBLISHED]);
 
         /** @var ?DocumentViewModel */
@@ -334,25 +334,25 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findOneByDocumentNrCaseInsensitive(string $documentNr): ?Document
+    public function findOneByDocumentNumberCaseInsensitive(string $documentNumber): ?Document
     {
         $qb = $this->createQueryBuilder('d')
-            ->where('LOWER(d.documentNr) = LOWER(:documentNr)')
-            ->setParameter('documentNr', $documentNr);
+            ->where('LOWER(d.documentNumber) = LOWER(:documentNumber)')
+            ->setParameter('documentNumber', $documentNumber);
 
         /** @var ?Document */
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function getDocumentInquiryNumbers(string $documentNr): DocumentInquiryNumbers
+    public function getDocumentInquiryNumbers(string $documentNumber): DocumentInquiryNumbers
     {
         /**
          * @var array<array-key, array{id:Uuid, inquiryNumber:string}> $result
          */
         $result = $this->createQueryBuilder('d')
             ->select('d.id, inq.inquiryNumber')
-            ->where('LOWER(d.documentNr) = LOWER(:documentNr)')
-            ->setParameter('documentNr', $documentNr)
+            ->where('LOWER(d.documentNumber) = LOWER(:documentNumber)')
+            ->setParameter('documentNumber', $documentNumber)
             ->leftJoin('d.inquiries', 'inq')
             ->getQuery()
             ->getArrayResult();
@@ -392,7 +392,7 @@ class DocumentRepository extends ServiceEntityRepository
         INNER JOIN document_dossier dd ON d.id = dd.document_id
         WHERE dd.woo_decision_id = :dossierId
           AND (
-              TRIM(COALESCE(d.document_nr, '')) = ''
+              TRIM(COALESCE(d.document_number, '')) = ''
               OR TRIM(COALESCE(d.judgement, '')) = ''
               OR (
                   d.suspended = FALSE
@@ -409,7 +409,7 @@ class DocumentRepository extends ServiceEntityRepository
         INNER JOIN document_referrals dr ON d_ref.id = dr.referred_document_id
         INNER JOIN document_chain dc ON dr.document_id = dc.id
         WHERE
-            TRIM(COALESCE(d_ref.document_nr, '')) = ''
+            TRIM(COALESCE(d_ref.document_number, '')) = ''
             OR TRIM(COALESCE(d_ref.judgement, '')) = ''
             OR (
                 d_ref.suspended = FALSE

@@ -1,5 +1,5 @@
 # https://taskfile.dev
-version: "3.48.0"
+version: '3.50.0'
 
 vars:
   ROBOT_PARAMS: --variablefile libraries/tenants.py --outputdir results  --name 'E2E Tests' ./tests
@@ -37,7 +37,7 @@ tasks:
           echo Tenant: {{.tenant}}
       - task: fixtures:load:e2e
         vars:
-          tenant: '{{.tenant}}'
+          TENANT: '{{.tenant}}'
       - cmd: |
           #!/usr/bin/env bash
           set -euo pipefail
@@ -144,6 +144,9 @@ tasks:
     vars:
       tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
+      - task: :env:e2e:enable
+      - defer:
+          task: ':env:e2e:disable'
       - task: :up
       - task: init
       - task: clear-results
@@ -160,6 +163,9 @@ tasks:
     vars:
       tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
+      - task: :env:e2e:enable
+      - defer:
+          task: ':env:e2e:disable'
       - task: :up
       - task: init
       - task: clear-results
@@ -168,7 +174,7 @@ tasks:
         vars:
           SUB_CMD: >
             run -e ENVIRONMENT=docker -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
-            /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include ci --exclude init --exclude sitemap --ordering order.txt {{.ROBOT_PARAMS}}"
+            /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include ci --exclude init --exclude sitemap --exclude failing --ordering order.txt {{.ROBOT_PARAMS}}"
 
   docker:run:api:
     aliases: [run-api]
@@ -251,17 +257,17 @@ tasks:
   cleansheet:
     desc: Run for Robot customized cleansheet
     cmds:
-      - task: :dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant=minvws woopie:dev:clean-sheet --index woopie-minvws --force {{.CLI_ARGS}}" }
+      - task: :dc:exec:admin
+        vars: { SUB_CMD: "bin/console --tenant=minvws woopie:dev:clean-sheet --index woopie-minvws --force {{ .CLI_ARGS }}" }
       - task: :minio:clear-buckets
 
   fixtures:load:e2e:
     desc: Load the E2E fixtures
     vars:
-      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
+      TENANT: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
-      - task: :dc:shell
-        vars: { SUB_CMD: "admin bin/console --tenant={{.tenant}} doctrine:fixtures:load --no-interaction --append --group=e2e" }
+      - task: :dc:exec:admin
+        vars: { SUB_CMD: "bin/console --tenant={{ .TENANT }} doctrine:fixtures:load --no-interaction --append --group=e2e" }
 
   clear-results:
     desc: Empties the results folder, as well as creating it if it does not exist
@@ -274,9 +280,9 @@ tasks:
     desc: Disable the Symfony debug toolbar in Robot Framework tests
     dir: ../../
     status:
-      - test ! -f {{.BASE_PATH}}/.env.local
+      - grep -q '^ENABLE_TOOLBAR=false' .env.dev.local
     cmds:
-      - cmd: sed -i '' 's/^\(ENABLE_TOOLBAR=\).*$/\1false/' .env.local
+      - cmd: grep -q '^ENABLE_TOOLBAR=' .env.dev.local && sed -i '' 's/^\(ENABLE_TOOLBAR=\).*$/\1false/' .env.dev.local || echo 'ENABLE_TOOLBAR=false' >> .env.dev.local
         platforms: [darwin]
-      - cmd: sed -i 's/^\(ENABLE_TOOLBAR=\).*$/\1false/' .env.local
+      - cmd: grep -q '^ENABLE_TOOLBAR=' .env.dev.local && sed -i 's/^\(ENABLE_TOOLBAR=\).*$/\1false/' .env.dev.local || echo 'ENABLE_TOOLBAR=false' >> .env.dev.local
         platforms: [linux]

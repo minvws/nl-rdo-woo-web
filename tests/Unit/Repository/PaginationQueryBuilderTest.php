@@ -38,7 +38,7 @@ class PaginationQueryBuilderTest extends UnitTestCase
 
         $queryBuilderMock = Mockery::mock(QueryBuilder::class);
         $queryBuilderMock->expects('orderBy')
-            ->with('entity.id', 'ASC')
+            ->with('entity.id', 'DESC')
             ->andReturnSelf();
         $queryBuilderMock->expects('setMaxResults')
             ->with($itemsPerPage + 1)
@@ -58,11 +58,11 @@ class PaginationQueryBuilderTest extends UnitTestCase
     public function testGetPaginatedWithCursor(): void
     {
         $entityClass = Department::class;
-        $cursorId = 123;
+        $cursorId = '123'; // Must be a string, not an integer
 
         $queryBuilderMock = Mockery::mock(QueryBuilder::class);
         $queryBuilderMock->expects('andWhere')
-            ->with('entity.id > :id')
+            ->with('entity.id < :id')
             ->andReturnSelf();
         $queryBuilderMock->expects('setParameter')
             ->with('id', $cursorId)

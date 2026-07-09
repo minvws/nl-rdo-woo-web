@@ -10,7 +10,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Search\Query\Facet\Definition\DateFacet;
-use Shared\Domain\Search\Query\Facet\Definition\PrefixedDossierNrFacet;
+use Shared\Domain\Search\Query\Facet\Definition\PrefixedDossierNumberFacet;
 use Shared\Domain\Search\Query\Facet\Input\DateFacetInput;
 use Shared\Domain\Search\Query\Facet\Input\FacetInputCollection;
 use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
@@ -58,7 +58,10 @@ class ResultTransformerTest extends UnitTestCase
     public function testTransform(): void
     {
         $facetInputs = new FacetInputCollection(...[
-            FacetKey::PREFIXED_DOSSIER_NR->value => StringValuesFacetInput::fromParameterBag(new PrefixedDossierNrFacet(), new ParameterBag()),
+            FacetKey::PREFIXED_DOSSIER_NUMBER->value => StringValuesFacetInput::fromParameterBag(
+                new PrefixedDossierNumberFacet(),
+                new ParameterBag(),
+            ),
             FacetKey::DATE->value => DateFacetInput::fromParameterBag(new DateFacet(), new ParameterBag()),
         ]);
 

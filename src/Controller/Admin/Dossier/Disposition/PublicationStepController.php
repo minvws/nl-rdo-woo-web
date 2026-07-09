@@ -28,13 +28,13 @@ class PublicationStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/disposition/publish/concept/{prefix}/{dossierId}',
+        path: '/balie/dossier/disposition/publish/concept/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_disposition_publication_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Disposition $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Disposition $dossier,
         Request $request,
     ): Response {
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
@@ -58,13 +58,13 @@ class PublicationStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/disposition/publish/edit/{prefix}/{dossierId}',
+        path: '/balie/dossier/disposition/publish/edit/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_disposition_publication_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Disposition $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Disposition $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {

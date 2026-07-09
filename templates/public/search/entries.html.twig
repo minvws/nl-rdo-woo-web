@@ -83,7 +83,7 @@
 {% if result.searchParameters.hasActiveFacets %}
     {# Facet pills #}
     <ul class="flex flex-wrap pb-1 gap-x-2">
-        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::PREFIXED_DOSSIER_NR'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::PREFIXED_DOSSIER_NUMBER'), result) }}
         {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::INQUIRY_DOCUMENTS'), result) }}
         {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::INQUIRY_DOSSIERS'), result) }}
         {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::TYPE'), result) }}
@@ -95,7 +95,7 @@
         {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
         {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::FAMILY'), result) }}
         {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::THREAD'), result) }}
-        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::REFERRED_DOCUMENT_NR'), result) }}
+        {{ macro.facet_pills(constant('Shared\\Service\\Search\\Model\\FacetKey::REFERRED_DOCUMENT_NUMBER'), result) }}
     </ul>
 {% endif %}
 

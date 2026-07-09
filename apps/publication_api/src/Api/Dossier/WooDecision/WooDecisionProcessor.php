@@ -11,8 +11,9 @@ use ApiPlatform\Validator\Exception\ValidationException as ApiPlatformValidation
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Dossier\DossierNrValidator;
+use PublicationApi\Api\Dossier\DossierNumberValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\Dossier\WooDecision\Document\WooDecisionDocumentMapper;
 use PublicationApi\Api\Dossier\WooDecision\Document\WooDecisionDocumentRequestDto;
 use PublicationApi\Api\Dossier\WooDecision\Document\WooDecisionDocumentValidator;
@@ -20,9 +21,11 @@ use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
 use PublicationApi\Domain\Inquiry\InquiryService;
+use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
+use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
@@ -53,13 +56,15 @@ use function array_values;
 final readonly class WooDecisionProcessor implements ProcessorInterface
 {
     public function __construct(
-        private DossierNrValidator $dossierNrValidator,
+        private DossierNumberValidator $dossierNumberValidator,
         private DossierSupportService $dossierSupportService,
+        private DossierUpdateGuard $dossierUpdateGuard,
         private DocumentRepository $documentRepository,
         private DocumentService $documentService,
         private DocumentUpdater $documentUpdater,
         private WooDecisionDispatcher $wooDecisionDispatcher,
         private WooDecisionRepository $wooDecisionRepository,
+        private DossierRepository $dossierRepository,
         private InquiryService $inquiryService,
         private WooDecisionMapper $wooDecisionMapper,
         private DocumentPrefixDeterminer $documentPrefixDeterminer,
@@ -90,22 +95,28 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
         $organisation = $this->organisationResolver->resolve($uriVariables);
         $subject = $this->dossierSupportService->getSubject($data, $organisation);
         $department = $this->dossierSupportService->getDepartment($organisation, $data->departmentId);
-        $wooDecision = $this->wooDecisionRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
+        $dossier = $this->dossierRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
+
+        if ($dossier !== null && ! $dossier instanceof WooDecision) {
+            throw ExternalIdInUseException::forExternalIdAlreadyUsed($dossier->getType());
+        }
 
         $this->wooDecisionDocumentValidator->validate($data->documents);
 
-        if ($wooDecision === null) {
+        if ($dossier === null) {
             $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
-            $this->dossierNrValidator->validate($data->dossierNumber, $documentPrefix);
-            $wooDecision = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
+            $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
+            $dossier = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
 
-            return $this->wooDecisionMapper->fromEntity($wooDecision);
+            return $this->wooDecisionMapper->fromEntity($dossier);
         }
 
-        $this->dossierNrValidator->validate($data->dossierNumber, $wooDecision->getDocumentPrefix(), $wooDecision->getId());
-        $this->update($wooDecision, $organisation, $department, $subject, $data);
+        $this->dossierUpdateGuard->assertDossierIsEditable($dossier);
 
-        return $this->wooDecisionMapper->fromEntity($wooDecision);
+        $this->dossierNumberValidator->validate($data->dossierNumber, $dossier->getDocumentPrefix(), $dossier->getId());
+        $this->update($dossier, $organisation, $department, $subject, $data);
+
+        return $this->wooDecisionMapper->fromEntity($dossier);
     }
 
     private function create(

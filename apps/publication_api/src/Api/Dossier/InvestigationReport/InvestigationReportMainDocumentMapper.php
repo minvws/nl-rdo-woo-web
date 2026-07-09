@@ -6,7 +6,6 @@ namespace PublicationApi\Api\Dossier\InvestigationReport;
 
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
-use Shared\Domain\Publication\FileInfo;
 use Webmozart\Assert\Assert;
 
 class InvestigationReportMainDocumentMapper
@@ -22,10 +21,7 @@ class InvestigationReportMainDocumentMapper
             $mainDocumentRequestDto->language,
         );
 
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($mainDocumentRequestDto->fileName->toString());
-
-        $mainDocument->setFileInfo($fileInfo);
+        $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
 
         return $mainDocument;
@@ -38,10 +34,7 @@ class InvestigationReportMainDocumentMapper
         $mainDocument = $investigationReport->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($mainDocumentRequestDto->fileName->toString());
-
-        $mainDocument->setFileInfo($fileInfo);
+        $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());
         $mainDocument->setFormalDate($mainDocumentRequestDto->formalDate);
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
         $mainDocument->setLanguage($mainDocumentRequestDto->language);

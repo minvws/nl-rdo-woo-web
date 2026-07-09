@@ -55,7 +55,7 @@ class StepActionHelperTest extends UnitTestCase
     public function testRedirectToNextStep(): void
     {
         $this->dossier->expects('getDocumentPrefix')->andReturn('foo');
-        $this->dossier->expects('getDossierNr')->andReturn('bar');
+        $this->dossier->expects('getDossierNumber')->andReturn('bar');
         $this->wizardStatus->expects('getDossier')->andReturn($this->dossier);
 
         $nextStep = Mockery::mock(StepStatus::class);
@@ -67,7 +67,7 @@ class StepActionHelperTest extends UnitTestCase
             'dummy_route',
             [
                 'prefix' => 'foo',
-                'dossierId' => 'bar',
+                'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
 
@@ -79,7 +79,7 @@ class StepActionHelperTest extends UnitTestCase
     public function testRedirectToCurrentStep(): void
     {
         $this->dossier->expects('getDocumentPrefix')->andReturn('foo');
-        $this->dossier->expects('getDossierNr')->andReturn('bar');
+        $this->dossier->expects('getDossierNumber')->andReturn('bar');
         $this->wizardStatus->expects('getDossier')->andReturn($this->dossier);
 
         $currentStep = Mockery::mock(StepStatus::class);
@@ -91,7 +91,7 @@ class StepActionHelperTest extends UnitTestCase
             'dummy_route',
             [
                 'prefix' => 'foo',
-                'dossierId' => 'bar',
+                'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
 
@@ -103,7 +103,7 @@ class StepActionHelperTest extends UnitTestCase
     public function testRedirectToFirstOpenStep(): void
     {
         $this->dossier->expects('getDocumentPrefix')->andReturn('foo');
-        $this->dossier->expects('getDossierNr')->andReturn('bar');
+        $this->dossier->expects('getDossierNumber')->andReturn('bar');
         $this->wizardStatus->expects('getDossier')->andReturn($this->dossier);
 
         $openStep = Mockery::mock(StepStatus::class);
@@ -115,7 +115,7 @@ class StepActionHelperTest extends UnitTestCase
             'dummy_route',
             [
                 'prefix' => 'foo',
-                'dossierId' => 'bar',
+                'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
 
@@ -127,7 +127,7 @@ class StepActionHelperTest extends UnitTestCase
     public function testRedirectToFirstOpenStepRedirectsToDossierIfItIsAlreadyPublished(): void
     {
         $this->dossier->expects('getDocumentPrefix')->andReturn('foo');
-        $this->dossier->expects('getDossierNr')->andReturn('bar');
+        $this->dossier->expects('getDossierNumber')->andReturn('bar');
 
         $wizardStatus = Mockery::mock(DossierWizardStatus::class);
         $wizardStatus->expects('getFirstOpenStep')->andReturnNull();
@@ -137,7 +137,7 @@ class StepActionHelperTest extends UnitTestCase
             'app_admin_dossier',
             [
                 'prefix' => 'foo',
-                'dossierId' => 'bar',
+                'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
 
@@ -149,7 +149,7 @@ class StepActionHelperTest extends UnitTestCase
     public function testRedirectAfterFormSubmitUsesNextStepIfNextIsClickedForAConceptDossier(): void
     {
         $this->dossier->expects('getDocumentPrefix')->andReturn('foo');
-        $this->dossier->expects('getDossierNr')->andReturn('bar');
+        $this->dossier->expects('getDossierNumber')->andReturn('bar');
         $this->wizardStatus->expects('getDossier')->times(3)->andReturn($this->dossier);
 
         $currentStep = Mockery::mock(StepStatus::class);
@@ -173,7 +173,7 @@ class StepActionHelperTest extends UnitTestCase
             'dummy_route',
             [
                 'prefix' => 'foo',
-                'dossierId' => 'bar',
+                'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
 
@@ -185,7 +185,7 @@ class StepActionHelperTest extends UnitTestCase
     public function testRedirectAfterFormSubmitUsesCurrentStepIfSubmitIsClickedForAConceptDossier(): void
     {
         $this->dossier->expects('getDocumentPrefix')->andReturn('foo');
-        $this->dossier->expects('getDossierNr')->andReturn('bar');
+        $this->dossier->expects('getDossierNumber')->andReturn('bar');
         $this->wizardStatus->expects('getDossier')->times(3)->andReturn($this->dossier);
 
         $currentStep = Mockery::mock(StepStatus::class);
@@ -206,7 +206,7 @@ class StepActionHelperTest extends UnitTestCase
             'dummy_route',
             [
                 'prefix' => 'foo',
-                'dossierId' => 'bar',
+                'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
 
@@ -218,7 +218,7 @@ class StepActionHelperTest extends UnitTestCase
     public function testRedirectAfterFormSubmitRedirectsToDossierForAPublishedDossier(): void
     {
         $this->dossier->expects('getDocumentPrefix')->andReturn('foo');
-        $this->dossier->expects('getDossierNr')->andReturn('bar');
+        $this->dossier->expects('getDossierNumber')->andReturn('bar');
         $this->wizardStatus->expects('getDossier')->times(3)->andReturn($this->dossier);
 
         $form = Mockery::mock(FormInterface::class);
@@ -236,7 +236,7 @@ class StepActionHelperTest extends UnitTestCase
             'app_admin_dossier',
             [
                 'prefix' => 'foo',
-                'dossierId' => 'bar',
+                'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
 
@@ -248,7 +248,7 @@ class StepActionHelperTest extends UnitTestCase
     public function testAddDossierToBreadCrumbs(): void
     {
         $this->dossier->expects('getDocumentPrefix')->times(2)->andReturn('foo');
-        $this->dossier->expects('getDossierNr')->times(2)->andReturn('bar');
+        $this->dossier->expects('getDossierNumber')->times(2)->andReturn('bar');
 
         $breadCrumbs = Mockery::mock(Breadcrumbs::class);
         $item = 'foo bar';
@@ -261,7 +261,7 @@ class StepActionHelperTest extends UnitTestCase
             'app_admin_dossier',
             [
                 'prefix' => $this->dossier->getDocumentPrefix(),
-                'dossierId' => $this->dossier->getDossierNr(),
+                'dossierNumber' => $this->dossier->getDossierNumber(),
             ],
         );
 
@@ -274,13 +274,13 @@ class StepActionHelperTest extends UnitTestCase
     {
         $dossier = Mockery::mock(AbstractDossier::class);
         $dossier->expects('getDocumentPrefix')->andReturn('foo');
-        $dossier->expects('getDossierNr')->andReturn('bar');
+        $dossier->expects('getDossierNumber')->andReturn('bar');
 
         $this->router->expects('generate')->with(
             'app_admin_dossier_publication_confirmation',
             [
                 'prefix' => 'foo',
-                'dossierId' => 'bar',
+                'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
 

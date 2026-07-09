@@ -4,6 +4,7 @@ Library             OperatingSystem
 Library             Browser
 Library             DebugLibrary
 Library             FakerLibrary
+Resource            Dossier.resource
 
 
 *** Variables ***
@@ -12,10 +13,9 @@ ${FILE_LOCATION}    ${EMPTY}
 
 *** Keywords ***
 Fill Out Complaint Judgement Details
-  ${random_summary} =  Fakerlibrary.Text  200
-  Fill Text  id=content_form_summary  ${random_summary}
+  Fill Out Summary
   Upload Complaint Judgement  ${FILE_LOCATION}
-  Click  "Opslaan en verder"
+  Click Save And Continue
 
 Upload Complaint Judgement
   [Arguments]  ${complaint_judgement_location}

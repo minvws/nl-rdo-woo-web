@@ -29,7 +29,7 @@ class AttachmentActionController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/attachment/withdraw/{prefix}/{dossierId}/{attachmentId}',
+        path: '/balie/dossier/attachment/withdraw/{prefix}/{dossierNumber}/{attachmentId}',
         name: 'app_admin_dossier_attachment_withdraw',
         methods: ['GET', 'POST'],
     )]
@@ -37,7 +37,7 @@ class AttachmentActionController extends AbstractController
     public function withdraw(
         Breadcrumbs $breadcrumbs,
         Request $request,
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] AbstractDossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
         #[MapEntity(mapping: ['attachmentId' => 'id'])] AbstractAttachment $attachment,
     ): Response {
         if ($attachment->getDossier() !== $dossier) {
@@ -47,9 +47,9 @@ class AttachmentActionController extends AbstractController
         $wizardStatus = $this->wizardStatusFactory->getWizardStatus($dossier);
 
         $breadcrumbs->addRouteItem(
-            $dossier->getDossierNr(),
+            $dossier->getDossierNumber(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
 
         Assert::notNull($attachment->getFileInfo()->getName());
@@ -58,7 +58,7 @@ class AttachmentActionController extends AbstractController
             $wizardStatus->getAttachmentStep()->getRouteName(),
             [
                 'prefix' => $dossier->getDocumentPrefix(),
-                'dossierId' => $dossier->getDossierNr(),
+                'dossierNumber' => $dossier->getDossierNumber(),
             ],
         );
         $breadcrumbs->addItem('admin.dossiers.attachment.withdraw.title');
@@ -74,7 +74,7 @@ class AttachmentActionController extends AbstractController
                 $wizardStatus->getAttachmentStep()->getRouteName(),
                 [
                     'prefix' => $dossier->getDocumentPrefix(),
-                    'dossierId' => $dossier->getDossierNr(),
+                    'dossierNumber' => $dossier->getDossierNumber(),
                 ],
             );
         }

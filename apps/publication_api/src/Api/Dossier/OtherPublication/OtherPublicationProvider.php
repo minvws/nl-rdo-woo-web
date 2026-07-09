@@ -6,17 +6,17 @@ namespace PublicationApi\Api\Dossier\OtherPublication;
 
 use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\Pagination\ArrayPaginator;
 use ApiPlatform\State\ProviderInterface;
 use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
+use PublicationApi\Api\Pagination\CursorPage;
+use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
+use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationRepository;
 use Shared\Service\ApiPlatformService;
 use Shared\ValueObject\ExternalId;
-
-use function count;
 
 final readonly class OtherPublicationProvider implements ProviderInterface
 {
@@ -24,22 +24,20 @@ final readonly class OtherPublicationProvider implements ProviderInterface
         private OrganisationResolver $organisationResolver,
         private OtherPublicationRepository $otherPublicationRepository,
         private OtherPublicationMapper $otherPublicationMapper,
+        private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
     }
 
     /**
-     * @param array<array-key,string> $uriVariables
+     * @param array<array-key, string> $uriVariables
      */
-    public function provide(
-        Operation $operation,
-        array $uriVariables = [],
-        array $context = [],
-    ): ArrayPaginator|OtherPublicationResponseDto {
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|OtherPublicationResponseDto
+    {
         $organisation = $this->organisationResolver->resolve($uriVariables);
 
         if ($operation instanceof CollectionOperationInterface) {
-            return $this->provideCollection($organisation, $context);
+            return $this->provideCollection($organisation, $operation, $uriVariables, $context);
         }
 
         return $this->provideSingle($organisation, ExternalIdFactory::create($uriVariables['dossierExternalId']));
@@ -47,16 +45,30 @@ final readonly class OtherPublicationProvider implements ProviderInterface
 
     /**
      * @param array<array-key,mixed> $context
+     * @param array<array-key, string> $uriVariables
      */
-    private function provideCollection(Organisation $organisation, array $context): ArrayPaginator
-    {
+    private function provideCollection(
+        Organisation $organisation,
+        Operation $operation,
+        array $uriVariables,
+        array $context,
+    ): CursorPage {
         $otherPublications = $this->otherPublicationRepository->getByOrganisationAndContainsExternalId(
             $organisation,
             $this->itemsPerPage,
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator($this->otherPublicationMapper->fromEntities($otherPublications), 0, count($otherPublications));
+        $mappedDtos = $this->otherPublicationMapper->fromEntities($otherPublications);
+
+        /** @var list<HasId> $otherPublications */
+        return $this->cursorPageFactory->create(
+            $otherPublications,
+            $mappedDtos,
+            $this->itemsPerPage,
+            $operation,
+            $uriVariables,
+        );
     }
 
     private function provideSingle(Organisation $organisation, ExternalId $otherPublicationExternalId): OtherPublicationResponseDto

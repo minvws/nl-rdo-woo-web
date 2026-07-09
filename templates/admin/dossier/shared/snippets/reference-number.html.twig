@@ -1,8 +1,8 @@
-{% if form.children.dossierNr is defined %}
-    {{ form_row(form.dossierNr) }}
-{% elseif dossier.dossierNr %}
+{% if form.children.dossierNumber is defined %}
+    {{ form_row(form.dossierNumber) }}
+{% elseif dossier.dossierNumber %}
     <div class="bhr-form-row">
         <h2 class="bhr-label">{{ 'global.ref_number' | trans }}</h2>
-        <p class="bhr-readonly-text">{{ dossier.dossierNr }}</p>
+        <p class="bhr-readonly-text">{{ dossier.dossierNumber }}</p>
     </div>
 {% endif %}

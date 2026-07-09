@@ -1,11 +1,6 @@
 export type FormValue = Record<string, InputValueType>;
 export type InputValueType =
-  | boolean
-  | number
-  | string
-  | object
-  | Array<string>
-  | undefined;
+  boolean | number | string | object | Array<string> | undefined;
 
 export const enum InputErrorId {
   DateMaxUntilToday = 'dateMaxUntilToday',

@@ -44,12 +44,18 @@ Fill Out Basic Details
   END
   Select Random Subject
   Select Options By  id=details_documentPrefix_documentPrefix  text  ${prefix}
-  Fill Text  id=details_dossierNr  robot-admin-${DOSSIER_REFERENCE}
-  Click  "Opslaan en verder"
+  Fill Text  id=details_dossierNumber  robot-admin-${DOSSIER_REFERENCE}
+  Click Save And Continue
   Assert No Input Errors
 
 Select Random Department
-  ${nr_of_departments} =  Wait Until Keyword Succeeds  3s  250ms  Get Element Count  //select[@name="details[departments][0]"]/option  >  0
+  ${nr_of_departments} =  Wait Until Keyword Succeeds
+  ...  3s
+  ...  250ms
+  ...  Get Element Count
+  ...  //select[@name="details[departments][0]"]/option
+  ...  >
+  ...  0
   ${max_index} =  Evaluate  max(0, ${nr_of_departments} - 1)
   ${min_index} =  Evaluate  min(1, ${max_index})
   ${random_index} =  Evaluate  # index 0 is a placeholder, skipped when possible
@@ -159,7 +165,7 @@ Click Save And Prepare
   Success Alert Is Visible  klaarzetten gelukt: De publicatie wordt voorbereid
 
 Click Edit Details
-  Click  //a[@data-e2e-name="edit-details"]
+  Click  //a[@data-e2e-name="edit-basic-details"]
 
 Edit Main Document
   Click  //*[@data-e2e-name="main-document"]//*[@data-e2e-name="edit-file"]
@@ -179,6 +185,10 @@ Verify Publication Action Status
     ...  ${EMPTY}
   END
 
+Verify Publication Badge Status
+  [Arguments]  ${expected_action}
+  Get Text  (//*[@data-e2e-name="dossier-status-badge"])[1]  contains  ${expected_action}
+
 Verify Dossier Document Count
   [Arguments]
   ...  ${nr_of_published_docs}=0
@@ -189,6 +199,13 @@ Verify Dossier Document Count
   Get Text  //*[@data-e2e-name="tabs-documenten-button-2"]  contains  (${nr_of_partially_published_docs})
   Get Text  //*[@data-e2e-name="tabs-documenten-button-3"]  contains  (${nr_of_unpublished_docs})
   Get Text  //*[@data-e2e-name="tabs-documenten-button-4"]  contains  (${nr_of_not_yet_online_docs})
+
+Click Save And Continue
+  Click  //button[@data-e2e-name="save-and-continue"]
+
+Fill Out Summary
+  ${random_summary} =  Fakerlibrary.Text  200
+  Fill Text  id=content_form_summary  ${random_summary}
 
 Assert No Input Errors
   Get Element Count  //*[contains(@class,"js-input-errors")]  should be  0

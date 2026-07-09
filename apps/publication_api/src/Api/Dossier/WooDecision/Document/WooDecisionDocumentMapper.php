@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\WooDecision\Document;
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Service\Inventory\DocumentNumber;
 use Shared\Service\ObjectHasher;
@@ -24,21 +23,18 @@ readonly class WooDecisionDocumentMapper
         string $documentPrefix,
         WooDecisionDocumentRequestDto $wooDecisionDocumentRequestDto,
     ): Document {
-        $documentNr = DocumentNumber::fromString(
+        $documentNumber = DocumentNumber::fromString(
             $documentPrefix,
             $wooDecisionDocumentRequestDto->matter,
             $wooDecisionDocumentRequestDto->documentId->toString(),
         );
 
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($wooDecisionDocumentRequestDto->fileName->toString());
-
         $document = new Document();
         $document->setExternalId($wooDecisionDocumentRequestDto->externalId);
-        $document->setDocumentNr($documentNr->getValue());
-        $document->setFileInfo($fileInfo);
+        $document->setDocumentNumber($documentNumber->getValue());
+        $document->getFileInfo()->setName($wooDecisionDocumentRequestDto->fileName->toString());
 
-        return self::update($documentPrefix, $document, $wooDecisionDocumentRequestDto);
+        return $this->update($documentPrefix, $document, $wooDecisionDocumentRequestDto);
     }
 
     public function update(
@@ -48,7 +44,7 @@ readonly class WooDecisionDocumentMapper
     ): Document {
         $documentHash = $this->objectHasher->get($document);
 
-        $documentNr = DocumentNumber::fromString(
+        $documentNumber = DocumentNumber::fromString(
             $documentPrefix,
             $wooDecisionDocumentRequestDto->matter,
             $wooDecisionDocumentRequestDto->documentId->toString(),
@@ -56,7 +52,7 @@ readonly class WooDecisionDocumentMapper
 
         $document->setDocumentDate($wooDecisionDocumentRequestDto->documentDate);
         $document->setDocumentId($wooDecisionDocumentRequestDto->documentId);
-        $document->setDocumentNr($documentNr->getValue());
+        $document->setDocumentNumber($documentNumber->getValue());
         $document->setFamilyId($wooDecisionDocumentRequestDto->familyId);
         $document->setGrounds($wooDecisionDocumentRequestDto->grounds);
         $document->setJudgement($wooDecisionDocumentRequestDto->judgement);

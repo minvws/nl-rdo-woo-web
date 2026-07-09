@@ -22,13 +22,13 @@ class ProcessInventoryException extends TranslatableException
         return new self('publication.dossier.error.could_not_download_inventory');
     }
 
-    public static function forMissingDocument(string $documentNr): self
+    public static function forMissingDocument(string $documentNumber): self
     {
         return new self(
-            sprintf('Missing document %s in the inventory', $documentNr),
+            sprintf('Missing document %s in the inventory', $documentNumber),
             'publication.dossier.error.missing_document',
             [
-                '{documentNumber}' => $documentNr,
+                '{documentNumber}' => $documentNumber,
             ],
         );
     }
@@ -39,6 +39,11 @@ class ProcessInventoryException extends TranslatableException
             sprintf('Uncaught exception during inventory processing: %s', $exception->getMessage()),
             'publication.dossier.error.processing_inventory',
         );
+    }
+
+    public static function forProcessingFailed(): self
+    {
+        return new self('Production report processing failed', 'publication.dossier.error.processing_inventory');
     }
 
     public static function forNoChanges(): self
@@ -62,24 +67,24 @@ class ProcessInventoryException extends TranslatableException
         return new self('publication.dossier.error.maximum_processing_time_exceeded');
     }
 
-    public static function forMissingReferredDocument(string $documentNr): self
+    public static function forMissingReferredDocument(string $documentNumber): self
     {
         return new self(
-            sprintf('The referred document %s does not exist', $documentNr),
+            sprintf('The referred document %s does not exist', $documentNumber),
             'publication.dossier.error.referred_document_does_not_exist',
             [
-                '{documentNumber}' => $documentNr,
+                '{documentNumber}' => $documentNumber,
             ],
         );
     }
 
-    public static function forDuplicateDocumentNr(string $documentNr): self
+    public static function forDuplicateDocumentNumber(string $documentNumber): self
     {
         return new self(
-            sprintf('The document number %s is not unique within the inventory', $documentNr),
+            sprintf('The document number %s is not unique within the inventory', $documentNumber),
             'publication.dossier.error.document_not_unique',
             [
-                '{documentNumber}' => $documentNr,
+                '{documentNumber}' => $documentNumber,
             ],
         );
     }
@@ -95,9 +100,6 @@ class ProcessInventoryException extends TranslatableException
 
     public static function forGenericRowException(Exception $exception): self
     {
-        return new self(
-            $exception->getMessage(),
-            'publication.dossier.error.generic_document_row_exception',
-        );
+        return new self($exception->getMessage(), 'publication.dossier.error.generic_document_row_exception');
     }
 }

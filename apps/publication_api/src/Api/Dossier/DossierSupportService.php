@@ -21,8 +21,6 @@ use Shared\Service\DossierService;
 use Shared\Service\MainDocumentService;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Shared\ValueObject\ExternalId;
-use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints\Unique;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -35,7 +33,7 @@ use function array_map;
 use function array_unique;
 use function count;
 
-final readonly class DossierSupportService
+readonly class DossierSupportService
 {
     public function __construct(
         private AttachmentService $attachmentService,
@@ -44,9 +42,6 @@ final readonly class DossierSupportService
         private DossierService $dossierService,
         private MainDocumentService $mainDocumentService,
         private SubjectRepository $subjectRepository,
-        private Security $security,
-        #[Autowire(param: 'enable_update_published_dossier_via_api')]
-        private bool $enableUpdatePublishedDossierViaApi = false,
     ) {
     }
 
@@ -109,12 +104,6 @@ final readonly class DossierSupportService
 
     public function validateDossier(AbstractDossier $dossier): void
     {
-        if (! $this->enableUpdatePublishedDossierViaApi) {
-            if (! $this->security->isGranted('AuthMatrix.dossier.update', $dossier)) {
-                throw new ValidationException(ConstraintViolationList::createFromMessage('dossier update is not allowed in non-concept state'));
-            }
-        }
-
         try {
             $this->dossierService->validate($dossier, DossierValidationGroup::allNonWorkflowGroups());
         } catch (ValidationFailedException $validationFailedException) {

@@ -53,7 +53,7 @@ final class WooIndexWooDecisionStory extends Story
     {
         $unpublishedWooDecision = WooDecisionFactory::createOne([
             'status' => DossierStatus::NEW,
-            'dossierNr' => 'my-unpublished-woo-decision',
+            'dossierNumber' => 'my-unpublished-woo-decision',
             'createdAt' => CarbonImmutable::parse('2025-01-01'),
             'updatedAt' => CarbonImmutable::parse('2025-01-01'),
         ]);
@@ -63,7 +63,7 @@ final class WooIndexWooDecisionStory extends Story
     public function buildPublishedDossier(int $number, CarbonImmutable $dossierDate, CarbonImmutable $miscDate): void
     {
         $wooDecision = WooDecisionFactory::createOne([
-            'dossierNr' => sprintf('my-woo-decision-%s', $number),
+            'dossierNumber' => sprintf('my-woo-decision-%s', $number),
             'createdAt' => $dossierDate,
             'updatedAt' => $dossierDate,
         ]);
@@ -76,7 +76,7 @@ final class WooIndexWooDecisionStory extends Story
                 ->create([
                     'overwrite_id' => $this->getUniqueUuid(),
                     'documentDate' => PlainDate::createFromFormat('Y-m-d', $dossierDate->setDay($i)->subYear()->subMonths(3)->format('Y-m-d')),
-                    'documentNr' => sprintf('%04d-%04d', $number, $i),
+                    'documentNumber' => sprintf('%04d-%04d', $number, $i),
                     'dossiers' => [$wooDecision],
                     'judgement' => faker()->randomElement([Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC]),
                     'createdAt' => $dossierDate->setDay($i),
@@ -91,7 +91,7 @@ final class WooIndexWooDecisionStory extends Story
                 ->create([
                     'overwrite_id' => $this->getUniqueUuid(),
                     'documentDate' => PlainDate::createFromFormat('Y-m-d', $dossierDate->setDay($i)->subYear()->subMonths(3)->format('Y-m-d')),
-                    'documentNr' => sprintf('%04d-%04d', $number, $i),
+                    'documentNumber' => sprintf('%04d-%04d', $number, $i),
                     'dossiers' => [$wooDecision],
                     'judgement' => faker()->randomElement([Judgement::ALREADY_PUBLIC, Judgement::NOT_PUBLIC]),
                     'createdAt' => $dossierDate->setDay($i),

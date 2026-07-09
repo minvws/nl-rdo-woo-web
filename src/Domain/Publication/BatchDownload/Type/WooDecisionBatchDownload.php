@@ -32,7 +32,7 @@ readonly class WooDecisionBatchDownload implements BatchDownloadTypeInterface
         return sprintf(
             '%s-%s',
             $scope->wooDecision->getDocumentPrefix(),
-            $scope->wooDecision->getDossierNr(),
+            $scope->wooDecision->getDossierNumber(),
         );
     }
 

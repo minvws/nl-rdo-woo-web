@@ -1,0 +1,32 @@
+# https://taskfile.dev
+version: '3.50.0'
+
+tasks:
+  run:
+    desc: Run schemathesis tests
+    cmds:
+      - task: :up
+      - task: :composer:script:openapi:export
+      - mkdir -p reports
+      - task: :dc
+        vars:
+          SUB_CMD: >-
+            run --rm
+            schemathesis run
+            --phases stateful
+            --request-cert /certs/client-minvws.pem
+            --request-cert-key /certs/client-minvws.key
+            --tls-verify=false
+            --report-dir /reports
+            --coverage-report-html-path /reports/schema-coverage.html
+            https://publication-api-minvws.local/api/publication/v1/openapi.json
+
+  view:
+    desc: View output from the last schemathesis run
+    env:
+      COVERAGE_REPORT: reports/schema-coverage.html
+    cmds:
+      - echo "=== report files ==="
+      - ls reports/ 2>/dev/null || echo "(no report dir)"
+      - cmd: echo "Opening $COVERAGE_REPORT ..."; open "$COVERAGE_REPORT"
+        if: test -f "$COVERAGE_REPORT"

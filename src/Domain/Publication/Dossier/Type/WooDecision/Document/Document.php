@@ -11,7 +11,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Override;
 use Shared\Doctrine\PlainDateType;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Validator\UniqueDocumentNr;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Validator\UniqueDocumentNumber;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem;
@@ -27,7 +27,7 @@ use function array_values;
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity('externalId')]
-#[UniqueDocumentNr]
+#[UniqueDocumentNumber]
 class Document extends AbstractPublicationItem
 {
     #[ORM\Column(name: 'external_id', type: 'external_id', length: 128, unique: true, nullable: true)]
@@ -43,7 +43,7 @@ class Document extends AbstractPublicationItem
     private Collection $dossiers;
 
     #[ORM\Column(length: 255, nullable: false, index: true)]
-    private string $documentNr;
+    private string $documentNumber;
 
     #[ORM\Column(type: PlainDateType::NAME, nullable: true, index: true)]
     private ?PlainDate $documentDate = null;
@@ -131,14 +131,14 @@ class Document extends AbstractPublicationItem
         return $this;
     }
 
-    public function getDocumentNr(): string
+    public function getDocumentNumber(): string
     {
-        return $this->documentNr;
+        return $this->documentNumber;
     }
 
-    public function setDocumentNr(string $documentNr): self
+    public function setDocumentNumber(string $documentNumber): self
     {
-        $this->documentNr = $documentNr;
+        $this->documentNumber = $documentNumber;
 
         return $this;
     }
@@ -372,7 +372,7 @@ class Document extends AbstractPublicationItem
     #[Override]
     public function getFileCacheKey(): string
     {
-        return $this->documentNr;
+        return $this->documentNumber;
     }
 
     public function getWithdrawReason(): ?DocumentWithdrawReason

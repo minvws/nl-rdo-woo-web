@@ -31,7 +31,7 @@ final class DispositionControllerTest extends SharedWebTestCase
             'dossier' => $dossier,
         ]);
 
-        $client->request('GET', sprintf('/beschikking/%s/%s', $dossier->getDocumentPrefix(), $dossier->getDossierNr()));
+        $client->request('GET', sprintf('/beschikking/%s/%s', $dossier->getDocumentPrefix(), $dossier->getDossierNumber()));
 
         $this->assertResponseIsSuccessful();
         $this->assertStringContainsString($expectedBreadcrumb, (string) $client->getResponse()->getContent());

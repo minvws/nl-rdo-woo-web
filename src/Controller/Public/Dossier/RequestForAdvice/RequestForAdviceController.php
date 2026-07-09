@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Shared\Controller\Public\Dossier\RequestForAdvice;
 
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
+use InvalidArgumentException;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\ViewModel\NoticeNotPublicViewFactory;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
+use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\ViewModel\RequestForAdviceViewFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
@@ -29,43 +32,88 @@ class RequestForAdviceController extends AbstractController
         private readonly AttachmentViewFactory $attachmentViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
         private readonly DossierFileViewFactory $dossierFileViewFactory,
+        private readonly RequestForAdviceMainDocumentRepository $requestForAdviceMainDocumentRepository,
+        private readonly NoticeNotPublicViewFactory $noticeNotPublicViewFactory,
     ) {
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/adviesaanvraag/{prefix}/{dossierId}', name: 'app_requestforadvice_detail', methods: ['GET'])]
+    #[Route('/adviesaanvraag/{prefix}/{dossierNumber}', name: 'app_requestforadvice_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] RequestForAdvice $requestForAdvice,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        RequestForAdviceMainDocument $document,
         Breadcrumbs $breadcrumbs,
+        string $prefix,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem(mb_ucfirst((string) $requestForAdvice->getTitle()));
 
-        return $this->render('public/dossier/request-for-advice/details.html.twig', [
+        $parameters = [
             'dossier' => $this->viewFactory->make($requestForAdvice),
             'attachments' => $this->attachmentViewFactory->makeCollection($requestForAdvice),
-            'document' => $this->mainDocumentViewFactory->make($requestForAdvice, $document),
+        ];
+
+        $document = $this->requestForAdviceMainDocumentRepository->findForDossierByPrefixAndDossierNumber(
+            $prefix,
+            $requestForAdvice->getDossierNumber(),
+        );
+        $noticeNotPublic = $requestForAdvice->getNoticeNotPublic();
+
+        if ($document === null && $noticeNotPublic === null) {
+            throw new InvalidArgumentException('either mainDocument or NoticeNotPublic must be set');
+        }
+
+        if ($document !== null) {
+            $parameters['document'] = $this->mainDocumentViewFactory->make($requestForAdvice, $document);
+            $parameters['noticeNotPublic'] = null;
+        } else {
+            $parameters['document'] = null;
+            $parameters['noticeNotPublic'] = $this->noticeNotPublicViewFactory->make($requestForAdvice);
+        }
+
+        return $this->render('public/dossier/request-for-advice/details.html.twig', $parameters);
+    }
+
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
+    #[Route(
+        '/adviesaanvraag/{prefix}/{dossierNumber}/mededeling-niet-openbaar',
+        name: 'app_requestforadvice_notice_not_public_detail',
+        methods: ['GET'],
+    )]
+    public function noticeNotPublicDetail(
+        #[ValueResolver('dossierWithAccessCheck')] RequestForAdvice $requestForAdvice,
+        Breadcrumbs $breadcrumbs,
+    ): Response {
+        $noticeNotPublicViewModel = $this->noticeNotPublicViewFactory->make($requestForAdvice);
+
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
+        $breadcrumbs->addRouteItem('dossier.type.request-for-advice', 'app_requestforadvice_detail', [
+            'prefix' => $requestForAdvice->getDocumentPrefix(),
+            'dossierNumber' => $requestForAdvice->getDossierNumber(),
+        ]);
+        $breadcrumbs->addItem($noticeNotPublicViewModel->title);
+
+        return $this->render('public/dossier/request-for-advice/notice-not-public.html.twig', [
+            'dossier' => $this->viewFactory->make($requestForAdvice),
+            'noticeNotPublic' => $noticeNotPublicViewModel,
         ]);
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/adviesaanvraag/{prefix}/{dossierId}/document',
+        '/adviesaanvraag/{prefix}/{dossierNumber}/document',
         name: 'app_requestforadvice_document_detail',
         methods: ['GET'],
     )]
     public function documentDetail(
         #[ValueResolver('dossierWithAccessCheck')] RequestForAdvice $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber)')]
         RequestForAdviceMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('dossier.type.request-for-advice', 'app_requestforadvice_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
         ]);
         $breadcrumbs->addItem((string) $dossier->getTitle());
 
@@ -83,13 +131,13 @@ class RequestForAdviceController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/adviesaanvraag/{prefix}/{dossierId}/bijlage/{attachmentId}',
+        '/adviesaanvraag/{prefix}/{dossierNumber}/bijlage/{attachmentId}',
         name: 'app_requestforadvice_attachment_detail',
         methods: ['GET'],
     )]
     public function attachmentDetail(
         #[ValueResolver('dossierWithAccessCheck')] RequestForAdvice $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber, attachmentId)')]
         RequestForAdviceAttachment $attachment,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -98,7 +146,7 @@ class RequestForAdviceController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('dossier.type.request-for-advice', 'app_requestforadvice_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
         ]);
         $breadcrumbs->addItem((string) $dossier->getTitle());
 

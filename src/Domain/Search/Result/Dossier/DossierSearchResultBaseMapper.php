@@ -30,12 +30,12 @@ readonly class DossierSearchResultBaseMapper
         ApplicationMode $mode = ApplicationMode::PUBLIC,
     ): ?ResultEntryInterface {
         $prefix = $hit->getStringOrNull('[fields][document_prefix][0]');
-        $dossierNr = $hit->getStringOrNull('[fields][dossier_nr][0]');
-        if (is_null($prefix) || is_null($dossierNr)) {
+        $dossierNumber = $hit->getStringOrNull('[fields][dossier_number][0]');
+        if (is_null($prefix) || is_null($dossierNumber)) {
             return null;
         }
 
-        $resultViewModel = $repository->getSearchResultViewModel($prefix, $dossierNr, $mode);
+        $resultViewModel = $repository->getSearchResultViewModel($prefix, $dossierNumber, $mode);
         if ($resultViewModel === null) {
             return null;
         }

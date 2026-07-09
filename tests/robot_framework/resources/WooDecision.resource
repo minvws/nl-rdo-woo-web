@@ -9,7 +9,6 @@ Resource            TestData.resource
 
 
 *** Variables ***
-${ENVIRONMENT}          ${EMPTY}
 ${PRODUCTION_REPORT}    ${EMPTY}
 ${DOCUMENTS}            ${EMPTY}
 ${NUMBER_OF_DOCUMENTS}  ${EMPTY}
@@ -57,7 +56,7 @@ Fill Out WooDecision Details
   Click  " Besluitbrief toevoegen... "
   Upload Besluitbrief  files/woodecision/besluitbrief.txt
   IF  ${has_attachment}  Upload Attachment  staatscourant
-  Click  "Opslaan en verder"
+  Click Save And Continue
 
 Upload Besluitbrief
   [Arguments]  ${besluitbrief_location}

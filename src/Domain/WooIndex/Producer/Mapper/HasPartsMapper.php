@@ -26,19 +26,19 @@ final readonly class HasPartsMapper
         return $rawUrl
             ->hasParts
             ?->map(fn (RawReferenceDto $dto) => new UrlReference(
-                resource: $this->getResource($rawUrl->documentPrefix, $rawUrl->dossierNr, $dto),
+                resource: $this->getResource($rawUrl->documentPrefix, $rawUrl->dossierNumber, $dto),
                 officieleTitel: $dto->documentFileName,
             ))
             ?? null;
     }
 
-    private function getResource(string $documentPrefix, string $dossierNr, RawReferenceDto $dto): string
+    private function getResource(string $documentPrefix, string $dossierNumber, RawReferenceDto $dto): string
     {
         $subpath = $this->urlGenerator->generate(
             name: 'app_dossier_file_download',
             parameters: [
                 'prefix' => $documentPrefix,
-                'dossierId' => $dossierNr,
+                'dossierNumber' => $dossierNumber,
                 'type' => $dto->source->value,
                 'id' => $dto->id,
             ],

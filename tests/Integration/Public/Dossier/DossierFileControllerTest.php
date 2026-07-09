@@ -60,7 +60,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
             $dossier,
             $document,
             DossierFileType::DOCUMENT,
-            expectedDownloadFileName: $document->getDocumentNr() . '.pdf',
+            expectedDownloadFileName: $document->getDocumentNumber() . '.pdf',
         );
     }
 
@@ -83,7 +83,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
             $dossier,
             $document,
             DossierFileType::DOCUMENT,
-            expectedDownloadFileName: $document->getDocumentNr() . '.pdf',
+            expectedDownloadFileName: $document->getDocumentNumber() . '.pdf',
         );
     }
 
@@ -141,7 +141,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
             sprintf(
                 '/dossier/%s/%s/file/download/%s/%s',
                 $dossier->getDocumentPrefix(),
-                $dossier->getDossierNr(),
+                $dossier->getDossierNumber(),
                 $dossierFileType->value,
                 $entityWithFileInfo->getId(),
             ),

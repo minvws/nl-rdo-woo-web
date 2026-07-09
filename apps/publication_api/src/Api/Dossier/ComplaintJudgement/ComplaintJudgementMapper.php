@@ -7,8 +7,10 @@ namespace PublicationApi\Api\Dossier\ComplaintJudgement;
 use PublicationApi\Api\Department\DepartmentMapper;
 use PublicationApi\Api\Dossier\ComplaintJudgement\Uploads\MainDocument\ComplaintJudgementUploadMainDocumentResource;
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicResponseDtoFactory;
 use PublicationApi\Api\Organisation\OrganisationMapper;
 use PublicationApi\Api\Subject\SubjectMapper;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
@@ -16,7 +18,6 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\Url;
@@ -28,9 +29,10 @@ use function array_values;
 readonly class ComplaintJudgementMapper
 {
     public function __construct(
+        private ApiUrlGenerator $apiUrlGenerator,
         private DossierPathHelper $dossierPathHelper,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
-        private PublicUrlGenerator $publicUrlGenerator,
+        private NoticeNotPublicResponseDtoFactory $noticeNotPublicResponseDtoFactory,
     ) {
     }
 
@@ -50,7 +52,7 @@ readonly class ComplaintJudgementMapper
     public function fromEntity(ComplaintJudgement $complaintJudgement): ComplaintJudgementResponseDto
     {
         $mainDocument = $complaintJudgement->getMainDocument();
-        Assert::notNull($mainDocument);
+        $noticeNotPublic = $complaintJudgement->getNoticeNotPublic();
 
         $dateFrom = $complaintJudgement->getDateFrom();
         Assert::notNull($dateFrom);
@@ -58,22 +60,31 @@ readonly class ComplaintJudgementMapper
         $department = $complaintJudgement->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
+        $mainDocumentDto = $mainDocument !== null
+            ? $this->mainDocumentResponseDtoFactory->fromEntity(
+                $mainDocument,
+                ComplaintJudgementUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                ComplaintJudgementMainDocumentResponseDto::class,
+            )
+            : null;
+
+        $noticeNotPublicDto = $noticeNotPublic !== null
+            ? $this->noticeNotPublicResponseDtoFactory->fromEntity($noticeNotPublic)
+            : null;
+
         return new ComplaintJudgementResponseDto(
             $complaintJudgement->getId(),
             $complaintJudgement->getExternalId(),
             OrganisationMapper::fromEntity($complaintJudgement->getOrganisation()),
-            $complaintJudgement->getDossierNr(),
+            $complaintJudgement->getDossierNumber(),
             $complaintJudgement->getTitle(),
             $complaintJudgement->getSummary(),
             SubjectMapper::fromNullableEntity($complaintJudgement->getSubject()),
             DepartmentMapper::fromEntity($department),
             $complaintJudgement->getPublicationDate(),
             $complaintJudgement->getStatus(),
-            $this->mainDocumentResponseDtoFactory->fromEntity(
-                $mainDocument,
-                ComplaintJudgementUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
-                ComplaintJudgementMainDocumentResponseDto::class,
-            ),
+            $mainDocumentDto,
+            $noticeNotPublicDto,
             $dateFrom,
             $this->getHalLinks($complaintJudgement),
         );
@@ -106,7 +117,7 @@ readonly class ComplaintJudgementMapper
     ): ComplaintJudgement {
         $complaintJudgement->setDateFrom($complaintJudgementRequestDto->dossierDate);
         $complaintJudgement->setDepartments([$department]);
-        $complaintJudgement->setDossierNr($complaintJudgementRequestDto->dossierNumber);
+        $complaintJudgement->setDossierNumber($complaintJudgementRequestDto->dossierNumber);
         $complaintJudgement->setOrganisation($organisation);
         $complaintJudgement->setPublicationDate($complaintJudgementRequestDto->publicationDate);
         $complaintJudgement->setTitle($complaintJudgementRequestDto->title);
@@ -121,7 +132,7 @@ readonly class ComplaintJudgementMapper
         $linkCollection = new LinkCollection();
         $linkCollection->set(
             LinkCollection::SELF,
-            new Link($this->publicUrlGenerator->buildUrlFromRoute(ComplaintJudgementResource::ROUTE_NAME_GET_COMPLAINT_JUDGEMENT, [
+            new Link($this->apiUrlGenerator->buildUrlFromRoute(ComplaintJudgementResource::ROUTE_NAME_GET_COMPLAINT_JUDGEMENT, [
                 'organisationId' => $complaintJudgement->getOrganisation()->getId(),
                 'dossierExternalId' => $complaintJudgement->getExternalId(),
             ])),

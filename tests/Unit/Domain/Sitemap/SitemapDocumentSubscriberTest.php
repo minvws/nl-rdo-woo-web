@@ -42,12 +42,12 @@ class SitemapDocumentSubscriberTest extends UnitTestCase
     {
         $document = Mockery::mock(Document::class);
         $document->expects('getUpdatedAt')->andReturn($documentUpdatedAt = new DateTimeImmutable());
-        $document->expects('getDocumentNr')->andReturn($documentNr = 'doc-123');
+        $document->expects('getDocumentNumber')->andReturn($documentNumber = 'doc-123');
 
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
         $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'foo');
-        $dossier->expects('getDossierNr')->andReturn($dossierNr = 'bar');
+        $dossier->expects('getDossierNumber')->andReturn($dossierNumber = 'bar');
 
         $query = Mockery::mock(Query::class);
         $query->expects('toIterable')->andReturn([
@@ -73,8 +73,8 @@ class SitemapDocumentSubscriberTest extends UnitTestCase
             'app_document_detail',
             [
                 'prefix' => $prefix,
-                'dossierId' => $dossierNr,
-                'documentId' => $documentNr,
+                'dossierNumber' => $dossierNumber,
+                'documentNumber' => $documentNumber,
             ],
             0,
         )->andReturn($docUrl = '/foo/bar/doc-123');

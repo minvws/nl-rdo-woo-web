@@ -12,11 +12,14 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Entity\HasAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\EntityWithNoticeNotPublic;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\HasNoticeNotPublicTrait;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
+use Shared\Validator\ExactlyOneOf\ExactlyOneOf;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -30,13 +33,26 @@ use Symfony\Component\Validator\Constraints as Assert;
     DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
     DossierValidationGroup::WORKFLOW_PUBLISH->value,
 ])]
-class Advice extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument
+#[ExactlyOneOf(
+    properties: ['mainDocument', 'noticeNotPublic'],
+    errorPaths: ['document', 'noticeNotPublic'],
+    noneMessage: 'dossier.document_or_notice_required',
+    multipleMessage: 'dossier.document_and_notice_not_allowed',
+    groups: [
+        DossierValidationGroup::CONTENT->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ],
+)]
+class Advice extends AbstractDossier implements EntityWithAttachments, EntityWithMainDocument, EntityWithNoticeNotPublic
 {
     /** @use HasAttachments<AdviceAttachment> */
     use HasAttachments;
 
     /** @use HasMainDocument<AdviceMainDocument> */
     use HasMainDocument;
+
+    use HasNoticeNotPublicTrait;
 
     #[Assert\NotNull(
         message: 'date_mandatory',
@@ -58,11 +74,6 @@ class Advice extends AbstractDossier implements EntityWithAttachments, EntityWit
     protected ?PlainDate $dateFrom = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: AdviceMainDocument::class, cascade: ['persist', 'remove'])]
-    #[Assert\NotBlank(groups: [
-        DossierValidationGroup::CONTENT->value,
-        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
-        DossierValidationGroup::WORKFLOW_PUBLISH->value,
-    ])]
     #[Assert\Valid(groups: [
         DossierValidationGroup::CONTENT->value,
         DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,

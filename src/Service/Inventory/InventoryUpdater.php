@@ -13,15 +13,20 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUpdateEvent;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Search\SearchDispatcher;
+use Shared\Exception\ProcessInventoryException;
 use Shared\Exception\ProductionReportUpdaterException;
+use Shared\Exception\TranslatableException;
 use Shared\Service\Inquiry\DocumentInquiryNumbers;
 use Shared\Service\Inquiry\InquiryChangeset;
 use Shared\Service\Inquiry\InquiryService;
 use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
+use Shared\Service\Inventory\Reader\InventoryReadItem;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 use function count;
@@ -44,8 +49,10 @@ readonly class InventoryUpdater
 
     /**
      * @throws Exception
+     * @throws ExceptionInterface
      */
     public function applyChangesetToDatabase(
+        ProductionReportProcessRun $run,
         WooDecision $dossier,
         InventoryReaderInterface $reader,
         InventoryChangeset $changeset,
@@ -60,74 +67,26 @@ readonly class InventoryUpdater
         $currentProgress = $runProgress->getCurrentCount();
         foreach ($documentGenerator as $inventoryItem) {
             if (count($documentsToUpdate) > 1000) {
-                $this->doctrine->flush();
-                foreach ($documentsToUpdate as $doc) {
-                    $this->doctrine->detach($doc);
-                }
+                $this->flushAndDetach($documentsToUpdate);
                 $documentsToUpdate = [];
             }
 
             $rowIndex = $inventoryItem->getIndex();
             $runProgress->update($currentProgress + $rowIndex);
 
-            $documentMetadata = $inventoryItem->getDocumentMetadata();
-            if (! $documentMetadata instanceof DocumentMetadata) {
-                continue;
-            }
-
-            $documentNr = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
-            $documentChangeStatus = $changeset->getStatus($documentNr);
-            if ($documentChangeStatus === InventoryChangeset::UNCHANGED) {
-                continue;
-            }
-
-            $document = $this->documentRepository->findOneByDocumentNrCaseInsensitive($documentNr->getValue());
-            if ($documentChangeStatus === InventoryChangeset::ADDED && $document === null) {
-                $document = new Document();
-                $document->setDocumentNr($documentNr->getValue());
-
-                $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
-                $inquiryChangeset->updateInquiryNumbersForDocument(
-                    DocumentInquiryNumbers::fromDocumentEntity($document),
-                    $documentMetadata->getInquiryNumbers(),
-                );
-
-                $documentsToUpdate[] = $document;
-
-                if (count($documentMetadata->getRefersTo()) !== 0) {
-                    $docReferralUpdates[$documentNr->getValue()] = $documentMetadata->getRefersTo();
+            try {
+                $document = $this->processInventoryItem($inventoryItem, $dossier, $changeset, $inquiryChangeset, $docReferralUpdates);
+                if ($document instanceof Document) {
+                    $documentsToUpdate[] = $document;
                 }
+            } catch (Exception $exception) {
+                $this->addRowException($rowIndex, $run, $exception);
 
-                continue;
+                throw $exception;
             }
-
-            if ($documentChangeStatus === InventoryChangeset::UPDATED && $document instanceof Document) {
-                $this->messageBus->dispatch(
-                    new DocumentUpdateEvent($dossier, $documentMetadata, $document),
-                );
-
-                $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
-                $inquiryChangeset->updateInquiryNumbersForDocument(
-                    DocumentInquiryNumbers::fromDocumentEntity($document),
-                    $documentMetadata->getInquiryNumbers(),
-                );
-
-                $documentsToUpdate[] = $document;
-
-                if ($this->documentComparator->hasRefersToUpdate($dossier, $document, $documentMetadata)) {
-                    $docReferralUpdates[$document->getDocumentNr()] = $documentMetadata->getRefersTo();
-                }
-
-                continue;
-            }
-
-            throw ProductionReportUpdaterException::forStateMismatch();
         }
 
-        $this->doctrine->flush();
-        foreach ($documentsToUpdate as $doc) {
-            $this->doctrine->detach($doc);
-        }
+        $this->flushAndDetach($documentsToUpdate);
         unset($documentsToUpdate);
 
         // These updates must be applied outside the main document process loop, as referred docs might not exist yet.
@@ -138,10 +97,103 @@ readonly class InventoryUpdater
         $this->applyDeletes($changeset, $dossier);
     }
 
+    /**
+     * @param array<string, array<array-key, string>> $docReferralUpdates
+     *
+     * @throws Exception
+     * @throws ExceptionInterface
+     */
+    private function processInventoryItem(
+        InventoryReadItem $inventoryItem,
+        WooDecision $dossier,
+        InventoryChangeset $changeset,
+        InquiryChangeset $inquiryChangeset,
+        array &$docReferralUpdates,
+    ): ?Document {
+        $documentMetadata = $inventoryItem->getDocumentMetadata();
+        if (! $documentMetadata instanceof DocumentMetadata) {
+            return null;
+        }
+
+        $documentNumber = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
+        $documentChangeStatus = $changeset->getStatus($documentNumber);
+        if ($documentChangeStatus === InventoryChangeset::UNCHANGED) {
+            return null;
+        }
+
+        $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber->getValue());
+        if ($documentChangeStatus === InventoryChangeset::ADDED && $document === null) {
+            $document = new Document();
+            $document->setDocumentNumber($documentNumber->getValue());
+
+            $this->applyDocumentUpdate($documentMetadata, $dossier, $document, $inquiryChangeset);
+
+            if (count($documentMetadata->getRefersTo()) !== 0) {
+                $docReferralUpdates[$documentNumber->getValue()] = $documentMetadata->getRefersTo();
+            }
+
+            return $document;
+        }
+
+        if ($documentChangeStatus === InventoryChangeset::UPDATED && $document instanceof Document) {
+            $this->messageBus->dispatch(
+                new DocumentUpdateEvent($dossier, $documentMetadata, $document),
+            );
+
+            $this->applyDocumentUpdate($documentMetadata, $dossier, $document, $inquiryChangeset);
+
+            if ($this->documentComparator->hasRefersToUpdate($dossier, $document, $documentMetadata)) {
+                $docReferralUpdates[$document->getDocumentNumber()] = $documentMetadata->getRefersTo();
+            }
+
+            return $document;
+        }
+
+        throw ProductionReportUpdaterException::forStateMismatch();
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function applyDocumentUpdate(
+        DocumentMetadata $documentMetadata,
+        WooDecision $dossier,
+        Document $document,
+        InquiryChangeset $inquiryChangeset,
+    ): void {
+        $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
+
+        $inquiryChangeset->updateInquiryNumbersForDocument(
+            DocumentInquiryNumbers::fromDocumentEntity($document),
+            $documentMetadata->getInquiryNumbers(),
+        );
+    }
+
+    /**
+     * @param array<int, Document> $documents
+     */
+    private function flushAndDetach(array $documents): void
+    {
+        $this->doctrine->flush();
+
+        foreach ($documents as $document) {
+            $this->doctrine->detach($document);
+        }
+    }
+
+    private function addRowException(int $rowIndex, ProductionReportProcessRun $run, Exception $exception): void
+    {
+        if (! $exception instanceof TranslatableException) {
+            $exception = ProcessInventoryException::forGenericRowException($exception);
+        }
+
+        $run->addRowException($rowIndex, $exception);
+    }
+
     private function applyDeletes(InventoryChangeset $changeset, WooDecision $dossier): void
     {
-        foreach ($changeset->getDeleted() as $documentNr) {
-            $document = $this->getDocument($documentNr);
+        foreach ($changeset->getDeleted() as $documentNumber) {
+            $document = $this->getDocument($documentNumber);
             if (! $document instanceof Document || ! $dossier->getStatus()->isConcept()) {
                 throw ProductionReportUpdaterException::forStateMismatch();
             }
@@ -164,14 +216,14 @@ readonly class InventoryUpdater
 
         $this->searchDispatcher->dispatchIndexDossierCommand($dossier->getId());
 
-        foreach ($changeset->getAll() as $documentNr => $action) {
+        foreach ($changeset->getAll() as $documentNumber => $action) {
             $runProgress->tick();
 
             if ($action === InventoryChangeset::UNCHANGED) {
                 continue;
             }
 
-            $document = $this->getDocument($documentNr);
+            $document = $this->getDocument($documentNumber);
             if (! $document instanceof Document) {
                 throw ProductionReportUpdaterException::forStateMismatch();
             }
@@ -196,9 +248,9 @@ readonly class InventoryUpdater
         }
     }
 
-    private function getDocument(string $documentNr): ?Document
+    private function getDocument(string $documentNumber): ?Document
     {
-        return $this->documentRepository->findOneByDocumentNrCaseInsensitive($documentNr);
+        return $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber);
     }
 
     /**
@@ -207,8 +259,8 @@ readonly class InventoryUpdater
     private function applyDocumentReferralUpdates(WooDecision $dossier, array $docReferralUpdates): void
     {
         $documentsToUpdate = [];
-        foreach ($docReferralUpdates as $documentNr => $refersTo) {
-            $document = $this->getDocument($documentNr);
+        foreach ($docReferralUpdates as $documentNumber => $refersTo) {
+            $document = $this->getDocument($documentNumber);
             if (! $document instanceof Document) {
                 throw new RuntimeException('State mismatch between database and document referral updates');
             }
@@ -217,17 +269,11 @@ readonly class InventoryUpdater
 
             $documentsToUpdate[] = $document;
             if (count($documentsToUpdate) > 1000) {
-                $this->doctrine->flush();
-                foreach ($documentsToUpdate as $doc) {
-                    $this->doctrine->detach($doc);
-                }
+                $this->flushAndDetach($documentsToUpdate);
                 $documentsToUpdate = [];
             }
         }
 
-        $this->doctrine->flush();
-        foreach ($documentsToUpdate as $doc) {
-            $this->doctrine->detach($doc);
-        }
+        $this->flushAndDetach($documentsToUpdate);
     }
 }

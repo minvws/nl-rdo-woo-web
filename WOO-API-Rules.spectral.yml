@@ -1,0 +1,37 @@
+# Custom Woo OpenAPI rules, layered on top of the ADR ruleset.
+
+extends:
+  - ./API-Design-Rules.spectral.yml
+
+rules:
+  # Guards against the #6961 regression: API Platform emitting an empty response schema
+  # (just `{ type: object }` with no properties), which renders as an empty body in the docs.
+  woo:success-response-body-required:
+    severity: warn
+    message: "{{property}} success response should define a non-empty body: 'content' with at least one media type whose 'schema' is not an empty object."
+    given: >-
+      $..[responses][?(@property && @property.match(/^[23]\d\d$/) && @property !== '204')]
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required: ["content"]
+          properties:
+            content:
+              type: object
+              minProperties: 1
+              additionalProperties:
+                type: object
+                required: ["schema"]
+                properties:
+                  schema:
+                    type: object
+                    minProperties: 1
+                    not:
+                      type: object
+                      properties:
+                        type:
+                          const: object
+                      required: ["type"]
+                      additionalProperties: false

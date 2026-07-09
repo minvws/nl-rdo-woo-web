@@ -49,3 +49,4 @@ hashes.json
 lib/
 reports
 compose.override.yml
+__pycache__

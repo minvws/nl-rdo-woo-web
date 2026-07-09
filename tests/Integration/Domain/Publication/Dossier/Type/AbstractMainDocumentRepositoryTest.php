@@ -50,17 +50,17 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
             'dossier' => $dossier,
         ]);
 
-        $result = $this->mainDocumentRepository->findForDossierByPrefixAndNr(
+        $result = $this->mainDocumentRepository->findForDossierByPrefixAndDossierNumber(
             $dossier->getDocumentPrefix(),
-            $dossier->getDossierNr(),
+            $dossier->getDossierNumber(),
         );
         self::assertNotNull($result);
 
         $this->mainDocumentRepository->remove($result, true);
 
-        $result = $this->mainDocumentRepository->findForDossierByPrefixAndNr(
+        $result = $this->mainDocumentRepository->findForDossierByPrefixAndDossierNumber(
             $dossier->getDocumentPrefix(),
-            $dossier->getDossierNr(),
+            $dossier->getDossierNumber(),
         );
         self::assertNull($result);
     }
@@ -83,7 +83,7 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
         );
     }
 
-    public function testFindForDossierByPrefixAndNrFindsMatch(): void
+    public function testFindForDossierByPrefixAndNumberFindsMatch(): void
     {
         $dossier = AnnualReportFactory::createOne();
 
@@ -91,18 +91,18 @@ final class AbstractMainDocumentRepositoryTest extends SharedWebTestCase
             'dossier' => $dossier,
         ]);
 
-        $result = $this->mainDocumentRepository->findForDossierByPrefixAndNr(
+        $result = $this->mainDocumentRepository->findForDossierByPrefixAndDossierNumber(
             $dossier->getDocumentPrefix(),
-            $dossier->getDossierNr(),
+            $dossier->getDossierNumber(),
         );
 
         self::assertNotNull($result);
         self::assertEquals($document->getId(), $result->getId());
     }
 
-    public function testFindForDossierByPrefixAndNrMismatch(): void
+    public function testFindForDossierByPrefixAndNumberMismatch(): void
     {
-        $result = $this->mainDocumentRepository->findForDossierByPrefixAndNr(
+        $result = $this->mainDocumentRepository->findForDossierByPrefixAndDossierNumber(
             'a non-existing document prefix',
             'a non-existing dossier number',
         );

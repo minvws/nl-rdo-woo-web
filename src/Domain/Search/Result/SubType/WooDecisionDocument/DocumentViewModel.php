@@ -17,7 +17,7 @@ readonly class DocumentViewModel implements SubTypeViewModelInterface
 
     public function __construct(
         public string $documentId,
-        public string $documentNr,
+        public string $documentNumber,
         string $fileName,
         public SourceType $fileSourceType,
         bool $fileUploaded,

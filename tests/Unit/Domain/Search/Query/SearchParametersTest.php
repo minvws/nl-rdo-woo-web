@@ -76,7 +76,7 @@ class SearchParametersTest extends UnitTestCase
         $facetInputCollection = Mockery::mock(FacetInputCollection::class);
         $facetInputCollection->expects('getIterator')->andReturn(new ArrayIterator([
             FacetKey::DEPARTMENT->value => $enabledFacet,
-            FacetKey::PREFIXED_DOSSIER_NR->value => $disabledFacet,
+            FacetKey::PREFIXED_DOSSIER_NUMBER->value => $disabledFacet,
             FacetKey::INQUIRY_DOCUMENTS->value => $documentInquiryFacet,
             FacetKey::INQUIRY_DOSSIERS->value => $dossierInquiryFacet,
         ]));

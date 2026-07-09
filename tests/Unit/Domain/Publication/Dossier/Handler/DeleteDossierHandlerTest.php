@@ -41,7 +41,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
     private DossierDeleteStrategyInterface&MockInterface $strategyB;
     private UuidV6 $dossierId;
     private string $documentPrefix;
-    private string $dossierNr;
+    private string $dossierNumber;
     private DossierTitle $dossierTitle;
     private DossierStatus $dossierStatus;
     private AuditLogger $auditLogger;
@@ -60,7 +60,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
         $this->dossierUuid = Uuid::v6();
         $this->documentPrefix = 'foo-bar';
-        $this->dossierNr = 'foo123';
+        $this->dossierNumber = 'foo123';
         $this->dossierTitle = DossierTitle::create('Foo Bar');
         $this->dossierStatus = DossierStatus::PUBLISHED;
 
@@ -93,7 +93,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
         $this->internalAuditLogger->expects('canHandleEvent')->andReturnTrue();
         $this->dossier->expects('getId')->andReturn($this->dossierId);
         $this->dossier->expects('getDocumentPrefix')->andReturn($this->documentPrefix);
-        $this->dossier->expects('getDossierNr')->andReturn($this->dossierNr);
+        $this->dossier->expects('getDossierNumber')->andReturn($this->dossierNumber);
         $this->dossier->expects('getTitle')->andReturn($this->dossierTitle);
         $this->dossier->expects('getStatus')->andReturn($this->dossierStatus);
 
@@ -121,7 +121,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
                     [
                         'id' => $this->dossierId->toRfc4122(),
                         'prefix' => $this->documentPrefix,
-                        'dossier_nr' => $this->dossierNr,
+                        'dossier_number' => $this->dossierNumber,
                         'title' => $this->dossierTitle,
                         'status' => $this->dossierStatus->value,
                     ],
@@ -141,7 +141,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
         $this->internalAuditLogger->expects('canHandleEvent')->andReturnTrue();
         $this->dossier->expects('getId')->andReturn($this->dossierId);
         $this->dossier->expects('getDocumentPrefix')->andReturn($this->documentPrefix);
-        $this->dossier->expects('getDossierNr')->andReturn($this->dossierNr);
+        $this->dossier->expects('getDossierNumber')->andReturn($this->dossierNumber);
         $this->dossier->expects('getTitle')->andReturn($this->dossierTitle);
         $this->dossier->expects('getStatus')->andReturn($this->dossierStatus);
 
@@ -169,7 +169,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
                     [
                         'id' => $this->dossierId->toRfc4122(),
                         'prefix' => $this->documentPrefix,
-                        'dossier_nr' => $this->dossierNr,
+                        'dossier_number' => $this->dossierNumber,
                         'title' => $this->dossierTitle,
                         'status' => $this->dossierStatus->value,
                     ],
@@ -189,7 +189,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
         $this->internalAuditLogger->expects('canHandleEvent')->andReturnTrue();
         $this->dossier->expects('getId')->andReturn($this->dossierId);
         $this->dossier->expects('getDocumentPrefix')->andReturn($this->documentPrefix);
-        $this->dossier->expects('getDossierNr')->andReturn($this->dossierNr);
+        $this->dossier->expects('getDossierNumber')->andReturn($this->dossierNumber);
         $this->dossier->expects('getTitle')->andReturn($this->dossierTitle);
         $this->dossier->expects('getStatus')->andReturn($this->dossierStatus);
 
@@ -216,7 +216,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
                     [
                         'id' => $this->dossierId->toRfc4122(),
                         'prefix' => $this->documentPrefix,
-                        'dossier_nr' => $this->dossierNr,
+                        'dossier_number' => $this->dossierNumber,
                         'title' => $this->dossierTitle,
                         'status' => $this->dossierStatus->value,
                     ],

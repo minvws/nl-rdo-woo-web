@@ -36,7 +36,7 @@ readonly class SitemapMainDocumentSubscriber
                         sprintf('app_%s_document_detail', $dossier->getType()->getValueForRouteName()),
                         [
                             'prefix' => $dossier->getDocumentPrefix(),
-                            'dossierId' => $dossier->getDossierNr(),
+                            'dossierNumber' => $dossier->getDossierNumber(),
                         ],
                         UrlGeneratorInterface::ABSOLUTE_URL,
                     ),

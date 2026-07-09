@@ -9,10 +9,10 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
-use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\ValueObject\ExternalId;
 use Stringable;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
@@ -36,11 +36,20 @@ abstract class ApiPublicationV1DossierTestCase extends ApiPublicationV1TestCase
         return sprintf('/api/publication/v1/organisation/%s/dossiers/%s/external/%s', $organisationId, $this->getDossierApiUriSegment(), $dossierId);
     }
 
-    protected function buildPublicUrl(Uuid|Organisation $organisation, string|ExternalId|AbstractDossier|null $dossier = null): string
+    protected function buildApiUrl(Uuid|Organisation $organisation, string|ExternalId|AbstractDossier|null $dossier = null): string
     {
-        $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
+        $context = $this->fromContainer(RouterInterface::class)->getContext();
 
-        return $publicUrlGenerator->buildUrlFromPath($this->buildUrl($organisation, $dossier));
+        $port = '';
+        if ($context->getScheme() === 'http' && $context->getHttpPort() !== 80) {
+            $port = ':' . $context->getHttpPort();
+        }
+
+        if ($context->getScheme() === 'https' && $context->getHttpsPort() !== 443) {
+            $port = ':' . $context->getHttpsPort();
+        }
+
+        return sprintf('%s://%s%s%s', $context->getScheme(), $context->getHost(), $port, $this->buildUrl($organisation, $dossier));
     }
 
     /**

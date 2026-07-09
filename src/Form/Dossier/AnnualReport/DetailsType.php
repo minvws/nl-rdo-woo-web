@@ -47,7 +47,7 @@ class DetailsType extends AbstractDossierStepType
         $dossierForm->addInternalReferenceField();
         $dossierForm->addDepartmentsField();
         $dossierForm->addSubjectField();
-        $dossierForm->addDossierNrField();
+        $dossierForm->addDossierNumberField();
         $dossierForm->addDocumentPrefixField();
         $dossierForm->addSubmits();
     }

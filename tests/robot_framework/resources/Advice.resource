@@ -5,6 +5,7 @@ Library             Browser
 Library             DebugLibrary
 Library             FakerLibrary
 Resource            Admin.resource
+Resource            Dossier.resource
 
 
 *** Variables ***
@@ -14,12 +15,17 @@ ${FILE_LOCATION}    ${EMPTY}
 *** Keywords ***
 Fill Out Advice Details
   [Arguments]  ${has_attachment}
-  ${random_summary} =  Fakerlibrary.Text  200
-  Fill Text  id=content_form_summary  ${random_summary}
+  Fill Out Summary
   Upload Advice  ${FILE_LOCATION}
   Upload Advice Request  ${FILE_LOCATION}
   IF  ${has_attachment}  Upload Attachment  brief
-  Click  "Opslaan en verder"
+  Click Save And Continue
+
+Fill Out Advice Details Without Uploading Main Document
+  [Arguments]  ${has_attachment}=${FALSE}
+  Fill Out Summary
+  IF  ${has_attachment}  Upload Attachment  brief
+  Upload Advice Request  ${FILE_LOCATION}
 
 Upload Advice
   [Arguments]  ${advice_location}

@@ -40,7 +40,7 @@ class WooDecisionDocumentRequestDto
         public bool $isSuspended,
         public Judgement $judgement,
         #[Assert\All([
-            new Assert\Url(),
+            new Assert\Url(requireTld: true),
         ])]
         public array $links,
         #[ApiProperty(schema: [

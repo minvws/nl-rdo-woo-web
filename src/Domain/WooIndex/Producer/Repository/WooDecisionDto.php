@@ -12,7 +12,7 @@ final readonly class WooDecisionDto
     public function __construct(
         public Uuid $id,
         public string $documentPrefix,
-        public string $dossierNr,
+        public string $dossierNumber,
         public PlainDate $publicationDate,
         public ?RawReferenceDto $mainDocumentReference = null,
     ) {

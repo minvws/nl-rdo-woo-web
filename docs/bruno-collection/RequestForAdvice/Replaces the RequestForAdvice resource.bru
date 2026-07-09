@@ -57,10 +57,10 @@ script:pre-request {
   const crypto = require('crypto');
 
   if (!bru.getEnvVar("requestForAdviceDossierExternalId")) {
-    bru.setEnvVar("requestForAdviceDossierExternalId", crypto.randomUUID());
+    bru.setVar("requestForAdviceDossierExternalId", crypto.randomUUID());
   }
   if (!bru.getEnvVar("requestForAdviceAttachmentExternalId")) {
-    bru.setEnvVar("requestForAdviceAttachmentExternalId", crypto.randomUUID());
+    bru.setVar("requestForAdviceAttachmentExternalId", crypto.randomUUID());
   }
 }
 

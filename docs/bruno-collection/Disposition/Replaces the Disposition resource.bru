@@ -55,10 +55,10 @@ script:pre-request {
   const crypto = require('crypto');
 
   if (!bru.getEnvVar("dispositionDossierExternalId")) {
-    bru.setEnvVar("dispositionDossierExternalId", crypto.randomUUID());
+    bru.setVar("dispositionDossierExternalId", crypto.randomUUID());
   }
   if (!bru.getEnvVar("dispositionAttachmentExternalId")) {
-    bru.setEnvVar("dispositionAttachmentExternalId", crypto.randomUUID());
+    bru.setVar("dispositionAttachmentExternalId", crypto.randomUUID());
   }
 }
 

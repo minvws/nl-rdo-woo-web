@@ -37,7 +37,7 @@ final readonly class IsPartOfMapper
             name: 'app_dossier_file_download',
             parameters: [
                 'prefix' => $rawUrl->documentPrefix,
-                'dossierId' => $rawUrl->dossierNr,
+                'dossierNumber' => $rawUrl->dossierNumber,
                 'type' => $rawUrl->mainDocumentReference->source->value,
                 'id' => $rawUrl->mainDocumentReference->id,
             ],

@@ -7,7 +7,7 @@ namespace Shared\Domain\Search\Index\SubType\Mapper;
 use DateTimeInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
-use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
 use Shared\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
 use Shared\Domain\Search\Index\ElasticDocument;
 use Shared\Domain\Search\Index\ElasticDocumentId;
@@ -38,11 +38,11 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
         Assert::isInstanceOf($entity, Document::class);
 
         $dossiers = [];
-        $prefixedDossierNrs = [];
+        $prefixedDossierNumbers = [];
         $organisationIds = [];
         foreach ($entity->getDossiers() as $dossier) {
             $dossiers[] = $this->wooDecisionMapper->map($dossier)->getDocumentValues();
-            $prefixedDossierNrs[] = PrefixedDossierNr::forDossier($dossier);
+            $prefixedDossierNumbers[] = PrefixedDossierNumber::forDossier($dossier);
             $organisationIds[] = $dossier->getOrganisation()->getId();
         }
 
@@ -50,15 +50,15 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
             static fn (Inquiry $inquiry) => $inquiry->getId(),
         )->toArray();
 
-        $referredDocumentNrs = $entity->getReferredBy()->map(
-            static fn (Document $document) => $document->getDocumentNr(),
+        $referredDocumentNumbers = $entity->getReferredBy()->map(
+            static fn (Document $document) => $document->getDocumentNumber(),
         )->toArray();
 
         $file = $entity->getFileInfo();
 
         $fields = [
             ElasticField::TYPE->value => ElasticDocumentType::WOO_DECISION_DOCUMENT->value,
-            ElasticField::DOCUMENT_NR->value => $entity->getDocumentNr(),
+            ElasticField::DOCUMENT_NUMBER->value => $entity->getDocumentNumber(),
             ElasticField::MIME_TYPE->value => $file->getMimeType(),
             ElasticField::FILE_SIZE->value => $file->getSize(),
             ElasticField::FILE_TYPE->value => $file->getType(),
@@ -74,9 +74,9 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
             ElasticField::DOCUMENT_PAGES->value => $entity->getFileInfo()->getPageCount(),
             ElasticNestedField::DOSSIERS->value => $dossiers,
             ElasticField::INQUIRY_IDS->value => $inquiryIds,
-            ElasticField::PREFIXED_DOSSIER_NR->value => $prefixedDossierNrs,
+            ElasticField::PREFIXED_DOSSIER_NUMBER->value => $prefixedDossierNumbers,
             ElasticField::ORGANISATION_IDS->value => $organisationIds,
-            ElasticField::REFERRED_DOCUMENT_NRS->value => $referredDocumentNrs,
+            ElasticField::REFERRED_DOCUMENT_NUMBERS->value => $referredDocumentNumbers,
         ];
 
         if ($metadata !== null) {

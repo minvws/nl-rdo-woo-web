@@ -36,7 +36,7 @@ class DocumentResultMapperTest extends UnitTestCase
     public function testMapReturnsNullWhenPrefixIsMissing(): void
     {
         $hit = Mockery::mock(TypeArray::class);
-        $hit->expects('getStringOrNull')->with('[fields][document_nr][0]')->andReturnNull();
+        $hit->expects('getStringOrNull')->with('[fields][document_number][0]')->andReturnNull();
 
         $this->assertNull($this->mapper->map($hit));
     }
@@ -44,7 +44,7 @@ class DocumentResultMapperTest extends UnitTestCase
     public function testMapReturnsNullWhenViewModelCannotBeLoaded(): void
     {
         $hit = Mockery::mock(TypeArray::class);
-        $hit->expects('getStringOrNull')->with('[fields][document_nr][0]')->andReturn('foo');
+        $hit->expects('getStringOrNull')->with('[fields][document_number][0]')->andReturn('foo');
 
         $this->documentRepository->expects('getDocumentSearchEntry')->with('foo')->andReturnNull();
 
@@ -54,7 +54,7 @@ class DocumentResultMapperTest extends UnitTestCase
     public function testMapSuccessful(): void
     {
         $hit = Mockery::mock(TypeArray::class);
-        $hit->expects('getStringOrNull')->with('[fields][document_nr][0]')->andReturn('foo');
+        $hit->expects('getStringOrNull')->with('[fields][document_number][0]')->andReturn('foo');
         $hit->expects('exists')->with('[highlight][pages.content]')->andReturnTrue();
         $hit->expects('getTypeArray->toArray')->andReturn(['x', 'y']);
         $hit->expects('exists')->with('[highlight][dossiers.title]')->andReturnFalse();

@@ -31,8 +31,7 @@ readonly class RequestForAdviceConfig implements DossierTypeConfigInterface
 
     public function getSecurityExpression(): ?Expression
     {
-        // TODO restore this: return null;
-        return new Expression('is_granted("ROLE_SUPER_ADMIN")');
+        return null;
     }
 
     public function getStatusWorkflow(): WorkflowInterface

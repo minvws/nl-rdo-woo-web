@@ -78,13 +78,13 @@ script:pre-request {
   const crypto = require('crypto');
   
   if (!bru.getEnvVar("wooDecisionDossierExternalId")) {
-    bru.setEnvVar("wooDecisionDossierExternalId", crypto.randomUUID());
+    bru.setVar("wooDecisionDossierExternalId", crypto.randomUUID());
   }
   if (!bru.getEnvVar("wooDecisionAttachmentExternalId")) {
-    bru.setEnvVar("wooDecisionAttachmentExternalId", crypto.randomUUID());
+    bru.setVar("wooDecisionAttachmentExternalId", crypto.randomUUID());
   }
   if (!bru.getEnvVar("wooDecisionDocumentExternalId")) {
-    bru.setEnvVar("wooDecisionDocumentExternalId", crypto.randomUUID());
+    bru.setVar("wooDecisionDocumentExternalId", crypto.randomUUID());
   }
 }
 
@@ -219,7 +219,7 @@ example {
               "inquiryNumbers": [],
               "date": "",
               "documentId": "",
-              "documentNr": "",
+              "documentNumber": "",
               "externalId": "",
               "familyId": "",
               "grounds": [],

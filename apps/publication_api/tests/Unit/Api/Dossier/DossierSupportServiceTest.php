@@ -26,7 +26,6 @@ use Shared\Tests\Unit\UnitTestCase;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\ExternalId;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -39,7 +38,6 @@ class DossierSupportServiceTest extends UnitTestCase
     private MainDocumentService&MockInterface $mainDocumentService;
     private SubjectRepository&MockInterface $subjectRepository;
     private DepartmentRepository&MockInterface $departmentRepository;
-    private Security&MockInterface $security;
     private DossierSupportService $dossierSupportService;
 
     protected function setUp(): void
@@ -49,7 +47,6 @@ class DossierSupportServiceTest extends UnitTestCase
         $this->mainDocumentService = Mockery::mock(MainDocumentService::class);
         $this->subjectRepository = Mockery::mock(SubjectRepository::class);
         $this->departmentRepository = Mockery::mock(DepartmentRepository::class);
-        $this->security = Mockery::mock(Security::class);
 
         $this->dossierSupportService = new DossierSupportService(
             $this->attachmentService,
@@ -58,7 +55,6 @@ class DossierSupportServiceTest extends UnitTestCase
             $this->dossierService,
             $this->mainDocumentService,
             $this->subjectRepository,
-            $this->security,
         );
     }
 
@@ -145,26 +141,9 @@ class DossierSupportServiceTest extends UnitTestCase
         }
     }
 
-    public function testValidateDossierThrowsWhenSecurityDenied(): void
-    {
-        $dossier = Mockery::mock(AbstractDossier::class);
-
-        $this->security->expects('isGranted')
-            ->with('AuthMatrix.dossier.update', $dossier)
-            ->andReturn(false);
-
-        $this->expectException(ValidationException::class);
-
-        $this->dossierSupportService->validateDossier($dossier);
-    }
-
     public function testValidateDossierSucceeds(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
-
-        $this->security->expects('isGranted')
-            ->with('AuthMatrix.dossier.update', $dossier)
-            ->andReturn(true);
 
         $this->dossierService->expects('validate')
             ->with($dossier, [
@@ -184,10 +163,6 @@ class DossierSupportServiceTest extends UnitTestCase
         $dossier = Mockery::mock(AbstractDossier::class);
         $violations = new ConstraintViolationList();
         $validationFailedException = new ValidationFailedException($dossier, $violations);
-
-        $this->security->expects('isGranted')
-            ->with('AuthMatrix.dossier.update', $dossier)
-            ->andReturn(true);
 
         $this->dossierService->expects('validate')
             ->andThrow($validationFailedException);

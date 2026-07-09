@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguageFactory;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentTypeFactory;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
@@ -29,6 +30,7 @@ class DossierViewParamsBuilder
         private readonly AttachmentLanguageFactory $attachmentLanguageFactory,
         private readonly GroundViewFactory $groundViewFactory,
         private readonly DepartmentRepository $departmentRepository,
+        private readonly NoticeNotPublicRepository $noticeNotPublicRepository,
     ) {
     }
 
@@ -71,6 +73,15 @@ class DossierViewParamsBuilder
         $this->params['attachmentFileLimits'] = $dossier->getAttachmentEntityClass()::getUploadGroupId()->getFileLimits();
         $this->params['attachmentLanguages'] = $this->attachmentLanguageFactory->makeAsArray();
         $this->params['grounds'] = $this->groundViewFactory->makeAsArray();
+
+        return $this;
+    }
+
+    public function withNoticeNotPublicParams(AbstractDossier $dossier): self
+    {
+        $noticeNotPublic = $this->noticeNotPublicRepository->findOneByDossierId($dossier->getId());
+        $this->params['noticeNotPublic'] = $noticeNotPublic;
+        $this->params['hasNoticeNotPublic'] = $noticeNotPublic !== null;
 
         return $this;
     }

@@ -3,6 +3,8 @@ parameters:
     has_feature_publication_v1_api: '%env(bool:HAS_FEATURE_PUBLICATION_V1_API)%'
     env(ENABLE_UPDATE_PUBLISHED_DOSSIER_VIA_API): false
     enable_update_published_dossier_via_api: '%env(bool:ENABLE_UPDATE_PUBLISHED_DOSSIER_VIA_API)%'
+    env(ENABLE_UPLOAD_DOCUMENT_FOR_PUBLISHED_DOSSIER_VIA_API): false
+    enable_upload_document_for_published_dossier_via_api: '%env(bool:ENABLE_UPLOAD_DOCUMENT_FOR_PUBLISHED_DOSSIER_VIA_API)%'
 
 imports:
     - { resource: services/api_servers.yaml }

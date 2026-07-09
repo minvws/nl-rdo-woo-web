@@ -6,7 +6,6 @@ namespace PublicationApi\Api\Dossier\AnnualReport;
 
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
-use Shared\Domain\Publication\FileInfo;
 use Webmozart\Assert\Assert;
 
 class AnnualReportMainDocumentMapper
@@ -22,10 +21,7 @@ class AnnualReportMainDocumentMapper
             $mainDocumentRequestDto->language,
         );
 
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($mainDocumentRequestDto->fileName->toString());
-
-        $mainDocument->setFileInfo($fileInfo);
+        $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
 
         return $mainDocument;
@@ -38,10 +34,7 @@ class AnnualReportMainDocumentMapper
         $mainDocument = $annualReport->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($mainDocumentRequestDto->fileName->toString());
-
-        $mainDocument->setFileInfo($fileInfo);
+        $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());
         $mainDocument->setFormalDate($mainDocumentRequestDto->formalDate);
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
         $mainDocument->setLanguage($mainDocumentRequestDto->language);

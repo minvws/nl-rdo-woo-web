@@ -9,20 +9,26 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException as ApiPlatformValidationException;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Dossier\DossierNrValidator;
+use PublicationApi\Api\Dossier\DossierNumberValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\ExternalIdFactory;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicService;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
+use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
-use Shared\Domain\Publication\Dossier\Type\Advice\AdviceRepository;
+use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Webmozart\Assert\Assert;
 
@@ -38,13 +44,16 @@ use function sprintf;
 final readonly class AdviceProcessor implements ProcessorInterface
 {
     public function __construct(
-        private DossierNrValidator $dossierNrValidator,
+        private DossierNumberValidator $dossierNumberValidator,
         private DossierSupportService $dossierSupportService,
-        private AdviceRepository $adviceRepository,
+        private DossierUpdateGuard $dossierUpdateGuard,
+        private DossierRepository $dossierRepository,
         private AdviceMapper $adviceMapper,
         private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
         private OrganisationResolver $organisationResolver,
+        private NoticeNotPublicService $noticeNotPublicService,
+        private MessageBusInterface $messageBus,
     ) {
     }
 
@@ -66,20 +75,26 @@ final readonly class AdviceProcessor implements ProcessorInterface
         $organisation = $this->organisationResolver->resolve($uriVariables);
         $subject = $this->dossierSupportService->getSubject($data, $organisation);
         $department = $this->dossierSupportService->getDepartment($organisation, $data->departmentId);
-        $advice = $this->adviceRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
+        $dossier = $this->dossierRepository->findByOrganisationAndExternalId($organisation, $dossierExternalId);
 
-        if ($advice === null) {
-            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
-            $this->dossierNrValidator->validate($data->dossierNumber, $documentPrefix);
-            $advice = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
-
-            return $this->adviceMapper->fromEntity($advice);
+        if ($dossier !== null && ! $dossier instanceof Advice) {
+            throw ExternalIdInUseException::forExternalIdAlreadyUsed($dossier->getType());
         }
 
-        $this->dossierNrValidator->validate($data->dossierNumber, $advice->getDocumentPrefix(), $advice->getId());
-        $this->update($advice, $organisation, $department, $subject, $data);
+        if ($dossier === null) {
+            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
+            $dossier = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
 
-        return $this->adviceMapper->fromEntity($advice);
+            return $this->adviceMapper->fromEntity($dossier);
+        }
+
+        $this->dossierUpdateGuard->assertDossierIsEditable($dossier);
+
+        $this->dossierNumberValidator->validate($data->dossierNumber, $dossier->getDocumentPrefix(), $dossier->getId());
+        $this->update($dossier, $organisation, $department, $subject, $data);
+
+        return $this->adviceMapper->fromEntity($dossier);
     }
 
     private function create(
@@ -98,13 +113,22 @@ final readonly class AdviceProcessor implements ProcessorInterface
             $dossierExternalId,
             $documentPrefix,
         );
-        $mainDocument = AdviceMainDocumentMapper::create($advice, $adviceRequestDto->mainDocument);
+
+        if ($adviceRequestDto->mainDocument !== null) {
+            $mainDocument = AdviceMainDocumentMapper::create($advice, $adviceRequestDto->mainDocument);
+            $advice->setMainDocument($mainDocument);
+            $this->dossierSupportService->validateMainDocument($mainDocument);
+        } else {
+            $noticeNotPublic = $adviceRequestDto->noticeNotPublic;
+            Assert::notNull($noticeNotPublic);
+
+            $advice->setNoticeNotPublic(
+                NoticeNotPublicMapper::create($advice, $noticeNotPublic),
+            );
+        }
+
         $attachments = $this->getAttachments($advice, $adviceRequestDto->attachments);
-
-        $this->dossierSupportService->validateMainDocument($mainDocument);
         $this->validateAdviceAttachments($attachments);
-
-        $advice->setMainDocument($mainDocument);
         $this->dossierSupportService->addAttachments($advice, $attachments);
 
         $this->dossierSupportService->validateDossier($advice);
@@ -121,13 +145,33 @@ final readonly class AdviceProcessor implements ProcessorInterface
         AdviceRequestDto $adviceRequestDto,
     ): void {
         $advice = AdviceMapper::update($advice, $adviceRequestDto, $organisation, $department, $subject);
-        $mainDocument = AdviceMainDocumentMapper::update($advice, $adviceRequestDto->mainDocument);
+
+        if ($adviceRequestDto->mainDocument !== null) {
+            if ($advice->getNoticeNotPublic() !== null) {
+                $this->noticeNotPublicService->deleteFromDossier($advice);
+            }
+
+            $mainDocument = $advice->getMainDocument() !== null
+                ? AdviceMainDocumentMapper::update($advice, $adviceRequestDto->mainDocument)
+                : AdviceMainDocumentMapper::create($advice, $adviceRequestDto->mainDocument);
+            $advice->setMainDocument($mainDocument);
+            $this->dossierSupportService->validateMainDocument($mainDocument);
+        } else {
+            if ($advice->getMainDocument() !== null) {
+                $this->messageBus->dispatch(new DeleteMainDocumentCommand($advice->getId()));
+            }
+
+            $noticeNotPublicDto = $adviceRequestDto->noticeNotPublic;
+            Assert::notNull($noticeNotPublicDto);
+
+            $notice = $advice->getNoticeNotPublic() !== null
+                ? $this->noticeNotPublicService->updateForDossier($advice, $noticeNotPublicDto)
+                : $this->noticeNotPublicService->createForDossier($advice, $noticeNotPublicDto);
+            $advice->setNoticeNotPublic($notice);
+        }
+
         $attachments = $this->getAttachments($advice, $adviceRequestDto->attachments);
-
-        $this->dossierSupportService->validateMainDocument($mainDocument);
         $this->validateAdviceAttachments($attachments);
-
-        $advice->setMainDocument($mainDocument);
         $this->attachmentSynchronizer->sync($advice, $adviceRequestDto->attachments);
 
         $this->dossierSupportService->validateDossier($advice);

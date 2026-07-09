@@ -19,13 +19,13 @@ final class InquiryLinkImportExceptionTest extends TestCase
         );
 
         self::assertEquals(
-            'public.global.no_doc_number',
+            'public.global.no_document_number',
             $exception->getTranslationKey(),
         );
 
         self::assertEquals(
             [
-                '{documentNr}' => 'tst-123',
+                '{documentNumber}' => 'tst-123',
             ],
             $exception->getPlaceholders(),
         );

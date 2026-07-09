@@ -53,7 +53,7 @@ class InquiryDossierBatchDownloadTest extends UnitTestCase
 
         $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->expects('getDocumentPrefix')->andReturn('FOO');
-        $wooDecision->expects('getDossierNr')->andReturn('BAR-123');
+        $wooDecision->expects('getDossierNumber')->andReturn('BAR-123');
         $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $wooDecision);
 
         self::assertEquals(

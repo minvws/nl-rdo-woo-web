@@ -9,8 +9,10 @@ use PublicationApi\Api\Department\DepartmentMapper;
 use PublicationApi\Api\Dossier\Advice\Uploads\Attachment\AdviceUploadAttachmentResource;
 use PublicationApi\Api\Dossier\Advice\Uploads\MainDocument\AdviceUploadMainDocumentResource;
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicResponseDtoFactory;
 use PublicationApi\Api\Organisation\OrganisationMapper;
 use PublicationApi\Api\Subject\SubjectMapper;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
@@ -18,7 +20,6 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\Url;
@@ -30,10 +31,11 @@ use function array_values;
 readonly class AdviceMapper
 {
     public function __construct(
+        private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
         private DossierPathHelper $dossierPathHelper,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
-        private PublicUrlGenerator $publicUrlGenerator,
+        private NoticeNotPublicResponseDtoFactory $noticeNotPublicResponseDtoFactory,
     ) {
     }
 
@@ -53,7 +55,7 @@ readonly class AdviceMapper
     public function fromEntity(Advice $advice): AdviceResponseDto
     {
         $mainDocument = $advice->getMainDocument();
-        Assert::notNull($mainDocument);
+        $noticeNotPublic = $advice->getNoticeNotPublic();
 
         $dateFrom = $advice->getDateFrom();
         Assert::notNull($dateFrom);
@@ -61,22 +63,31 @@ readonly class AdviceMapper
         $department = $advice->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
+        $mainDocumentDto = $mainDocument !== null
+            ? $this->mainDocumentResponseDtoFactory->fromEntity(
+                $mainDocument,
+                AdviceUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                AdviceMainDocumentResponseDto::class,
+            )
+            : null;
+
+        $noticeNotPublicDto = $noticeNotPublic !== null
+            ? $this->noticeNotPublicResponseDtoFactory->fromEntity($noticeNotPublic)
+            : null;
+
         return new AdviceResponseDto(
             $advice->getId(),
             $advice->getExternalId(),
             OrganisationMapper::fromEntity($advice->getOrganisation()),
-            $advice->getDossierNr(),
+            $advice->getDossierNumber(),
             $advice->getTitle(),
             $advice->getSummary(),
             SubjectMapper::fromNullableEntity($advice->getSubject()),
             DepartmentMapper::fromEntity($department),
             $advice->getPublicationDate(),
             $advice->getStatus(),
-            $this->mainDocumentResponseDtoFactory->fromEntity(
-                $mainDocument,
-                AdviceUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
-                AdviceMainDocumentResponseDto::class,
-            ),
+            $mainDocumentDto,
+            $noticeNotPublicDto,
             $this->attachmentResponseDtoFactory->fromDossier($advice, AdviceUploadAttachmentResource::ROUTE_NAME_UPLOAD),
             $dateFrom,
             $this->getHalLinks($advice),
@@ -110,7 +121,7 @@ readonly class AdviceMapper
     ): Advice {
         $advice->setDateFrom($adviceRequestDto->dossierDate);
         $advice->setDepartments([$department]);
-        $advice->setDossierNr($adviceRequestDto->dossierNumber);
+        $advice->setDossierNumber($adviceRequestDto->dossierNumber);
         $advice->setOrganisation($organisation);
         $advice->setPublicationDate($adviceRequestDto->publicationDate);
         $advice->setSubject($subject);
@@ -125,7 +136,7 @@ readonly class AdviceMapper
         $linkCollection = new LinkCollection();
         $linkCollection->set(
             LinkCollection::SELF,
-            new Link($this->publicUrlGenerator->buildUrlFromRoute(AdviceResource::ROUTE_NAME_GET_ADVICE, [
+            new Link($this->apiUrlGenerator->buildUrlFromRoute(AdviceResource::ROUTE_NAME_GET_ADVICE, [
                 'organisationId' => $advice->getOrganisation()->getId(),
                 'dossierExternalId' => $advice->getExternalId(),
             ])),

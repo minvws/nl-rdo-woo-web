@@ -8,7 +8,7 @@ use DateTimeInterface;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Search\Index\Dossier\DossierIndexer;
-use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNr;
+use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
 use Shared\Domain\Search\Index\ElasticDocument;
 use Shared\Domain\Search\Index\ElasticDocumentId;
 use Shared\Domain\Search\Index\ElasticDocumentType;
@@ -51,7 +51,7 @@ readonly class AttachmentAndMainDocumentMapper implements ElasticSubTypeMapperIn
             ElasticNestedField::DOSSIERS->value => [
                 $dossierDocument->getDocumentValues(),
             ],
-            ElasticField::PREFIXED_DOSSIER_NR->value => PrefixedDossierNr::forDossier($entity->getDossier()),
+            ElasticField::PREFIXED_DOSSIER_NUMBER->value => PrefixedDossierNumber::forDossier($entity->getDossier()),
             ElasticField::ORGANISATION_IDS->value => [$entity->getDossier()->getOrganisation()->getId()],
         ];
 

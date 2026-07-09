@@ -19,7 +19,7 @@
                 "_id": "adsfafdsdfsa",
                 "_score": 1,
                 "fields": {
-                    "dossier_nr": [
+                    "dossier_number": [
                         "adsfafdsdfsa"
                     ],
                     "type": [
@@ -35,7 +35,7 @@
                 "_id": "dasffdafdas",
                 "_score": 1,
                 "fields": {
-                    "dossier_nr": [
+                    "dossier_number": [
                         "dasffdafdas"
                     ],
                     "type": [
@@ -51,7 +51,7 @@
                 "_id": "afdfdafda",
                 "_score": 1,
                 "fields": {
-                    "dossier_nr": [
+                    "dossier_number": [
                         "afdfdafda"
                     ],
                     "type": [
@@ -67,7 +67,7 @@
                 "_id": "dffadfdas",
                 "_score": 1,
                 "fields": {
-                    "dossier_nr": [
+                    "dossier_number": [
                         "dffadfdas"
                     ],
                     "type": [
@@ -83,7 +83,7 @@
                 "_id": "dfasfdas",
                 "_score": 1,
                 "fields": {
-                    "dossier_nr": [
+                    "dossier_number": [
                         "dfasfdas"
                     ],
                     "type": [
@@ -99,10 +99,10 @@
                 "_id": "TEST1-x-5033",
                 "_score": 1,
                 "fields": {
-                    "dossier_nr": [
+                    "dossier_number": [
                         "afdsadsffdas"
                     ],
-                    "document_nr": [
+                    "document_number": [
                         "TEST1-x-5033"
                     ],
                     "type": [
@@ -115,10 +115,10 @@
                 "_id": "TEST1-x-5044",
                 "_score": 1,
                 "fields": {
-                    "dossier_nr": [
+                    "dossier_number": [
                         "afdsadsffdas"
                     ],
-                    "document_nr": [
+                    "document_number": [
                         "TEST1-x-5044"
                     ],
                     "type": [
@@ -131,10 +131,10 @@
                 "_id": "TEST1-x-5034",
                 "_score": 1,
                 "fields": {
-                    "dossier_nr": [
+                    "dossier_number": [
                         "afdsadsffdas"
                     ],
-                    "document_nr": [
+                    "document_number": [
                         "TEST1-x-5034"
                     ],
                     "type": [
@@ -147,10 +147,10 @@
                 "_id": "TEST1-y-5036",
                 "_score": 1,
                 "fields": {
-                    "dossier_nr": [
+                    "dossier_number": [
                         "afdsadsffdas"
                     ],
-                    "document_nr": [
+                    "document_number": [
                         "TEST1-y-5036"
                     ],
                     "type": [
@@ -163,10 +163,10 @@
                 "_id": "TEST1-y-5061",
                 "_score": 1,
                 "fields": {
-                    "dossier_nr": [
+                    "dossier_number": [
                         "afdsadsffdas"
                     ],
-                    "document_nr": [
+                    "document_number": [
                         "TEST1-y-5061"
                     ],
                     "type": [

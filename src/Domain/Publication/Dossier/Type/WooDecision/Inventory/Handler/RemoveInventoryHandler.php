@@ -39,9 +39,9 @@ class RemoveInventoryHandler
             }
 
             if (! $dossier->canRemoveInventory()) {
-                $this->logger->warning('Cannot remove the inventory: the inventory must be optional and the dossier status must be concept.', [
+                $this->logger->warning('Cannot remove the inventory: the inventory must not be required and the dossier status must be concept.', [
                     'uuid' => $message->getUuid(),
-                    'isOptional' => $dossier->isInventoryOptional(),
+                    'isRequired' => $dossier->isInventoryRequired(),
                     'status' => $dossier->getStatus(),
                 ]);
 

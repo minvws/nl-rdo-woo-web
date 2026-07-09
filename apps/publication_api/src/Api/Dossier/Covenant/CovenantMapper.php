@@ -9,8 +9,10 @@ use PublicationApi\Api\Department\DepartmentMapper;
 use PublicationApi\Api\Dossier\Covenant\Uploads\Attachment\CovenantUploadAttachmentResource;
 use PublicationApi\Api\Dossier\Covenant\Uploads\MainDocument\CovenantUploadMainDocumentResource;
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicResponseDtoFactory;
 use PublicationApi\Api\Organisation\OrganisationMapper;
 use PublicationApi\Api\Subject\SubjectMapper;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
@@ -18,7 +20,6 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\Url;
@@ -30,10 +31,11 @@ use function array_values;
 readonly class CovenantMapper
 {
     public function __construct(
+        private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
         private DossierPathHelper $dossierPathHelper,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
-        private PublicUrlGenerator $publicUrlGenerator,
+        private NoticeNotPublicResponseDtoFactory $noticeNotPublicResponseDtoFactory,
     ) {
     }
 
@@ -53,7 +55,7 @@ readonly class CovenantMapper
     public function fromEntity(Covenant $covenant): CovenantResponseDto
     {
         $mainDocument = $covenant->getMainDocument();
-        Assert::notNull($mainDocument);
+        $noticeNotPublic = $covenant->getNoticeNotPublic();
 
         $dateFrom = $covenant->getDateFrom();
         Assert::notNull($dateFrom);
@@ -61,22 +63,31 @@ readonly class CovenantMapper
         $department = $covenant->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
+        $mainDocumentDto = $mainDocument !== null
+            ? $this->mainDocumentResponseDtoFactory->fromEntity(
+                $mainDocument,
+                CovenantUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                CovenantMainDocumentResponseDto::class,
+            )
+            : null;
+
+        $noticeNotPublicDto = $noticeNotPublic !== null
+            ? $this->noticeNotPublicResponseDtoFactory->fromEntity($noticeNotPublic)
+            : null;
+
         return new CovenantResponseDto(
             $covenant->getId(),
             $covenant->getExternalId(),
             OrganisationMapper::fromEntity($covenant->getOrganisation()),
-            $covenant->getDossierNr(),
+            $covenant->getDossierNumber(),
             $covenant->getTitle(),
             $covenant->getSummary(),
             SubjectMapper::fromNullableEntity($covenant->getSubject()),
             DepartmentMapper::fromEntity($department),
             $covenant->getPublicationDate(),
             $covenant->getStatus(),
-            $this->mainDocumentResponseDtoFactory->fromEntity(
-                $mainDocument,
-                CovenantUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
-                CovenantMainDocumentResponseDto::class,
-            ),
+            $mainDocumentDto,
+            $noticeNotPublicDto,
             $this->attachmentResponseDtoFactory->fromDossier($covenant, CovenantUploadAttachmentResource::ROUTE_NAME_UPLOAD),
             $dateFrom,
             $covenant->getDateTo(),
@@ -114,7 +125,7 @@ readonly class CovenantMapper
         $covenant->setDateFrom($covenantRequestDto->dateFrom);
         $covenant->setDateTo($covenantRequestDto->dateTo);
         $covenant->setDepartments([$department]);
-        $covenant->setDossierNr($covenantRequestDto->dossierNumber);
+        $covenant->setDossierNumber($covenantRequestDto->dossierNumber);
         $covenant->setOrganisation($organisation);
         $covenant->setParties($covenantRequestDto->parties);
         $covenant->setPreviousVersionLink($covenantRequestDto->previousVersionLink);
@@ -131,7 +142,7 @@ readonly class CovenantMapper
         $linkCollection = new LinkCollection();
         $linkCollection->set(
             LinkCollection::SELF,
-            new Link($this->publicUrlGenerator->buildUrlFromRoute(CovenantResource::ROUTE_NAME_GET_COVENANT, [
+            new Link($this->apiUrlGenerator->buildUrlFromRoute(CovenantResource::ROUTE_NAME_GET_COVENANT, [
                 'organisationId' => $covenant->getOrganisation()->getId(),
                 'dossierExternalId' => $covenant->getExternalId(),
             ])),

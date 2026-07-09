@@ -45,7 +45,7 @@ script:pre-request {
   const crypto = require('crypto');
 
   if (!bru.getEnvVar("complaintJudgementDossierExternalId")) {
-    bru.setEnvVar("complaintJudgementDossierExternalId", crypto.randomUUID());
+    bru.setVar("complaintJudgementDossierExternalId", crypto.randomUUID());
   }
 }
 

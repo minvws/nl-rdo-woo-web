@@ -24,7 +24,7 @@ final class DispositionFactory extends PersistentObjectFactory
         $publicationDate = self::faker()->plainDateBetween('01-01-2010', '01-01-2023');
 
         return [
-            'dossierNr' => self::faker()->bothify('DOSSIER-####-#####'),
+            'dossierNumber' => self::faker()->bothify('DOSSIER-####-#####'),
             'title' => DossierTitle::create(self::faker()->sentence()),
             'summary' => self::faker()->sentences(4, true),
             'documentPrefix' => WooDecisionFactory::DEFAULT_PREFIX,

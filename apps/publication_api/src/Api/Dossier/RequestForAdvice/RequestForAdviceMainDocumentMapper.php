@@ -6,7 +6,6 @@ namespace PublicationApi\Api\Dossier\RequestForAdvice;
 
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
-use Shared\Domain\Publication\FileInfo;
 use Webmozart\Assert\Assert;
 
 class RequestForAdviceMainDocumentMapper
@@ -22,10 +21,7 @@ class RequestForAdviceMainDocumentMapper
             $mainDocumentRequestDto->language,
         );
 
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($mainDocumentRequestDto->fileName->toString());
-
-        $mainDocument->setFileInfo($fileInfo);
+        $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
 
         return $mainDocument;
@@ -38,10 +34,7 @@ class RequestForAdviceMainDocumentMapper
         $mainDocument = $requestForAdvice->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($mainDocumentRequestDto->fileName->toString());
-
-        $mainDocument->setFileInfo($fileInfo);
+        $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());
         $mainDocument->setFormalDate($mainDocumentRequestDto->formalDate);
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
         $mainDocument->setLanguage($mainDocumentRequestDto->language);

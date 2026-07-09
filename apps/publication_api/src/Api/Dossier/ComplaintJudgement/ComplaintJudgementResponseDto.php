@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\ComplaintJudgement;
 
 use PublicationApi\Api\Department\DepartmentResponseDto;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicResponseDto;
 use PublicationApi\Api\Organisation\OrganisationResponseDto;
 use PublicationApi\Api\Subject\SubjectResponse;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
@@ -28,7 +29,8 @@ final class ComplaintJudgementResponseDto
         public DepartmentResponseDto $department,
         public ?PlainDate $publicationDate,
         public DossierStatus $status,
-        public ComplaintJudgementMainDocumentResponseDto $mainDocument,
+        public ?ComplaintJudgementMainDocumentResponseDto $mainDocument,
+        public ?NoticeNotPublicResponseDto $noticeNotPublic,
         public PlainDate $dossierDate,
         #[SerializedName('_links')]
         public LinkCollection $halLinks,

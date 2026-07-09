@@ -6,6 +6,7 @@ import MultiCombobox from '@admin-fe/component/form/MultiCombobox.vue';
 import MultiSelect from '@admin-fe/component/form/MultiSelect.vue';
 import MultiText from '@admin-fe/component/form/MultiText.vue';
 import PublicationFiles from '@admin-fe/component/publication/file/PublicationFiles.vue';
+import PublicationNoticeNotPublic from '@admin-fe/component/publication/notice/PublicationNoticeNotPublic.vue';
 import PublicationSearchAndGo from '@admin-fe/component/publication/search/PublicationSearchAndGo.vue';
 import UploadArea from '@admin-fe/component/file/upload/UploadArea.vue';
 import WooDecisionAddDocuments from '@admin-fe/component/publication/woo-decision/AddDocuments.vue';
@@ -19,6 +20,7 @@ const components = {
   MultiSelect,
   MultiText,
   PublicationFiles,
+  PublicationNoticeNotPublic,
   PublicationSearchAndGo,
   UploadArea,
   WooDecisionAddDocuments,

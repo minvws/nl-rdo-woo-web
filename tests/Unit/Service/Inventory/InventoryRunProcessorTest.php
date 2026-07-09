@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Inventory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Exception\TranslatableException;
 use Shared\Service\DossierService;
 use Shared\Service\Inventory\InventoryChangeset;
 use Shared\Service\Inventory\InventoryComparator;
@@ -27,6 +29,7 @@ use Symfony\Component\Uid\Uuid;
 class InventoryRunProcessorTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
+    private ManagerRegistry&MockInterface $managerRegistry;
     private LoggerInterface&MockInterface $logger;
     private InventoryComparator&MockInterface $inventoryComparator;
     private InventoryUpdater&MockInterface $inventoryUpdater;
@@ -41,6 +44,7 @@ class InventoryRunProcessorTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->entityManager = Mockery::mock(EntityManagerInterface::class);
+        $this->managerRegistry = Mockery::mock(ManagerRegistry::class);
         $this->logger = Mockery::mock(LoggerInterface::class);
         $loggingHelper = Mockery::mock(LoggingHelper::class);
         $this->inventoryComparator = Mockery::mock(InventoryComparator::class);
@@ -51,6 +55,7 @@ class InventoryRunProcessorTest extends UnitTestCase
 
         $this->runProcessor = new InventoryRunProcessor(
             $this->entityManager,
+            $this->managerRegistry,
             $this->logger,
             $loggingHelper,
             $this->inventoryComparator,
@@ -135,7 +140,7 @@ class InventoryRunProcessorTest extends UnitTestCase
 
         $this->inventoryUpdater
             ->expects('applyChangesetToDatabase')
-            ->with($this->dossier, $this->reader, $changeset, Mockery::type(RunProgress::class));
+            ->with($this->run, $this->dossier, $this->reader, $changeset, Mockery::type(RunProgress::class));
 
         $this->inventoryService->expects('storeProductionReport')->with($this->run);
 
@@ -182,7 +187,7 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->runProcessor->process($this->run);
     }
 
-    public function testProcessSkipsFlushIfEntityManagerIsClosed(): void
+    public function testProcessFinalizesRunWithFreshManagerWhenEntityManagerIsClosed(): void
     {
         $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('hasNoChanges')->andReturnFalse();
@@ -204,7 +209,7 @@ class InventoryRunProcessorTest extends UnitTestCase
 
         $this->inventoryUpdater
             ->expects('applyChangesetToDatabase')
-            ->with($this->dossier, $this->reader, $changeset, Mockery::type(RunProgress::class));
+            ->with($this->run, $this->dossier, $this->reader, $changeset, Mockery::type(RunProgress::class));
 
         $this->inventoryService->expects('storeProductionReport')->with($this->run);
 
@@ -223,8 +228,138 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->entityManager->expects('persist')->with($this->dossier);
         $this->entityManager->expects('refresh')->with($this->dossier);
 
-        $this->entityManager->expects('persist')->never()->with($this->run);
-        $this->entityManager->expects('flush')->never();
+        $freshManager = Mockery::mock(EntityManagerInterface::class);
+        $this->managerRegistry->expects('resetManager')
+            ->andReturn($freshManager);
+
+        $reloadedRun = Mockery::mock(ProductionReportProcessRun::class);
+        $reloadedRun->expects('addGenericException');
+        $reloadedRun->expects('fail');
+
+        $freshManager
+            ->expects('find')
+            ->with(ProductionReportProcessRun::class, Mockery::type(Uuid::class))
+            ->andReturn($reloadedRun);
+        $freshManager->expects('flush');
+
+        $this->runProcessor->process($this->run);
+    }
+
+    public function testProcessAddsExceptionToResultWhenThereAreNoChanges(): void
+    {
+        $changeset = Mockery::mock(InventoryChangeset::class);
+        $changeset->expects('hasNoChanges')->andReturnTrue();
+        $changeset->expects('getResultingTotalDocumentCount')->andReturn(10);
+
+        $this->run->expects('isPending')->andReturnTrue();
+        $this->run->expects('hasNoErrors')->andReturnTrue();
+        $this->run->expects('hasErrors')->andReturnTrue();
+        $this->run->expects('addGenericException');
+        $this->run->expects('fail');
+        $this->run->expects('isConfirmed')->andReturnFalse();
+        $this->run->expects('isFinal')->andReturnTrue();
+
+        $this->entityManager->expects('isOpen')->andReturnTrue();
+        $this->entityManager->expects('persist')->with($this->run)->times(2);
+        $this->entityManager->expects('flush')->times(2);
+
+        $this->inventoryComparator->expects('determineChangeset')->andReturn($changeset);
+
+        $this->runProcessor->process($this->run);
+    }
+
+    public function testProcessFailsWhenNoChangesetIsAvailableDuringUpdate(): void
+    {
+        $changeset = Mockery::mock(InventoryChangeset::class);
+        $changeset->expects('hasNoChanges')->andReturnFalse();
+        $changeset->expects('getResultingTotalDocumentCount')->andReturn(10);
+
+        $this->run->expects('isPending')->andReturnTrue();
+        $this->run->expects('hasErrors')->andReturnFalse();
+        $this->run->expects('setChangeset');
+        $this->run->expects('isConfirmed')->andReturnTrue();
+        $this->run->expects('startUpdating');
+        $this->run->expects('getChangeset')->andReturnNull();
+        $this->run->expects('addGenericException');
+        $this->run->expects('fail');
+        $this->run->expects('isFinal')->andReturnTrue();
+
+        $this->entityManager->expects('isOpen')->andReturnTrue();
+        $this->entityManager->expects('persist')
+            ->with($this->run)
+            ->times(3);
+        $this->entityManager->expects('flush')->times(3);
+
+        $this->progressUpdater->expects('updateProgressForRun');
+
+        $this->logger->expects('error');
+
+        $this->inventoryComparator->expects('determineChangeset')->andReturn($changeset);
+
+        $this->runProcessor->process($this->run);
+    }
+
+    public function testProcessDoesNotFailWhenRunCannotBeFoundWithFreshManager(): void
+    {
+        $this->run->expects('isPending')->andReturnTrue();
+        $this->run->expects('addGenericException');
+        $this->run->expects('fail');
+        $this->run->expects('isFinal')->andReturnTrue();
+
+        $this->entityManager->expects('isOpen')->andReturnFalse();
+        $this->entityManager->expects('persist')->with($this->run);
+        $this->entityManager->expects('flush');
+
+        $this->logger->expects('error');
+
+        $this->inventoryComparator->expects('determineChangeset')->andThrows(new RuntimeException('oops'));
+
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager->expects('find')
+            ->with(ProductionReportProcessRun::class, Mockery::type(Uuid::class))
+            ->andReturnNull();
+
+        $this->managerRegistry->expects('resetManager')->andReturn($entityManager);
+
+        $this->runProcessor->process($this->run);
+    }
+
+    public function testProcessFinalizesRunWithCaughtExceptionWhenEntityManagerIsClosed(): void
+    {
+        $this->run->expects('isPending')
+            ->andReturnTrue();
+        $this->run->expects('addGenericException');
+        $this->run->expects('fail');
+        $this->run->expects('isFinal')
+            ->andReturnTrue();
+
+        $this->entityManager->expects('isOpen')
+            ->andReturnFalse();
+        $this->entityManager->expects('persist')
+            ->with($this->run);
+        $this->entityManager->expects('flush');
+
+        $this->logger->expects('error');
+
+        $this->inventoryComparator->expects('determineChangeset')
+            ->andThrows(new RuntimeException('some error'));
+
+        $freshManager = Mockery::mock(EntityManagerInterface::class);
+        $this->managerRegistry->expects('resetManager')
+            ->andReturn($freshManager);
+
+        $reloadedRun = Mockery::mock(ProductionReportProcessRun::class);
+        $reloadedRun->expects('addGenericException')
+            ->with(Mockery::on(static function (TranslatableException $exception): bool {
+                return $exception->getMessage() === 'Uncaught exception during inventory processing: some error';
+            }));
+        $reloadedRun->expects('fail');
+
+        $freshManager
+            ->expects('find')
+            ->with(ProductionReportProcessRun::class, Mockery::type(Uuid::class))
+            ->andReturn($reloadedRun);
+        $freshManager->expects('flush');
 
         $this->runProcessor->process($this->run);
     }

@@ -25,13 +25,13 @@ class DossierFileController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/balie/dossier/{prefix}/{dossierId}/file/download/{type}/{id?""}',
+        '/balie/dossier/{prefix}/{dossierNumber}/file/download/{type}/{id?""}',
         name: 'app_admin_dossier_file_download',
         methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function download(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] AbstractDossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
         DossierFileType $type,
         string $id,
     ): StreamedResponse {

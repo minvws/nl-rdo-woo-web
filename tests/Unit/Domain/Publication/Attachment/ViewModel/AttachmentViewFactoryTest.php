@@ -98,7 +98,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
 
         $dossier = Mockery::mock(WooDecision::class); // TODO replace with AbstractDossier & EntityWithAttachments
         $dossier->expects('getDocumentPrefix')->times(2)->andReturn($expectedDocumentPrefix);
-        $dossier->expects('getDossierNr')->times(2)->andReturn($expectedDossierId);
+        $dossier->expects('getDossierNumber')->times(2)->andReturn($expectedDossierId);
         $dossier->expects('getAttachments')->andReturn(new ArrayCollection([$attachment]));
         $dossier->expects('getType')->andReturn($dossierType);
 
@@ -139,18 +139,18 @@ final class AttachmentViewFactoryTest extends UnitTestCase
                 'attachmentClass' => WooDecisionAttachment::class,
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedDownloadRouteName' => 'app_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_woodecision_attachment_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId', 'attachmentId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber', 'attachmentId'],
             ],
             'DecisionAttachment in admin mode' => [
                 'dossierType' => DossierType::WOO_DECISION,
                 'attachmentClass' => WooDecisionAttachment::class,
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedDownloadRouteName' => 'app_admin_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_woodecision_attachment_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId', 'attachmentId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber', 'attachmentId'],
             ],
 
             'CovenantAttachment in public mode' => [
@@ -158,18 +158,18 @@ final class AttachmentViewFactoryTest extends UnitTestCase
                 'attachmentClass' => CovenantAttachment::class,
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedDownloadRouteName' => 'app_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_covenant_attachment_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId', 'attachmentId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber', 'attachmentId'],
             ],
             'CovenantAttachment in admin mode' => [
                 'dossierType' => DossierType::COVENANT,
                 'attachmentClass' => CovenantAttachment::class,
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedDownloadRouteName' => 'app_admin_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_covenant_attachment_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId', 'attachmentId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber', 'attachmentId'],
             ],
 
             'AnnualReportAttachment in public mode' => [
@@ -177,18 +177,18 @@ final class AttachmentViewFactoryTest extends UnitTestCase
                 'attachmentClass' => AnnualReportAttachment::class,
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedDownloadRouteName' => 'app_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_annualreport_attachment_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId', 'attachmentId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber', 'attachmentId'],
             ],
             'AnnualReportAttachment in admin mode' => [
                 'dossierType' => DossierType::ANNUAL_REPORT,
                 'attachmentClass' => AnnualReportAttachment::class,
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedDownloadRouteName' => 'app_admin_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_annualreport_attachment_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId', 'attachmentId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber', 'attachmentId'],
             ],
 
             'InvestigationReportAttachment in public mode' => [
@@ -196,18 +196,18 @@ final class AttachmentViewFactoryTest extends UnitTestCase
                 'attachmentClass' => InvestigationReportAttachment::class,
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedDownloadRouteName' => 'app_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_investigationreport_attachment_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId', 'attachmentId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber', 'attachmentId'],
             ],
             'InvestigationReportAttachment in admin mode' => [
                 'dossierType' => DossierType::INVESTIGATION_REPORT,
                 'attachmentClass' => InvestigationReportAttachment::class,
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedDownloadRouteName' => 'app_admin_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_investigationreport_attachment_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId', 'attachmentId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber', 'attachmentId'],
             ],
 
             'DispositionAttachment in public mode' => [
@@ -215,18 +215,18 @@ final class AttachmentViewFactoryTest extends UnitTestCase
                 'attachmentClass' => DispositionAttachment::class,
                 'applicationMode' => ApplicationMode::PUBLIC,
                 'expectedDownloadRouteName' => 'app_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_disposition_attachment_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId', 'attachmentId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber', 'attachmentId'],
             ],
             'DispositionAttachment in admin mode' => [
                 'dossierType' => DossierType::DISPOSITION,
                 'attachmentClass' => DispositionAttachment::class,
                 'applicationMode' => ApplicationMode::ADMIN,
                 'expectedDownloadRouteName' => 'app_admin_dossier_file_download',
-                'expectedDownloadParameterKeys' => ['prefix', 'dossierId', 'type', 'id'],
+                'expectedDownloadParameterKeys' => ['prefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_disposition_attachment_detail',
-                'expectedDetailsParameterKeys' => ['prefix', 'dossierId', 'attachmentId'],
+                'expectedDetailsParameterKeys' => ['prefix', 'dossierNumber', 'attachmentId'],
             ],
         ];
     }

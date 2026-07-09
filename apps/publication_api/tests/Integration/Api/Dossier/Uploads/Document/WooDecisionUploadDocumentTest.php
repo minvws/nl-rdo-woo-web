@@ -7,6 +7,7 @@ namespace PublicationApi\Tests\Integration\Api\Dossier\Uploads\Document;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Dossier\WooDecision\Uploads\Document\DocumentFileName;
+use PublicationApi\FeatureFlag\DocumentUploadGuard;
 use PublicationApi\Tests\Integration\Api\ApiPublicationV1TestCase;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
@@ -22,7 +23,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\UuidV6;
 
-use function file_get_contents;
 use function sprintf;
 use function str_repeat;
 use function Zenstruck\Foundry\Persistence\save;
@@ -48,6 +48,10 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
 
         $client = self::createPublicationApiClient();
         $fileContent = $this->getTestFileContent('1008.pdf');
+
+        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
+        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->once();
+        self::getContainer()->set(DocumentUploadGuard::class, $documentUploadGuard);
 
         $uploadService = Mockery::mock(UploadService::class);
         self::getContainer()->set(UploadService::class, $uploadService);
@@ -150,9 +154,11 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
 
         $client = self::createPublicationApiClient();
 
-        $testFileName = '1008.pdf';
-        $testFilePath = sprintf('%s/tests/robot_framework/files/woodecision/%s', static::$kernel?->getProjectDir(), $testFileName);
-        $fileContent = file_get_contents($testFilePath);
+        $fileContent = $this->getTestFileContent('1008.pdf');
+
+        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
+        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->once();
+        self::getContainer()->set(DocumentUploadGuard::class, $documentUploadGuard);
 
         $uploadService = Mockery::mock(UploadService::class);
         self::getContainer()->set(UploadService::class, $uploadService);
@@ -193,9 +199,11 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
 
         $client = self::createPublicationApiClient();
 
-        $testFileName = '1008.pdf';
-        $testFilePath = sprintf('%s/tests/robot_framework/files/woodecision/%s', static::$kernel?->getProjectDir(), $testFileName);
-        $fileContent = file_get_contents($testFilePath);
+        $fileContent = $this->getTestFileContent('1008.pdf');
+
+        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
+        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->once();
+        self::getContainer()->set(DocumentUploadGuard::class, $documentUploadGuard);
 
         $uploadService = Mockery::mock(UploadService::class);
         self::getContainer()->set(UploadService::class, $uploadService);
@@ -238,9 +246,11 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
 
         $client = $this->createPublicationApiClient();
 
-        $testFileName = '1008.pdf';
-        $testFilePath = sprintf('%s/tests/robot_framework/files/woodecision/%s', static::$kernel?->getProjectDir(), $testFileName);
-        $fileContent = file_get_contents($testFilePath);
+        $fileContent = $this->getTestFileContent('1008.pdf');
+
+        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
+        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->once();
+        self::getContainer()->set(DocumentUploadGuard::class, $documentUploadGuard);
 
         $uploadService = Mockery::mock(UploadService::class);
         if ($expectedResponseCode === Response::HTTP_NO_CONTENT) {
@@ -264,6 +274,44 @@ final class WooDecisionUploadDocumentTest extends ApiPublicationV1TestCase
         ]);
 
         self::assertResponseStatusCodeSame($expectedResponseCode);
+    }
+
+    public function testUploadWooDecisionDocumentForPublishedDossierWhenUpdatesAreDisabled(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'previewDate' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+        ]);
+        $document = DocumentFactory::createOne([
+            'dossiers' => [$wooDecision],
+            'externalId' => $this->getFaker()->externalId(),
+            'judgement' => Judgement::PUBLIC,
+        ]);
+
+        $client = self::createPublicationApiClient();
+
+        $fileContent = $this->getTestFileContent('1008.pdf');
+
+        $url = sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/document/external/%s',
+            $organisation->getId(),
+            $wooDecision->getExternalId(),
+            $document->getExternalId()?->toString(),
+        );
+
+        $client->request(Request::METHOD_PUT, $url, [
+            'headers' => [
+                'Content-Type' => 'application/octet-stream',
+            ],
+            'body' => $fileContent,
+        ]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
     }
 
     /**

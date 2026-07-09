@@ -20,9 +20,9 @@ trait CommonDossierPropertiesAccessors
         return $this->getCommonDossier()->dossierId;
     }
 
-    public function getDossierNr(): string
+    public function getDossierNumber(): string
     {
-        return $this->getCommonDossier()->dossierNr;
+        return $this->getCommonDossier()->dossierNumber;
     }
 
     public function getDocumentPrefix(): string

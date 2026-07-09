@@ -70,7 +70,7 @@ final class WooDecisionTest extends UnitTestCase
         return new WooDecision(
             new CommonDossierProperties(
                 dossierId: 'dossierId',
-                dossierNr: 'dossierNr',
+                dossierNumber: 'dossierNumber',
                 documentPrefix: 'documentPrefix',
                 isPreview: true,
                 title: DossierTitle::create('title'),

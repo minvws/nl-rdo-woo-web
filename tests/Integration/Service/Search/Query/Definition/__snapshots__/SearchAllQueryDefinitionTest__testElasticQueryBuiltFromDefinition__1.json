@@ -2,9 +2,9 @@
     "body": {
         "docvalue_fields": [
             "type",
-            "document_nr",
+            "document_number",
             "document_prefix",
-            "dossier_nr"
+            "dossier_number"
         ],
         "_source": false,
         "suggest": {
@@ -96,7 +96,7 @@
                                         },
                                         {
                                             "term": {
-                                                "document_nr": {
+                                                "document_number": {
                                                     "value": "foo",
                                                     "boost": 5,
                                                     "case_insensitive": true
@@ -160,7 +160,7 @@
                                         },
                                         {
                                             "term": {
-                                                "prefixed_dossier_nr": {
+                                                "prefixed_dossier_number": {
                                                     "value": "foo",
                                                     "boost": 5,
                                                     "case_insensitive": true
@@ -169,7 +169,7 @@
                                         },
                                         {
                                             "term": {
-                                                "dossier_nr": {
+                                                "dossier_number": {
                                                     "value": "foo",
                                                     "boost": 5,
                                                     "case_insensitive": true
@@ -473,7 +473,7 @@
             },
             "unique_dossiers": {
                 "cardinality": {
-                    "field": "prefixed_dossier_nr",
+                    "field": "prefixed_dossier_number",
                     "precision_threshold": 40000
                 }
             }

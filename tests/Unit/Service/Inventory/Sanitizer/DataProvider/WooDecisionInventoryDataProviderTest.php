@@ -62,7 +62,7 @@ class WooDecisionInventoryDataProviderTest extends UnitTestCase
 
     public function testGetFilename(): void
     {
-        $this->wooDecision->expects('getDossierNr')->andReturn('foo123');
+        $this->wooDecision->expects('getDossierNumber')->andReturn('foo123');
 
         self::assertEquals(
             'inventarislijst-foo123',

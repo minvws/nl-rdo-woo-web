@@ -69,27 +69,27 @@ class InquiryLinkImporterTest extends UnitTestCase
         $prefix = Mockery::mock(DocumentPrefix::class);
         $prefix->expects('getOrganisation')->andReturn($organisation);
 
-        $documentNrA = 'foo-xx-123';
-        $documentNrB = 'foo-xx-456';
+        $documentNumberA = 'foo-xx-123';
+        $documentNumberB = 'foo-xx-456';
 
         $this->parser
             ->expects('parse')
             ->with($upload, $prefix)
             ->andReturn($this->iterableToGenerator([
-                $documentNrA => ['case1', 'case2'],
-                $documentNrB => ['case1'],
+                $documentNumberA => ['case1', 'case2'],
+                $documentNumberB => ['case1'],
             ]));
 
         $this->documentRepository
             ->expects('getDocumentInquiryNumbers')
-            ->with($documentNrA)
+            ->with($documentNumberA)
             ->andReturn(
                 new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), InquiryNumbers::empty()),
             );
 
         $this->documentRepository
             ->expects('getDocumentInquiryNumbers')
-            ->with($documentNrB)
+            ->with($documentNumberB)
             ->andReturn(
                 new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), InquiryNumbers::empty()),
             );
@@ -117,27 +117,27 @@ class InquiryLinkImporterTest extends UnitTestCase
         $prefix = Mockery::mock(DocumentPrefix::class);
         $prefix->expects('getOrganisation')->andReturn($organisation);
 
-        $documentNrA = 'foo-xx-123';
-        $documentNrB = 'foo-xx-456';
+        $documentNumberA = 'foo-xx-123';
+        $documentNumberB = 'foo-xx-456';
 
         $this->parser
             ->expects('parse')
             ->with($upload, $prefix)
             ->andReturn($this->iterableToGenerator([
-                $documentNrA => ['case1', 'case2'],
-                $documentNrB => ['case1', '<script>foo</script>'],
+                $documentNumberA => ['case1', 'case2'],
+                $documentNumberB => ['case1', '<script>foo</script>'],
             ]));
 
         $this->documentRepository
             ->expects('getDocumentInquiryNumbers')
-            ->with($documentNrA)
+            ->with($documentNumberA)
             ->andReturn(
                 new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), InquiryNumbers::empty()),
             );
 
         $this->documentRepository
             ->expects('getDocumentInquiryNumbers')
-            ->with($documentNrB)
+            ->with($documentNumberB)
             ->andReturn(
                 new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), InquiryNumbers::empty()),
             );

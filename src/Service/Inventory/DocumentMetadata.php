@@ -40,11 +40,11 @@ readonly class DocumentMetadata
         return $this->date;
     }
 
-    public function getFilename(string $documentNr): string
+    public function getFilename(string $documentNumber): string
     {
         if ($this->filename === '') {
-            // Assume that when we have no filename, we can use the documentNr as filename and its extension is PDF.
-            return $documentNr . '.pdf';
+            // Assume that when we have no filename, we can use the documentNumber as filename and its extension is PDF.
+            return $documentNumber . '.pdf';
         }
 
         return $this->filename;

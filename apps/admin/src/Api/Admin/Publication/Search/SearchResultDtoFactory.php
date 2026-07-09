@@ -79,9 +79,9 @@ readonly class SearchResultDtoFactory
             title: $dossier->title,
             link: $this->urlGenerator->generate(
                 'app_admin_dossier',
-                ['prefix' => $dossier->documentPrefix, 'dossierId' => $dossier->dossierNr],
+                ['prefix' => $dossier->documentPrefix, 'dossierNumber' => $dossier->dossierNumber],
             ),
-            number: $dossier->dossierNr,
+            number: $dossier->dossierNumber,
         );
     }
 
@@ -92,18 +92,18 @@ readonly class SearchResultDtoFactory
         $document = $entry->getViewModel();
 
         return new SearchResultDto(
-            id: $document->documentNr,
+            id: $document->documentNumber,
             type: SearchResultType::DOCUMENT,
             title: $document->fileInfo->getName() ?? '',
             link: $this->urlGenerator->generate(
                 'app_admin_dossier_woodecision_document',
                 [
                     'prefix' => $dossier->getDocumentPrefix(),
-                    'dossierId' => $dossier->getDossierNr(),
-                    'documentId' => $document->documentNr,
+                    'dossierNumber' => $dossier->getDossierNumber(),
+                    'documentNumber' => $document->documentNumber,
                 ],
             ),
-            number: $document->documentNr,
+            number: $document->documentNumber,
         );
     }
 
@@ -137,14 +137,14 @@ readonly class SearchResultDtoFactory
 
     private function getMainDocumentAndAttachmentUrl(DossierReference $dossierReference): string
     {
-        $dossier = $this->dossierRepository->findOneByPrefixAndDossierNr(
+        $dossier = $this->dossierRepository->findOneByPrefixAndDossierNumber(
             $dossierReference->getDocumentPrefix(),
-            $dossierReference->getDossierNr(),
+            $dossierReference->getDossierNumber(),
         );
 
         return $this->urlGenerator->generate(
             $this->wizardStatusFactory->getWizardStatus($dossier)->getAttachmentStep()->getRouteName(),
-            ['prefix' => $dossierReference->getDocumentPrefix(), 'dossierId' => $dossierReference->getDossierNr()],
+            ['prefix' => $dossierReference->getDocumentPrefix(), 'dossierNumber' => $dossierReference->getDossierNumber()],
         );
     }
 }

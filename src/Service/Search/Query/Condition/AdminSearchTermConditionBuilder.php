@@ -22,7 +22,7 @@ class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
             should: [
                 $this->getNestedDossiersTitleAndSummaryQuery($searchParameters),
                 $this->getDocumentFilenameQuery($searchParameters),
-                $this->getDocumentNrQuery($searchParameters),
+                $this->getDocumentNumberQuery($searchParameters),
                 $this->getDocumentIdQuery($searchParameters),
                 $this->getInquiryNumberQuery($searchParameters),
             ],

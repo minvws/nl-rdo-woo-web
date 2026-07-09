@@ -17,10 +17,22 @@
 # spectral lint -r .linter.yaml $OAS_URL_OR_FILE
 # ```
 
-extends: spectral:oas
+extends:
+  - ["spectral:oas", "off"] # extend spectral:oas maar zet standaard alle regels uit
 
 rules:
+  #/core/publish-openapi (deze error-rules valideren of OAS valid is)
+  oas3-schema: error
+  operation-operationId-unique: error
+  path-params: error
+  openapi-tags-uniqueness: error
+  oas3-valid-media-example: error
+  oas3-valid-schema-example: error
+  oas3-server-variables: error
   oas3-api-servers: error
+
+  #/core/no-trailing-slash
+  path-keys-no-trailing-slash: error
 
   #/core/doc-openapi
   nlgov:openapi3:
@@ -136,7 +148,7 @@ rules:
   nlgov:paths-kebab-case:
     severity: error
     message: "{{property}} is not kebab-case."
-    given: $.paths[?(@property && !@property.match(/\/openapi\.json/))]~
+    given: $.paths[?(@property && !@property.match(/\/openapi\.(json)|(yaml)/))]~
     then:
       function: pattern
       functionOptions:
@@ -161,20 +173,8 @@ rules:
       functionOptions:
         match: ^\$?[a-z][a-z\d]*([A-Z][a-z\d]*)*$
 
-  nlgov:schema-camel-case:
-    severity: warn
-    message: "Schema name should be UpperCamelCase in {{path}}"
-    given: >-
-      $.components.schemas[*]~
-    then:
-      function: casing
-      functionOptions:
-        type: pascal
-        separator:
-          char: ""
-
   nlgov:servers-use-https:
-    severity: warn
+    severity: error
     message: "Server URL {{value}} {{error}}."
     given:
       - $.servers[*]
@@ -215,16 +215,23 @@ rules:
               - title
               - detail
 
-  nlgov:property-casing:
-    severity: warn
+  #/core/error-handling/invalid-input
+  nlgov:problem-invalid-input:
+    severity: error
+    message: "GET and DELETE endpoints that have parameters, and all other endpoints must be able to return a 400 response"
     given:
-      - "$.*.schemas[*].properties.[?(@property && @property.match(/_links/i))]"
+      - $.paths..[?( @property.match(/(get)|(delete)/) && @.parameters && @.parameters.length > 0 )]
+      - $.paths..[?( @property.match(/(put)|(post)|(patch)/))]
     then:
-      function: casing
+      function: schema
       functionOptions:
-        type: camel
-      field: "@key"
-    message: Properties must be lowerCamelCase.
+        schema:
+          type: object
+          properties:
+            responses:
+              type: object
+              required:
+              - "400"
 
   #/core/date-time/timezone
   nlgov:date-time-ensure-timezone:

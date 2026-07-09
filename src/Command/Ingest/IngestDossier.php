@@ -34,7 +34,7 @@ class IngestDossier extends Command
         $this
             ->setDefinition([
                 new InputArgument('prefix', InputArgument::REQUIRED, 'The prefix of the dossier to ingest'),
-                new InputArgument('dossierNr', InputArgument::REQUIRED, 'The dossiernr of the dossier to ingest'),
+                new InputArgument('dossierNumber', InputArgument::REQUIRED, 'The dossierNumber of the dossier to ingest'),
                 new InputOption('force-refresh', 'f', InputOption::VALUE_NONE, 'Skip any caching'),
             ]);
     }
@@ -44,12 +44,12 @@ class IngestDossier extends Command
         $prefix = $input->getArgument('prefix');
         Assert::string($prefix);
 
-        $dossierNr = $input->getArgument('dossierNr');
-        Assert::string($dossierNr);
+        $dossierNumber = $input->getArgument('dossierNumber');
+        Assert::string($dossierNumber);
 
-        $dossier = $this->repository->findOneBy(['documentPrefix' => $prefix, 'dossierNr' => $dossierNr]);
+        $dossier = $this->repository->findOneBy(['documentPrefix' => $prefix, 'dossierNumber' => $dossierNumber]);
         if (! $dossier) {
-            $output->writeln(sprintf('<error>Dossier with prefix %s and dossierNr %s not found</error>', $prefix, $dossierNr));
+            $output->writeln(sprintf('<error>Dossier with prefix %s and dossierNumber %s not found</error>', $prefix, $dossierNumber));
 
             return self::FAILURE;
         }

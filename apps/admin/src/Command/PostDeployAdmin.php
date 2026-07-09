@@ -10,11 +10,19 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Webmozart\Assert\Assert;
 
 #[AsCommand(name: 'woopie:post-deploy', description: 'Executes post deploy actions')]
 class PostDeployAdmin extends Command
 {
+    public function __construct(
+        #[Autowire('%kernel.project_dir%/public')]
+        private readonly string $publicDir,
+    ) {
+        parent::__construct();
+    }
+
     protected function configure(): void
     {
     }
@@ -34,8 +42,8 @@ class PostDeployAdmin extends Command
         Assert::notNull($command);
 
         $openApiArguments = [
-            ['--output' => 'public/api/admin/v1/openapi.json'],
-            ['--output' => 'public/api/admin/v1/openapi.yaml', '--yaml' => true],
+            ['--output' => $this->publicDir . '/api/admin/v1/openapi.json'],
+            ['--output' => $this->publicDir . '/api/admin/v1/openapi.yaml', '--yaml' => true],
         ];
 
         foreach ($openApiArguments as $args) {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Service\Worker\Pdf\Extractor;
 
 use Psr\Log\LoggerInterface;
+use Shared\Domain\HasId;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\Stats\WorkerStatsService;
 use Shared\Service\Storage\EntityStorageService;
@@ -33,7 +34,7 @@ class PagecountExtractor implements EntityExtractorInterface, OutputExtractorInt
         $this->output = $this->extractPageCountFromPdf($entity);
     }
 
-    protected function extractPageCountFromPdf(EntityWithFileInfo $entity): ?PdftkPageCountResult
+    protected function extractPageCountFromPdf(EntityWithFileInfo&HasId $entity): ?PdftkPageCountResult
     {
         /** @var string|false $localPdfPath */
         $localPdfPath = $this->statsService->measure(

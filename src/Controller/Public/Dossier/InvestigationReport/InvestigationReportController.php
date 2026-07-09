@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Shared\Controller\Public\Dossier\InvestigationReport;
 
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
+use InvalidArgumentException;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\ViewModel\NoticeNotPublicViewFactory;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
+use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\ViewModel\InvestigationReportViewFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
@@ -29,43 +32,88 @@ class InvestigationReportController extends AbstractController
         private readonly AttachmentViewFactory $attachmentViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
         private readonly DossierFileViewFactory $dossierFileViewFactory,
+        private readonly InvestigationReportMainDocumentRepository $investigationReportMainDocumentRepository,
+        private readonly NoticeNotPublicViewFactory $noticeNotPublicViewFactory,
     ) {
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/onderzoeksrapport/{prefix}/{dossierId}', name: 'app_investigationreport_detail', methods: ['GET'])]
+    #[Route('/onderzoeksrapport/{prefix}/{dossierNumber}', name: 'app_investigationreport_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $investigationReport,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        InvestigationReportMainDocument $document,
         Breadcrumbs $breadcrumbs,
+        string $prefix,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem(mb_ucfirst((string) $investigationReport->getTitle()));
 
-        return $this->render('public/dossier/investigation-report/details.html.twig', [
+        $parameters = [
             'dossier' => $this->viewFactory->make($investigationReport),
             'attachments' => $this->attachmentViewFactory->makeCollection($investigationReport),
-            'document' => $this->mainDocumentViewFactory->make($investigationReport, $document),
+        ];
+
+        $document = $this->investigationReportMainDocumentRepository->findForDossierByPrefixAndDossierNumber(
+            $prefix,
+            $investigationReport->getDossierNumber(),
+        );
+        $noticeNotPublic = $investigationReport->getNoticeNotPublic();
+
+        if ($document === null && $noticeNotPublic === null) {
+            throw new InvalidArgumentException('either mainDocument or NoticeNotPublic must be set');
+        }
+
+        if ($document !== null) {
+            $parameters['document'] = $this->mainDocumentViewFactory->make($investigationReport, $document);
+            $parameters['noticeNotPublic'] = null;
+        } else {
+            $parameters['document'] = null;
+            $parameters['noticeNotPublic'] = $this->noticeNotPublicViewFactory->make($investigationReport);
+        }
+
+        return $this->render('public/dossier/investigation-report/details.html.twig', $parameters);
+    }
+
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
+    #[Route(
+        '/onderzoeksrapport/{prefix}/{dossierNumber}/mededeling-niet-openbaar',
+        name: 'app_investigationreport_notice_not_public_detail',
+        methods: ['GET'],
+    )]
+    public function noticeNotPublicDetail(
+        #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $investigationReport,
+        Breadcrumbs $breadcrumbs,
+    ): Response {
+        $noticeNotPublicViewModel = $this->noticeNotPublicViewFactory->make($investigationReport);
+
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
+        $breadcrumbs->addRouteItem('dossier.type.investigation-report', 'app_investigationreport_detail', [
+            'prefix' => $investigationReport->getDocumentPrefix(),
+            'dossierNumber' => $investigationReport->getDossierNumber(),
+        ]);
+        $breadcrumbs->addItem($noticeNotPublicViewModel->title);
+
+        return $this->render('public/dossier/investigation-report/notice-not-public.html.twig', [
+            'dossier' => $this->viewFactory->make($investigationReport),
+            'noticeNotPublic' => $noticeNotPublicViewModel,
         ]);
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/onderzoeksrapport/{prefix}/{dossierId}/document',
+        '/onderzoeksrapport/{prefix}/{dossierNumber}/document',
         name: 'app_investigationreport_document_detail',
         methods: ['GET'],
     )]
     public function documentDetail(
         #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber)')]
         InvestigationReportMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('dossier.type.investigation-report', 'app_investigationreport_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
         ]);
         $breadcrumbs->addItem((string) $dossier->getTitle());
 
@@ -83,13 +131,13 @@ class InvestigationReportController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/onderzoeksrapport/{prefix}/{dossierId}/bijlage/{attachmentId}',
+        '/onderzoeksrapport/{prefix}/{dossierNumber}/bijlage/{attachmentId}',
         name: 'app_investigationreport_attachment_detail',
         methods: ['GET'],
     )]
     public function attachmentDetail(
         #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber, attachmentId)')]
         InvestigationReportAttachment $attachment,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -98,7 +146,7 @@ class InvestigationReportController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('dossier.type.investigation-report', 'app_investigationreport_detail', [
             'prefix' => $dossier->getDocumentPrefix(),
-            'dossierId' => $dossier->getDossierNr(),
+            'dossierNumber' => $dossier->getDossierNumber(),
         ]);
         $breadcrumbs->addItem((string) $dossier->getTitle());
 

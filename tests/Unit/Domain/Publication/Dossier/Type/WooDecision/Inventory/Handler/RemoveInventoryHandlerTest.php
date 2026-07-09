@@ -80,7 +80,7 @@ class RemoveInventoryHandlerTest extends UnitTestCase
 
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('canRemoveInventory')->andReturnFalse();
-        $dossier->expects('isInventoryOptional')->andReturnFalse();
+        $dossier->expects('isInventoryRequired')->andReturnTrue();
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
 
         $this->wooDecisionRepository->expects('find')->with($dossierId)->andReturn($dossier);

@@ -45,7 +45,7 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
         self::assertEquals($covenantAttachment, $result);
     }
 
-    public function testFindForDossierByPrefixAndNrFindsMatch(): void
+    public function testFindForDossierByPrefixAndNumberFindsMatch(): void
     {
         $covenant = CovenantFactory::createOne();
 
@@ -53,9 +53,9 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
             'dossier' => $covenant,
         ]);
 
-        $result = $this->attachmentRepository->findForDossierByPrefixAndNr(
+        $result = $this->attachmentRepository->findForDossierByPrefixAndDossierNumber(
             $covenant->getDocumentPrefix(),
-            $covenant->getDossierNr(),
+            $covenant->getDossierNumber(),
             $covenantAttachment->getId()->toRfc4122(),
         );
 
@@ -63,9 +63,9 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
         self::assertEquals($covenantAttachment->getId(), $result->getId());
     }
 
-    public function testFindForDossierByPrefixAndNrMismatch(): void
+    public function testFindForDossierByPrefixAndNumberMismatch(): void
     {
-        $result = $this->attachmentRepository->findForDossierByPrefixAndNr(
+        $result = $this->attachmentRepository->findForDossierByPrefixAndDossierNumber(
             'a non-existing document prefix',
             'a non-existing dossier number',
             $this->getFaker()->uuid(),
@@ -81,18 +81,18 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
             'dossier' => $dossier,
         ]);
 
-        $result = $this->attachmentRepository->findForDossierByPrefixAndNr(
+        $result = $this->attachmentRepository->findForDossierByPrefixAndDossierNumber(
             $dossier->getDocumentPrefix(),
-            $dossier->getDossierNr(),
+            $dossier->getDossierNumber(),
             $attachment->getId()->toRfc4122(),
         );
         self::assertNotNull($result);
 
         $this->attachmentRepository->remove($result, true);
 
-        $result = $this->attachmentRepository->findForDossierByPrefixAndNr(
+        $result = $this->attachmentRepository->findForDossierByPrefixAndDossierNumber(
             $dossier->getDocumentPrefix(),
-            $dossier->getDossierNr(),
+            $dossier->getDossierNumber(),
             $attachment->getId()->toRfc4122(),
         );
         self::assertNull($result);
@@ -121,14 +121,14 @@ final class AbstractAttachmentRepositoryTest extends SharedWebTestCase
         );
     }
 
-    public function testFindForDossierByPrefixAndNrResultsNullOnDossierMismatch(): void
+    public function testFindForDossierByPrefixAndNumberResultsNullOnDossierMismatch(): void
     {
         $dossier = CovenantFactory::createOne();
         $attachment = CovenantAttachmentFactory::createOne([
             'dossier' => $dossier,
         ]);
 
-        $result = $this->attachmentRepository->findForDossierByPrefixAndNr(
+        $result = $this->attachmentRepository->findForDossierByPrefixAndDossierNumber(
             $dossier->getDocumentPrefix(),
             'MISMATCH',
             $attachment->getId()->toRfc4122(),

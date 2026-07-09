@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Api\Dossier\AnnualReport\AnnualReportResource;
 use PublicationApi\Api\Dossier\AnnualReport\Uploads\Attachment\AnnualReportUploadAttachmentResource;
 use PublicationApi\Api\Dossier\AnnualReport\Uploads\MainDocument\AnnualReportUploadMainDocumentResource;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Controller\Public\Dossier\DossierFileController;
@@ -16,8 +17,10 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
@@ -29,9 +32,11 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
+use Shared\Tests\Factory\Publication\Dossier\NoticeNotPublic\NoticeNotPublicFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocumentFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,8 +75,13 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
 
         $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
         self::assertResponseIsSuccessful();
-        self::assertCount(1, $result->toArray());
-        self::assertJsonContains([['externalId' => $annualReport->getExternalId()?->toString()]]);
+        $data = $result->toArray();
+        self::assertArrayHasKey('items', $data);
+        self::assertArrayHasKey('hasNextPage', $data);
+        /** @var array<array-key, mixed> $items */
+        $items = $data['items'];
+        self::assertCount(1, $items);
+        self::assertJsonContains(['items' => [['externalId' => $annualReport->getExternalId()?->toString()]]]);
     }
 
     public function testGetAnnualReport(): void
@@ -96,6 +106,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
 
         self::assertResponseIsSuccessful();
 
+        $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
         $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
@@ -105,7 +116,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                 'id' => $organisation->getId()->toString(),
                 'name' => $organisation->getName(),
             ],
-            'dossierNumber' => $annualReport->getDossierNr(),
+            'dossierNumber' => $annualReport->getDossierNumber(),
             'title' => (string) $annualReport->getTitle(),
             'summary' => $annualReport->getSummary(),
             'subject' => [
@@ -128,7 +139,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                 'uploadStatus' => UploadStatus::PROCESSED->value,
                 '_links' => [
                     'upload' => [
-                        'href' => $publicUrlGenerator->buildUrlFromRoute(
+                        'href' => $apiUrlGenerator->buildUrlFromRoute(
                             AnnualReportUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
                             [
                                 'organisationId' => $annualReport->getOrganisation()->getId(),
@@ -142,7 +153,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                             [
                                 'prefix' => $annualReport->getDocumentPrefix(),
-                                'dossierId' => $annualReport->getDossierNr(),
+                                'dossierNumber' => $annualReport->getDossierNumber(),
                                 'type' => DossierFileType::MAIN_DOCUMENT->value,
                                 'id' => $annualReportMainDocument->getId(),
                             ],
@@ -150,6 +161,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                     ],
                 ],
             ],
+            'noticeNotPublic' => null,
             'attachments' => [
                 [
                     'id' => (string) $annualReportAttachment->getId(),
@@ -162,7 +174,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                     'uploadStatus' => UploadStatus::PROCESSED->value,
                     '_links' => [
                         'upload' => [
-                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                            'href' => $apiUrlGenerator->buildUrlFromRoute(
                                 AnnualReportUploadAttachmentResource::ROUTE_NAME_UPLOAD,
                                 [
                                     'organisationId' => $annualReport->getOrganisation()->getId(),
@@ -177,7 +189,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                                 [
                                     'prefix' => $annualReport->getDocumentPrefix(),
-                                    'dossierId' => $annualReport->getDossierNr(),
+                                    'dossierNumber' => $annualReport->getDossierNumber(),
                                     'type' => DossierFileType::ATTACHMENT->value,
                                     'id' => $annualReportAttachment->getId(),
                                 ],
@@ -188,7 +200,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
             ],
             'year' => (int) $annualReport->getDateFrom()?->format('Y'),
             '_links' => [
-                'self' => ['href' => $this->buildPublicUrl($organisation, $annualReport)],
+                'self' => ['href' => $this->buildApiUrl($organisation, $annualReport)],
                 'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($annualReport)],
             ],
         ];
@@ -265,7 +277,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         self::assertDatabaseCount(AnnualReport::class, 1);
     }
 
-    public function testCreateAnnualReportWithoutMainDocument(): void
+    public function testCreateAnnualReportWithoutMainDocumentNorNotice(): void
     {
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
@@ -279,8 +291,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => [[
-            'code' => Type::INVALID_TYPE_ERROR,
-            'propertyPath' => 'mainDocument',
+            'message' => 'A dossier must contain at least a main document or a notice not public',
         ], ]]);
     }
 
@@ -311,6 +322,27 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
 
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, str_repeat('x', 129)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testCreateAnnualReportWithExternalIdAlreadyUsedByComplaintJudgementReturnsConflict(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        $data = $this->createValidAnnualReportDataPayload($department, $subject, 1);
+        $externalId = $this->getFaker()->externalId();
+        ComplaintJudgementFactory::createOne([
+            'externalId' => $externalId,
+            'organisation' => $organisation,
+            'departments' => [$department],
+            'subject' => $subject,
+        ]);
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $externalId), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertJsonContains(['detail' => 'ExternalId already in use by type complaint-judgement']);
     }
 
     /**
@@ -441,7 +473,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         self::assertMatchesResourceItemJsonSchema(AnnualReportResource::class);
 
         self::assertDatabaseHas(AnnualReport::class, [
-            'dossierNr' => $data['dossierNumber'],
+            'dossierNumber' => $data['dossierNumber'],
             'documentPrefix' => $annualReport->getDocumentPrefix(),
             'summary' => $data['summary'],
             'title' => $data['title'],
@@ -592,7 +624,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
 
         $data = [
             'title' => (string) $annualReport->getTitle(),
-            'dossierNumber' => $annualReport->getDossierNr(),
+            'dossierNumber' => $annualReport->getDossierNumber(),
             'year' => (int) $annualReport->getDateFrom()?->format('Y'),
             'publicationDate' => $annualReport->getPublicationDate()?->format('Y-m-d'),
             'summary' => $annualReport->getSummary(),
@@ -648,7 +680,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
 
         $data = [
             'title' => (string) $annualReport->getTitle(),
-            'dossierNumber' => $annualReport->getDossierNr(),
+            'dossierNumber' => $annualReport->getDossierNumber(),
             'year' => (int) $annualReport->getDateFrom()?->format('Y'),
             'publicationDate' => $annualReport->getPublicationDate()?->format('Y-m-d'),
             'summary' => $annualReport->getSummary(),
@@ -703,7 +735,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
 
         $data = [
             'title' => (string) $annualReport->getTitle(),
-            'dossierNumber' => $annualReport->getDossierNr(),
+            'dossierNumber' => $annualReport->getDossierNumber(),
             'year' => (int) $annualReport->getDateFrom()?->format('Y'),
             'publicationDate' => $annualReport->getPublicationDate()?->format('Y-m-d'),
             'summary' => $annualReport->getSummary(),
@@ -774,7 +806,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
 
         $data = [
             'title' => (string) $annualReport->getTitle(),
-            'dossierNumber' => $annualReport->getDossierNr(),
+            'dossierNumber' => $annualReport->getDossierNumber(),
             'year' => (int) $annualReport->getDateFrom()?->format('Y'),
             'publicationDate' => $annualReport->getPublicationDate()?->format('Y-m-d'),
             'summary' => $annualReport->getSummary(),
@@ -811,5 +843,167 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         self::assertDatabaseMissing(AnnualReportAttachment::class, [
             'id' => $attachment2->getId(),
         ]);
+    }
+
+    public function testCreateAnnualReportWithBothMainDocumentAndNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(AnnualReport::class, 0);
+
+        $data = $this->createValidAnnualReportDataPayload($department, $subject, 0);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'message' => 'A dossier cannot have both a main document and a notice not public',
+        ]]]);
+
+        self::assertDatabaseCount(AnnualReport::class, 0);
+    }
+
+    public function testCreateAnnualReportWithNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(AnnualReport::class, 0);
+
+        $data = $this->createValidAnnualReportDataPayload($department, $subject, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'documentName' => $this->getFaker()->sentence(),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'explanation' => $this->getFaker()->sentence(),
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+        self::assertMatchesResourceItemJsonSchema(AnnualReportResource::class);
+        self::assertDatabaseCount(AnnualReport::class, 1);
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+    }
+
+    public function testCreateAnnualReportWithNoticeNotPublicAndEmptyGrounds(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(AnnualReport::class, 0);
+
+        $data = $this->createValidAnnualReportDataPayload($department, $subject, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'grounds' => [],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        self::assertDatabaseCount(AnnualReport::class, 0);
+    }
+
+    public function testCreateAnnualReportWithNoticeNotPublicAndMissingFormalDate(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+
+        self::assertDatabaseCount(AnnualReport::class, 0);
+
+        $data = $this->createValidAnnualReportDataPayload($department, $subject, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+        ];
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        self::assertDatabaseCount(AnnualReport::class, 0);
+    }
+
+    public function testUpdateAnnualReportTransitionsFromMainDocumentToNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $annualReport = AnnualReportFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        $mainDocument = AnnualReportMainDocumentFactory::createOne(['dossier' => $annualReport]);
+        $mainDocumentId = $mainDocument->getId();
+
+        self::assertDatabaseHas(AnnualReportMainDocument::class, [
+            'id' => $mainDocumentId,
+        ]);
+        self::assertDatabaseCount(NoticeNotPublic::class, 0);
+
+        $data = $this->createValidAnnualReportDataPayload($department, null, 0);
+        unset($data['mainDocument']);
+        $data['noticeNotPublic'] = [
+            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
+            'documentName' => $this->getFaker()->sentence(),
+            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'explanation' => $this->getFaker()->sentence(),
+        ];
+
+        $response = self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $annualReport), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        $responseData = $response->toArray();
+        self::assertNull($responseData['mainDocument']);
+        self::assertNotNull($responseData['noticeNotPublic']);
+        $responseNoticeNotPublic = $responseData['noticeNotPublic'];
+        self::assertIsArray($responseNoticeNotPublic);
+        self::assertEquals($data['noticeNotPublic']['formalDate'], $responseNoticeNotPublic['formalDate']);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+        self::assertDatabaseMissing(AnnualReportMainDocument::class, [
+            'id' => $mainDocumentId,
+        ]);
+    }
+
+    public function testUpdateAnnualReportTransitionsFromNoticeNotPublicToMainDocument(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $annualReport = AnnualReportFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        NoticeNotPublicFactory::createOne(['dossier' => $annualReport]);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 1);
+        self::assertDatabaseCount(AnnualReportMainDocument::class, 0);
+
+        $data = $this->createValidAnnualReportDataPayload($department, null, 0);
+        unset($data['noticeNotPublic']);
+
+        $response = self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $annualReport), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        $responseData = $response->toArray();
+        self::assertNotNull($responseData['mainDocument']);
+        self::assertNull($responseData['noticeNotPublic']);
+
+        self::assertDatabaseCount(NoticeNotPublic::class, 0);
+        self::assertDatabaseCount(AnnualReportMainDocument::class, 1);
     }
 }

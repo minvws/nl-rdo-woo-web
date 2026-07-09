@@ -10,8 +10,9 @@
 {% block about %}
     <twig:Public:Publication:About
         document="{{ document }}"
-        documentType="{{ document.type | trans | capitalize }}"
+        documentType="{{ document is not null ? document.type | trans | capitalize : 'public.documents.document.type_of' | trans }}"
         dossier="{{ dossier }}"
+        noticeNotPublic="{{ noticeNotPublic }}"
         title="{{ 'public.dossiers.annual_report.about' | trans }}"
         dateLabel="{{ 'global.year' | trans }}"
     >

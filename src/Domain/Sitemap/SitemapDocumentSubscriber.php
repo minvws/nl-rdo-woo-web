@@ -41,8 +41,8 @@ readonly class SitemapDocumentSubscriber
                     new UrlConcrete(
                         $event->getUrlGenerator()->generate('app_document_detail', [
                             'prefix' => $dossier->getDocumentPrefix(),
-                            'dossierId' => $dossier->getDossierNr(),
-                            'documentId' => $document->getDocumentNr(),
+                            'dossierNumber' => $dossier->getDossierNumber(),
+                            'documentNumber' => $document->getDocumentNumber(),
                         ], UrlGeneratorInterface::ABSOLUTE_URL),
                         $document->getUpdatedAt(),
                         UrlConcrete::CHANGEFREQ_MONTHLY,

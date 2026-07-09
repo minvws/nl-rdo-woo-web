@@ -1,0 +1,86 @@
+# https://taskfile.dev
+version: '3.50.0'
+
+tasks:
+
+  migrate:test:
+    desc: Run (doctrine) database migrations in test environment
+    cmds:
+      - task: cmd:doctrine:database:create
+        vars:
+          TENANT: '{{ .TENANT }}'
+          SUB_CMD: '--if-not-exists --no-interaction --env=test'
+      - task: cmd:doctrine:schema:drop
+        vars:
+          TENANT: '{{ .TENANT }}'
+          SUB_CMD: '--full-database --force --no-interaction --env=test'
+      - task: cmd:doctrine:migrations:migrate
+        vars:
+          TENANT: '{{ .TENANT }}'
+          SUB_CMD: '--no-interaction --env=test'
+    requires:
+      vars: [TENANT]
+
+  migrate:diff:
+    desc: Run (doctrine) database migrations diff
+    cmds:
+      - task: cmd:doctrine:migrations:diff
+        vars:
+          TENANT: 'minvws'
+          SUB_CMD: '--no-interaction'
+
+  migrate:dump:
+    desc: Dump doctrine migrations to plain SQL files
+    cmds:
+      - task: cmd:woopie:sql:dump
+        vars:
+          TENANT: 'minvws'
+
+  user:create:
+    desc: Create an user
+    vars:
+      TENANT: '{{ .TENANT | default "minvws" }}'
+    cmds:
+      - task: cmd:woopie:user:create
+        vars:
+          TENANT: '{{ .TENANT }}'
+          CLI_ARGS: '{{ .CLI_ARGS | default "\"email@example.org\" \"full name\" --super-admin" }}'
+
+  migrate:
+    desc: Run (doctrine) database migrations
+    cmds:
+      - task: cmd:doctrine:database:create
+        vars:
+          SUB_CMD: '--if-not-exists --no-interaction'
+          TENANT: '{{ .TENANT }}'
+      - task: cmd:doctrine:migrations:migrate
+        vars:
+          SUB_CMD: '--no-interaction'
+          TENANT: '{{ .TENANT }}'
+    requires:
+      vars: [TENANT]
+
+  loadfixtures:
+    desc: Load doctrine example fixtures
+    cmds:
+      - task: cmd:doctrine:fixtures:load
+        vars:
+          SUB_CMD: '--no-interaction --append'
+          TENANT: '{{ .TENANT }}'
+    requires:
+      vars: [TENANT]
+
+  cmd:*:
+    vars:
+      CMD: '{{ index .MATCH 0 }}'
+      ID: '{{ .ID | default "admin" }}'
+    cmds:
+      - task: :dc:exec:admin
+        vars:
+          SUB_CMD: 'bin/console --tenant={{ .TENANT }} --id={{ .ID }} {{ .CMD }} {{ .SUB_CMD }} {{ .CLI_ARGS }}'
+          CLI_ARGS: '{{ .CLI_ARGS }}'
+    requires:
+      vars:
+        - name: TENANT
+          enum:
+            ref: .LOCAL_TENANTS

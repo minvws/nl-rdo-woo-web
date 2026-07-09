@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Shared\Controller\Public\Dossier\Covenant;
 
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
+use InvalidArgumentException;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\ViewModel\NoticeNotPublicViewFactory;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\Covenant\ViewModel\CovenantViewFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
@@ -27,36 +30,78 @@ class CovenantController extends AbstractController
         private readonly AttachmentViewFactory $attachmentViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
         private readonly DossierFileViewFactory $dossierFileViewFactory,
+        private readonly CovenantMainDocumentRepository $covenantMainDocumentRepository,
+        private readonly NoticeNotPublicViewFactory $noticeNotPublicViewFactory,
     ) {
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/convenant/{prefix}/{dossierId}', name: 'app_covenant_detail', methods: ['GET'])]
+    #[Route('/convenant/{prefix}/{dossierNumber}', name: 'app_covenant_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
-        CovenantMainDocument $covenantDocument,
         Breadcrumbs $breadcrumbs,
+        string $prefix,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addItem('global.covenant');
 
-        return $this->render('public/dossier/covenant/details.html.twig', [
+        $parameters = [
             'dossier' => $this->covenantViewFactory->make($covenant),
             'attachments' => $this->attachmentViewFactory->makeCollection($covenant),
-            'document' => $this->mainDocumentViewFactory->make($covenant, $covenantDocument),
+        ];
+
+        $document = $this->covenantMainDocumentRepository->findForDossierByPrefixAndDossierNumber($prefix, $covenant->getDossierNumber());
+        $noticeNotPublic = $covenant->getNoticeNotPublic();
+
+        if ($document === null && $noticeNotPublic === null) {
+            throw new InvalidArgumentException('either mainDocument or NoticeNotPublic must be set');
+        }
+
+        if ($document !== null) {
+            $parameters['document'] = $this->mainDocumentViewFactory->make($covenant, $document);
+            $parameters['noticeNotPublic'] = null;
+        } else {
+            $parameters['document'] = null;
+            $parameters['noticeNotPublic'] = $this->noticeNotPublicViewFactory->make($covenant);
+        }
+
+        return $this->render('public/dossier/covenant/details.html.twig', $parameters);
+    }
+
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
+    #[Route(
+        '/convenant/{prefix}/{dossierNumber}/mededeling-niet-openbaar',
+        name: 'app_covenant_notice_not_public_detail',
+        methods: ['GET'],
+    )]
+    public function noticeNotPublicDetail(
+        #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
+        Breadcrumbs $breadcrumbs,
+    ): Response {
+        $noticeNotPublicViewModel = $this->noticeNotPublicViewFactory->make($covenant);
+
+        $breadcrumbs->addRouteItem('global.home', 'app_home');
+        $breadcrumbs->addRouteItem('global.covenant', 'app_covenant_detail', [
+            'prefix' => $covenant->getDocumentPrefix(),
+            'dossierNumber' => $covenant->getDossierNumber(),
+        ]);
+        $breadcrumbs->addItem($noticeNotPublicViewModel->title);
+
+        return $this->render('public/dossier/covenant/notice-not-public.html.twig', [
+            'dossier' => $this->covenantViewFactory->make($covenant),
+            'noticeNotPublic' => $noticeNotPublicViewModel,
         ]);
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/convenant/{prefix}/{dossierId}/document',
+        '/convenant/{prefix}/{dossierNumber}/document',
         name: 'app_covenant_document_detail',
         methods: ['GET'],
     )]
     public function covenantDocumentDetail(
         #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber)')]
         CovenantMainDocument $covenantDocument,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -65,7 +110,7 @@ class CovenantController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('global.covenant', 'app_covenant_detail', [
             'prefix' => $covenant->getDocumentPrefix(),
-            'dossierId' => $covenant->getDossierNr(),
+            'dossierNumber' => $covenant->getDossierNumber(),
         ]);
         $breadcrumbs->addItem($mainDocumentViewModel->name ?? '');
 
@@ -83,13 +128,13 @@ class CovenantController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/convenant/{prefix}/{dossierId}/bijlage/{attachmentId}',
+        '/convenant/{prefix}/{dossierNumber}/bijlage/{attachmentId}',
         name: 'app_covenant_attachment_detail',
         methods: ['GET'],
     )]
     public function covenantAttachmentDetail(
         #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndNr(prefix, dossierId, attachmentId)')]
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber, attachmentId)')]
         CovenantAttachment $covenantAttachment,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -98,7 +143,7 @@ class CovenantController extends AbstractController
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('global.covenant', 'app_covenant_detail', [
             'prefix' => $covenant->getDocumentPrefix(),
-            'dossierId' => $covenant->getDossierNr(),
+            'dossierNumber' => $covenant->getDossierNumber(),
         ]);
         $breadcrumbs->addItem($covenantAttachmentView->name ?? '');
 

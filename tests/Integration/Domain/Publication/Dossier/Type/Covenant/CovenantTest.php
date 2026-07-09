@@ -24,7 +24,7 @@ final class CovenantTest extends SharedWebTestCase
         $date = new DateTimeImmutable('2020-04-21');
 
         $covenant = new Covenant();
-        $covenant->setDossierNr('foo-123');
+        $covenant->setDossierNumber('foo-123');
         $covenant->setDepartments([$department]);
         $covenant->setTitle(DossierTitle::create('bar'));
         $covenant->setDocumentPrefix('FOO');
@@ -45,7 +45,7 @@ final class CovenantTest extends SharedWebTestCase
         CarbonImmutable::setTestNow($date);
 
         $covenant = new Covenant();
-        $covenant->setDossierNr('foo-123');
+        $covenant->setDossierNumber('foo-123');
         $covenant->setDepartments([$department]);
         $covenant->setTitle(DossierTitle::create('bar'));
         $covenant->setDocumentPrefix('FOO');

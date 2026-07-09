@@ -1,7 +1,7 @@
 id: doc-456
 fields:
     type: document
-    document_nr: doc-123
+    document_number: doc-123
     mime_type: application/pdf
     file_size: 1234
     file_type: pdf
@@ -17,14 +17,14 @@ fields:
     document_pages: 13
     dossiers: [{ mapped-dossier-data: dummy }]
     inquiry_ids: [{  }]
-    prefixed_dossier_nr: [PREFIX|dos-123]
+    prefixed_dossier_number: [PREFIX|dos-123]
     organisation_ids: [{  }]
     referred_document_nrs: [doc-456, doc-789]
     metadata: [foo]
     pages: { 1: bar }
 documentValues:
     type: { name: WOO_DECISION_DOCUMENT, value: document }
-    document_nr: doc-123
+    document_number: doc-123
     mime_type: application/pdf
     file_size: 1234
     file_type: pdf
@@ -40,7 +40,7 @@ documentValues:
     document_pages: 13
     dossiers: [{ mapped-dossier-data: dummy }]
     inquiry_ids: [{  }]
-    prefixed_dossier_nr: [PREFIX|dos-123]
+    prefixed_dossier_number: [PREFIX|dos-123]
     organisation_ids: [{  }]
     referred_document_nrs: [doc-456, doc-789]
     metadata: [foo]

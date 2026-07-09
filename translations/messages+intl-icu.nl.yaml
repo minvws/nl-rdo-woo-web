@@ -8,6 +8,8 @@ global.added: "toegevoegd"
 global.all_departments: "Alle bestuursorganen"
 global.and: "en"
 global.and_on: "en op"
+global.one: "een"
+global.none: "geen"
 global.annual_report: "Jaarplan of jaarverslag"
 global.action: "Actie"
 global.attachment_of: "Bijlage van"
@@ -144,6 +146,12 @@ global.number_of_dossiers: >-
     =0{# besluiten}
     =1{# besluit}
     other{# besluiten}
+  }
+global.number_of_grounds: >-
+  { count, plural,
+    =0{# weigeringsgronden}
+    =1{# weigeringsgrond}
+    other{# weigeringsgronden}
   }
 global.number_of_results: >-
   { count, plural,
@@ -501,6 +509,19 @@ admin.dossiers.attachment.withdraw.help: "Is er een nieuwere versie van de bijla
 admin.dossiers.attachment.withdraw.success: "De bijlage is ingetrokken."
 admin.dossiers.attachment.withdraw.impossible: "Intrekken van deze bijlage is niet mogelijk."
 
+#START notice_not_public
+global.dossiers.notice_not_public: "Mededeling niet-openbaar"
+global.dossiers.notice_not_public.explanation: "Toelichting"
+
+admin.dossiers.notice_not_public.document_name: "Documentnaam"
+admin.dossiers.notice_not_public.formal_date: "Datum mededeling"
+
+public.dossiers.notice_not_public.about: "Over deze mededeling"
+public.dossiers.notice_not_public.notification: "Er is besloten dit document in zijn geheel niet openbaar te maken."
+public.dossiers.notice_not_public.notice: "Mededeling"
+public.dossiers.notice_not_public.date_original_document: "Datum oorspronkelijke document"
+#STOP notice_not_public
+
 admin.dossiers.form.details.internal_reference_label: "Interne referentie"
 admin.dossiers.form.details.internal_reference_help: "Verwijzing naar de interne vindplaats of verantwoordelijke van de brondocumentatie van deze publicatie. Wordt niet gepubliceerd."
 admin.dossiers.form.details.ref_nr_help: "Minimaal 3 en maximaal 50 karakters. Gebruik alleen letters, cijfers en verbindingstekens.<br><strong>Let op</strong>: dit nummer is na het opslaan van de basisgegevens niet meer aan te passen."
@@ -686,7 +707,7 @@ public.global.label.home: "Home"
 public.global.label.search_publications: "Zoek door alle publicaties"
 public.global.label.all_categories: "Alle categorieën"
 public.global.label.departments: "Bekijk per bestuursorgaan"
-public.global.no_doc_number: "Documentnummer {documentNr} bestaat niet"
+public.global.no_document_number: "Documentnummer {documentNumber} bestaat niet"
 public.global.are_or_is: >-
   { count, plural,
     =1{is}
@@ -941,8 +962,8 @@ history.dossier_update_inventory.private: 'Nieuwe inventarislijst toegevoegd ({f
 history.dossier_update_inventory.public: 'Inventarislijst vervangen'
 history.dossier_update_preview_date.private: 'Datum feitelijke verstrekking aangepast naar {date}'
 history.dossier_update_preview_date.public: null
-history.dossier_update_dossier_nr.private: 'Besluitnummer aangepast van {oldNr} naar {newNr}'
-history.dossier_update_dossier_nr.public: 'Besluitnummer aangepast van {oldNr} naar {newNr}'
+history.dossier_update_dossier_number.private: 'Besluitnummer aangepast van {oldNr} naar {newNr}'
+history.dossier_update_dossier_number.public: 'Besluitnummer aangepast van {oldNr} naar {newNr}'
 history.dossier_update_publication_date.private: 'Datum publicatie aangepast naar {date}'
 history.dossier_update_publication_date.public: null
 history.dossier_inquiry_added.public: null
@@ -994,10 +1015,22 @@ history.covenant.main_document_added.private: 'Nieuw convenant toegevoegd ({file
 history.covenant.main_document_updated.private: 'Convenant gewijzigd ({filename})'
 history.covenant.main_document_updated.public: 'Convenant vervangen'
 history.covenant.main_document_deleted.private: 'Convenant verwijderd ({filename})'
+history.covenant.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
+history.covenant.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
+history.covenant.notice_not_public_updated.private: "Mededeling 'niet-openbaar' gewijzigd"
+history.covenant.notice_not_public_updated.public: "Mededeling 'niet-openbaar' gewijzigd"
+history.covenant.notice_not_public_deleted.private: "Mededeling 'niet-openbaar' verwijderd"
+history.covenant.notice_not_public_deleted.public: "Vastgesteld dat dit document openbaar gemaakt kan worden."
 history.annual-report.main_document_added.private: 'Nieuw jaarplan of jaarverslag toegevoegd ({filename})'
 history.annual-report.main_document_updated.private: 'Jaarplan of jaarverslag gewijzigd ({filename})'
 history.annual-report.main_document_updated.public: 'Jaarplan of jaarverslag vervangen'
 history.annual-report.main_document_deleted.private: 'Jaarplan of jaarverslag verwijderd ({filename})'
+history.annual-report.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
+history.annual-report.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
+history.annual-report.notice_not_public_updated.private: "Mededeling 'niet-openbaar' gewijzigd"
+history.annual-report.notice_not_public_updated.public: "Mededeling 'niet-openbaar' gewijzigd"
+history.annual-report.notice_not_public_deleted.private: "Mededeling 'niet-openbaar' verwijderd"
+history.annual-report.notice_not_public_deleted.public: "Vastgesteld dat dit document openbaar gemaakt kan worden."
 search.results_without_date: >-
   { count, plural,
     =1 {Er is {pre_document}1 document of dossier{post_document} waarvan we de datum niet weten, die verder wel aan uw zoekopdracht voldoet.}
@@ -1044,15 +1077,15 @@ publication.dossier.error.file_name_too_long: "Rij {rownumber} heeft een te lang
 publication.dossier.error.inquiry_numbers_invalid: "Rij {rownumber} bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
 publication.dossier.error.invalid_link: "Rij {rownumber} heeft een ongeldige URL"
 publication.inquiry.error.inquiry_numbers_invalid: "Bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
-publication.dossier.error.generic_document_row_exception: "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
-publication.dossier.error.processing_inventory: "Er is een technische fout opgetreden tijdens de verwerking van de inventaris"
+publication.dossier.error.generic_document_row_exception: "Er is een technische fout opgetreden tijdens de verwerking van het productierapport"
+publication.dossier.error.processing_inventory: "Er is een technische fout opgetreden tijdens de verwerking van het productierapport"
 publication.dossier.error.no_inventory_changes: "Het nieuwe productierapport is gelijk aan het huidige rapport"
 publication.dossier.error.max_documents_exceeded: "Het maximaal aantal documenten per dossier ({max}) wordt overschreden"
 publication.dossier.error.missing_document: "Document {documentNumber} mist in het productierapport"
 publication.dossier.error.referred_document_does_not_exist: "Gerelateerd ID {documentNumber} is niet bekend"
 publication.dossier.error.document_not_unique: "Het documentnummer {documentNumber} is niet uniek binnen het productierapport"
 publication.dossier.error.maximum_processing_time_exceeded: "De verwerking van het productierapport heeft de maximale duur overschreden"
-publication.dossier.error.file_name_does_not_match_document_number: "De bestandsnaam {filename} komt niet overeen met documentnummer {documentnr}"
+publication.dossier.error.file_name_does_not_match_document_number: "De bestandsnaam {filename} komt niet overeen met documentnummer {documentNumber}"
 publication.dossier.error.productionreport_date_header: "Op {date} is een poging gedaan het productierapport te vervangen - dit is gefaald met de volgende fouten:"
 publication.dossier.error.productionreport_noop: "Het productierapport is niet vervangen en het originele productierapport is behouden."
 
@@ -1135,6 +1168,12 @@ history.investigation-report.main_document_added.private: 'Nieuw onderzoeksrappo
 history.investigation-report.main_document_updated.private: 'Onderzoeksrapport gewijzigd ({filename})'
 history.investigation-report.main_document_updated.public: 'Onderzoeksrapport vervangen'
 history.investigation-report.main_document_deleted.private: 'Onderzoeksrapport verwijderd ({filename})'
+history.investigation-report.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
+history.investigation-report.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
+history.investigation-report.notice_not_public_updated.private: "Mededeling 'niet-openbaar' gewijzigd"
+history.investigation-report.notice_not_public_updated.public: "Mededeling 'niet-openbaar' gewijzigd"
+history.investigation-report.notice_not_public_deleted.private: "Mededeling 'niet-openbaar' verwijderd"
+history.investigation-report.notice_not_public_deleted.public: "Vastgesteld dat dit document openbaar gemaakt kan worden."
 #END investigation-report
 
 #START complaint-judgement
@@ -1177,6 +1216,12 @@ history.complaint-judgement.main_document_added.private: 'Nieuw klachtoordeel to
 history.complaint-judgement.main_document_updated.private: 'Klachtoordeel gewijzigd ({filename})'
 history.complaint-judgement.main_document_updated.public: 'Klachtoordeel vervangen'
 history.complaint-judgement.main_document_deleted.private: 'Klachtoordeel verwijderd ({filename})'
+history.complaint-judgement.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
+history.complaint-judgement.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
+history.complaint-judgement.notice_not_public_updated.private: "Mededeling 'niet-openbaar' gewijzigd"
+history.complaint-judgement.notice_not_public_updated.public: "Mededeling 'niet-openbaar' gewijzigd"
+history.complaint-judgement.notice_not_public_deleted.private: "Mededeling 'niet-openbaar' verwijderd"
+history.complaint-judgement.notice_not_public_deleted.public: "Vastgesteld dat dit document openbaar gemaakt kan worden."
 #END complaint-judgement
 
 #START disposition
@@ -1220,6 +1265,12 @@ history.disposition.main_document_added.private: 'Nieuw beschikking toegevoegd (
 history.disposition.main_document_updated.private: 'Beschikking gewijzigd ({filename})'
 history.disposition.main_document_updated.public: 'Beschikking vervangen'
 history.disposition.main_document_deleted.private: 'Beschikking verwijderd ({filename})'
+history.disposition.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
+history.disposition.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
+history.disposition.notice_not_public_updated.private: "Mededeling 'niet-openbaar' gewijzigd"
+history.disposition.notice_not_public_updated.public: "Mededeling 'niet-openbaar' gewijzigd"
+history.disposition.notice_not_public_deleted.private: "Mededeling 'niet-openbaar' verwijderd"
+history.disposition.notice_not_public_deleted.public: "Vastgesteld dat dit document openbaar gemaakt kan worden."
 #END disposition
 
 #START other publication
@@ -1266,6 +1317,12 @@ history.other-publication.main_document_added.private: 'Nieuw informatiestuk toe
 history.other-publication.main_document_updated.private: 'Informatiestuk gewijzigd ({filename})'
 history.other-publication.main_document_updated.public: 'Informatiestuk vervangen'
 history.other-publication.main_document_deleted.private: 'Informatiestuk verwijderd ({filename})'
+history.other-publication.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
+history.other-publication.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
+history.other-publication.notice_not_public_updated.private: "Mededeling 'niet-openbaar' gewijzigd"
+history.other-publication.notice_not_public_updated.public: "Mededeling 'niet-openbaar' gewijzigd"
+history.other-publication.notice_not_public_deleted.private: "Mededeling 'niet-openbaar' verwijderd"
+history.other-publication.notice_not_public_deleted.public: "Vastgesteld dat dit document openbaar gemaakt kan worden."
 public.search.type_description.other_publication: 'Inspanningsverplichting Woo'
 public.search.type.other_publication_main_document: 'Informatiestuk'
 #END other publication
@@ -1315,6 +1372,12 @@ history.advice.main_document_added.private: 'Nieuw advies toegevoegd ({filename}
 history.advice.main_document_updated.private: 'Advies gewijzigd ({filename})'
 history.advice.main_document_updated.public: 'Advies vervangen'
 history.advice.main_document_deleted.private: 'Advies verwijderd ({filename})'
+history.advice.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
+history.advice.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
+history.advice.notice_not_public_updated.private: "Mededeling 'niet-openbaar' gewijzigd"
+history.advice.notice_not_public_updated.public: "Mededeling 'niet-openbaar' gewijzigd"
+history.advice.notice_not_public_deleted.private: "Mededeling 'niet-openbaar' verwijderd"
+history.advice.notice_not_public_deleted.public: "Vastgesteld dat dit document openbaar gemaakt kan worden."
 public.search.type_description.advice: 'Over ontwerpen van wet- en regelgeving'
 public.search.type.advice_main_document: 'Advies'
 #END advice
@@ -1372,6 +1435,12 @@ history.request-for-advice.main_document_added.private: 'Nieuwe adviesaanvraag t
 history.request-for-advice.main_document_updated.private: 'Adviesaanvraag gewijzigd ({filename})'
 history.request-for-advice.main_document_updated.public: 'Adviesaanvraag vervangen'
 history.request-for-advice.main_document_deleted.private: 'Adviesaanvraag verwijderd ({filename})'
+history.request-for-advice.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
+history.request-for-advice.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
+history.request-for-advice.notice_not_public_updated.private: "Mededeling 'niet-openbaar' gewijzigd"
+history.request-for-advice.notice_not_public_updated.public: "Mededeling 'niet-openbaar' gewijzigd"
+history.request-for-advice.notice_not_public_deleted.private: "Mededeling 'niet-openbaar' verwijderd"
+history.request-for-advice.notice_not_public_deleted.public: "Vastgesteld dat dit document openbaar gemaakt kan worden."
 public.search.type_description.request_for_advice: 'De aanvraag van een advies'
 public.search.type.request_for_advice_main_document: 'Hoofddocument'
 #END request for advice
@@ -1387,7 +1456,7 @@ admin.dossiers.action.confirmation.delete: 'De publicatie zal compleet verwijder
 admin.dossiers.action.action_is_executed: 'De actie wordt nu op de achtergrond uitgevoerd'
 admin.dossiers.action.withdraw_all_executing: 'Alle (deels) openbare documenten worden nu ingetrokken. Het kan even duren voor dit verwerkt is.'
 admin.dossiers.action.withdraw_document_executing: 'Het document wordt nu ingetrokken. Het kan even duren voor dit verwerkt is.'
-admin.dossiers.action.column.dossier_nr: 'Dossiernummer'
+admin.dossiers.action.column.dossier_number: 'Dossiernummer'
 admin.dossiers.action.column.type: 'Soort'
 admin.dossiers.action.column.status: 'Status'
 admin.dossiers.action.column.id: 'Database ID'
@@ -1401,7 +1470,7 @@ admin.dossiers.action.row.actual_uploads: 'Werkelijk aantal uploads'
 admin.dossiers.action.row.uploads_completed: 'Upload compleet'
 admin.dossiers.action.row.step_completed: 'Stap "{step}" compleet'
 
-admin.dossiers.downloads.column.dossier_nr: 'Dossiernummer'
+admin.dossiers.downloads.column.dossier_number: 'Dossiernummer'
 admin.dossiers.downloads.column.expected_count: 'Verwacht'
 admin.dossiers.downloads.column.file_count: 'Werkelijk'
 admin.dossiers.downloads.column.status: 'Status'

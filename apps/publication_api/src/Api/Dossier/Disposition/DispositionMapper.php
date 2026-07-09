@@ -9,8 +9,10 @@ use PublicationApi\Api\Department\DepartmentMapper;
 use PublicationApi\Api\Dossier\Disposition\Uploads\Attachment\DispositionUploadAttachmentResource;
 use PublicationApi\Api\Dossier\Disposition\Uploads\MainDocument\DispositionUploadMainDocumentResource;
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
+use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicResponseDtoFactory;
 use PublicationApi\Api\Organisation\OrganisationMapper;
 use PublicationApi\Api\Subject\SubjectMapper;
+use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
@@ -18,7 +20,6 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\Url;
@@ -30,10 +31,11 @@ use function array_values;
 readonly class DispositionMapper
 {
     public function __construct(
+        private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
         private DossierPathHelper $dossierPathHelper,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
-        private PublicUrlGenerator $publicUrlGenerator,
+        private NoticeNotPublicResponseDtoFactory $noticeNotPublicResponseDtoFactory,
     ) {
     }
 
@@ -50,7 +52,7 @@ readonly class DispositionMapper
     public function fromEntity(Disposition $disposition): DispositionResponseDto
     {
         $mainDocument = $disposition->getMainDocument();
-        Assert::notNull($mainDocument);
+        $noticeNotPublic = $disposition->getNoticeNotPublic();
 
         $dateFrom = $disposition->getDateFrom();
         Assert::notNull($dateFrom);
@@ -58,22 +60,31 @@ readonly class DispositionMapper
         $department = $disposition->getDepartments()->first();
         Assert::isInstanceOf($department, Department::class);
 
+        $mainDocumentDto = $mainDocument !== null
+            ? $this->mainDocumentResponseDtoFactory->fromEntity(
+                $mainDocument,
+                DispositionUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
+                DispositionMainDocumentResponseDto::class,
+            )
+            : null;
+
+        $noticeNotPublicDto = $noticeNotPublic !== null
+            ? $this->noticeNotPublicResponseDtoFactory->fromEntity($noticeNotPublic)
+            : null;
+
         return new DispositionResponseDto(
             $disposition->getId(),
             $disposition->getExternalId(),
             OrganisationMapper::fromEntity($disposition->getOrganisation()),
-            $disposition->getDossierNr(),
+            $disposition->getDossierNumber(),
             $disposition->getTitle(),
             $disposition->getSummary(),
             SubjectMapper::fromNullableEntity($disposition->getSubject()),
             DepartmentMapper::fromEntity($department),
             $disposition->getPublicationDate(),
             $disposition->getStatus(),
-            $this->mainDocumentResponseDtoFactory->fromEntity(
-                $mainDocument,
-                DispositionUploadMainDocumentResource::ROUTE_NAME_MAIN_DOCUMENT_UPLOAD,
-                DispositionMainDocumentResponseDto::class,
-            ),
+            $mainDocumentDto,
+            $noticeNotPublicDto,
             $this->attachmentResponseDtoFactory->fromDossier($disposition, DispositionUploadAttachmentResource::ROUTE_NAME_UPLOAD),
             $dateFrom,
             $this->getHalLinks($disposition),
@@ -107,7 +118,7 @@ readonly class DispositionMapper
     ): Disposition {
         $disposition->setDateFrom($dispositionRequestDto->dossierDate);
         $disposition->setDepartments([$department]);
-        $disposition->setDossierNr($dispositionRequestDto->dossierNumber);
+        $disposition->setDossierNumber($dispositionRequestDto->dossierNumber);
         $disposition->setOrganisation($organisation);
         $disposition->setPublicationDate($dispositionRequestDto->publicationDate);
         $disposition->setSubject($subject);
@@ -122,7 +133,7 @@ readonly class DispositionMapper
         $linkCollection = new LinkCollection();
         $linkCollection->set(
             LinkCollection::SELF,
-            new Link($this->publicUrlGenerator->buildUrlFromRoute(DispositionResource::ROUTE_NAME_GET_DISPOSITION, [
+            new Link($this->apiUrlGenerator->buildUrlFromRoute(DispositionResource::ROUTE_NAME_GET_DISPOSITION, [
                 'organisationId' => $disposition->getOrganisation()->getId(),
                 'dossierExternalId' => $disposition->getExternalId(),
             ])),

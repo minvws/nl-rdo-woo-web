@@ -1,5 +1,4 @@
 results
-libraries/__pycache__
 files/generated
 secrets
 envs/.env.rf.test.*

@@ -15,7 +15,7 @@
             <table class="bhr-table">
                 <thead>
                     <tr>
-                        <th scope="col">{{ 'admin.dossiers.action.column.dossier_nr' | trans }}</th>
+                        <th scope="col">{{ 'admin.dossiers.action.column.dossier_number' | trans }}</th>
                         <th scope="col">{{ 'admin.dossiers.action.column.type' | trans }}</th>
                         <th scope="col">{{ 'admin.dossiers.action.column.status' | trans }}</th>
                         <th scope="col">{{ 'admin.dossiers.action.column.id' | trans }}</th>
@@ -26,8 +26,8 @@
                     {% for dossier in dossiers %}
                         <tr>
                             <td>
-                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_administration_details', {prefix: dossier.documentPrefix, dossierId: dossier.dossierNr}) }}">
-                                    {{ dossier.dossierNr }}
+                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_administration_details', {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}">
+                                    {{ dossier.dossierNumber }}
                                 </a>
                             </td>
                             <td>

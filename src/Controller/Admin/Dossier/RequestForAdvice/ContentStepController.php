@@ -31,20 +31,20 @@ class ContentStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/request-for-advice/content/concept/{prefix}/{dossierId}',
+        path: '/balie/dossier/request-for-advice/content/concept/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_requestforadvice_content_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] RequestForAdvice $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] RequestForAdvice $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem(
             (string) $dossier->getTitle(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addItem('admin.dossiers.request-for-advice.step.content');
 
@@ -66,6 +66,7 @@ class ContentStepController extends AbstractController
             $this->stepHelper->getParamsBuilder($dossier)
                 ->withMainDocumentParams($dossier)
                 ->withAttachmentsParams($dossier)
+                ->withNoticeNotPublicParams($dossier)
                 ->withForm($form)
                 ->withWizardStatus($wizardStatus)
                 ->withBreadCrumbs($breadcrumbs)
@@ -76,13 +77,13 @@ class ContentStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/request-for-advice/content/edit/{prefix}/{dossierId}',
+        path: '/balie/dossier/request-for-advice/content/edit/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_requestforadvice_content_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] RequestForAdvice $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] RequestForAdvice $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -111,6 +112,7 @@ class ContentStepController extends AbstractController
             $this->stepHelper->getParamsBuilder($dossier)
                 ->withMainDocumentParams($dossier)
                 ->withAttachmentsParams($dossier)
+                ->withNoticeNotPublicParams($dossier)
                 ->withForm($form)
                 ->withWizardStatus($wizardStatus)
                 ->withBreadCrumbs($breadcrumbs)

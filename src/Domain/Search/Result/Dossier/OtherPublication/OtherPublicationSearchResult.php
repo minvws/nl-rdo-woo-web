@@ -12,7 +12,7 @@ readonly class OtherPublicationSearchResult extends AbstractDossierTypeSearchRes
 {
     public function __construct(
         Uuid $id,
-        string $dossierNr,
+        string $dossierNumber,
         string $documentPrefix,
         string $title,
         public ?string $summary,
@@ -21,6 +21,6 @@ readonly class OtherPublicationSearchResult extends AbstractDossierTypeSearchRes
         public int $documentCount,
         public ?PlainDate $date,
     ) {
-        parent::__construct($id, $dossierNr, $documentPrefix, $title);
+        parent::__construct($id, $dossierNumber, $documentPrefix, $title);
     }
 }

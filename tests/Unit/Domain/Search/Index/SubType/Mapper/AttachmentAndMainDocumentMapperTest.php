@@ -35,7 +35,7 @@ class AttachmentAndMainDocumentMapperTest extends UnitTestCase
     {
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getDocumentPrefix')->andReturn('PREFIX');
-        $dossier->expects('getDossierNr')->andReturn('foo-123');
+        $dossier->expects('getDossierNumber')->andReturn('foo-123');
         $dossier->expects('getOrganisation->getId')
             ->andReturn(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'));
 

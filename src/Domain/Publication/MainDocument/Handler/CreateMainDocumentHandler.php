@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\MainDocument\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
-use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicAlreadyExistsException;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
@@ -31,6 +31,7 @@ readonly class CreateMainDocumentHandler
         private DossierWorkflowManager $dossierWorkflowManager,
         private EntityManagerInterface $entityManager,
         private DossierRepository $dossierRepository,
+        private NoticeNotPublicRepository $noticeNotPublicRepository,
         private ValidatorInterface $validator,
         private EntityUploadStorer $uploadStorer,
     ) {
@@ -39,7 +40,6 @@ readonly class CreateMainDocumentHandler
     public function __invoke(CreateMainDocumentCommand $command): AbstractMainDocument
     {
         $dossierId = $command->dossierId;
-        /** @var AbstractDossier&EntityWithMainDocument $dossier */
         $dossier = $this->dossierRepository->findOneByDossierId($dossierId);
         Assert::isInstanceOf($dossier, EntityWithMainDocument::class);
 
@@ -47,9 +47,12 @@ readonly class CreateMainDocumentHandler
             throw new MainDocumentAlreadyExistsException();
         }
 
+        if ($this->noticeNotPublicRepository->findOneByDossierId($dossierId) !== null) {
+            throw new NoticeNotPublicAlreadyExistsException();
+        }
+
         $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::UPDATE_MAIN_DOCUMENT);
 
-        /** @var EntityRepository<MainDocumentRepositoryInterface> $documentRepository */
         $documentRepository = $this->entityManager->getRepository($dossier->getMainDocumentEntityClass());
         Assert::isInstanceOf($documentRepository, MainDocumentRepositoryInterface::class);
 

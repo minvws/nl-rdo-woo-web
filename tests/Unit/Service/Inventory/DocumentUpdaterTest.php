@@ -66,7 +66,7 @@ class DocumentUpdaterTest extends UnitTestCase
         $documentMetadata = $this->getDocumentMetadata(Judgement::PUBLIC);
 
         $existingDocument = Mockery::mock(Document::class);
-        $existingDocument->expects('getDocumentNr')->andReturn('tst-123');
+        $existingDocument->expects('getDocumentNumber')->andReturn('tst-123');
         $existingDocument->expects('setJudgement')->with($documentMetadata->getJudgement());
         $existingDocument->expects('setDocumentDate')->with($documentMetadata->getDate());
         $existingDocument->expects('setFamilyId')->with($documentMetadata->getFamilyId());
@@ -99,7 +99,7 @@ class DocumentUpdaterTest extends UnitTestCase
         $documentMetadata = $this->getDocumentMetadata(Judgement::PUBLIC);
 
         $existingDocument = Mockery::mock(Document::class);
-        $existingDocument->expects('getDocumentNr')->andReturn('tst-123');
+        $existingDocument->expects('getDocumentNumber')->andReturn('tst-123');
         $existingDocument->expects('setJudgement')->with($documentMetadata->getJudgement());
         $existingDocument->expects('setDocumentDate')->with($documentMetadata->getDate());
         $existingDocument->expects('setFamilyId')->with($documentMetadata->getFamilyId());
@@ -124,12 +124,12 @@ class DocumentUpdaterTest extends UnitTestCase
         $newReferredDoc = Mockery::mock(Document::class);
 
         $oldReferredDoc = Mockery::mock(Document::class);
-        $oldReferredDoc->expects('getDocumentNr')->andReturn('PREFIX-matter-456');
+        $oldReferredDoc->expects('getDocumentNumber')->andReturn('PREFIX-matter-456');
         $oldReferredDoc->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('456'));
 
         $existingDocument = Mockery::mock(Document::class);
         $existingDocument->expects('getRefersTo')->andReturn(new ArrayCollection([$oldReferredDoc]));
-        $existingDocument->expects('getDocumentNr')->andReturn('PREFIX-matter-1');
+        $existingDocument->expects('getDocumentNumber')->andReturn('PREFIX-matter-1');
         $existingDocument->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('1'));
 
         // Old referred document is no longer in metadata so should be removed
@@ -227,7 +227,7 @@ class DocumentUpdaterTest extends UnitTestCase
         $fileInfo->expects('setName')->with($expectedName);
 
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentNr')->andReturn('tst-123');
+        $document->expects('getDocumentNumber')->andReturn('tst-123');
         $document->expects('setJudgement')->with($documentMetadata->getJudgement());
         $document->expects('setDocumentDate')->with($documentMetadata->getDate());
         $document->expects('setFamilyId')->with($documentMetadata->getFamilyId());

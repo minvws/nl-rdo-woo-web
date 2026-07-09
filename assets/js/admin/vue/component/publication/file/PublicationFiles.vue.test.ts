@@ -1,3 +1,4 @@
+import { usePublicationFilesStore } from '@admin-fe/composables';
 import { SelectOptions } from '@admin-fe/form/interface';
 import type { FileUploadLimit } from '@js/admin/utils/file/interface';
 import { createMockedAttachmentType } from '@js/test';
@@ -55,6 +56,10 @@ describe('The "PublicationFiles" component', () => {
     );
     HTMLDialogElement.prototype.close = vi.fn(); // This prevents a warning saying this function does not exist
     HTMLDialogElement.prototype.showModal = vi.fn(); // This prevents a warning saying this function does not exist
+
+    const store = usePublicationFilesStore();
+    store.setHasMainDocument(false);
+    store.setHasNotice(false);
   });
 
   afterEach(() => {
@@ -69,6 +74,8 @@ describe('The "PublicationFiles" component', () => {
     fileLimits: FileUploadLimit[];
     fileTypeOptions: PublicationFileTypes;
     groundOptions: GroundOptions;
+    hasNoticeNotPublic: boolean;
+    isMainDocument: boolean;
     languageOptions: SelectOptions;
     maxLength: number;
     readableFileType?: string;
@@ -77,6 +84,8 @@ describe('The "PublicationFiles" component', () => {
   const createComponent = (options: Partial<CreateComponentOptions> = {}) => {
     const {
       fileLimits = [],
+      hasNoticeNotPublic = false,
+      isMainDocument = false,
       maxLength = 2,
       fileTypeOptions = mockedPublicationFileTypes,
       groundOptions = [],
@@ -92,6 +101,8 @@ describe('The "PublicationFiles" component', () => {
         fileLimits,
         fileTypeOptions,
         groundOptions,
+        hasNoticeNotPublic,
+        isMainDocument,
         languageOptions,
         maxLength,
         readableFileType,
@@ -293,6 +304,61 @@ describe('The "PublicationFiles" component', () => {
       expect(getDialogComponent(createComponent()).props('e2eName')).toBe(
         'mocked-e2e-name',
       );
+    });
+  });
+
+  describe('the shared publication files store', () => {
+    test('should not be affected by the store when not the main document (e.g. attachments)', async () => {
+      usePublicationFilesStore().setHasNotice(true);
+
+      const component = createComponent({ isMainDocument: false });
+      await flushPromises();
+
+      expect(
+        getAddFileButton(component).attributes('disabled'),
+      ).toBeUndefined();
+    });
+
+    test('should disable the add button for the main document when a notice exists', async () => {
+      const component = createComponent({
+        isMainDocument: true,
+        hasNoticeNotPublic: true,
+        maxLength: 1,
+      });
+      await flushPromises();
+
+      expect(getAddFileButton(component).attributes('disabled')).toBeDefined();
+    });
+
+    test('should seed the store with the notice fact from its prop on mount', async () => {
+      createComponent({ isMainDocument: true, hasNoticeNotPublic: true });
+      await flushPromises();
+
+      expect(usePublicationFilesStore().state.hasNotice).toBe(true);
+    });
+
+    test('should reactively disable the add button for the main document when a notice is added', async () => {
+      const component = createComponent({
+        isMainDocument: true,
+        maxLength: 1,
+      });
+      await flushPromises();
+
+      // A main document was fetched, so the store reflects its presence.
+      expect(usePublicationFilesStore().state.hasMainDocument).toBe(true);
+
+      usePublicationFilesStore().setHasNotice(true);
+      await flushPromises();
+
+      expect(getAddFileButton(component).attributes('disabled')).toBeDefined();
+    });
+
+    test('should report to the store that a main document exists after fetching files', async () => {
+      const component = createComponent({ isMainDocument: true });
+      await flushPromises();
+
+      expect(usePublicationFilesStore().state.hasMainDocument).toBe(true);
+      expect(component.exists()).toBe(true);
     });
   });
 });

@@ -24,7 +24,7 @@ final readonly class WooDecisionDocumentResponseDto
         public array $inquiryNumbers,
         public ?PlainDate $documentDate,
         public ?DocumentId $documentId,
-        public string $documentNr,
+        public string $documentNumber,
         public ?ExternalId $externalId,
         public ?int $familyId,
         public ?string $filename,

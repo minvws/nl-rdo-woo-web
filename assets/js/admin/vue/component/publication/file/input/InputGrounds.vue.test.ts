@@ -23,6 +23,7 @@ describe('The "InputGrounds" component', () => {
         'Zijn in dit document gegevens gelakt? Kies dan de gebruikte weigeringsgronden.',
       legend: 'Weigeringsgronden',
       label: 'Weigeringsgrond',
+      minLength: 0,
       name: 'grounds',
       options: [
         {
@@ -32,5 +33,20 @@ describe('The "InputGrounds" component', () => {
       ],
       values: ['mocked-value-1', 'mocked-value-2'],
     });
+  });
+
+  test('should pass minLength prop to MultiSelect when provided', () => {
+    const component = mount(InputGrounds, {
+      props: {
+        minLength: 1,
+        options: [{ citation: 'mocked-citation-1', label: 'mocked-label-1' }],
+        values: [],
+      },
+      shallow: true,
+    });
+
+    expect(
+      component.findComponent({ name: 'MultiSelect' }).props('minLength'),
+    ).toBe(1);
   });
 });

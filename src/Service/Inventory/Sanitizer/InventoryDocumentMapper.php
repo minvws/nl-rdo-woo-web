@@ -32,7 +32,7 @@ readonly class InventoryDocumentMapper
 
         return [
             $document->getDocumentId()?->toString() ?? '',
-            $document->getDocumentNr(),
+            $document->getDocumentNumber(),
             $document->getFileInfo()->getName() ?: '',
             $document->getJudgement() ? $this->translator->trans('public.documents.judgment.short.' . $document->getJudgement()->value) : '',
             $document->getGrounds(),
@@ -42,8 +42,8 @@ readonly class InventoryDocumentMapper
                 'app_document_detail',
                 [
                     'prefix' => $dossier->getDocumentPrefix(),
-                    'dossierId' => $dossier->getDossierNr(),
-                    'documentId' => $document->getDocumentNr(),
+                    'dossierNumber' => $dossier->getDossierNumber(),
+                    'documentNumber' => $document->getDocumentNumber(),
                 ],
             ),
             $document->isSuspended() ? 'ja' : '',
@@ -92,8 +92,8 @@ readonly class InventoryDocumentMapper
                     'app_document_detail',
                     [
                         'prefix' => $documentDossier->getDocumentPrefix(),
-                        'dossierId' => $documentDossier->getDossierNr(),
-                        'documentId' => $referredDocument->getDocumentNr(),
+                        'dossierNumber' => $documentDossier->getDossierNumber(),
+                        'documentNumber' => $referredDocument->getDocumentNumber(),
                     ],
                 );
             },

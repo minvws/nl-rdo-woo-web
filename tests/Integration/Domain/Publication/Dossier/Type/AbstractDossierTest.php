@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Disposition\DispositionFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\PlainDate;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -70,6 +73,17 @@ final class AbstractDossierTest extends SharedWebTestCase
         ]);
 
         $errors = $this->validator->validate($dispositionTwo);
+        self::assertCount(0, $errors);
+    }
+
+    public function testDateToComparisonIsSkippedWhenDateFromIsNull(): void
+    {
+        $dossier = WooDecisionFactory::new()->published()->withoutPersisting()->create([
+            'dateFrom' => null,
+            'dateTo' => PlainDate::create('2026-01-31'),
+        ]);
+
+        $errors = $this->validator->validate($dossier, null, [DossierValidationGroup::DETAILS->value]);
         self::assertCount(0, $errors);
     }
 

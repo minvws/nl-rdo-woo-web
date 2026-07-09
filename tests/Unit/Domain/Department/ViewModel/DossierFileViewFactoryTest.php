@@ -36,7 +36,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
     {
         $dossier = Mockery::mock(Covenant::class);
         $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'foo');
-        $dossier->expects('getDossierNr')->andReturn($dossierNr = 'bar-123');
+        $dossier->expects('getDossierNumber')->andReturn($dossierNumber = 'bar-123');
 
         $fileEntity = Mockery::mock(CovenantAttachment::class);
         $fileEntity->expects('getId')->andReturn($entityId = Uuid::v6());
@@ -52,7 +52,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
                 'app_dossier_file_download',
                 [
                     'prefix' => $prefix,
-                    'dossierId' => $dossierNr,
+                    'dossierNumber' => $dossierNumber,
                     'type' => $fileType->value,
                     'id' => $entityId,
                 ],
@@ -70,7 +70,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
     {
         $dossier = Mockery::mock(Covenant::class);
         $dossier->expects('getDocumentPrefix')->times(2)->andReturn($prefix = 'foo');
-        $dossier->expects('getDossierNr')->times(2)->andReturn($dossierNr = 'bar-123');
+        $dossier->expects('getDossierNumber')->times(2)->andReturn($dossierNumber = 'bar-123');
 
         $fileEntity = Mockery::mock(CovenantAttachment::class);
         $fileEntity->expects('getId')->times(2)->andReturn($entityId = Uuid::v6());
@@ -88,7 +88,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
                 'app_dossier_file_download',
                 [
                     'prefix' => $prefix,
-                    'dossierId' => $dossierNr,
+                    'dossierNumber' => $dossierNumber,
                     'type' => $fileType->value,
                     'id' => $entityId,
                 ],
@@ -104,7 +104,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
                 'app_dossier_file_thumbnail',
                 [
                     'prefix' => $prefix,
-                    'dossierId' => $dossierNr,
+                    'dossierNumber' => $dossierNumber,
                     'type' => $fileType->value,
                     'id' => $entityId,
                     'pageNr' => 2,

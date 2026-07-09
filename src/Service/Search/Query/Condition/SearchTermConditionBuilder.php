@@ -45,7 +45,7 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
                 $this->getNestedDossiersTitleAndSummaryQuery($searchParameters),
                 $this->getNestedPagesContentQuery($searchParameters),
                 $this->getDocumentFilenameQuery($searchParameters),
-                $this->getDocumentNrQuery($searchParameters),
+                $this->getDocumentNumberQuery($searchParameters),
                 $this->getDocumentIdQuery($searchParameters),
             ],
             filter: [
@@ -71,13 +71,13 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
                     ->setDefaultOperator($searchParameters->operator->value)
                     ->setBoost(4),
                 Query::term(
-                    field: ElasticField::PREFIXED_DOSSIER_NR->value,
+                    field: ElasticField::PREFIXED_DOSSIER_NUMBER->value,
                     value: $searchParameters->query,
                 )
                     ->setCaseInsensitive(true)
                     ->setBoost(5),
                 Query::term(
-                    field: ElasticField::DOSSIER_NR->value,
+                    field: ElasticField::DOSSIER_NUMBER->value,
                     value: $searchParameters->query,
                 )
                     ->setCaseInsensitive(true)
@@ -144,10 +144,10 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
             ->setBoost(4);
     }
 
-    protected function getDocumentNrQuery(SearchParameters $searchParameters): TermQuery
+    protected function getDocumentNumberQuery(SearchParameters $searchParameters): TermQuery
     {
         return Query::term(
-            field: ElasticField::DOCUMENT_NR->value,
+            field: ElasticField::DOCUMENT_NUMBER->value,
             value: $searchParameters->query,
         )
             ->setCaseInsensitive(true)

@@ -11,7 +11,7 @@
             <thead>
                 <tr>
                     {% if isSortable %}
-                        {{ knp_pagination_sortable(documents, 'global.document_number' | trans, 'doc.documentNr', { thClassName: "x-min-w-36 x-w-36", 'fragment': fragment }) }}
+                        {{ knp_pagination_sortable(documents, 'global.document_number' | trans, 'doc.documentNumber', { thClassName: "x-min-w-36 x-w-36", 'fragment': fragment }) }}
                         <th class="x-min-w-12 x-w-12" scope="col">{{ 'global.document_type' | trans }}</th>
                         {{ knp_pagination_sortable(documents, 'global.document_name' | trans, 'doc.fileInfo.name', { 'fragment': fragment }) }}
                         {{ knp_pagination_sortable(documents, 'global.date' | trans, 'doc.documentDate', { thClassName: 'text-right! x-min-w-40 w-40', 'fragment': fragment }) }}
@@ -36,7 +36,7 @@
                     </td>
                     <td>
                         <div class="woo-readable-width">
-                            <a class="woo-a break-all" href="{{ path('app_document_detail', { prefix: dossier.documentPrefix ?? document.dossiers.first.documentPrefix, dossierId: dossier.dossierNr ?? document.dossiers.first.dossierNr, documentId: document.documentNr }) }}">{{ document.fileInfo.name }}</a>
+                            <a class="woo-a break-all" href="{{ path('app_document_detail', { prefix: dossier.documentPrefix ?? document.dossiers.first.documentPrefix, dossierNumber: dossier.dossierNumber ?? document.dossiers.first.dossierNumber, documentNumber: document.documentNumber }) }}">{{ document.fileInfo.name }}</a>
                         </div>
                     </td>
                     <td class="text-right whitespace-nowrap">

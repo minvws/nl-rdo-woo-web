@@ -6,8 +6,10 @@ namespace Shared\Tests\Unit\Service\Inventory;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Generator;
 use Mockery;
 use Mockery\MockInterface;
+use RuntimeException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
@@ -16,10 +18,14 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentReposito
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Search\SearchDispatcher;
+use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\ProductionReportUpdaterException;
+use Shared\Exception\TranslatableException;
 use Shared\Service\Inquiry\InquiryChangeset;
 use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inquiry\InquiryService;
@@ -123,12 +129,12 @@ class InventoryUpdaterTest extends UnitTestCase
         $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($dossierId);
 
         $this->documentRepository
-            ->expects('findOneByDocumentNrCaseInsensitive')
+            ->expects('findOneByDocumentNumberCaseInsensitive')
             ->with('pfx-matter-2')
             ->andReturn($updatedDocument);
 
         $this->documentRepository
-            ->expects('findOneByDocumentNrCaseInsensitive')
+            ->expects('findOneByDocumentNumberCaseInsensitive')
             ->with('pfx-matter-3')
             ->andReturn($deletedDocument);
 
@@ -216,11 +222,11 @@ class InventoryUpdaterTest extends UnitTestCase
 
         $createdDocument = Mockery::mock(Document::class);
         $this->documentRepository
-            ->expects('findOneByDocumentNrCaseInsensitive')
+            ->expects('findOneByDocumentNumberCaseInsensitive')
             ->with('PFX-MAT-1')
             ->andReturn(null);
         $this->documentRepository
-            ->expects('findOneByDocumentNrCaseInsensitive')
+            ->expects('findOneByDocumentNumberCaseInsensitive')
             ->with('PFX-MAT-1')
             ->andReturn($createdDocument);
 
@@ -239,6 +245,346 @@ class InventoryUpdaterTest extends UnitTestCase
         $this->entityManager->expects('flush')->atLeast()->once();
         $this->entityManager->allows('detach');
 
-        $this->inventoryUpdater->applyChangesetToDatabase($dossier, $reader, $changeset, $runProgress);
+        $run = Mockery::mock(ProductionReportProcessRun::class);
+
+        $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $reader, $changeset, $runProgress);
+    }
+
+    public function testApplyChangesetToDatabaseWrapsNonTranslatableRowExceptionAndAborts(): void
+    {
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getDocumentPrefix')
+            ->andReturn('PFX');
+        $dossier->expects('getOrganisation')
+            ->andReturn(Mockery::mock(Organisation::class));
+
+        $metadata = new DocumentMetadata(
+            date: PlainDate::create('2024-01-15'),
+            filename: 'doc-1.pdf',
+            familyId: 10,
+            sourceType: SourceType::PDF,
+            grounds: ['5.1.1a'],
+            id: DocumentId::create('1'),
+            judgement: Judgement::PUBLIC,
+            period: null,
+            threadId: null,
+            inquiryNumbers: new InquiryNumbers(['21-a']),
+            suspended: false,
+            links: [],
+            remark: null,
+            matter: DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
+            refersTo: [],
+        );
+
+        $reader = Mockery::mock(InventoryReaderInterface::class);
+        $reader->expects('getDocumentMetadataGenerator')
+            ->with($dossier)
+            ->andReturn((static function () use ($metadata): Generator {
+                yield new InventoryReadItem($metadata, 1, null);
+            })());
+
+        $changeset = new InventoryChangeset([
+            'pfx-mat-1' => InventoryChangeset::ADDED,
+        ]);
+
+        $runProgress = Mockery::mock(RunProgress::class);
+        $runProgress->expects('getCurrentCount')
+            ->andReturn(0);
+        $runProgress->expects('update')
+            ->with(1);
+
+        $this->documentRepository
+            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->with('PFX-MAT-1')
+            ->andReturn(null);
+
+        $this->documentUpdater
+            ->expects('databaseUpdate')
+            ->with($metadata, $dossier, Mockery::type(Document::class))
+            ->andThrows(new RuntimeException('some runtime exception'));
+
+        $run = Mockery::mock(ProductionReportProcessRun::class);
+        $run->expects('addRowException')
+            ->with(1, Mockery::type(TranslatableException::class));
+
+        $this->expectException(RuntimeException::class);
+        $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $reader, $changeset, $runProgress);
+    }
+
+    public function testApplyChangesetToDatabasePassesTranslatableRowExceptionThroughAndAborts(): void
+    {
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getDocumentPrefix')
+            ->andReturn('PFX');
+        $dossier->expects('getOrganisation')
+            ->andReturn(Mockery::mock(Organisation::class));
+
+        $metadata = new DocumentMetadata(
+            date: PlainDate::create('2024-01-15'),
+            filename: 'doc-1.pdf',
+            familyId: 10,
+            sourceType: SourceType::PDF,
+            grounds: ['5.1.1a'],
+            id: DocumentId::create('1'),
+            judgement: Judgement::PUBLIC,
+            period: null,
+            threadId: null,
+            inquiryNumbers: new InquiryNumbers(['21-a']),
+            suspended: false,
+            links: [],
+            remark: null,
+            matter: DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
+            refersTo: [],
+        );
+
+        $reader = Mockery::mock(InventoryReaderInterface::class);
+        $reader->expects('getDocumentMetadataGenerator')
+            ->with($dossier)
+            ->andReturn((static function () use ($metadata): Generator {
+                yield new InventoryReadItem($metadata, 1, null);
+            })());
+
+        $changeset = new InventoryChangeset([
+            'pfx-mat-1' => InventoryChangeset::ADDED,
+        ]);
+
+        $runProgress = Mockery::mock(RunProgress::class);
+        $runProgress->expects('getCurrentCount')
+            ->andReturn(0);
+        $runProgress->expects('update')
+            ->with(1);
+
+        $this->documentRepository
+            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->with('PFX-MAT-1')
+            ->andReturn(null);
+
+        $thrown = ProcessInventoryException::forGenericRowException(new RuntimeException('some runtime exception'));
+        $this->documentUpdater
+            ->expects('databaseUpdate')
+            ->with($metadata, $dossier, Mockery::type(Document::class))
+            ->andThrows($thrown);
+
+        $run = Mockery::mock(ProductionReportProcessRun::class);
+        $run->expects('addRowException')
+            ->with(1, $thrown);
+
+        $this->expectException(ProcessInventoryException::class);
+        $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $reader, $changeset, $runProgress);
+    }
+
+    public function testApplyChangesetToDatabaseSkipsItemsWithoutDocumentMetadata(): void
+    {
+        $index = $this->getFaker()->numberBetween(1, 100);
+
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getOrganisation')->andReturn(Mockery::mock(Organisation::class));
+
+        $reader = Mockery::mock(InventoryReaderInterface::class);
+        $reader->expects('getDocumentMetadataGenerator')
+            ->with($dossier)
+            ->andReturn((static function () use ($index): Generator {
+                yield new InventoryReadItem(null, $index, null);
+            })());
+
+        $changeset = new InventoryChangeset([]);
+
+        $runProgress = Mockery::mock(RunProgress::class);
+        $runProgress->expects('getCurrentCount')->andReturn(0);
+        $runProgress->expects('update')->with($index);
+
+        $this->inquiryService->expects('applyChangesetAsync')->with(Mockery::type(InquiryChangeset::class));
+        $this->entityManager->expects('flush')->times(3);
+
+        $run = Mockery::mock(ProductionReportProcessRun::class);
+
+        $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $reader, $changeset, $runProgress);
+    }
+
+    public function testApplyChangesetToDatabaseSkipsUnchangedDocuments(): void
+    {
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getDocumentPrefix')->andReturn('PFX');
+        $dossier->expects('getOrganisation')->andReturn(Mockery::mock(Organisation::class));
+
+        $index = $this->getFaker()->numberBetween(1, 100);
+        $metadata = $this->createDocumentMetadata([]);
+
+        $reader = Mockery::mock(InventoryReaderInterface::class);
+        $reader->expects('getDocumentMetadataGenerator')
+            ->with($dossier)
+            ->andReturn((static function () use ($metadata, $index): Generator {
+                yield new InventoryReadItem($metadata, $index, null);
+            })());
+
+        $changeset = new InventoryChangeset(['pfx-mat-1' => InventoryChangeset::UNCHANGED]);
+
+        $runProgress = Mockery::mock(RunProgress::class);
+        $runProgress->expects('getCurrentCount')->andReturn(0);
+        $runProgress->expects('update')->with($index);
+
+        $this->inquiryService->expects('applyChangesetAsync')->with(Mockery::type(InquiryChangeset::class));
+        $this->entityManager->expects('flush')->times(3);
+
+        $run = Mockery::mock(ProductionReportProcessRun::class);
+
+        $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $reader, $changeset, $runProgress);
+    }
+
+    public function testApplyChangesetToDatabaseThrowsStateMismatchWhenAddedDocumentAlreadyExists(): void
+    {
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getDocumentPrefix')->andReturn('PFX');
+        $dossier->expects('getOrganisation')->andReturn(Mockery::mock(Organisation::class));
+
+        $index = $this->getFaker()->numberBetween(1, 100);
+        $metadata = $this->createDocumentMetadata([]);
+
+        $reader = Mockery::mock(InventoryReaderInterface::class);
+        $reader->expects('getDocumentMetadataGenerator')
+            ->with($dossier)
+            ->andReturn((static function () use ($metadata, $index): Generator {
+                yield new InventoryReadItem($metadata, $index, null);
+            })());
+
+        $changeset = new InventoryChangeset(['pfx-mat-1' => InventoryChangeset::ADDED]);
+
+        $runProgress = Mockery::mock(RunProgress::class);
+        $runProgress->expects('getCurrentCount')->andReturn(0);
+        $runProgress->expects('update')->with($index);
+
+        $this->documentRepository
+            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->with('PFX-MAT-1')
+            ->andReturn(Mockery::mock(Document::class));
+
+        $run = Mockery::mock(ProductionReportProcessRun::class);
+        $run->expects('addRowException')->with($index, Mockery::type(TranslatableException::class));
+
+        $this->expectException(ProductionReportUpdaterException::class);
+        $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $reader, $changeset, $runProgress);
+    }
+
+    public function testApplyChangesetToDatabaseThrowsStateMismatchWhenDeletedDocumentIsMissing(): void
+    {
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getOrganisation')->andReturn(Mockery::mock(Organisation::class));
+
+        $reader = Mockery::mock(InventoryReaderInterface::class);
+        $reader->expects('getDocumentMetadataGenerator')
+            ->with($dossier)
+            ->andReturn((static function (): Generator {
+                yield from [];
+            })());
+
+        $documentNumber = $this->getFaker()->word();
+        $changeset = new InventoryChangeset([$documentNumber => InventoryChangeset::DELETED]);
+
+        $runProgress = Mockery::mock(RunProgress::class);
+        $runProgress->expects('getCurrentCount')->andReturn(0);
+
+        $this->inquiryService->expects('applyChangesetAsync')->with(Mockery::type(InquiryChangeset::class));
+        $this->entityManager->expects('flush')->twice();
+
+        $this->documentRepository
+            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->with($documentNumber)
+            ->andReturnNull();
+
+        $run = Mockery::mock(ProductionReportProcessRun::class);
+
+        $this->expectException(ProductionReportUpdaterException::class);
+        $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $reader, $changeset, $runProgress);
+    }
+
+    public function testApplyChangesetToDatabaseThrowsWhenReferralDocumentIsMissing(): void
+    {
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getDocumentPrefix')->andReturn('PFX');
+        $dossier->expects('getOrganisation')->andReturn(Mockery::mock(Organisation::class));
+
+        $index = $this->getFaker()->numberBetween(1, 100);
+        $metadata = $this->createDocumentMetadata([$this->getFaker()->word()]);
+
+        $reader = Mockery::mock(InventoryReaderInterface::class);
+        $reader->expects('getDocumentMetadataGenerator')
+            ->with($dossier)
+            ->andReturn((static function () use ($metadata, $index): Generator {
+                yield new InventoryReadItem($metadata, $index, null);
+            })());
+
+        $changeset = new InventoryChangeset(['pfx-mat-1' => InventoryChangeset::ADDED]);
+
+        $runProgress = Mockery::mock(RunProgress::class);
+        $runProgress->expects('getCurrentCount')->andReturn(0);
+        $runProgress->expects('update')->with($index);
+
+        $this->documentRepository
+            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->with('PFX-MAT-1')
+            ->twice()
+            ->andReturnNull();
+
+        $this->documentUpdater
+            ->expects('databaseUpdate')
+            ->with($metadata, $dossier, Mockery::type(Document::class));
+
+        $this->entityManager->expects('flush');
+        $this->entityManager->allows('detach');
+
+        $run = Mockery::mock(ProductionReportProcessRun::class);
+
+        $this->expectException(RuntimeException::class);
+        $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $reader, $changeset, $runProgress);
+    }
+
+    public function testSendMessagesForChangesetThrowsStateMismatchWhenDocumentIsMissing(): void
+    {
+        $dossierId = Uuid::v6();
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getId')->twice()->andReturn($dossierId);
+        $dossier->expects('getInquiries')->andReturn(new ArrayCollection());
+
+        $documentNumber = $this->getFaker()->word();
+        $changeset = new InventoryChangeset([$documentNumber => InventoryChangeset::UPDATED]);
+
+        $runProgress = Mockery::mock(RunProgress::class);
+        $runProgress->expects('tick');
+
+        $this->productionReportDispatcher->expects('dispatchGenerateInventoryCommand')->with($dossierId);
+        $this->batchDownloadService->expects('refresh')->with(Mockery::type(BatchDownloadScope::class));
+        $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($dossierId);
+
+        $this->documentRepository
+            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->with($documentNumber)
+            ->andReturnNull();
+
+        $this->expectException(ProductionReportUpdaterException::class);
+        $this->inventoryUpdater->sendMessagesForChangeset($changeset, $dossier, $runProgress);
+    }
+
+    /**
+     * @param array<int, string> $refersTo
+     */
+    private function createDocumentMetadata(array $refersTo): DocumentMetadata
+    {
+        return new DocumentMetadata(
+            date: $this->getFaker()->plainDate(),
+            filename: $this->getFaker()->word() . '.pdf',
+            familyId: $this->getFaker()->numberBetween(1, 100),
+            sourceType: SourceType::PDF,
+            grounds: [$this->getFaker()->word()],
+            id: DocumentId::create('1'),
+            judgement: Judgement::PUBLIC,
+            period: null,
+            threadId: null,
+            inquiryNumbers: new InquiryNumbers([$this->getFaker()->bothify('##-?')]),
+            suspended: false,
+            links: [],
+            remark: null,
+            matter: DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
+            refersTo: $refersTo,
+        );
     }
 }

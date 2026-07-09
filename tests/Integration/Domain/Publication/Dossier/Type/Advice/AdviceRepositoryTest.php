@@ -21,11 +21,11 @@ final class AdviceRepositoryTest extends SharedWebTestCase
         $result = self::fromContainer(AdviceRepository::class)
             ->getSearchResultViewModel(
                 $dossier->getDocumentPrefix(),
-                $dossier->getDossierNr(),
+                $dossier->getDossierNumber(),
                 ApplicationMode::PUBLIC,
             );
 
         self::assertNotNull($result);
-        self::assertEquals($dossier->getDossierNr(), $result->dossierNr);
+        self::assertEquals($dossier->getDossierNumber(), $result->dossierNumber);
     }
 }

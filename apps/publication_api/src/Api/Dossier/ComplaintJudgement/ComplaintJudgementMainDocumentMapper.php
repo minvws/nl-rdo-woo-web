@@ -6,7 +6,6 @@ namespace PublicationApi\Api\Dossier\ComplaintJudgement;
 
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
-use Shared\Domain\Publication\FileInfo;
 use Webmozart\Assert\Assert;
 
 class ComplaintJudgementMainDocumentMapper
@@ -22,10 +21,7 @@ class ComplaintJudgementMainDocumentMapper
             $mainDocumentRequestDto->language,
         );
 
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($mainDocumentRequestDto->fileName->toString());
-
-        $mainDocument->setFileInfo($fileInfo);
+        $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
 
         return $mainDocument;
@@ -38,11 +34,7 @@ class ComplaintJudgementMainDocumentMapper
         $mainDocument = $complaintJudgement->getMainDocument();
         Assert::notNull($mainDocument);
 
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($mainDocumentRequestDto->fileName->toString());
-
-        $mainDocument->setFileInfo($fileInfo);
-
+        $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());
         $mainDocument->setFormalDate($mainDocumentRequestDto->formalDate);
         $mainDocument->setGrounds($mainDocumentRequestDto->grounds);
         $mainDocument->setLanguage($mainDocumentRequestDto->language);

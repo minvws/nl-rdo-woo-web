@@ -31,7 +31,7 @@ final class WooIndexAnnualReportStory extends Story
     public function build(): void
     {
         $annualReport = AnnualReportFactory::createOne([
-            'dossierNr' => 'my-annual-report-1',
+            'dossierNumber' => 'my-annual-report-1',
             'createdAt' => CarbonImmutable::parse('2022-02-01 13:37:42'),
             'updatedAt' => CarbonImmutable::parse('2022-02-01 13:37:42'),
         ]);
@@ -39,7 +39,7 @@ final class WooIndexAnnualReportStory extends Story
 
         $unpublishedAnnualReport = AnnualReportFactory::createOne([
             'status' => DossierStatus::NEW,
-            'dossierNr' => 'my-unpublished-annual-report-2',
+            'dossierNumber' => 'my-unpublished-annual-report-2',
         ]);
         $this->addState('unpublishedAnnualReport', $unpublishedAnnualReport);
 

@@ -6,17 +6,17 @@ namespace PublicationApi\Api\Dossier\Advice;
 
 use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\Pagination\ArrayPaginator;
 use ApiPlatform\State\ProviderInterface;
 use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
+use PublicationApi\Api\Pagination\CursorPage;
+use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
+use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceRepository;
 use Shared\Service\ApiPlatformService;
 use Shared\ValueObject\ExternalId;
-
-use function count;
 
 final readonly class AdviceProvider implements ProviderInterface
 {
@@ -24,19 +24,20 @@ final readonly class AdviceProvider implements ProviderInterface
         private OrganisationResolver $organisationResolver,
         private AdviceRepository $adviceRepository,
         private AdviceMapper $adviceMapper,
+        private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
     }
 
     /**
-     * @param array<array-key,string> $uriVariables
+     * @param array<array-key, string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): ArrayPaginator|AdviceResponseDto
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|AdviceResponseDto
     {
         $organisation = $this->organisationResolver->resolve($uriVariables);
 
         if ($operation instanceof CollectionOperationInterface) {
-            return $this->provideCollection($organisation, $context);
+            return $this->provideCollection($organisation, $operation, $uriVariables, $context);
         }
 
         return $this->provideSingle($organisation, ExternalIdFactory::create($uriVariables['dossierExternalId']));
@@ -44,16 +45,30 @@ final readonly class AdviceProvider implements ProviderInterface
 
     /**
      * @param array<array-key,mixed> $context
+     * @param array<array-key, string> $uriVariables
      */
-    private function provideCollection(Organisation $organisation, array $context): ArrayPaginator
-    {
+    private function provideCollection(
+        Organisation $organisation,
+        Operation $operation,
+        array $uriVariables,
+        array $context,
+    ): CursorPage {
         $advices = $this->adviceRepository->getByOrganisationAndContainsExternalId(
             $organisation,
             $this->itemsPerPage,
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        return new ArrayPaginator($this->adviceMapper->fromEntities($advices), 0, count($advices));
+        $mappedDtos = $this->adviceMapper->fromEntities($advices);
+
+        /** @var list<HasId> $advices */
+        return $this->cursorPageFactory->create(
+            $advices,
+            $mappedDtos,
+            $this->itemsPerPage,
+            $operation,
+            $uriVariables,
+        );
     }
 
     private function provideSingle(Organisation $organisation, ExternalId $dossierExternalId): AdviceResponseDto

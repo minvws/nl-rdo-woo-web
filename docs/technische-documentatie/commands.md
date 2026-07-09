@@ -107,7 +107,7 @@ Creates or deletes an elasticsearch index. It is also possible to create an alia
 ### Ingestion
 
 ```shell
-bin/console --tenant=minvws woopie:ingest:dossier <dossierNr>
+bin/console --tenant=minvws woopie:ingest:dossier <dossierNumber>
 ```
 
 Starts the ingestion of a dossier. The dossier number input is required.

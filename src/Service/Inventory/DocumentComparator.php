@@ -28,7 +28,7 @@ readonly class DocumentComparator
     {
         $changeset = new PropertyChangeset();
 
-        // No comparison for 'id' and 'matter', these are part of the documentNr that was used to fetch $document, so they certainly match.
+        // No comparison for 'id' and 'matter', these are part of the documentNumber that was used to fetch $document, so they certainly match.
 
         $changeset->compare(MetadataField::JUDGEMENT->value, $document->getJudgement(), $metadata->getJudgement());
         $changeset->compare(MetadataField::FAMILY->value, $document->getFamilyId(), $metadata->getFamilyId());
@@ -51,7 +51,7 @@ readonly class DocumentComparator
         $changeset->compare(
             MetadataField::DOCUMENT->value,
             $document->getFileInfo()->getName(),
-            $metadata->getFilename($document->getDocumentNr()),
+            $metadata->getFilename($document->getDocumentNumber()),
         );
 
         if ($this->hasInquiryNumberUpdate($document, $metadata)) {
@@ -78,18 +78,18 @@ readonly class DocumentComparator
     public function hasRefersToUpdate(WooDecision $dossier, Document $document, DocumentMetadata $metadata): bool
     {
         $currentDocNrs = $document->getRefersTo()->map(
-            static fn (Document $doc) => $doc->getDocumentNr(),
+            static fn (Document $doc) => $doc->getDocumentNumber(),
         )->toArray();
 
         $newDocNrs = [];
         foreach ($metadata->getRefersTo() as $referral) {
-            $documentNr = DocumentNumber::fromReferral($dossier, $document, $referral);
-            $referredDocument = $this->documentRepository->findByDocumentNumber($documentNr);
+            $documentNumber = DocumentNumber::fromReferral($dossier, $document, $referral);
+            $referredDocument = $this->documentRepository->findByDocumentNumber($documentNumber);
             if (! $referredDocument) {
                 continue;
             }
 
-            $newDocNrs[] = $referredDocument->getDocumentNr();
+            $newDocNrs[] = $referredDocument->getDocumentNumber();
         }
 
         return count($currentDocNrs) !== count($newDocNrs) || array_diff($currentDocNrs, $newDocNrs);

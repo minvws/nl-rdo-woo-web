@@ -43,33 +43,33 @@ class InventoryDocumentMapperTest extends UnitTestCase
         $urls = ['http://dummy.url', 'https://x.y.z'];
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDossierNr')->times(3)->andReturn('tst-123');
+        $dossier->expects('getDossierNumber')->times(3)->andReturn('tst-123');
         $dossier->expects('getDocumentPrefix')->times(9)->andReturn('PREFIX');
         $dossier->expects('getTitle')->andReturn(DossierTitle::create('Foo Bar'));
 
         $referredDocA = Mockery::mock(Document::class);
-        $referredDocA->expects('getDocumentNr')->times(2)->andReturn($refDocIdA = 'PREFIX-matterA-a');
+        $referredDocA->expects('getDocumentNumber')->times(2)->andReturn($refDocIdA = 'PREFIX-matterA-a');
         $referredDocA->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('a'));
         $referredDocA->expects('getDossiers')->times(2)->andReturn(new ArrayCollection([$dossier]));
 
         $referredDocB = Mockery::mock(Document::class);
-        $referredDocB->expects('getDocumentNr')->times(2)->andReturn($refDocIdB = 'PREFIX-matterB-b');
+        $referredDocB->expects('getDocumentNumber')->times(2)->andReturn($refDocIdB = 'PREFIX-matterB-b');
         $referredDocB->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('b'));
         $referredDocB->expects('getDossiers')->times(2)->andReturn(new ArrayCollection([$dossier]));
 
         $this->urlGenerator
             ->expects('generate')
-            ->with('app_document_detail', ['prefix' => 'PREFIX', 'dossierId' => 'tst-123', 'documentId' => $refDocIdA])
+            ->with('app_document_detail', ['prefix' => 'PREFIX', 'dossierNumber' => 'tst-123', 'documentNumber' => $refDocIdA])
             ->andReturn('test-url-A');
 
         $this->urlGenerator
             ->expects('generate')
-            ->with('app_document_detail', ['prefix' => 'PREFIX', 'dossierId' => 'tst-123', 'documentId' => $refDocIdB])
+            ->with('app_document_detail', ['prefix' => 'PREFIX', 'dossierNumber' => 'tst-123', 'documentNumber' => $refDocIdB])
             ->andReturn('test-url-B');
 
         $document = Mockery::mock(Document::class);
         $document->expects('getDocumentId')->times(4)->andReturn(DocumentId::create('123'));
-        $document->expects('getDocumentNr')->times(3)->andReturn($docNr = 'PREFIX-matterA-123');
+        $document->expects('getDocumentNumber')->times(3)->andReturn($docNr = 'PREFIX-matterA-123');
         $document->expects('getFileInfo->getName')->andReturn('test-doc-name');
         $document->expects('getJudgement')->times(2)->andReturn(Judgement::PARTIAL_PUBLIC);
         $document->expects('getGrounds')->andReturn(['a', 'b']);
@@ -86,7 +86,7 @@ class InventoryDocumentMapperTest extends UnitTestCase
 
         $this->urlGenerator
             ->expects('generate')
-            ->with('app_document_detail', ['prefix' => 'PREFIX', 'dossierId' => 'tst-123', 'documentId' => $docNr])
+            ->with('app_document_detail', ['prefix' => 'PREFIX', 'dossierNumber' => 'tst-123', 'documentNumber' => $docNr])
             ->andReturn('test-url');
 
         $this->assertMatchesSnapshot(

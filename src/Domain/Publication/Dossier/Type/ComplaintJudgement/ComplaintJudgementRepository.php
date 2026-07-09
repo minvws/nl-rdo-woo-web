@@ -24,14 +24,14 @@ class ComplaintJudgementRepository extends AbstractDossierRepository implements 
 
     public function getSearchResultViewModel(
         string $prefix,
-        string $dossierNr,
+        string $dossierNumber,
         ApplicationMode $mode,
     ): ?ComplaintJudgementSearchResult {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
                 'new %s(
                     dos.id,
-                    dos.dossierNr,
+                    dos.dossierNumber,
                     dos.documentPrefix,
                     dos.title,
                     dos.summary,
@@ -42,11 +42,11 @@ class ComplaintJudgementRepository extends AbstractDossierRepository implements 
                 ComplaintJudgementSearchResult::class,
             ))
             ->where('dos.documentPrefix = :prefix')
-            ->andWhere('dos.dossierNr = :dossierNr')
+            ->andWhere('dos.dossierNumber = :dossierNumber')
             ->andWhere('dos.status IN (:statuses)')
             ->groupBy('dos.id')
             ->setParameter('prefix', $prefix)
-            ->setParameter('dossierNr', $dossierNr)
+            ->setParameter('dossierNumber', $dossierNumber)
             ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
 
         /** @var ?ComplaintJudgementSearchResult */

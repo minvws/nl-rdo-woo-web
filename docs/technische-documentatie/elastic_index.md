@@ -7,7 +7,7 @@ Note that we currently use a single index as defined in `\Shared\ElasticConfig::
 ```json
 {
     "properties": {
-        "dossier_nr": {                     // Unique dossier number. This is also the ID of the document.
+        "dossier_number": {                     // Unique dossier number. This is also the ID of the document.
             "type": "keyword"
         },
         "title": {                          // Dossier title
@@ -49,10 +49,10 @@ Note that we currently use a single index as defined in `\Shared\ElasticConfig::
         "documents": {                      // Documents are nested object within a dossier
             "type": "nested",
             "properties": {
-                "document_nr": {            // Document number (unique within dossier, and prefixed with document_prefix)
+                "document_number": {            // Document number (unique within dossier, and prefixed with document_prefix)
                     "type": "keyword"
                 },
-                "dossier_nr": {             // Dossier number within this document
+                "dossier_number": {             // Dossier number within this document
                     "type": "keyword"
                 },
                 "mimetype": {               // Mimetype of the document
@@ -116,10 +116,10 @@ Note that we currently use a single index as defined in `\Shared\ElasticConfig::
                         "page_nr": {                // Page number (starts at 1)
                             "type": "integer"
                         },
-                        "document_nr": {            // Document number for this page
+                        "document_number": {            // Document number for this page
                             "type": "keyword"
                         },
-                        "dossier_nr": {             // Dossier number for this page
+                        "dossier_number": {             // Dossier number for this page
                             "type": "keyword"
                         },
                         "content": {                // Actual extracted content of the page

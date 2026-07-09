@@ -1,9 +1,16 @@
+parameters:
+    app.items_per_page: 100
+
 services:
     _defaults:
         autowire: true
         autoconfigure: true
         bind:
-            $itemsPerPage: 100
+            $itemsPerPage: '%app.items_per_page%'
 
     PublicationApi\:
         resource: '../../src/'
+
+when@test:
+    parameters:
+        app.items_per_page: 5

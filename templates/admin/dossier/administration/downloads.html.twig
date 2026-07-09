@@ -13,7 +13,7 @@
             <table class="bhr-table">
                 <thead>
                     <tr>
-                        <th scope="col">{{ 'admin.dossiers.downloads.column.dossier_nr' | trans }}</th>
+                        <th scope="col">{{ 'admin.dossiers.downloads.column.dossier_number' | trans }}</th>
                         <th scope="col">{{ 'admin.dossiers.downloads.column.expected_count' | trans }}</th>
                         <th scope="col">{{ 'admin.dossiers.downloads.column.file_count' | trans }}</th>
                         <th scope="col">{{ 'admin.dossiers.downloads.column.status' | trans }}</th>
@@ -26,8 +26,8 @@
                     {% for dossier in dossiers %}
                         <tr>
                             <td>
-                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier', {prefix: dossier.prefix, dossierId: dossier.dossierNr}) }}">
-                                    {{ dossier.dossierNr }}
+                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier', {prefix: dossier.prefix, dossierNumber: dossier.dossierNumber}) }}">
+                                    {{ dossier.dossierNumber }}
                                 </a>
                             </td>
                             <td>
@@ -59,7 +59,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_administration_details', {prefix: dossier.prefix, dossierId: dossier.dossierNr}) }}">
+                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_administration_details', {prefix: dossier.prefix, dossierNumber: dossier.dossierNumber}) }}">
                                     {{ 'admin.dossiers.downloads.actions' | trans }}
                                 </a>
                             </td>

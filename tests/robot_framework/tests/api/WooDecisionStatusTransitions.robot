@@ -147,7 +147,7 @@ Verify WooDecision Documents Are Not Publicly Accessible
     Dictionary Should Not Contain Key
     ...  ${document}[_links]
     ...  public
-    ...  msg=Expected document _links.public to be absent (documentNr=${document}[documentNr], status=${get_response.json()}[status])
+    ...  msg=Expected document _links.public to be absent (documentNumber=${document}[documentNumber], status=${get_response.json()}[status])
   END
 
 Build Request Body For WooDecision

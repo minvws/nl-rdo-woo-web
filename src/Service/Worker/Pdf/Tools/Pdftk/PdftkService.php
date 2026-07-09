@@ -16,7 +16,7 @@ class PdftkService
 
     public function extractPage(string $sourcePdf, int $pageNr, string $targetPath): PdftkPageExtractResult
     {
-        $params = [self::PDFTK_PATH, $sourcePdf, 'cat', $pageNr, 'output', $targetPath];
+        $params = [self::PDFTK_PATH, $sourcePdf, 'cat', (string) $pageNr, 'output', $targetPath];
 
         $process = $this->getNewProcess($params);
         $exitCode = $process->run();
@@ -57,7 +57,7 @@ class PdftkService
     }
 
     /**
-     * @param array<int,string|int> $params
+     * @param array<int,string> $params
      *
      * @codeCoverageIgnore
      */

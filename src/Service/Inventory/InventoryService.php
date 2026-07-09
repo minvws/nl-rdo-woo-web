@@ -92,7 +92,7 @@ class InventoryService
         $file->setSourceType(SourceType::SPREADSHEET);
         $file->setType('xlsx');
 
-        $defaultFilename = 'production-report-' . $run->getDossier()->getDossierNr() . '.xlsx';
+        $defaultFilename = 'production-report-' . $run->getDossier()->getDossierNumber() . '.xlsx';
         $file->setName($run->getFileInfo()->getName() ?? $defaultFilename);
 
         $this->doctrine->persist($inventory);

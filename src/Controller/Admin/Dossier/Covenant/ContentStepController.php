@@ -29,20 +29,20 @@ class ContentStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/covenant/content/concept/{prefix}/{dossierId}',
+        path: '/balie/dossier/covenant/content/concept/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_covenant_content_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Covenant $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Covenant $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem(
             (string) $dossier->getTitle(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierId' => $dossier->getDossierNr()],
+            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addItem('admin.dossiers.covenant.step.content');
 
@@ -64,6 +64,7 @@ class ContentStepController extends AbstractController
             $this->stepHelper->getParamsBuilder($dossier)
                 ->withMainDocumentParams($dossier)
                 ->withAttachmentsParams($dossier)
+                ->withNoticeNotPublicParams($dossier)
                 ->withForm($form)
                 ->withWizardStatus($wizardStatus)
                 ->withBreadCrumbs($breadcrumbs)
@@ -74,13 +75,13 @@ class ContentStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/covenant/content/edit/{prefix}/{dossierId}',
+        path: '/balie/dossier/covenant/content/edit/{prefix}/{dossierNumber}',
         name: 'app_admin_dossier_covenant_content_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] Covenant $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Covenant $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -109,6 +110,7 @@ class ContentStepController extends AbstractController
             $this->stepHelper->getParamsBuilder($dossier)
                 ->withMainDocumentParams($dossier)
                 ->withAttachmentsParams($dossier)
+                ->withNoticeNotPublicParams($dossier)
                 ->withForm($form)
                 ->withWizardStatus($wizardStatus)
                 ->withBreadCrumbs($breadcrumbs)

@@ -19,21 +19,16 @@ use function strval;
 class DocumentNumberTest extends UnitTestCase
 {
     #[DataProvider('fromDossierAndReferralProvider')]
-    public function testFromReferral(string $documentNr, string $prefix, string $documentId, string $referral, string $expected): void
+    public function testFromReferral(string $documentNumber, string $prefix, string $documentId, string $referral, string $expected): void
     {
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getDocumentPrefix')->times(3)->andReturn($prefix);
 
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentNr')->andReturn($documentNr);
+        $document->expects('getdocumentNumber')->andReturn($documentNumber);
         $document->expects('getDocumentId')->times(3)->andReturn(DocumentId::create($documentId));
 
-        $documentNumber = DocumentNumber::fromReferral($dossier, $document, $referral);
-
-        self::assertEquals(
-            $expected,
-            strval($documentNumber),
-        );
+        self::assertEquals($expected, strval(DocumentNumber::fromReferral($dossier, $document, $referral)));
     }
 
     /**
@@ -43,49 +38,49 @@ class DocumentNumberTest extends UnitTestCase
     {
         return [
             'separated-by-dash' => [
-                'documentNr' => 'pr3f1x-docmatter-123',
+                'documentNumber' => 'pr3f1x-docmatter-123',
                 'prefix' => 'pr3f1x',
                 'documentId' => '123',
                 'referral' => 'm4tt3r-d0c1d.suffix',
                 'expected' => 'pr3f1x-m4tt3r-d0c1d.suffix',
             ],
             'separated-by-underscore' => [
-                'documentNr' => 'pr3f1x-docmatter-123',
+                'documentNumber' => 'pr3f1x-docmatter-123',
                 'prefix' => 'pr3f1x',
                 'documentId' => '123',
                 'referral' => 'm4tt3r_d0c1d.suffix',
                 'expected' => 'pr3f1x-m4tt3r-d0c1d.suffix',
             ],
             'document-id-only' => [
-                'documentNr' => 'pr3f1x-docmatter-123',
+                'documentNumber' => 'pr3f1x-docmatter-123',
                 'prefix' => 'pr3f1x',
                 'documentId' => '123',
                 'referral' => 'd0c1d',
                 'expected' => 'pr3f1x-docmatter-d0c1d',
             ],
             'with-prefix-included' => [
-                'documentNr' => 'pr3f1x-docmatter-123',
+                'documentNumber' => 'pr3f1x-docmatter-123',
                 'prefix' => 'pr3f1x',
                 'documentId' => '123',
                 'referral' => 'pr3f1x-m4tt3r-d0c1d.suffix',
                 'expected' => 'pr3f1x-m4tt3r-d0c1d.suffix',
             ],
             'document-id-only-matter-with-dash' => [
-                'documentNr' => 'pr3f1x-doc-matter-123',
+                'documentNumber' => 'pr3f1x-doc-matter-123',
                 'prefix' => 'pr3f1x',
                 'documentId' => '123',
                 'referral' => 'd0c1d',
                 'expected' => 'pr3f1x-doc-matter-d0c1d',
             ],
             'other-matter-with-dash' => [
-                'documentNr' => 'pr3f1x-doc-matter-123',
+                'documentNumber' => 'pr3f1x-doc-matter-123',
                 'prefix' => 'pr3f1x',
                 'documentId' => '123',
                 'referral' => 'other-doc-matter-d0c1d',
                 'expected' => 'pr3f1x-other-doc-matter-d0c1d',
             ],
             'without-matter' => [
-                'documentNr' => 'pr3f1x-123',
+                'documentNumber' => 'pr3f1x-123',
                 'prefix' => 'pr3f1x',
                 'documentId' => '123',
                 'referral' => 'other-d0c1d',

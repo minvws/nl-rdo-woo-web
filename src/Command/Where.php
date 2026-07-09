@@ -31,10 +31,9 @@ class Where extends Command
 
     protected function configure(): void
     {
-        $this
-            ->setDefinition([
-                new InputArgument('url', InputArgument::REQUIRED, 'url to parse'),
-            ]);
+        $this->setDefinition([
+            new InputArgument('url', InputArgument::REQUIRED, 'url to parse'),
+        ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -49,7 +48,7 @@ class Where extends Command
         try {
             $match = $this->matcher->match($parts['path']);
             Assert::string($match['_route']);
-            Assert::string($match['dossierId']);
+            Assert::string($match['dossierNumber']);
         } catch (Exception) {
             $output->writeln("<error>Could not match {$parts['path']}</error>");
 
@@ -58,21 +57,21 @@ class Where extends Command
 
         $output->writeln("<info>Matched {$parts['path']} to {$match['_route']}</info>");
 
-        if (! array_key_exists('dossierId', $match)) {
-            $output->writeln('<error>No dossierId found</error>');
+        if (! array_key_exists('dossierNumber', $match)) {
+            $output->writeln('<error>No dossierNumber found</error>');
 
             return self::FAILURE;
         }
 
-        $dossier = $this->wooDecisionRepository->findOneBy(['dossierNr' => $match['dossierId']]);
+        $dossier = $this->wooDecisionRepository->findOneBy(['dossierNumber' => $match['dossierNumber']]);
         if (! $dossier) {
-            $output->writeln("<error>Dossier {$match['dossierId']} not found</error>");
+            $output->writeln("<error>Dossier {$match['dossierNumber']} not found</error>");
 
             return self::FAILURE;
         }
 
-        if (array_key_exists('documentId', $match)) {
-            $document = $this->documentRepository->findOneBy(['documentNr' => $match['documentId']]);
+        if (array_key_exists('documentNumber', $match)) {
+            $document = $this->documentRepository->findOneBy(['documentNumber' => $match['documentNumber']]);
             $documents = [$document];
         } else {
             $documents = $dossier->getDocuments();

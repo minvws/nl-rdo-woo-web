@@ -15,7 +15,7 @@ class UniqueDossierCountComponent
         $queryBuilder->addAggregation(
             Aggregation::cardinality(
                 nameAndField: 'unique_dossiers',
-                fieldOrSource: ElasticField::PREFIXED_DOSSIER_NR->value,
+                fieldOrSource: ElasticField::PREFIXED_DOSSIER_NUMBER->value,
             )->setPrecisionThreshold(40_000),
         );
     }

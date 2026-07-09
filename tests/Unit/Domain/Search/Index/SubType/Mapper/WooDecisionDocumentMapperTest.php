@@ -53,7 +53,7 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
     public function testMap(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDossierNr')->andReturn('dos-123');
+        $dossier->expects('getDossierNumber')->andReturn('dos-123');
         $dossier->expects('getDocumentPrefix')->andReturn('PREFIX');
         $dossier->expects('getOrganisation->getId')->andReturn(
             Uuid::fromRfc4122('55ae5de9-55f4-3420-b40b-5cde6e07fc5a'),
@@ -78,17 +78,17 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
         $fileInfo->expects('getPageCount')->andReturn(13);
 
         $referredDocumentA = Mockery::mock(Document::class);
-        $referredDocumentA->expects('getDocumentNr')->andReturn('doc-456');
+        $referredDocumentA->expects('getDocumentNumber')->andReturn('doc-456');
 
         $referredDocumentB = Mockery::mock(Document::class);
-        $referredDocumentB->expects('getDocumentNr')->andReturn('doc-789');
+        $referredDocumentB->expects('getDocumentNumber')->andReturn('doc-789');
 
         $document = Mockery::mock(Document::class);
         $document->expects('getId->toRfc4122')->andReturn('doc-456');
         $document->expects('getDossiers')->andReturn(new ArrayCollection([$dossier]));
         $document->expects('getInquiries')->andReturn(new ArrayCollection([$inquiry]));
         $document->expects('getReferredBy')->andReturn(new ArrayCollection([$referredDocumentA, $referredDocumentB]));
-        $document->expects('getDocumentNr')->andReturn('doc-123');
+        $document->expects('getDocumentNumber')->andReturn('doc-123');
         $document->expects('getFileInfo')->times(2)->andReturn($fileInfo);
         $document->expects('getDocumentDate')->andReturn(PlainDate::create('2024-04-16'));
         $document->expects('getFamilyId')->andReturn(789);

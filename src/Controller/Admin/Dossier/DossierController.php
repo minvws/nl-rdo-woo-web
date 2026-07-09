@@ -9,6 +9,7 @@ use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Admin\DossierFilterParameters;
 use Shared\Domain\Publication\Dossier\Admin\DossierListingService;
+use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierTypeViewFactory;
@@ -31,7 +32,7 @@ use function reset;
 
 class DossierController extends AbstractController
 {
-    protected const MAX_ITEMS_PER_PAGE = 100;
+    protected const int MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
         private readonly DossierListingService $listingService,
@@ -42,6 +43,7 @@ class DossierController extends AbstractController
         private readonly DossierPathHelper $dossierPathHelper,
         private readonly DossierTypeViewFactory $dossierTypeViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
+        private readonly NoticeNotPublicRepository $noticeNotPublicRepository,
     ) {
     }
 
@@ -74,12 +76,12 @@ class DossierController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/overview/{prefix}/{dossierId}', name: 'app_admin_dossier', methods: ['GET'])]
+    #[Route('/balie/dossier/overview/{prefix}/{dossierNumber}', name: 'app_admin_dossier', methods: ['GET'])]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function dossier(
         #[MapEntity(
             class: AbstractDossier::class,
-            mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'],
+            mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'],
         )]
         AbstractDossier $dossier,
     ): Response {
@@ -92,6 +94,8 @@ class DossierController extends AbstractController
             );
         }
 
+        $noticeNotPublic = $this->noticeNotPublicRepository->findOneByDossierId($dossier->getId());
+
         return $this->render(
             'admin/dossier/' . $dossier->getType()->value . '/view.html.twig',
             [
@@ -100,6 +104,7 @@ class DossierController extends AbstractController
                     ApplicationMode::ADMIN,
                 ),
                 'mainDocument' => $mainDocumentView,
+                'noticeNotPublic' => $noticeNotPublic,
                 'dossier' => $dossier,
                 'workflowStatus' => $this->wizardStatusFactory->getWizardStatus($dossier),
                 'publicDossierUrl' => $this->dossierPathHelper->getAbsoluteDetailsPath($dossier),
@@ -108,13 +113,13 @@ class DossierController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/overview/{prefix}/{dossierId}/publication-confirmation',
+        path: '/balie/dossier/overview/{prefix}/{dossierNumber}/publication-confirmation',
         name: 'app_admin_dossier_publication_confirmation',
         methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function publicationConfirmation(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierId' => 'dossierNr'])] AbstractDossier $dossier,
+        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
     ): Response {
         return $this->render('admin/dossier/' . $dossier->getType()->value . '/publication-confirmation.html.twig', [
             'dossier' => $dossier,

@@ -15,7 +15,7 @@ De documentatie is publiekelijk beschikbaar op [open.minvws.nl/documentatie/](ht
 Om deze lokaal te genereren, gebruik je het volgende commando:
 
 ```bash
-task docs:build
+task docs:build:all
 ```
 
 ## Technische documentatie

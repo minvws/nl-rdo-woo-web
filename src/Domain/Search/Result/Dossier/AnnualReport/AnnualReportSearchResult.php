@@ -14,7 +14,7 @@ readonly class AnnualReportSearchResult extends AbstractDossierTypeSearchResult
 
     public function __construct(
         Uuid $id,
-        string $dossierNr,
+        string $dossierNumber,
         string $documentPrefix,
         string $title,
         public ?string $summary,
@@ -25,6 +25,6 @@ readonly class AnnualReportSearchResult extends AbstractDossierTypeSearchResult
     ) {
         $this->year = $dateFrom?->format('Y');
 
-        parent::__construct($id, $dossierNr, $documentPrefix, $title);
+        parent::__construct($id, $dossierNumber, $documentPrefix, $title);
     }
 }

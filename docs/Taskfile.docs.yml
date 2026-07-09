@@ -1,23 +1,26 @@
 # https://taskfile.dev
-version: "3.48.0"
+version: '3.50.0'
 
 vars:
   # See tags for latest version: https://hub.docker.com/r/davidanson/markdownlint-cli2/tags
-  MARKDOWNLINT_VERSION: v0.22.1
+  MARKDOWNLINT_VERSION: v0.22.0
+  TENANT: '{{ .TENANT | default "minvws" }}'
 
 tasks:
   lint:
     desc: Lint documentation
+    run: once
     cmds:
       - docker run -it --rm
         --volume "{{.BASE_PATH}}":/workdir
-        davidanson/markdownlint-cli2:{{.MARKDOWNLINT_VERSION}}
-        {{.SUB_CMD}} {{.CLI_ARGS}}
+        davidanson/markdownlint-cli2:{{ .MARKDOWNLINT_VERSION }}
+        {{ .SUB_CMD }} {{ .CLI_ARGS }}
     requires:
       vars: [ BASE_PATH ]
 
   lint:fix:
     desc: Auto fix lint errors in documentation
+    run: once
     cmds:
       - task: lint
         vars: { SUB_CMD: --fix }
@@ -25,59 +28,78 @@ tasks:
   sphinx:shell:
     desc: Start a shell in the sphinx container
     cmds:
+      - task: :dc:run:sphinx
+        vars:
+          SUB_CMD: bash
+
+  requirements:update:
+    aliases: [ deps:update ]
+    desc: Update the Python dependencies in docs/requirements.txt to their latest versions
+    vars:
+      FIXUID:
+        sh: echo ${FIXUID:-$(id -u)}
+      FIXGID:
+        sh: echo ${FIXGID:-$(id -g)}
+    cmds:
       - task: :dc
-        vars: { SUB_CMD: run --rm sphinx bash }
+        vars:
+          SUB_CMD: >-
+            run --rm --user root sphinx bash -c
+            'set -e;
+             pip install --quiet pur;
+             pur --requirement requirements.txt;
+             chown {{ .FIXUID }}:{{ .FIXGID }} requirements.txt'
 
   build:
-    aliases: [ sphinx:build ]
     desc: Build the documentation
+    vars:
+      TENANT: '{{ .TENANT | default "minvws" }}'
     cmds:
-      - task: lint
-      - task: sphinx:build:ci
+      - task: build:ci
+        vars:
+          TENANT: '{{ .TENANT }}'
+      - mkdir -p "{{.BASE_PATH}}/public/documentatie/{{ .TENANT }}"
+      - cp -r "{{.BASE_PATH}}/docs/_build/{{ .TENANT }}/html/." "{{.BASE_PATH}}/public/documentatie/{{ .TENANT }}"
+
+  build:all:
+    desc: Build the documentation for all tenants
+    cmds:
+      - task: build
+        vars:
+          TENANT: '{{ .ITEM }}'
+        for: { var: LOCAL_TENANTS }
 
   build:ci:
-    aliases: [ sphinx:build:ci ]
     desc: Build the documentation in CI
     cmds:
-      - task: do:sphinx:build:cleanup
-      - task: do:sphinx-download-theme
+      - task: do:build:cleanup
+        vars: { TENANT: '{{ .TENANT }}' }
       - task: :d:create-cache-volumes
       - task: do:sphinx-build
-      - cp -r "{{.BASE_PATH}}/docs/_build/html" "{{.BASE_PATH}}/public/documentatie"
+        vars:
+          TENANT: '{{ .TENANT }}'
+    requires:
+      vars:
+        - name: TENANT
+          enum:
+            ref: .ALL_TENANTS
 
-  bundle:
-    aliases: [ sphinx:bundle ]
-    desc: Bundle the documentation
+  build:ci:all:
+    desc: Build the documentation for all tenants in CI
     cmds:
-      - task: sphinx:build
-      - tar -czf "{{.BASE_PATH}}/docs/_build/html.tar.gz" -C "{{.BASE_PATH}}/docs/_build" html
-      - echo "Documentation archive is available at file://{{.BASE_PATH}}/docs/_build/docs.tar.gz"
+      - task: build:ci
+        vars: { TENANT: '{{ .ITEM }}' }
+        for: { var: ALL_TENANTS }
 
-  do:sphinx:build:cleanup:
+  do:build:cleanup:
     desc: Remove the generated sphinx files
     internal: true
     cmds:
-      - rm -rf "{{.BASE_PATH}}/public/documentatie"
-      - rm -rf "{{.BASE_PATH}}/docs/_build/html" "{{.BASE_PATH}}/docs/_build/doctrees"
-
-  do:sphinx-download-theme:
-    desc: Download the manon sphinx theme
-    internal: true
-    vars:
-      GH_CMD: release download --clobber -D gebruikershandleiding --repo minvws/icore-manon-sphinx-theme --pattern 'sphinx-rijkshuisstijl*.zip'
-    cmds:
-      - |
-        if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
-          echo "Downloading theme from GitHub using gh directly..."
-          gh {{.GH_CMD}}
-        else
-          echo "Downloading theme from GitHub using Docker..."
-          docker run -it --rm \
-            --volume "{{.BASE_PATH}}/docs":/gh \
-            --env GITHUB_TOKEN="$CR_PAT" \
-            maniator/gh:{{.GH_VERSION}} \
-            {{.GH_CMD}}
-        fi
+      - rm -rf "{{ .BASE_PATH }}/public/documentatie/{{ .TENANT }}"
+      - rm -rf "{{ .BASE_PATH }}/docs/_build/{{ .TENANT }}"
+    requires:
+      vars:
+        - name: TENANT
 
   do:sphinx-build:
     desc: Run the sphinx-build tool
@@ -85,4 +107,9 @@ tasks:
     cmds:
       - task: :dc
         vars:
-          SUB_CMD: run --rm sphinx sphinx-build -M html gebruikershandleiding _build
+          SUB_CMD: run --rm -e SPHINX_TENANT={{ .TENANT }} sphinx sphinx-build -M html gebruikershandleiding _build/{{ .TENANT }} --fail-on-warning {{ .CLI_ARGS }}
+    requires:
+      vars:
+        - name: TENANT
+          enum:
+            ref: .ALL_TENANTS
