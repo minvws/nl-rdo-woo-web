@@ -1,6 +1,6 @@
 {% extends 'public/dossier/shared/attachment.html.twig' %}
 
-{% set urlToDossierPage = url('app_annualreport_detail', { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber } ) %}
+{% set urlToDossierPage = url('app_annualreport_detail', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber } ) %}
 {% set dateLabel = 'global.year' | trans %}
 
 {% block dossier_date %}

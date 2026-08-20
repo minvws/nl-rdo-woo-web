@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Shared\Controller\Admin\Dossier\WooDecision;
 
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
 use Shared\Domain\Publication\Dossier\Step\StepName;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Form\Dossier\WooDecision\DecisionType;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,13 +29,13 @@ class DecisionStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/decision/concept/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/woodecision/decision/concept/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_woodecision_decision_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
         Request $request,
     ): Response {
         $stepName = StepName::DECISION;
@@ -69,20 +69,20 @@ class DecisionStepController extends AbstractController
                 ->withDepartments()
                 ->with('attachments', $this->attachmentViewFactory->makeCollection(
                     $dossier,
-                    ApplicationMode::ADMIN,
+                    ApplicationId::ADMIN,
                 ))
                 ->getParams(),
         );
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/decision/edit/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/woodecision/decision/edit/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_woodecision_decision_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -122,7 +122,7 @@ class DecisionStepController extends AbstractController
                 ->withDepartments()
                 ->with('attachments', $this->attachmentViewFactory->makeCollection(
                     $dossier,
-                    ApplicationMode::ADMIN,
+                    ApplicationId::ADMIN,
                 ))
                 ->getParams(),
         );

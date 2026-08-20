@@ -12,6 +12,7 @@ use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationMainDocument;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
@@ -39,6 +40,7 @@ use Webmozart\Assert\Assert;
     'other_publication_main_document' => OtherPublicationMainDocument::class,
     'advice_main_document' => AdviceMainDocument::class,
     'request_for_advice_main_document' => RequestForAdviceMainDocument::class,
+    'draft_decision_main_document' => DraftDecisionMainDocument::class,
 ])]
 #[ORM\HasLifecycleCallbacks]
 abstract class AbstractMainDocument implements EntityWithFileInfo

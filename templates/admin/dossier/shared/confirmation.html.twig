@@ -2,7 +2,7 @@
 {% import "admin/macros/document.html.twig" as macro %}
 
 {% set page_title = "Dossier " | trans() ~ dossier.dossierNumber %}
-{% set adminDossierUrl = path('app_admin_dossier', {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) %}
+{% set adminDossierUrl = path('app_admin_dossier', {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) %}
 
 {% block body %}
 <div class="bhr-container bhr-container--sm">

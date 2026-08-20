@@ -10,7 +10,10 @@ use Stringable;
 
 use function sprintf;
 
-final readonly class PlainDate implements Stringable
+/**
+ * @implements Equatable<PlainDate>
+ */
+final readonly class PlainDate implements Stringable, Equatable
 {
     public const string DEFAULT_STRING_FORMAT = 'Y-m-d';
 
@@ -53,9 +56,12 @@ final readonly class PlainDate implements Stringable
         return $this->date->format($format);
     }
 
-    public function equalTo(PlainDate $date): bool
+    /**
+     * @param PlainDate $other
+     */
+    public function equalTo(Equatable $other): bool
     {
-        return $this->format(self::DEFAULT_STRING_FORMAT) === $date->format(self::DEFAULT_STRING_FORMAT);
+        return $this->format(self::DEFAULT_STRING_FORMAT) === $other->format(self::DEFAULT_STRING_FORMAT);
     }
 
     public function toString(): string

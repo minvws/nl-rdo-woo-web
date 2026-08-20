@@ -107,6 +107,8 @@ enum AttachmentType: string implements TranslatableInterface
     case REGULATION = 'c_995d4fe9';
     case DIRECTIVE = 'c_41ac5574';
 
+    case POLICY_DOCUMENT = 'c_10eb451d';
+
     case AGENDA = 'c_f90465b3';
     case DECISION_LIST = 'c_d4a4792f';
     case INCOMING_DOCUMENT = 'c_de27ae7a';
@@ -157,5 +159,10 @@ enum AttachmentType: string implements TranslatableInterface
     public function isRequestForAdvice(): bool
     {
         return $this === self::REQUEST_FOR_ADVICE;
+    }
+
+    public function isRequestForAdviceOrPolicyDocument(): bool
+    {
+        return $this === self::REQUEST_FOR_ADVICE || $this === self::POLICY_DOCUMENT;
     }
 }

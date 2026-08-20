@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker;
 
-use Closure;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
@@ -12,7 +11,6 @@ use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContextFactory;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
-use Shared\Service\Stats\WorkerStatsService;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\LocalFilesystem;
 use Shared\Tests\Unit\UnitTestCase;
@@ -21,7 +19,6 @@ use Symfony\Component\Uid\Uuid;
 class PdfPageProcessingContextFactoryTest extends UnitTestCase
 {
     private EntityStorageService&MockInterface $entityStorage;
-    private WorkerStatsService&MockInterface $statsService;
     private LocalFilesystem&MockInterface $localFilesytem;
     private FileInfo&MockInterface $fileInfo;
     private PdfPageProcessingContextFactory $factory;
@@ -31,12 +28,10 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
         parent::setUp();
 
         $this->entityStorage = Mockery::mock(EntityStorageService::class);
-        $this->statsService = Mockery::mock(WorkerStatsService::class);
         $this->localFilesytem = Mockery::mock(LocalFilesystem::class);
         $this->fileInfo = Mockery::mock(FileInfo::class);
         $this->factory = new PdfPageProcessingContextFactory(
             $this->entityStorage,
-            $this->statsService,
             $this->localFilesytem,
         );
     }
@@ -49,15 +44,6 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
         $entity->expects('getFileInfo')->andReturn($this->fileInfo);
         $entity->expects('getId')->andReturn(Uuid::v6());
         $pageNumber = 123;
-
-        $this->statsService
-            ->expects('measure')
-            ->with('download.entity', Mockery::on(static function (Closure $closure) {
-                $closure();
-
-                return true;
-            }))
-            ->andReturnFalse();
 
         $this->entityStorage->expects('downloadEntity')->with($entity)->andReturnFalse();
 
@@ -75,17 +61,6 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
 
         $localFile = '/local/file.pdf';
         $pageNumber = 123;
-
-        $this->statsService
-            ->expects('measure')
-            ->with('download.entity', Mockery::on(static function (Closure $closure) use ($localFile) {
-                $result = $closure();
-
-                self::assertEquals($localFile, $result);
-
-                return true;
-            }))
-            ->andReturn($localFile);
 
         $this->entityStorage->expects('downloadEntity')->with($entity)->andReturn($localFile);
 
@@ -106,17 +81,6 @@ class PdfPageProcessingContextFactoryTest extends UnitTestCase
         $localFile = '/local/file.pdf';
         $tempDir = '/tmp/dir';
         $pageNumber = 123;
-
-        $this->statsService
-            ->expects('measure')
-            ->with('download.entity', Mockery::on(static function (Closure $closure) use ($localFile) {
-                $result = $closure();
-
-                self::assertEquals($localFile, $result);
-
-                return true;
-            }))
-            ->andReturn($localFile);
 
         $this->entityStorage->expects('downloadEntity')->with($entity)->andReturn($localFile);
         $this->localFilesytem->expects('createTempDir')->andReturn($tempDir);

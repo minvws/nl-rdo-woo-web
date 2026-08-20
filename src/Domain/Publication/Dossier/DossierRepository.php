@@ -49,12 +49,12 @@ class DossierRepository extends ServiceEntityRepository
         return $qb->getQuery()->getSingleResult();
     }
 
-    public function findOneByPrefixAndDossierNumber(string $prefix, string $dossierNumber): AbstractDossier
+    public function findOneByPrefixAndDossierNumber(string $documentPrefix, string $dossierNumber): AbstractDossier
     {
         $qb = $this->createQueryBuilder('d')
-            ->where('d.documentPrefix = :prefix')
+            ->where('d.documentPrefix = :documentPrefix')
             ->andWhere('d.dossierNumber = :dossierNumber')
-            ->setParameter('prefix', $prefix)
+            ->setParameter('documentPrefix', $documentPrefix)
             ->setParameter('dossierNumber', $dossierNumber);
 
         /** @var AbstractDossier */

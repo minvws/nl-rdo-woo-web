@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Public;
 
-use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Department\DepartmentService;
 use Shared\Domain\Search\Query\SearchParametersFactory;
 use Shared\Service\Search\Query\Definition\BrowseAllAggregationsQueryDefinition;
@@ -64,7 +63,7 @@ class SearchController extends AbstractController
     }
 
     #[Route('/zoeken', name: 'app_search')]
-    public function search(Request $request, Breadcrumbs $breadcrumbs): Response
+    public function search(Request $request): Response
     {
         // If we have a POST request, we have a search query in the body. Redirect to GET request
         // so we have the q in the query string.
@@ -79,9 +78,6 @@ class SearchController extends AbstractController
         }
 
         $searchParameters = $this->searchParametersFactory->createFromRequest($request);
-
-        $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem('public.search.label');
 
         $result = $this->searchService->getResult($this->searchAllQueryDefinition, $searchParameters);
         if ($result->hasFailed()) {
@@ -98,7 +94,7 @@ class SearchController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/alle-categorieën', name: 'app_browse', options: ['sitemap' => ['priority' => 0.7]])]
-    public function browse(Request $request, Breadcrumbs $breadcrumbs): Response
+    public function browse(Request $request): Response
     {
         // If we have a POST request, we have a search query in the body. Redirect to GET request
         // so we have the q in the query string.
@@ -115,9 +111,6 @@ class SearchController extends AbstractController
 
             return new RedirectResponse($this->generateUrl('app_search', ['q' => $q]));
         }
-
-        $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem('public.global.label.all_categories');
 
         $result = $this->searchService->getResult($this->aggregationsQueryDefinition);
         if ($result->hasFailed()) {

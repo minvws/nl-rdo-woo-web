@@ -11,14 +11,18 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Override;
 use Shared\Doctrine\PlainDateType;
+use Shared\Doctrine\PublicationContextType;
+use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Validator\UniqueDocumentNumber;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicationItem;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Validator\Immutable;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -45,6 +49,10 @@ class Document extends AbstractPublicationItem
     #[ORM\Column(length: 255, nullable: false, index: true)]
     private string $documentNumber;
 
+    #[ORM\Column(type: PublicationContextType::NAME, length: 255, nullable: true)]
+    #[Immutable(groups: [DossierValidationGroup::PUBLICATION_LOCKED->value])]
+    private ?PublicationContext $publicationContext = null;
+
     #[ORM\Column(type: PlainDateType::NAME, nullable: true, index: true)]
     private ?PlainDate $documentDate = null;
 
@@ -52,6 +60,7 @@ class Document extends AbstractPublicationItem
     private ?int $familyId = null;
 
     #[ORM\Column(type: 'document_id', length: 170, nullable: true)]
+    #[Immutable(groups: [DossierValidationGroup::PUBLICATION_LOCKED->value])]
     private ?DocumentId $documentId = null;
 
     #[ORM\Column(nullable: true)]
@@ -139,6 +148,18 @@ class Document extends AbstractPublicationItem
     public function setDocumentNumber(string $documentNumber): self
     {
         $this->documentNumber = $documentNumber;
+
+        return $this;
+    }
+
+    public function getPublicationContext(): ?PublicationContext
+    {
+        return $this->publicationContext;
+    }
+
+    public function setPublicationContext(?PublicationContext $publicationContext): self
+    {
+        $this->publicationContext = $publicationContext;
 
         return $this;
     }

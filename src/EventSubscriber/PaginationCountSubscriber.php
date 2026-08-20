@@ -17,10 +17,10 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
  * This listener is needed because the paginator by default cannot handle already sliced
  * objects in combination with the item count of the paginator.
  */
+#[AsEventListener(event: 'knp_pager.items')]
 class PaginationCountSubscriber
 {
-    #[AsEventListener(event: 'knp_pager.items')]
-    public function itemCount(ItemsEvent $event): void
+    public function __invoke(ItemsEvent $event): void
     {
         if (! $event->target instanceof Result) {
             return;

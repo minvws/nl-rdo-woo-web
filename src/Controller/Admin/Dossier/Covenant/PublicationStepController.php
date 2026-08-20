@@ -28,13 +28,13 @@ class PublicationStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/covenant/publish/concept/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/covenant/publish/concept/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_covenant_publication_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Covenant $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Covenant $dossier,
         Request $request,
     ): Response {
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
@@ -58,13 +58,13 @@ class PublicationStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/covenant/publish/edit/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/covenant/publish/edit/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_covenant_publication_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Covenant $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Covenant $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {

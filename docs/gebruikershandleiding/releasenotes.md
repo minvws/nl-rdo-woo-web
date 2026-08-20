@@ -2,6 +2,89 @@
 
 # Release notes
 
+## v3.3.0
+
+### Highlights
+
+- **Gepubliceerde dossiers zijn beter te beheren via de Publication API.** Aan bestaande gepubliceerde dossiers kunnen nu nieuwe documenten en bijlagen worden toegevoegd en bestaande documenten kunnen worden aangepast.
+- **Documenten kunnen via de API worden ingetrokken.** Daarbij kan een reden en toelichting worden meegegeven; ingetrokken documenten zijn vervolgens niet meer te downloaden via de publieke website.
+- **Productierapporten ondersteunen meer kolomnamen.** Hierdoor kunnen meer productierapporten rechtstreeks worden geïmporteerd zonder voorafgaande aanpassingen.
+
+### Publieke Website
+
+- **Juiste benaming voor Wob-besluiten in de navigatie**: De navigatie maakt nu onderscheid tussen Woo- en Wob-besluiten. Een dossier van het type Wob wordt daardoor ook als **Wob-besluit** weergegeven.
+- **Juiste gebeurtenis in documentgeschiedenis**: Bij een nieuw document vermeldt de geschiedenis nu dat het document is **aangemaakt**, in plaats van dat het is **vervangen**.
+- **Geen onjuiste melding bij niet-openbare documenten**: Bij documenten die als niet openbaar zijn beoordeeld, wordt niet langer ten onrechte aangegeven dat het document nog beschikbaar moet komen.
+
+### Balie
+
+- **Betere ondersteuning van productierapporten**: De import van productierapporten herkent aanvullende benamingen voor datum- en beoordelingskolommen. Hierdoor kunnen bestanden met deze alternatieve kolomnamen direct worden verwerkt.
+- **Extra controle op Markdown-invoer**: Markdown-velden kunnen nu worden gecontroleerd op niet-toegestane onderdelen. Wanneer een niet-toegestaan onderdeel wordt gebruikt, wordt hierover een duidelijke validatiemelding gegeven.
+- **Documenten toevoegen aan gepubliceerde dossiers**: Bij een gepubliceerd dossier kunnen nieuwe documenten en bijlagen worden toegevoegd en bestaande documenten worden aangepast. Bestaande documenten of bijlagen kunnen daarbij niet worden verwijderd.
+
+### Publication Api
+
+- **Documenten intrekken via de API**: Gepubliceerde documenten kunnen nu ook via de API worden ingetrokken, inclusief een reden en toelichting. Het document is daarna niet meer te downloaden en op de oorspronkelijke documentpagina
+wordt aangegeven dat het document is ingetrokken.
+
+### Overige
+
+- **Opnieuw bijwerken van een gepubliceerd dossier**: Bij het opnieuw aanleveren van gegevens voor een gepubliceerd dossier zorgen verschillen in publicatie- en verstrekkingdatums niet langer voor een validatiefout.
+Deze datums worden na publicatie niet meer via deze update gewijzigd.
+- **Gebruikersdocumentatie bijgewerkt**: Verschillende onderdelen van de technische en functionele documentatie zijn bijgewerkt om beter aan te sluiten op de huidige werking van het platform.
+
+## v3.2.0
+
+### Publieke Website
+
+- **Documentatie per omgeving**: De gebruikersdocumentatie kan nu per omgeving de juiste huisstijl, verwijzingen en links tonen.
+- **Detailpagina voor mededelingen niet-openbaar**: Een mededeling niet-openbaar heeft een eigen detailpagina met de documentdatum, informatiecategorie, uitzonderingsgronden en eventuele toelichting. Omdat het oorspronkelijke document niet openbaar is,
+bevat deze pagina geen downloadmogelijkheid of documentviewer.
+- **Aangepaste homepage-afbeelding per omgeving**: De homepage kan nu een omgevingseigen headerafbeelding tonen.
+- **Consistente broodkruimels en paginatitels**: Broodkruimels en titels op dossier-, document- en bijlagepagina’s zijn vereenvoudigd en gelijkgetrokken. Hierdoor worden lange of wisselende dossier- en documentnamen niet meer onnodig in de navigatie herhaald.
+- **Publicatiecontext op de website**: Het volledige documentnummer wordt nu consequent getoond in zoekresultaten, documentoverzichten en op documentpagina’s. In documenttabellen wordt de losse identificatie duidelijker aangeduid als ‘ID’.
+- **Correcte wetsverwijzingen**: Links bij uitzonderingsgronden verwijzen nu naar de wet die daadwerkelijk op het document van toepassing is.
+
+### Balie
+
+- **Bronbestandtype ‘meerdere’**: Voor verzameldocumenten kan het bronbestandtype ‘meerdere’ worden opgegeven. Dit type heeft een eigen pictogram en kan als zoekfilter worden gebruikt.
+- **Publicatiecontext in productierapporten**: Productierapporten ondersteunen een kolom ‘Publicatiecontext’, waarmee documentnummers op een vaste manier worden samengesteld. Een rapport kan niet tegelijkertijd de oude en de nieuwe contextkolom bevatten.
+- **Optionele documentcontext**: Bij het aanleveren van documenten via productierapporten en de API is de oude contextwaarde niet langer altijd verplicht. Documentnummers kunnen daardoor ook zonder deze waarde worden opgebouwd,
+waarbij conflicterende nummers worden geweigerd.
+- **Uploadbeveiliging voor gepubliceerde dossiers**: Nieuwe uploads van hoofddocumenten en bijlagen kunnen centraal worden geblokkeerd zodra een dossier is gepubliceerd. Deze controle kan met een configuratie-instelling worden beheerd.
+- **Directe uitsluiting tussen hoofddocument en mededeling**: Zodra een hoofddocument of mededeling niet-openbaar is toegevoegd, wordt de andere mogelijkheid direct uitgeschakeld. Een pagina opnieuw laden is hiervoor niet meer nodig.
+- **Verplichte documentkeuze bij publiceren**: Een publicatie kan niet meer zonder hoofddocument én zonder mededeling niet-openbaar worden afgerond. Bij beide invoermogelijkheden verschijnt een duidelijke validatiemelding.
+- **Mededelingen niet-openbaar bewerken**: Een bestaande mededeling niet-openbaar kan weer correct worden aangepast. De samenvatting van de mededeling is daarnaast consistenter vormgegeven in het formulier en het dossieroverzicht.
+- **Duidelijkere fouten bij productierapporten**: Onverwachte fouten tijdens het verwerken van een productierapport worden beter vastgelegd en getoond. Waar mogelijk wordt ook aangegeven in welke rij de fout is ontstaan.
+
+### Publication API
+
+- **Mededelingen niet-openbaar via de API**: Via de publicatie-API kan een mededeling niet-openbaar worden aangeleverd in plaats van een hoofddocument. De API controleert dat altijd precies één van beide aanwezig is.
+- **Publicatiecontext via de API**: De publicatie-API ondersteunt het veld `publicationContext` voor documenten. Het documentnummer wordt samengesteld uit de publicatiecontext en het document-ID.
+- **Documenten intrekken via de API**: Gepubliceerde documenten kunnen via de API worden ingetrokken, inclusief een reden en toelichting. Het document kan daarna niet meer worden gedownload en de publieke pagina toont dat het is ingetrokken.
+- **Completere API-specificatie**: Verplichte velden zijn nu correct gemarkeerd in de API-specificatie. Hierdoor sluiten automatische controles beter aan op de daadwerkelijke validatie van de API.
+- **Correcte API-links**: Links die door de API worden teruggegeven, verwijzen nu naar het juiste API-adres in plaats van naar het webadres.
+- **Validatie van wijzigingen na publicatie**: Velden die na publicatie niet meer mogen veranderen, worden door de API geweigerd. Toegestane wijzigingen blijven beschikbaar.
+- **Uploads via dossierupdates tijdelijk geweigerd**: Het uploaden van nieuwe bestanden tijdens een API-update van een gepubliceerd dossier wordt voorlopig geweigerd met een correcte foutmelding.
+- **Kwaliteitscontrole voor API-specificaties**: De automatische controle van de API-specificaties is uitgebreid, zodat ontbrekende of ongeldige definities eerder in het ontwikkelproces worden gevonden.
+
+### Overige
+
+- **Geen serverfout na correctie van een dossiernummer**: Het aanpassen van een dossiernummer na een eerdere validatiefout veroorzaakt niet langer een serverfout.
+- **Geen serverfout bij wijziging van een document-ID**: Bepaalde opeenvolgende wijzigingen aan documentidentificaties veroorzaakten een serverfout. Deze situatie wordt nu correct verwerkt.
+- **Alle afgeleide gegevens bijgewerkt na nummerwijziging**: Na het wijzigen van een referentienummer worden downloadlijsten, inventarislijsten, gekoppelde zaken en zoekgegevens opnieuw bijgewerkt.
+- **Betrouwbaardere databasetests**: Een ontbrekende database-index is aan de testomgeving toegevoegd. Hierdoor kunnen conflicten tussen documentnummers die alleen in hoofdletters verschillen beter worden getest.
+- **Detailpagina mededeling niet-openbaar hersteld**: Een verouderde naam in templates veroorzaakte een serverfout op sommige detailpagina’s. Deze pagina’s worden nu weer correct weergegeven.
+- **Duidelijke melding bij dubbel referentienummer**: Het invoeren van een al gebruikt referentienummer in de beheeromgeving veroorzaakt niet langer een serverfout. De gebruiker ontvangt nu een normale validatiemelding.
+- **Gewijzigde besluitnaam in inventaris**: Wanneer de naam van een gepubliceerd besluit wordt aangepast, wordt deze wijziging nu ook in de inventarislijst verwerkt.
+- **Geen onnodige wijzigingsacties voor ongewijzigde titels**: Een ongewijzigde dossiertitel werd ten onrechte als wijziging geregistreerd. Hierdoor ontstonden onnodige geschiedenisregels en achtergrondtaken; dit is gecorrigeerd.
+- **Betere verwerking van metadatawijzigingen**: Bij het wijzigen van metadata van een gepubliceerd dossier via de API worden de benodigde vervolgacties gezamenlijk uitgevoerd. Dit omvat onder meer het vernieuwen van zoekgegevens,
+geschiedenis en relevante afgeleide bestanden.
+- **Verbeterde kwaliteit van mededelingen niet-openbaar**: Ontbrekende vertalingen, foutafhandeling en enkele weergaveproblemen rond mededelingen niet-openbaar zijn opgelost. Ook zijn de interne vervolgacties na het wijzigen van een
+mededeling consistenter gemaakt.
+- **Duidelijkere routebenamingen**: Interne routeparameters gebruiken nu duidelijkere en consistentere namen. Dit maakt routes beter leesbaar en verkleint de kans op verwisseling.
+- **Voorkomen van dubbele achtergrondtaken**: Dezelfde vervolgactie wordt niet langer meerdere keren gestart wanneer verschillende wijzigingen binnen één bewerking tot hetzelfde resultaat leiden.
+
 ## v3.1.0
 
 ### Balie

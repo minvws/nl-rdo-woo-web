@@ -116,6 +116,11 @@ class HistoryService
             Assert::allScalar($values);
 
             $context['{' . $ctxKey . '}'] = join(',', $values);
+
+            // TODO: Remove after Github issue #7449
+            if ($ctxKey === 'applicationMode') {
+                $context['{applicationId}'] = $context['{' . $ctxKey . '}'];
+            }
         }
 
         if ($this->translator->getCatalogue()->has($key)) {

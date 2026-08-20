@@ -7,6 +7,7 @@ namespace PublicationApi\Api\Uploads\Attachment;
 use ApiPlatform\Validator\Exception\ValidationException;
 use PublicationApi\Api\DossierLookup;
 use PublicationApi\Api\OrganisationLookup;
+use PublicationApi\FeatureFlag\DocumentUploadGuard;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use Shared\Domain\Publication\Dossier\Type\DossierRepositoryWithExternalId;
@@ -18,6 +19,7 @@ readonly class UploadAttachmentProcessor
         private AttachmentRepository $attachmentRepository,
         private DossierLookup $dossierLookup,
         private OrganisationLookup $organisationLookup,
+        private DocumentUploadGuard $documentUploadGuard,
         private UploadAttachmentHandler $uploadAttachmentHandler,
     ) {
     }
@@ -32,6 +34,8 @@ readonly class UploadAttachmentProcessor
     ): void {
         $organisation = $this->organisationLookup->find($uploadAttachmentRequest->getOrganisationId());
         $dossier = $this->dossierLookup->find($dossierRepositoryWithExternalId, $organisation, $uploadAttachmentRequest->getDossierExternalId());
+
+        $this->documentUploadGuard->assertDocumentUploadIsAllowed($dossier);
 
         $attachment = $this->attachmentRepository->findByDossierAndExternalId($dossier, $uploadAttachmentRequest->getAttachmentExternalId());
         if (! $attachment instanceof $attachmentClass) {

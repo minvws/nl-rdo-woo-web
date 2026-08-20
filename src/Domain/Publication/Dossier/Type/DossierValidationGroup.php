@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type;
 
+use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Step\StepName;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 
-use function array_filter;
-use function array_values;
-use function str_starts_with;
+use function in_array;
 
 enum DossierValidationGroup: string
 {
@@ -24,6 +23,9 @@ enum DossierValidationGroup: string
     case WORKFLOW_PUBLISH = 'workflow_publish';
     case WORKFLOW_PUBLISH_AS_PREVIEW = 'workflow_publish_as_preview';
     case WORKFLOW_SCHEDULE_PUBLISH = 'workflow_schedule_publish';
+
+    // Condition-level guard group: enforced only while the owning dossier is in a locked status
+    case PUBLICATION_LOCKED = 'publication_locked';
 
     /**
      * @return array<array-key, self>
@@ -53,13 +55,30 @@ enum DossierValidationGroup: string
     }
 
     /**
+     * @return array<array-key, self>
+     */
+    public static function getForStatus(DossierStatus $dossierStatus): array
+    {
+        $validationGroups = self::allNonWorkflowGroups();
+
+        if (in_array($dossierStatus, DossierStatus::nonConceptCases(), true)) {
+            $validationGroups[] = self::PUBLICATION_LOCKED;
+        }
+
+        return $validationGroups;
+    }
+
+    /**
      * @return list<self::*>
      */
     public static function allNonWorkflowGroups(): array
     {
-        return array_values(array_filter(
-            self::cases(),
-            static fn (self $group): bool => ! str_starts_with($group->value, 'workflow_'),
-        ));
+        return [
+            self::DETAILS,
+            self::DECISION,
+            self::DOCUMENTS,
+            self::PUBLICATION,
+            self::CONTENT,
+        ];
     }
 }

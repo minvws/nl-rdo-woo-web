@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\MainDocument\ViewModel;
 
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use function sprintf;
@@ -24,22 +24,22 @@ readonly class MainDocumentViewFactory
     public function make(
         AbstractDossier&EntityWithMainDocument $dossier,
         AbstractMainDocument $mainDocument,
-        ApplicationMode $mode = ApplicationMode::PUBLIC,
+        ApplicationId $applicationId = ApplicationId::PUBLIC,
     ): MainDocument {
         $detailsUrl = $this->urlGenerator->generate(
             sprintf('app_%s_document_detail', $dossier->getType()->getValueForRouteName()),
             [
-                'prefix' => $dossier->getDocumentPrefix(),
+                'documentPrefix' => $dossier->getDocumentPrefix(),
                 'dossierNumber' => $dossier->getDossierNumber(),
             ],
         );
 
-        $downloadRouteName = $mode === ApplicationMode::ADMIN
+        $downloadRouteName = $applicationId->isAdmin()
             ? 'app_admin_dossier_file_download'
             : 'app_dossier_file_download';
 
         $downloadRouteParameters = [
-            'prefix' => $dossier->getDocumentPrefix(),
+            'documentPrefix' => $dossier->getDocumentPrefix(),
             'dossierNumber' => $dossier->getDossierNumber(),
             'type' => DossierFileType::MAIN_DOCUMENT->value,
             'id' => $mainDocument->getId(),

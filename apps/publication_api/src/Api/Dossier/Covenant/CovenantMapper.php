@@ -107,7 +107,7 @@ readonly class CovenantMapper
     ): Covenant {
         $covenant = new Covenant();
         $covenant->setExternalId($externalId);
-        $covenant->setStatus(DossierStatus::NEW);
+        $covenant->setStatus(DossierStatus::CONCEPT);
         $covenant->setDocumentPrefix($documentPrefix);
 
         self::update($covenant, $covenantRequestDto, $organisation, $department, $subject);
@@ -129,7 +129,9 @@ readonly class CovenantMapper
         $covenant->setOrganisation($organisation);
         $covenant->setParties($covenantRequestDto->parties);
         $covenant->setPreviousVersionLink($covenantRequestDto->previousVersionLink);
-        $covenant->setPublicationDate($covenantRequestDto->publicationDate);
+        if (! $covenant->getStatus()->isPublished()) {
+            $covenant->setPublicationDate($covenantRequestDto->publicationDate);
+        }
         $covenant->setSubject($subject);
         $covenant->setSummary($covenantRequestDto->summary);
         $covenant->setTitle($covenantRequestDto->title);

@@ -8,7 +8,6 @@ use Shared\Service\Security\Authorization\AuthorizationEntryRequestStore;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 use function count;
 use function in_array;
@@ -17,6 +16,7 @@ use function str_starts_with;
 /**
  * This listener ensures all admin endpoints check an AuthMatrix permission, except whitelisted urls.
  */
+#[AsEventListener(priority: -10)]
 readonly class AuthMatrixEnsureSubscriber
 {
     public function __construct(
@@ -24,8 +24,7 @@ readonly class AuthMatrixEnsureSubscriber
     ) {
     }
 
-    #[AsEventListener(event: KernelEvents::CONTROLLER_ARGUMENTS, priority: -10)]
-    public function onKernelControllerArguments(ControllerArgumentsEvent $event): void
+    public function __invoke(ControllerArgumentsEvent $event): void
     {
         if (! $event->isMainRequest()) {
             return;

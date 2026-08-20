@@ -11,7 +11,7 @@ tasks:
     desc: Lint documentation
     run: once
     cmds:
-      - docker run -it --rm
+      - docker run --rm
         --volume "{{.BASE_PATH}}":/workdir
         davidanson/markdownlint-cli2:{{ .MARKDOWNLINT_VERSION }}
         {{ .SUB_CMD }} {{ .CLI_ARGS }}

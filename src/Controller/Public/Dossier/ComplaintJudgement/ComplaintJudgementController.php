@@ -21,8 +21,6 @@ use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
 
-use function mb_ucfirst;
-
 class ComplaintJudgementController extends AbstractController
 {
     public function __construct(
@@ -35,32 +33,35 @@ class ComplaintJudgementController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/klachtoordeel/{prefix}/{dossierNumber}', name: 'app_complaintjudgement_detail', methods: ['GET'])]
+    #[Route('/klachtoordeel/{documentPrefix}/{dossierNumber}', name: 'app_complaintjudgement_detail', methods: ['GET'])]
     public function detail(
-        #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $complaintJudgement,
         Breadcrumbs $breadcrumbs,
-        string $prefix,
+        string $documentPrefix,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem(mb_ucfirst((string) $dossier->getTitle()));
+        $breadcrumbs->addItem($complaintJudgement->getType()->getTranslationKey());
 
         $parameters = [
-            'dossier' => $this->viewFactory->make($dossier),
+            'dossier' => $this->viewFactory->make($complaintJudgement),
         ];
 
-        $document = $this->complaintJudgementMainDocumentRepository->findForDossierByPrefixAndDossierNumber($prefix, $dossier->getDossierNumber());
-        $noticeNotPublic = $dossier->getNoticeNotPublic();
+        $document = $this->complaintJudgementMainDocumentRepository->findForDossierByPrefixAndDossierNumber(
+            $documentPrefix,
+            $complaintJudgement->getDossierNumber(),
+        );
+        $noticeNotPublic = $complaintJudgement->getNoticeNotPublic();
 
         if ($document === null && $noticeNotPublic === null) {
             throw new InvalidArgumentException('either mainDocument or NoticeNotPublic must be set');
         }
 
         if ($document !== null) {
-            $parameters['document'] = $this->mainDocumentViewFactory->make($dossier, $document);
+            $parameters['document'] = $this->mainDocumentViewFactory->make($complaintJudgement, $document);
             $parameters['noticeNotPublic'] = null;
         } else {
             $parameters['document'] = null;
-            $parameters['noticeNotPublic'] = $this->noticeNotPublicViewFactory->make($dossier);
+            $parameters['noticeNotPublic'] = $this->noticeNotPublicViewFactory->make($complaintJudgement);
         }
 
         return $this->render('public/dossier/complaint-judgement/details.html.twig', $parameters);
@@ -68,55 +69,53 @@ class ComplaintJudgementController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/klachtoordeel/{prefix}/{dossierNumber}/mededeling-niet-openbaar',
+        '/klachtoordeel/{documentPrefix}/{dossierNumber}/mededeling-niet-openbaar',
         name: 'app_complaintjudgement_notice_not_public_detail',
         methods: ['GET'],
     )]
     public function noticeNotPublicDetail(
-        #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $complaintJudgement,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        $noticeNotPublicViewModel = $this->noticeNotPublicViewFactory->make($dossier);
-
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('dossier.type.complaint-judgement', 'app_complaintjudgement_detail', [
-            'prefix' => $dossier->getDocumentPrefix(),
-            'dossierNumber' => $dossier->getDossierNumber(),
+        $breadcrumbs->addRouteItem($complaintJudgement->getType()->getTranslationKey(), 'app_complaintjudgement_detail', [
+            'documentPrefix' => $complaintJudgement->getDocumentPrefix(),
+            'dossierNumber' => $complaintJudgement->getDossierNumber(),
         ]);
-        $breadcrumbs->addItem($noticeNotPublicViewModel->title);
+        $breadcrumbs->addItem('global.dossiers.notice_not_public');
 
         return $this->render('public/dossier/complaint-judgement/notice-not-public.html.twig', [
-            'dossier' => $this->viewFactory->make($dossier),
-            'noticeNotPublic' => $noticeNotPublicViewModel,
+            'dossier' => $this->viewFactory->make($complaintJudgement),
+            'noticeNotPublic' => $this->noticeNotPublicViewFactory->make($complaintJudgement),
         ]);
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/klachtoordeel/{prefix}/{dossierNumber}/document',
+        '/klachtoordeel/{documentPrefix}/{dossierNumber}/document',
         name: 'app_complaintjudgement_document_detail',
         methods: ['GET'],
     )]
     public function documentDetail(
-        #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber)')]
+        #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $complaintJudgement,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(documentPrefix, dossierNumber)')]
         ComplaintJudgementMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        $mainDocumentViewModel = $this->mainDocumentViewFactory->make($dossier, $document);
+        $mainDocumentViewModel = $this->mainDocumentViewFactory->make($complaintJudgement, $document);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('dossier.type.complaint-judgement', 'app_complaintjudgement_detail', [
-            'prefix' => $dossier->getDocumentPrefix(),
-            'dossierNumber' => $dossier->getDossierNumber(),
+        $breadcrumbs->addRouteItem($complaintJudgement->getType()->getTranslationKey(), 'app_complaintjudgement_detail', [
+            'documentPrefix' => $complaintJudgement->getDocumentPrefix(),
+            'dossierNumber' => $complaintJudgement->getDossierNumber(),
         ]);
-        $breadcrumbs->addItem(mb_ucfirst((string) $dossier->getTitle()));
+        $breadcrumbs->addItem('public.global.main_document');
 
         return $this->render('public/dossier/complaint-judgement/document.html.twig', [
-            'dossier' => $this->viewFactory->make($dossier),
+            'dossier' => $this->viewFactory->make($complaintJudgement),
             'document' => $mainDocumentViewModel,
             'file' => $this->dossierFileViewFactory->make(
-                $dossier,
+                $complaintJudgement,
                 $document,
                 DossierFileType::MAIN_DOCUMENT,
             ),

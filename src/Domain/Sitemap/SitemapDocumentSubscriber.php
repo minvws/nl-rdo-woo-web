@@ -14,6 +14,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
 
+#[AsEventListener]
 readonly class SitemapDocumentSubscriber
 {
     public function __construct(
@@ -22,8 +23,7 @@ readonly class SitemapDocumentSubscriber
     ) {
     }
 
-    #[AsEventListener(event: SitemapPopulateEvent::class)]
-    public function populate(SitemapPopulateEvent $event): void
+    public function __invoke(SitemapPopulateEvent $event): void
     {
         $dossierQuery = $this->dossierRepository->createQueryBuilder('d')
             ->select('d')
@@ -40,7 +40,7 @@ readonly class SitemapDocumentSubscriber
                 $event->getUrlContainer()->addUrl(
                     new UrlConcrete(
                         $event->getUrlGenerator()->generate('app_document_detail', [
-                            'prefix' => $dossier->getDocumentPrefix(),
+                            'documentPrefix' => $dossier->getDocumentPrefix(),
                             'dossierNumber' => $dossier->getDossierNumber(),
                             'documentNumber' => $document->getDocumentNumber(),
                         ], UrlGeneratorInterface::ABSOLUTE_URL),

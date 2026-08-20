@@ -1,0 +1,11 @@
+/*
+ * Tenant-specific overrides of theme variables for minvws. Every tenant has
+ * a stylesheet so it can be loaded unconditionally (see
+ * templates/public/base.html.twig). The --tenant marker keeps the built file
+ * non-empty: Vite drops empty CSS assets, which breaks the entrypoint
+ * mapping of vite-plugin-symfony.
+ */
+
+:root {
+    --tenant: 'minvws';
+}

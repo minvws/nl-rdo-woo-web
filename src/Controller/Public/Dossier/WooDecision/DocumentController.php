@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\DocumentViewFactory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
@@ -24,6 +25,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Webmozart\Assert\Assert;
 
 class DocumentController extends AbstractController
 {
@@ -33,29 +36,30 @@ class DocumentController extends AbstractController
         private readonly WooDecisionViewFactory $wooDecisionViewFactory,
         private readonly DocumentViewFactory $documentViewFactory,
         private readonly DossierFileViewFactory $dossierFileViewFactory,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/dossier/{prefix}/{dossierNumber}/document/{documentNumber}', name: 'app_document_detail', methods: ['GET'])]
+    #[Route('/dossier/{documentPrefix}/{dossierNumber}/document/{documentNumber}', name: 'app_document_detail', methods: ['GET'])]
     public function detail(
-        #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
-        #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(prefix, dossierNumber, documentNumber)')] Document $document,
+        #[ValueResolver('dossierWithAccessCheck')] WooDecision $wooDecision,
+        #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(documentPrefix, dossierNumber, documentNumber)')] Document $document,
         Breadcrumbs $breadcrumbs,
         Request $request,
     ): Response {
         $this->denyAccessUnlessGranted(DossierVoter::VIEW, $document);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('global.decision', 'app_woodecision_detail', [
-            'prefix' => $dossier->getDocumentPrefix(),
-            'dossierNumber' => $dossier->getDossierNumber(),
+        $breadcrumbs->addRouteItem($this->getPublicationReason($wooDecision), 'app_woodecision_detail', [
+            'documentPrefix' => $wooDecision->getDocumentPrefix(),
+            'dossierNumber' => $wooDecision->getDossierNumber(),
         ]);
         $breadcrumbs->addItem('global.document');
 
         /** @var PaginationInterface<array-key,Document> $threadDocPaginator */
         $threadDocPaginator = $this->paginator->paginate(
-            $this->documentRepository->getRelatedDocumentsByThread($dossier, $document),
+            $this->documentRepository->getRelatedDocumentsByThread($wooDecision, $document),
             $request->query->getInt('pp', 1),
             100,
             [
@@ -67,7 +71,7 @@ class DocumentController extends AbstractController
 
         /** @var PaginationInterface<array-key,Document> $familyDocPaginator */
         $familyDocPaginator = $this->paginator->paginate(
-            $this->documentRepository->getRelatedDocumentsByFamily($dossier, $document),
+            $this->documentRepository->getRelatedDocumentsByFamily($wooDecision, $document),
             $request->query->getInt('fp', 1),
             100,
             [
@@ -78,36 +82,44 @@ class DocumentController extends AbstractController
         );
 
         return $this->render('public/dossier/woo-decision/document/details.html.twig', [
-            'dossier' => $this->wooDecisionViewFactory->make($dossier),
+            'dossier' => $this->wooDecisionViewFactory->make($wooDecision),
             'document' => $this->documentViewFactory->make($document),
             'thread' => $threadDocPaginator,
             'family' => $familyDocPaginator,
             'file' => $this->dossierFileViewFactory->make(
-                $dossier,
+                $wooDecision,
                 $document,
                 DossierFileType::DOCUMENT,
             ),
             'family_search_url' => $this->generateUrl(
                 'app_search',
                 [
-                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($dossier)],
+                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($wooDecision)],
                     FacetKey::FAMILY->getParamName() => [$document->getFamilyId()],
                 ],
             ),
             'thread_search_url' => $this->generateUrl(
                 'app_search',
                 [
-                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($dossier)],
+                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($wooDecision)],
                     FacetKey::THREAD->getParamName() => [$document->getThreadId()],
                 ],
             ),
             'referred_search_url' => $this->generateUrl(
                 'app_search',
                 [
-                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($dossier)],
+                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($wooDecision)],
                     FacetKey::REFERRED_DOCUMENT_NUMBER->getParamName() => [$document->getDocumentNumber()],
                 ],
             ),
         ]);
+    }
+
+    private function getPublicationReason(WooDecision $dossier): string
+    {
+        $publicationReason = $dossier->getPublicationReason();
+        Assert::isInstanceOf($publicationReason, PublicationReason::class);
+
+        return $publicationReason->trans($this->translator);
     }
 }

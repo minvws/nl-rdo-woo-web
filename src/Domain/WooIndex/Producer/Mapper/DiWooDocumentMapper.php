@@ -54,6 +54,7 @@ final readonly class DiWooDocumentMapper
             DossierType::COMPLAINT_JUDGEMENT => InformatieCategorie::c_a870c43d,
             DossierType::OTHER_PUBLICATION => InformatieCategorie::c_aab6bfc7,
             DossierType::ADVICE, DossierType::REQUEST_FOR_ADVICE => InformatieCategorie::c_99a836c7,
+            DossierType::DRAFT_DECISION => InformatieCategorie::c_759721e2,
         };
     }
 }

@@ -71,7 +71,7 @@ class OrganisationTest extends UnitTestCase
         $organisation->addDocumentPrefix($archivedPrefix);
 
         self::assertEquals([$activePrefix], $organisation->getDocumentPrefixes()->toArray());
-        self::assertEquals(['foo'], $organisation->getPrefixesAsArray());
+        self::assertEquals(['foo'], $organisation->getDocumentPrefixesAsArray());
     }
 
     public function testRemoveDocumentPrefix(): void

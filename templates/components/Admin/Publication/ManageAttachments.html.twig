@@ -1,6 +1,14 @@
+{% set isOptional = (minLength | default(0)) is same as (0) %}
+
 <div class="bhr-form-row">
-    <h2 class="bhr-label">{{ title | default('Bijlagen') }} <span class="bhr-optional"><span class="sr-only">(</span>optioneel<span class="sr-only">)</span></span></h2>
-    <p class="bhr-form-help">{{ helpText }}</p>
+    <h2 class="bhr-label">{{ title | default('Bijlagen') }}{% if isOptional %} <span class="bhr-optional"><span class="sr-only">(</span>optioneel<span class="sr-only">)</span></span>{% endif %}</h2>
+    {% if formField is defined %}
+        {{ form_errors(formField) }}
+        {% do formField.setRendered %}
+    {% endif %}
+    {% if helpText | default('') is not empty %}
+        <p class="bhr-form-help">{{ helpText }}</p>
+    {% endif %}
 
     <div data-e2e-name="attachments" {{ vue_component('GenericController', {
         componentName: 'PublicationFiles',
@@ -14,6 +22,7 @@
         groundOptions: grounds,
         languageOptions: languages,
         maxLength: maxLength | default(50),
+        readableFileType: readableFileType | default(null),
         uploadEndpoint: uploadEndpoint | default(null),
         uploadGroupId: "attachments",
     }) }}>

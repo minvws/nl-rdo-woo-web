@@ -24,7 +24,7 @@ readonly class LoginLogger
     ) {
     }
 
-    #[AsEventListener(event: LogoutEvent::class)]
+    #[AsEventListener]
     public function onLogout(LogoutEvent $event): void
     {
         /** @var User|null $user */
@@ -38,7 +38,7 @@ readonly class LoginLogger
         ]);
     }
 
-    #[AsEventListener(event: LoginSuccessEvent::class)]
+    #[AsEventListener]
     public function onAuthenticationSuccess(LoginSuccessEvent $event): void
     {
         $user = $event->getUser();
@@ -51,7 +51,7 @@ readonly class LoginLogger
         $event->setResponse(new RedirectResponse($landingUrl));
     }
 
-    #[AsEventListener(event: LoginFailureEvent::class)]
+    #[AsEventListener]
     public function onAuthenticationFailure(LoginFailureEvent $event): void
     {
         $exception = $event->getException();

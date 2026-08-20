@@ -38,8 +38,8 @@
                             {% endfor %}
                         </td>
                         <td>
-                            {% for prefix in organisation.documentPrefixes %}
-                                {{ prefix.prefix }}{% if not loop.last %},{% endif %}
+                            {% for documentPrefix in organisation.documentPrefixes %}
+                                {{ documentPrefix.prefix }}{% if not loop.last %},{% endif %}
                             {% endfor %}
                         </td>
                     </tr>

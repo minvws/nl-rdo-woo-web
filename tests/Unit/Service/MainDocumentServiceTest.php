@@ -28,7 +28,7 @@ class MainDocumentServiceTest extends UnitTestCase
 
         $validator = Mockery::mock(ValidatorInterface::class);
         $validator->expects('validate')
-            ->with($mainDocument)
+            ->with($mainDocument, null, null)
             ->andReturn($constraintViolationList);
 
         $mainDocumentService = new MainDocumentService($entityManager, $validator);
@@ -47,7 +47,7 @@ class MainDocumentServiceTest extends UnitTestCase
 
         $validator = Mockery::mock(ValidatorInterface::class);
         $validator->expects('validate')
-            ->with($mainDocument)
+            ->with($mainDocument, null, null)
             ->andReturn($constraintViolationList);
 
         $mainDocumentService = new MainDocumentService($entityManager, $validator);

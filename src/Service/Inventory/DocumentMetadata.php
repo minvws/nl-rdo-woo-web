@@ -8,8 +8,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\SourceType;
 use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\ValueObject\DocumentId;
-use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 
 readonly class DocumentMetadata
 {
@@ -29,7 +29,7 @@ readonly class DocumentMetadata
         /** @var array<string> */
         private array $links,
         private ?string $remark,
-        private ?DocumentMatter $matter,
+        private PublicationContext $publicationContext,
         /** @var array<string> */
         private array $refersTo,
     ) {
@@ -111,9 +111,9 @@ readonly class DocumentMetadata
         return $this->remark;
     }
 
-    public function getMatter(): ?DocumentMatter
+    public function getPublicationContext(): PublicationContext
     {
-        return $this->matter;
+        return $this->publicationContext;
     }
 
     /**

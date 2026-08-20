@@ -10,6 +10,6 @@ class ElasticConfigFactory
 {
     public static function default(): ElasticConfig
     {
-        return new ElasticConfig('woopie', 'woopie-read', 'woopie-write', 'woopie-suggestions', 'worker_stats');
+        return new ElasticConfig('woopie', 'woopie-read', 'woopie-write', 'woopie-suggestions');
     }
 }

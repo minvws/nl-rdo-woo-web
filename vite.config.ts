@@ -26,8 +26,10 @@ export default defineConfig({
       input: {
         admin: './assets/js/admin/index.ts',
         public: './assets/js/public/index.ts',
-        'worker-charts': './assets/js/misc/charts.js',
         'api-docs': './assets/api-docs/index.html',
+        'tenant-minvws-public': './tenants/minvws/assets/styles/public.css',
+        'tenant-minfin-public': './tenants/minfin/assets/styles/public.css',
+        'tenant-minbuza-public': './tenants/minbuza/assets/styles/public.css',
       },
       output: {
         assetFileNames: () => {

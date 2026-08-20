@@ -21,6 +21,9 @@ use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecisionAttachment;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
@@ -133,6 +136,28 @@ class ElasticDocumentTypeTest extends UnitTestCase
                 ),
                 'expectedType' => ElasticDocumentType::ATTACHMENT,
             ],
+            'DraftDecision' => [
+                'entity' => new DraftDecision(),
+                'expectedType' => ElasticDocumentType::DRAFT_DECISION,
+            ],
+            'DraftDecisionMainDocument' => [
+                'entity' => new DraftDecisionMainDocument(
+                    new DraftDecision(),
+                    PlainDate::today(),
+                    AttachmentType::ADVICE,
+                    AttachmentLanguage::NLD,
+                ),
+                'expectedType' => ElasticDocumentType::DRAFT_DECISION_MAIN_DOCUMENT,
+            ],
+            'DraftDecisionAttachment' => [
+                'entity' => new DraftDecisionAttachment(
+                    new DraftDecision(),
+                    PlainDate::today(),
+                    AttachmentType::ADVICE,
+                    AttachmentLanguage::NLD,
+                ),
+                'expectedType' => ElasticDocumentType::ATTACHMENT,
+            ],
         ];
     }
 
@@ -221,6 +246,18 @@ class ElasticDocumentTypeTest extends UnitTestCase
             ],
             'RequestForAdviceAttachment' => [
                 'entityClass' => RequestForAdviceAttachment::class,
+                'expectedType' => ElasticDocumentType::ATTACHMENT,
+            ],
+            'DraftDecision' => [
+                'entityClass' => DraftDecision::class,
+                'expectedType' => ElasticDocumentType::DRAFT_DECISION,
+            ],
+            'DraftDecisionMainDocument' => [
+                'entityClass' => DraftDecisionMainDocument::class,
+                'expectedType' => ElasticDocumentType::DRAFT_DECISION_MAIN_DOCUMENT,
+            ],
+            'DraftDecisionAttachment' => [
+                'entityClass' => DraftDecisionAttachment::class,
                 'expectedType' => ElasticDocumentType::ATTACHMENT,
             ],
         ];
@@ -344,6 +381,10 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'investigation-report' => [
                 'input' => DossierType::INVESTIGATION_REPORT,
                 'expectedType' => ElasticDocumentType::INVESTIGATION_REPORT,
+            ],
+            'draft-decision' => [
+                'input' => DossierType::DRAFT_DECISION,
+                'expectedType' => ElasticDocumentType::DRAFT_DECISION,
             ],
         ];
     }

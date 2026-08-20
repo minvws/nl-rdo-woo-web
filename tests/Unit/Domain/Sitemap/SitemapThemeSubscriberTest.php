@@ -67,6 +67,6 @@ class SitemapThemeSubscriberTest extends UnitTestCase
             $urlGenerator,
         );
 
-        $this->subscriber->populate($event);
+        $this->subscriber->__invoke($event);
     }
 }

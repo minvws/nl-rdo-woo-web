@@ -23,10 +23,12 @@ use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\Validator\Immutable;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
@@ -56,12 +58,21 @@ use function strtolower;
     DossierType::OTHER_PUBLICATION->value => OtherPublication::class,
     DossierType::ADVICE->value => Advice::class,
     DossierType::REQUEST_FOR_ADVICE->value => RequestForAdvice::class,
+    DossierType::DRAFT_DECISION->value => DraftDecision::class,
 ])]
 #[ORM\UniqueConstraint(name: 'dossier_unique_index', columns: ['dossier_number', 'document_prefix'])]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(
     fields: ['dossierNumber', 'documentPrefix'],
+    message: 'dossier.dossier_number_not_unique.display_at_reference_field',
     entityClass: AbstractDossier::class,
+    errorPath: 'dossierNumber',
+    groups: [
+        DossierValidationGroup::DETAILS->value,
+        DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
+        DossierValidationGroup::WORKFLOW_PUBLISH->value,
+    ],
 )]
 #[ORM\UniqueConstraint(name: 'dossier_unique_external_id', columns: ['external_id', 'organisation_id'])]
 #[UniqueEntity(
@@ -97,6 +108,7 @@ abstract class AbstractDossier implements HasId
             DossierValidationGroup::WORKFLOW_PUBLISH->value,
         ],
     )]
+    #[Immutable(groups: [DossierValidationGroup::PUBLICATION_LOCKED->value])]
     protected string $dossierNumber = '';
 
     #[ORM\Column(type: DossierTitleType::NAME, length: 500)]
@@ -175,6 +187,7 @@ abstract class AbstractDossier implements HasId
         DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
         DossierValidationGroup::WORKFLOW_PUBLISH->value,
     ])]
+    #[Immutable(groups: [DossierValidationGroup::PUBLICATION_LOCKED->value])]
     protected string $documentPrefix = '';
 
     #[ORM\Column(type: PlainDateType::NAME, nullable: true)]
@@ -187,6 +200,7 @@ abstract class AbstractDossier implements HasId
     #[PlainDateBeforeOrEqual('today', groups: [
         DossierValidationGroup::WORKFLOW_PUBLISH->value,
     ])]
+    #[Immutable(groups: [DossierValidationGroup::PUBLICATION_LOCKED->value])]
     protected ?PlainDate $publicationDate = null;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: false)]
@@ -255,6 +269,11 @@ abstract class AbstractDossier implements HasId
 
     public function setTitle(DossierTitle $title): self
     {
+        // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found
+        if (isset($this->title) && $this->title->equalTo($title)) {
+            return $this;
+        }
+
         $this->title = $title;
 
         return $this;

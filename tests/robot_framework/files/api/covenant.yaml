@@ -154,3 +154,72 @@ testcases:
     - name: Verify HAL links
       keyword:
         name: Verify HAL Links Are Reachable
+
+- title: Update dossier metadata after publish
+  steps:
+    - name: Create dossier
+      request: {}
+    - name: Sync locked dates before resend
+      keyword:
+        name: Sync Locked Dates From Server
+        args:
+          - covenant
+    - name: Change title before resend
+      keyword:
+        name: Update Previous Request Body
+        args:
+          - title
+          - Updated title after publish
+    - name: Re-send with updated title while published
+      reuse_previous_request: true
+      request:
+        files:
+          mainDocument:
+          attachments: []
+        expected_publication_status: published
+
+- title: Adding an attachment to a published dossier is allowed
+  steps:
+    - name: Create dossier
+      request: {}
+    - name: Sync locked dates before resend
+      keyword:
+        name: Sync Locked Dates From Server
+        args:
+          - covenant
+    - name: Add an extra attachment before resend
+      keyword:
+        name: Add Generated Attachment To Previous Request Body
+        args:
+          - - c_c2f56984
+    - name: Re-send with an extra attachment while published
+      reuse_previous_request: true
+      request:
+        files:
+          mainDocument:
+          attachments: []
+        expected_response_status: 200
+    - name: Upload the new attachment's file
+      keyword:
+        name: Upload Generated Attachment
+        args:
+          - covenant
+
+- title: Removing an attachment from a published dossier is rejected
+  skip: false
+  steps:
+    - name: Create dossier
+      request: {}
+    - name: Remove attachments before resend
+      keyword:
+        name: Update Previous Request Body
+        args:
+          - attachments
+          - []
+    - name: Re-send with no attachments while published
+      reuse_previous_request: true
+      request:
+        files:
+          mainDocument:
+          attachments: []
+        expected_response_status: 422

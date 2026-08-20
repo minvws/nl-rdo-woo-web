@@ -11,6 +11,6 @@
     https://x.y.z
 - 'http://foo.bar/test-url'
 - ja
-- a;matterB_b
+- PREFIX-matterA-a;PREFIX-matterB-b
 - 'http://foo.bar/test-url-A;http://foo.bar/test-url-B'
 - 'Foo Bar'

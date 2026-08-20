@@ -19,6 +19,7 @@
         {% endif %}
 
         {{ vite_entry_link_tags('public') }}
+        {{ vite_entry_link_tags('tenant-' ~ TENANT_ID ~ '-public') }}
 
         {{ vite_entry_script_tags('public', { attr: { defer: false } }) }}
 

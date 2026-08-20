@@ -39,6 +39,7 @@ use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportMainD
 use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Count;
@@ -152,7 +153,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                             [
-                                'prefix' => $annualReport->getDocumentPrefix(),
+                                'documentPrefix' => $annualReport->getDocumentPrefix(),
                                 'dossierNumber' => $annualReport->getDossierNumber(),
                                 'type' => DossierFileType::MAIN_DOCUMENT->value,
                                 'id' => $annualReportMainDocument->getId(),
@@ -188,7 +189,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                                 [
-                                    'prefix' => $annualReport->getDocumentPrefix(),
+                                    'documentPrefix' => $annualReport->getDocumentPrefix(),
                                     'dossierNumber' => $annualReport->getDossierNumber(),
                                     'type' => DossierFileType::ATTACHMENT->value,
                                     'id' => $annualReportAttachment->getId(),
@@ -560,10 +561,13 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
-            'status' => $this->getFaker()->randomElement(DossierStatus::nonConceptCases()),
+            'status' => DossierStatus::SCHEDULED,
         ]);
         AnnualReportMainDocumentFactory::createOne(['dossier' => $annualReport]);
-        AnnualReportAttachmentFactory::createOne(['dossier' => $annualReport]);
+        AnnualReportAttachmentFactory::createOne([
+            'dossier' => $annualReport,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         self::assertDatabaseHas(AnnualReport::class, [
             'title' => (string) $annualReport->getTitle(),
@@ -1005,5 +1009,56 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
 
         self::assertDatabaseCount(NoticeNotPublic::class, 0);
         self::assertDatabaseCount(AnnualReportMainDocument::class, 1);
+    }
+
+    public function testUpdatePublishedAnnualReportIgnoresPublicationDateChange(): void
+    {
+        $newTitle = 'Updated title for published annual report';
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $annualReport = AnnualReportFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::PUBLISHED,
+            'publicationDate' => PlainDate::create('2025-01-02'),
+        ]);
+        $mainDocument = AnnualReportMainDocumentFactory::createOne(['dossier' => $annualReport]);
+        $attachment = AnnualReportAttachmentFactory::createOne([
+            'dossier' => $annualReport,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $data = [
+            'title' => $newTitle,
+            'dossierNumber' => $annualReport->getDossierNumber(),
+            'year' => (int) $annualReport->getDateFrom()?->format('Y'),
+            'publicationDate' => '2025-02-02',
+            'summary' => $annualReport->getSummary(),
+            'departmentId' => $department->getId(),
+            'subjectId' => $annualReport->getSubject()?->getId(),
+            'mainDocument' => [
+                'fileName' => $mainDocument->getFileInfo()->getName(),
+                'formalDate' => $mainDocument->getFormalDate()->format('Y-m-d'),
+                'type' => $mainDocument->getType()->value,
+                'language' => $mainDocument->getLanguage()->value,
+            ],
+            'attachments' => [
+                [
+                    'fileName' => $attachment->getFileInfo()->getName(),
+                    'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
+                    'language' => $attachment->getLanguage(),
+                    'type' => $attachment->getType(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
+                ],
+            ],
+        ];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $annualReport), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+        self::assertJsonContains(['publicationDate' => '2025-01-02', 'title' => $newTitle]);
+
+        self::assertDatabaseHas(AnnualReport::class, ['title' => $newTitle]);
     }
 }

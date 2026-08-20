@@ -230,6 +230,11 @@
         "label": "complaint_judgement"
     },
     {
+        "type": "AttachmentType",
+        "value": "c_10eb451d",
+        "label": "policy_document"
+    },
+    {
         "type": "AttachmentTypeBranch",
         "label": "branch.citizen_document",
         "subbranch": null,

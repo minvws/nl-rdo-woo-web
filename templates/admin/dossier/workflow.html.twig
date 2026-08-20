@@ -12,7 +12,7 @@
             {% if not step.accessible or dossier.dossierNumber is empty  or dossier.documentPrefix is empty %}
                 {% set stepUrl = '' %}
             {% else %}
-                {% set stepUrl = dossier.dossierNumber ? path(step.routeName, { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) : '' %}
+                {% set stepUrl = dossier.dossierNumber ? path(step.routeName, { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) : '' %}
             {% endif %}
 
             {% if isCurrentStep %}

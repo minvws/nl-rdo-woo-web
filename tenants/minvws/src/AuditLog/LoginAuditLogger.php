@@ -18,8 +18,6 @@ use Symfony\Component\Security\Http\Event\LogoutEvent;
 use function hash;
 use function substr;
 
-#[AsEventListener(event: LogoutEvent::class, method: 'onLogout')]
-#[AsEventListener(event: LoginFailureEvent::class, method: 'onAuthenticationFailure')]
 readonly class LoginAuditLogger
 {
     public function __construct(
@@ -27,6 +25,7 @@ readonly class LoginAuditLogger
     ) {
     }
 
+    #[AsEventListener]
     public function onLogout(LogoutEvent $event): void
     {
         /** @var User|null $user */
@@ -41,6 +40,7 @@ readonly class LoginAuditLogger
             ->withSource('woo'));
     }
 
+    #[AsEventListener]
     public function onAuthenticationFailure(LoginFailureEvent $event): void
     {
         $exception = $event->getException();

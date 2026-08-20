@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\Covenant;
 
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantRepository;
 use Shared\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
@@ -24,7 +24,7 @@ final class CovenantRepositoryTest extends SharedWebTestCase
             ->getSearchResultViewModel(
                 $covenant->getDocumentPrefix(),
                 $covenant->getDossierNumber(),
-                ApplicationMode::PUBLIC,
+                ApplicationId::PUBLIC,
             );
 
         self::assertInstanceOf(CovenantSearchResult::class, $result);

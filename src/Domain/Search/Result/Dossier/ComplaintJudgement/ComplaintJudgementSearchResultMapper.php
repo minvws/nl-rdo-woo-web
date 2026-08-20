@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Shared\Domain\Search\Result\Dossier\ComplaintJudgement;
 
 use MinVWS\TypeArray\TypeArray;
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementRepository;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use Shared\Domain\Search\Result\ResultEntryInterface;
 use Shared\Domain\Search\Result\SearchResultMapperInterface;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 readonly class ComplaintJudgementSearchResultMapper implements SearchResultMapperInterface
 {
@@ -25,13 +25,13 @@ readonly class ComplaintJudgementSearchResultMapper implements SearchResultMappe
         return $type === ElasticDocumentType::COMPLAINT_JUDGEMENT;
     }
 
-    public function map(TypeArray $hit, ApplicationMode $mode = ApplicationMode::PUBLIC): ?ResultEntryInterface
+    public function map(TypeArray $hit, ApplicationId $applicationId = ApplicationId::PUBLIC): ?ResultEntryInterface
     {
         return $this->baseMapper->map(
             $hit,
             $this->repository,
             ElasticDocumentType::COMPLAINT_JUDGEMENT,
-            mode: $mode,
+            applicationId: $applicationId,
         );
     }
 }

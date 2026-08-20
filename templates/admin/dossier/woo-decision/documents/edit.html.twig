@@ -12,14 +12,14 @@
                     {% if dossier.hasProductionReport  %}
                     <a
                         class="bhr-btn-filled-primary mr-2"
-                        href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, type: constant('Shared\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
+                        href="{{ path('app_admin_dossier_file_download', {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, type: constant('Shared\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
                     >
                         {{ 'admin.dossiers.download_report' | trans }}
 
                         <twig:Admin:Button:Icon isRight="{{ true }}" name="download" />
                     </a>
                     {% endif %}
-                    <a class="bhr-btn-bordered-primary mr-2" href="{{ path('app_admin_dossier_woodecision_documents_edit_replace_inventory', { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, replace: 1 }) }}" data-e2e-name="replace-report">
+                    <a class="bhr-btn-bordered-primary mr-2" href="{{ path('app_admin_dossier_woodecision_documents_edit_replace_inventory', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, replace: 1 }) }}" data-e2e-name="replace-report">
                         {{ 'admin.dossiers.replace_report' | trans }}
                     </a>
 
@@ -50,7 +50,7 @@
                         <caption class="sr-only">{{ 'admin.dossiers.documents_sortable' | trans }}</caption>
                         <thead>
                             <tr>
-                                {{ knp_pagination_sortable(pagination, 'global.document_number' | trans, 'doc.documentNumber', { thClassName: 'w-40' }, {}, 'admin/layout/sort.html.twig') }}
+                                {{ knp_pagination_sortable(pagination, 'global.id' | trans | upper, 'doc.documentNumber', { thClassName: 'w-32' }, {}, 'admin/layout/sort.html.twig') }}
                                 {{ knp_pagination_sortable(pagination, 'global.document_name' | trans, 'doc.fileInfo.name', { thClassName: 'w-2/5' }, {}, 'admin/layout/sort.html.twig') }}
                                 {{ knp_pagination_sortable(pagination, 'global.document_judgement' | trans, 'doc.judgement', {}, {}, 'admin/layout/sort.html.twig') }}
                                 {{ knp_pagination_sortable(pagination, 'global.document_particular' | trans, 'hasNotice', {}, {}, 'admin/layout/sort.html.twig') }}
@@ -60,7 +60,7 @@
                             {% for document in pagination %}
                                 <tr>
                                     <td>
-                                        <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_woodecision_document', {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, documentNumber: document.documentNumber}) }}" data-e2e-name="doc-link">
+                                        <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_woodecision_document', {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, documentNumber: document.documentNumber}) }}" data-e2e-name="doc-link">
                                             {{ document.documentId }}
                                         </a>
                                     </td>

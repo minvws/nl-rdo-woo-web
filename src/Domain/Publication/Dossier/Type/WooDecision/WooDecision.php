@@ -24,6 +24,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\Dossier\Validator\Immutable;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteAttachments;
 use Shared\Domain\Publication\Dossier\Validator\NoIncompleteDocuments;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
@@ -105,6 +106,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
     #[PlainDateBeforeOrEqual('today', groups: [
         DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
     ])]
+    #[Immutable(groups: [DossierValidationGroup::PUBLICATION_LOCKED->value])]
     private ?PlainDate $previewDate = null;
 
     #[ORM\OneToOne(mappedBy: 'dossier', targetEntity: ProductionReportProcessRun::class, cascade: ['remove'])]
@@ -117,6 +119,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
         DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
         DossierValidationGroup::WORKFLOW_PUBLISH->value,
     ])]
+    #[Immutable(groups: [DossierValidationGroup::PUBLICATION_LOCKED->value])]
     private ?DecisionType $decision = null;
 
     #[ORM\Column(type: PlainDateType::NAME, nullable: true)]

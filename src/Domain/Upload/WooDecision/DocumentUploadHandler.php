@@ -8,14 +8,14 @@ use Shared\Domain\Upload\Event\UploadValidatedEvent;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsEventListener(event: UploadValidatedEvent::class, method: 'onUploadValidated')]
+#[AsEventListener]
 final readonly class DocumentUploadHandler
 {
     public function __construct(private ProcessUploadedDocumentAction $processUploadedDocumentAction)
     {
     }
 
-    public function onUploadValidated(UploadValidatedEvent $event): void
+    public function __invoke(UploadValidatedEvent $event): void
     {
         $uploadEntity = $event->uploadEntity;
         if ($uploadEntity->getUploadGroupId() !== UploadGroupId::WOO_DECISION_DOCUMENTS) {

@@ -18,7 +18,7 @@ This procedure is intended for upgrading the PHP version used in the Docker envi
 - Create a new feature branch:
 
 ```bash
-git checkout -b upgrade/php-image-0.9.2
+git checkout -b upgrade/php-image-<version>
 ```
 
 ---
@@ -26,13 +26,17 @@ git checkout -b upgrade/php-image-0.9.2
 ## 3. Adjust the Dockerfile
 
 - Open: `docker/php/Dockerfile`
-- Change the image line, for example:
+- Change the `FROM php:...` line. It pins a full tag, of the shape:
 
 ```Dockerfile
-FROM php:8.4.17-apache-trixie
+FROM php:<major>.<minor>.<patch>-apache-<debian-codename>
 ```
 
-Adjust this to the desired version/tag. **Be sure to include the full tag, including the patch version.**
+Adjust this to the desired version/tag. **Be sure to include the full tag, including the patch version.** See the
+[official PHP image tags](https://hub.docker.com/_/php/tags) for what is available.
+
+> This guide deliberately does not name concrete versions — they go stale. Check `docker/php/Dockerfile`,
+> `compose.yml` and `composer.json` for what is actually pinned right now.
 
 ---
 
@@ -50,7 +54,7 @@ task build:php
 
 ## 5. Set PHP_IMAGE_TAG
 
-- Set a unique tag for the new image (for example, dev or 0.9.2) as an environment variable:
+- Set a unique tag for the new image (for example `dev`, or the new image version) as an environment variable:
 
 ```bash
 export PHP_IMAGE_TAG=dev
@@ -90,29 +94,33 @@ php -v
 **Output should match the desired version, e.g.**
 
 ```bash
-PHP 8.4.17 (cli) (built: Feb  3 2026 ...)
+PHP <version> (cli) (built: ...)
 ...
-Zend Engine v4.4.17 ...
+Zend Engine <version> ...
 ```
 
 ---
 
 ## 8. Update compose.yml
 
-- Adjust the PHP image tag in `compose.yml` (or similar compose config) so it points to the new image:
+- Adjust the PHP image tag in `compose.yml` so it points to the new image. There is a single YAML anchor, reused by the
+  `public`, `admin`, `publication_api`, `worker_minvws` and `worker_minfin` services, so only one line changes:
 
 ```yml
-image: registry.example.com/your-php-image:0.9.2
+image: &PHP_IMAGE "ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-<image-version>}"
 ```
+
+The default after `:-` is the tag to bump. `PHP_IMAGE_TAG` lets you test another tag without editing the file.
 
 ---
 
 ## 9. Bump & Update composer.json
 
-- Set the correct PHP version in `composer.json`:
+- Set the correct PHP version constraint in `composer.json`, if the minimum has changed. It is a caret constraint on the
+  `php` key:
 
 ```json
-"php": ">=8.4"
+"php": "^<major>.<minor>"
 ```
 
 - Run an update (note the `-W` for dependency tree!):
@@ -128,7 +136,23 @@ composer update -W
 ## 10. Run Rector for Code Style and Language Features
 
 Run Rector to automatically update your codebase to use new code styles and language features available in the new PHP version. This helps ensure
-compatibility and leverages improvements in the language.
+compatibility and leverages improvements in the language. From inside the container (`task shell`):
+
+```bash
+composer rector-preview   # dry run, shows what would change
+composer rector           # apply the changes
+```
+
+`rector.php` calls `->withPhpSets()` without arguments, which means Rector takes the target PHP version from the `php`
+constraint in `composer.json`. So do step 9 before this step, otherwise Rector will still be working against the old
+version.
+
+Then re-run the static analysis and code style checks, since a PHP bump often surfaces new findings:
+
+```bash
+composer checktype    # PHPStan
+composer checkstyle   # phpcs + php-cs-fixer, --dry-run
+```
 
 ---
 
@@ -145,5 +169,6 @@ Commit all relevant files in the branch:
 ## 12. PR & Trigger Build
 
 - Create a Pull Request.
-- Make sure to trigger the `Build PHP image` with the correct version.
+- Trigger the `Build PHP image` workflow ([.github/workflows/build-php-image.yml](../../.github/workflows/build-php-image.yml))
+  with the correct version, so the new tag exists in ghcr.io before anything tries to pull it.
 - Check that tests pass in CI.

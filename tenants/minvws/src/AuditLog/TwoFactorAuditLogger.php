@@ -12,8 +12,6 @@ use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvents
 use Shared\Service\Security\User;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsEventListener(event: TwoFactorAuthenticationEvents::FAILURE, method: 'onFailure')]
-#[AsEventListener(event: TwoFactorAuthenticationEvents::SUCCESS, method: 'onSuccess')]
 readonly class TwoFactorAuditLogger
 {
     public function __construct(
@@ -21,6 +19,7 @@ readonly class TwoFactorAuditLogger
     ) {
     }
 
+    #[AsEventListener(event: TwoFactorAuthenticationEvents::FAILURE)]
     public function onFailure(TwoFactorAuthenticationEvent $event): void
     {
         /** @var User $user */
@@ -34,6 +33,7 @@ readonly class TwoFactorAuditLogger
         );
     }
 
+    #[AsEventListener(event: TwoFactorAuthenticationEvents::SUCCESS)]
     public function onSuccess(TwoFactorAuthenticationEvent $event): void
     {
         /** @var User $user */

@@ -386,7 +386,19 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 ],
             );
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertMatchesResourceItemJsonSchema(SubjectResource::class);
+        self::assertJsonEquals([
+            'status' => 422,
+            'violations' => [
+                [
+                    'propertyPath' => 'name',
+                    'message' => 'This value should be of type string.',
+                    'code' => 'ba785a8c-82cb-4283-967c-3cf342181b40',
+                ],
+            ],
+            'detail' => 'name: This value should be of type string.',
+            'type' => '/validation_errors/ba785a8c-82cb-4283-967c-3cf342181b40',
+            'title' => 'An error occurred',
+        ]);
     }
 
     // test bug https://github.com/minvws/nl-rdo-woo-web-private/issues/6919

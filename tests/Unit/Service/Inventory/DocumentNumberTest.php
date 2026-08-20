@@ -8,11 +8,9 @@ use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Service\Inventory\DocumentMetadata;
 use Shared\Service\Inventory\DocumentNumber;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
-use Shared\ValueObject\DocumentMatter;
 
 use function strval;
 
@@ -87,21 +85,5 @@ class DocumentNumberTest extends UnitTestCase
                 'expected' => 'pr3f1x-other-d0c1d',
             ],
         ];
-    }
-
-    public function testFromDossierAndDocumentMetadata(): void
-    {
-        $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDocumentPrefix')->andReturn('pr3f1x');
-
-        $matter = DocumentMatter::create('bar');
-        $documentMetadata = Mockery::mock(DocumentMetadata::class);
-        $documentMetadata->expects('getMatter')->andReturn($matter);
-        $documentMetadata->expects('getId')->andReturn(DocumentId::create('foo123'));
-
-        $documentNumber = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
-
-        self::assertEquals('pr3f1x-bar-foo123', $documentNumber->getValue());
-        self::assertEquals($matter, $documentNumber->getMatter());
     }
 }

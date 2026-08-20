@@ -34,13 +34,13 @@ class DocumentsConceptStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/documents/concept/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/woodecision/documents/concept/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_woodecision_documents_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
         Request $request,
     ): Response {
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, StepName::DOCUMENTS);
@@ -115,7 +115,7 @@ class DocumentsConceptStepController extends AbstractController
 
         return $this->redirectToRoute(
             'app_admin_dossier_woodecision_documents_concept',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
     }
 
@@ -125,18 +125,18 @@ class DocumentsConceptStepController extends AbstractController
 
         return $this->redirectToRoute(
             'app_admin_dossier_woodecision_documents_concept',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/documents/concept/inventory-status/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/woodecision/documents/concept/inventory-status/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_woodecision_documents_concept_inventory_status',
         methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function inventoryProcessStatus(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
     ): Response {
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, StepName::DOCUMENTS);
         if (! $wizardStatus->isCurrentStepAccessibleInConceptMode()) {

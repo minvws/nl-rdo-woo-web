@@ -7,12 +7,12 @@ namespace Shared\Tests\Unit\Domain\Search\Result;
 use MinVWS\TypeArray\TypeArray;
 use Mockery;
 use Mockery\MockInterface;
+use Shared\ApplicationId;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Result\ResultEntryInterface;
 use Shared\Domain\Search\Result\ResultFactory;
 use Shared\Domain\Search\Result\SearchResultException;
 use Shared\Domain\Search\Result\SearchResultMapperInterface;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Unit\UnitTestCase;
 
 class ResultFactoryTest extends UnitTestCase
@@ -34,14 +34,14 @@ class ResultFactoryTest extends UnitTestCase
         $hit = Mockery::mock(TypeArray::class);
         $hit->expects('getString')->with('[fields][type][0]')->andReturn(ElasticDocumentType::WOO_DECISION->value);
 
-        $mode = ApplicationMode::ADMIN;
+        $applicationId = ApplicationId::ADMIN;
 
         $result = Mockery::mock(ResultEntryInterface::class);
         $this->firstMapper->expects('supports')->with(ElasticDocumentType::WOO_DECISION)->andReturnFalse();
         $this->secondMapper->expects('supports')->with(ElasticDocumentType::WOO_DECISION)->andReturnTrue();
-        $this->secondMapper->expects('map')->with($hit, $mode)->andReturn($result);
+        $this->secondMapper->expects('map')->with($hit, $applicationId)->andReturn($result);
 
-        $this->assertSame($result, $this->factory->map($hit, $mode));
+        $this->assertSame($result, $this->factory->map($hit, $applicationId));
     }
 
     public function testMapThrowsExceptionWhenNoMapperSupportsTheHit(): void
@@ -53,6 +53,6 @@ class ResultFactoryTest extends UnitTestCase
         $this->secondMapper->expects('supports')->with(ElasticDocumentType::WOO_DECISION)->andReturnFalse();
 
         $this->expectException(SearchResultException::class);
-        $this->factory->map($hit, ApplicationMode::PUBLIC);
+        $this->factory->map($hit, ApplicationId::PUBLIC);
     }
 }

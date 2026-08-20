@@ -213,8 +213,11 @@ class Kernel extends BaseKernel
     {
         $parameters = $this->getKernelParametersTrait();
 
-        $parameters['kernel.application_id'] = $this->getApplicationId()->value;
-        $parameters['kernel.tenant_id'] = $this->getTenantId()->value;
+        $parameters['kernel.application_id'] = $this->getApplicationId();
+        $parameters['kernel.application_id_value'] = $this->getApplicationId()->value;
+
+        $parameters['kernel.tenant_id'] = $this->getTenantId();
+        $parameters['kernel.tenant_id_value'] = $this->getTenantId()->value;
 
         // This was introduced to avod issues with the config cache. Every application wrote a different reference to
         // the same file. By setting this private parameter to the build dir, the file is written to a different location

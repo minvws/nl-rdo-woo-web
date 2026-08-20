@@ -39,7 +39,7 @@ final class NoticeNotPublicViewFactoryTest extends UnitTestCase
             ->expects('generate')
             ->with(
                 'app_advice_notice_not_public_detail',
-                Mockery::on(static fn (array $params) => array_key_exists('prefix', $params) && array_key_exists('dossierNumber', $params)),
+                Mockery::on(static fn (array $params) => array_key_exists('documentPrefix', $params) && array_key_exists('dossierNumber', $params)),
             )
             ->andReturn($expectedDetailsUrl = 'http://details.test');
 

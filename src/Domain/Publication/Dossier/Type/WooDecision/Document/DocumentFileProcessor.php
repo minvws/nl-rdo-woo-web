@@ -53,6 +53,7 @@ readonly class DocumentFileProcessor
             return;
         }
 
+        $wasUploaded = $document->getFileInfo()->isUploaded();
         $this->fileStorer->storeForDocument($file, $document, $documentId);
 
         if ($document->isWithdrawn() && $dossier->getStatus()->isPubliclyAvailable()) {
@@ -64,7 +65,7 @@ readonly class DocumentFileProcessor
 
         $this->historyService->addDocumentEntry(
             $document,
-            $document->getFileInfo()->isUploaded() ? 'document_replaced' : 'document_uploaded',
+            $wasUploaded ? 'document_replaced' : 'document_uploaded',
             [
                 'filetype' => $document->getFileInfo()->getType(),
                 'filesize' => Utils::getFileSize($document),

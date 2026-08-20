@@ -7,16 +7,19 @@ namespace Shared\Domain\Publication\Dossier\Type\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Workflow\DossierMarkingStore;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowConfig;
 
 /**
  * @codeCoverageIgnore
+ *
+ * @phpstan-import-type Transitions from DossierWorkflowConfig
+ * @phpstan-import-type Places from DossierWorkflowConfig
+ * @phpstan-import-type Config from DossierWorkflowConfig
  */
-class RequestForAdviceWorkflow
+class RequestForAdviceWorkflow implements DossierWorkflowConfig
 {
-    public const string REQUEST_FOR_ADVICE_WORKFLOW_NAME = 'request_for_advice_workflow';
-
     /**
-     * @return array<string, mixed>
+     * @return Config
      */
     public static function getConfiguration(): array
     {
@@ -33,21 +36,22 @@ class RequestForAdviceWorkflow
     }
 
     /**
-     * @return array<string, array<string, mixed>>
+     * @return Places
      */
     private static function getPlaces(): array
     {
         return [
-            DossierStatus::NEW->value => [],
-            DossierStatus::CONCEPT->value => [],
-            DossierStatus::SCHEDULED->value => [],
-            DossierStatus::PREVIEW->value => [],
-            DossierStatus::PUBLISHED->value => [],
-            DossierStatus::DELETED->value => [],        ];
+            DossierStatus::NEW->value,
+            DossierStatus::CONCEPT->value,
+            DossierStatus::SCHEDULED->value,
+            DossierStatus::PREVIEW->value,
+            DossierStatus::PUBLISHED->value,
+            DossierStatus::DELETED->value,
+        ];
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return Transitions
      */
     private static function getTransitions(): array
     {

@@ -4,7 +4,7 @@
 
 ![Afbeelding toont de tweede stap van de uploadstraat waar plek is voor een toelichting en het uploaden van het hoofddocument en bijlage](img/jaarplan_jaarverslag_2.png)
 
-## Toelichting op de Jaarplan en jaarverslag
+## Toelichting op Jaarplan en jaarverslag
 
 Hier geef je een beknopte beschrijving van de inhoud van het jaarplan/jaarverslag. Deze toelichting verschijnt bovenaan op de
 websit een biedt een overzichtelijke introductie van de belangrijkste punten. Zorg ervoor dat de beschrijving helder en informatief

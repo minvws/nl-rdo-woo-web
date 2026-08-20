@@ -11,7 +11,6 @@ use Shared\Domain\Ingest\Content\ContentExtractOptions;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
-use Shared\Service\Stats\WorkerStatsService;
 
 /**
  * Extractor that will extract content from a single page from a given entity and index it into ES.
@@ -22,7 +21,6 @@ readonly class PageContentExtractor
         private LoggerInterface $logger,
         private SubTypeIndexer $subTypeIndexer,
         private ContentExtractCache $contentExtractCache,
-        private WorkerStatsService $statsService,
     ) {
     }
 
@@ -36,13 +34,10 @@ readonly class PageContentExtractor
                 ->withLocalFile($context->getOptionalLocalPageDocument()),
         );
 
-        $this->statsService->measure(
-            'index.full.entity',
-            fn () => $this->indexPage(
-                $context->getEntity(),
-                $context->getPageNumber(),
-                $extracts,
-            ),
+        $this->indexPage(
+            $context->getEntity(),
+            $context->getPageNumber(),
+            $extracts,
         );
     }
 

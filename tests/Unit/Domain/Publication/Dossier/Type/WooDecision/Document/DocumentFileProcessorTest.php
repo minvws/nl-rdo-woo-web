@@ -190,6 +190,114 @@ final class DocumentFileProcessorTest extends UnitTestCase
         $this->processor->process($this->file, $this->dossier, $documentId);
     }
 
+    public function testProcessAddsUploadedHistoryEntryWhenStoringMarksTheFileAsUploaded(): void
+    {
+        $documentId = DocumentId::create('foo.123');
+        $fileInfo = new FileInfo()->setType('pdf')->setSize(1024);
+
+        $this->documentRepository
+            ->expects('findOneByDossierAndDocumentId')
+            ->with($this->dossier, $documentId)
+            ->andReturn($this->document);
+
+        $this->document
+            ->expects('shouldBeUploaded')
+            ->andReturnTrue();
+
+        $this->document
+            ->expects('isWithdrawn')
+            ->andReturnFalse();
+
+        $this->document
+            ->expects('getFileInfo')
+            ->times(3)
+            ->andReturn($fileInfo);
+
+        $this->dossier
+            ->expects('getStatus')
+            ->andReturn(DossierStatus::PUBLISHED);
+
+        // Storing the file marks the fileInfo as uploaded, which must not influence the history entry.
+        $this->fileStorer
+            ->expects('storeForDocument')
+            ->with($this->file, $this->document, $documentId)
+            ->andReturnUsing(static function () use ($fileInfo): void {
+                $fileInfo->setUploaded(true);
+            });
+
+        $this->ingestService
+            ->expects('ingest')
+            ->with(
+                $this->document,
+                Mockery::on(static fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
+            );
+
+        $this->historyService
+            ->expects('addDocumentEntry')
+            ->with(
+                $this->document,
+                'document_uploaded',
+                [
+                    'filetype' => 'pdf',
+                    'filesize' => '1 KB',
+                ],
+            );
+
+        $this->processor->process($this->file, $this->dossier, $documentId);
+    }
+
+    public function testProcessAddsReplacedHistoryEntryWhenTheFileWasAlreadyUploaded(): void
+    {
+        $documentId = DocumentId::create('foo.123');
+        $fileInfo = new FileInfo()->setType('pdf')->setSize(1024)->setUploaded(true);
+
+        $this->documentRepository
+            ->expects('findOneByDossierAndDocumentId')
+            ->with($this->dossier, $documentId)
+            ->andReturn($this->document);
+
+        $this->document
+            ->expects('shouldBeUploaded')
+            ->andReturnTrue();
+
+        $this->document
+            ->expects('isWithdrawn')
+            ->andReturnFalse();
+
+        $this->document
+            ->expects('getFileInfo')
+            ->times(3)
+            ->andReturn($fileInfo);
+
+        $this->dossier
+            ->expects('getStatus')
+            ->andReturn(DossierStatus::PUBLISHED);
+
+        $this->fileStorer
+            ->expects('storeForDocument')
+            ->with($this->file, $this->document, $documentId);
+
+        $this->ingestService
+            ->expects('ingest')
+            ->with(
+                $this->document,
+                Mockery::on(static fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
+            );
+
+        $this->historyService
+            ->expects('addDocumentEntry')
+            ->with(
+                $this->document,
+                'document_replaced',
+                [
+                    'filetype' => 'pdf',
+                    'filesize' => '1 KB',
+                ],
+            );
+
+        $this->processor->process($this->file, $this->dossier, $documentId);
+    }
+
     public function testProcessWithGivenFileType(): void
     {
         $documentId = DocumentId::create('foo.123');

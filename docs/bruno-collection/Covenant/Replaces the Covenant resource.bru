@@ -22,18 +22,18 @@ body:json {
   {
     "departmentId": "{{departmentId}}",
     "mainDocument": {
-      "fileName": "{{$randomWords}}.pdf",
+      "fileName": "main-document.pdf",
       "formalDate": "2026-02-01",
       "language": "NLD",
       "type": "c_386e74cb",
       "grounds": []
     },
     "subjectId": "{{subjectId}}",
-    "summary": "{{$randomUUID}}",
-    "title": "Bruno {{$randomUUID}}",
+    "summary": "Summary of the covenant",
+    "title": "Bruno - Covenant",
     "attachments": [
       {
-        "fileName": "{{$randomWords}}.pdf",
+        "fileName": "attachment.pdf",
         "formalDate": "2026-02-01",
         "language": "NLD",
         "type": "c_d506b718",
@@ -43,7 +43,7 @@ body:json {
     ],
     "dateFrom": "2025-01-01",
     "dateTo": "2025-06-01",
-    "dossierNumber": "bruno-{{$randomUUID}}",
+    "dossierNumber": "bruno-{{sessionTimestamp}}",
     "publicationDate": "2026-02-01",
     "parties": [
       "Party 1",
@@ -60,10 +60,10 @@ script:pre-request {
 
   const crypto = require('crypto');
 
-  if (!bru.getEnvVar("covenantDossierExternalId")) {
+  if (!bru.getVar("covenantDossierExternalId")) {
     bru.setVar("covenantDossierExternalId", crypto.randomUUID());
   }
-  if (!bru.getEnvVar("covenantAttachmentExternalId")) {
+  if (!bru.getVar("covenantAttachmentExternalId")) {
     bru.setVar("covenantAttachmentExternalId", crypto.randomUUID());
   }
 }

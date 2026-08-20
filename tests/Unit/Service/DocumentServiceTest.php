@@ -15,9 +15,6 @@ use Shared\Service\HistoryService;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Tests\Unit\UnitTestCase;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DocumentServiceTest extends UnitTestCase
 {
@@ -27,7 +24,6 @@ class DocumentServiceTest extends UnitTestCase
     private ThumbnailStorageService&MockInterface $thumbnailStorageService;
     private SubTypeIndexer&MockInterface $subTypeIndexer;
     private HistoryService&MockInterface $historyService;
-    private ValidatorInterface&MockInterface $validator;
 
     protected function setUp(): void
     {
@@ -36,7 +32,6 @@ class DocumentServiceTest extends UnitTestCase
         $this->thumbnailStorageService = Mockery::mock(ThumbnailStorageService::class);
         $this->subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
         $this->historyService = Mockery::mock(HistoryService::class);
-        $this->validator = Mockery::mock(ValidatorInterface::class);
 
         $this->documentService = new DocumentService(
             $this->entityManager,
@@ -44,7 +39,6 @@ class DocumentServiceTest extends UnitTestCase
             $this->thumbnailStorageService,
             $this->subTypeIndexer,
             $this->historyService,
-            $this->validator,
         );
 
         parent::setUp();
@@ -113,24 +107,5 @@ class DocumentServiceTest extends UnitTestCase
         $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($document);
 
         $this->documentService->removeDocumentFromDossier($dossier, $document);
-    }
-
-    public function testValidateDocuments(): void
-    {
-        $documents = [
-            Mockery::mock(Document::class),
-            Mockery::mock(Document::class),
-        ];
-
-        $constraintViolationList = Mockery::mock(ConstraintViolationListInterface::class);
-        $constraintViolationList->expects('count')
-            ->andReturn(1);
-
-        $this->validator->expects('validate')
-            ->with($documents)
-            ->andReturn($constraintViolationList);
-
-        $this->expectException(ValidationFailedException::class);
-        $this->documentService->validateDocuments($documents);
     }
 }

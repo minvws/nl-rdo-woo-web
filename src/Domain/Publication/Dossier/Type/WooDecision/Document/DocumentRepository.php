@@ -169,16 +169,16 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findOneByDossierNumberAndDocumentNumber(string $prefix, string $dossierNumber, string $documentNumber): ?Document
+    public function findOneByDossierNumberAndDocumentNumber(string $documentPrefix, string $dossierNumber, string $documentNumber): ?Document
     {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds')
             ->where('d.documentNumber = :documentNumber')
             ->andWhere('ds.dossierNumber = :dossierNumber')
-            ->andWhere('ds.documentPrefix = :prefix')
+            ->andWhere('ds.documentPrefix = :documentPrefix')
             ->setParameter('documentNumber', $documentNumber)
             ->setParameter('dossierNumber', $dossierNumber)
-            ->setParameter('prefix', $prefix);
+            ->setParameter('documentPrefix', $documentPrefix);
 
         /** @var ?Document */
         return $qb->getQuery()->getOneOrNullResult();
@@ -269,7 +269,20 @@ class DocumentRepository extends ServiceEntityRepository
 
     public function findByDocumentNumber(DocumentNumber $documentNumber): ?Document
     {
-        return $this->findOneBy(['documentNumber' => $documentNumber->getValue()]);
+        return $this->findOneBy(['documentNumber' => $documentNumber->toString()]);
+    }
+
+    /**
+     * @return iterable<int,Document>
+     */
+    public function getDocumentsMissingPublicationContextIterable(): iterable
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.publicationContext IS NULL')
+            ->andWhere('d.documentId IS NOT NULL')
+            ->orderBy('d.id', 'ASC');
+
+        return $qb->getQuery()->toIterable();
     }
 
     /**

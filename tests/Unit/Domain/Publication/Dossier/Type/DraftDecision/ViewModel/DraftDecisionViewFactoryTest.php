@@ -1,0 +1,68 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\DraftDecision\ViewModel;
+
+use Mockery;
+use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\ViewModel\DraftDecisionViewFactory;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierProperties;
+use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFactory;
+use Shared\Domain\Publication\Dossier\ViewModel\Department;
+use Shared\Domain\Publication\Dossier\ViewModel\Subject;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DossierTitle;
+use Shared\ValueObject\PlainDate;
+
+final class DraftDecisionViewFactoryTest extends UnitTestCase
+{
+    private CommonDossierPropertiesViewFactory&MockInterface $commonDossierViewFactory;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->commonDossierViewFactory = Mockery::mock(CommonDossierPropertiesViewFactory::class);
+    }
+
+    public function testMake(): void
+    {
+        $expectedMainDepartment = Mockery::mock(Department::class);
+
+        $this->commonDossierViewFactory
+            ->expects('make')
+            ->andReturn(new CommonDossierProperties(
+                dossierId: $expectedUuid = 'my uuid',
+                dossierNumber: $expectedDossierNumber = 'my dossier number',
+                documentPrefix: $expectedDocumentPrefix = 'my document prefix',
+                isPreview: $expectedIsPreview = true,
+                title: $expectedTitle = DossierTitle::create('my title'),
+                publicationDate: $publicationDate = PlainDate::today(),
+                mainDepartment: $expectedMainDepartment,
+                summary: $expectedSummary = 'my summary',
+                type: $expectedType = DossierType::DRAFT_DECISION,
+                subject: $expectedSubject = Mockery::mock(Subject::class),
+            ));
+
+        $dossier = Mockery::mock(DraftDecision::class);
+        $dossier->expects('getDateFrom')->andReturn($expectedDate = PlainDate::today());
+
+        $result = new DraftDecisionViewFactory($this->commonDossierViewFactory)->make($dossier);
+
+        $this->assertSame($expectedUuid, $result->getDossierId());
+        $this->assertSame($expectedDossierNumber, $result->getDossierNumber());
+        $this->assertSame($expectedDocumentPrefix, $result->getDocumentPrefix());
+        $this->assertSame($expectedIsPreview, $result->isPreview());
+        $this->assertSame($expectedTitle, $result->getTitle());
+        $this->assertSame($publicationDate, $result->getPublicationDate());
+        $this->assertSame($expectedMainDepartment, $result->getMainDepartment());
+        $this->assertSame($expectedSubject, $result->getSubject());
+        $this->assertTrue($result->hasSubject());
+        $this->assertSame($expectedSummary, $result->getSummary());
+        $this->assertSame($expectedType, $result->getType());
+        $this->assertSame($expectedDate, $result->date);
+    }
+}

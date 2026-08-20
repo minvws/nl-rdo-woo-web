@@ -87,6 +87,8 @@ decision_on_objection: beslissing op bezwaar
 judgement_on_wob_woo_request: beslissing op Wob-/Woo-verzoek
 wob_woo_request: Wob-/Woo-verzoek
 
+policy_document: "beleidsdocument"
+
 other: overig
 
 # Talen (TOOI) - vervangt de oude 'dutch' en 'english' sleutels

@@ -6,13 +6,13 @@ namespace Shared\Tests\Unit\Domain\Publication\History;
 
 use Mockery;
 use Mockery\MockInterface;
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Event\DossierCreatedEvent;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\History\DossierHistoryHandler;
 use Shared\Service\HistoryService;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -21,18 +21,18 @@ final class DossierHistoryHandlerTest extends UnitTestCase
     private HistoryService&MockInterface $historyService;
     private DossierRepository&MockInterface $repository;
     private DossierHistoryHandler $handler;
-    private ApplicationMode $applicationMode;
+    private ApplicationId $applicationId;
 
     protected function setUp(): void
     {
         $this->historyService = Mockery::mock(HistoryService::class);
         $this->repository = Mockery::mock(DossierRepository::class);
-        $this->applicationMode = ApplicationMode::ALL;
+        $this->applicationId = ApplicationId::PUBLIC;
 
         $this->handler = new DossierHistoryHandler(
             $this->historyService,
             $this->repository,
-            $this->applicationMode,
+            $this->applicationId,
         );
 
         parent::setUp();
@@ -56,7 +56,7 @@ final class DossierHistoryHandlerTest extends UnitTestCase
                 $dossier->getId(),
                 'dossier_created',
                 [
-                    'applicationMode' => $this->applicationMode->value,
+                    'applicationId' => $this->applicationId->value,
                     'status' => $dossierStatus->value,
                 ],
             );

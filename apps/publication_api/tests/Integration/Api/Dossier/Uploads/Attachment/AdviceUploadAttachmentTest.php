@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Integration\Api\Dossier\Uploads\Attachment;
 
 use PublicationApi\Tests\Integration\Api\Dossier\Uploads\ApiPublicationV1UploadTestCase;
+use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
@@ -22,7 +23,7 @@ final class AdviceUploadAttachmentTest extends ApiPublicationV1UploadTestCase
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        $advice = AdviceFactory::createOne([
+        $advice = AdviceFactory::new()->concept()->create([
             'organisation' => $organisation,
             'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
@@ -45,6 +46,38 @@ final class AdviceUploadAttachmentTest extends ApiPublicationV1UploadTestCase
             uploadGroupId: UploadGroupId::ATTACHMENTS,
             entityParameterKey: 'attachmentId',
         );
+    }
+
+    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $advice = AdviceFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'departments' => [$department],
+            'status' => DossierStatus::PUBLISHED,
+        ]);
+        $adviceAttachment = AdviceAttachmentFactory::createOne([
+            'dossier' => $advice,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/advice/external/%s/uploads/attachment/external/%s',
+            $organisation->getId(),
+            $advice->getExternalId(),
+            $adviceAttachment->getExternalId(),
+        ), [
+            'headers' => [
+                'Content-Type' => 'application/octet-stream',
+            ],
+            'body' => $this->getTestFileContent('1008.pdf'),
+        ]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
     }
 
     public function testUploadWithTooLongAdviceExternalId(): void
@@ -109,7 +142,7 @@ final class AdviceUploadAttachmentTest extends ApiPublicationV1UploadTestCase
         ]);
 
         $client = self::createPublicationApiClient();
-        $response = $client->request(Request::METHOD_PUT, sprintf(
+        $client->request(Request::METHOD_PUT, sprintf(
             '/api/publication/v1/organisation/%s/dossiers/advice/external/%s/uploads/attachment/external/%s',
             $organisation->getId(),
             'not-found',

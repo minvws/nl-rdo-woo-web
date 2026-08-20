@@ -96,7 +96,7 @@ readonly class StepActionHelper
         $url = $this->router->generate(
             $name,
             [
-                'prefix' => $dossier->getDocumentPrefix(),
+                'documentPrefix' => $dossier->getDocumentPrefix(),
                 'dossierNumber' => $dossier->getDossierNumber(),
             ],
         );
@@ -121,7 +121,7 @@ readonly class StepActionHelper
         $breadcrumbs->addRouteItem(
             (string) $dossier->getTitle(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
 
         if ($item !== null) {

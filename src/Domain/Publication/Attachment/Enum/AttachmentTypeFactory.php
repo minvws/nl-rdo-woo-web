@@ -100,6 +100,8 @@ readonly class AttachmentTypeFactory
 
             AttachmentType::COMPLAINT_JUDGEMENT,
 
+            AttachmentType::POLICY_DOCUMENT,
+
             new AttachmentTypeBranch(
                 name: $this->trans('branch.citizen_document'),
                 attachmentTypes: [

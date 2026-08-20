@@ -18,11 +18,13 @@ readonly class MainDocumentService
     }
 
     /**
+     * @param array<array-key, string>|null $validationGroups
+     *
      * @throws ValidationFailedException
      */
-    public function validate(AbstractMainDocument $mainDocument): void
+    public function validate(AbstractMainDocument $mainDocument, ?array $validationGroups = null): void
     {
-        $errors = $this->validator->validate($mainDocument);
+        $errors = $this->validator->validate($mainDocument, groups: $validationGroups);
 
         if ($errors->count() > 0) {
             throw new ValidationFailedException($mainDocument, $errors);

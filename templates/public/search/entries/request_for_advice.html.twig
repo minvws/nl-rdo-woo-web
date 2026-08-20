@@ -1,6 +1,6 @@
 {% extends 'public/search/entries/base.html.twig' %}
 
-{% set resultUrl = path('app_requestforadvice_detail', { prefix: entry.dossier.documentPrefix, dossierNumber: entry.dossier.dossierNumber }) %}
+{% set resultUrl = path('app_requestforadvice_detail', { documentPrefix: entry.dossier.documentPrefix, dossierNumber: entry.dossier.dossierNumber }) %}
 {% set resultType = 'dossier.type.request-for-advice' | trans %}
 
 {% block resultSpecsBottom %}

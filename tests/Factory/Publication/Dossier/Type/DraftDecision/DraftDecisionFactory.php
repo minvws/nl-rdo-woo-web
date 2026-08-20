@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Shared\Tests\Factory\Publication\Dossier\Type\DraftDecision;
+
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
+use Shared\Tests\Factory\OrganisationFactory;
+use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
+use Shared\ValueObject\DossierTitle;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
+
+/**
+ * @extends PersistentObjectFactory<DraftDecision>
+ */
+final class DraftDecisionFactory extends PersistentObjectFactory
+{
+    /**
+     * @return array<string, mixed>
+     */
+    protected function defaults(): array
+    {
+        $publicationDate = self::faker()->plainDateBetween('01-01-2010', '01-01-2023');
+
+        return [
+            'dossierNumber' => self::faker()->bothify('DOSSIER-####-#####'),
+            'title' => DossierTitle::create(self::faker()->sentence()),
+            'summary' => self::faker()->sentences(4, true),
+            'documentPrefix' => WooDecisionFactory::DEFAULT_PREFIX,
+            'status' => DossierStatus::PUBLISHED,
+            'organisation' => OrganisationFactory::new(),
+            'publicationDate' => $publicationDate,
+        ];
+    }
+
+    public function concept(): self
+    {
+        return $this->with([
+            'status' => DossierStatus::CONCEPT,
+        ]);
+    }
+
+    public static function class(): string
+    {
+        return DraftDecision::class;
+    }
+}

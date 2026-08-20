@@ -19,7 +19,7 @@
 
             <twig:block name="right">
                 {% if matrix_has_permission('dossier.update') %}
-                <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.detailsPath, {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}">{{ 'admin.global.edit' | trans }} <span class="sr-only">({{ 'admin.dossiers.workflow.details' | trans }})</span></a>
+                <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.detailsPath, {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}">{{ 'admin.global.edit' | trans }} <span class="sr-only">({{ 'admin.dossiers.workflow.details' | trans }})</span></a>
                 {% endif %}
             </twig:block>
         </twig:Admin:LeftAndRight>
@@ -64,7 +64,7 @@
             <twig:block name="right">
                 {% if matrix_has_permission('dossier.update') %}
                     {% if workflowStatus.isReadyForDecision %}
-                        <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.contentStep.routeName, {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}" data-e2e-name="edit-basic-details">{{ 'admin.global.edit' | trans }} <span class="sr-only">({{ dossierTypeTitle }})</span></a>
+                        <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.contentStep.routeName, {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}" data-e2e-name="edit-basic-details">{{ 'admin.global.edit' | trans }} <span class="sr-only">({{ dossierTypeTitle }})</span></a>
                     {% endif %}
                 {% endif %}
             </twig:block>
@@ -134,7 +134,7 @@
             <twig:block name="right">
                 {% if matrix_has_permission('dossier.update') %}
                 {% if workflowStatus.isReadyForPublication %}
-                    <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.publicationPath, {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}">{{ 'admin.global.edit' | trans }} <span class="sr-only">({{ 'admin.global.publication' | trans }})</span></a>
+                    <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.publicationPath, {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}">{{ 'admin.global.edit' | trans }} <span class="sr-only">({{ 'admin.global.publication' | trans }})</span></a>
                 {% endif %}
                 {% endif %}
             </twig:block>
@@ -154,7 +154,7 @@
                 <twig:Admin:Definition term="{{ 'admin.dossiers.public_link' | trans }}">
                     <p>{{ 'admin.dossiers.public_link_available' | trans }} <strong>{{ dossier.publicationDate | format_date('long') }}</strong></p>
                     <twig:Admin:CopyToClipboardLayout copy="{{ publicDossierUrl }}">
-                        <a class="bhr-a" href="{{ publicDossierUrl }}">
+                        <a class="bhr-a" href="{{ publicDossierUrl }}" data-e2e-name="public-url">
                             {{ publicDossierUrl }}
                         </a>
                     </twig:Admin:CopyToClipboardLayout>
@@ -177,7 +177,7 @@
                 <li class="bhr-li">{{ deleteBullet }}</li>
                 {% endfor %}
             </ul>
-            <a class="bhr-btn-filled-danger" data-e2e-name="delete-dossier-link" href="{{ path('app_admin_dossier_delete', { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}">{{ deleteTitle }}</a>
+            <a class="bhr-btn-filled-danger" data-e2e-name="delete-dossier-link" href="{{ path('app_admin_dossier_delete', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}">{{ deleteTitle }}</a>
         </section>
     {% endif %}
 

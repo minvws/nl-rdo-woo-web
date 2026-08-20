@@ -40,6 +40,7 @@ use Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication\OtherPublicat
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Count;
@@ -153,7 +154,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                             [
-                                'prefix' => $otherPublication->getDocumentPrefix(),
+                                'documentPrefix' => $otherPublication->getDocumentPrefix(),
                                 'dossierNumber' => $otherPublication->getDossierNumber(),
                                 'type' => DossierFileType::MAIN_DOCUMENT->value,
                                 'id' => $otherPublicationMainDocument->getId(),
@@ -189,7 +190,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                                 [
-                                    'prefix' => $otherPublication->getDocumentPrefix(),
+                                    'documentPrefix' => $otherPublication->getDocumentPrefix(),
                                     'dossierNumber' => $otherPublication->getDossierNumber(),
                                     'type' => DossierFileType::ATTACHMENT->value,
                                     'id' => $otherPublicationAttachment->getId(),
@@ -571,10 +572,13 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
-            'status' => $this->getFaker()->randomElement(DossierStatus::nonConceptCases()),
+            'status' => DossierStatus::SCHEDULED,
         ]);
         OtherPublicationMainDocumentFactory::createOne(['dossier' => $otherPublication]);
-        OtherPublicationAttachmentFactory::createOne(['dossier' => $otherPublication]);
+        OtherPublicationAttachmentFactory::createOne([
+            'dossier' => $otherPublication,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         self::assertDatabaseHas(OtherPublication::class, [
             'title' => (string) $otherPublication->getTitle(),
@@ -1016,5 +1020,56 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
 
         self::assertDatabaseCount(NoticeNotPublic::class, 0);
         self::assertDatabaseCount(OtherPublicationMainDocument::class, 1);
+    }
+
+    public function testUpdatePublishedOtherPublicationIgnoresPublicationDateChange(): void
+    {
+        $newTitle = 'Updated title for published other publication';
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $otherPublication = OtherPublicationFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::PUBLISHED,
+            'publicationDate' => PlainDate::create('2025-01-02'),
+        ]);
+        $mainDocument = OtherPublicationMainDocumentFactory::createOne(['dossier' => $otherPublication]);
+        $attachment = OtherPublicationAttachmentFactory::createOne([
+            'dossier' => $otherPublication,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $data = [
+            'title' => $newTitle,
+            'dossierNumber' => $otherPublication->getDossierNumber(),
+            'dossierDate' => $otherPublication->getDateFrom()?->format('Y-m-d'),
+            'publicationDate' => '2025-02-02',
+            'summary' => $otherPublication->getSummary(),
+            'departmentId' => $department->getId(),
+            'subjectId' => $otherPublication->getSubject()?->getId(),
+            'mainDocument' => [
+                'fileName' => $mainDocument->getFileInfo()->getName(),
+                'formalDate' => $mainDocument->getFormalDate()->format('Y-m-d'),
+                'type' => $mainDocument->getType()->value,
+                'language' => $mainDocument->getLanguage()->value,
+            ],
+            'attachments' => [
+                [
+                    'fileName' => $attachment->getFileInfo()->getName(),
+                    'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
+                    'language' => $attachment->getLanguage(),
+                    'type' => $attachment->getType(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
+                ],
+            ],
+        ];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $otherPublication), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+        self::assertJsonContains(['publicationDate' => '2025-01-02', 'title' => $newTitle]);
+
+        self::assertDatabaseHas(OtherPublication::class, ['title' => $newTitle]);
     }
 }

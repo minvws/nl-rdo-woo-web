@@ -2,6 +2,7 @@ parameters:
     configPageLimit: '%env(int:DOCUMENT_PAGE_LIMIT)%'
     env(DOCUMENT_PAGE_LIMIT): '0'
     env(HAS_FEATURE_WOO_GPT): 'false'
+    env(HAS_FEATURE_DRAFT_DECISION): 'false'
 
     env(ENABLE_TOOLBAR) : 'true'
     enable_symfony_toolbar: '%env(bool:ENABLE_TOOLBAR)%'
@@ -10,7 +11,6 @@ parameters:
     limit_total_document_file_size_in_gib: '%env(int:LIMIT_TOTAL_DOCUMENT_FILE_SIZE_IN_GIB)%'
 
     available_locales: ['en', 'nl']
-    app_mode: '%env(APP_MODE)%'
     thumbnail_limit: 50
 
     elasticsearch.suggestions_search_input: 'search-input'
@@ -28,10 +28,6 @@ services:
 
         bind:
             Psr\Log\LoggerInterface $logger: '@Shared\Service\Logging\EnrichedPsrLogger'
-
-    Shared\Service\Security\ApplicationMode\ApplicationMode:
-        factory: ['Shared\Service\Security\ApplicationMode\ApplicationMode', 'fromEnvVar']
-        arguments: [ '%app_mode%' ]
 
     Shared\ApplicationId:
         factory: ['@kernel', 'getApplicationId']
@@ -66,12 +62,6 @@ services:
         arguments:
             $factories:
                 - '@Shared\Service\FileReader\ExcelCsvReaderFactory'
-
-    Shared\Service\Stats\WorkerStatsService:
-        arguments:
-            $handlers:
-                - '@Shared\Service\Stats\Handler\ElasticHandler'
-                - '@Shared\Service\Stats\Handler\DoctrineHandler'
 
     # Public is true, because we need to inject this service in the DBAL types (see /App/Doctrine/Encrypted*.php files)
     Shared\Service\Encryption\EncryptionService:

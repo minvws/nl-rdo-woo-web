@@ -175,7 +175,7 @@ Get Random Grounds
   ...  10.2e
   ...  10.2g
   ...  11.1
-  ${count} =  FakerLibrary.Random Int  1  ${{len($grounds)}}
+  ${count} =  FakerLibrary.Random Int  1  3
   @{random_grounds} =  FakerLibrary.Random Elements  ${grounds}  ${count}  unique=True
   RETURN  @{random_grounds}
 
@@ -183,6 +183,51 @@ Generate External ID
   ${id} =  FakerLibrary.Isbn 10
   VAR  ${EXTERNAL_ID} =  ${id}  scope=suite
   RETURN  ${EXTERNAL_ID}
+
+Update Previous Request Body
+  [Documentation]    This is not unused, it's referenced from yaml files.
+  ...    A reuse_previous_request step always sends PREVIOUS_REQUEST_BODY as-is, ignoring any
+  ...    'body' override in that same step, so field changes must be applied here beforehand.
+  [Arguments]  ${field}  ${value}
+  Set To Dictionary  ${PREVIOUS_REQUEST_BODY}  ${field}  ${value}
+
+Add Generated Attachment To Previous Request Body
+  [Documentation]    This is not unused, it's referenced from yaml files.
+  ...    Placeholders like <PYTHON GUID>/<ROBOT RANDOMIZE>/<ROBOT DATE ...> are only resolved for
+  ...    'request' steps, not for values passed as 'keyword' step args, so build the attachment here
+  ...    with real values instead of writing a placeholder-laden dict directly in the yaml.
+  ...    Stores the generated attachment as GENERATED_ATTACHMENT so a later 'keyword' step can upload
+  ...    its file, since the yaml step's own 'files.attachments' list can't reference this externalId.
+  [Arguments]  ${allowed_types}
+  ${attachment} =  Generate Attachment  ${allowed_types}
+  ${attachments} =  Copy List  ${PREVIOUS_REQUEST_BODY}[attachments]
+  Append To List  ${attachments}  ${attachment}
+  Set To Dictionary  ${PREVIOUS_REQUEST_BODY}  attachments  ${attachments}
+  VAR  ${GENERATED_ATTACHMENT} =  ${attachment}  scope=test
+
+Upload Generated Attachment
+  [Documentation]    This is not unused, it's referenced from yaml files.
+  ...    Uploads the file for the attachment previously added by Add Generated Attachment To
+  ...    Previous Request Body. The resend step must set 'files.attachments: []' so the generic
+  ...    upload loop in the test template doesn't also try (and fail) to upload it using stale
+  ...    externalIds from the yaml.
+  [Arguments]  ${dossier_type}
+  Upload Attachment Document  ${dossier_type}  ${TEST_DATA_ROOT}/dummy.txt  ${EXTERNAL_ID}  ${GENERATED_ATTACHMENT}[externalId]
+
+Sync Locked Dates From Server
+  [Documentation]    This is not unused, it's referenced from yaml files.
+  ...    Temporary workaround for https://github.com/minvws/nl-rdo-woo-web-private/issues/7492 is fixed.
+  [Arguments]  ${dossier_type}
+  Log
+  ...  TODO: remove Sync Locked Dates From Server once https://github.com/minvws/nl-rdo-woo-web-private/issues/7492 is fixed
+  ...  level=WARN
+  ${response} =  GET On Session
+  ...  alias=${API_ALIAS}
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/${dossier_type}/external/${EXTERNAL_ID}
+  Set To Dictionary  ${PREVIOUS_REQUEST_BODY}  publicationDate  ${response.json()}[publicationDate]
+  IF  '${dossier_type}' == 'woo-decision'
+    Set To Dictionary  ${PREVIOUS_REQUEST_BODY}  previewDate  ${response.json()}[previewDate]
+  END
 
 Generate Main Document
   [Arguments]  ${file_location}=${TEST_DATA_ROOT}/dummy.txt  ${type}=${EMPTY}

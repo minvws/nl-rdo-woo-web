@@ -49,6 +49,7 @@ global.document_type: "Type"
 global.document_judgement: "Soort besluit"
 global.document_particular: "Bijzonderheden"
 global.document_edit: "Document bewerken"
+global.id: "Id"
 global.documents.filter_help: "Filter de documenten. Bij het veranderen van de selectie wordt deze pagina herladen en worden de gegevens voor de geselecteerde waarde getoond."
 global.no_documents: "Geen documenten"
 global.domain_title: "WooPlatform"
@@ -337,7 +338,6 @@ admin.decision.preview_date_help: "Kies de datum waarop het besluit aan de verzo
 admin.decision.publication_date: "Datum openbare publicatie"
 admin.decision.publication_date_help: "Kies de datum waarop het besluit voor iedereen publiek toegankelijk wordt."
 admin.stats.manage: "Statistieken & Monitoring"
-admin.stats.worker_monitoring: "Monitoring van workers"
 admin.stats.manage_help: "Deze link biedt toegang tot statistieken en monitoring van het systeem."
 admin.elastic.manage: "Elasticsearch management"
 admin.elastic.mange_help: "Deze link biedt toegang tot beheerdersacties voor ElasticSearch."
@@ -456,7 +456,7 @@ dossier.type.covenant: "Convenant"
 dossier.type.covenant.description: "Afspraken over de samenwerking met andere organisaties"
 dossier.type.woo-decision: "Woo-besluit"
 dossier.type.woo-decision.description: "Reactie op een woo-verzoek van een burger, organisatie of pers"
-dossier.type.annual-report: "Jaarplan en Jaarverslag"
+dossier.type.annual-report: "Jaarplan en jaarverslag"
 dossier.type.annual-report.description: "Een jaarplan beschrijft, een jaarverslag rapporteert overheidsacties en resultaten"
 
 admin.publications.department: "Bestuursorgaan"
@@ -674,6 +674,8 @@ admin.inquiries.link_inquiry: "Zaaknummer aan Woo-besluiten of -documenten koppe
 admin.inquiries.link_to_inquiry: "Link naar zaak"
 admin.user.password_changed: "Wachtwoord succesvol gewijzigd"
 
+public.global.main_document: "Hoofddocument"
+public.global.attachment: "Bijlage"
 public.global.access_denied.message: "U heeft niet de toegangsrechten die nodig zijn om deze pagina of dit document te mogen bekijken."
 public.global.page_not-found.message: "De pagina of het document dat u zoekt, bestaat niet of is niet beschikbaar."
 public.global.page_not-available.message: "De pagina of het document dat u zoekt, is momenteel niet beschikbaar."
@@ -763,6 +765,7 @@ public.documents.file_type.pdf: "PDF"
 public.documents.file_type.presentation: "Presentatie"
 public.documents.file_type.spreadsheet: "Spreadsheet"
 public.documents.file_type.unknown: "Onbekend"
+public.documents.file_type.multiple: "Verzamelbestand"
 public.documents.file_type.vcard: "Visitekaartje"
 public.documents.file_type.video: "Video"
 public.documents.file_type.audio: "Audio"
@@ -864,7 +867,7 @@ public.inquiry.documents.of_which_withdrawn: "waarvan {count} ingetrokken"
 public.inquiry.documents.of_which_suspended: "waarvan {count} opgeschort"
 public.inquiry.page_title: "Besluiten en documenten voor zaaknummer {inquiry_number}"
 public.inquiry.dossiers_and_documents: "Besluiten en documenten"
-public.inquiry.dossier_detail_breadcrumb: "Documenten voor {title}"
+public.inquiry.dossier_detail_breadcrumb: "Documenten"
 public.inquiry.dossier_detail_title: "Documenten voor {title} voor zaaknummer {inquiry_number}"
 public.inquiry.decisions_for_inquiry: "Er {are_or_is} {number_of_decisions} genomen voor het verzoek om informatie te openbaren met zaaknummer {inquiry_number}"
 public.inquiry.dossiers_breadcrumb: "Alle besluiten en documenten"
@@ -944,7 +947,7 @@ public.dossiers.no_dossiers: "Geen besluiten"
 public.search_suggestion: "Bedoelde u misschien:"
 public.search_suggestion.terms: "Bedoelde u misschien een van de volgende zoektermen:"
 
-history.dossier_created.private: 'Publicatie aangemaakt met status "{status}" (via {applicationMode})'
+history.dossier_created.private: 'Publicatie aangemaakt met status "{status}" (via {applicationId})'
 history.dossier_created.public: null
 history.dossier_updated.private: 'De volgende gegevens zijn aangepast: {changes}'
 history.dossier_updated.public: 'Informatie over de publicatie bijgewerkt'
@@ -1071,6 +1074,8 @@ publication.dossier.error.invalid_document_id_length: "Rij {rownumber} heeft een
 publication.dossier.error.invalid_family_id: "Rij {rownumber} heeft een ongeldige familie / family id"
 publication.dossier.error.invalid_thread_id: "Rij {rownumber} heeft een ongeldige thread id"
 publication.dossier.error.invalid_matter: "Rij {rownumber} heeft een matter met een incorrect aantal en/of incorrecte karakters"
+publication.dossier.error.invalid_publication_context: "Rij {rownumber} heeft een publicatiecontext met een incorrect aantal en/of incorrecte karakters"
+publication.dossier.error.matter_and_publication_context_combination: "Productierapport met een kolom \"Publicatiecontext\" kan geen kolom voor \"Matter\" bevatten"
 publication.dossier.error.remark_too_long: "Rij {rownumber} heeft een te lange toelichting / opmerking (max {max} tekens)"
 publication.dossier.error.link_too_long: "Rij {rownumber} heeft een te lange link (max 2048 tekens)"
 publication.dossier.error.file_name_too_long: "Rij {rownumber} heeft een te lange bestandsnaam (max 1024 tekens)"
@@ -1444,6 +1449,51 @@ history.request-for-advice.notice_not_public_deleted.public: "Vastgesteld dat di
 public.search.type_description.request_for_advice: 'De aanvraag van een advies'
 public.search.type.request_for_advice_main_document: 'Hoofddocument'
 #END request for advice
+
+#START draft-decision
+dossier.type.draft-decision: "Ontwerpbesluit"
+dossier.type.draft-decision.description: "Ontwerpen van wet- en regelgeving met adviesaanvraag"
+public.dossiers.draft-decision.tagline: "Ontwerpbesluit met omschrijving:"
+public.dossiers.draft-decision.description: "De ontwerpen van wetten en van andere regelgeving waarover een overheidsorganisatie advies heeft gevraagd bij een externe partij. Ook de adviesaanvraag valt onder deze categorie."
+public.dossiers.draft-decision.about: "Over dit ontwerpbesluit"
+public.dossiers.draft-decision.attachments_for: "Bijlagen bij dit ontwerpbesluit"
+admin.dossiers.draft-decision.step.details: 'Basisgegevens'
+admin.dossiers.draft-decision.complete_step.details: 'Maak eerst basisgegevens compleet'
+admin.dossiers.draft-decision.step.content: 'Ontwerpbesluit'
+admin.dossiers.draft-decision.complete_step.content: 'Maak eerst details compleet'
+admin.dossiers.draft-decision.step.publication: 'Publicatie'
+admin.dossiers.draft-decision.complete_step.publication: 'De publicatie is nog niet gepubliceerd'
+admin.dossiers.draft-decision.create_new: 'Ontwerpbesluit publiceren'
+admin.dossiers.draft-decision.form.details.subject_help: 'Kies het onderwerp waaronder dit ontwerpbesluit valt. Het gekozen onderwerp wordt ook gekoppeld aan alle documenten.'
+admin.dossiers.draft-decision.form.details.title: 'Omschrijving van het ontwerpbesluit'
+admin.dossiers.draft-decision.form.details.date_label: 'Datum van het ontwerpbesluit'
+admin.dossiers.draft-decision.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende woorden zoals inspanningsverplichting, aangaande, etc.<ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Ontwerpbesluit over de mogelijke inzet van digitale middelen in het kader van jeugdgezondheidszorg bij langdurige uitbraken van infectieziekten</li><li class='bhr-form-help__do text-sm'>Wel: Gebruik digitale middelen in jeugdgezondheidszorg</li></ul>"
+admin.dossiers.draft-decision.form.content.document_label: 'Ontwerpbesluit'
+admin.dossiers.draft-decision.form.content.document_help: 'Upload minimaal het ontwerpbesluit'
+admin.dossiers.draft-decision.form.content.attachment_label: 'Adviesaanvraag of opdrachtformulering'
+admin.dossiers.draft-decision.form.content.attachment_help: 'Upload minimaal de adviesaanvraag of opdrachtformulering'
+admin.dossiers.draft-decision.form.details.ref_int: 'Interne referentie'
+admin.dossiers.draft-decision.form.publication.publication_date_label: 'Datum openbare publicatie'
+admin.dossiers.draft-decision.form.publication.publication_date_help: 'Kies de datum waarop het ontwerpbesluit voor iedereen publiek toegankelijk wordt.'
+admin.dossiers.draft-decision.create.success: '<strong>Ontwerpbesluit klaarzetten gelukt:</strong> De publicatie wordt voorbereid.'
+admin.dossiers.draft-decision.edit_link: 'Hele publicatie bekijken'
+admin.dossiers.draft-decision.description: 'Omschrijving van het ontwerpbesluit'
+admin.dossiers.draft-decision.delete: 'Publicatie verwijderen'
+admin.dossiers.draft-decision.delete_bullet-1: 'De publicatie van het ontwerpbesluit wordt verwijderd.'
+admin.dossiers.draft-decision.delete_bullet-2: 'Het document en de bijlagen bij dit ontwerpbesluit kunnen niet meer worden verwijderd nadat het is gepubliceerd.'
+admin.dossiers.draft-decision.delete_bullet-3: 'Je kunt deze actie niet ongedaan maken.'
+admin.dossiers.draft-decision.summary: 'Toelichting op het ontwerpbesluit'
+admin.dossiers.draft-decision.date: 'Datum'
+admin.dossiers.draft-decision.document: 'Ontwerpbesluit'
+admin.global.draft-decision_on: 'Ontwerpbesluit met omschrijving:'
+history.draft-decision.main_document_added.private: 'Nieuw ontwerpbesluit toegevoegd ({filename})'
+history.draft-decision.main_document_updated.private: 'Ontwerpbesluit gewijzigd ({filename})'
+history.draft-decision.main_document_updated.public: 'Ontwerpbesluit vervangen'
+history.draft-decision.main_document_deleted.private: 'Ontwerpbesluit verwijderd ({filename})'
+public.documents.type.draft_decision: "Ontwerpbesluiten"
+public.search.type_description.draft_decision: 'Ontwerpen van wet- en regelgeving met adviesaanvraag'
+public.search.type.draft_decision_main_document: 'Hoofddocument'
+#END draft-decision
 
 admin.dossiers.action.label.ingest: 'Volledig opnieuw indexeren (inclusief document inhoud)'
 admin.dossiers.action.label.index: 'Metadata opnieuw indexeren (exclusief document inhoud)'

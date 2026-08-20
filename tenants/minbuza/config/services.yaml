@@ -20,7 +20,6 @@ parameters:
     elasticsearch.index.prefix: '%env(default:elasticsearch.index.prefix.default:MINBUZA_ELASTICSEARCH_INDEX_PREFIX)%'
     elasticsearch.index.read: '%elasticsearch.index.prefix%read'
     elasticsearch.index.write: '%elasticsearch.index.prefix%write'
-    elasticsearch.index.worker_stats: '%elasticsearch.index.prefix%worker-stats'
 
     # RabbitMQ
     rabbitmq_url: '%env(MINBUZA_RABBITMQ_URL)%'

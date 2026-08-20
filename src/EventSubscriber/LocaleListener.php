@@ -6,7 +6,6 @@ namespace Shared\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Webmozart\Assert\Assert;
 
 use function in_array;
@@ -15,6 +14,7 @@ use function strval;
 /**
  * This listener will set the locale based on the session or the _locale query parameter.
  */
+#[AsEventListener(priority: 20)]
 class LocaleListener
 {
     protected const string LOCALE_KEY = '_locale';
@@ -26,8 +26,7 @@ class LocaleListener
     {
     }
 
-    #[AsEventListener(event: KernelEvents::REQUEST, priority: 20)]
-    public function onKernelRequest(RequestEvent $event): void
+    public function __invoke(RequestEvent $event): void
     {
         $request = $event->getRequest();
 

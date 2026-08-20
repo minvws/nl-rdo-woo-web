@@ -9,8 +9,11 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\Exception\ValidationException as ApiPlatformValidationException;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
+use PublicationApi\Api\Dossier\DossierAttachmentValidator;
+use PublicationApi\Api\Dossier\DossierMainDocumentValidator;
 use PublicationApi\Api\Dossier\DossierNumberValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\Dossier\DossierValidator;
 use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
@@ -23,6 +26,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
 use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
@@ -46,8 +50,11 @@ final readonly class AdviceProcessor implements ProcessorInterface
     public function __construct(
         private DossierNumberValidator $dossierNumberValidator,
         private DossierSupportService $dossierSupportService,
+        private DossierAttachmentValidator $dossierAttachmentValidator,
+        private DossierMainDocumentValidator $dossierMainDocumentValidator,
         private DossierUpdateGuard $dossierUpdateGuard,
         private DossierRepository $dossierRepository,
+        private DossierValidator $dossierValidator,
         private AdviceMapper $adviceMapper,
         private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
@@ -117,7 +124,7 @@ final readonly class AdviceProcessor implements ProcessorInterface
         if ($adviceRequestDto->mainDocument !== null) {
             $mainDocument = AdviceMainDocumentMapper::create($advice, $adviceRequestDto->mainDocument);
             $advice->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             $noticeNotPublic = $adviceRequestDto->noticeNotPublic;
             Assert::notNull($noticeNotPublic);
@@ -127,12 +134,15 @@ final readonly class AdviceProcessor implements ProcessorInterface
             );
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($adviceRequestDto->attachments);
         $attachments = $this->getAttachments($advice, $adviceRequestDto->attachments);
-        $this->validateAdviceAttachments($attachments);
+        $this->validateAdviceAttachments($attachments, $advice->getStatus());
         $this->dossierSupportService->addAttachments($advice, $attachments);
 
-        $this->dossierSupportService->validateDossier($advice);
-        $this->dossierSupportService->dispatchCreateDossierCommand($advice);
+        $this->dossierValidator->validateDossier($advice);
+        $this->dossierSupportService->autoPublish($advice);
+        $this->dossierSupportService->validateCompletionAndPersist($advice);
+        $this->dossierSupportService->synchronizeArtifacts($advice);
 
         return $advice;
     }
@@ -155,7 +165,7 @@ final readonly class AdviceProcessor implements ProcessorInterface
                 ? AdviceMainDocumentMapper::update($advice, $adviceRequestDto->mainDocument)
                 : AdviceMainDocumentMapper::create($advice, $adviceRequestDto->mainDocument);
             $advice->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             if ($advice->getMainDocument() !== null) {
                 $this->messageBus->dispatch(new DeleteMainDocumentCommand($advice->getId()));
@@ -170,12 +180,16 @@ final readonly class AdviceProcessor implements ProcessorInterface
             $advice->setNoticeNotPublic($notice);
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($adviceRequestDto->attachments);
+        $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($advice, $adviceRequestDto->attachments);
         $attachments = $this->getAttachments($advice, $adviceRequestDto->attachments);
-        $this->validateAdviceAttachments($attachments);
+        $this->validateAdviceAttachments($attachments, $advice->getStatus());
         $this->attachmentSynchronizer->sync($advice, $adviceRequestDto->attachments);
 
-        $this->dossierSupportService->validateDossier($advice);
-        $this->dossierSupportService->dispatchUpdateDossierCommand($advice);
+        $this->dossierValidator->validateDossier($advice);
+        $this->dossierSupportService->autoPublish($advice);
+        $this->dossierSupportService->validateCompletionAndPersist($advice);
+        $this->dossierSupportService->synchronizeArtifacts($advice);
     }
 
     /**
@@ -194,7 +208,7 @@ final readonly class AdviceProcessor implements ProcessorInterface
     /**
      * @param list<AdviceAttachment> $attachments
      */
-    private function validateAdviceAttachments(array $attachments): void
+    private function validateAdviceAttachments(array $attachments, DossierStatus $dossierStatus): void
     {
         $attachmentType = AttachmentType::REQUEST_FOR_ADVICE;
         if ($this->hasMoreThanOneAttachmentOfType($attachments, $attachmentType)) {
@@ -204,7 +218,7 @@ final readonly class AdviceProcessor implements ProcessorInterface
             )));
         }
 
-        $this->dossierSupportService->validateAttachments($attachments);
+        $this->dossierAttachmentValidator->validate($attachments, $dossierStatus);
     }
 
     /**

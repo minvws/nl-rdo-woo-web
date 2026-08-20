@@ -57,7 +57,7 @@ final class FileScanAuditLoggerTest extends UnitTestCase
             },
         ));
 
-        $this->fileScanLogger->onFileScanned(new FileScannedEvent(
+        $this->fileScanLogger->__invoke(new FileScannedEvent(
             path: $path,
             hasFailed: true,
             reason: $reason,

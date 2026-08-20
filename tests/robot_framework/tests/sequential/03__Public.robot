@@ -39,6 +39,10 @@ Filter Options For Dossiers
   ${result_count} =  Evaluate  ${result_count} + ${cj_count}
   ${publication_count} =  Evaluate  ${publication_count} + ${cj_publication_count}
   Compare Search Result Summary  ${result_count}  ${publication_count}
+  ${dd_count}  ${dd_publication_count} =  Select Filter Options - Dossier  draft-decision
+  ${result_count} =  Evaluate  ${result_count} + ${dd_count}
+  ${publication_count} =  Evaluate  ${publication_count} + ${dd_publication_count}
+  Compare Search Result Summary  ${result_count}  ${publication_count}
 
 Filter Options For Document Types
   ${pdf_count} =  Select Filter Options - Document Type  document_type=pdf

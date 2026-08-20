@@ -8,18 +8,15 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shared\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
 use Shared\Domain\Publication\Dossier\DossierPublisher;
-use Shared\Domain\Publication\Dossier\Event\DossierUpdatedEvent;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
 use Shared\Service\DossierService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsMessageHandler]
 readonly class UpdateDossierPublicationHandler
 {
     public function __construct(
         private DossierService $dossierService,
-        private MessageBusInterface $messageBus,
         private DossierPublisher $publisher,
         private LoggerInterface $logger,
     ) {
@@ -51,9 +48,5 @@ readonly class UpdateDossierPublicationHandler
         }
 
         $this->dossierService->validateCompletion($dossier);
-
-        $this->messageBus->dispatch(
-            DossierUpdatedEvent::forDossier($dossier),
-        );
     }
 }

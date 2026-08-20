@@ -10,14 +10,14 @@ use Shared\Domain\Search\Theme\ThemeManager;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+#[AsEventListener]
 readonly class SitemapThemeSubscriber
 {
     public function __construct(private ThemeManager $themeManager)
     {
     }
 
-    #[AsEventListener(event: SitemapPopulateEvent::class)]
-    public function populate(SitemapPopulateEvent $event): void
+    public function __invoke(SitemapPopulateEvent $event): void
     {
         foreach ($this->themeManager->getViewsForAllThemes() as $themeView) {
             $event->getUrlContainer()->addUrl(

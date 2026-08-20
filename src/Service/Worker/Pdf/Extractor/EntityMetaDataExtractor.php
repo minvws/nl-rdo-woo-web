@@ -10,7 +10,6 @@ use Shared\Domain\Ingest\Content\ContentExtractLogContext;
 use Shared\Domain\Ingest\Content\Extractor\Tika\TikaService;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
-use Shared\Service\Stats\WorkerStatsService;
 use Shared\Service\Storage\EntityStorageService;
 use Symfony\Contracts\Cache\CacheInterface;
 
@@ -26,7 +25,6 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
         private EntityStorageService $entityStorageService,
         private SubTypeIndexer $subTypeIndexer,
         private TikaService $tika,
-        private WorkerStatsService $statsService,
         private CacheInterface $metadataExtractCache,
     ) {
     }
@@ -41,7 +39,7 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
             fn () => $this->extractMetaDataFromPdf($entity),
         );
 
-        $this->statsService->measure('index.entity', fn () => $this->indexEntity($entity, $metaData));
+        $this->indexEntity($entity, $metaData);
     }
 
     /**
@@ -49,12 +47,7 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
      */
     private function extractMetaDataFromPdf(EntityWithFileInfo $entity): array
     {
-        /** @var string|false $localPdfPath */
-        $localPdfPath = $this->statsService->measure(
-            'download.entity',
-            fn (): string|false => $this->entityStorageService->downloadEntity($entity),
-        );
-
+        $localPdfPath = $this->entityStorageService->downloadEntity($entity);
         if ($localPdfPath === false) {
             $this->logger->error('Failed to save file to local storage', [
                 'id' => $entity->getId(),
@@ -64,13 +57,9 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
             return [];
         }
 
-        /** @var array<array-key,string> $tikaData */
-        $tikaData = $this->statsService->measure(
-            'tika',
-            fn (): array => $this->tika->extract(
-                sourcePath: $localPdfPath,
-                logContext: ContentExtractLogContext::forEntity($entity),
-            ),
+        $tikaData = $this->tika->extract(
+            sourcePath: $localPdfPath,
+            logContext: ContentExtractLogContext::forEntity($entity),
         );
 
         unset($tikaData['X-TIKA:content']);

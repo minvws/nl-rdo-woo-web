@@ -153,9 +153,6 @@ Click Breadcrumb Element
   [Arguments]  ${element_nr}
   Click  (//*[@data-e2e-name="breadcrumb"])[${element_nr}]
 
-Click Public URL
-  Click  //*[@data-e2e-name="public-url"]
-
 Verify Document Details
   [Arguments]  ${download_type}  ${publication_status}
   Reload

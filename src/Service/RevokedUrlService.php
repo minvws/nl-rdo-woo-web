@@ -45,14 +45,14 @@ readonly class RevokedUrlService
             }
 
             $urlParams = [
-                'prefix' => $dossier->getDocumentPrefix(),
+                'documentPrefix' => $dossier->getDocumentPrefix(),
                 'dossierNumber' => $dossier->getDossierNumber(),
                 'documentNumber' => $document->getDocumentNumber(),
             ];
 
             yield $this->router->generate('app_document_detail', $urlParams);
 
-            unset($urlParams['prefix']);
+            unset($urlParams['documentPrefix']);
 
             yield $this->router->generate('app_legacy_document_detail', $urlParams);
         }

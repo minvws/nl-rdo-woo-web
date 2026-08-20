@@ -6,13 +6,11 @@ namespace Shared\Form\Dossier;
 
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
-use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Form\PlainDateType;
 use Shared\Form\Transformer\StringToDossierTitleTransformer;
 use Shared\Service\Security\Roles;
 use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
-use Shared\Validator\UniqueDossierNumber;
 use Shared\ValueObject\PlainDate;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -93,18 +91,6 @@ final readonly class DossierForm
                 'empty_data' => '',
                 'attr' => [
                     'class' => 'bhr-input-text w-full',
-                ],
-                'constraints' => [
-                    new UniqueDossierNumber(
-                        documentPrefix: $dossier->getDocumentPrefix(),
-                        excludeId: $dossier->getId(),
-                        groups: [
-                            DossierValidationGroup::DETAILS->value,
-                            DossierValidationGroup::WORKFLOW_SCHEDULE_PUBLISH->value,
-                            DossierValidationGroup::WORKFLOW_PUBLISH_AS_PREVIEW->value,
-                            DossierValidationGroup::WORKFLOW_PUBLISH->value,
-                        ],
-                    ),
                 ],
             ]);
         }

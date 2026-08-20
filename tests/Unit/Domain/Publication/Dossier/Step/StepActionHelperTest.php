@@ -66,7 +66,7 @@ class StepActionHelperTest extends UnitTestCase
         $this->router->expects('generate')->with(
             'dummy_route',
             [
-                'prefix' => 'foo',
+                'documentPrefix' => 'foo',
                 'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
@@ -90,7 +90,7 @@ class StepActionHelperTest extends UnitTestCase
         $this->router->expects('generate')->with(
             'dummy_route',
             [
-                'prefix' => 'foo',
+                'documentPrefix' => 'foo',
                 'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
@@ -114,7 +114,7 @@ class StepActionHelperTest extends UnitTestCase
         $this->router->expects('generate')->with(
             'dummy_route',
             [
-                'prefix' => 'foo',
+                'documentPrefix' => 'foo',
                 'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
@@ -136,7 +136,7 @@ class StepActionHelperTest extends UnitTestCase
         $this->router->expects('generate')->with(
             'app_admin_dossier',
             [
-                'prefix' => 'foo',
+                'documentPrefix' => 'foo',
                 'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
@@ -172,7 +172,7 @@ class StepActionHelperTest extends UnitTestCase
         $this->router->expects('generate')->with(
             'dummy_route',
             [
-                'prefix' => 'foo',
+                'documentPrefix' => 'foo',
                 'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
@@ -205,7 +205,7 @@ class StepActionHelperTest extends UnitTestCase
         $this->router->expects('generate')->with(
             'dummy_route',
             [
-                'prefix' => 'foo',
+                'documentPrefix' => 'foo',
                 'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
@@ -235,7 +235,7 @@ class StepActionHelperTest extends UnitTestCase
         $this->router->expects('generate')->with(
             'app_admin_dossier',
             [
-                'prefix' => 'foo',
+                'documentPrefix' => 'foo',
                 'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');
@@ -260,7 +260,7 @@ class StepActionHelperTest extends UnitTestCase
             (string) $dossierTitle,
             'app_admin_dossier',
             [
-                'prefix' => $this->dossier->getDocumentPrefix(),
+                'documentPrefix' => $this->dossier->getDocumentPrefix(),
                 'dossierNumber' => $this->dossier->getDossierNumber(),
             ],
         );
@@ -279,7 +279,7 @@ class StepActionHelperTest extends UnitTestCase
         $this->router->expects('generate')->with(
             'app_admin_dossier_publication_confirmation',
             [
-                'prefix' => 'foo',
+                'documentPrefix' => 'foo',
                 'dossierNumber' => 'bar',
             ],
         )->andReturn('dummy-url');

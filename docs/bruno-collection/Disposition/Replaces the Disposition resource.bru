@@ -22,18 +22,18 @@ body:json {
   {
     "departmentId": "{{departmentId}}",
     "mainDocument": {
-      "fileName": "{{$randomWords}}.pdf",
+      "fileName": "main-document.pdf",
       "formalDate": "2026-02-01",
       "language": "NLD",
       "type": "c_45be34e9",
       "grounds": []
     },
     "subjectId": "{{subjectId}}",
-    "summary": "{{$randomUUID}}",
-    "title": "Bruno {{$randomUUID}}",
+    "summary": "Summary of the disposition",
+    "title": "Bruno - Disposition",
     "attachments": [
       {
-        "fileName": "{{$randomWords}}.pdf",
+        "fileName": "attachment.pdf",
         "formalDate": "2026-02-01",
         "language": "NLD",
         "type": "c_d506b718",
@@ -42,7 +42,7 @@ body:json {
       }
     ],
     "dossierDate": "2025-01-01",
-    "dossierNumber": "bruno-{{$randomUUID}}",
+    "dossierNumber": "bruno-{{sessionTimestamp}}",
     "publicationDate": "2026-02-01"
   }
 }
@@ -54,10 +54,10 @@ script:pre-request {
 
   const crypto = require('crypto');
 
-  if (!bru.getEnvVar("dispositionDossierExternalId")) {
+  if (!bru.getVar("dispositionDossierExternalId")) {
     bru.setVar("dispositionDossierExternalId", crypto.randomUUID());
   }
-  if (!bru.getEnvVar("dispositionAttachmentExternalId")) {
+  if (!bru.getVar("dispositionAttachmentExternalId")) {
     bru.setVar("dispositionAttachmentExternalId", crypto.randomUUID());
   }
 }

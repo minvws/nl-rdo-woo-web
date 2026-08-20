@@ -22,18 +22,18 @@ body:json {
   {
     "departmentId":  "{{departmentId}}",
     "mainDocument": {
-      "fileName": "{{$randomWords}}.pdf",
+      "fileName": "main-document.pdf",
       "formalDate": "2026-02-01",
       "language": "NLD",
       "type": "c_a40458df",
       "grounds": []
     },
     "subjectId": "{{subjectId}}",
-    "summary": "{{$randomUUID}}",
-    "title": "Bruno {{$randomUUID}}",
+    "summary": "Summary of the request for advice",
+    "title": "Bruno - Request for advice",
     "attachments": [
       {
-        "fileName": "{{$randomWords}}.pdf",
+        "fileName": "attachment.pdf",
         "formalDate": "2026-02-01",
         "language": "NLD",
         "type": "c_0e425c23",
@@ -42,7 +42,7 @@ body:json {
       }
     ],
     "dossierDate": "2025-01-01",
-    "dossierNumber": "bruno-{{$randomUUID}}",
+    "dossierNumber": "bruno-{{sessionTimestamp}}",
     "publicationDate": "2026-02-01",
     "link": "",
     "advisoryBodies": []
@@ -56,10 +56,10 @@ script:pre-request {
 
   const crypto = require('crypto');
 
-  if (!bru.getEnvVar("requestForAdviceDossierExternalId")) {
+  if (!bru.getVar("requestForAdviceDossierExternalId")) {
     bru.setVar("requestForAdviceDossierExternalId", crypto.randomUUID());
   }
-  if (!bru.getEnvVar("requestForAdviceAttachmentExternalId")) {
+  if (!bru.getVar("requestForAdviceAttachmentExternalId")) {
     bru.setVar("requestForAdviceAttachmentExternalId", crypto.randomUUID());
   }
 }

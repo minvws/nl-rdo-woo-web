@@ -36,7 +36,7 @@
                 {% endif %}
                 {% if document.entity.documentId is defined %}
                     <tr>
-                        <th class="woo-table-cell-light" scope="row">{{ 'global.document_number' | trans }}</th>
+                        <th class="woo-table-cell-light" scope="row">{{ 'global.id' | trans | upper }}</th>
                         <td>{{ document.entity.documentId }}</td>
                     </tr>
                 {% endif %}

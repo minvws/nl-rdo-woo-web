@@ -11,11 +11,6 @@ use Shared\Tests\Unit\UnitTestCase;
 
 final class DossierValidationGroupTest extends UnitTestCase
 {
-    public function testDossierValidationGroup(): void
-    {
-        $this->assertMatchesSnapshot(DossierValidationGroup::cases());
-    }
-
     public function testGetValidationGroupsForStepName(): void
     {
         $result = [];

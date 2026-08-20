@@ -8,8 +8,11 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
+use PublicationApi\Api\Dossier\DossierAttachmentValidator;
+use PublicationApi\Api\Dossier\DossierMainDocumentValidator;
 use PublicationApi\Api\Dossier\DossierNumberValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\Dossier\DossierValidator;
 use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
@@ -40,8 +43,11 @@ final readonly class AnnualReportProcessor implements ProcessorInterface
     public function __construct(
         private DossierNumberValidator $dossierNumberValidator,
         private DossierSupportService $dossierSupportService,
+        private DossierAttachmentValidator $dossierAttachmentValidator,
+        private DossierMainDocumentValidator $dossierMainDocumentValidator,
         private DossierUpdateGuard $dossierUpdateGuard,
         private DossierRepository $dossierRepository,
+        private DossierValidator $dossierValidator,
         private AnnualReportMapper $annualReportMapper,
         private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
@@ -111,7 +117,7 @@ final readonly class AnnualReportProcessor implements ProcessorInterface
         if ($annualReportRequestDto->mainDocument !== null) {
             $mainDocument = AnnualReportMainDocumentMapper::create($annualReport, $annualReportRequestDto->mainDocument);
             $annualReport->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             $noticeNotPublic = $annualReportRequestDto->noticeNotPublic;
             Assert::notNull($noticeNotPublic);
@@ -121,12 +127,15 @@ final readonly class AnnualReportProcessor implements ProcessorInterface
             );
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($annualReportRequestDto->attachments);
         $attachments = $this->getAttachments($annualReport, $annualReportRequestDto->attachments);
-        $this->dossierSupportService->validateAttachments($attachments);
+        $this->dossierAttachmentValidator->validate($attachments, $annualReport->getStatus());
         $this->dossierSupportService->addAttachments($annualReport, $attachments);
 
-        $this->dossierSupportService->validateDossier($annualReport);
-        $this->dossierSupportService->dispatchCreateDossierCommand($annualReport);
+        $this->dossierValidator->validateDossier($annualReport);
+        $this->dossierSupportService->autoPublish($annualReport);
+        $this->dossierSupportService->validateCompletionAndPersist($annualReport);
+        $this->dossierSupportService->synchronizeArtifacts($annualReport);
 
         return $annualReport;
     }
@@ -149,7 +158,7 @@ final readonly class AnnualReportProcessor implements ProcessorInterface
                 ? AnnualReportMainDocumentMapper::update($annualReport, $annualReportRequestDto->mainDocument)
                 : AnnualReportMainDocumentMapper::create($annualReport, $annualReportRequestDto->mainDocument);
             $annualReport->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             if ($annualReport->getMainDocument() !== null) {
                 $this->messageBus->dispatch(new DeleteMainDocumentCommand($annualReport->getId()));
@@ -164,12 +173,16 @@ final readonly class AnnualReportProcessor implements ProcessorInterface
             $annualReport->setNoticeNotPublic($notice);
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($annualReportRequestDto->attachments);
+        $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($annualReport, $annualReportRequestDto->attachments);
         $attachments = $this->getAttachments($annualReport, $annualReportRequestDto->attachments);
-        $this->dossierSupportService->validateAttachments($attachments);
+        $this->dossierAttachmentValidator->validate($attachments, $annualReport->getStatus());
         $this->attachmentSynchronizer->sync($annualReport, $annualReportRequestDto->attachments);
 
-        $this->dossierSupportService->validateDossier($annualReport);
-        $this->dossierSupportService->dispatchUpdateDossierCommand($annualReport);
+        $this->dossierValidator->validateDossier($annualReport);
+        $this->dossierSupportService->autoPublish($annualReport);
+        $this->dossierSupportService->validateCompletionAndPersist($annualReport);
+        $this->dossierSupportService->synchronizeArtifacts($annualReport);
     }
 
     /**

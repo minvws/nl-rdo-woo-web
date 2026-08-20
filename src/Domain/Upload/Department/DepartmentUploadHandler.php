@@ -11,7 +11,7 @@ use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Uid\Uuid;
 
-#[AsEventListener(event: UploadValidatedEvent::class, method: 'onUploadValidated')]
+#[AsEventListener]
 final readonly class DepartmentUploadHandler
 {
     public function __construct(
@@ -20,7 +20,7 @@ final readonly class DepartmentUploadHandler
     ) {
     }
 
-    public function onUploadValidated(UploadValidatedEvent $event): void
+    public function __invoke(UploadValidatedEvent $event): void
     {
         $uploadEntity = $event->uploadEntity;
         if ($uploadEntity->getUploadGroupId() !== UploadGroupId::DEPARTMENT) {

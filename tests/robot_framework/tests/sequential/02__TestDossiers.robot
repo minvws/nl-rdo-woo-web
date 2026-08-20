@@ -7,6 +7,7 @@ Resource            ../../resources/AnnualReport.resource
 Resource            ../../resources/ComplaintJudgement.resource
 Resource            ../../resources/Covenant.resource
 Resource            ../../resources/Disposition.resource
+Resource            ../../resources/DraftDecision.resource
 Resource            ../../resources/InvestigationReport.resource
 Resource            ../../resources/Organisations.resource
 Resource            ../../resources/OtherPublication.resource
@@ -60,6 +61,10 @@ Adviesaanvraag, Concept                               request-for-advice    Conc
 Adviesaanvraag, Gepubliceerd                          request-for-advice    Gepubliceerd          ${FALSE}
 Adviesaanvraag, Gepubliceerd, Bijlage                 request-for-advice    Gepubliceerd          ${TRUE}
 Adviesaanvraag, Gepland                               request-for-advice    Gepland               ${FALSE}
+Ontwerpbesluit, Concept                               draft-decision        Concept               ${FALSE}
+Ontwerpbesluit, Gepubliceerd                          draft-decision        Gepubliceerd          ${FALSE}
+Ontwerpbesluit, Gepubliceerd, Bijlage                 draft-decision        Gepubliceerd          ${TRUE}
+Ontwerpbesluit, Gepland                               draft-decision        Gepland               ${FALSE}
 
 
 *** Keywords ***
@@ -102,5 +107,7 @@ Create Test Dossier
     Fill Out Advice Details  ${has_attachment}
   ELSE IF  "${type}" == "request-for-advice"
     Fill Out Request For Advice Details  ${has_attachment}
+  ELSE IF  "${type}" == "draft-decision"
+    Fill Out DraftDecision Details  ${has_attachment}
   END
   Publish Dossier And Return To Admin Home  ${publication_status}

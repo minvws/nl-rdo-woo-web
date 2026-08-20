@@ -17,25 +17,25 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DocumentController extends AbstractController
 {
     #[Route(
-        path: '/balie/dossier/woodecision/document/summary/{prefix}/{dossierNumber}/{documentNumber}',
+        path: '/balie/dossier/woodecision/document/summary/{documentPrefix}/{dossierNumber}/{documentNumber}',
         name: 'app_admin_dossier_woodecision_document',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function document(
         Breadcrumbs $breadcrumbs,
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
-        #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(prefix, dossierNumber, documentNumber)')] Document $document,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
+        #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(documentPrefix, dossierNumber, documentNumber)')] Document $document,
     ): Response {
         $breadcrumbs->addRouteItem(
             (string) $dossier->getTitle(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addRouteItem(
             'admin.dossiers.woo-decision.step.documents',
             'app_admin_dossier_woodecision_documents_edit',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addItem($document->getFileInfo()->getName() ?? '');
 

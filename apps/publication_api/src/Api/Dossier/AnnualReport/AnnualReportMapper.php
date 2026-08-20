@@ -103,7 +103,7 @@ readonly class AnnualReportMapper
     ): AnnualReport {
         $annualReport = new AnnualReport();
         $annualReport->setExternalId($externalId);
-        $annualReport->setStatus(DossierStatus::NEW);
+        $annualReport->setStatus(DossierStatus::CONCEPT);
         $annualReport->setDocumentPrefix($documentPrefix);
 
         self::update($annualReport, $annualReportRequestDto, $organisation, $department, $subject);
@@ -122,7 +122,9 @@ readonly class AnnualReportMapper
         $annualReport->setDepartments([$department]);
         $annualReport->setDossierNumber($annualReportRequestDto->dossierNumber);
         $annualReport->setOrganisation($organisation);
-        $annualReport->setPublicationDate($annualReportRequestDto->publicationDate);
+        if (! $annualReport->getStatus()->isPublished()) {
+            $annualReport->setPublicationDate($annualReportRequestDto->publicationDate);
+        }
         $annualReport->setSubject($subject);
         $annualReport->setSummary($annualReportRequestDto->summary);
         $annualReport->setTitle($annualReportRequestDto->title);

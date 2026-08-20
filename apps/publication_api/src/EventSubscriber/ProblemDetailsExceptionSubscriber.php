@@ -8,8 +8,8 @@ use PublicationApi\Domain\OpenApi\ProblemDetailsFactory;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 
+#[AsEventListener(priority: -10)]
 final readonly class ProblemDetailsExceptionSubscriber
 {
     public function __construct(
@@ -17,8 +17,7 @@ final readonly class ProblemDetailsExceptionSubscriber
     ) {
     }
 
-    #[AsEventListener(event: KernelEvents::EXCEPTION, priority: -10)]
-    public function onException(ExceptionEvent $event): void
+    public function __invoke(ExceptionEvent $event): void
     {
         $problemDetails = $this->problemDetailsFactory->build($event->getThrowable());
         if ($problemDetails === null) {

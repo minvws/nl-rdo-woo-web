@@ -7,7 +7,6 @@ namespace Shared\Tests\Unit\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Domain\Search\SearchDispatcher;
 use Shared\Service\DossierService;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Shared\Tests\Unit\UnitTestCase;
@@ -25,7 +24,6 @@ class DossierServiceTest extends UnitTestCase
         $dossierService = new DossierService(
             $doctrine,
             $statusFactory,
-            Mockery::mock(SearchDispatcher::class),
             Mockery::mock(ValidatorInterface::class),
         );
 
@@ -57,7 +55,6 @@ class DossierServiceTest extends UnitTestCase
         $dossierService = new DossierService(
             Mockery::mock(EntityManagerInterface::class),
             Mockery::mock(WizardStatusFactory::class),
-            Mockery::mock(SearchDispatcher::class),
             $validator,
         );
 
@@ -81,7 +78,6 @@ class DossierServiceTest extends UnitTestCase
         $dossierService = new DossierService(
             Mockery::mock(EntityManagerInterface::class),
             Mockery::mock(WizardStatusFactory::class),
-            Mockery::mock(SearchDispatcher::class),
             $validator,
         );
 

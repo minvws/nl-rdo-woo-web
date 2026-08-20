@@ -75,7 +75,7 @@ readonly class AttachmentResponseDtoFactory
             $linkCollection->set(
                 LinkCollection::FILE,
                 new Link($this->publicUrlGenerator->buildUrlFromRoute(DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, [
-                    'prefix' => $dossier->getDocumentPrefix(),
+                    'documentPrefix' => $dossier->getDocumentPrefix(),
                     'dossierNumber' => $dossier->getDossierNumber(),
                     'type' => DossierFileType::ATTACHMENT->value,
                     'id' => $attachment->getId(),

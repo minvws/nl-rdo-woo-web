@@ -1,0 +1,50 @@
+{{ form_start(form) }}
+    {{ form_row(form.summary) }}
+
+    <twig:Admin:Publication:ManageDocument
+        canDelete="{{ canDeleteDocument }}"
+        documentType="{{ 'admin.dossiers.draft-decision.document' | trans }}"
+        documentTypes="{{ documentTypes }}"
+        endpoint="{{ '/balie/api/dossiers/' ~ dossier.id ~ '/draft-decision-document' }}"
+        e2eName="draft-decision"
+        fileLimits="{{ documentFileLimits | default([])}}"
+        formField="{{ form.document }}"
+        grounds="{{ [] }}"
+        helpText="{{ 'admin.dossiers.draft-decision.form.content.document_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        title="{{ 'admin.dossiers.draft-decision.form.content.document_label' | trans }}"
+        dossierId="{{ dossier.id }}"
+    />
+
+    {% set attachmentsApiEndpoint = '/balie/api/dossiers/' ~ dossier.id ~ '/draft-decision-attachments' %}
+
+     <twig:Admin:Publication:ManageAttachments
+        allowMultiple="{{ false }}"
+        canDelete="{{ canDeleteAttachments }}"
+        documentTypes="{{ requestForAdviceTypes }}"
+        endpoint="{{ attachmentsApiEndpoint }}"
+        e2eName="request-for-advice"
+        fileLimits="{{ attachmentFileLimits | default([])}}"
+        formField="{{ form.attachment }}"
+        grounds="{{ [] }}"
+        helpText="{{ 'admin.dossiers.draft-decision.form.content.attachment_help' | trans }}"
+        languages="{{ attachmentLanguages }}"
+        minLength="{{ 1 }}"
+        maxLength="{{ 1 }}"
+        readableFileType="{{ 'admin.dossiers.draft-decision.form.content.attachment_label' | trans }}"
+        title="{{ 'admin.dossiers.draft-decision.form.content.attachment_label' | trans }}"
+        dossierId="{{ dossier.id }}"
+    />
+
+    <twig:Admin:Publication:ManageAttachments
+        canDelete="{{ canDeleteAttachments }}"
+        documentTypes="{{ attachmentTypes }}"
+        endpoint="{{ attachmentsApiEndpoint }}"
+        fileLimits="{{ attachmentFileLimits | default([])}}"
+        grounds="{{ [] }}"
+        languages="{{ attachmentLanguages }}"
+        maxLength="{{ 49 }}"
+        dossierId="{{ dossier.id }}"
+    />
+
+{{ form_end(form) }}

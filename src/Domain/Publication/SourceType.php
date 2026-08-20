@@ -28,6 +28,7 @@ enum SourceType: string implements TranslatableInterface
     case CHAT = 'chat';
     case AUDIO = 'audio';
     case UNKNOWN = 'unknown';
+    case MULTIPLE = 'multiple';
 
     // Finds the given source type in the list of known types
     public static function create(?string $target): self

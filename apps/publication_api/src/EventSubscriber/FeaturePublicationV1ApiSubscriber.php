@@ -8,8 +8,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\KernelEvents;
 
+#[AsEventListener(priority: 5)]
 final readonly class FeaturePublicationV1ApiSubscriber
 {
     public function __construct(
@@ -18,8 +18,7 @@ final readonly class FeaturePublicationV1ApiSubscriber
     ) {
     }
 
-    #[AsEventListener(event: KernelEvents::REQUEST, priority: 5)]
-    public function onRequest(RequestEvent $event): void
+    public function __invoke(RequestEvent $event): void
     {
         if ($this->hasFeaturePublicationV1) {
             return;

@@ -29,12 +29,13 @@ readonly class DossierPathHelper
             DossierType::OTHER_PUBLICATION => 'app_otherpublication_detail',
             DossierType::ADVICE => 'app_advice_detail',
             DossierType::REQUEST_FOR_ADVICE => 'app_requestforadvice_detail',
+            DossierType::DRAFT_DECISION => 'app_draftdecision_detail',
         };
 
         return $this->router->generate(
             $routeName,
             [
-                'prefix' => $dossier->getDocumentPrefix(),
+                'documentPrefix' => $dossier->getDocumentPrefix(),
                 'dossierNumber' => $dossier->getDossierNumber(),
             ],
         );

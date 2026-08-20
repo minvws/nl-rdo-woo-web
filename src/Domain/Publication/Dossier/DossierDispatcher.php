@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier;
 
 use Shared\Domain\Publication\Dossier\Command\CreateDossierCommand;
 use Shared\Domain\Publication\Dossier\Command\DeleteDossierCommand;
+use Shared\Domain\Publication\Dossier\Command\SynchronizeDossierArtifactsCommand;
 use Shared\Domain\Publication\Dossier\Command\UpdateDossierContentCommand;
 use Shared\Domain\Publication\Dossier\Command\UpdateDossierDetailsCommand;
 use Shared\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
@@ -31,11 +32,11 @@ readonly class DossierDispatcher
         );
     }
 
-    public function dispatchUpdateDossierCommand(AbstractDossier $dossier): void
+    public function dispatchSynchronizeArtifactsCommand(AbstractDossier $dossier): void
     {
-        $this->dispatchUpdateDossierDetailsCommand($dossier);
-        $this->dispatchUpdateDossierContentCommand($dossier);
-        $this->dispatchUpdateDossierPublicationCommand($dossier);
+        $this->messageBus->dispatch(
+            SynchronizeDossierArtifactsCommand::forDossier($dossier),
+        );
     }
 
     public function dispatchUpdateDossierDetailsCommand(AbstractDossier $dossier): void

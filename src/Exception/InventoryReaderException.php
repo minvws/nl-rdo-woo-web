@@ -54,6 +54,25 @@ class InventoryReaderException extends FileReaderException
         );
     }
 
+    public static function forInvalidPublicationContextInRow(int $rowIndex): self
+    {
+        return new self(
+            "Invalid publication context in inventory row #$rowIndex",
+            'publication.dossier.error.invalid_publication_context',
+            [
+                '{rownumber}' => strval($rowIndex),
+            ],
+        );
+    }
+
+    public static function forMatterAndPublicationContextCombination(): self
+    {
+        return new self(
+            'A production report with a "Publicatiecontext" column cannot contain a "Matter" column',
+            'publication.dossier.error.matter_and_publication_context_combination',
+        );
+    }
+
     public static function forRemarkTooLong(int $rowIndex, int $max): self
     {
         return new self(

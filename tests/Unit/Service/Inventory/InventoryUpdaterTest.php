@@ -37,11 +37,10 @@ use Shared\Service\Inventory\InventoryUpdater;
 use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Shared\Service\Inventory\Reader\InventoryReadItem;
-use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
-use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
@@ -186,7 +185,6 @@ class InventoryUpdaterTest extends UnitTestCase
     public function testApplyChangesetToDatabaseAddsDocumentAndAppliesReferralUpdates(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDocumentPrefix')->andReturn('PFX');
         $dossier->expects('getOrganisation')->andReturn(Mockery::mock(Organisation::class));
 
         $metadata = new DocumentMetadata(
@@ -203,7 +201,7 @@ class InventoryUpdaterTest extends UnitTestCase
             suspended: false,
             links: [],
             remark: null,
-            matter: DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
+            publicationContext: PublicationContext::fromString('PFX-MAT'),
             refersTo: ['matter-77'],
         );
 
@@ -253,8 +251,6 @@ class InventoryUpdaterTest extends UnitTestCase
     public function testApplyChangesetToDatabaseWrapsNonTranslatableRowExceptionAndAborts(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDocumentPrefix')
-            ->andReturn('PFX');
         $dossier->expects('getOrganisation')
             ->andReturn(Mockery::mock(Organisation::class));
 
@@ -272,7 +268,7 @@ class InventoryUpdaterTest extends UnitTestCase
             suspended: false,
             links: [],
             remark: null,
-            matter: DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
+            publicationContext: PublicationContext::fromString('PFX-MAT'),
             refersTo: [],
         );
 
@@ -314,8 +310,6 @@ class InventoryUpdaterTest extends UnitTestCase
     public function testApplyChangesetToDatabasePassesTranslatableRowExceptionThroughAndAborts(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDocumentPrefix')
-            ->andReturn('PFX');
         $dossier->expects('getOrganisation')
             ->andReturn(Mockery::mock(Organisation::class));
 
@@ -333,7 +327,7 @@ class InventoryUpdaterTest extends UnitTestCase
             suspended: false,
             links: [],
             remark: null,
-            matter: DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
+            publicationContext: PublicationContext::fromString('PFX-MAT'),
             refersTo: [],
         );
 
@@ -404,7 +398,6 @@ class InventoryUpdaterTest extends UnitTestCase
     public function testApplyChangesetToDatabaseSkipsUnchangedDocuments(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDocumentPrefix')->andReturn('PFX');
         $dossier->expects('getOrganisation')->andReturn(Mockery::mock(Organisation::class));
 
         $index = $this->getFaker()->numberBetween(1, 100);
@@ -434,7 +427,6 @@ class InventoryUpdaterTest extends UnitTestCase
     public function testApplyChangesetToDatabaseThrowsStateMismatchWhenAddedDocumentAlreadyExists(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDocumentPrefix')->andReturn('PFX');
         $dossier->expects('getOrganisation')->andReturn(Mockery::mock(Organisation::class));
 
         $index = $this->getFaker()->numberBetween(1, 100);
@@ -500,7 +492,6 @@ class InventoryUpdaterTest extends UnitTestCase
     public function testApplyChangesetToDatabaseThrowsWhenReferralDocumentIsMissing(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDocumentPrefix')->andReturn('PFX');
         $dossier->expects('getOrganisation')->andReturn(Mockery::mock(Organisation::class));
 
         $index = $this->getFaker()->numberBetween(1, 100);
@@ -583,7 +574,7 @@ class InventoryUpdaterTest extends UnitTestCase
             suspended: false,
             links: [],
             remark: null,
-            matter: DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
+            publicationContext: PublicationContext::fromString('PFX-MAT'),
             refersTo: $refersTo,
         );
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Public;
 
-use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Shared\Domain\Search\Query\SearchParametersFactory;
 use Shared\Domain\Search\Theme\ThemeInterface;
 use Shared\Domain\Search\Theme\ThemeManager;
@@ -35,11 +34,8 @@ class ThemeController extends AbstractController
     }
 
     #[Route('/thema/{name}', name: 'app_theme')]
-    public function search(
-        string $name,
-        Request $request,
-        Breadcrumbs $breadcrumbs,
-    ): Response {
+    public function search(string $name, Request $request): Response
+    {
         // If we have a POST request, we have a search query in the body. Redirect to GET request
         // so we have the q in the query string.
         if ($request->isMethod('POST')) {
@@ -54,9 +50,6 @@ class ThemeController extends AbstractController
 
         $theme = $this->getTheme($name);
         $result = $this->getResult($request, $theme);
-
-        $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem($theme->getPageTitleTranslationKey());
 
         if ($result->hasFailed()) {
             return $this->render('public/search/result-failure.html.twig', [

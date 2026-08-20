@@ -29,20 +29,20 @@ class ContentStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/disposition/content/concept/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/disposition/content/concept/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_disposition_content_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Disposition $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Disposition $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem(
             (string) $dossier->getTitle(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addItem('admin.dossiers.disposition.step.content');
 
@@ -74,13 +74,13 @@ class ContentStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/disposition/content/edit/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/disposition/content/edit/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_disposition_content_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Disposition $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Disposition $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {

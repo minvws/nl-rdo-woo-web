@@ -7,12 +7,12 @@ namespace Shared\Tests\Unit\Domain\Search\Result\Dossier;
 use MinVWS\TypeArray\TypeArray;
 use Mockery;
 use Mockery\MockInterface;
+use Shared\ApplicationId;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
 use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use Shared\Domain\Search\Result\Dossier\DossierSearchResultEntry;
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Unit\UnitTestCase;
 
 class DossierSearchResultBaseMapperTest extends UnitTestCase
@@ -44,7 +44,7 @@ class DossierSearchResultBaseMapperTest extends UnitTestCase
 
         $this->repository
             ->expects('getSearchResultViewModel')
-            ->with('foo', 'bar', ApplicationMode::ADMIN)
+            ->with('foo', 'bar', ApplicationId::ADMIN)
             ->andReturnNull();
 
         $this->assertNull(
@@ -53,7 +53,7 @@ class DossierSearchResultBaseMapperTest extends UnitTestCase
                 $this->repository,
                 ElasticDocumentType::ANNUAL_REPORT,
                 [],
-                ApplicationMode::ADMIN,
+                ApplicationId::ADMIN,
             ),
         );
     }
@@ -71,7 +71,7 @@ class DossierSearchResultBaseMapperTest extends UnitTestCase
 
         $this->repository
             ->expects('getSearchResultViewModel')
-            ->with('foo', 'bar', ApplicationMode::PUBLIC)
+            ->with('foo', 'bar', ApplicationId::PUBLIC)
             ->andReturn($viewModel);
 
         $entry = $this->mapper->map($this->hit, $this->repository, ElasticDocumentType::COVENANT);

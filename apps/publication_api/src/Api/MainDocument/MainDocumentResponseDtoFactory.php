@@ -49,6 +49,31 @@ readonly class MainDocumentResponseDtoFactory
         );
     }
 
+    /**
+     * For dossier types whose documents may not be redacted, so their response DTO has no grounds property.
+     *
+     * @template T of MainDocumentResponseDtoInterface
+     *
+     * @param class-string<T> $responseDtoClass
+     *
+     * @return T
+     */
+    public function fromEntityWithoutGrounds(
+        AbstractMainDocument $mainDocument,
+        string $routeNameUpload,
+        string $responseDtoClass,
+    ): MainDocumentResponseDtoInterface {
+        return new $responseDtoClass(
+            $mainDocument->getId(),
+            $mainDocument->getType(),
+            $mainDocument->getLanguage(),
+            $mainDocument->getFormalDate(),
+            $mainDocument->getFileInfo()->getName(),
+            $this->mainDocumentUploadStatusService->getUploadStatus($mainDocument),
+            $this->getHalLinks($mainDocument, $routeNameUpload),
+        );
+    }
+
     private function getHalLinks(AbstractMainDocument $mainDocument, string $routeNameUpload): LinkCollection
     {
         $dossier = $mainDocument->getDossier();
@@ -66,7 +91,7 @@ readonly class MainDocumentResponseDtoFactory
             $linkCollection->set(
                 LinkCollection::FILE,
                 new Link($this->publicUrlGenerator->buildUrlFromRoute(DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, [
-                    'prefix' => $dossier->getDocumentPrefix(),
+                    'documentPrefix' => $dossier->getDocumentPrefix(),
                     'dossierNumber' => $dossier->getDossierNumber(),
                     'type' => DossierFileType::MAIN_DOCUMENT->value,
                     'id' => $mainDocument->getId(),

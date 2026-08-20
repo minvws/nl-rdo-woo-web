@@ -10,14 +10,14 @@ use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Uid\Uuid;
 
-#[AsEventListener(event: UploadValidatedEvent::class, method: 'onUploadValidated')]
+#[AsEventListener]
 final readonly class DocumentUploadHandler
 {
     public function __construct(private WooDecisionDispatcher $wooDecisionDispatcher)
     {
     }
 
-    public function onUploadValidated(UploadValidatedEvent $event): void
+    public function __invoke(UploadValidatedEvent $event): void
     {
         $uploadEntity = $event->uploadEntity;
         if ($uploadEntity->getUploadGroupId() !== UploadGroupId::API_WOO_DECISION_DOCUMENTS) {

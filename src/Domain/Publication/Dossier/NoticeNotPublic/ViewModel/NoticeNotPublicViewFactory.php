@@ -32,7 +32,7 @@ readonly class NoticeNotPublicViewFactory
         $detailsUrl = $this->urlGenerator->generate(
             sprintf('app_%s_notice_not_public_detail', $dossier->getType()->getValueForRouteName()),
             [
-                'prefix' => $dossier->getDocumentPrefix(),
+                'documentPrefix' => $dossier->getDocumentPrefix(),
                 'dossierNumber' => $dossier->getDossierNumber(),
             ],
         );

@@ -2,168 +2,194 @@
 
 <!-- TOC -->
 - [Woo Publication Platform](#woo-publication-platform)
-  - [Technical details](#technical-details)
-    - [Paths & Classes](#paths--classes)
-      - [Path: /src/Command](#path-srccommand)
-      - [Path: /src/Controller](#path-srccontroller)
-      - [Path: /src/Entity](#path-srcentity)
-      - [Path: /src/Form](#path-srcform)
-      - [Path: /src/Respository](#path-srcrespository)
-      - [Path: /src/Message](#path-srcmessage)
-      - [Path: /src/MessageHandler](#path-srcmessagehandler)
-      - [Path: /src/Service](#path-srcservice)
-      - [Class: /src/Service/Ingest/IngestService](#class-srcserviceingestingestservice)
-      - [Path: /src/Service/Ingest/Handler](#path-srcserviceingesthandler)
-      - [Path: /src/Service/Ingest/Processor](#path-srcserviceingestprocessor)
-      - [Path: /src/Service/Worker](#path-srcserviceworker)
-      - [Class: /src/Service/Elastic/IndexService](#class-srcserviceelasticindexservice)
-      - [Class: /src/Service/Elastic/ElasticClientFactory](#class-srcserviceelasticelasticclientfactory)
-      - [Class: /src/Service/Elastic/ElasticService](#class-srcserviceelasticelasticservice)
-      - [Class: /src/Service/TikaServiceFactory](#class-srcservicetikaservicefactory)
-    - [Class: /src/Service/Encryption/EncryptionService](#class-srcserviceencryptionencryptionservice)
-    - [Path: /src/Service/Storage](#path-srcservicestorage)
-    - [Class: /src/Service/InventoryService](#class-srcserviceinventoryservice)
-    - [Class: /src/Service/UserService](#class-srcserviceuserservice)
-    - [Class: /src/Service/DocumentService](#class-srcservicedocumentservice)
-    - [Class: /src/Service/DossierService](#class-srcservicedossierservice)
+  - [Applications](#applications)
+  - [Tenants](#tenants)
+  - [Configuration layering](#configuration-layering)
+  - [The Shared domain](#the-shared-domain)
+    - [Publication](#publication)
+    - [Ingest](#ingest)
+    - [Search](#search)
+    - [Files and storage](#files-and-storage)
+    - [Other domains](#other-domains)
+  - [Services outside the domain layer](#services-outside-the-domain-layer)
+  - [Message queues](#message-queues)
   - [Adding more ingesters / file formats](#adding-more-ingesters--file-formats)
-  - [Prometheus exporters](#prometheus-exporters)
+  - [Monitoring endpoints](#monitoring-endpoints)
 <!-- TOC -->
 
-## Technical details
+This document describes how the code is organised. For the publication domain specifically,
+[dossier-types.md](dossier-types.md) is more detailed and is the better starting point when adding a publication type.
 
-### Paths & Classes
+## Applications
 
-#### Path: /src/Command
+The platform is not a single application. `composer.json` maps six PSR-4 roots:
 
-Holds all commands that can be run on the commandline. Most commands are used for development purposes.
+| Namespace         | Path                        | Contents                                                               |
+|-------------------|-----------------------------|------------------------------------------------------------------------|
+| `Shared\`         | `src/`                      | The domain model, and most of the controllers, forms and templates     |
+| `Admin\`          | `apps/admin/src/`           | Mostly the admin API (`Api/`), plus authentication and user management |
+| `Public\`         | `apps/public/src/`          | Empty; the public controllers live in `src/Controller/Public`          |
+| `PublicationApi\` | `apps/publication_api/src/` | The API Platform application for external parties                      |
+| `Worker\`         | `apps/worker/src/`          | The message queue consumers                                            |
+| `WooMinVWS\`      | `tenants/minvws/src/`       | minvws-specific code, including all audit logging                      |
 
-#### Path: /src/Controller
+A running instance is exactly **one** of these applications, selected by the `APP_ID` environment variable (see
+[environment-settings.md](environment-settings.md)) or `--id` on the command line (see [commands.md](commands.md)). This
+replaced the old `APP_MODE` setting. `apps/shared/` holds configuration only and has no `src/`.
 
-Holds all controllers that are used for the web interface.
+The practical consequence: a service, route or console command defined under `apps/<app>/` only exists when that
+application is booted.
 
-#### Path: /src/Entity
+**The split is not what the directory names suggest.** `apps/` is much smaller than `src/`, and the web-facing code has
+largely stayed in `Shared\`:
 
-Holds all entities that are used for the database.
+- the admin dossier wizard — its controllers (`src/Controller/Admin/Dossier/`), forms (`src/Form/Dossier/`) and
+  templates — is in `Shared\`, not in `apps/admin/`. `apps/admin/src/Controller` holds only four controllers (index,
+  login, user management and organisation switching);
+- the public site's controllers are in `src/Controller/Public/`, and `apps/public/src/` is empty;
+- what `apps/admin/` really contains is the admin API used by the editor front-end, in `apps/admin/src/Api/Admin/`.
 
-#### Path: /src/Form
+So when looking for a page, start in `src/Controller/`. Only the Publication API is genuinely self-contained in its own
+application.
 
-Holds all forms that are used for the web interface / validation.
+## Tenants
 
-#### Path: /src/Respository
+The platform is multi-tenant. `Shared\TenantId` enumerates them: `minvws`, `minfin` and `minbuza`.
 
-Holds all repositories that are used for the database.
+For web requests, `Shared\TenantResolver` maps the incoming `HTTP_HOST` to a tenant using the
+`HTTP_HOST_TO_TENANT_MAPPING` environment variable. On the command line the tenant comes from the mandatory `--tenant`
+option.
 
-#### Path: /src/Message
+Per-tenant overrides live in `tenants/<tenant>/`, which can contain `config/`, `assets/`, `translations/`, `src/` and
+`tests/`. Only `minvws` currently has `src/`, which is why some behaviour — audit logging in particular, see
+[logging.md](logging.md) — exists for that tenant alone.
 
-Holds all messages that are used for the rabbitMQ queue. Each type of message corresponds to a ingest task.
-There is for instance a PDF ingester (ie IngestPdfMessage) and an MetadataOnly ingester (ie IngestMetadataOnlyMessage).
+## Configuration layering
 
-These messages are send through the rabbitMQ queue and are consumed by the worker.
+`Shared\Kernel` compiles a separate container per (tenant, application, environment) and loads bundles, services and
+routes from three directories in order:
 
-#### Path: /src/MessageHandler
+1. `config/` — shared
+2. `apps/<application>/config/` — application-specific
+3. `tenants/<tenant>/config/` — tenant-specific
 
-Holds all message handlers that are used for the rabbitMQ queue. Each type of message handler corresponds
-to a ingester. Each ingester will take a message from the queue and process it. For instance, the PDF ingester
-will take a IngestPdfMessage and will extract the text from the PDF for the given page it needs to ingest, and
-store it in the database and elasticsearch. The bulk of the work is done in the `Shared\Service\Worker` classes.
+Later layers override earlier ones. The kernel also exposes `kernel.application_id` and `kernel.tenant_id` as container
+parameters, and writes cache, build and log directories per tenant and application, so `var/log/minvws/admin/` and
+`var/log/minfin/worker/` are separate.
 
-#### Path: /src/Service
+## The Shared domain
 
-Holds all services that are used for the application. These services are used by the controllers and
-message handlers.
+`src/Domain/` is organised by domain rather than by technical role. There is no `src/Entity`, `src/Message` or
+`src/MessageHandler`; entities, commands and handlers sit next to the domain logic that owns them.
 
-#### Class: /src/Service/Ingest/IngestService
+### Publication
 
-The main class to call for ingesting a document. This class will check all handlers (found in
-`App/Service/Ingest/Handler`), and see if there is a candidate that can handle the given document (based on
-mimetype). If so, that handler will be used to prepare the document and send ingester messages to the queue.
-For instance, a metadata only handler will generate a single ingest message, but a pdf file will generate a ingest
-message per page.
+`src/Domain/Publication/` is the core of the system:
 
-#### Path: /src/Service/Ingest/Handler
+| Namespace        | Contents                                                                         |
+|------------------|----------------------------------------------------------------------------------|
+| `Dossier`        | `AbstractDossier`, the wizard, workflows, voters, delete strategies, view models |
+| `Dossier/Type/*` | One namespace per publication type (see [dossier-types.md](dossier-types.md))    |
+| `MainDocument`   | `AbstractMainDocument` and its commands, handlers and events                     |
+| `Attachment`     | `AbstractAttachment` and its commands, handlers and events                       |
+| `BatchDownload`  | Generating ZIP archives of a dossier or inquiry                                  |
+| `History`        | The change history shown in the admin                                            |
+| `Subject`        | Subject labels                                                                   |
 
-These classes are used to prepare a document for ingesting.
+See [doctrine.md](doctrine.md) for the entity landscape.
 
-#### Path: /src/Service/Ingest/Processor
+### Ingest
 
-These classes are used to process given documents for ingesting. In some cases, it is needed to fetch some
-metadata like pagecount etc. These processor classes will fetch this information from the
-files. Note that these are NOT the same as the processors found in `\Shared\Service\Worker` even though in theory
-the can overlap in functionality.
+Ingest is the process of (re-)building all derived data for a publication: indexing into Elasticsearch, extracting
+content, generating thumbnails, running OCR. It must be able to restore everything from the database and file storage
+alone.
 
-#### Path: /src/Service/Worker
+`src/Domain/Ingest/` has two halves:
 
-These classes are used to process ingester messages. These processors are called from the worker handlers
-(`\Shared\MessageHandler\Ingest*Handler`) and provide the meat of processing of a given document.
+- `Ingest/Process/` — one namespace per ingest step, each holding an `Ingest*Command` and its `Ingest*Handler`:
+  `Dossier`, `Pdf`, `PdfPage`, `MetadataOnly`, `TikaOnly` and `SubType`. `Process/Dossier` also holds `DossierIngester`
+  and the per-type strategies behind `DossierIngestStrategyInterface`.
+- `Ingest/Content/` — content extraction, with `Extractor/Tika` and `Extractor/Tesseract` behind
+  `ContentExtractorInterface`, keyed by `ContentExtractorKey`.
 
-#### Class: /src/Service/Elastic/IndexService
+A PDF is ingested by `IngestPdfCommand`, which dispatches an `IngestPdfPageCommand` per page.
 
-This class is used to manage the elasticsearch index. It consists of create/delete/alias and is used mostly
-in the command line tools.
+### Search
 
-#### Class: /src/Service/Elastic/ElasticClientFactory
+`src/Domain/Search/`:
 
-This class can generate a complete configured elasticsearch client.
+| Namespace            | Contents                                                                       |
+|----------------------|--------------------------------------------------------------------------------|
+| `Index`              | `ElasticDocument`, `ElasticDocumentType`, the per-entity indexers and updaters |
+| `Index/ElasticIndex` | `ElasticIndexManager`, which creates, deletes and aliases indices              |
+| `Index/Rollover`     | Rolling over to a new mapping version                                          |
+| `Index/Schema`       | The mapping-facing helpers (`ElasticPath`, `ElasticHighlights`)                |
+| `Result`             | Search result view models, per dossier type                                    |
 
-#### Class: /src/Service/Elastic/ElasticService
+See [elastic_index.md](elastic_index.md) for the index itself.
 
-The main elastic service class that communicates with elasticsearch. It is used to index documents. Retrieval of documents
-is done through the `searchService`.
+### Files and storage
 
-#### Class: /src/Service/TikaServiceFactory
+| Namespace            | Contents                                                            |
+|----------------------|---------------------------------------------------------------------|
+| `Domain/Upload`      | Chunked uploads, validation and virus scanning (`Upload/AntiVirus`) |
+| `Domain/FileStorage` | Checking storage against the database, finding orphaned files       |
+| `Domain/S3`          | S3 / MinIO specifics                                                |
+| `Service/Storage`    | Flysystem-backed storage services, local or S3                      |
 
-This class can generate a complete configured tika client.
+### Other domains
 
-### Class: /src/Service/Encryption/EncryptionService
+`Domain/Content` (editable content pages), `Domain/Department`, `Domain/Organisation`, `Domain/WooIndex` (the DiWoo
+sitemap), `Domain/Sitemap`, `Domain/Robots` (see [robots.md](robots.md)) and `Domain/ArchiveExtractor`.
 
-This class is used to encrypt and decrypt data at rest. It is used for database values like mfa tokens and mfa
-recovery codes. It uses libsodium for encryption and decryption.
+## Services outside the domain layer
 
-### Path: /src/Service/Storage
+Some services still live under `src/Service/`:
 
-These classes are used to abstract the storage of files. Storage can be local, but also remote (like S3). There is
-functionality to copy a file to local storage if needed, for instance when processing locally on a worker system.
+| Class or namespace                                                              | Purpose                                                                                 |
+|---------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| `Encryption/EncryptionService`                                                  | Encrypt and decrypt data at rest with libsodium. Used for MFA tokens and recovery codes |
+| `Elastic/ElasticClientFactory`                                                  | Builds a fully configured Elasticsearch client                                          |
+| `Elastic/ElasticService`                                                        | Indexes documents. Retrieval goes through `Service/Search`                              |
+| `Storage`                                                                       | Abstracts file storage, local or remote, and can copy a file locally for processing     |
+| `Search`                                                                        | Query building and execution for the public search                                      |
+| `Security`                                                                      | `User`, voters, the auth matrix and application-ID checks                               |
+| `Inventory`, `Inquiry`                                                          | Reading production report spreadsheets and inquiry link imports                         |
+| `DocumentService`, `DossierService`, `AttachmentService`, `MainDocumentService` | Entity-level operations used by the admin and API                                       |
 
-### Class: /src/Service/InventoryService
+## Message queues
 
-This class is used to manage the inventory of documents. It processes the inventory spreadsheet of a dossier, and
-adds the documents to the database.
+Messenger is configured in `config/packages/messenger.yaml`. Besides `sync`, there are five queued transports, listed in
+priority order: `high`, `esupdater`, `ingestor`, `global` and `api_documents`. Each maps to its own RabbitMQ queue
+through a `<TENANT>_*_TRANSPORT_DSN` environment variable (see
+[environment-settings.md](environment-settings.md)).
 
-### Class: /src/Service/UserService
+Commands are routed to a transport in the `routing` section. Roughly: user-facing work that must happen promptly goes to
+`high`, ingest steps to `ingestor`, index updates to `esupdater`, archive generation to `global`, and document uploads
+from the Publication API to `api_documents`.
 
-This class manages users in the system. Mostly creating users, and resetting credentials (password, 2fa)
-
-### Class: /src/Service/DocumentService
-
-Document management. Ingests a document from a PDF or ZIP file, or removes a document from the database.
-
-### Class: /src/Service/DossierService
-
-Creates or mutates dossiers. This will add document entries if a inventory file is given as well.
+The consumers run in the `worker` application, one container per tenant.
 
 ## Adding more ingesters / file formats
 
-To add more ingesters, you need to follow these steps:
+To add support for another file format:
 
-1. Create an ingester handler in `\Shared\Service\Ingest\Handler` that extends the `BaseHandler` and implements `Handler`. You
-need to define two methods: `canHandle` and `handle`. The `canHandle` method will check if the given document can be
-handled (for instance, based on mimetype). The `handle` method will prepare the document for ingesting and will send
-ingest messages to the queue for processing.
+1. Create a command and handler in a new namespace under `Shared\Domain\Ingest\Process\`. Follow an existing pair such
+   as `Process/Pdf/IngestPdfCommand` and `IngestPdfHandler`. The handler does the work, or delegates to a processor
+   class in the same namespace as `PdfPageProcessor` does.
+2. If the format needs its own content extraction, implement `ContentExtractorInterface` in
+   `Shared\Domain\Ingest\Content\Extractor\` and add a case to `ContentExtractorKey`.
+3. Route the new command in `config/packages/messenger.yaml`, under the `ingestor` transport alongside the existing
+   `Ingest*Command` entries.
+4. If a dossier type needs to ingest extra relationships or files, implement `DossierIngestStrategyInterface` and add it
+   to the mapping in `DossierIngester`. See `WooDecisionIngestStrategy` for an example.
+5. Restart the workers so they pick up the new handler.
 
-   > It's important to implement the `Handler` interface. This will automatically add the handler to the ingester.
+## Monitoring endpoints
 
-2. Create an ingester message in `\Shared\Message\Ingest*Message`. This message will be sent to the queue by your new handler
-and will be consumed by the worker. This message will contain all the information needed to ingest the document, which
-often is nothing more than a document uuid.
-3. Create a message handler in `\Shared\MessageHandler\Ingest*Handler`. This handler will consume the ingest message and
-will often do nothing more than calling a `Processor` from `\Shared\Service\Worker\*Processor`.
-4. Create a processor in `\Shared\Service\Worker\*Processor`. This will do the actual processing of the ingest message.
-5. Make sure the message bus is configured to handle your new ingester message. This is done in `config/packages/messenger.yaml`
-where you need to add your message to the `routing` section (currently: `async` is used).
-6. When restarting the workers, it will automatically pick up the new ingester and start processing documents.
+Both are defined in `src/Controller/Public/StatsController.php`.
 
-## Prometheus exporters
-
-All workers can/will expose their stats through prometheus. There is a rudimentary Prometheus exporter for the worker stats. This can be called
-from the `\prometheus` endpoint and currently consists of each worker step and average duration.
+- `/prometheus` (`app_prometheus`) exposes three counters as plain text: the number of documents, the number of dossiers
+  and the total page count.
+- `/health` (`app_health`) returns JSON reporting reachability of PostgreSQL, Redis, Elasticsearch, RabbitMQ and both the
+  document and thumbnail storage, with a `503` status when any of them is down.

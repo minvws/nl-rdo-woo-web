@@ -32,7 +32,7 @@ final readonly class UrlMapper
         $subpath = $this->urlGenerator->generate(
             name: 'app_dossier_file_download',
             parameters: [
-                'prefix' => $rawUrl->documentPrefix,
+                'documentPrefix' => $rawUrl->documentPrefix,
                 'dossierNumber' => $rawUrl->dossierNumber,
                 'type' => $rawUrl->source->value,
                 'id' => $rawUrl->id,

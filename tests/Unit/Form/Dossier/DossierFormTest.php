@@ -13,7 +13,6 @@ use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Uid\Uuid;
 
 class DossierFormTest extends UnitTestCase
 {
@@ -21,8 +20,6 @@ class DossierFormTest extends UnitTestCase
     {
         $dossier = Mockery::mock(RequestForAdvice::class);
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $dossier->expects('getDocumentPrefix')->andReturn('pfx');
-        $dossier->expects('getId')->andReturn(Uuid::v6());
 
         $builder = Mockery::mock(FormBuilderInterface::class);
         $builder->expects('getData')->andReturn($dossier);
@@ -56,8 +53,6 @@ class DossierFormTest extends UnitTestCase
     {
         $dossier = Mockery::mock(RequestForAdvice::class);
         $dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
-        $dossier->expects('getDocumentPrefix')->andReturn('pfx');
-        $dossier->expects('getId')->andReturn(Uuid::v6());
 
         $builder = Mockery::mock(FormBuilderInterface::class);
         $builder->expects('getData')->andReturn($dossier);
@@ -74,8 +69,6 @@ class DossierFormTest extends UnitTestCase
     {
         $dossier = Mockery::mock(RequestForAdvice::class);
         $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
-        $dossier->expects('getDocumentPrefix')->andReturn('pfx');
-        $dossier->expects('getId')->andReturn(Uuid::v6());
 
         $builder = Mockery::mock(FormBuilderInterface::class);
         $builder->expects('getData')->andReturn($dossier);

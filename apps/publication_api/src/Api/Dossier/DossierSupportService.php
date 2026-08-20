@@ -12,35 +12,18 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierDispatcher;
-use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectRepository;
-use Shared\Service\AttachmentService;
 use Shared\Service\DossierService;
-use Shared\Service\MainDocumentService;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
-use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Validator\Constraints\Unique;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
-use Webmozart\Assert\Assert;
 
-use function array_map;
-use function array_unique;
-use function count;
-
-readonly class DossierSupportService
+final readonly class DossierSupportService
 {
     public function __construct(
-        private AttachmentService $attachmentService,
         private DepartmentRepository $departmentRepository,
         private DossierDispatcher $dossierDispatcher,
         private DossierService $dossierService,
-        private MainDocumentService $mainDocumentService,
         private SubjectRepository $subjectRepository,
     ) {
     }
@@ -87,108 +70,18 @@ readonly class DossierSupportService
         }
     }
 
-    public function dispatchCreateDossierCommand(AbstractDossier $dossier): void
+    public function synchronizeArtifacts(AbstractDossier $dossier): void
     {
-        $this->dossierDispatcher->dispatchCreateDossierCommand($dossier);
+        $this->dossierDispatcher->dispatchSynchronizeArtifactsCommand($dossier);
     }
 
-    public function dispatchUpdateDossierCommand(AbstractDossier $dossier): void
+    public function autoPublish(AbstractDossier $dossier): void
     {
-        $this->dossierDispatcher->dispatchUpdateDossierCommand($dossier);
+        $this->dossierDispatcher->dispatchUpdateDossierPublicationCommand($dossier);
     }
 
-    public function dispatchUpdateDossierDetailsCommand(AbstractDossier $dossier): void
+    public function validateCompletionAndPersist(AbstractDossier $dossier): void
     {
-        $this->dossierDispatcher->dispatchUpdateDossierDetailsCommand($dossier);
-    }
-
-    public function validateDossier(AbstractDossier $dossier): void
-    {
-        try {
-            $this->dossierService->validate($dossier, DossierValidationGroup::allNonWorkflowGroups());
-        } catch (ValidationFailedException $validationFailedException) {
-            $this->dossierService->refreshDossier($dossier);
-            throw new ValidationException($validationFailedException->getViolations(), previous: $validationFailedException);
-        }
-    }
-
-    /**
-     * @param list<AbstractAttachment> $attachments
-     */
-    public function validateAttachments(array $attachments): void
-    {
-        $this->assertUniqueExternalIds($attachments);
-
-        try {
-            $this->attachmentService->validate($attachments);
-        } catch (ValidationFailedException $validationFailedException) {
-            $this->attachmentService->refreshAttachments($attachments);
-
-            throw new ValidationException(
-                $this->prefixViolationsPropertyPath($validationFailedException->getViolations(), 'attachments.'),
-                previous: $validationFailedException,
-            );
-        }
-    }
-
-    /**
-     * @param list<AbstractAttachment> $attachments
-     */
-    private function assertUniqueExternalIds(array $attachments): void
-    {
-        $externalIds = array_map(
-            static function (AbstractAttachment $abstractAttachment) {
-                $externalId = $abstractAttachment->getExternalId();
-                Assert::isInstanceOf($externalId, ExternalId::class);
-
-                return $externalId->toString();
-            },
-            $attachments,
-        );
-
-        if (count($externalIds) === count(array_unique($externalIds))) {
-            return;
-        }
-
-        throw new ValidationException(new ConstraintViolationList([
-            new ConstraintViolation(
-                'attachments contain non-unique external-ids',
-                null,
-                [],
-                $attachments,
-                'attachments',
-                $externalIds,
-                null,
-                Unique::IS_NOT_UNIQUE,
-            ),
-        ]));
-    }
-
-    public function validateMainDocument(AbstractMainDocument $mainDocument): void
-    {
-        try {
-            $this->mainDocumentService->validate($mainDocument);
-        } catch (ValidationFailedException $validationFailedException) {
-            $this->mainDocumentService->refreshMainDocument($mainDocument);
-
-            $violations = $this->prefixViolationsPropertyPath(
-                $validationFailedException->getViolations(),
-                'mainDocument.',
-            );
-
-            throw new ValidationException($violations, previous: $validationFailedException);
-        }
-    }
-
-    public function prefixViolationsPropertyPath(ConstraintViolationListInterface $violations, string $prefix): ConstraintViolationList
-    {
-        $constraintViolationList = ConstraintViolationBuilder::createList();
-        foreach ($violations as $violation) {
-            $constraintViolationList->add(
-                ConstraintViolationBuilder::forViolation($violation, $prefix . $violation->getPropertyPath()),
-            );
-        }
-
-        return $constraintViolationList;
+        $this->dossierService->validateCompletion($dossier);
     }
 }

@@ -81,7 +81,7 @@
 {% endmacro %}
 
 {% macro document_url(document) %}
-    <a class="woo-a" href="{{ path('app_document_detail', { prefix: document.dossiers.first.documentPrefix, dossierNumber: document.dossiers.first.dossierNumber, documentNumber: document.documentNumber }) }}">{{ document.fileInfo.name }}</a>
+    <a class="woo-a" href="{{ path('app_document_detail', { documentPrefix: document.dossiers.first.documentPrefix, dossierNumber: document.dossiers.first.dossierNumber, documentNumber: document.documentNumber }) }}">{{ document.fileInfo.name }}</a>
 {% endmacro %}
 
 {% macro withdrawn_and_suspended_count(withdrawnCount, suspendedCount) %}

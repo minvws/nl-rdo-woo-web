@@ -89,6 +89,7 @@ readonly class DocumentUpdater
         $document->setSuspended($documentMetadata->isSuspended());
         $document->setLinks($documentMetadata->getLinks());
         $document->setRemark($documentMetadata->getRemark());
+        $document->setPublicationContext($documentMetadata->getPublicationContext());
 
         $fileName = $documentMetadata->getFilename($documentNumber);
 

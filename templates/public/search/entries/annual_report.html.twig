@@ -1,6 +1,6 @@
 {% extends 'public/search/entries/base.html.twig' %}
 
-{% set resultUrl = path('app_annualreport_detail', { prefix: entry.dossier.documentPrefix, dossierNumber: entry.dossier.dossierNumber }) %}
+{% set resultUrl = path('app_annualreport_detail', { documentPrefix: entry.dossier.documentPrefix, dossierNumber: entry.dossier.dossierNumber }) %}
 {% set resultType = 'public.global.annual_report' | trans %}
 
 {% block resultSpecsBottom %}

@@ -119,8 +119,20 @@ describe('The "LinkDossiers" component', () => {
 
     expect(getSelectedDossiersList(component).exists()).toBe(false);
 
-    await addDossier(component, { id: '1', title: 'Dossier 1' });
-    await addDossier(component, { id: '2', title: 'Dossier 2' });
+    await addDossier(component, {
+      id: '1',
+      link: 'mocked-link-1',
+      number: null,
+      title: 'Dossier 1',
+      type: 'dossier',
+    });
+    await addDossier(component, {
+      id: '2',
+      link: 'mocked-link-2',
+      number: null,
+      title: 'Dossier 2',
+      type: 'dossier',
+    });
 
     const selectedDossiersList = getSelectedDossiersList(component);
     expect(selectedDossiersList.findAll('li').length).toBe(2);
@@ -133,8 +145,20 @@ describe('The "LinkDossiers" component', () => {
 
     expect(getSelectElementOptions(component).length).toBe(0);
 
-    await addDossier(component, { id: 'id-1', title: 'Dossier 1' });
-    await addDossier(component, { id: 'id-2', title: 'Dossier 2' });
+    await addDossier(component, {
+      id: 'id-1',
+      link: 'mocked-link-1',
+      number: null,
+      title: 'Dossier 1',
+      type: 'dossier',
+    });
+    await addDossier(component, {
+      id: 'id-2',
+      link: 'mocked-link-2',
+      number: null,
+      title: 'Dossier 2',
+      type: 'dossier',
+    });
 
     const options = getSelectElementOptions(component);
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import MultiSelect from '@admin-fe/component/form/MultiSelect.vue';
 import { SelectOptions } from '@admin-fe/form/interface';
+import { computed } from 'vue';
 import type { GroundOptions } from '../interface';
 
 interface Props {
@@ -22,10 +23,13 @@ const options: SelectOptions = props.options.reduce<SelectOptions>(
   ],
   [],
 );
+
+const isEmpty = computed(() => props.options.length === 0);
 </script>
 
 <template>
   <MultiSelect
+    v-if="!isEmpty"
     buttonText="Weigeringsgrond toevoegen"
     buttonTextMultiple="Nog een weigeringsgrond toevoegen"
     helpText="Zijn in dit document gegevens gelakt? Kies dan de gebruikte weigeringsgronden."

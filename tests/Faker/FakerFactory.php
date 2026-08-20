@@ -12,12 +12,13 @@ class FakerFactory
 {
     /** @var list<class-string<Base>> */
     protected static array $providers = [
+        AttachmentFakerProvider::class,
         BaseFakerProvider::class,
         DateTimeFakerProvider::class,
+        DocumentFakerProvider::class,
+        DossierFakerProvider::class,
         FileFakerProvider::class,
-        GroundsFakerProvider::class,
         UuidFakerProvider::class,
-        DocumentIdFakerProvider::class,
     ];
 
     public static function addProviders(Generator $faker): Generator

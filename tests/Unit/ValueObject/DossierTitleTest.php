@@ -21,6 +21,24 @@ class DossierTitleTest extends UnitTestCase
         $this->assertEquals($title, $dossierTitle->__toString());
     }
 
+    public function testTitleIsEqual(): void
+    {
+        $titleOne = DossierTitle::create('foobar');
+        $titleTwo = DossierTitle::create('foobar');
+
+        $this->assertTrue($titleOne->equalTo($titleTwo));
+        $this->assertTrue($titleTwo->equalTo($titleOne));
+    }
+
+    public function testTitleIsNotEqual(): void
+    {
+        $titleOne = DossierTitle::create('foobar-one');
+        $titleTwo = DossierTitle::create('foobar-two');
+
+        $this->assertFalse($titleOne->equalTo($titleTwo));
+        $this->assertFalse($titleTwo->equalTo($titleOne));
+    }
+
     #[DataProvider('invalidDossierTitleDataProvider')]
     public function testCreateWithInvalidString(string $title, string $message): void
     {

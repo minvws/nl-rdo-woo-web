@@ -7,7 +7,6 @@ namespace Shared\Service\Worker\Pdf\Extractor;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\HasId;
 use Shared\Domain\Publication\EntityWithFileInfo;
-use Shared\Service\Stats\WorkerStatsService;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkPageCountResult;
 use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
@@ -25,7 +24,6 @@ class PagecountExtractor implements EntityExtractorInterface, OutputExtractorInt
         protected readonly LoggerInterface $logger,
         protected readonly PdftkService $pdftkService,
         protected readonly EntityStorageService $entityStorageService,
-        protected readonly WorkerStatsService $statsService,
     ) {
     }
 
@@ -36,11 +34,7 @@ class PagecountExtractor implements EntityExtractorInterface, OutputExtractorInt
 
     protected function extractPageCountFromPdf(EntityWithFileInfo&HasId $entity): ?PdftkPageCountResult
     {
-        /** @var string|false $localPdfPath */
-        $localPdfPath = $this->statsService->measure(
-            'download.entity',
-            fn (): string|false => $this->entityStorageService->downloadEntity($entity),
-        );
+        $localPdfPath = $this->entityStorageService->downloadEntity($entity);
         if ($localPdfPath === false) {
             $this->logger->error('Failed to download entity for page count extraction', [
                 'id' => $entity->getId(),
@@ -50,11 +44,7 @@ class PagecountExtractor implements EntityExtractorInterface, OutputExtractorInt
             return null;
         }
 
-        /** @var PdftkPageCountResult $pdftkPageCountResult */
-        $pdftkPageCountResult = $this->statsService->measure(
-            'pdftk.extractNumberOfPages',
-            fn (): PdftkPageCountResult => $this->pdftkService->extractNumberOfPages($localPdfPath),
-        );
+        $pdftkPageCountResult = $this->pdftkService->extractNumberOfPages($localPdfPath);
 
         $this->entityStorageService->removeDownload($localPdfPath);
 

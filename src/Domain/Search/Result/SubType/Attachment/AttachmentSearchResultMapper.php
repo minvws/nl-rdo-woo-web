@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Search\Result\SubType\Attachment;
 
 use MinVWS\TypeArray\TypeArray;
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\Type\DossierReference;
@@ -14,7 +15,6 @@ use Shared\Domain\Search\Result\HighlightMapperTrait;
 use Shared\Domain\Search\Result\ResultEntryInterface;
 use Shared\Domain\Search\Result\SearchResultMapperInterface;
 use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 use function is_null;
 
@@ -33,7 +33,7 @@ readonly class AttachmentSearchResultMapper implements SearchResultMapperInterfa
         return $type === ElasticDocumentType::ATTACHMENT;
     }
 
-    public function map(TypeArray $hit, ApplicationMode $mode = ApplicationMode::PUBLIC): ?ResultEntryInterface
+    public function map(TypeArray $hit, ApplicationId $applicationId = ApplicationId::PUBLIC): ?ResultEntryInterface
     {
         $id = $hit->getStringOrNull('[_id]');
         if (is_null($id)) {

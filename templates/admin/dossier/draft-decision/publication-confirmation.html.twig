@@ -1,0 +1,15 @@
+{% extends 'admin/dossier/shared/confirmation.html.twig' %}
+
+{% block about_title %}
+    {{ 'admin.global.draft-decision_on' | trans }}
+{% endblock %}
+
+{% block success_message %}
+    <twig:Admin:Alert type="success">
+        {{ 'admin.dossiers.draft-decision.create.success' | trans | raw }}
+    </twig:Admin:Alert>
+{% endblock %}
+
+{% block edit_link %}
+    {{'admin.dossiers.draft-decision.edit_link' | trans }}
+{% endblock %}

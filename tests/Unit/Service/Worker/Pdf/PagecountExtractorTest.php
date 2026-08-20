@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
-use Closure;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
-use Shared\Service\Stats\WorkerStatsService;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Worker\Pdf\Extractor\PagecountExtractor;
 use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkPageCountResult;
@@ -22,7 +20,6 @@ final class PagecountExtractorTest extends UnitTestCase
     protected LoggerInterface&MockInterface $logger;
     protected PdftkService&MockInterface $pdftkService;
     protected EntityStorageService&MockInterface $entityStorageService;
-    protected WorkerStatsService&MockInterface $statsService;
     protected EntityWithFileInfo&MockInterface $entity;
 
     protected function setUp(): void
@@ -32,7 +29,6 @@ final class PagecountExtractorTest extends UnitTestCase
         $this->logger = Mockery::mock(LoggerInterface::class);
         $this->pdftkService = Mockery::mock(PdftkService::class);
         $this->entityStorageService = Mockery::mock(EntityStorageService::class);
-        $this->statsService = Mockery::mock(WorkerStatsService::class);
         $this->entity = Mockery::mock(EntityWithFileInfo::class);
     }
 
@@ -42,17 +38,6 @@ final class PagecountExtractorTest extends UnitTestCase
             ->expects('downloadEntity')
             ->with($this->entity)
             ->andReturn($localPdfPath = 'localPdfPath');
-
-        $this->statsService
-            ->expects('measure')
-            ->with('download.entity', Mockery::on(function (Closure $closure) use ($localPdfPath) {
-                $result = $closure();
-
-                $this->assertSame($localPdfPath, $result, 'The download path does not match expected value');
-
-                return true;
-            }))
-            ->andReturn($localPdfPath);
 
         $pdftkPageCountResult = new PdftkPageCountResult(
             exitCode: 0,
@@ -67,17 +52,6 @@ final class PagecountExtractorTest extends UnitTestCase
             ->with($localPdfPath)
             ->andReturn($pdftkPageCountResult);
 
-        $this->statsService
-            ->expects('measure')
-            ->with('pdftk.extractNumberOfPages', Mockery::on(function (Closure $closure) use ($pdftkPageCountResult) {
-                $result = $closure();
-
-                $this->assertSame($pdftkPageCountResult, $result, 'The pdftkPageCountResult does not match expected value');
-
-                return true;
-            }))
-            ->andReturn($pdftkPageCountResult);
-
         $this->entityStorageService
             ->expects('removeDownload')
             ->with($localPdfPath);
@@ -86,7 +60,6 @@ final class PagecountExtractorTest extends UnitTestCase
             $this->logger,
             $this->pdftkService,
             $this->entityStorageService,
-            $this->statsService,
         );
 
         $extractor->extract($this->entity);
@@ -112,22 +85,10 @@ final class PagecountExtractorTest extends UnitTestCase
                 'class' => $this->entity::class,
             ]);
 
-        $this->statsService
-            ->expects('measure')
-            ->with('download.entity', Mockery::on(function (Closure $closure) {
-                $result = $closure();
-
-                $this->assertFalse($result);
-
-                return true;
-            }))
-            ->andReturnFalse();
-
         $extractor = new PagecountExtractor(
             $this->logger,
             $this->pdftkService,
             $this->entityStorageService,
-            $this->statsService,
         );
 
         $extractor->extract($this->entity);
@@ -142,17 +103,6 @@ final class PagecountExtractorTest extends UnitTestCase
             ->with($this->entity)
             ->andReturn($localPdfPath = 'localPdfPath');
 
-        $this->statsService
-            ->expects('measure')
-            ->with('download.entity', Mockery::on(function (Closure $closure) use ($localPdfPath) {
-                $result = $closure();
-
-                $this->assertSame($localPdfPath, $result, 'The download path does not match expected value');
-
-                return true;
-            }))
-            ->andReturn($localPdfPath);
-
         $pdftkPageCountResult = new PdftkPageCountResult(
             exitCode: 1,
             params: [],
@@ -164,17 +114,6 @@ final class PagecountExtractorTest extends UnitTestCase
         $this->pdftkService
             ->expects('extractNumberOfPages')
             ->with($localPdfPath)
-            ->andReturn($pdftkPageCountResult);
-
-        $this->statsService
-            ->expects('measure')
-            ->with('pdftk.extractNumberOfPages', Mockery::on(function (Closure $closure) use ($pdftkPageCountResult) {
-                $result = $closure();
-
-                $this->assertSame($pdftkPageCountResult, $result, 'The pdftkPageCountResult does not match expected value');
-
-                return true;
-            }))
             ->andReturn($pdftkPageCountResult);
 
         $this->entityStorageService
@@ -198,7 +137,6 @@ final class PagecountExtractorTest extends UnitTestCase
             $this->logger,
             $this->pdftkService,
             $this->entityStorageService,
-            $this->statsService,
         );
 
         $extractor->extract($this->entity);

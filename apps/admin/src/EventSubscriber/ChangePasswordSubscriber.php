@@ -9,7 +9,6 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use function in_array;
@@ -18,6 +17,7 @@ use function in_array;
  * This listener will check if the user that has logged in needs to change his password. If so, we will automatically
  * redirect to the change password page.
  */
+#[AsEventListener]
 class ChangePasswordSubscriber
 {
     /**
@@ -35,8 +35,7 @@ class ChangePasswordSubscriber
     {
     }
 
-    #[AsEventListener(event: KernelEvents::REQUEST)]
-    public function onKernelRequest(RequestEvent $event): void
+    public function __invoke(RequestEvent $event): void
     {
         // Skip non-main requests
         if (! $event->isMainRequest()) {

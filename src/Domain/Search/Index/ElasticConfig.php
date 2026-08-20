@@ -17,8 +17,6 @@ readonly class ElasticConfig
         public string $writeIndex,
         #[Autowire(param: 'elasticsearch.suggestions_search_input')]
         public string $suggestionsSearchInput,
-        #[Autowire(param: 'elasticsearch.index.worker_stats')]
-        public string $workerStatsIndex,
     ) {
     }
 }

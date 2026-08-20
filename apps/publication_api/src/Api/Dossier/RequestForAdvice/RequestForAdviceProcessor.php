@@ -8,8 +8,11 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
+use PublicationApi\Api\Dossier\DossierAttachmentValidator;
+use PublicationApi\Api\Dossier\DossierMainDocumentValidator;
 use PublicationApi\Api\Dossier\DossierNumberValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\Dossier\DossierValidator;
 use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
@@ -40,8 +43,11 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
     public function __construct(
         private DossierNumberValidator $dossierNumberValidator,
         private DossierSupportService $dossierSupportService,
+        private DossierAttachmentValidator $dossierAttachmentValidator,
+        private DossierMainDocumentValidator $dossierMainDocumentValidator,
         private DossierUpdateGuard $dossierUpdateGuard,
         private DossierRepository $dossierRepository,
+        private DossierValidator $dossierValidator,
         private RequestForAdviceMapper $requestForAdviceMapper,
         private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
@@ -112,7 +118,7 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
         if ($requestForAdviceRequestDto->mainDocument !== null) {
             $mainDocument = RequestForAdviceMainDocumentMapper::create($requestForAdvice, $requestForAdviceRequestDto->mainDocument);
             $requestForAdvice->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             $noticeNotPublic = $requestForAdviceRequestDto->noticeNotPublic;
             Assert::notNull($noticeNotPublic);
@@ -122,12 +128,15 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
             );
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($requestForAdviceRequestDto->attachments);
         $attachments = $this->getAttachments($requestForAdvice, $requestForAdviceRequestDto->attachments);
-        $this->dossierSupportService->validateAttachments($attachments);
+        $this->dossierAttachmentValidator->validate($attachments, $requestForAdvice->getStatus());
         $this->dossierSupportService->addAttachments($requestForAdvice, $attachments);
 
-        $this->dossierSupportService->validateDossier($requestForAdvice);
-        $this->dossierSupportService->dispatchCreateDossierCommand($requestForAdvice);
+        $this->dossierValidator->validateDossier($requestForAdvice);
+        $this->dossierSupportService->autoPublish($requestForAdvice);
+        $this->dossierSupportService->validateCompletionAndPersist($requestForAdvice);
+        $this->dossierSupportService->synchronizeArtifacts($requestForAdvice);
 
         return $requestForAdvice;
     }
@@ -150,7 +159,7 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
                 ? RequestForAdviceMainDocumentMapper::update($requestForAdvice, $requestForAdviceRequestDto->mainDocument)
                 : RequestForAdviceMainDocumentMapper::create($requestForAdvice, $requestForAdviceRequestDto->mainDocument);
             $requestForAdvice->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             if ($requestForAdvice->getMainDocument() !== null) {
                 $this->messageBus->dispatch(new DeleteMainDocumentCommand($requestForAdvice->getId()));
@@ -165,12 +174,16 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
             $requestForAdvice->setNoticeNotPublic($notice);
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($requestForAdviceRequestDto->attachments);
+        $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($requestForAdvice, $requestForAdviceRequestDto->attachments);
         $attachments = $this->getAttachments($requestForAdvice, $requestForAdviceRequestDto->attachments);
-        $this->dossierSupportService->validateAttachments($attachments);
+        $this->dossierAttachmentValidator->validate($attachments, $requestForAdvice->getStatus());
         $this->attachmentSynchronizer->sync($requestForAdvice, $requestForAdviceRequestDto->attachments);
 
-        $this->dossierSupportService->validateDossier($requestForAdvice);
-        $this->dossierSupportService->dispatchUpdateDossierCommand($requestForAdvice);
+        $this->dossierValidator->validateDossier($requestForAdvice);
+        $this->dossierSupportService->autoPublish($requestForAdvice);
+        $this->dossierSupportService->validateCompletionAndPersist($requestForAdvice);
+        $this->dossierSupportService->synchronizeArtifacts($requestForAdvice);
     }
 
     /**

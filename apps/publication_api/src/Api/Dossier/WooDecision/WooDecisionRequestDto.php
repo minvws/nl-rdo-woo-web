@@ -47,8 +47,8 @@ class WooDecisionRequestDto extends AbstractDossierRequestDto
             new Assert\Type(WooDecisionDocumentRequestDto::class),
         ])]
         #[Assert\Valid]
-        #[Assert\Unique(normalizer: [self::class, 'normalizeDocumentExternalId'], message: 'woo_decision.duplicate_document_external_id')]
-        #[Assert\Unique(normalizer: [self::class, 'normalizeDocumentDocumentId'], message: 'woo_decision.duplicate_document_id')]
+        #[Assert\Unique(message: 'woo_decision.duplicate_document_external_id', normalizer: [self::class, 'normalizeDocumentExternalId'])]
+        #[Assert\Unique(message: 'woo_decision.duplicate_document_id', normalizer: [self::class, 'normalizeDocumentDocumentId'])]
         public array $documents = [],
     ) {
         parent::__construct($departmentId, $dossierNumber, $subjectId, $summary, $title);

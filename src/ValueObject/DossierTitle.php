@@ -11,7 +11,10 @@ use Webmozart\Assert\Assert;
 
 use function trim;
 
-final readonly class DossierTitle implements Stringable
+/**
+ * @implements Equatable<DossierTitle>
+ */
+final readonly class DossierTitle implements Stringable, Equatable
 {
     public const int MIN_LENGTH = 3;
     public const int MAX_LENGTH = 500;
@@ -52,5 +55,10 @@ final readonly class DossierTitle implements Stringable
     public function toString(): string
     {
         return $this->__toString();
+    }
+
+    public function equalTo(Equatable $other): bool
+    {
+        return $this->toString() === $other->toString();
     }
 }

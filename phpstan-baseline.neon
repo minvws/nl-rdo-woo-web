@@ -37,15 +37,6 @@ parameters:
 			path: src/Domain/Publication/Dossier/ViewModel/SubjectViewFactory.php
 
 		-
-			message: '''
-				#^Call to deprecated method handleEntityUpdate\(\) of class Shared\\Service\\DossierService\:
-				to be removed in WOO\-2066$#
-			'''
-			identifier: method.deprecated
-			count: 1
-			path: src/Domain/Publication/Dossier/Workflow/DossierWorkflowManager.php
-
-		-
 			message: '#^Cannot access offset ''_meta'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1

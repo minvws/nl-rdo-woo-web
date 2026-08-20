@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\RequestForAdvice;
 
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceRepository;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Factory\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
 
@@ -19,7 +19,7 @@ final class RequestForAdviceRepositoryTest extends SharedWebTestCase
             ->getSearchResultViewModel(
                 $dossier->getDocumentPrefix(),
                 $dossier->getDossierNumber(),
-                ApplicationMode::PUBLIC,
+                ApplicationId::PUBLIC,
             );
 
         self::assertNotNull($result);

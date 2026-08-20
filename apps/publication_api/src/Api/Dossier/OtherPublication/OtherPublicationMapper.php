@@ -104,7 +104,7 @@ readonly class OtherPublicationMapper
     ): OtherPublication {
         $otherPublication = new OtherPublication();
         $otherPublication->setExternalId($externalId);
-        $otherPublication->setStatus(DossierStatus::NEW);
+        $otherPublication->setStatus(DossierStatus::CONCEPT);
         $otherPublication->setDocumentPrefix($documentPrefix);
 
         self::update($otherPublication, $otherPublicationRequestDto, $organisation, $department, $subject);
@@ -123,7 +123,9 @@ readonly class OtherPublicationMapper
         $otherPublication->setDepartments([$department]);
         $otherPublication->setDossierNumber($otherPublicationRequestDto->dossierNumber);
         $otherPublication->setOrganisation($organisation);
-        $otherPublication->setPublicationDate($otherPublicationRequestDto->publicationDate);
+        if (! $otherPublication->getStatus()->isPublished()) {
+            $otherPublication->setPublicationDate($otherPublicationRequestDto->publicationDate);
+        }
         $otherPublication->setSubject($subject);
         $otherPublication->setSummary($otherPublicationRequestDto->summary);
         $otherPublication->setTitle($otherPublicationRequestDto->title);

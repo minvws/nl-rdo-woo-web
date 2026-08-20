@@ -1,0 +1,26 @@
+name: Check db requirements
+
+on:
+  workflow_call:
+
+jobs:
+  db_requirements:
+    name: Check .db_requirements
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+      - name: Validate .db_requirements matches latest SQL migration
+        run: |
+          latest_migration="$(find migrations/sql -maxdepth 1 -type f -name '*.sql' -printf '%f\n' | sort | tail -n 1)"
+          required_migration="$(tr -d '\r\n' < .db_requirements)"
+
+          if [[ -z "$latest_migration" ]]; then
+            echo "::error::No SQL migration files found in migrations/sql"
+            exit 1
+          fi
+
+          if [[ "$latest_migration" != "$required_migration" ]]; then
+            echo "::error::.db_requirements contains '$required_migration' but latest migration in folder migrations/sql is '$latest_migration'"
+            exit 1
+          fi

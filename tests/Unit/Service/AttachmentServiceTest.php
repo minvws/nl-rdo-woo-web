@@ -31,7 +31,7 @@ class AttachmentServiceTest extends UnitTestCase
 
         $validator = Mockery::mock(ValidatorInterface::class);
         $validator->expects('validate')
-            ->with($attachments)
+            ->with($attachments, null, null)
             ->andReturn($constraintViolationList);
 
         $attachmentService = new AttachmentService($entityManager, $validator);
@@ -53,7 +53,7 @@ class AttachmentServiceTest extends UnitTestCase
 
         $validator = Mockery::mock(ValidatorInterface::class);
         $validator->expects('validate')
-            ->with($attachments)
+            ->with($attachments, null, null)
             ->andReturn($constraintViolationList);
 
         $attachmentService = new AttachmentService($entityManager, $validator);

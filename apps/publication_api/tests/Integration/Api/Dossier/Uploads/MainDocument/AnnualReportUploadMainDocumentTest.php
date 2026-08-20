@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Integration\Api\Dossier\Uploads\MainDocument;
 
 use PublicationApi\Tests\Integration\Api\Dossier\Uploads\ApiPublicationV1UploadTestCase;
+use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
@@ -22,7 +23,7 @@ final class AnnualReportUploadMainDocumentTest extends ApiPublicationV1UploadTes
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        $annualReport = AnnualReportFactory::createOne([
+        $annualReport = AnnualReportFactory::new()->concept()->create([
             'organisation' => $organisation,
             'externalId' => $this->getFaker()->externalId(),
             'departments' => [$department],
@@ -43,6 +44,33 @@ final class AnnualReportUploadMainDocumentTest extends ApiPublicationV1UploadTes
             uploadGroupId: UploadGroupId::MAIN_DOCUMENTS,
             entityParameterKey: 'mainDocumentId',
         );
+    }
+
+    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $annualReport = AnnualReportFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'departments' => [$department],
+            'status' => DossierStatus::PUBLISHED,
+        ]);
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/annual-report/external/%s/uploads/main-document',
+            $organisation->getId(),
+            $annualReport->getExternalId(),
+        ), [
+            'headers' => [
+                'Content-Type' => 'application/octet-stream',
+            ],
+            'body' => $this->getTestFileContent('1008.pdf'),
+        ]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
     }
 
     public function testUploadWithoutFile(): void

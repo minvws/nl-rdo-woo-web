@@ -164,7 +164,7 @@ class Organisation implements HasId
     /**
      * @return array<array-key, string>
      */
-    public function getPrefixesAsArray(): array
+    public function getDocumentPrefixesAsArray(): array
     {
         return array_map(
             static fn (DocumentPrefix $prefix): string => $prefix->getPrefix(),

@@ -106,6 +106,7 @@
                                             "other_publication_main_document",
                                             "advice_main_document",
                                             "request_for_advice_main_document",
+                                            "draft_decision_main_document",
                                             "attachment"
                                         ]
                                     }
@@ -176,7 +177,8 @@
                                             "complaint_judgement",
                                             "other_publication",
                                             "advice",
-                                            "request_for_advice"
+                                            "request_for_advice",
+                                            "draft_decision"
                                         ]
                                     }
                                 }
@@ -215,6 +217,7 @@
                                                                     "other_publication_main_document",
                                                                     "advice_main_document",
                                                                     "request_for_advice_main_document",
+                                                                    "draft_decision_main_document",
                                                                     "attachment"
                                                                 ]
                                                             }
@@ -254,7 +257,8 @@
                                                                     "complaint_judgement",
                                                                     "other_publication",
                                                                     "advice",
-                                                                    "request_for_advice"
+                                                                    "request_for_advice",
+                                                                    "draft_decision"
                                                                 ]
                                                             }
                                                         },

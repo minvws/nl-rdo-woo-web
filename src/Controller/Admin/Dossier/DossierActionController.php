@@ -36,10 +36,10 @@ class DossierActionController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/dossier/delete/{prefix}/{dossierNumber}', name: 'app_admin_dossier_delete', methods: ['GET', 'POST'])]
+    #[Route('/balie/dossier/delete/{documentPrefix}/{dossierNumber}', name: 'app_admin_dossier_delete', methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.dossier.delete', subject: 'dossier')]
     public function delete(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -70,10 +70,14 @@ class DossierActionController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/documenten-intrekken/{prefix}/{dossierNumber}', 'app_admin_dossier_withdraw_all_documents', methods: ['GET', 'POST'])]
+    #[Route(
+        '/balie/dossier/documenten-intrekken/{documentPrefix}/{dossierNumber}',
+        'app_admin_dossier_withdraw_all_documents',
+        methods: ['GET', 'POST'],
+    )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'wooDecision')]
     public function withdrawAllDocuments(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $wooDecision,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $wooDecision,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -105,7 +109,7 @@ class DossierActionController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_admin_dossier_woodecision_documents_edit',
-                ['prefix' => $wooDecision->getDocumentPrefix(), 'dossierNumber' => $wooDecision->getDossierNumber()],
+                ['documentPrefix' => $wooDecision->getDocumentPrefix(), 'dossierNumber' => $wooDecision->getDossierNumber()],
             );
         }
 

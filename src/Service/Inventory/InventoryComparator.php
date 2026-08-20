@@ -52,8 +52,11 @@ class InventoryComparator
             }
 
             try {
-                $documentNumber = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
-                $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber->getValue());
+                $documentNumber = DocumentNumber::fromPublicationContextAndDossierId(
+                    $documentMetadata->getPublicationContext(),
+                    $documentMetadata->getId(),
+                );
+                $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber->toString());
 
                 if ($document === null) {
                     $changeset->markAsAdded($documentNumber);

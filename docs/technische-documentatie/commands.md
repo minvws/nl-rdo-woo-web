@@ -2,6 +2,7 @@
 
 <!-- TOC -->
 - [Woo Publication Platform commands](#woo-publication-platform-commands)
+  - [Selecting a tenant and an application](#selecting-a-tenant-and-an-application)
   - [Cron commands](#cron-commands)
     - [Upload cleanup](#upload-cleanup)
     - [Archives cleanup](#archives-cleanup)
@@ -9,7 +10,7 @@
     - [Inventory processrun cleanup](#inventory-processrun-cleanup)
     - [Publish scheduled dossiers](#publish-scheduled-dossiers)
   - [Console commands](#console-commands)
-    - [Production check](#production-check)
+    - [Platform check](#platform-check)
     - [Page check](#page-check)
     - [Index management](#index-management)
     - [Ingestion](#ingestion)
@@ -20,16 +21,55 @@
     - [Post deploy](#post-deploy)
     - [BatchDownload refresh](#batchdownload-refresh)
     - [Move orphaned files](#move-orphaned-files)
-    - [Cleanup worker status](#cleanup-worker-status)
+    - [Export revoked urls](#export-revoked-urls)
     - [Inventory refresh](#inventory-refresh)
     - [Generate database key](#generate-database-key)
     - [Generate auditlog key](#generate-auditlog-key)
     - [Normalize document grounds](#normalize-document-grounds)
+    - [Generate publication context](#generate-publication-context)
   - [Development commands](#development-commands)
     - [SQL dump](#sql-dump)
     - [Clean sheet](#clean-sheet)
     - [Content extraction](#content-extraction)
 <!-- TOC -->
+
+## Selecting a tenant and an application
+
+`bin/console` takes two options that decide which kernel is booted:
+
+| Option           | Required | Values                                                   | Falls back to             |
+|------------------|----------|----------------------------------------------------------|---------------------------|
+| `--tenant`, `-T` | yes      | `minvws`, `minfin`, `minbuza`                            | nothing — it is mandatory |
+| `--id`, `-i`     | no       | `admin`, `public`, `publication_api`, `worker`, `shared` | `APP_ID`, then `shared`   |
+
+`--tenant` is mandatory; the command exits with an error if it is missing.
+
+`--id` selects the application. It matters because `Shared\Kernel` compiles a separate container per (tenant,
+application, environment) and loads `apps/<id>/config` for that application only, so **a command defined inside an
+application only exists for that application**:
+
+- commands under `src/` are shared and available whatever the application is. They live in `src/Command/` and its
+  subdirectories, plus `src/Domain/WooIndex/Command/`;
+- commands under `apps/<app>/src/Command/` belong to that application alone. Today that is the user-management commands
+  (admin) and `woopie:post-deploy`, which is registered once per application and does different work for each.
+
+In practice you rarely have to pass `--id`, because every service container sets `APP_ID` to its own application and
+`bin/console` falls back to it. `task shell` opens the `admin` container, where `APP_ID=ADMIN`, so the admin commands
+work there as written.
+
+You do need `--id` when the command belongs to a different application than the container you are in. From the worker
+container, for example:
+
+```shell
+# There are no commands defined in the "woopie:user" namespace.
+bin/console --tenant=minvws woopie:user:view foo@example.org
+
+# Works
+bin/console --tenant=minvws --id=admin woopie:user:view foo@example.org
+```
+
+The examples below assume you are in the container the command belongs to, and pass `--id` only where the application is
+the point.
 
 ## Cron commands
 
@@ -77,14 +117,14 @@ Publish dossiers when their publication date is reached. Should be executed at l
 
 This is a list of all console commands available for the Woo Publication Platform.
 
-### Production check
+### Platform check
 
 ```shell
-bin/console --tenant=minvws woopie:check:production
+bin/console --tenant=minvws woopie:check:platform
 ```
 
-This command checks if the current environment is ready for production. It will mainly check
-installed tools and extensions that are needed to run the project.
+Checks if the current platform is ready for running. It will mainly check installed tools and extensions that are
+needed to run the project. The former name `woopie:check:production` still works as an alias.
 
 ### Page check
 
@@ -98,19 +138,29 @@ Checks if there are pages that are not yet indexed in ElasticSearch.
 
 ```shell
 bin/console --tenant=minvws woopie:index:alias <index> <alias>
-bin/console --tenant=minvws woopie:index:create <index> <version-number>
+bin/console --tenant=minvws woopie:index:create <name> <version> [--read] [--write]
 bin/console --tenant=minvws woopie:index:delete <index>
 ```
 
 Creates or deletes an elasticsearch index. It is also possible to create an alias for an index.
 
+For `woopie:index:create`, `<version>` is the mapping version to use (see [elastic_index.md](elastic_index.md)) or
+`latest` for the newest one. Pass `--read` and/or `--write` to point the read and write aliases at the new index
+straight away, which is what the local setup does:
+
+```shell
+bin/console --tenant=minvws woopie:index:create minvws-initial latest --read --write
+```
+
 ### Ingestion
 
 ```shell
-bin/console --tenant=minvws woopie:ingest:dossier <dossierNumber>
+bin/console --tenant=minvws woopie:ingest:dossier <prefix> <dossierNumber> [--force-refresh]
 ```
 
-Starts the ingestion of a dossier. The dossier number input is required.
+Starts the ingestion of a dossier. Both the document prefix and the dossier number are required. Add `--force-refresh`
+to skip any caching.
+
 In order for this to run, you must have the workers/consumers running. This can be done with
 
 ```shell
@@ -119,25 +169,29 @@ bin/console --tenant=minvws messenger:consume -d
 
 ### User management
 
+These three commands belong to the admin application. They work as written inside the `admin` container (`task shell`);
+from anywhere else add `--id=admin`, see
+[Selecting a tenant and an application](#selecting-a-tenant-and-an-application).
+
 ```shell
-bin/console --tenant=minvws woopie:user:create "<email>" "<fullname>" --admin
+bin/console --tenant=minvws woopie:user:create "<email>" "<fullname>" [--super-admin]
 ```
 
-Creates a new user with the given email address and name. When the `--admin` flag is given, the user
-is automatically granted the admin role.
+Creates a new user with the given email address and name. When the `--super-admin` (`-s`) flag is given, the user is
+granted the super-admin role.
 
 This command will generate a random password, 2fa token and 2fa recovery tokens. The password must be
 changed on first login and is only visible during this creation period.
 
 ```shell
-bin/console --tenant=minvws woopie:user:view  <email>
+bin/console --tenant=minvws woopie:user:view <email>
 ```
 
-This command will view the details of a user with the given email address. Everything EXCEPT
-the password can be viewed.
+Retrieves the 2fa token of the user with the given email address, and displays it as a QR code when `qrencode` is
+installed. Everything EXCEPT the password can be viewed.
 
 ```shell
-bin/console --tenant=minvws woopie:user:reset  <email>
+bin/console --tenant=minvws woopie:user:reset <email>
 ```
 
 This will reset the password, 2fa token and 2fa recovery codes for the given user. The user must
@@ -187,10 +241,16 @@ Depending on the environment this might result in a lot of output.
 ### Post deploy
 
 ```shell
-bin/console --tenant=minvws woopie:post-deploy
+bin/console --tenant=minvws --id=admin woopie:post-deploy
 ```
 
-To be executed after each deployment. Currently only ensures all required `ContentPage` records exist, but more actions will be added in the future.
+To be executed after each deployment, **once per application**. The command name is registered separately in the admin,
+publication API and worker applications, and each one runs its own post-deploy actions, so the `--id` decides what
+happens. Locally, `task refresh` runs it for `worker`, `publication_api` and `admin` in turn; `task postdeploy
+APPLICATION_ID=<id>` runs a single one.
+
+For the admin application this currently only ensures all required `ContentPage` records exist, but more actions will be
+added in the future.
 
 ### BatchDownload refresh
 
@@ -210,13 +270,14 @@ bin/console --tenant=minvws woopie:move-orphaned-files
 Moves orphaned files into a separate ("trash") bucket. Orphaned files are files in storage that are no longer related to any of the existing entities.
 Asks for the name of the destination bucket during execution.
 
-### Cleanup worker status
+### Export revoked urls
 
 ```shell
-bin/console --tenant=minvws woopie:cron:clean-worker-status
+bin/console --tenant=minvws woo:export-revoked-urls
 ```
 
-Removes all WorkerStats records with a `created_at` more than one week old.
+Exports the urls of revoked documents, meaning documents that have been withdrawn or suspended. Useful for feeding a
+cache or CDN purge.
 
 ### Inventory refresh
 
@@ -245,10 +306,19 @@ Creates a new keypair for auditlog encryption.
 ### Normalize document grounds
 
 ```shell
-bin/console --tenant=minvws woopie:normalize-document-grounds
+bin/console --tenant=minvws woopie:normalize-document-grounds <mapping> [--dry-run]
 ```
 
-Normalize the 'grounds' values for woo-decision documents based on an Excel input file as mapping.
+Normalize the 'grounds' values for woo-decision documents based on an Excel input file as mapping. The path to that
+spreadsheet is required. Use `--dry-run` (`-d`) to see what would change without writing anything.
+
+### Generate publication context
+
+```shell
+bin/console --tenant=minvws woopie:document:generate-document-publication-context [--dry-run]
+```
+
+Generate the publicationContext of documents that do not have one yet. Use `--dry-run` (`-d`) to preview the effect.
 
 ## Development commands
 
@@ -263,10 +333,12 @@ Converts doctrine migrations (PHP code) into plain SQL files
 ### Clean sheet
 
 ```shell
-bin/console --tenant=minvws woopie:dev:clean-sheet
+bin/console --tenant=minvws woopie:dev:clean-sheet --index <index> [--force] [--users] [--keep-prefixes] [--keep-subjects]
 ```
 
-Resets data from search index, database, file storage and message queue.
+Resets data from search index, database, file storage and message queue. `--index` names the Elasticsearch index to
+reset. `--force` skips the confirmation prompt, `--users` also resets users, and `--keep-prefixes` / `--keep-subjects`
+preserve those. Locally, prefer `task cleansheet`, which passes sensible defaults and clears the MinIO buckets too.
 
 ### Content extraction
 

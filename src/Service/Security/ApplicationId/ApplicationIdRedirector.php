@@ -1,0 +1,82 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Shared\Service\Security\ApplicationId;
+
+use Shared\ApplicationId;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+
+use function str_starts_with;
+
+/**
+ * This listener will check the application mode and redirect any requests outside the configured mode.
+ */
+#[AsEventListener]
+readonly class ApplicationIdRedirector
+{
+    public const string ADMIN_PATH = '/balie';
+    public const string API_PATH = '/api';
+    public const string PUBLIC_PATH = '/';
+
+    public function __construct(
+        private ApplicationId $applicationId,
+    ) {
+    }
+
+    public function __invoke(RequestEvent $event): void
+    {
+        if ($this->isExcludedFromRedirect($event)) {
+            return;
+        }
+
+        $path = $event->getRequest()->getPathInfo();
+        $isAdminPath = str_starts_with($path, self::ADMIN_PATH);
+        $isApiPath = str_starts_with($path, self::API_PATH);
+        $isPublicPath = ! $isAdminPath && ! $isApiPath;
+
+        if ($this->applicationId->isAdmin() && ! $isAdminPath) {
+            $event->setResponse(new RedirectResponse(self::ADMIN_PATH));
+        }
+
+        if ($this->applicationId->isPublicationApi() && ! $isApiPath) {
+            $event->setResponse(new RedirectResponse(self::API_PATH));
+        }
+
+        if ($this->applicationId->isPublic() && ! $isPublicPath) {
+            $event->setResponse(new RedirectResponse(self::PUBLIC_PATH));
+        }
+    }
+
+    private function isExcludedFromRedirect(RequestEvent $event): bool
+    {
+        if ($event->getRequest()->attributes->get('_firewall_context') === 'security.firewall.map.context.dev') {
+            return true;
+        }
+
+        $path = $event->getRequest()->getPathInfo();
+
+        if ($this->isSymfonyProfilerRoute($path)) {
+            return true;
+        }
+
+        if (str_starts_with($path, '/health')) {
+            return true;
+        }
+
+        if ($this->applicationId->isShared()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function isSymfonyProfilerRoute(string $path): bool
+    {
+        return str_starts_with($path, '/_profiler')
+            || str_starts_with($path, '/_wdt')
+            || str_starts_with($path, '/_fragment');
+    }
+}

@@ -26,7 +26,7 @@ Fill Out Basic Details
   ...  ${department}=${EMPTY}
   Generate Dossier Reference Number
   Fill Text  id=details_title  Robot Admin ${DOSSIER_REFERENCE}
-  IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement' or '${type}' == 'other-publication' or '${type}' == 'advice' or '${type}' == 'request-for-advice'
+  IF  '${type}' == 'disposition' or '${type}' == 'investigation-report' or '${type}' == 'complaint-judgement' or '${type}' == 'other-publication' or '${type}' == 'advice' or '${type}' == 'request-for-advice' or '${type}' == 'draft-decision'
     Type Text  id=details_date  01012022
   ELSE IF  '${type}' == 'annual-report'
     Select Options By  id=details_year  index  5
@@ -102,8 +102,39 @@ Create New Dossier
 
 Choose Dossier Type
   [Documentation]  Check if there is an option to choose Convenant or Woo -- This is only shown when you have super-admin permissions.
+  ...  Also skips the test (instead of failing on a missing button) if the dossier type isn't
+  ...    offered at all in this environment, e.g. because it's hidden behind a disabled feature
+  ...    flag such as HAS_FEATURE_DRAFT_DECISION.
   [Arguments]  ${dossier_type}=woo-decision
+  Skip If Dossier Type Unavailable  ${dossier_type}
   Click  //*[@data-e2e-name="create-dossier-type-${dossier_type}"]
+
+Is Dossier Type Available
+  [Documentation]  Live-checks, on the already-open create-dossier page, whether the given
+  ...    dossier type can be created in this environment.
+  [Arguments]  ${dossier_type}
+  VAR  ${selector} =  //*[@data-e2e-name="create-dossier-type-${dossier_type}"]
+  ${is_available} =  Run Keyword And Return Status  Wait For Elements State  ${selector}  visible  timeout=3s
+  RETURN  ${is_available}
+
+Skip If Dossier Type Unavailable
+  [Documentation]  Skips (and navigates back to the dossier listing) if the given dossier type
+  ...    isn't offered in this environment, e.g. because it's hidden behind a disabled feature
+  ...    flag such as HAS_FEATURE_DRAFT_DECISION.
+  [Arguments]  ${dossier_type}
+  ${is_available} =  Is Dossier Type Available  ${dossier_type}
+  IF  not ${is_available}
+    Click Publications
+    Skip  Dossier type '${dossier_type}' is not offered in this environment (feature flag disabled)
+  END
+
+Skip Suite If Dossier Type Unavailable
+  [Documentation]  Call once from Suite Setup (while already on the dossier listing page) to
+  ...    skip the whole suite up front if the given dossier type isn't offered in this
+  ...    environment, instead of letting every test discover and skip the same thing on its own.
+  [Arguments]  ${dossier_type}
+  Click  //*[@data-e2e-name="create-dossier"]
+  Skip If Dossier Type Unavailable  ${dossier_type}
 
 Publish Dossier And Return To Admin Home
   [Arguments]  ${publication_status}=Gepubliceerd
@@ -118,6 +149,8 @@ Publish Dossier And Return To Admin Home
     Click Publications
   ELSE IF  "${publication_status}" == "Concept"
     Click Publications
+  ELSE
+    Fatal Error  Value '${publication_status}' is not an allowed value for $publication_status.
   END
 
 Fill Publication Date
@@ -209,3 +242,10 @@ Fill Out Summary
 
 Assert No Input Errors
   Get Element Count  //*[contains(@class,"js-input-errors")]  should be  0
+
+Click Public URL
+  Click  //*[@data-e2e-name="public-url"]
+
+Verify Dossier Metadata On Public
+  ${reference_lower} =  Convert To Lower Case  ${DOSSIER_REFERENCE}
+  Get Text  //*[@data-e2e-name="dossier-metadata-title"]  contains  ${reference_lower}

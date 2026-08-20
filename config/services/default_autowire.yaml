@@ -8,6 +8,8 @@ services:
             Psr\Log\LoggerInterface $logger: '@Shared\Service\Logging\EnrichedPsrLogger'
             string $publicBaseUrl: '%public_base_url%'
             int $thumbnailLimit: '%thumbnail_limit%'
+            Shared\ApplicationId $applicationId: '%kernel.application_id%'
+            bool $hasFeatureDraftDecision: '%env(bool:HAS_FEATURE_DRAFT_DECISION)%'
 
     Shared\:
         resource: '../../src/'

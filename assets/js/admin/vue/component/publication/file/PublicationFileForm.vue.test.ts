@@ -109,7 +109,7 @@ describe('The "PublicationFileForm" component', () => {
   test('should allow the user to provide the language of this file', () => {
     expect(getLanguagesComponent().props()).toMatchObject({
       options: [{ label: 'Dutch', value: 'nl' }],
-      value: 'Dutch',
+      value: 'NLD',
     });
   });
 

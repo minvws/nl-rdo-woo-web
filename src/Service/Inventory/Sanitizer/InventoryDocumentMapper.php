@@ -6,7 +6,6 @@ namespace Shared\Service\Inventory\Sanitizer;
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Service\Inventory\DocumentNumber;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webmozart\Assert\Assert;
@@ -41,13 +40,13 @@ readonly class InventoryDocumentMapper
             $this->publicBaseUrl . $this->urlGenerator->generate(
                 'app_document_detail',
                 [
-                    'prefix' => $dossier->getDocumentPrefix(),
+                    'documentPrefix' => $dossier->getDocumentPrefix(),
                     'dossierNumber' => $dossier->getDossierNumber(),
                     'documentNumber' => $document->getDocumentNumber(),
                 ],
             ),
             $document->isSuspended() ? 'ja' : '',
-            implode(';', $this->getRelatedDocumentIds($document)),
+            implode(';', $this->getRelatedDocumentNumbers($document)),
             implode(';', $this->getRelatedDocumentUrls($document)),
             (string) $dossier->getTitle(),
         ];
@@ -56,24 +55,14 @@ readonly class InventoryDocumentMapper
     /**
      * @return array<array-key,string>
      */
-    private function getRelatedDocumentIds(Document $document): array
+    private function getRelatedDocumentNumbers(Document $document): array
     {
         $dossier = $document->getDossiers()->first();
         Assert::isInstanceOf($dossier, WooDecision::class);
-        $documentNumber = DocumentNumber::fromDossierAndDocument($dossier, $document);
 
         return $document->getRefersTo()->map(
-            static function (Document $referredDocument) use ($documentNumber): string {
-                $referredDossier = $referredDocument->getDossiers()->first();
-                Assert::isInstanceOf($referredDossier, WooDecision::class);
-
-                $referredDocumentNumber = DocumentNumber::fromDossierAndDocument($referredDossier, $referredDocument);
-
-                if ($documentNumber->getMatter()?->toString() !== $referredDocumentNumber->getMatter()?->toString()) {
-                    return $referredDocumentNumber->matter?->toString() . '_' . $referredDocumentNumber->id->toString();
-                }
-
-                return $referredDocumentNumber->id->toString();
+            static function (Document $referredDocument): string {
+                return $referredDocument->getDocumentNumber();
             },
         )->toArray();
     }
@@ -91,7 +80,7 @@ readonly class InventoryDocumentMapper
                 return $this->publicBaseUrl . $this->urlGenerator->generate(
                     'app_document_detail',
                     [
-                        'prefix' => $documentDossier->getDocumentPrefix(),
+                        'documentPrefix' => $documentDossier->getDocumentPrefix(),
                         'dossierNumber' => $documentDossier->getDossierNumber(),
                         'documentNumber' => $referredDocument->getDocumentNumber(),
                     ],

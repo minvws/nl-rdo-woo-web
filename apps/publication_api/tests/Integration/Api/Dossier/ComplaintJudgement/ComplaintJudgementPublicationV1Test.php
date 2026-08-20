@@ -36,6 +36,7 @@ use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJu
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
@@ -141,7 +142,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                             [
-                                'prefix' => $complaintJudgement->getDocumentPrefix(),
+                                'documentPrefix' => $complaintJudgement->getDocumentPrefix(),
                                 'dossierNumber' => $complaintJudgement->getDossierNumber(),
                                 'type' => DossierFileType::MAIN_DOCUMENT->value,
                                 'id' => $complaintJudgementMainDocument->getId(),
@@ -468,39 +469,6 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         ];
     }
 
-    public function testUpdateComplaintJudgementWithNonConceptState(): void
-    {
-        $organisation = OrganisationFactory::createOne();
-        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        $complaintJudgement = ComplaintJudgementFactory::createOne([
-            'dateFrom' => $this->getFaker()->plainDate(),
-            'externalId' => $this->getFaker()->externalId(),
-            'departments' => [$department],
-            'organisation' => $organisation,
-            'status' => $this->getFaker()->randomElement(DossierStatus::nonConceptCases()),
-        ]);
-        ComplaintJudgementMainDocumentFactory::createOne(['dossier' => $complaintJudgement]);
-
-        self::assertDatabaseHas(ComplaintJudgement::class, [
-            'title' => (string) $complaintJudgement->getTitle(),
-            'summary' => $complaintJudgement->getSummary(),
-        ]);
-
-        $data = $this->createValidComplaintJudgementDataPayload($department, null);
-        self::createPublicationApiRequest(
-            Request::METHOD_PUT,
-            $this->buildComplaintJudgementUrl($organisation, $complaintJudgement),
-            ['json' => $data],
-        );
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'dossier update is not allowed in non-concept state']]]);
-
-        self::assertDatabaseHas(ComplaintJudgement::class, [
-            'title' => (string) $complaintJudgement->getTitle(),
-            'summary' => $complaintJudgement->getSummary(),
-        ]);
-    }
-
     /**
      * @return array<string, mixed>
      */
@@ -697,5 +665,48 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $dossierId = is_string($dossier) ? $dossier : $dossier->getExternalId();
 
         return sprintf('/api/publication/v1/organisation/%s/dossiers/%s/external/%s', $organisationId, $this->getDossierApiUriSegment(), $dossierId);
+    }
+
+    public function testUpdatePublishedComplaintJudgementIgnoresPublicationDateChange(): void
+    {
+        $newTitle = 'Updated title for published complaint judgement';
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $complaintJudgement = ComplaintJudgementFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::PUBLISHED,
+            'publicationDate' => PlainDate::create('2025-01-02'),
+        ]);
+        $mainDocument = ComplaintJudgementMainDocumentFactory::createOne(['dossier' => $complaintJudgement]);
+
+        $data = [
+            'title' => $newTitle,
+            'externalId' => $complaintJudgement->getExternalId()?->toString(),
+            'dossierNumber' => $complaintJudgement->getDossierNumber(),
+            'dossierDate' => $complaintJudgement->getDateFrom()?->format('Y-m-d'),
+            'publicationDate' => '2025-02-02',
+            'summary' => $complaintJudgement->getSummary(),
+            'departmentId' => $department->getId(),
+            'subjectId' => $complaintJudgement->getSubject()?->getId(),
+            'mainDocument' => [
+                'fileName' => $mainDocument->getFileInfo()->getName(),
+                'formalDate' => $mainDocument->getFormalDate()->format('Y-m-d'),
+                'type' => $mainDocument->getType()->value,
+                'language' => $mainDocument->getLanguage()->value,
+            ],
+        ];
+
+        self::createPublicationApiRequest(
+            Request::METHOD_PUT,
+            $this->buildComplaintJudgementUrl($organisation, $complaintJudgement),
+            ['json' => $data],
+        );
+        self::assertResponseIsSuccessful();
+        self::assertJsonContains(['publicationDate' => '2025-01-02', 'title' => $newTitle]);
+
+        self::assertDatabaseHas(ComplaintJudgement::class, ['title' => $newTitle]);
     }
 }

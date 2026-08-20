@@ -201,7 +201,7 @@ services:
       - ${DOCKER_RABIITMQ_MANAGEMENT_PORT:-15672}:15672
 
   postgres:
-    image: postgres:15.14-bookworm
+    image: postgres:17.10-trixie
     labels:
       com.symfony.server.service-ignore: true
     environment:

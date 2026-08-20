@@ -7,16 +7,19 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Workflow\DossierMarkingStore;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowConfig;
 
 /**
  * @codeCoverageIgnore
+ *
+ * @phpstan-import-type Transitions from DossierWorkflowConfig
+ * @phpstan-import-type Places from DossierWorkflowConfig
+ * @phpstan-import-type Config from DossierWorkflowConfig
  */
-class WooDecisionWorkflow
+class WooDecisionWorkflow implements DossierWorkflowConfig
 {
-    public const string WOO_DECISION_WORKFLOW_NAME = 'woo_decision_workflow';
-
     /**
-     * @return array<string, mixed>
+     * @return Config
      */
     public static function getConfiguration(): array
     {
@@ -33,22 +36,22 @@ class WooDecisionWorkflow
     }
 
     /**
-     * @return array<string, array<string, mixed>>
+     * @return Places
      */
     private static function getPlaces(): array
     {
         return [
-            DossierStatus::NEW->value => [],
-            DossierStatus::CONCEPT->value => [],
-            DossierStatus::SCHEDULED->value => [],
-            DossierStatus::PREVIEW->value => [],
-            DossierStatus::PUBLISHED->value => [],
-            DossierStatus::DELETED->value => [],
+            DossierStatus::NEW->value,
+            DossierStatus::CONCEPT->value,
+            DossierStatus::SCHEDULED->value,
+            DossierStatus::PREVIEW->value,
+            DossierStatus::PUBLISHED->value,
+            DossierStatus::DELETED->value,
         ];
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return Transitions
      */
     private static function getTransitions(): array
     {

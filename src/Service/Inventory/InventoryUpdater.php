@@ -115,21 +115,24 @@ readonly class InventoryUpdater
             return null;
         }
 
-        $documentNumber = DocumentNumber::fromDossierAndDocumentMetadata($dossier, $documentMetadata);
+        $documentNumber = DocumentNumber::fromPublicationContextAndDossierId(
+            $documentMetadata->getPublicationContext(),
+            $documentMetadata->getId(),
+        );
         $documentChangeStatus = $changeset->getStatus($documentNumber);
         if ($documentChangeStatus === InventoryChangeset::UNCHANGED) {
             return null;
         }
 
-        $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber->getValue());
+        $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber->toString());
         if ($documentChangeStatus === InventoryChangeset::ADDED && $document === null) {
             $document = new Document();
-            $document->setDocumentNumber($documentNumber->getValue());
+            $document->setDocumentNumber($documentNumber->toString());
 
             $this->applyDocumentUpdate($documentMetadata, $dossier, $document, $inquiryChangeset);
 
             if (count($documentMetadata->getRefersTo()) !== 0) {
-                $docReferralUpdates[$documentNumber->getValue()] = $documentMetadata->getRefersTo();
+                $docReferralUpdates[$documentNumber->toString()] = $documentMetadata->getRefersTo();
             }
 
             return $document;

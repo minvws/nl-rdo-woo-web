@@ -12,6 +12,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  db_requirements_check:
+    name: Check .db_requirements
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/db-requirements-check.yml
+    secrets: inherit
+
   migration_check:
     name: Check for missing migrations
     if: github.event_name == 'pull_request'
@@ -265,7 +271,7 @@ jobs:
     needs: [setup-composer-cache]
     services:
       postgres:
-        image: postgres:14.10-bookworm
+        image: postgres:17.10-trixie
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres

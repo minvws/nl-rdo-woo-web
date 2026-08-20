@@ -16,6 +16,7 @@ use Shared\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecisionAttachment;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
@@ -38,6 +39,7 @@ use Webmozart\Assert\Assert;
     'other_publication_attachment' => OtherPublicationAttachment::class,
     'advice_attachment' => AdviceAttachment::class,
     'request_for_advice_attachment' => RequestForAdviceAttachment::class,
+    'draft_decision_attachment' => DraftDecisionAttachment::class,
 ])]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\UniqueConstraint(columns: ['dossier_id', 'external_id'])]

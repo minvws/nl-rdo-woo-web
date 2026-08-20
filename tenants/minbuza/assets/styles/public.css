@@ -1,0 +1,11 @@
+/*
+ * Tenant-specific overrides of theme variables for minbuza. This file is
+ * built as its own entry and only loaded on the minbuza public website
+ * (see templates/public/base.html.twig). These rules are unlayered on
+ * purpose: they must win from the Tailwind theme layer in theme.css.
+ */
+
+:root {
+    --tenant: 'minbuza';
+    --img-woo-hero: url(/public/img/public/hero/hero-vlaggen-eu-raad-brussel.jpeg);
+}

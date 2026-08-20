@@ -23,7 +23,6 @@
         "elasticsearch/elasticsearch": "^9.0",
         "endroid/qr-code": "^6.0.5",
         "erichard/elasticsearch-query-builder": "^3.0.3-beta",
-        "fakerphp/faker": "^1.21",
         "gemorroj/archive7z": "^5.6",
         "guzzlehttp/psr7": "^2.7",
         "huluti/breadcrumbs-bundle": "^1.6",
@@ -242,6 +241,7 @@
         "checkarc": "Check architecture rules using PHPArkitect"
     },
     "conflict": {
+        "doctrine/orm": "3.6.8",
         "symfony/symfony": "*"
     },
     "extra": {
@@ -256,6 +256,7 @@
     "require-dev": {
         "dama/doctrine-test-bundle": "^8.2",
         "dg/bypass-finals": "^1.5",
+        "fakerphp/faker": "^1.21",
         "friendsofphp/php-cs-fixer": "^3.91.2",
         "justinrainbow/json-schema": "^6.8",
         "league/flysystem-memory": "^3.0",

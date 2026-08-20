@@ -8,8 +8,10 @@
     otherPublication: false
     advice: false
     requestForAdvice: false
+    draftDecision: false
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\Covenant\Covenant
+    translationKey: dossier.type.covenant
     valueForRouteName: covenant
     name: COVENANT
     value: covenant
@@ -23,8 +25,10 @@
     otherPublication: false
     advice: false
     requestForAdvice: false
+    draftDecision: false
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision
+    translationKey: dossier.type.woo-decision
     valueForRouteName: woodecision
     name: WOO_DECISION
     value: woo-decision
@@ -38,8 +42,10 @@
     otherPublication: false
     advice: false
     requestForAdvice: false
+    draftDecision: false
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport
+    translationKey: dossier.type.annual-report
     valueForRouteName: annualreport
     name: ANNUAL_REPORT
     value: annual-report
@@ -53,8 +59,10 @@
     otherPublication: false
     advice: false
     requestForAdvice: false
+    draftDecision: false
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport
+    translationKey: dossier.type.investigation-report
     valueForRouteName: investigationreport
     name: INVESTIGATION_REPORT
     value: investigation-report
@@ -68,8 +76,10 @@
     otherPublication: false
     advice: false
     requestForAdvice: false
+    draftDecision: false
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\Disposition\Disposition
+    translationKey: dossier.type.disposition
     valueForRouteName: disposition
     name: DISPOSITION
     value: disposition
@@ -83,8 +93,10 @@
     otherPublication: false
     advice: false
     requestForAdvice: false
+    draftDecision: false
     attachments: false
     dossierClass: Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement
+    translationKey: dossier.type.complaint-judgement
     valueForRouteName: complaintjudgement
     name: COMPLAINT_JUDGEMENT
     value: complaint-judgement
@@ -98,8 +110,10 @@
     otherPublication: true
     advice: false
     requestForAdvice: false
+    draftDecision: false
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication
+    translationKey: dossier.type.other-publication
     valueForRouteName: otherpublication
     name: OTHER_PUBLICATION
     value: other-publication
@@ -113,8 +127,10 @@
     otherPublication: false
     advice: true
     requestForAdvice: false
+    draftDecision: false
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\Advice\Advice
+    translationKey: dossier.type.advice
     valueForRouteName: advice
     name: ADVICE
     value: advice
@@ -128,8 +144,27 @@
     otherPublication: false
     advice: false
     requestForAdvice: true
+    draftDecision: false
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice
+    translationKey: dossier.type.request-for-advice
     valueForRouteName: requestforadvice
     name: REQUEST_FOR_ADVICE
     value: request-for-advice
+-
+    covenant: false
+    wooDecision: false
+    annualReport: false
+    investigationReport: false
+    disposition: false
+    complaintJudgement: false
+    otherPublication: false
+    advice: false
+    requestForAdvice: false
+    draftDecision: true
+    attachments: true
+    dossierClass: Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision
+    translationKey: dossier.type.draft-decision
+    valueForRouteName: draftdecision
+    name: DRAFT_DECISION
+    value: draft-decision

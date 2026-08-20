@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Shared\Domain\Search\Result\Dossier\AnnualReport;
 
 use MinVWS\TypeArray\TypeArray;
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportRepository;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use Shared\Domain\Search\Result\ResultEntryInterface;
 use Shared\Domain\Search\Result\SearchResultMapperInterface;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 readonly class AnnualReportSearchResultMapper implements SearchResultMapperInterface
 {
@@ -25,13 +25,13 @@ readonly class AnnualReportSearchResultMapper implements SearchResultMapperInter
         return $type === ElasticDocumentType::ANNUAL_REPORT;
     }
 
-    public function map(TypeArray $hit, ApplicationMode $mode = ApplicationMode::PUBLIC): ?ResultEntryInterface
+    public function map(TypeArray $hit, ApplicationId $applicationId = ApplicationId::PUBLIC): ?ResultEntryInterface
     {
         return $this->baseMapper->map(
             $hit,
             $this->repository,
             ElasticDocumentType::ANNUAL_REPORT,
-            mode: $mode,
+            applicationId: $applicationId,
         );
     }
 }

@@ -9,7 +9,7 @@ use Shared\Domain\Upload\Event\UploadCompletedEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-#[AsEventListener(event: UploadCompletedEvent::class, method: 'onUploadCompleted')]
+#[AsEventListener]
 final readonly class ValidationEventHandler
 {
     public function __construct(
@@ -17,7 +17,7 @@ final readonly class ValidationEventHandler
     ) {
     }
 
-    public function onUploadCompleted(UploadCompletedEvent $event): void
+    public function __invoke(UploadCompletedEvent $event): void
     {
         $this->messageBus->dispatch(
             ValidateUploadCommand::forEntity($event->uploadEntity),

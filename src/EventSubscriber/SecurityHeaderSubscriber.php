@@ -9,7 +9,6 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Webmozart\Assert\Assert;
 
 use function array_merge;
@@ -54,7 +53,7 @@ class SecurityHeaderSubscriber
     ) {
     }
 
-    #[AsEventListener(event: KernelEvents::REQUEST)]
+    #[AsEventListener]
     public function onKernelRequest(RequestEvent $event): void
     {
         // Add random nonce that can be used in CSP for this request only
@@ -63,7 +62,7 @@ class SecurityHeaderSubscriber
         $event->getRequest()->attributes->set('csp_nonce', $nonce);
     }
 
-    #[AsEventListener(event: KernelEvents::RESPONSE)]
+    #[AsEventListener]
     public function onKernelResponse(ResponseEvent $event): void
     {
         $response = $event->getResponse();

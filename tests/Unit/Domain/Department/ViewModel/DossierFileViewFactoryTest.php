@@ -51,7 +51,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
             ->with(
                 'app_dossier_file_download',
                 [
-                    'prefix' => $prefix,
+                    'documentPrefix' => $prefix,
                     'dossierNumber' => $dossierNumber,
                     'type' => $fileType->value,
                     'id' => $entityId,
@@ -87,7 +87,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
             ->with(
                 'app_dossier_file_download',
                 [
-                    'prefix' => $prefix,
+                    'documentPrefix' => $prefix,
                     'dossierNumber' => $dossierNumber,
                     'type' => $fileType->value,
                     'id' => $entityId,
@@ -103,7 +103,7 @@ final class DossierFileViewFactoryTest extends UnitTestCase
             ->with(
                 'app_dossier_file_thumbnail',
                 [
-                    'prefix' => $prefix,
+                    'documentPrefix' => $prefix,
                     'dossierNumber' => $dossierNumber,
                     'type' => $fileType->value,
                     'id' => $entityId,

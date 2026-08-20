@@ -1,6 +1,6 @@
 {% extends 'public/search/entries/base.html.twig' %}
 
-{% set resultUrl = path('app_disposition_detail', { prefix: entry.dossier.documentPrefix, dossierNumber: entry.dossier.dossierNumber }) %}
+{% set resultUrl = path('app_disposition_detail', { documentPrefix: entry.dossier.documentPrefix, dossierNumber: entry.dossier.dossierNumber }) %}
 {% set resultType = 'dossier.type.disposition' | trans %}
 
 {% block resultSpecsBottom %}

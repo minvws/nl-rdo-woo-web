@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Controller\Admin\Dossier;
 
 use Knp\Component\Pager\PaginatorInterface;
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Admin\DossierFilterParameters;
@@ -18,7 +19,6 @@ use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use Shared\Form\Dossier\SearchFormType;
 use Shared\Service\DossierWizard\WizardStatusFactory;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -76,12 +76,12 @@ class DossierController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/overview/{prefix}/{dossierNumber}', name: 'app_admin_dossier', methods: ['GET'])]
+    #[Route('/balie/dossier/overview/{documentPrefix}/{dossierNumber}', name: 'app_admin_dossier', methods: ['GET'])]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function dossier(
         #[MapEntity(
             class: AbstractDossier::class,
-            mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'],
+            mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'],
         )]
         AbstractDossier $dossier,
     ): Response {
@@ -90,7 +90,7 @@ class DossierController extends AbstractController
             $mainDocumentView = $this->mainDocumentViewFactory->make(
                 $dossier,
                 $dossier->getMainDocument(),
-                ApplicationMode::ADMIN,
+                ApplicationId::ADMIN,
             );
         }
 
@@ -101,7 +101,7 @@ class DossierController extends AbstractController
             [
                 'attachments' => $this->attachmentViewFactory->makeCollection(
                     $dossier,
-                    ApplicationMode::ADMIN,
+                    ApplicationId::ADMIN,
                 ),
                 'mainDocument' => $mainDocumentView,
                 'noticeNotPublic' => $noticeNotPublic,
@@ -113,13 +113,13 @@ class DossierController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/overview/{prefix}/{dossierNumber}/publication-confirmation',
+        path: '/balie/dossier/overview/{documentPrefix}/{dossierNumber}/publication-confirmation',
         name: 'app_admin_dossier_publication_confirmation',
         methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function publicationConfirmation(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
     ): Response {
         return $this->render('admin/dossier/' . $dossier->getType()->value . '/publication-confirmation.html.twig', [
             'dossier' => $dossier,

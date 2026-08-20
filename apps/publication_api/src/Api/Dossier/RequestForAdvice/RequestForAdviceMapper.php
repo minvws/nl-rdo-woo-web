@@ -106,7 +106,7 @@ readonly class RequestForAdviceMapper
     ): RequestForAdvice {
         $requestForAdvice = new RequestForAdvice();
         $requestForAdvice->setExternalId($externalId);
-        $requestForAdvice->setStatus(DossierStatus::NEW);
+        $requestForAdvice->setStatus(DossierStatus::CONCEPT);
         $requestForAdvice->setDocumentPrefix($documentPrefix);
 
         self::update($requestForAdvice, $requestForAdviceRequestDto, $organisation, $department, $subject);
@@ -125,7 +125,9 @@ readonly class RequestForAdviceMapper
         $requestForAdvice->setDepartments([$department]);
         $requestForAdvice->setDossierNumber($requestForAdviceRequestDto->dossierNumber);
         $requestForAdvice->setOrganisation($organisation);
-        $requestForAdvice->setPublicationDate($requestForAdviceRequestDto->publicationDate);
+        if (! $requestForAdvice->getStatus()->isPublished()) {
+            $requestForAdvice->setPublicationDate($requestForAdviceRequestDto->publicationDate);
+        }
         $requestForAdvice->setSubject($subject);
         $requestForAdvice->setSummary($requestForAdviceRequestDto->summary);
         $requestForAdvice->setTitle($requestForAdviceRequestDto->title);

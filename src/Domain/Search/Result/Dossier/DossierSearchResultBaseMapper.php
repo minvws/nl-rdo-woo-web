@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Shared\Domain\Search\Result\Dossier;
 
 use MinVWS\TypeArray\TypeArray;
+use Shared\ApplicationId;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Result\HighlightMapperTrait;
 use Shared\Domain\Search\Result\ResultEntryInterface;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 use function array_map;
 use function is_null;
@@ -27,15 +27,15 @@ readonly class DossierSearchResultBaseMapper
         ProvidesDossierTypeSearchResultInterface $repository,
         ElasticDocumentType $documentType,
         array $highlightPaths = [ElasticField::TITLE->value, ElasticField::SUMMARY->value],
-        ApplicationMode $mode = ApplicationMode::PUBLIC,
+        ApplicationId $applicationId = ApplicationId::PUBLIC,
     ): ?ResultEntryInterface {
-        $prefix = $hit->getStringOrNull('[fields][document_prefix][0]');
+        $documentPrefix = $hit->getStringOrNull('[fields][document_prefix][0]');
         $dossierNumber = $hit->getStringOrNull('[fields][dossier_number][0]');
-        if (is_null($prefix) || is_null($dossierNumber)) {
+        if (is_null($documentPrefix) || is_null($dossierNumber)) {
             return null;
         }
 
-        $resultViewModel = $repository->getSearchResultViewModel($prefix, $dossierNumber, $mode);
+        $resultViewModel = $repository->getSearchResultViewModel($documentPrefix, $dossierNumber, $applicationId);
         if ($resultViewModel === null) {
             return null;
         }

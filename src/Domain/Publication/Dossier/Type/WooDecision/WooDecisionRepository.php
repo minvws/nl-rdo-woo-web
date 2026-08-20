@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\ApplicationId;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\AbstractDossierRepository;
@@ -15,7 +16,6 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use Shared\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\Uid\Uuid;
 
 use function sprintf;
@@ -71,9 +71,9 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
     }
 
     public function getSearchResultViewModel(
-        string $prefix,
+        string $documentPrefix,
         string $dossierNumber,
-        ApplicationMode $mode,
+        ApplicationId $applicationId,
     ): ?WooDecisionSearchResult {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
@@ -91,14 +91,14 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
                 )',
                 WooDecisionSearchResult::class,
             ))
-            ->where('dos.documentPrefix = :prefix')
+            ->where('dos.documentPrefix = :documentPrefix')
             ->andWhere('dos.dossierNumber = :dossierNumber')
             ->andWhere('dos.status IN (:statuses)')
             ->leftJoin('dos.documents', 'doc')
             ->groupBy('dos.id')
-            ->setParameter('prefix', $prefix)
+            ->setParameter('documentPrefix', $documentPrefix)
             ->setParameter('dossierNumber', $dossierNumber)
-            ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
+            ->setParameter('statuses', $applicationId->getAccessibleDossierStatuses());
 
         /** @var ?WooDecisionSearchResult */
         return $qb->getQuery()->getOneOrNullResult();

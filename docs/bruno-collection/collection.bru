@@ -5,3 +5,9 @@ meta {
 auth {
   mode: none
 }
+
+script:pre-request {
+  if (!bru.getVar("sessionTimestamp")) {
+    bru.setVar("sessionTimestamp", Date.now().toString());
+  }
+}

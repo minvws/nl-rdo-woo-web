@@ -132,7 +132,7 @@ readonly class ResultTransformer
         // Add all found hits and their documents
         $entries = [];
         foreach ($typedResponse->getIterable('[hits][hits]') as $hit) {
-            $entries[] = $this->resultFactory->map($hit, $searchParameters->mode);
+            $entries[] = $this->resultFactory->map($hit, $searchParameters->applicationId);
         }
 
         /** @var array<array-key, ResultEntryInterface> $entries */

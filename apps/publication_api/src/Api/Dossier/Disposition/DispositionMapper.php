@@ -101,7 +101,7 @@ readonly class DispositionMapper
     ): Disposition {
         $disposition = new Disposition();
         $disposition->setExternalId($externalId);
-        $disposition->setStatus(DossierStatus::NEW);
+        $disposition->setStatus(DossierStatus::CONCEPT);
         $disposition->setDocumentPrefix($documentPrefix);
 
         self::update($disposition, $dispositionRequestDto, $organisation, $department, $subject);
@@ -120,7 +120,9 @@ readonly class DispositionMapper
         $disposition->setDepartments([$department]);
         $disposition->setDossierNumber($dispositionRequestDto->dossierNumber);
         $disposition->setOrganisation($organisation);
-        $disposition->setPublicationDate($dispositionRequestDto->publicationDate);
+        if (! $disposition->getStatus()->isPublished()) {
+            $disposition->setPublicationDate($dispositionRequestDto->publicationDate);
+        }
         $disposition->setSubject($subject);
         $disposition->setSummary($dispositionRequestDto->summary);
         $disposition->setTitle($dispositionRequestDto->title);

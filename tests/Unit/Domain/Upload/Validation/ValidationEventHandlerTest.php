@@ -33,6 +33,6 @@ class ValidationEventHandlerTest extends UnitTestCase
         ));
 
         $handler = new ValidationEventHandler($messageBus);
-        $handler->onUploadCompleted($event);
+        $handler->__invoke($event);
     }
 }

@@ -7,8 +7,10 @@ namespace PublicationApi\Api\Dossier\ComplaintJudgement;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
+use PublicationApi\Api\Dossier\DossierMainDocumentValidator;
 use PublicationApi\Api\Dossier\DossierNumberValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\Dossier\DossierValidator;
 use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
@@ -34,8 +36,10 @@ final readonly class ComplaintJudgementProcessor implements ProcessorInterface
     public function __construct(
         private DossierNumberValidator $dossierNumberValidator,
         private DossierSupportService $dossierSupportService,
+        private DossierMainDocumentValidator $dossierMainDocumentValidator,
         private DossierUpdateGuard $dossierUpdateGuard,
         private DossierRepository $dossierRepository,
+        private DossierValidator $dossierValidator,
         private ComplaintJudgementMapper $complaintJudgementMapper,
         private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private OrganisationResolver $organisationResolver,
@@ -104,7 +108,7 @@ final readonly class ComplaintJudgementProcessor implements ProcessorInterface
         if ($complaintJudgementRequestDto->mainDocument !== null) {
             $mainDocument = ComplaintJudgementMainDocumentMapper::create($complaintJudgement, $complaintJudgementRequestDto->mainDocument);
             $complaintJudgement->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             $noticeNotPublic = $complaintJudgementRequestDto->noticeNotPublic;
             Assert::notNull($noticeNotPublic);
@@ -114,8 +118,10 @@ final readonly class ComplaintJudgementProcessor implements ProcessorInterface
             );
         }
 
-        $this->dossierSupportService->validateDossier($complaintJudgement);
-        $this->dossierSupportService->dispatchCreateDossierCommand($complaintJudgement);
+        $this->dossierValidator->validateDossier($complaintJudgement);
+        $this->dossierSupportService->autoPublish($complaintJudgement);
+        $this->dossierSupportService->validateCompletionAndPersist($complaintJudgement);
+        $this->dossierSupportService->synchronizeArtifacts($complaintJudgement);
 
         return $complaintJudgement;
     }
@@ -144,7 +150,7 @@ final readonly class ComplaintJudgementProcessor implements ProcessorInterface
                 ? ComplaintJudgementMainDocumentMapper::update($complaintJudgement, $complaintJudgementRequestDto->mainDocument)
                 : ComplaintJudgementMainDocumentMapper::create($complaintJudgement, $complaintJudgementRequestDto->mainDocument);
             $complaintJudgement->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             if ($complaintJudgement->getMainDocument() !== null) {
                 $this->messageBus->dispatch(new DeleteMainDocumentCommand($complaintJudgement->getId()));
@@ -159,7 +165,9 @@ final readonly class ComplaintJudgementProcessor implements ProcessorInterface
             $complaintJudgement->setNoticeNotPublic($notice);
         }
 
-        $this->dossierSupportService->validateDossier($complaintJudgement);
-        $this->dossierSupportService->dispatchUpdateDossierCommand($complaintJudgement);
+        $this->dossierValidator->validateDossier($complaintJudgement);
+        $this->dossierSupportService->autoPublish($complaintJudgement);
+        $this->dossierSupportService->validateCompletionAndPersist($complaintJudgement);
+        $this->dossierSupportService->synchronizeArtifacts($complaintJudgement);
     }
 }

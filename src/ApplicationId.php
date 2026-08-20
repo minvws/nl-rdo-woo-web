@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Shared;
 
+use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Service\Security\ApplicationId\ApplicationIdException;
+
 use function strtolower;
 
 enum ApplicationId: string
@@ -21,6 +24,23 @@ enum ApplicationId: string
         }
 
         return self::from(strtolower($value));
+    }
+
+    /**
+     * @return list<DossierStatus>
+     */
+    public function getAccessibleDossierStatuses(): array
+    {
+        return match ($this) {
+            self::PUBLIC => DossierStatus::publiclyAvailableCases(),
+            self::ADMIN => [
+                DossierStatus::CONCEPT,
+                DossierStatus::SCHEDULED,
+                DossierStatus::PREVIEW,
+                DossierStatus::PUBLISHED,
+            ],
+            default => throw ApplicationIdException::forCannotDetermineAccessibleDossierStatuses($this),
+        };
     }
 
     public function isAdmin(): bool

@@ -17,11 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
                 . '/{dossierExternalId}/uploads/document/external/{documentExternalId}',
             inputFormats: ['binary' => ['application/octet-stream']],
             outputFormats: [],
-            requirements: [
-                'organisationId' => '[0-9a-zA-Z-]+',
-                'dossierExternalId' => '[0-9a-zA-Z-]+',
-                'documentExternalId' => '[0-9a-zA-Z-]+',
-            ],
             status: Response::HTTP_NO_CONTENT,
             controller: WooDecisionUploadDocumentRequestDtoFactory::class,
             input: false,

@@ -15,105 +15,105 @@ legacy_search:
         keepRequestMethod: true
 
 legacy_investigationreport_detail:
-    path: /investigation-report/{prefix}/{dossierNumber}
+    path: /investigation-report/{documentPrefix}/{dossierNumber}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_investigationreport_detail'
         permanent: true
 
 legacy_investigationreport_document_detail:
-    path: /investigation-report/{prefix}/{dossierNumber}/document
+    path: /investigation-report/{documentPrefix}/{dossierNumber}/document
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_investigationreport_document_detail'
         permanent: true
 
 legacy_investigationreport_attachment_detail:
-    path: /investigation-report/{prefix}/{dossierNumber}/attachment/{attachmentId}
+    path: /investigation-report/{documentPrefix}/{dossierNumber}/attachment/{attachmentId}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_investigationreport_attachment_detail'
         permanent: true
 
 legacy_annualreport_detail:
-    path: /annual-report/{prefix}/{dossierNumber}
+    path: /annual-report/{documentPrefix}/{dossierNumber}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_annualreport_detail'
         permanent: true
 
 legacy_annualreport_document_detail:
-    path: /annual-report/{prefix}/{dossierNumber}/document
+    path: /annual-report/{documentPrefix}/{dossierNumber}/document
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_annualreport_document_detail'
         permanent: true
 
 legacy_annualreport_attachment_detail:
-    path: /annual-report/{prefix}/{dossierNumber}/attachment/{attachmentId}
+    path: /annual-report/{documentPrefix}/{dossierNumber}/attachment/{attachmentId}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_annualreport_attachment_detail'
         permanent: true
 
 legacy_disposition_detail:
-    path: /disposition/{prefix}/{dossierNumber}
+    path: /disposition/{documentPrefix}/{dossierNumber}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_disposition_detail'
         permanent: true
 
 legacy_disposition_document_detail:
-    path: /disposition/{prefix}/{dossierNumber}/document
+    path: /disposition/{documentPrefix}/{dossierNumber}/document
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_disposition_document_detail'
         permanent: true
 
 legacy_disposition_attachment_detail:
-    path: /disposition/{prefix}/{dossierNumber}/attachment/{attachmentId}
+    path: /disposition/{documentPrefix}/{dossierNumber}/attachment/{attachmentId}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_disposition_attachment_detail'
         permanent: true
 
 legacy_complaintjudgement_detail:
-    path: /complaint-judgement/{prefix}/{dossierNumber}
+    path: /complaint-judgement/{documentPrefix}/{dossierNumber}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_complaintjudgement_detail'
         permanent: true
 
 legacy_complaintjudgement_document_detail:
-    path: /complaint-judgement/{prefix}/{dossierNumber}/document
+    path: /complaint-judgement/{documentPrefix}/{dossierNumber}/document
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_complaintjudgement_document_detail'
         permanent: true
 
 legacy_woodecision_decisionattachment_detail:
-    path: /dossier/{prefix}/{dossierNumber}/decision-attachments/{attachmentId}
+    path: /dossier/{documentPrefix}/{dossierNumber}/decision-attachments/{attachmentId}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_woodecision_decisionattachment_detail'
         permanent: true
 
 legacy_covenant_detail:
-    path: /covenant/{prefix}/{dossierNumber}
+    path: /covenant/{documentPrefix}/{dossierNumber}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_covenant_detail'
         permanent: true
 
 legacy_covenant_covenantdocument_detail:
-    path: /covenant/{prefix}/{dossierNumber}/covenant-document
+    path: /covenant/{documentPrefix}/{dossierNumber}/covenant-document
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_covenant_covenantdocument_detail'
         permanent: true
 
 legacy_covenant_covenantattachment_detail:
-    path: /covenant/{prefix}/{dossierNumber}/covenant-attachment/{attachmentId}
+    path: /covenant/{documentPrefix}/{dossierNumber}/covenant-attachment/{attachmentId}
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
     defaults:
         route: 'app_covenant_covenantattachment_detail'

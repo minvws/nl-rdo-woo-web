@@ -9,19 +9,14 @@ use Mockery\MockInterface;
 use Psr\Log\NullLogger;
 use Shared\Domain\Publication\Dossier\Command\UpdateDossierPublicationCommand;
 use Shared\Domain\Publication\Dossier\DossierPublisher;
-use Shared\Domain\Publication\Dossier\Event\DossierUpdatedEvent;
 use Shared\Domain\Publication\Dossier\Handler\UpdateDossierPublicationHandler;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Service\DossierService;
 use Shared\Tests\Unit\UnitTestCase;
-use stdClass;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 class UpdateDossierPublicationHandlerTest extends UnitTestCase
 {
-    private MessageBusInterface&MockInterface $messageBus;
     private DossierPublisher&MockInterface $dossierPublisher;
     private UpdateDossierPublicationHandler $handler;
     private DossierService&MockInterface $dossierService;
@@ -29,12 +24,10 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->dossierService = Mockery::mock(DossierService::class);
-        $this->messageBus = Mockery::mock(MessageBusInterface::class);
         $this->dossierPublisher = Mockery::mock(DossierPublisher::class);
 
         $this->handler = new UpdateDossierPublicationHandler(
             $this->dossierService,
-            $this->messageBus,
             $this->dossierPublisher,
             new NullLogger(),
         );
@@ -46,7 +39,7 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->expects('getId')->times(2)->andReturn($dossierId);
+        $dossier->expects('getId')->andReturn($dossierId);
 
         $this->dossierService->expects('validateCompletion')->with($dossier, false);
 
@@ -55,14 +48,6 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
         $this->dossierService->expects('validateCompletion')->with($dossier);
 
         $this->dossierPublisher->expects('publish')->with($dossier);
-
-        $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static function (DossierUpdatedEvent $message) use ($dossierId) {
-                self::assertEquals($dossierId, $message->dossierId);
-
-                return true;
-            },
-        ))->andReturns(new Envelope(new stdClass()));
 
         $this->handler->__invoke(
             new UpdateDossierPublicationCommand($dossier),
@@ -73,7 +58,7 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->expects('getId')->times(2)->andReturn($dossierId);
+        $dossier->expects('getId')->andReturn($dossierId);
 
         $this->dossierService->expects('validateCompletion')->with($dossier, false);
 
@@ -84,14 +69,6 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
 
         $this->dossierPublisher->expects('publishAsPreview')->with($dossier);
 
-        $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static function (DossierUpdatedEvent $message) use ($dossierId) {
-                self::assertEquals($dossierId, $message->dossierId);
-
-                return true;
-            },
-        ))->andReturns(new Envelope(new stdClass()));
-
         $this->handler->__invoke(
             new UpdateDossierPublicationCommand($dossier),
         );
@@ -101,7 +78,7 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
     {
         $dossierId = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class);
-        $dossier->expects('getId')->times(2)->andReturn($dossierId);
+        $dossier->expects('getId')->andReturn($dossierId);
 
         $this->dossierService->expects('validateCompletion')->with($dossier, false);
 
@@ -112,14 +89,6 @@ class UpdateDossierPublicationHandlerTest extends UnitTestCase
         $this->dossierService->expects('validateCompletion')->with($dossier);
 
         $this->dossierPublisher->expects('schedulePublication')->with($dossier);
-
-        $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static function (DossierUpdatedEvent $message) use ($dossierId) {
-                self::assertEquals($dossierId, $message->dossierId);
-
-                return true;
-            },
-        ))->andReturns(new Envelope(new stdClass()));
 
         $this->handler->__invoke(
             new UpdateDossierPublicationCommand($dossier),

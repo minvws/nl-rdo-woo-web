@@ -4,3 +4,5 @@ admin.global.platform_title: "Beheer platform woo-publicaties Ministerie van Fin
 public.intro.label.oga: "OpenFIN"
 public.intro.description.oga: "Openbaar gemaakte informatie door het Ministerie van Financiën"
 public.global.logo.text: "Ministerie van Financiën"
+public.department.description: "Op dit platform vindt u informatie die openbaar is gemaakt op grond van de Wet open overheid door het Ministerie van Financiën en aan haar verwante (zelfstandig) bestuursorganen. Het platform zal de komende periode aangevuld worden met meer informatie."
+public.browse.facets.description: "Op dit platform vindt u informatie die openbaar is gemaakt op grond van de <a href='https://www.rijksoverheid.nl/onderwerpen/wet-open-overheid-woo'>Wet open overheid (Woo)</a> door het Ministerie van Financiën en aan haar verwante (zelfstandig) bestuursorganen. Het platform zal de komende periode aangevuld worden met meer informatie."

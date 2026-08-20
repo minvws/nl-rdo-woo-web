@@ -34,6 +34,13 @@ final class ComplaintJudgementFactory extends PersistentObjectFactory
         ];
     }
 
+    public function concept(): self
+    {
+        return $this->with([
+            'status' => DossierStatus::CONCEPT,
+        ]);
+    }
+
     public static function class(): string
     {
         return ComplaintJudgement::class;

@@ -6,11 +6,9 @@ namespace Shared\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
-use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Step\StepName;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Domain\Search\SearchDispatcher;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -20,7 +18,6 @@ readonly class DossierService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private WizardStatusFactory $statusFactory,
-        private SearchDispatcher $searchDispatcher,
         private ValidatorInterface $validator,
     ) {
     }
@@ -44,20 +41,6 @@ readonly class DossierService
         }
 
         return $completed;
-    }
-
-    /**
-     * @deprecated to be removed in WOO-2066
-     */
-    public function handleEntityUpdate(AbstractDossier $dossier): void
-    {
-        if ($dossier->getStatus() === DossierStatus::DELETED) {
-            return;
-        }
-
-        $this->validateCompletion($dossier);
-
-        $this->searchDispatcher->dispatchIndexDossierCommand($dossier->getId());
     }
 
     /**

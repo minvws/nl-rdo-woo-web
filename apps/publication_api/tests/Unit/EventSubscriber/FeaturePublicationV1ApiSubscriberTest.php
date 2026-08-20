@@ -26,14 +26,14 @@ final class FeaturePublicationV1ApiSubscriberTest extends UnitTestCase
 
         $this->expectException(NotFoundHttpException::class);
 
-        $subscriber->onRequest($this->event);
+        $subscriber->__invoke($this->event);
     }
 
     public function testWhenFeatureIsEnabledItsANoOp(): void
     {
         $subscriber = new FeaturePublicationV1ApiSubscriber(hasFeaturePublicationV1: true);
 
-        $subscriber->onRequest($this->event);
+        $subscriber->__invoke($this->event);
 
         // @phpstan-ignore method.alreadyNarrowedType
         $this->asserttrue(true); // If we reach this point, the test passes (no exception was thrown)

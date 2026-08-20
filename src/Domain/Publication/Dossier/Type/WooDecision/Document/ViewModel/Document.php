@@ -11,7 +11,7 @@ final readonly class Document
     public function __construct(
         public bool $ingested,
         public EntityDocument $entity,
-        public bool $withdrawn = false,
+        public bool $isDownloadable,
     ) {
     }
 }

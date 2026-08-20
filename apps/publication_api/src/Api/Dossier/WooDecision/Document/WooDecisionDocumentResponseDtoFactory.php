@@ -56,6 +56,7 @@ readonly class WooDecisionDocumentResponseDtoFactory
             $document->getExternalId(),
             $document->getFamilyId(),
             $document->getFileInfo()->getName(),
+            $document->getFileInfo()->getSourceType(),
             $document->getGrounds(),
             $document->isSuspended(),
             $document->isUploaded(),
@@ -105,7 +106,7 @@ readonly class WooDecisionDocumentResponseDtoFactory
             $linkCollection->set(
                 LinkCollection::FILE,
                 new Link($this->publicUrlGenerator->buildUrlFromRoute(DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, [
-                    'prefix' => $wooDecision->getDocumentPrefix(),
+                    'documentPrefix' => $wooDecision->getDocumentPrefix(),
                     'dossierNumber' => $wooDecision->getDossierNumber(),
                     'type' => DossierFileType::DOCUMENT->value,
                     'id' => $document->getId(),

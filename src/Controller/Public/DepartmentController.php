@@ -34,11 +34,8 @@ class DepartmentController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route('/bestuursorganen', name: 'app_departments_index')]
-    public function index(Breadcrumbs $breadcrumbs): Response
+    public function index(): Response
     {
-        $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem('public.breadcrumbs.departments');
-
         return $this->render('public/department/index.html.twig', [
             'departments' => $this->departmentService->getPublicDepartments(),
         ]);

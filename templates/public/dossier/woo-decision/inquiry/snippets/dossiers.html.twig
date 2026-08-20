@@ -17,7 +17,7 @@
                 <tbody>
                 {% for data in dossiers %}
                     {% set dossier = data[0] %}
-                    {% set dossierUrl = path('app_inquiry_dossier', {token: inquiry.token, prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) %}
+                    {% set dossierUrl = path('app_inquiry_dossier', {token: inquiry.token, documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) %}
                     <tr>
                         <td><a class="woo-a" href="{{ dossierUrl }}">{{ dossier.title }}</a></td>
                         <td><a class="woo-a" href="{{ dossierUrl }}">{{ 'public.inquiry.documents_in_dossier' | trans({count: data.docCount}) }}</a></td>

@@ -91,6 +91,7 @@ framework:
             Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawDocumentCommand: high
             Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand: high
             Shared\Domain\Upload\Command\ValidateUploadCommand: high
+            Shared\Domain\Publication\Dossier\Command\SynchronizeDossierArtifactsCommand: high
 
             Shared\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand: ingestor
             Shared\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor

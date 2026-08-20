@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use function sprintf;
 
+#[AsEventListener]
 readonly class SitemapAttachmentSubscriber
 {
     public function __construct(
@@ -22,8 +23,7 @@ readonly class SitemapAttachmentSubscriber
     ) {
     }
 
-    #[AsEventListener(event: SitemapPopulateEvent::class)]
-    public function populate(SitemapPopulateEvent $event): void
+    public function __invoke(SitemapPopulateEvent $event): void
     {
         $attachmentQuery = $this->attachmentRepository->getAllPublishedQuery();
 
@@ -35,7 +35,7 @@ readonly class SitemapAttachmentSubscriber
                     $event->getUrlGenerator()->generate(
                         sprintf('app_%s_attachment_detail', $dossier->getType()->getValueForRouteName()),
                         [
-                            'prefix' => $dossier->getDocumentPrefix(),
+                            'documentPrefix' => $dossier->getDocumentPrefix(),
                             'dossierNumber' => $dossier->getDossierNumber(),
                             'attachmentId' => $attachment->getId(),
                         ],

@@ -12,13 +12,12 @@ use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Service\ObjectHasher;
 use Shared\Service\Storage\EntityStorageService;
-use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
-use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\FileName;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 
 final class WooDecisionDocumentMapperTest extends UnitTestCase
 {
@@ -41,7 +40,7 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
             remark: null,
             sourceType: $sourceType,
             threadId: null,
-            matter: DocumentMatter::create('test'),
+            publicationContext: PublicationContext::fromString('test'),
         );
 
         $entityStorageService = Mockery::mock(EntityStorageService::class);
@@ -55,7 +54,7 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
             new ObjectHasher(),
             $uploadEntityRepository,
         );
-        $document = $wooDecisionDocumentMapper->create('PREFIX', $dto);
+        $document = $wooDecisionDocumentMapper->create($dto);
 
         $this->assertEquals($sourceType, $document->getFileInfo()->getSourceType());
     }
@@ -78,7 +77,7 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
             remark: null,
             sourceType: $sourceType,
             threadId: null,
-            matter: DocumentMatter::create('updated'),
+            publicationContext: PublicationContext::fromString('updated'),
         );
 
         $initialDto = new WooDecisionDocumentRequestDto(
@@ -96,7 +95,7 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
             remark: null,
             sourceType: SourceType::PDF,
             threadId: null,
-            matter: DocumentMatter::create('original'),
+            publicationContext: PublicationContext::fromString('original'),
         );
 
         $entityStorageService = Mockery::mock(EntityStorageService::class);
@@ -112,10 +111,10 @@ final class WooDecisionDocumentMapperTest extends UnitTestCase
             new ObjectHasher(),
             $uploadEntityRepository,
         );
-        $document = $wooDecisionDocumentMapper->create(WooDecisionFactory::DEFAULT_PREFIX, $initialDto);
+        $document = $wooDecisionDocumentMapper->create($initialDto);
         $this->assertEquals(SourceType::PDF, $document->getFileInfo()->getSourceType());
 
-        $document = $wooDecisionDocumentMapper->update(WooDecisionFactory::DEFAULT_PREFIX, $document, $updateDto);
+        $document = $wooDecisionDocumentMapper->update($document, $updateDto);
 
         $this->assertEquals($sourceType, $document->getFileInfo()->getSourceType());
         $this->assertStringContainsString('doc.123', $document->getDocumentNumber());

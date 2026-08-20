@@ -12,6 +12,7 @@ use PublicationApi\Api\OrganisationLookup;
 use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentHandler;
 use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentProcessor;
 use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentRequestInterface;
+use PublicationApi\FeatureFlag\DocumentUploadGuard;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
@@ -49,6 +50,9 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
 
+        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
+        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
+
         $mainDocument = Mockery::mock(AbstractMainDocument::class);
         $dossier->expects('getMainDocument')->andReturn($mainDocument);
 
@@ -59,6 +63,7 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
         $processor = new UploadMainDocumentProcessor(
             $dossierLookup,
             $organisationLookup,
+            $documentUploadGuard,
             $uploadMainDocumentHandler,
         );
 
@@ -89,11 +94,15 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
 
+        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
+        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
+
         $uploadMainDocumentHandler = Mockery::mock(UploadMainDocumentHandler::class);
 
         $processor = new UploadMainDocumentProcessor(
             $dossierLookup,
             $organisationLookup,
+            $documentUploadGuard,
             $uploadMainDocumentHandler,
         );
 
@@ -126,6 +135,9 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
 
+        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
+        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
+
         $dossier->expects('getMainDocument')->andReturnNull();
 
         $uploadMainDocumentHandler = Mockery::mock(UploadMainDocumentHandler::class);
@@ -133,6 +145,7 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
         $processor = new UploadMainDocumentProcessor(
             $dossierLookup,
             $organisationLookup,
+            $documentUploadGuard,
             $uploadMainDocumentHandler,
         );
 
@@ -165,6 +178,9 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
 
+        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
+        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
+
         $mainDocument = Mockery::mock(AbstractMainDocument::class);
         $dossier->expects('getMainDocument')->andReturn($mainDocument);
 
@@ -173,6 +189,7 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
         $processor = new UploadMainDocumentProcessor(
             $dossierLookup,
             $organisationLookup,
+            $documentUploadGuard,
             $uploadMainDocumentHandler,
         );
 

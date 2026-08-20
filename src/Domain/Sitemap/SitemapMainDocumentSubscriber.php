@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use function sprintf;
 
+#[AsEventListener]
 readonly class SitemapMainDocumentSubscriber
 {
     public function __construct(
@@ -22,8 +23,7 @@ readonly class SitemapMainDocumentSubscriber
     ) {
     }
 
-    #[AsEventListener(event: SitemapPopulateEvent::class)]
-    public function populate(SitemapPopulateEvent $event): void
+    public function __invoke(SitemapPopulateEvent $event): void
     {
         $mainDocumentQuery = $this->mainDocumentRepository->getAllPublishedQuery();
 
@@ -35,7 +35,7 @@ readonly class SitemapMainDocumentSubscriber
                     $event->getUrlGenerator()->generate(
                         sprintf('app_%s_document_detail', $dossier->getType()->getValueForRouteName()),
                         [
-                            'prefix' => $dossier->getDocumentPrefix(),
+                            'documentPrefix' => $dossier->getDocumentPrefix(),
                             'dossierNumber' => $dossier->getDossierNumber(),
                         ],
                         UrlGeneratorInterface::ABSOLUTE_URL,

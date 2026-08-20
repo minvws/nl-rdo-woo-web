@@ -9,6 +9,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\DocumentMatter;
+use Shared\ValueObject\PublicationContext;
 use Stringable;
 
 use function count;
@@ -41,11 +42,6 @@ readonly class DocumentNumber implements Stringable
 
     public function __toString(): string
     {
-        return $this->getValue();
-    }
-
-    public function getValue(): string
-    {
         return $this->value;
     }
 
@@ -54,12 +50,7 @@ readonly class DocumentNumber implements Stringable
         return $this->matter;
     }
 
-    public static function fromDossierAndDocumentMetadata(WooDecision $dossier, DocumentMetadata $metadata): self
-    {
-        return new self($dossier->getDocumentPrefix(), $metadata->getMatter(), $metadata->getId());
-    }
-
-    public static function fromString(string $prefix, ?DocumentMatter $defaultMatter, string $input): self
+    public static function fromPrefixMatterAndInput(string $prefix, ?DocumentMatter $defaultMatter, string $input): self
     {
         // If the prefix is included remove it
         if (str_starts_with($input, $prefix)) {
@@ -84,7 +75,7 @@ readonly class DocumentNumber implements Stringable
         // Create an instance for the referring document first, to use it's matter as the fallback matter.
         $referringDocNr = self::fromDossierAndDocument($dossier, $referringDocument);
 
-        return self::fromString($dossier->getDocumentPrefix(), $referringDocNr->getMatter(), $referral);
+        return self::fromPrefixMatterAndInput($dossier->getDocumentPrefix(), $referringDocNr->getMatter(), $referral);
     }
 
     public static function fromDossierAndDocument(WooDecision $dossier, Document $document): self
@@ -101,6 +92,11 @@ readonly class DocumentNumber implements Stringable
         $matter = DocumentMatter::create($matterStr ?: '0');
 
         return new self($dossier->getDocumentPrefix(), $matter, $document->getDocumentId());
+    }
+
+    public static function fromPublicationContextAndDossierId(PublicationContext $publicationContext, DocumentId $documentId): self
+    {
+        return new self($publicationContext->toString(), null, $documentId);
     }
 
     public function toString(): string

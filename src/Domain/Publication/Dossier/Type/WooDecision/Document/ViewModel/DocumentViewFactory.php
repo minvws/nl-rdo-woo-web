@@ -19,6 +19,7 @@ final readonly class DocumentViewFactory
         return new Document(
             ingested: $this->searchService->isIngested($documentEntity),
             entity: $documentEntity,
+            isDownloadable: $documentEntity->shouldBeUploaded() && $documentEntity->isUploaded() && $documentEntity->getFileInfo()->getSize() > 0,
         );
     }
 }

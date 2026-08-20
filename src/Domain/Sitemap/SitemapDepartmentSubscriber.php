@@ -10,6 +10,7 @@ use Shared\Domain\Department\DepartmentRepository;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+#[AsEventListener]
 readonly class SitemapDepartmentSubscriber
 {
     public function __construct(
@@ -17,8 +18,7 @@ readonly class SitemapDepartmentSubscriber
     ) {
     }
 
-    #[AsEventListener(event: SitemapPopulateEvent::class)]
-    public function populate(SitemapPopulateEvent $event): void
+    public function __invoke(SitemapPopulateEvent $event): void
     {
         $event->getUrlContainer()->addUrl(
             new UrlConcrete(

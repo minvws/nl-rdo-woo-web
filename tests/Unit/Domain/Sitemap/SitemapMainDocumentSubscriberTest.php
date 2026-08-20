@@ -58,7 +58,7 @@ class SitemapMainDocumentSubscriberTest extends UnitTestCase
         $urlGenerator->expects('generate')->with(
             'app_covenant_document_detail',
             [
-                'prefix' => $prefix,
+                'documentPrefix' => $prefix,
                 'dossierNumber' => $dossierNumber,
             ],
             0,
@@ -83,6 +83,6 @@ class SitemapMainDocumentSubscriberTest extends UnitTestCase
             $urlGenerator,
         );
 
-        $this->subscriber->populate($event);
+        $this->subscriber->__invoke($event);
     }
 }

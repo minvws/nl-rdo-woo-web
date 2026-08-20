@@ -20,20 +20,6 @@
                 "manage"
             ],
             "allow_restricted_indices": false
-        },
-        {
-            "names": [
-                "minfin-worker-stats"
-            ],
-            "privileges": [
-                "create",
-                "read",
-                "write",
-                "create_doc",
-                "index",
-                "create_index"
-            ],
-            "allow_restricted_indices": false
         }
     ]
 }

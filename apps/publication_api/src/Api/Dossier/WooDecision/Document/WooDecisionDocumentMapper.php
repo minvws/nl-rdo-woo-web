@@ -20,43 +20,40 @@ readonly class WooDecisionDocumentMapper
     }
 
     public function create(
-        string $documentPrefix,
         WooDecisionDocumentRequestDto $wooDecisionDocumentRequestDto,
     ): Document {
-        $documentNumber = DocumentNumber::fromString(
-            $documentPrefix,
-            $wooDecisionDocumentRequestDto->matter,
-            $wooDecisionDocumentRequestDto->documentId->toString(),
+        $documentNumber = DocumentNumber::fromPublicationContextAndDossierId(
+            $wooDecisionDocumentRequestDto->publicationContext,
+            $wooDecisionDocumentRequestDto->documentId,
         );
 
         $document = new Document();
         $document->setExternalId($wooDecisionDocumentRequestDto->externalId);
-        $document->setDocumentNumber($documentNumber->getValue());
+        $document->setDocumentNumber($documentNumber->toString());
         $document->getFileInfo()->setName($wooDecisionDocumentRequestDto->fileName->toString());
 
-        return $this->update($documentPrefix, $document, $wooDecisionDocumentRequestDto);
+        return $this->update($document, $wooDecisionDocumentRequestDto);
     }
 
     public function update(
-        string $documentPrefix,
         Document $document,
         WooDecisionDocumentRequestDto $wooDecisionDocumentRequestDto,
     ): Document {
         $documentHash = $this->objectHasher->get($document);
 
-        $documentNumber = DocumentNumber::fromString(
-            $documentPrefix,
-            $wooDecisionDocumentRequestDto->matter,
-            $wooDecisionDocumentRequestDto->documentId->toString(),
+        $documentNumber = DocumentNumber::fromPublicationContextAndDossierId(
+            $wooDecisionDocumentRequestDto->publicationContext,
+            $wooDecisionDocumentRequestDto->documentId,
         );
 
         $document->setDocumentDate($wooDecisionDocumentRequestDto->documentDate);
         $document->setDocumentId($wooDecisionDocumentRequestDto->documentId);
-        $document->setDocumentNumber($documentNumber->getValue());
+        $document->setDocumentNumber($documentNumber->toString());
         $document->setFamilyId($wooDecisionDocumentRequestDto->familyId);
         $document->setGrounds($wooDecisionDocumentRequestDto->grounds);
         $document->setJudgement($wooDecisionDocumentRequestDto->judgement);
         $document->setLinks($wooDecisionDocumentRequestDto->links);
+        $document->setPublicationContext($wooDecisionDocumentRequestDto->publicationContext);
         $document->setSuspended($wooDecisionDocumentRequestDto->isSuspended);
         $document->setRemark($wooDecisionDocumentRequestDto->remark);
         $document->setThreadId($wooDecisionDocumentRequestDto->threadId);

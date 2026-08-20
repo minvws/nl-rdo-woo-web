@@ -7,16 +7,19 @@ namespace Shared\Domain\Publication\Dossier\Type\Covenant;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Workflow\DossierMarkingStore;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowConfig;
 
 /**
  * @codeCoverageIgnore
+ *
+ * @phpstan-import-type Transitions from DossierWorkflowConfig
+ * @phpstan-import-type Places from DossierWorkflowConfig
+ * @phpstan-import-type Config from DossierWorkflowConfig
  */
-class CovenantWorkflow
+class CovenantWorkflow implements DossierWorkflowConfig
 {
-    public const string COVENANT_WORKFLOW_NAME = 'covenant_workflow';
-
     /**
-     * @return array<string, mixed>
+     * @return Config
      */
     public static function getConfiguration(): array
     {
@@ -33,7 +36,7 @@ class CovenantWorkflow
     }
 
     /**
-     * @return array<string, array<string, mixed>>
+     * @return Places
      */
     private static function getPlaces(): array
     {
@@ -47,7 +50,7 @@ class CovenantWorkflow
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return Transitions
      */
     private static function getTransitions(): array
     {

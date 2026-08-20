@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
-use Closure;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
@@ -15,7 +14,6 @@ use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
-use Shared\Service\Stats\WorkerStatsService;
 use Shared\Service\Worker\Pdf\Extractor\PageContentExtractor;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
@@ -27,7 +25,6 @@ final class PageContentExtractorTest extends UnitTestCase
     private LoggerInterface&MockInterface $logger;
     private ContentExtractCache&MockInterface $contentExtractCache;
     private SubTypeIndexer&MockInterface $subTypeIndexer;
-    private WorkerStatsService&MockInterface $statsService;
     private EntityWithFileInfo&MockInterface $entity;
     private PageContentExtractor $extractor;
 
@@ -38,14 +35,12 @@ final class PageContentExtractorTest extends UnitTestCase
         $this->logger = Mockery::mock(LoggerInterface::class);
         $this->contentExtractCache = Mockery::mock(ContentExtractCache::class);
         $this->subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
-        $this->statsService = Mockery::mock(WorkerStatsService::class);
         $this->entity = Mockery::mock(EntityWithFileInfo::class);
 
         $this->extractor = new PageContentExtractor(
             $this->logger,
             $this->subTypeIndexer,
             $this->contentExtractCache,
-            $this->statsService,
         );
     }
 
@@ -69,17 +64,6 @@ final class PageContentExtractorTest extends UnitTestCase
         $this->subTypeIndexer
             ->expects('updatePage')
             ->with($this->entity, $pageNr, $content);
-
-        $this->statsService
-            ->expects('measure')
-            ->with(
-                'index.full.entity',
-                Mockery::on(static function (Closure $closure) {
-                    $closure();
-
-                    return true;
-                }),
-            );
 
         $workDir = '/foo/bar';
         $localDocument = '/baz.pdf';
@@ -109,17 +93,6 @@ final class PageContentExtractorTest extends UnitTestCase
         $this->subTypeIndexer
             ->expects('updatePage')
             ->with($this->entity, $pageNr, $content);
-
-        $this->statsService
-            ->expects('measure')
-            ->with(
-                'index.full.entity',
-                Mockery::on(static function (Closure $closure) {
-                    $closure();
-
-                    return true;
-                }),
-            );
 
         $workDir = '/foo/bar';
         $localDocument = '/baz.pdf';
@@ -154,17 +127,6 @@ final class PageContentExtractorTest extends UnitTestCase
             ->expects('updatePage')
             ->with($this->entity, $pageNr, $content)
             ->andThrow($thrownException = new RuntimeException('indexPage failed'));
-
-        $this->statsService
-            ->expects('measure')
-            ->with(
-                'index.full.entity',
-                Mockery::on(static function (Closure $closure) {
-                    $closure();
-
-                    return true;
-                }),
-            );
 
         $this->logger
             ->expects('error')

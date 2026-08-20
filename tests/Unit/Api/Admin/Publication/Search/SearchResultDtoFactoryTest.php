@@ -103,7 +103,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
         $this->urlGenerator
             ->expects('generate')
             ->with('app_admin_dossier', [
-                'prefix' => $wooDecisionPrefix,
+                'documentPrefix' => $wooDecisionPrefix,
                 'dossierNumber' => $wooDecisionNr,
             ])
             ->andReturn('/link/to/woo-decision');
@@ -142,7 +142,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
         $this->urlGenerator
             ->expects('generate')
             ->with('app_admin_dossier_woodecision_document', [
-                'prefix' => $wooDecisionPrefix,
+                'documentPrefix' => $wooDecisionPrefix,
                 'dossierNumber' => $wooDecisionNr,
                 'documentNumber' => $documentNumber,
             ])
@@ -205,7 +205,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
         $this->urlGenerator
             ->expects('generate')
             ->with($attachmentRouteName, [
-                'prefix' => $wooDecisionPrefix,
+                'documentPrefix' => $wooDecisionPrefix,
                 'dossierNumber' => $wooDecisionNr,
             ])
             ->andReturn('/link/to/woo-decision-attachment');
@@ -265,7 +265,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
         $this->urlGenerator
             ->expects('generate')
             ->with($mainDocumentRouteName, [
-                'prefix' => $wooDecisionPrefix,
+                'documentPrefix' => $wooDecisionPrefix,
                 'dossierNumber' => $wooDecisionNr,
             ])
             ->andReturn('/link/to/woo-decision-main-document');

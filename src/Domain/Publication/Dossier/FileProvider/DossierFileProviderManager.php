@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\FileProvider;
 
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\EntityWithFileInfo;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 readonly class DossierFileProviderManager
@@ -25,7 +25,7 @@ readonly class DossierFileProviderManager
         AbstractDossier $dossier,
         string $id,
     ): EntityWithFileInfo {
-        return $this->getEntity($type, $dossier, $id, ApplicationMode::PUBLIC);
+        return $this->getEntity($type, $dossier, $id, ApplicationId::PUBLIC);
     }
 
     public function getEntityForAdminUse(
@@ -33,18 +33,18 @@ readonly class DossierFileProviderManager
         AbstractDossier $dossier,
         string $id,
     ): EntityWithFileInfo {
-        return $this->getEntity($type, $dossier, $id, ApplicationMode::ADMIN);
+        return $this->getEntity($type, $dossier, $id, ApplicationId::ADMIN);
     }
 
     private function getEntity(
         DossierFileType $type,
         AbstractDossier $dossier,
         string $id,
-        ApplicationMode $mode,
+        ApplicationId $applicationId,
     ): EntityWithFileInfo {
         foreach ($this->providers as $provider) {
             if ($provider->getType() === $type) {
-                return $mode === ApplicationMode::ADMIN
+                return $applicationId->isAdmin()
                     ? $provider->getEntityForAdminUse($dossier, $id)
                     : $provider->getEntityForPublicUse($dossier, $id);
             }

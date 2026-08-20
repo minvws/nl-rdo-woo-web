@@ -13,7 +13,7 @@ export const createMockedPublicationFile = (
   grounds: options.grounds ?? ['mocked-ground-1', 'mocked-ground-2'],
   id: options.id ?? 'mocked-id',
   internalReference: options.internalReference ?? 'mocked-internal-reference',
-  language: options.language ?? 'Dutch',
+  language: options.language ?? 'NLD',
   mimeType: options.mimeType ?? 'mocked-mime-type',
   name: options.name ?? 'mocked-name',
   size: options.size ?? 100,

@@ -11,7 +11,10 @@ use function mb_strlen;
 use function preg_match;
 use function strtolower;
 
-final readonly class DocumentId implements Stringable
+/**
+ * @implements Equatable<DocumentId>
+ */
+final readonly class DocumentId implements Equatable, Stringable
 {
     public const string PATTERN = '/^[a-zA-Z0-9.\-]*$/';
     public const int MIN_LENGTH = 1;
@@ -47,6 +50,14 @@ final readonly class DocumentId implements Stringable
         }
 
         return new self($id);
+    }
+
+    /**
+     * @param DocumentId $other
+     */
+    public function equalTo(Equatable $other): bool
+    {
+        return $this->toString() === $other->toString();
     }
 
     public function toString(): string

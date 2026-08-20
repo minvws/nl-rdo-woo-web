@@ -40,6 +40,7 @@ use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJu
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Count;
@@ -153,7 +154,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                             [
-                                'prefix' => $advice->getDocumentPrefix(),
+                                'documentPrefix' => $advice->getDocumentPrefix(),
                                 'dossierNumber' => $advice->getDossierNumber(),
                                 'type' => DossierFileType::MAIN_DOCUMENT->value,
                                 'id' => $adviceMainDocument->getId(),
@@ -189,7 +190,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                                 [
-                                    'prefix' => $advice->getDocumentPrefix(),
+                                    'documentPrefix' => $advice->getDocumentPrefix(),
                                     'dossierNumber' => $advice->getDossierNumber(),
                                     'type' => DossierFileType::ATTACHMENT->value,
                                     'id' => $adviceAttachment->getId(),
@@ -681,10 +682,13 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
-            'status' => $this->getFaker()->randomElement(DossierStatus::nonConceptCases()),
+            'status' => DossierStatus::SCHEDULED,
         ]);
         AdviceMainDocumentFactory::createOne(['dossier' => $advice]);
-        AdviceAttachmentFactory::createOne(['dossier' => $advice]);
+        AdviceAttachmentFactory::createOne([
+            'dossier' => $advice,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         self::assertDatabaseHas(Advice::class, [
             'title' => (string) $advice->getTitle(),
@@ -694,10 +698,74 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $data = $this->createValidAdviceDataPayload($department, null, 0);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $advice), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'code' => ConstraintViolationBuilder::MODIFIED_SUB_ENTITY_ERROR,
+            'propertyPath' => 'attachments',
+        ]]]);
 
         self::assertDatabaseHas(Advice::class, [
             'title' => (string) $advice->getTitle(),
             'summary' => $advice->getSummary(),
+        ]);
+    }
+
+    public function testUpdateAdviceCanAddAttachmentWhenNonConceptState(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $advice = AdviceFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => $this->getFaker()->randomElement(DossierStatus::nonConceptCases()),
+        ]);
+        $mainDocument = AdviceMainDocumentFactory::createOne(['dossier' => $advice]);
+        $attachment = AdviceAttachmentFactory::createOne([
+            'dossier' => $advice,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $newAttachmentExternalId = $this->getFaker()->externalId();
+
+        $data = [
+            'title' => (string) $advice->getTitle(),
+            'dossierNumber' => $advice->getDossierNumber(),
+            'dossierDate' => $advice->getDateFrom()?->format('Y-m-d'),
+            'publicationDate' => $advice->getPublicationDate()?->format('Y-m-d'),
+            'summary' => $advice->getSummary(),
+            'departmentId' => $department->getId(),
+            'subjectId' => $advice->getSubject()?->getId(),
+            'mainDocument' => [
+                'fileName' => $mainDocument->getFileInfo()->getName(),
+                'formalDate' => $mainDocument->getFormalDate()->format('Y-m-d'),
+                'type' => $mainDocument->getType()->value,
+                'language' => $mainDocument->getLanguage()->value,
+            ],
+            'attachments' => [
+                [
+                    'fileName' => $attachment->getFileInfo()->getName(),
+                    'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
+                    'language' => $attachment->getLanguage(),
+                    'type' => $attachment->getType(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
+                ],
+                [
+                    'fileName' => $this->getFaker()->fileNameForGroup(UploadGroupId::ATTACHMENTS)->toString(),
+                    'formalDate' => $this->getFaker()->date(),
+                    'language' => AttachmentLanguage::NLD->value,
+                    'type' => AttachmentType::PERMIT->value,
+                    'externalId' => $newAttachmentExternalId->toString(),
+                ],
+            ],
+        ];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $advice), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        self::assertDatabaseHas(AdviceAttachment::class, [
+            'dossier' => ['id' => $advice->getId()],
+            'externalId' => $newAttachmentExternalId,
         ]);
     }
 
@@ -1044,5 +1112,56 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
 
         self::assertDatabaseCount(NoticeNotPublic::class, 0);
         self::assertDatabaseCount(AdviceMainDocument::class, 1);
+    }
+
+    public function testUpdatePublishedAdviceIgnoresPublicationDateChange(): void
+    {
+        $newTitle = 'Updated title for published advice';
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $advice = AdviceFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::PUBLISHED,
+            'publicationDate' => PlainDate::create('2025-01-02'),
+        ]);
+        $mainDocument = AdviceMainDocumentFactory::createOne(['dossier' => $advice]);
+        $attachment = AdviceAttachmentFactory::createOne([
+            'dossier' => $advice,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $data = [
+            'title' => $newTitle,
+            'dossierNumber' => $advice->getDossierNumber(),
+            'dossierDate' => $advice->getDateFrom()?->format('Y-m-d'),
+            'publicationDate' => '2025-02-02',
+            'summary' => $advice->getSummary(),
+            'departmentId' => $department->getId(),
+            'subjectId' => $advice->getSubject()?->getId(),
+            'mainDocument' => [
+                'fileName' => $mainDocument->getFileInfo()->getName(),
+                'formalDate' => $mainDocument->getFormalDate()->format('Y-m-d'),
+                'type' => $mainDocument->getType()->value,
+                'language' => $mainDocument->getLanguage()->value,
+            ],
+            'attachments' => [
+                [
+                    'fileName' => $attachment->getFileInfo()->getName(),
+                    'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
+                    'language' => $attachment->getLanguage(),
+                    'type' => $attachment->getType(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
+                ],
+            ],
+        ];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $advice), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+        self::assertJsonContains(['publicationDate' => '2025-01-02', 'title' => $newTitle]);
+
+        self::assertDatabaseHas(Advice::class, ['title' => $newTitle]);
     }
 }

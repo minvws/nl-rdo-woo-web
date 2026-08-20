@@ -33,6 +33,22 @@ final class InventoryReaderExceptionTest extends TestCase
         );
     }
 
+    public function testForInvalidPublicationContextInRow(): void
+    {
+        self::assertStringContainsString(
+            '123',
+            InventoryReaderException::forInvalidPublicationContextInRow(123)->getMessage(),
+        );
+    }
+
+    public function testForMatterAndPublicationContextCombination(): void
+    {
+        $message = InventoryReaderException::forMatterAndPublicationContextCombination()->getMessage();
+
+        self::assertStringContainsString('Publicatiecontext', $message);
+        self::assertStringContainsString('Matter', $message);
+    }
+
     public function testForLinkTooLong(): void
     {
         $message = InventoryReaderException::forLinkTooLong('foo-bar', 123)->getMessage();

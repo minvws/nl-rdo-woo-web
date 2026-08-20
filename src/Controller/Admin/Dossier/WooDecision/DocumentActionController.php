@@ -30,7 +30,7 @@ class DocumentActionController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/document/withdraw/{prefix}/{dossierNumber}/{documentNumber}',
+        path: '/balie/dossier/woodecision/document/withdraw/{documentPrefix}/{dossierNumber}/{documentNumber}',
         name: 'app_admin_dossier_woodecision_document_withdraw',
         methods: ['GET', 'POST'],
     )]
@@ -38,21 +38,21 @@ class DocumentActionController extends AbstractController
     public function withdraw(
         Breadcrumbs $breadcrumbs,
         Request $request,
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
-        #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(prefix, dossierNumber, documentNumber)')] Document $document,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
+        #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(documentPrefix, dossierNumber, documentNumber)')] Document $document,
     ): Response {
         $breadcrumbs->addRouteItem(
             $dossier->getDossierNumber(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addRouteItem(
             'Documenten',
             'app_admin_dossier_woodecision_documents_edit',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addRouteItem($document->getDocumentNumber(), 'app_admin_dossier_woodecision_document', [
-            'prefix' => $dossier->getDocumentPrefix(),
+            'documentPrefix' => $dossier->getDocumentPrefix(),
             'dossierNumber' => $dossier->getDossierNumber(),
             'documentNumber' => $document->getDocumentNumber(),
         ]);
@@ -67,7 +67,7 @@ class DocumentActionController extends AbstractController
 
         if ($cancelButton->isClicked()) {
             return $this->redirectToRoute('app_admin_dossier_woodecision_document', [
-                'prefix' => $dossier->getDocumentPrefix(),
+                'documentPrefix' => $dossier->getDocumentPrefix(),
                 'dossierNumber' => $dossier->getDossierNumber(),
                 'documentNumber' => $document->getDocumentNumber(),
             ]);
@@ -90,7 +90,7 @@ class DocumentActionController extends AbstractController
             return $this->redirectToRoute(
                 'app_admin_dossier_woodecision_document',
                 [
-                    'prefix' => $dossier->getDocumentPrefix(),
+                    'documentPrefix' => $dossier->getDocumentPrefix(),
                     'dossierNumber' => $dossier->getDossierNumber(),
                     'documentNumber' => $document->getDocumentNumber(),
                 ],

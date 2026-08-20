@@ -26,6 +26,13 @@ Validate Link In WooDecision Upload Step
   Get Text  //section//h1  contains  Productierapport uitgelegd
   Get Element States  //a[contains(@href, 'productierapport_template.xlsx')]  contains  attached
 
+Validate Minfin Documentation Styling
+  Go To  ${TENANT_CONFIGS}[minfin][URL_PUBLIC]/documentatie
+  Get Text  //section//h1  contains  Welkom bij de documentatie van het Woo Publicatieplatform
+  Get Text  //header//a[contains(@class,'logo')]  contains  Ministerie van Financiën
+  Verify Index Item  Publiceren
+  Verify Image  (//section//img)[1]
+
 
 *** Keywords ***
 Suite Setup

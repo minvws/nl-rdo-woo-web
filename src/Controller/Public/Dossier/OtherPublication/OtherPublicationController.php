@@ -23,8 +23,6 @@ use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
 
-use function mb_ucfirst;
-
 class OtherPublicationController extends AbstractController
 {
     public function __construct(
@@ -38,14 +36,14 @@ class OtherPublicationController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/overig/{prefix}/{dossierNumber}', name: 'app_otherpublication_detail', methods: ['GET'])]
+    #[Route('/overig/{documentPrefix}/{dossierNumber}', name: 'app_otherpublication_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] OtherPublication $otherPublication,
         Breadcrumbs $breadcrumbs,
-        string $prefix,
+        string $documentPrefix,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem(mb_ucfirst((string) $otherPublication->getTitle()));
+        $breadcrumbs->addItem($otherPublication->getType()->getTranslationKey());
 
         $parameters = [
             'dossier' => $this->viewFactory->make($otherPublication),
@@ -53,7 +51,7 @@ class OtherPublicationController extends AbstractController
         ];
 
         $document = $this->otherPublicationMainDocumentRepository->findForDossierByPrefixAndDossierNumber(
-            $prefix,
+            $documentPrefix,
             $otherPublication->getDossierNumber(),
         );
         $noticeNotPublic = $otherPublication->getNoticeNotPublic();
@@ -75,7 +73,7 @@ class OtherPublicationController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/overig/{prefix}/{dossierNumber}/mededeling-niet-openbaar',
+        '/overig/{documentPrefix}/{dossierNumber}/mededeling-niet-openbaar',
         name: 'app_otherpublication_notice_not_public_detail',
         methods: ['GET'],
     )]
@@ -83,46 +81,44 @@ class OtherPublicationController extends AbstractController
         #[ValueResolver('dossierWithAccessCheck')] OtherPublication $otherPublication,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        $noticeNotPublicViewModel = $this->noticeNotPublicViewFactory->make($otherPublication);
-
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('dossier.type.other-publication', 'app_otherpublication_detail', [
-            'prefix' => $otherPublication->getDocumentPrefix(),
+        $breadcrumbs->addRouteItem($otherPublication->getType()->getTranslationKey(), 'app_otherpublication_detail', [
+            'documentPrefix' => $otherPublication->getDocumentPrefix(),
             'dossierNumber' => $otherPublication->getDossierNumber(),
         ]);
-        $breadcrumbs->addItem($noticeNotPublicViewModel->title);
+        $breadcrumbs->addItem('public.global.notice_not_public');
 
         return $this->render('public/dossier/other-publication/notice-not-public.html.twig', [
             'dossier' => $this->viewFactory->make($otherPublication),
-            'noticeNotPublic' => $noticeNotPublicViewModel,
+            'noticeNotPublic' => $this->noticeNotPublicViewFactory->make($otherPublication),
         ]);
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/overig/{prefix}/{dossierNumber}/document',
+        '/overig/{documentPrefix}/{dossierNumber}/document',
         name: 'app_otherpublication_document_detail',
         methods: ['GET'],
     )]
     public function documentDetail(
-        #[ValueResolver('dossierWithAccessCheck')] OtherPublication $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber)')]
+        #[ValueResolver('dossierWithAccessCheck')] OtherPublication $otherPublication,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(documentPrefix, dossierNumber)')]
         OtherPublicationMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('dossier.type.other-publication', 'app_otherpublication_detail', [
-            'prefix' => $dossier->getDocumentPrefix(),
-            'dossierNumber' => $dossier->getDossierNumber(),
+        $breadcrumbs->addRouteItem($otherPublication->getType()->getTranslationKey(), 'app_otherpublication_detail', [
+            'documentPrefix' => $otherPublication->getDocumentPrefix(),
+            'dossierNumber' => $otherPublication->getDossierNumber(),
         ]);
-        $breadcrumbs->addItem((string) $dossier->getTitle());
+        $breadcrumbs->addItem('public.global.main_document');
 
         return $this->render('public/dossier/other-publication/document.html.twig', [
-            'dossier' => $this->viewFactory->make($dossier),
-            'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
-            'document' => $this->mainDocumentViewFactory->make($dossier, $document),
+            'dossier' => $this->viewFactory->make($otherPublication),
+            'attachments' => $this->attachmentViewFactory->makeCollection($otherPublication),
+            'document' => $this->mainDocumentViewFactory->make($otherPublication, $document),
             'file' => $this->dossierFileViewFactory->make(
-                $dossier,
+                $otherPublication,
                 $document,
                 DossierFileType::MAIN_DOCUMENT,
             ),
@@ -131,31 +127,29 @@ class OtherPublicationController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/overig/{prefix}/{dossierNumber}/bijlage/{attachmentId}',
+        '/overig/{documentPrefix}/{dossierNumber}/bijlage/{attachmentId}',
         name: 'app_otherpublication_attachment_detail',
         methods: ['GET'],
     )]
     public function attachmentDetail(
-        #[ValueResolver('dossierWithAccessCheck')] OtherPublication $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber, attachmentId)')]
+        #[ValueResolver('dossierWithAccessCheck')] OtherPublication $otherPublication,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(documentPrefix, dossierNumber, attachmentId)')]
         OtherPublicationAttachment $attachment,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        $attachmentViewModel = $this->attachmentViewFactory->make($dossier, $attachment);
-
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('dossier.type.other-publication', 'app_otherpublication_detail', [
-            'prefix' => $dossier->getDocumentPrefix(),
-            'dossierNumber' => $dossier->getDossierNumber(),
+        $breadcrumbs->addRouteItem($otherPublication->getType()->getTranslationKey(), 'app_otherpublication_detail', [
+            'documentPrefix' => $otherPublication->getDocumentPrefix(),
+            'dossierNumber' => $otherPublication->getDossierNumber(),
         ]);
-        $breadcrumbs->addItem((string) $dossier->getTitle());
+        $breadcrumbs->addItem('public.global.attachment');
 
         return $this->render('public/dossier/other-publication/attachment.html.twig', [
-            'dossier' => $this->viewFactory->make($dossier),
-            'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
-            'attachment' => $attachmentViewModel,
+            'dossier' => $this->viewFactory->make($otherPublication),
+            'attachments' => $this->attachmentViewFactory->makeCollection($otherPublication),
+            'attachment' => $this->attachmentViewFactory->make($otherPublication, $attachment),
             'file' => $this->dossierFileViewFactory->make(
-                $dossier,
+                $otherPublication,
                 $attachment,
                 DossierFileType::ATTACHMENT,
             ),

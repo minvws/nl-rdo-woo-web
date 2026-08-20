@@ -1,0 +1,9 @@
+{% extends 'admin/dossier/shared/concept.html.twig' %}
+
+{% block dossier_title %}
+    {{ 'admin.dossiers.draft-decision.create_new' | trans }}
+{% endblock %}
+
+{% block form %}
+    {% include 'admin/dossier/draft-decision/details/form.html.twig' %}
+{% endblock %}

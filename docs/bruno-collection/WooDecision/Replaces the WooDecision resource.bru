@@ -22,18 +22,18 @@ body:json {
   {
     "departmentId": "{{departmentId}}",
     "mainDocument": {
-      "fileName": "{{$randomWords}}.pdf",
+      "fileName": "main-document.pdf",
       "formalDate": "2026-02-01",
       "language": "NLD",
       "type": "c_4f50ca9c",
       "grounds": []
     },
     "subjectId": "{{subjectId}}",
-    "summary": "{{$randomUUID}}",
-    "title": "Bruno {{$randomUUID}}",
+    "summary": "Summary of the Woo decision",
+    "title": "Bruno - Woo decision",
     "attachments": [
       {
-        "fileName": "{{$randomWords}}.pdf",
+        "fileName": "attachment.pdf",
         "formalDate": "2026-02-01",
         "language": "NLD",
         "type": "c_d506b718",
@@ -43,8 +43,8 @@ body:json {
     ],
     "dateFrom": "2025-01-01",
     "dateTo": "2025-06-01",
-    "dossierNumber": "bruno-{{$randomUUID}}",
-    "publicationDate": "2026-02-01",
+    "dossierNumber": "bruno-{{sessionTimestamp}}",
+    "publicationDate": "2026-07-27",
     "decision": "already_public",
     "reason": "woo_request",
     "previewDate": "2025-12-21",
@@ -52,15 +52,15 @@ body:json {
       {
         "inquiryNumbers": [],
         "documentDate": "2025-01-01",
-        "documentId": "{{$timestamp}}",
+        "documentId": "{{sessionTimestamp}}",
         "externalId": "{{wooDecisionDocumentExternalId}}",
         "familyId": 333,
-        "fileName": "{{$randomWords}}.pdf",
+        "fileName": "document.pdf",
         "grounds": [],
         "isSuspended": false,
         "judgement": "public",
         "links": [],
-        "matter": "2025-01",
+        "publicationContext": "2025-01",
         "refersTo": [],
         "remark": "None",
         "sourceType": "pdf",
@@ -77,13 +77,13 @@ script:pre-request {
   
   const crypto = require('crypto');
   
-  if (!bru.getEnvVar("wooDecisionDossierExternalId")) {
+  if (!bru.getVar("wooDecisionDossierExternalId")) {
     bru.setVar("wooDecisionDossierExternalId", crypto.randomUUID());
   }
-  if (!bru.getEnvVar("wooDecisionAttachmentExternalId")) {
+  if (!bru.getVar("wooDecisionAttachmentExternalId")) {
     bru.setVar("wooDecisionAttachmentExternalId", crypto.randomUUID());
   }
-  if (!bru.getEnvVar("wooDecisionDocumentExternalId")) {
+  if (!bru.getVar("wooDecisionDocumentExternalId")) {
     bru.setVar("wooDecisionDocumentExternalId", crypto.randomUUID());
   }
 }
@@ -147,7 +147,7 @@ example {
             "isSuspended": false,
             "judgement": "public",
             "links": [],
-            "matter": "",
+            "publicationContext": "",
             "refersTo": [],
             "remark": "",
             "sourceType": "pdf",
@@ -300,7 +300,7 @@ example {
             "isSuspended": false,
             "judgement": "public",
             "links": [],
-            "matter": "",
+            "publicationContext": "",
             "refersTo": [],
             "remark": "",
             "sourceType": "pdf",
@@ -391,7 +391,7 @@ example {
             "isSuspended": false,
             "judgement": "public",
             "links": [],
-            "matter": "",
+            "publicationContext": "",
             "refersTo": [],
             "remark": "",
             "sourceType": "pdf",
@@ -482,7 +482,7 @@ example {
             "isSuspended": false,
             "judgement": "public",
             "links": [],
-            "matter": "",
+            "publicationContext": "",
             "refersTo": [],
             "remark": "",
             "sourceType": "pdf",
@@ -573,7 +573,7 @@ example {
             "isSuspended": false,
             "judgement": "public",
             "links": [],
-            "matter": "",
+            "publicationContext": "",
             "refersTo": [],
             "remark": "",
             "sourceType": "pdf",
@@ -664,7 +664,7 @@ example {
             "isSuspended": false,
             "judgement": "public",
             "links": [],
-            "matter": "",
+            "publicationContext": "",
             "refersTo": [],
             "remark": "",
             "sourceType": "pdf",
@@ -755,7 +755,7 @@ example {
             "isSuspended": false,
             "judgement": "public",
             "links": [],
-            "matter": "",
+            "publicationContext": "",
             "refersTo": [],
             "remark": "",
             "sourceType": "pdf",
@@ -846,7 +846,7 @@ example {
             "isSuspended": false,
             "judgement": "public",
             "links": [],
-            "matter": "",
+            "publicationContext": "",
             "refersTo": [],
             "remark": "",
             "sourceType": "pdf",
@@ -937,7 +937,7 @@ example {
             "isSuspended": false,
             "judgement": "public",
             "links": [],
-            "matter": "",
+            "publicationContext": "",
             "refersTo": [],
             "remark": "",
             "sourceType": "pdf",
@@ -1037,7 +1037,7 @@ example {
             "isSuspended": false,
             "judgement": "public",
             "links": [],
-            "matter": "",
+            "publicationContext": "",
             "refersTo": [],
             "remark": "",
             "sourceType": "pdf",
@@ -1137,7 +1137,7 @@ example {
             "isSuspended": false,
             "judgement": "public",
             "links": [],
-            "matter": "",
+            "publicationContext": "",
             "refersTo": [],
             "remark": "",
             "sourceType": "pdf",

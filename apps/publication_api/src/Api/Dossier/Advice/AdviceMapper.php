@@ -104,7 +104,7 @@ readonly class AdviceMapper
     ): Advice {
         $advice = new Advice();
         $advice->setExternalId($externalId);
-        $advice->setStatus(DossierStatus::NEW);
+        $advice->setStatus(DossierStatus::CONCEPT);
         $advice->setDocumentPrefix($documentPrefix);
 
         self::update($advice, $adviceRequestDto, $organisation, $department, $subject);
@@ -123,7 +123,9 @@ readonly class AdviceMapper
         $advice->setDepartments([$department]);
         $advice->setDossierNumber($adviceRequestDto->dossierNumber);
         $advice->setOrganisation($organisation);
-        $advice->setPublicationDate($adviceRequestDto->publicationDate);
+        if (! $advice->getStatus()->isPublished()) {
+            $advice->setPublicationDate($adviceRequestDto->publicationDate);
+        }
         $advice->setSubject($subject);
         $advice->setSummary($adviceRequestDto->summary);
         $advice->setTitle($adviceRequestDto->title);

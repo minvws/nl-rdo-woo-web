@@ -42,7 +42,7 @@ final class DepartmentUploadHandlerTest extends UnitTestCase
         );
     }
 
-    public function testOnUploadValidated(): void
+    public function testHandler(): void
     {
         $this->uploadEntity
             ->expects('getUploadGroupId')
@@ -69,10 +69,10 @@ final class DepartmentUploadHandlerTest extends UnitTestCase
             ->expects('save')
             ->with($department, true);
 
-        $this->departmentUploadHandler->onUploadValidated($this->event);
+        $this->departmentUploadHandler->__invoke($this->event);
     }
 
-    public function testOnUploadValidatedWithInvalidUploadGroupd(): void
+    public function testWithInvalidUploadGroupd(): void
     {
         $this->uploadEntity
             ->expects('getUploadGroupId')
@@ -80,6 +80,6 @@ final class DepartmentUploadHandlerTest extends UnitTestCase
 
         $this->entityUploadStorer->shouldNotReceive('storeDepartmentAssetForEntity');
 
-        $this->departmentUploadHandler->onUploadValidated($this->event);
+        $this->departmentUploadHandler->__invoke($this->event);
     }
 }

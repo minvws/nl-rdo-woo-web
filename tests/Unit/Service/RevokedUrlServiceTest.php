@@ -45,7 +45,7 @@ class RevokedUrlServiceTest extends UnitTestCase
 
         $publishedDossier = Mockery::mock(WooDecision::class);
         $publishedDossier->expects('getStatus')->times(2)->andReturn(DossierStatus::PUBLISHED);
-        $publishedDossier->expects('getDocumentPrefix')->times(2)->andReturn($docPrefix = 'FOO');
+        $publishedDossier->expects('getDocumentPrefix')->times(2)->andReturn($documentPrefix = 'FOO');
         $publishedDossier->expects('getDossierNumber')->times(2)->andReturn($dossierNumber = '123');
 
         $documentInConceptDossier = Mockery::mock(Document::class);
@@ -65,7 +65,7 @@ class RevokedUrlServiceTest extends UnitTestCase
         $this->router->expects('generate')->with(
             'app_document_detail',
             [
-                'prefix' => $docPrefix,
+                'documentPrefix' => $documentPrefix,
                 'dossierNumber' => $dossierNumber,
                 'documentNumber' => $docNrA,
             ],
@@ -82,7 +82,7 @@ class RevokedUrlServiceTest extends UnitTestCase
         $this->router->expects('generate')->with(
             'app_document_detail',
             [
-                'prefix' => $docPrefix,
+                'documentPrefix' => $documentPrefix,
                 'dossierNumber' => $dossierNumber,
                 'documentNumber' => $docNrB,
             ],

@@ -36,21 +36,24 @@ class AnnualReportController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/jaarplan-jaarverslag/{prefix}/{dossierNumber}', name: 'app_annualreport_detail', methods: ['GET'])]
+    #[Route('/jaarplan-jaarverslag/{documentPrefix}/{dossierNumber}', name: 'app_annualreport_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] AnnualReport $annualReport,
         Breadcrumbs $breadcrumbs,
-        string $prefix,
+        string $documentPrefix,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem('public.dossiers.annual_report.breadcrumb');
+        $breadcrumbs->addItem($annualReport->getType()->getTranslationKey());
 
         $parameters = [
             'dossier' => $this->viewFactory->make($annualReport),
             'attachments' => $this->attachmentViewFactory->makeCollection($annualReport),
         ];
 
-        $document = $this->annualReportMainDocumentRepository->findForDossierByPrefixAndDossierNumber($prefix, $annualReport->getDossierNumber());
+        $document = $this->annualReportMainDocumentRepository->findForDossierByPrefixAndDossierNumber(
+            $documentPrefix,
+            $annualReport->getDossierNumber(),
+        );
         $noticeNotPublic = $annualReport->getNoticeNotPublic();
 
         if ($document === null && $noticeNotPublic === null) {
@@ -70,7 +73,7 @@ class AnnualReportController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/jaarplan-jaarverslag/{prefix}/{dossierNumber}/mededeling-niet-openbaar',
+        '/jaarplan-jaarverslag/{documentPrefix}/{dossierNumber}/mededeling-niet-openbaar',
         name: 'app_annualreport_notice_not_public_detail',
         methods: ['GET'],
     )]
@@ -78,48 +81,44 @@ class AnnualReportController extends AbstractController
         #[ValueResolver('dossierWithAccessCheck')] AnnualReport $annualReport,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        $noticeNotPublicViewModel = $this->noticeNotPublicViewFactory->make($annualReport);
-
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('public.dossiers.annual_report.breadcrumb', 'app_annualreport_detail', [
-            'prefix' => $annualReport->getDocumentPrefix(),
+        $breadcrumbs->addRouteItem($annualReport->getType()->getTranslationKey(), 'app_annualreport_detail', [
+            'documentPrefix' => $annualReport->getDocumentPrefix(),
             'dossierNumber' => $annualReport->getDossierNumber(),
         ]);
-        $breadcrumbs->addItem($noticeNotPublicViewModel->title);
+        $breadcrumbs->addItem('global.dossiers.notice_not_public');
 
         return $this->render('public/dossier/annual-report/notice-not-public.html.twig', [
             'dossier' => $this->viewFactory->make($annualReport),
-            'noticeNotPublic' => $noticeNotPublicViewModel,
+            'noticeNotPublic' => $this->noticeNotPublicViewFactory->make($annualReport),
         ]);
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/jaarplan-jaarverslag/{prefix}/{dossierNumber}/document',
+        '/jaarplan-jaarverslag/{documentPrefix}/{dossierNumber}/document',
         name: 'app_annualreport_document_detail',
         methods: ['GET'],
     )]
     public function documentDetail(
-        #[ValueResolver('dossierWithAccessCheck')] AnnualReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber)')]
+        #[ValueResolver('dossierWithAccessCheck')] AnnualReport $annualReport,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(documentPrefix, dossierNumber)')]
         AnnualReportMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        $mainDocumentViewModel = $this->mainDocumentViewFactory->make($dossier, $document);
-
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('public.dossiers.annual_report.breadcrumb', 'app_annualreport_detail', [
-            'prefix' => $dossier->getDocumentPrefix(),
-            'dossierNumber' => $dossier->getDossierNumber(),
+        $breadcrumbs->addRouteItem($annualReport->getType()->getTranslationKey(), 'app_annualreport_detail', [
+            'documentPrefix' => $annualReport->getDocumentPrefix(),
+            'dossierNumber' => $annualReport->getDossierNumber(),
         ]);
-        $breadcrumbs->addItem($mainDocumentViewModel->name ?? '');
+        $breadcrumbs->addItem('public.global.main_document');
 
         return $this->render('public/dossier/annual-report/document.html.twig', [
-            'dossier' => $this->viewFactory->make($dossier),
-            'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
-            'document' => $mainDocumentViewModel,
+            'dossier' => $this->viewFactory->make($annualReport),
+            'attachments' => $this->attachmentViewFactory->makeCollection($annualReport),
+            'document' => $this->mainDocumentViewFactory->make($annualReport, $document),
             'file' => $this->dossierFileViewFactory->make(
-                $dossier,
+                $annualReport,
                 $document,
                 DossierFileType::MAIN_DOCUMENT,
             ),
@@ -128,31 +127,29 @@ class AnnualReportController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/jaarplan-jaarverslag/{prefix}/{dossierNumber}/bijlage/{attachmentId}',
+        '/jaarplan-jaarverslag/{documentPrefix}/{dossierNumber}/bijlage/{attachmentId}',
         name: 'app_annualreport_attachment_detail',
         methods: ['GET'],
     )]
     public function attachmentDetail(
-        #[ValueResolver('dossierWithAccessCheck')] AnnualReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber, attachmentId)')]
+        #[ValueResolver('dossierWithAccessCheck')] AnnualReport $annualReport,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(documentPrefix, dossierNumber, attachmentId)')]
         AnnualReportAttachment $attachment,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        $attachmentViewModel = $this->attachmentViewFactory->make($dossier, $attachment);
-
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('public.dossiers.annual_report.breadcrumb', 'app_annualreport_detail', [
-            'prefix' => $dossier->getDocumentPrefix(),
-            'dossierNumber' => $dossier->getDossierNumber(),
+        $breadcrumbs->addRouteItem($annualReport->getType()->getTranslationKey(), 'app_annualreport_detail', [
+            'documentPrefix' => $annualReport->getDocumentPrefix(),
+            'dossierNumber' => $annualReport->getDossierNumber(),
         ]);
-        $breadcrumbs->addItem($attachmentViewModel->name ?? '');
+        $breadcrumbs->addItem('public.global.attachment');
 
         return $this->render('public/dossier/annual-report/attachment.html.twig', [
-            'dossier' => $this->viewFactory->make($dossier),
-            'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
-            'attachment' => $attachmentViewModel,
+            'dossier' => $this->viewFactory->make($annualReport),
+            'attachments' => $this->attachmentViewFactory->makeCollection($annualReport),
+            'attachment' => $this->attachmentViewFactory->make($annualReport, $attachment),
             'file' => $this->dossierFileViewFactory->make(
-                $dossier,
+                $annualReport,
                 $attachment,
                 DossierFileType::ATTACHMENT,
             ),

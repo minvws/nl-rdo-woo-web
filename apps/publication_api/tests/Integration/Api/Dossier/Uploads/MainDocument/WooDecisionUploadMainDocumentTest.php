@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Integration\Api\Dossier\Uploads\MainDocument;
 
 use PublicationApi\Tests\Integration\Api\Dossier\Uploads\ApiPublicationV1UploadTestCase;
+use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
@@ -26,6 +27,7 @@ final class WooDecisionUploadMainDocumentTest extends ApiPublicationV1UploadTest
             'organisation' => $organisation,
             'externalId' => $this->getFaker()->externalId(),
             'previewDate' => $this->getFaker()->plainDate(),
+            'status' => DossierStatus::CONCEPT,
             'departments' => [$department],
         ]);
         $wooDecisionMainDocument = WooDecisionMainDocumentFactory::createOne([
@@ -44,6 +46,34 @@ final class WooDecisionUploadMainDocumentTest extends ApiPublicationV1UploadTest
             uploadGroupId: UploadGroupId::MAIN_DOCUMENTS,
             entityParameterKey: 'mainDocumentId',
         );
+    }
+
+    public function testUploadOnPublishedDossierReturnsValidationError(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::createOne([
+            'organisation' => $organisation,
+            'externalId' => $this->getFaker()->externalId(),
+            'previewDate' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'status' => DossierStatus::PUBLISHED,
+        ]);
+
+        $client = self::createPublicationApiClient();
+        $client->request(Request::METHOD_PUT, sprintf(
+            '/api/publication/v1/organisation/%s/dossiers/woo-decision/external/%s/uploads/main-document',
+            $organisation->getId(),
+            $wooDecision->getExternalId(),
+        ), [
+            'headers' => [
+                'Content-Type' => 'application/octet-stream',
+            ],
+            'body' => $this->getTestFileContent('1008.pdf'),
+        ]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [['message' => 'document upload is not allowed for a published dossier']]]);
     }
 
     public function testUploadWithoutFile(): void

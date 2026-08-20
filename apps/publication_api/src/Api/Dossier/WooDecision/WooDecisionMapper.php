@@ -101,7 +101,7 @@ readonly class WooDecisionMapper
     ): WooDecision {
         $wooDecision = new WooDecision();
         $wooDecision->setExternalId($externalId);
-        $wooDecision->setStatus(DossierStatus::NEW);
+        $wooDecision->setStatus(DossierStatus::CONCEPT);
         $wooDecision->setDocumentPrefix($documentPrefix);
 
         return self::update($wooDecision, $wooDecisionRequestDto, $organisation, $department, $subject);
@@ -122,8 +122,10 @@ readonly class WooDecisionMapper
         $wooDecision->setDepartments([$department]);
         $wooDecision->setDossierNumber($wooDecisionRequestDto->dossierNumber);
         $wooDecision->setOrganisation($organisation);
-        $wooDecision->setPreviewDate($wooDecisionRequestDto->previewDate);
-        $wooDecision->setPublicationDate($wooDecisionRequestDto->publicationDate);
+        if (! $wooDecision->getStatus()->isPublished()) {
+            $wooDecision->setPreviewDate($wooDecisionRequestDto->previewDate);
+            $wooDecision->setPublicationDate($wooDecisionRequestDto->publicationDate);
+        }
         $wooDecision->setPublicationReason($wooDecisionRequestDto->reason);
         $wooDecision->setSubject($subject);
         $wooDecision->setSummary($wooDecisionRequestDto->summary);

@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
+#[AsEventListener]
 readonly class SitemapDossierSubscriber
 {
     public function __construct(
@@ -20,8 +21,7 @@ readonly class SitemapDossierSubscriber
     ) {
     }
 
-    #[AsEventListener(event: SitemapPopulateEvent::class)]
-    public function populate(SitemapPopulateEvent $event): void
+    public function __invoke(SitemapPopulateEvent $event): void
     {
         $dossierQuery = $this->dossierRepository->createQueryBuilder('d')
             ->select('d')

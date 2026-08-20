@@ -44,7 +44,11 @@ class InventoryReaderFactory
                 new ColumnMapping(
                     name: MetadataField::DATE->value,
                     required: false,
-                    columnNames: ['date', 'datum'],
+                    columnNames: [
+                        'date',
+                        'datum',
+                        'datum (utc)',
+                    ],
                 ),
                 new ColumnMapping(
                     name: MetadataField::DOCUMENT->value,
@@ -83,6 +87,7 @@ class InventoryReaderFactory
                         'grond',
                         'tagmulti006',
                         'beoordelingsgrond (; gescheiden)',
+                        'code entries',
                     ],
                 ),
                 new ColumnMapping(
@@ -143,6 +148,16 @@ class InventoryReaderFactory
                     columnNames: [
                         'matter',
                         'matter / marjoleinnummer',
+                    ],
+                ),
+                new ColumnMapping(
+                    name: MetadataField::PUBLICATION_CONTEXT->value,
+                    required: false,
+                    columnNames: [
+                        'publicatiecontext',
+                        'publicationcontext',
+                        'publication context',
+                        'publication_context',
                     ],
                 ),
                 new ColumnMapping(

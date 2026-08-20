@@ -100,7 +100,7 @@ readonly class ComplaintJudgementMapper
     ): ComplaintJudgement {
         $complaintJudgement = new ComplaintJudgement();
         $complaintJudgement->setExternalId($externalId);
-        $complaintJudgement->setStatus(DossierStatus::NEW);
+        $complaintJudgement->setStatus(DossierStatus::CONCEPT);
         $complaintJudgement->setDocumentPrefix($documentPrefix);
 
         self::update($complaintJudgement, $complaintJudgementRequestDto, $organisation, $department, $subject);
@@ -119,7 +119,9 @@ readonly class ComplaintJudgementMapper
         $complaintJudgement->setDepartments([$department]);
         $complaintJudgement->setDossierNumber($complaintJudgementRequestDto->dossierNumber);
         $complaintJudgement->setOrganisation($organisation);
-        $complaintJudgement->setPublicationDate($complaintJudgementRequestDto->publicationDate);
+        if (! $complaintJudgement->getStatus()->isPublished()) {
+            $complaintJudgement->setPublicationDate($complaintJudgementRequestDto->publicationDate);
+        }
         $complaintJudgement->setTitle($complaintJudgementRequestDto->title);
         $complaintJudgement->setSummary($complaintJudgementRequestDto->summary);
         $complaintJudgement->setSubject($subject);

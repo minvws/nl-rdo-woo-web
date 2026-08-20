@@ -8,8 +8,8 @@ use ApiPlatform\Symfony\EventListener\EventPriorities;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 
+#[AsEventListener(priority: EventPriorities::PRE_SERIALIZE)]
 readonly class ApiVersionHeaderSubscriber
 {
     public const string HEADER_NAME = 'API-Version';
@@ -20,8 +20,7 @@ readonly class ApiVersionHeaderSubscriber
     ) {
     }
 
-    #[AsEventListener(event: KernelEvents::RESPONSE, priority: EventPriorities::PRE_SERIALIZE)]
-    public function addVersionHeader(ResponseEvent $event): void
+    public function __invoke(ResponseEvent $event): void
     {
         $response = $event->getResponse()->headers;
         $response->add([

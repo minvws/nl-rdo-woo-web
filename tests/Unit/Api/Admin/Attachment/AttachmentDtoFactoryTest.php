@@ -52,7 +52,7 @@ final class AttachmentDtoFactoryTest extends UnitTestCase
 
         $this->urlGenerator->expects('generate')
             ->with('app_admin_dossier_attachment_withdraw', [
-                'prefix' => $prefix,
+                'documentPrefix' => $prefix,
                 'dossierNumber' => $dossierNumber,
                 'attachmentId' => $attachmentId,
             ])

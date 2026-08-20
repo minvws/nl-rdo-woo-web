@@ -66,6 +66,27 @@ class DocumentIdTest extends UnitTestCase
         DocumentId::create($id);
     }
 
+    public function testEqualToReturnsTrueForSameId(): void
+    {
+        $documentId = DocumentId::create('abc-123');
+
+        $this->assertTrue($documentId->equalTo(DocumentId::create('abc-123')));
+    }
+
+    public function testEqualToIgnoresCase(): void
+    {
+        $documentId = DocumentId::create('ABC-123');
+
+        $this->assertTrue($documentId->equalTo(DocumentId::create('abc-123')));
+    }
+
+    public function testEqualToReturnsFalseForDifferentId(): void
+    {
+        $documentId = DocumentId::create('abc-123');
+
+        $this->assertFalse($documentId->equalTo(DocumentId::create('def-456')));
+    }
+
     /**
      * @return array<string,array{id:string,expectedCode:int}>
      */

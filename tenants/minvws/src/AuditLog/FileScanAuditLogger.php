@@ -11,7 +11,7 @@ use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsEventListener(event: FileScannedEvent::class, method: 'onFileScanned')]
+#[AsEventListener]
 readonly class FileScanAuditLogger
 {
     public function __construct(
@@ -20,7 +20,7 @@ readonly class FileScanAuditLogger
     ) {
     }
 
-    public function onFileScanned(FileScannedEvent $event): void
+    public function __invoke(FileScannedEvent $event): void
     {
         $logEvent = new FileUploadLogEvent()
             ->withData([

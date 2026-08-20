@@ -104,7 +104,7 @@ readonly class InvestigationReportMapper
     ): InvestigationReport {
         $investigationReport = new InvestigationReport();
         $investigationReport->setExternalId($externalId);
-        $investigationReport->setStatus(DossierStatus::NEW);
+        $investigationReport->setStatus(DossierStatus::CONCEPT);
         $investigationReport->setDocumentPrefix($documentPrefix);
 
         self::update($investigationReport, $investigationReportRequestDto, $organisation, $department, $subject);
@@ -123,7 +123,9 @@ readonly class InvestigationReportMapper
         $investigationReport->setDepartments([$department]);
         $investigationReport->setDossierNumber($investigationReportRequestDto->dossierNumber);
         $investigationReport->setOrganisation($organisation);
-        $investigationReport->setPublicationDate($investigationReportRequestDto->publicationDate);
+        if (! $investigationReport->getStatus()->isPublished()) {
+            $investigationReport->setPublicationDate($investigationReportRequestDto->publicationDate);
+        }
         $investigationReport->setSubject($subject);
         $investigationReport->setSummary($investigationReportRequestDto->summary);
         $investigationReport->setTitle($investigationReportRequestDto->title);

@@ -1,6 +1,6 @@
 {% extends 'public/dossier/shared/notice-not-public.html.twig' %}
 
-{% set urlToDossierPage = url('app_covenant_detail', { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber } ) %}
+{% set urlToDossierPage = url('app_covenant_detail', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber } ) %}
 {% set dateLabel = 'global.period' | trans %}
 
 {% block dossier_date %}

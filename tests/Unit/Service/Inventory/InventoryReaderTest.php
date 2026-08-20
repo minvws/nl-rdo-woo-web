@@ -7,7 +7,9 @@ namespace Shared\Tests\Unit\Service\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\SourceType;
 use Shared\Exception\InventoryReaderException;
+use Shared\Service\FileReader\CsvReaderFactory;
 use Shared\Service\FileReader\ExcelReaderFactory;
+use Shared\Service\Inventory\DocumentMetadata;
 use Shared\Service\Inventory\Reader\InventoryReaderFactory;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Shared\Service\Inventory\Reader\InventoryReadItem;
@@ -90,26 +92,14 @@ class InventoryReaderTest extends UnitTestCase
         self::assertEquals(SourceType::UNKNOWN, $documentMetadata2->getSourceType());
     }
 
-    public function testInventoryReaderTreatsBlankMatterCellsAsNull(): void
-    {
-        $this->reader->open(__DIR__ . '/inventory-empty-matter.xlsx');
-
-        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
-
-        self::assertNull($result[0]->getException());
-        self::assertNull($result[0]->getDocumentMetadata()?->getMatter());
-        self::assertNull($result[1]->getException());
-        self::assertNull($result[1]->getDocumentMetadata()?->getMatter());
-    }
-
-    public function testInventoryReaderWithoutMatterCellsDefaultsToNull(): void
+    public function testInventoryReaderWithoutMatterAndPublicationContextCellsDefaultsToNull(): void
     {
         $this->reader->open(__DIR__ . '/inventory-missing-matter.xlsx');
 
         $result = $this->reader->getDocumentMetadataGenerator(new WooDecision())->current();
-
+        self::assertNotNull($result->getException());
         self::assertInstanceOf(InventoryReadItem::class, $result);
-        self::assertNull($result->getDocumentMetadata()?->getMatter());
+        self::assertNull($result->getDocumentMetadata()?->getPublicationContext());
     }
 
     public function testInventoryReaderAddsExceptionsForTooLongRemark(): void
@@ -205,5 +195,71 @@ class InventoryReaderTest extends UnitTestCase
         $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
 
         self::assertEquals(InventoryReaderException::forInvalidLink('http://invalid link because of spaces', 2), $result[0]->getException());
+    }
+
+    public function testInventoryReaderParsesPublicationContextColumn(): void
+    {
+        $factory = new InventoryReaderFactory([
+            new CsvReaderFactory(),
+        ]);
+        $reader = $factory->create('text/csv');
+
+        $reader->open(__DIR__ . '/inventory-publicationcontext.csv');
+
+        $result = $reader->getDocumentMetadataGenerator(new WooDecision())->current();
+        self::assertInstanceOf(InventoryReadItem::class, $result);
+        self::assertNull($result->getException());
+        self::assertSame(
+            'PUBLICATIECONTEXT-1',
+            $result->getDocumentMetadata()?->getPublicationContext()?->toString(),
+        );
+    }
+
+    public function testInventoryReaderRejectsMatterAndPublicationContextColumnsTogether(): void
+    {
+        $factory = new InventoryReaderFactory([
+            new CsvReaderFactory(),
+        ]);
+        $reader = $factory->create('text/csv');
+
+        $reader->open(__DIR__ . '/inventory-publicationcontext-with-matter.csv');
+
+        $result = $reader->getDocumentMetadataGenerator(new WooDecision())->current();
+        self::assertInstanceOf(InventoryReadItem::class, $result);
+        self::assertEquals(
+            InventoryReaderException::forMatterAndPublicationContextCombination(),
+            $result->getException(),
+        );
+    }
+
+    public function testInventoryReaderAcceptsEmptyMatterWhenPublicationContextIsFilled(): void
+    {
+        $factory = new InventoryReaderFactory([
+            new CsvReaderFactory(),
+        ]);
+        $reader = $factory->create('text/csv');
+
+        $reader->open(__DIR__ . '/inventory-publicationcontext-with-empty-matter.csv');
+
+        $result = $reader->getDocumentMetadataGenerator(new WooDecision())->current();
+        self::assertInstanceOf(InventoryReadItem::class, $result);
+        self::assertNull($result->getException());
+        self::assertSame(
+            'PUBLICATIECONTEXT-3',
+            $result->getDocumentMetadata()?->getPublicationContext()?->toString(),
+        );
+    }
+
+    public function testInventoryReaderAcceptsAlternativeColumnNamesForDateAndGround(): void
+    {
+        $this->reader->open(__DIR__ . '/inventory-alternative-date-and-ground.xlsx');
+
+        $iterator = $this->reader->getDocumentMetadataGenerator(new WooDecision());
+
+        $documentMetadata = $iterator->current()->getDocumentMetadata();
+        self::assertInstanceOf(DocumentMetadata::class, $documentMetadata);
+
+        self::assertEquals(PlainDate::create('2022-10-09'), $documentMetadata->getDate());
+        self::assertEquals(['5.1.2e'], $documentMetadata->getGrounds());
     }
 }

@@ -6,17 +6,9 @@ namespace Shared\Domain\Publication\Dossier\Workflow\Guard;
 
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
-use Shared\Domain\Publication\Dossier\Type\Advice\AdviceWorkflow;
-use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportWorkflow;
-use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementWorkflow;
-use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantWorkflow;
-use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionWorkflow;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
-use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportWorkflow;
-use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationWorkflow;
-use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceWorkflow;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionWorkflow;
 use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflow;
 use Shared\Service\EnumHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Validator\Constraint;
@@ -35,14 +27,14 @@ final readonly class DossierWorkflowGuard implements EventSubscriberInterface
     }
 
     /**
-     * @return array<string, array<array-key, string>>
+     * @return array<string,array<array-key,string>>
      */
     public static function getSubscribedEvents(): array
     {
         $subscribedEvents = [];
         foreach (self::getSubscribedWorkflows() as $subscribedDossierWorkflow) {
             foreach (self::getSubscribedTransitions() as $subscribedTransition) {
-                $subscribedEvents[sprintf('workflow.%s.guard.%s', $subscribedDossierWorkflow, $subscribedTransition->value)] = ['guardDossier'];
+                $subscribedEvents[sprintf('workflow.%s.guard.%s', $subscribedDossierWorkflow, $subscribedTransition)] = ['guardDossier'];
             }
         }
 
@@ -79,37 +71,27 @@ final readonly class DossierWorkflowGuard implements EventSubscriberInterface
     }
 
     /**
-     * @return array<array-key, string>
+     * @return list<value-of<DossierWorkflow>>
      */
     private static function getSubscribedWorkflows(): array
     {
-        return [
-            AdviceWorkflow::ADVICE_WORKFLOW_NAME,
-            AnnualReportWorkflow::ANNUAL_REPORT_WORKFLOW_NAME,
-            ComplaintJudgementWorkflow::COMPLAINT_JUDGEMENT_WORKFLOW_NAME,
-            CovenantWorkflow::COVENANT_WORKFLOW_NAME,
-            DispositionWorkflow::DISPOSITION_WORKFLOW_NAME,
-            InvestigationReportWorkflow::INVESTIGATION_REPORT_WORKFLOW_NAME,
-            OtherPublicationWorkflow::OTHER_PUBLICATION_WORKFLOW_NAME,
-            RequestForAdviceWorkflow::REQUEST_FOR_ADVICE_WORKFLOW_NAME,
-            WooDecisionWorkflow::WOO_DECISION_WORKFLOW_NAME,
-        ];
+        return DossierWorkflow::all();
     }
 
     /**
-     * @return array<array-key, DossierStatusTransition>
+     * @return list<value-of<DossierStatusTransition>>
      */
     private static function getSubscribedTransitions(): array
     {
         return [
-            DossierStatusTransition::PUBLISH,
-            DossierStatusTransition::PUBLISH_AS_PREVIEW,
-            DossierStatusTransition::SCHEDULE_PUBLISH,
+            DossierStatusTransition::PUBLISH->value,
+            DossierStatusTransition::PUBLISH_AS_PREVIEW->value,
+            DossierStatusTransition::SCHEDULE_PUBLISH->value,
         ];
     }
 
     /**
-     * @return array<array-key, string>
+     * @return array<array-key,string>
      */
     private function getValidationGroupsFromEvent(GuardEvent $event): array
     {

@@ -10,7 +10,6 @@ use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\Rollover\MappingService;
 use Shared\Service\Elastic\ElasticClientInterface;
 
-use function array_filter;
 use function array_keys;
 use function is_null;
 use function strval;
@@ -134,11 +133,7 @@ readonly class ElasticIndexManager
             static fn (ElasticIndexDetails $index1, ElasticIndexDetails $index2) => $index2->name <=> $index1->name,
         );
 
-        // Also filter out a special index that is not relevant
-        return array_filter(
-            $indices,
-            fn (ElasticIndexDetails $index) => $index->name !== $this->elasticConfig->workerStatsIndex,
-        );
+        return $indices;
     }
 
     /**

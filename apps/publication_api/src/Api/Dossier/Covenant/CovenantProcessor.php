@@ -8,8 +8,11 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
+use PublicationApi\Api\Dossier\DossierAttachmentValidator;
+use PublicationApi\Api\Dossier\DossierMainDocumentValidator;
 use PublicationApi\Api\Dossier\DossierNumberValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\Dossier\DossierValidator;
 use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
@@ -42,9 +45,12 @@ final readonly class CovenantProcessor implements ProcessorInterface
         private DossierSupportService $dossierSupportService,
         private DossierUpdateGuard $dossierUpdateGuard,
         private DossierRepository $dossierRepository,
+        private DossierValidator $dossierValidator,
         private CovenantMapper $covenantMapper,
         private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
+        private DossierAttachmentValidator $dossierAttachmentValidator,
+        private DossierMainDocumentValidator $dossierMainDocumentValidator,
         private OrganisationResolver $organisationResolver,
         private NoticeNotPublicService $noticeNotPublicService,
         private MessageBusInterface $messageBus,
@@ -111,7 +117,7 @@ final readonly class CovenantProcessor implements ProcessorInterface
         if ($covenantRequestDto->mainDocument !== null) {
             $mainDocument = CovenantMainDocumentMapper::create($covenant, $covenantRequestDto->mainDocument);
             $covenant->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             $noticeNotPublic = $covenantRequestDto->noticeNotPublic;
             Assert::notNull($noticeNotPublic);
@@ -121,12 +127,15 @@ final readonly class CovenantProcessor implements ProcessorInterface
             );
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($covenantRequestDto->attachments);
         $attachments = $this->getAttachments($covenant, $covenantRequestDto->attachments);
-        $this->dossierSupportService->validateAttachments($attachments);
+        $this->dossierAttachmentValidator->validate($attachments, $covenant->getStatus());
         $this->dossierSupportService->addAttachments($covenant, $attachments);
 
-        $this->dossierSupportService->validateDossier($covenant);
-        $this->dossierSupportService->dispatchCreateDossierCommand($covenant);
+        $this->dossierValidator->validateDossier($covenant);
+        $this->dossierSupportService->autoPublish($covenant);
+        $this->dossierSupportService->validateCompletionAndPersist($covenant);
+        $this->dossierSupportService->synchronizeArtifacts($covenant);
 
         return $covenant;
     }
@@ -149,7 +158,7 @@ final readonly class CovenantProcessor implements ProcessorInterface
                 ? CovenantMainDocumentMapper::update($covenant, $covenantRequestDto->mainDocument)
                 : CovenantMainDocumentMapper::create($covenant, $covenantRequestDto->mainDocument);
             $covenant->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             if ($covenant->getMainDocument() !== null) {
                 $this->messageBus->dispatch(new DeleteMainDocumentCommand($covenant->getId()));
@@ -164,12 +173,16 @@ final readonly class CovenantProcessor implements ProcessorInterface
             $covenant->setNoticeNotPublic($notice);
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($covenantRequestDto->attachments);
+        $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($covenant, $covenantRequestDto->attachments);
         $attachments = $this->getAttachments($covenant, $covenantRequestDto->attachments);
-        $this->dossierSupportService->validateAttachments($attachments);
+        $this->dossierAttachmentValidator->validate($attachments, $covenant->getStatus());
         $this->attachmentSynchronizer->sync($covenant, $covenantRequestDto->attachments);
 
-        $this->dossierSupportService->validateDossier($covenant);
-        $this->dossierSupportService->dispatchUpdateDossierCommand($covenant);
+        $this->dossierValidator->validateDossier($covenant);
+        $this->dossierSupportService->autoPublish($covenant);
+        $this->dossierSupportService->validateCompletionAndPersist($covenant);
+        $this->dossierSupportService->synchronizeArtifacts($covenant);
     }
 
     /**

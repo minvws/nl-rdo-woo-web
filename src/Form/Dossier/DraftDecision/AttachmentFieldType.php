@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Shared\Form\Dossier\DraftDecision;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+/**
+ * This field is only used to get entity validation errors for the 'attachment' property, so the property_path is set to map errors.
+ * Attachments are uploaded using a Vue component with API calls, so it is not mapped.
+ *
+ * Only the form_errors should be rendered for this field, the field itself should not be used.
+ */
+class AttachmentFieldType extends AbstractType
+{
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'required' => false,
+            'error_bubbling' => false,
+            'compound' => false,
+            'mapped' => false,
+            'property_path' => 'attachment',
+        ]);
+    }
+}

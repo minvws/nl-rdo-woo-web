@@ -10,8 +10,6 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * This class handles Document entity management. Not to be confused with 'ES documents' or 'upload document' (files)!
@@ -24,7 +22,6 @@ readonly class DocumentService
         private ThumbnailStorageService $thumbStorage,
         private SubTypeIndexer $subTypeIndexer,
         private HistoryService $historyService,
-        private ValidatorInterface $validator,
     ) {
     }
 
@@ -57,18 +54,6 @@ readonly class DocumentService
 
         if ($flush) {
             $this->entityManager->flush();
-        }
-    }
-
-    /**
-     * @param list<Document> $documents
-     */
-    public function validateDocuments(array $documents): void
-    {
-        $errors = $this->validator->validate($documents);
-
-        if ($errors->count() > 0) {
-            throw new ValidationFailedException($documents, $errors);
         }
     }
 }

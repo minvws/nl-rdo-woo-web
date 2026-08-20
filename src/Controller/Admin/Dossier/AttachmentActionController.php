@@ -29,7 +29,7 @@ class AttachmentActionController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/attachment/withdraw/{prefix}/{dossierNumber}/{attachmentId}',
+        path: '/balie/dossier/attachment/withdraw/{documentPrefix}/{dossierNumber}/{attachmentId}',
         name: 'app_admin_dossier_attachment_withdraw',
         methods: ['GET', 'POST'],
     )]
@@ -37,7 +37,7 @@ class AttachmentActionController extends AbstractController
     public function withdraw(
         Breadcrumbs $breadcrumbs,
         Request $request,
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
         #[MapEntity(mapping: ['attachmentId' => 'id'])] AbstractAttachment $attachment,
     ): Response {
         if ($attachment->getDossier() !== $dossier) {
@@ -49,7 +49,7 @@ class AttachmentActionController extends AbstractController
         $breadcrumbs->addRouteItem(
             $dossier->getDossierNumber(),
             'app_admin_dossier',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
 
         Assert::notNull($attachment->getFileInfo()->getName());
@@ -57,7 +57,7 @@ class AttachmentActionController extends AbstractController
             $attachment->getFileInfo()->getName(),
             $wizardStatus->getAttachmentStep()->getRouteName(),
             [
-                'prefix' => $dossier->getDocumentPrefix(),
+                'documentPrefix' => $dossier->getDocumentPrefix(),
                 'dossierNumber' => $dossier->getDossierNumber(),
             ],
         );
@@ -73,7 +73,7 @@ class AttachmentActionController extends AbstractController
             return $this->redirectToRoute(
                 $wizardStatus->getAttachmentStep()->getRouteName(),
                 [
-                    'prefix' => $dossier->getDocumentPrefix(),
+                    'documentPrefix' => $dossier->getDocumentPrefix(),
                     'dossierNumber' => $dossier->getDossierNumber(),
                 ],
             );

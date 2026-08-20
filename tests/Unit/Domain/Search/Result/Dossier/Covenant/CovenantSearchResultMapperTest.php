@@ -7,13 +7,13 @@ namespace Shared\Tests\Unit\Domain\Search\Result\Dossier\Covenant;
 use MinVWS\TypeArray\TypeArray;
 use Mockery;
 use Mockery\MockInterface;
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantRepository;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Result\Dossier\Covenant\CovenantSearchResultMapper;
 use Shared\Domain\Search\Result\Dossier\DossierSearchResultBaseMapper;
 use Shared\Domain\Search\Result\ResultEntryInterface;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Unit\UnitTestCase;
 
 class CovenantSearchResultMapperTest extends UnitTestCase
@@ -52,13 +52,13 @@ class CovenantSearchResultMapperTest extends UnitTestCase
                 $this->repository,
                 ElasticDocumentType::COVENANT,
                 [ElasticField::TITLE->value, ElasticField::SUMMARY->value],
-                ApplicationMode::ADMIN,
+                ApplicationId::ADMIN,
             )
             ->andReturn($expectedResult);
 
         $this->assertEquals(
             $expectedResult,
-            $this->mapper->map($hit, ApplicationMode::ADMIN),
+            $this->mapper->map($hit, ApplicationId::ADMIN),
         );
     }
 }

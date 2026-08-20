@@ -599,7 +599,7 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
                 'isSuspended' => false,
                 'judgement' => Judgement::PUBLIC,
                 'links' => [],
-                'matter' => 'xx',
+                'publicationContext' => $this->getFaker()->publicationContext()->toString(),
                 'refersTo' => [],
                 'remark' => $this->getFaker()->sentence(),
                 'sourceType' => $this->getFaker()->randomElement(SourceType::cases()),

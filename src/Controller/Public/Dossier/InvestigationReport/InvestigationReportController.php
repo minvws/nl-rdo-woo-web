@@ -23,8 +23,6 @@ use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
 
-use function mb_ucfirst;
-
 class InvestigationReportController extends AbstractController
 {
     public function __construct(
@@ -38,14 +36,14 @@ class InvestigationReportController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/onderzoeksrapport/{prefix}/{dossierNumber}', name: 'app_investigationreport_detail', methods: ['GET'])]
+    #[Route('/onderzoeksrapport/{documentPrefix}/{dossierNumber}', name: 'app_investigationreport_detail', methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $investigationReport,
         Breadcrumbs $breadcrumbs,
-        string $prefix,
+        string $documentPrefix,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addItem(mb_ucfirst((string) $investigationReport->getTitle()));
+        $breadcrumbs->addItem($investigationReport->getType()->getTranslationKey());
 
         $parameters = [
             'dossier' => $this->viewFactory->make($investigationReport),
@@ -53,7 +51,7 @@ class InvestigationReportController extends AbstractController
         ];
 
         $document = $this->investigationReportMainDocumentRepository->findForDossierByPrefixAndDossierNumber(
-            $prefix,
+            $documentPrefix,
             $investigationReport->getDossierNumber(),
         );
         $noticeNotPublic = $investigationReport->getNoticeNotPublic();
@@ -75,7 +73,7 @@ class InvestigationReportController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/onderzoeksrapport/{prefix}/{dossierNumber}/mededeling-niet-openbaar',
+        '/onderzoeksrapport/{documentPrefix}/{dossierNumber}/mededeling-niet-openbaar',
         name: 'app_investigationreport_notice_not_public_detail',
         methods: ['GET'],
     )]
@@ -83,46 +81,44 @@ class InvestigationReportController extends AbstractController
         #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $investigationReport,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        $noticeNotPublicViewModel = $this->noticeNotPublicViewFactory->make($investigationReport);
-
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('dossier.type.investigation-report', 'app_investigationreport_detail', [
-            'prefix' => $investigationReport->getDocumentPrefix(),
+        $breadcrumbs->addRouteItem($investigationReport->getType()->getTranslationKey(), 'app_investigationreport_detail', [
+            'documentPrefix' => $investigationReport->getDocumentPrefix(),
             'dossierNumber' => $investigationReport->getDossierNumber(),
         ]);
-        $breadcrumbs->addItem($noticeNotPublicViewModel->title);
+        $breadcrumbs->addItem('global.dossiers.notice_not_public');
 
         return $this->render('public/dossier/investigation-report/notice-not-public.html.twig', [
             'dossier' => $this->viewFactory->make($investigationReport),
-            'noticeNotPublic' => $noticeNotPublicViewModel,
+            'noticeNotPublic' => $this->noticeNotPublicViewFactory->make($investigationReport),
         ]);
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/onderzoeksrapport/{prefix}/{dossierNumber}/document',
+        '/onderzoeksrapport/{documentPrefix}/{dossierNumber}/document',
         name: 'app_investigationreport_document_detail',
         methods: ['GET'],
     )]
     public function documentDetail(
-        #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber)')]
+        #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $investigationReport,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(documentPrefix, dossierNumber)')]
         InvestigationReportMainDocument $document,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('dossier.type.investigation-report', 'app_investigationreport_detail', [
-            'prefix' => $dossier->getDocumentPrefix(),
-            'dossierNumber' => $dossier->getDossierNumber(),
+        $breadcrumbs->addRouteItem($investigationReport->getType()->getTranslationKey(), 'app_investigationreport_detail', [
+            'documentPrefix' => $investigationReport->getDocumentPrefix(),
+            'dossierNumber' => $investigationReport->getDossierNumber(),
         ]);
-        $breadcrumbs->addItem((string) $dossier->getTitle());
+        $breadcrumbs->addItem('public.global.main_document');
 
         return $this->render('public/dossier/investigation-report/document.html.twig', [
-            'dossier' => $this->viewFactory->make($dossier),
-            'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
-            'document' => $this->mainDocumentViewFactory->make($dossier, $document),
+            'dossier' => $this->viewFactory->make($investigationReport),
+            'attachments' => $this->attachmentViewFactory->makeCollection($investigationReport),
+            'document' => $this->mainDocumentViewFactory->make($investigationReport, $document),
             'file' => $this->dossierFileViewFactory->make(
-                $dossier,
+                $investigationReport,
                 $document,
                 DossierFileType::MAIN_DOCUMENT,
             ),
@@ -131,31 +127,29 @@ class InvestigationReportController extends AbstractController
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
-        '/onderzoeksrapport/{prefix}/{dossierNumber}/bijlage/{attachmentId}',
+        '/onderzoeksrapport/{documentPrefix}/{dossierNumber}/bijlage/{attachmentId}',
         name: 'app_investigationreport_attachment_detail',
         methods: ['GET'],
     )]
     public function attachmentDetail(
-        #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $dossier,
-        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(prefix, dossierNumber, attachmentId)')]
+        #[ValueResolver('dossierWithAccessCheck')] InvestigationReport $investigationReport,
+        #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(documentPrefix, dossierNumber, attachmentId)')]
         InvestigationReportAttachment $attachment,
         Breadcrumbs $breadcrumbs,
     ): Response {
-        $attachmentViewModel = $this->attachmentViewFactory->make($dossier, $attachment);
-
         $breadcrumbs->addRouteItem('global.home', 'app_home');
-        $breadcrumbs->addRouteItem('dossier.type.investigation-report', 'app_investigationreport_detail', [
-            'prefix' => $dossier->getDocumentPrefix(),
-            'dossierNumber' => $dossier->getDossierNumber(),
+        $breadcrumbs->addRouteItem($investigationReport->getType()->getTranslationKey(), 'app_investigationreport_detail', [
+            'documentPrefix' => $investigationReport->getDocumentPrefix(),
+            'dossierNumber' => $investigationReport->getDossierNumber(),
         ]);
-        $breadcrumbs->addItem((string) $dossier->getTitle());
+        $breadcrumbs->addItem('public.global.attachment');
 
         return $this->render('public/dossier/investigation-report/attachment.html.twig', [
-            'dossier' => $this->viewFactory->make($dossier),
-            'attachments' => $this->attachmentViewFactory->makeCollection($dossier),
-            'attachment' => $attachmentViewModel,
+            'dossier' => $this->viewFactory->make($investigationReport),
+            'attachments' => $this->attachmentViewFactory->makeCollection($investigationReport),
+            'attachment' => $this->attachmentViewFactory->make($investigationReport, $attachment),
             'file' => $this->dossierFileViewFactory->make(
-                $dossier,
+                $investigationReport,
                 $attachment,
                 DossierFileType::ATTACHMENT,
             ),

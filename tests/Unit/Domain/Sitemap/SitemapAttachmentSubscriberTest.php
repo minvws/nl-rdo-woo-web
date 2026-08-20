@@ -60,7 +60,7 @@ class SitemapAttachmentSubscriberTest extends UnitTestCase
         $urlGenerator->expects('generate')->with(
             'app_covenant_attachment_detail',
             [
-                'prefix' => $prefix,
+                'documentPrefix' => $prefix,
                 'dossierNumber' => $dossierNumber,
                 'attachmentId' => $attachmentId,
             ],
@@ -86,6 +86,6 @@ class SitemapAttachmentSubscriberTest extends UnitTestCase
             $urlGenerator,
         );
 
-        $this->subscriber->populate($event);
+        $this->subscriber->__invoke($event);
     }
 }

@@ -14,7 +14,7 @@ use function substr;
 class StorageRootPathGenerator
 {
     /**
-     * Returns the root path of an entity. Normally, this is /{prefix}/{suffix}, where prefix are the first two
+     * Returns the root path of an entity. Normally, this is /{documentPrefix}/{suffix}, where prefix are the first two
      * characters of the SHA256 hash, and suffix is the rest of the SHA256 hash.
      */
     public function __invoke(EntityWithFileInfo $entity): string

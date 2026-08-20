@@ -19,6 +19,9 @@ use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecisionAttachment;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
@@ -69,6 +72,9 @@ enum ElasticDocumentType: string implements TranslatableInterface
     case REQUEST_FOR_ADVICE = 'request_for_advice';
     case REQUEST_FOR_ADVICE_MAIN_DOCUMENT = 'request_for_advice_main_document';
 
+    case DRAFT_DECISION = 'draft_decision';
+    case DRAFT_DECISION_MAIN_DOCUMENT = 'draft_decision_main_document';
+
     case ATTACHMENT = 'attachment';
 
     public static function fromEntity(object $entity): self
@@ -101,6 +107,9 @@ enum ElasticDocumentType: string implements TranslatableInterface
             $entity instanceof RequestForAdvice => self::REQUEST_FOR_ADVICE,
             $entity instanceof RequestForAdviceMainDocument => self::REQUEST_FOR_ADVICE_MAIN_DOCUMENT,
             $entity instanceof RequestForAdviceAttachment => self::ATTACHMENT,
+            $entity instanceof DraftDecision => self::DRAFT_DECISION,
+            $entity instanceof DraftDecisionMainDocument => self::DRAFT_DECISION_MAIN_DOCUMENT,
+            $entity instanceof DraftDecisionAttachment => self::ATTACHMENT,
             default => throw IndexException::noTypeFoundForEntityClass($entity::class),
         };
     }
@@ -117,6 +126,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
             DossierType::COVENANT => self::COVENANT,
             DossierType::OTHER_PUBLICATION => self::OTHER_PUBLICATION,
             DossierType::INVESTIGATION_REPORT => self::INVESTIGATION_REPORT,
+            DossierType::DRAFT_DECISION => self::DRAFT_DECISION,
         };
     }
 
@@ -150,6 +160,9 @@ enum ElasticDocumentType: string implements TranslatableInterface
             RequestForAdvice::class => self::REQUEST_FOR_ADVICE,
             RequestForAdviceMainDocument::class => self::REQUEST_FOR_ADVICE_MAIN_DOCUMENT,
             RequestForAdviceAttachment::class => self::ATTACHMENT,
+            DraftDecision::class => self::DRAFT_DECISION,
+            DraftDecisionMainDocument::class => self::DRAFT_DECISION_MAIN_DOCUMENT,
+            DraftDecisionAttachment::class => self::ATTACHMENT,
             default => throw IndexException::noTypeFoundForEntityClass($entityClass),
         };
     }
@@ -169,6 +182,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
             self::OTHER_PUBLICATION,
             self::ADVICE,
             self::REQUEST_FOR_ADVICE,
+            self::DRAFT_DECISION,
         ];
     }
 
@@ -188,6 +202,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
             self::OTHER_PUBLICATION_MAIN_DOCUMENT,
             self::ADVICE_MAIN_DOCUMENT,
             self::REQUEST_FOR_ADVICE_MAIN_DOCUMENT,
+            self::DRAFT_DECISION_MAIN_DOCUMENT,
             self::ATTACHMENT,
         ];
     }
@@ -207,6 +222,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
             self::OTHER_PUBLICATION_MAIN_DOCUMENT,
             self::REQUEST_FOR_ADVICE_MAIN_DOCUMENT,
             self::ADVICE_MAIN_DOCUMENT,
+            self::DRAFT_DECISION_MAIN_DOCUMENT,
         ];
     }
 

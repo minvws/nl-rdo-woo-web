@@ -36,13 +36,13 @@ class DocumentsEditStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/documents/edit/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/woodecision/documents/edit/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_woodecision_documents_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.document.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -76,13 +76,13 @@ class DocumentsEditStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/documents/edit/inventory-status/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/woodecision/documents/edit/inventory-status/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_woodecision_documents_edit_inventory_status',
         methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function inventoryProcess(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
     ): Response {
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, StepName::DOCUMENTS);
         if (! $wizardStatus->isCurrentStepAccessibleInEditMode()) {
@@ -93,13 +93,13 @@ class DocumentsEditStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/documents/edit/replace-inventory/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/woodecision/documents/edit/replace-inventory/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_woodecision_documents_edit_replace_inventory',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function replaceInventory(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -114,7 +114,7 @@ class DocumentsEditStepController extends AbstractController
         if ($this->stepHelper->isFormCancelled($form)) {
             return $this->redirectToRoute(
                 'app_admin_dossier_woodecision_documents_edit',
-                ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+                ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
             );
         }
 
@@ -138,7 +138,7 @@ class DocumentsEditStepController extends AbstractController
 
             return $this->redirectToRoute(
                 'app_admin_dossier_woodecision_documents_edit',
-                ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+                ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
             );
         }
 
@@ -153,7 +153,7 @@ class DocumentsEditStepController extends AbstractController
         $breadcrumbs->addRouteItem(
             'admin.dossiers.woo-decision.step.documents',
             'app_admin_dossier_woodecision_documents_edit',
-            ['prefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
+            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addItem('admin.dossiers.woo-decision.step.replace_inventory');
 

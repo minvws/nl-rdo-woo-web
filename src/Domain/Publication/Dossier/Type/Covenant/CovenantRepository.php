@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\Type\Covenant;
 
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\Type\AbstractDossierRepository;
 use Shared\Domain\Search\Result\Dossier\Covenant\CovenantSearchResult;
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 use function sprintf;
 
@@ -23,9 +23,9 @@ class CovenantRepository extends AbstractDossierRepository implements ProvidesDo
     }
 
     public function getSearchResultViewModel(
-        string $prefix,
+        string $documentPrefix,
         string $dossierNumber,
-        ApplicationMode $mode,
+        ApplicationId $applicationId,
     ): ?CovenantSearchResult {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
@@ -42,14 +42,14 @@ class CovenantRepository extends AbstractDossierRepository implements ProvidesDo
                 )',
                 CovenantSearchResult::class,
             ))
-            ->where('dos.documentPrefix = :prefix')
+            ->where('dos.documentPrefix = :documentPrefix')
             ->andWhere('dos.dossierNumber = :dossierNumber')
             ->andWhere('dos.status IN (:statuses)')
             ->leftJoin('dos.attachments', 'att')
             ->groupBy('dos.id')
-            ->setParameter('prefix', $prefix)
+            ->setParameter('documentPrefix', $documentPrefix)
             ->setParameter('dossierNumber', $dossierNumber)
-            ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
+            ->setParameter('statuses', $applicationId->getAccessibleDossierStatuses());
 
         /** @var ?CovenantSearchResult */
         return $qb->getQuery()->getOneOrNullResult();

@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\History;
 
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Event\DossierCreatedEvent;
 use Shared\Service\HistoryService;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 final readonly class DossierHistoryHandler
@@ -16,8 +15,7 @@ final readonly class DossierHistoryHandler
     public function __construct(
         private HistoryService $historyService,
         private DossierRepository $repository,
-        #[Autowire(service: ApplicationMode::class)]
-        private ApplicationMode $applicationMode,
+        private ApplicationId $applicationId,
     ) {
     }
 
@@ -30,7 +28,7 @@ final readonly class DossierHistoryHandler
             dossierId: $event->dossierId,
             key: 'dossier_created',
             context: [
-                'applicationMode' => $this->applicationMode->value,
+                'applicationId' => $this->applicationId->value,
                 'status' => $dossier->getStatus()->value,
             ],
         );

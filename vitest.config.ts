@@ -13,7 +13,7 @@ export default defineConfig({
     alias: {
       '@js': path.resolve(__dirname, 'assets/js/'),
       '@fonts': path.resolve(__dirname, 'assets/fonts/'),
-      '@img': path.resolve(__dirname, '/img/'),
+      '@img': path.resolve(__dirname, 'public/img/'),
       '@styles': path.resolve(__dirname, 'assets/styles/'),
       '@test': path.resolve(__dirname, 'assets/js/test/'),
       '@utils': path.resolve(__dirname, 'assets/js/utils/'),

@@ -36,7 +36,7 @@ readonly class InventorySanitizer
         $this->writer->open($tmpFilename);
         $this->writer->addHeaders(
             'Document ID',
-            'Document naam',
+            'Documentnummer',
             'Bestandsnaam',
             'Beoordeling',
             'Beoordelingsgrond',
@@ -44,7 +44,7 @@ readonly class InventorySanitizer
             'Publieke link',
             'Locatie document ID',
             'Opgeschort',
-            'Gerelateerd ID',
+            'Gerelateerd Documentnummer',
             'Locatie gerelateerd ID',
             'Besluitnaam',
         );

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shared\Domain\Ingest\Process\PdfPage;
 
 use Shared\Domain\Publication\EntityWithFileInfo;
-use Shared\Service\Stats\WorkerStatsService;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\LocalFilesystem;
 
@@ -13,7 +12,6 @@ readonly class PdfPageProcessingContextFactory
 {
     public function __construct(
         private EntityStorageService $entityStorageService,
-        private WorkerStatsService $statsService,
         private LocalFilesystem $localFilesystem,
     ) {
     }
@@ -43,12 +41,7 @@ readonly class PdfPageProcessingContextFactory
 
     private function downloadDocumentToLocalStorage(EntityWithFileInfo $entity): string
     {
-        /** @var string|false $localPath */
-        $localPath = $this->statsService->measure(
-            'download.entity',
-            fn (): string|false => $this->entityStorageService->downloadEntity($entity),
-        );
-
+        $localPath = $this->entityStorageService->downloadEntity($entity);
         if ($localPath === false) {
             throw PdfPageException::forCannotDownload($entity);
         }

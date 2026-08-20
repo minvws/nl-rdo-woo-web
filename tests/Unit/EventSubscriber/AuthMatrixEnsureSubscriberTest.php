@@ -41,7 +41,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
 
         $this->expectNotToPerformAssertions();
 
-        $this->subscriber->onKernelControllerArguments($event);
+        $this->subscriber->__invoke($event);
     }
 
     public function testNonBalieUrlsAreNotChecked(): void
@@ -56,7 +56,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
             HttpKernelInterface::MAIN_REQUEST,
         );
 
-        $this->subscriber->onKernelControllerArguments($event);
+        $this->subscriber->__invoke($event);
     }
 
     public function testWhitelistedAdminUrlIsNotChecked(): void
@@ -71,7 +71,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
             HttpKernelInterface::MAIN_REQUEST,
         );
 
-        $this->subscriber->onKernelControllerArguments($event);
+        $this->subscriber->__invoke($event);
     }
 
     public function testBalieUrlWithoutStoredEntriesTriggersAccessDenied(): void
@@ -90,7 +90,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
 
         $this->expectException(AccessDeniedHttpException::class);
 
-        $this->subscriber->onKernelControllerArguments($event);
+        $this->subscriber->__invoke($event);
     }
 
     public function testBalieUrlsWithStoredEntriesIsAccepted(): void
@@ -107,6 +107,6 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
             HttpKernelInterface::MAIN_REQUEST,
         );
 
-        $this->subscriber->onKernelControllerArguments($event);
+        $this->subscriber->__invoke($event);
     }
 }

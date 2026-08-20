@@ -20,6 +20,7 @@ use Shared\Service\Inventory\MetadataField;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 use Webmozart\Assert\Assert;
 
 use function count;
@@ -75,7 +76,7 @@ class InventoryReader implements InventoryReaderInterface
             $exception = null;
 
             try {
-                $documentMetadata = $this->mapRow($rowIdx);
+                $documentMetadata = $this->mapRow($rowIdx, $dossier->getDocumentPrefix());
             } catch (Exception $exception) {
                 // Exception occurred, but we still continue with the next row to discover and report any other errors
                 // To not break the generator yield instead of throwing the exception
@@ -91,8 +92,10 @@ class InventoryReader implements InventoryReaderInterface
      *
      * @throws Exception
      */
-    protected function mapRow(int $rowIdx): DocumentMetadata
+    protected function mapRow(int $rowIdx, string $documentPrefix): DocumentMetadata
     {
+        $this->assertMatterAndPublicationContextCombinationIsValid($rowIdx);
+
         $links = $this->getLinks($rowIdx);
         $remark = $this->getRemark($rowIdx);
 
@@ -122,7 +125,7 @@ class InventoryReader implements InventoryReaderInterface
             suspended: InventoryDataHelper::isTrue($this->reader->getOptionalString($rowIdx, MetadataField::SUSPENDED->value)),
             links: $links,
             remark: $remark,
-            matter: $this->getMatter($rowIdx),
+            publicationContext: $this->getPublicationContext($rowIdx, $documentPrefix),
             refersTo: InventoryDataHelper::separateValues($this->reader->getOptionalString($rowIdx, MetadataField::REFERS_TO->value)),
         );
     }
@@ -224,6 +227,40 @@ class InventoryReader implements InventoryReaderInterface
             return DocumentMatter::create($matter);
         } catch (InvalidArgumentException) {
             throw InventoryReaderException::forInvalidMatterInRow($rowIdx);
+        }
+    }
+
+    private function getPublicationContext(int $rowIdx, string $prefix): PublicationContext
+    {
+        $publicationContext = $this->reader->getOptionalString($rowIdx, MetadataField::PUBLICATION_CONTEXT->value);
+
+        if ($publicationContext !== null && trim($publicationContext) !== '') {
+            try {
+                return PublicationContext::fromString($publicationContext);
+            } catch (InvalidArgumentException) {
+                throw InventoryReaderException::forInvalidPublicationContextInRow($rowIdx);
+            }
+        }
+
+        if ($this->getMatter($rowIdx) !== null) {
+            // this is a fallback to construct a publicationContext from prefix and matter
+            try {
+                return PublicationContext::fromString($prefix . '-' . $this->getMatter($rowIdx)->toString());
+            } catch (InvalidArgumentException) {
+                throw InventoryReaderException::forInvalidPublicationContextInRow($rowIdx);
+            }
+        }
+
+        throw InventoryReaderException::forInvalidPublicationContextInRow($rowIdx);
+    }
+
+    private function assertMatterAndPublicationContextCombinationIsValid(int $rowIdx): void
+    {
+        $matter = $this->reader->getOptionalString($rowIdx, MetadataField::MATTER->value);
+        $publicationContext = $this->reader->getOptionalString($rowIdx, MetadataField::PUBLICATION_CONTEXT->value);
+
+        if ($matter !== null && trim($matter) !== '' && $publicationContext !== null && trim($publicationContext) !== '') {
+            throw InventoryReaderException::forMatterAndPublicationContextCombination();
         }
     }
 

@@ -8,8 +8,11 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
+use PublicationApi\Api\Dossier\DossierAttachmentValidator;
+use PublicationApi\Api\Dossier\DossierMainDocumentValidator;
 use PublicationApi\Api\Dossier\DossierNumberValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\Dossier\DossierValidator;
 use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
@@ -40,8 +43,11 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
     public function __construct(
         private DossierNumberValidator $dossierNumberValidator,
         private DossierSupportService $dossierSupportService,
+        private DossierAttachmentValidator $dossierAttachmentValidator,
+        private DossierMainDocumentValidator $dossierMainDocumentValidator,
         private DossierUpdateGuard $dossierUpdateGuard,
         private DossierRepository $dossierRepository,
+        private DossierValidator $dossierValidator,
         private OtherPublicationMapper $otherPublicationMapper,
         private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
@@ -111,7 +117,7 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
         if ($otherPublicationRequestDto->mainDocument !== null) {
             $mainDocument = OtherPublicationMainDocumentMapper::create($otherPublication, $otherPublicationRequestDto->mainDocument);
             $otherPublication->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             $noticeNotPublic = $otherPublicationRequestDto->noticeNotPublic;
             Assert::notNull($noticeNotPublic);
@@ -121,12 +127,15 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
             );
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($otherPublicationRequestDto->attachments);
         $attachments = $this->getAttachments($otherPublication, $otherPublicationRequestDto->attachments);
-        $this->dossierSupportService->validateAttachments($attachments);
+        $this->dossierAttachmentValidator->validate($attachments, $otherPublication->getStatus());
         $this->dossierSupportService->addAttachments($otherPublication, $attachments);
 
-        $this->dossierSupportService->validateDossier($otherPublication);
-        $this->dossierSupportService->dispatchCreateDossierCommand($otherPublication);
+        $this->dossierValidator->validateDossier($otherPublication);
+        $this->dossierSupportService->autoPublish($otherPublication);
+        $this->dossierSupportService->validateCompletionAndPersist($otherPublication);
+        $this->dossierSupportService->synchronizeArtifacts($otherPublication);
 
         return $otherPublication;
     }
@@ -149,7 +158,7 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
                 ? OtherPublicationMainDocumentMapper::update($otherPublication, $otherPublicationRequestDto->mainDocument)
                 : OtherPublicationMainDocumentMapper::create($otherPublication, $otherPublicationRequestDto->mainDocument);
             $otherPublication->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             if ($otherPublication->getMainDocument() !== null) {
                 $this->messageBus->dispatch(new DeleteMainDocumentCommand($otherPublication->getId()));
@@ -164,12 +173,16 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
             $otherPublication->setNoticeNotPublic($notice);
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($otherPublicationRequestDto->attachments);
+        $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($otherPublication, $otherPublicationRequestDto->attachments);
         $attachments = $this->getAttachments($otherPublication, $otherPublicationRequestDto->attachments);
-        $this->dossierSupportService->validateAttachments($attachments);
+        $this->dossierAttachmentValidator->validate($attachments, $otherPublication->getStatus());
         $this->attachmentSynchronizer->sync($otherPublication, $otherPublicationRequestDto->attachments);
 
-        $this->dossierSupportService->validateDossier($otherPublication);
-        $this->dossierSupportService->dispatchUpdateDossierCommand($otherPublication);
+        $this->dossierValidator->validateDossier($otherPublication);
+        $this->dossierSupportService->autoPublish($otherPublication);
+        $this->dossierSupportService->validateCompletionAndPersist($otherPublication);
+        $this->dossierSupportService->synchronizeArtifacts($otherPublication);
     }
 
     /**

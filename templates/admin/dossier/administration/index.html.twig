@@ -26,7 +26,7 @@
                     {% for dossier in dossiers %}
                         <tr>
                             <td>
-                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_administration_details', {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}">
+                                <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_administration_details', {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}">
                                     {{ dossier.dossierNumber }}
                                 </a>
                             </td>

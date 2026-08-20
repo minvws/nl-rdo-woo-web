@@ -8,8 +8,11 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
+use PublicationApi\Api\Dossier\DossierAttachmentValidator;
+use PublicationApi\Api\Dossier\DossierMainDocumentValidator;
 use PublicationApi\Api\Dossier\DossierNumberValidator;
 use PublicationApi\Api\Dossier\DossierSupportService;
+use PublicationApi\Api\Dossier\DossierValidator;
 use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
@@ -40,8 +43,11 @@ final readonly class DispositionProcessor implements ProcessorInterface
     public function __construct(
         private DossierNumberValidator $dossierNumberValidator,
         private DossierSupportService $dossierSupportService,
+        private DossierAttachmentValidator $dossierAttachmentValidator,
+        private DossierMainDocumentValidator $dossierMainDocumentValidator,
         private DossierUpdateGuard $dossierUpdateGuard,
         private DossierRepository $dossierRepository,
+        private DossierValidator $dossierValidator,
         private DispositionMapper $dispositionMapper,
         private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
@@ -111,7 +117,7 @@ final readonly class DispositionProcessor implements ProcessorInterface
         if ($dispositionRequestDto->mainDocument !== null) {
             $mainDocument = DispositionMainDocumentMapper::create($disposition, $dispositionRequestDto->mainDocument);
             $disposition->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             $noticeNotPublic = $dispositionRequestDto->noticeNotPublic;
             Assert::notNull($noticeNotPublic);
@@ -121,12 +127,15 @@ final readonly class DispositionProcessor implements ProcessorInterface
             );
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($dispositionRequestDto->attachments);
         $attachments = $this->getAttachments($disposition, $dispositionRequestDto->attachments);
-        $this->dossierSupportService->validateAttachments($attachments);
+        $this->dossierAttachmentValidator->validate($attachments, $disposition->getStatus());
         $this->dossierSupportService->addAttachments($disposition, $attachments);
 
-        $this->dossierSupportService->validateDossier($disposition);
-        $this->dossierSupportService->dispatchCreateDossierCommand($disposition);
+        $this->dossierValidator->validateDossier($disposition);
+        $this->dossierSupportService->autoPublish($disposition);
+        $this->dossierSupportService->validateCompletionAndPersist($disposition);
+        $this->dossierSupportService->synchronizeArtifacts($disposition);
 
         return $disposition;
     }
@@ -149,7 +158,7 @@ final readonly class DispositionProcessor implements ProcessorInterface
                 ? DispositionMainDocumentMapper::update($disposition, $dispositionRequestDto->mainDocument)
                 : DispositionMainDocumentMapper::create($disposition, $dispositionRequestDto->mainDocument);
             $disposition->setMainDocument($mainDocument);
-            $this->dossierSupportService->validateMainDocument($mainDocument);
+            $this->dossierMainDocumentValidator->validate($mainDocument);
         } else {
             if ($disposition->getMainDocument() !== null) {
                 $this->messageBus->dispatch(new DeleteMainDocumentCommand($disposition->getId()));
@@ -164,12 +173,16 @@ final readonly class DispositionProcessor implements ProcessorInterface
             $disposition->setNoticeNotPublic($notice);
         }
 
+        $this->dossierAttachmentValidator->assertUniqueExternalIds($dispositionRequestDto->attachments);
+        $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($disposition, $dispositionRequestDto->attachments);
         $attachments = $this->getAttachments($disposition, $dispositionRequestDto->attachments);
-        $this->dossierSupportService->validateAttachments($attachments);
+        $this->dossierAttachmentValidator->validate($attachments, $disposition->getStatus());
         $this->attachmentSynchronizer->sync($disposition, $dispositionRequestDto->attachments);
 
-        $this->dossierSupportService->validateDossier($disposition);
-        $this->dossierSupportService->dispatchUpdateDossierCommand($disposition);
+        $this->dossierValidator->validateDossier($disposition);
+        $this->dossierSupportService->autoPublish($disposition);
+        $this->dossierSupportService->validateCompletionAndPersist($disposition);
+        $this->dossierSupportService->synchronizeArtifacts($disposition);
     }
 
     /**

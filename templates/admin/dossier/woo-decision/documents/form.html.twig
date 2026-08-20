@@ -25,8 +25,8 @@
     <div
         {% if dataPath is not empty %}
             id="js-inventory-status"
-            data-done-url="{{ path('app_admin_dossier_woodecision_documents_concept', { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
-            data-endpoint="{{ path(dataPath, { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
+            data-done-url="{{ path('app_admin_dossier_woodecision_documents_concept', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
+            data-endpoint="{{ path(dataPath, { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
             role="status"
         {% endif %}
     >
@@ -58,9 +58,9 @@
     </div>
 
     <twig:Admin:Publication:WooDecision:AddDocuments
-        continueLaterUrl="{{ path('app_admin_dossier', { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
+        continueLaterUrl="{{ path('app_admin_dossier', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
         dossier="{{ dossier }}"
-        nextStepUrl="{{ path(workflowStatus.nextStep.routeName, { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
+        nextStepUrl="{{ path(workflowStatus.nextStep.routeName, { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
         uploadGroupId="{{ uploadGroupId }}"
     />
 </div>

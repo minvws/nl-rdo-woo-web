@@ -5,26 +5,15 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\Workflow;
 
 use Psr\Log\LoggerInterface;
-use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
-use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
-use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Service\DossierService;
-use Shared\Service\HistoryService;
-use Shared\Service\Inquiry\InquiryService;
 use Symfony\Component\Workflow\Exception\TransitionException;
 
 readonly class DossierWorkflowManager
 {
     public function __construct(
         private LoggerInterface $logger,
-        private InquiryService $inquiryService,
-        private HistoryService $historyService,
         private DossierTypeManager $dossierTypeManager,
-        private DossierService $dossierService,
-        private BatchDownloadService $batchDownloadService,
     ) {
     }
 
@@ -35,8 +24,6 @@ readonly class DossierWorkflowManager
 
     public function applyTransition(AbstractDossier $dossier, DossierStatusTransition $transition): void
     {
-        $oldState = $dossier->getStatus();
-
         $statusWorkflow = $this->dossierTypeManager->getStatusWorkflow($dossier);
 
         try {
@@ -51,42 +38,5 @@ readonly class DossierWorkflowManager
 
             throw DossierWorkflowException::forTransitionFailed($dossier, $transition, $exception);
         }
-
-        // TODO: below are mostly side-effects that should eventually be loosely coupled using events, see issue #2080
-        $this->dossierService->handleEntityUpdate($dossier);
-        if ($dossier->getStatus() !== $oldState && $dossier->getStatus()->isPubliclyAvailable() && $dossier instanceof WooDecision) {
-            $this->batchDownloadService->refresh(
-                BatchDownloadScope::forWooDecision($dossier),
-            );
-
-            foreach ($dossier->getInquiries() as $inquiry) {
-                $this->inquiryService->generateInventory($inquiry);
-            }
-        }
-
-        $newState = $dossier->getStatus();
-
-        if ($oldState === DossierStatus::NEW && $newState === DossierStatus::CONCEPT) {
-            // No need to log the change from status NEW to CONCEPT as this is just a technicality
-
-            return;
-        }
-
-        if ($oldState === $newState) {
-            // In some cases applying a transition does not result in an actual status change (a non-moving transition)
-
-            return;
-        }
-
-        $this->historyService->addDossierEntry($dossier->getId(), 'dossier_state_' . $newState->value, [
-            'old' => '%' . $oldState->value . '%',
-            'new' => '%' . $newState->value . '%',
-        ]);
-
-        $this->logger->info('Dossier state changed', [
-            'dossier' => $dossier->getId(),
-            'oldState' => $oldState->value,
-            'newState' => $newState->value,
-        ]);
     }
 }

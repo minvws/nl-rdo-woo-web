@@ -64,6 +64,7 @@ final class DocumentFactory extends PersistentObjectFactory
             'judgement' => $judgement,
             'links' => array_filter([$this->faker()->optional()->url()]),
             'remark' => $this->faker()->optional()->text(),
+            'publicationContext' => $this->faker()->optional()->publicationContext(),
 
             'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
@@ -83,11 +84,11 @@ final class DocumentFactory extends PersistentObjectFactory
                 }
 
                 if (! array_key_exists('documentNumber', $attributes) && $attributes['documentId'] instanceof DocumentId) {
-                    $attributes['documentNumber'] = DocumentNumber::fromString(
+                    $attributes['documentNumber'] = DocumentNumber::fromPrefixMatterAndInput(
                         WooDecisionFactory::DEFAULT_PREFIX,
                         DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
                         (string) $attributes['documentId'],
-                    )->getValue();
+                    )->toString();
                 }
 
                 if (! array_key_exists('fileInfo', $attributes) && is_scalar($attributes['documentNumber'])) {

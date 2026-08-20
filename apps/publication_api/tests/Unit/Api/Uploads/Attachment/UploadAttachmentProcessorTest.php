@@ -12,6 +12,7 @@ use PublicationApi\Api\OrganisationLookup;
 use PublicationApi\Api\Uploads\Attachment\UploadAttachmentHandler;
 use PublicationApi\Api\Uploads\Attachment\UploadAttachmentProcessor;
 use PublicationApi\Api\Uploads\Attachment\UploadAttachmentRequestInterface;
+use PublicationApi\FeatureFlag\DocumentUploadGuard;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
@@ -51,6 +52,9 @@ class UploadAttachmentProcessorTest extends UnitTestCase
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
 
+        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
+        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
+
         $attachment = Mockery::mock(AbstractAttachment::class);
         $attachmentRepository = Mockery::mock(AttachmentRepository::class);
         $attachmentRepository
@@ -65,6 +69,7 @@ class UploadAttachmentProcessorTest extends UnitTestCase
             $attachmentRepository,
             $dossierLookup,
             $organisationLookup,
+            $documentUploadGuard,
             $uploadAttachmentHandler,
         );
 
@@ -97,6 +102,9 @@ class UploadAttachmentProcessorTest extends UnitTestCase
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
 
+        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
+        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
+
         $attachmentRepository = Mockery::mock(AttachmentRepository::class);
         $attachmentRepository
             ->expects('findByDossierAndExternalId')
@@ -109,6 +117,7 @@ class UploadAttachmentProcessorTest extends UnitTestCase
             $attachmentRepository,
             $dossierLookup,
             $organisationLookup,
+            $documentUploadGuard,
             $uploadAttachmentHandler,
         );
 
@@ -143,6 +152,9 @@ class UploadAttachmentProcessorTest extends UnitTestCase
             ->with($dossierRepository, $organisation, $dossierExternalId)
             ->andReturn($dossier);
 
+        $documentUploadGuard = Mockery::mock(DocumentUploadGuard::class);
+        $documentUploadGuard->expects('assertDocumentUploadIsAllowed')->with($dossier);
+
         $attachment = Mockery::mock(AbstractAttachment::class);
         $attachmentRepository = Mockery::mock(AttachmentRepository::class);
         $attachmentRepository
@@ -156,6 +168,7 @@ class UploadAttachmentProcessorTest extends UnitTestCase
             $attachmentRepository,
             $dossierLookup,
             $organisationLookup,
+            $documentUploadGuard,
             $uploadAttachmentHandler,
         );
 

@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-24.04
     services:
       postgres:
-        image: postgres:14.10-bookworm
+        image: postgres:17.10-trixie
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -98,7 +98,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install libecpg-dev postgresql-client
       - name: Set up Python 3.8
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: 3.8
       - name: Install dependencies
@@ -115,3 +115,99 @@ jobs:
         run: |
           if [ `grep -c ERROR woo_db.log` -ne 0 ]; then grep ERROR woo_db.log; fi
           exit `grep -c ERROR woo_db.log`
+
+  detect_schema_drift:
+    name: Detect schema drift (missing migrations)
+    runs-on: ubuntu-24.04
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    services:
+      postgres:
+        image: postgres:17.10-trixie
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup PHP
+        uses: ./.github/actions/setup-php
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy .env.ci to .env.test.local
+        run: cp .env.ci .env.test.local
+      - name: Create database
+        run: bin/console --tenant=minvws doctrine:database:create --if-not-exists --no-interaction --env=test
+      - name: Run all migrations
+        run: bin/console --tenant=minvws doctrine:migrations:migrate --no-interaction --env=test
+      - name: Check for schema drift
+        id: drift_check
+        run: |
+          set +e
+          output=$(bin/console --tenant=minvws doctrine:migrations:diff --no-interaction --env=test 2>&1)
+          exit_code=$?
+          set -e
+
+          # Detect drift via the generated migration file and Doctrine's own message.
+          new_files=$(git status --porcelain migrations/ | grep '^??.*\.php$' || true)
+          generated=$(printf '%s\n' "$output" | grep -F 'Generated new migration class' || true)
+
+          # Clean up any generated file — it's only needed for detection
+          git checkout -- migrations/ 2>/dev/null || true
+          git clean -f migrations/ 2>/dev/null || true
+
+          {
+            echo "output<<EOF"
+            echo "$output"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          # Doctrine returns exit code 1 when there is no mapping diff.
+          if printf '%s\n' "$output" | grep -Eq '^[[:space:]]*No changes detected in your mapping information\.[[:space:]]*$'; then
+            echo "schema_drift=false" >> "$GITHUB_OUTPUT"
+          elif [ "$exit_code" -ne 0 ]; then
+            echo "schema_drift_check_failed=true" >> "$GITHUB_OUTPUT"
+            exit "$exit_code"
+          elif [ -n "$new_files" ] || [ -n "$generated" ]; then
+            echo "schema_drift=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "schema_drift=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Find existing drift comment
+        uses: peter-evans/find-comment@v4
+        id: find_comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Schema Drift Detected
+      - name: Create or update drift comment
+        if: ${{ contains(steps.drift_check.outputs.schema_drift, 'true') }}
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          comment-id: ${{ steps.find_comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |
+            ## 🚨 Schema Drift Detected — Missing Migration 🚨
+            The Doctrine entity mapping no longer matches the migration history.
+            ```
+            ${{ steps.drift_check.outputs.output }}
+            ```
+            👨‍💻 Please run `php bin/console --tenant=minvws doctrine:migrations:diff --no-interaction` locally to generate the missing migration, then run `php bin/console --tenant=minvws woopie:sql:dump` to create the SQL file and add it to `./migrations/sql`.
+      - name: Remove drift comment if clean
+        if: ${{ contains(steps.drift_check.outputs.schema_drift, 'false') && steps.find_comment.outputs.comment-id != '' }}
+        uses: actions/github-script@v9
+        with:
+          script: |
+            github.rest.issues.deleteComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ steps.find_comment.outputs.comment-id }}
+            })
+      - name: Fail if schema drift detected
+        if: ${{ contains(steps.drift_check.outputs.schema_drift, 'true') }}
+        run: |
+          echo "Schema drift detected. Add the missing migration before merging."
+          exit 1

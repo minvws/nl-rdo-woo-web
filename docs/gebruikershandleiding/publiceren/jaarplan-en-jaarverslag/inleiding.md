@@ -5,7 +5,7 @@ belangrijk dat je al een account hebt met de rechten ‘publicatie-beheer’ in 
 doen op het Woo Publicatieplatform.
 
 Als je inlogt in het uploadportaal kom je terecht in het overzicht 'Alle publicaties'. Om een nieuwe
-publicatie aan te maken, klik je rechtsboven op de knop ‘Nieuwe publicatie’ en selecteer je ‘Jaarplan en Jaarverslag’.
+publicatie aan te maken, klik je rechtsboven op de knop ‘Nieuwe publicatie’ en selecteer je ‘Jaarplan en jaarverslag’.
 Het proces van het aanmaken van een nieuwe publicatie bestaat uit drie stappen:
 
 1. Eerst voer je de basisgegevens in;

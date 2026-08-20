@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
@@ -36,6 +37,7 @@ class DossierVoter extends Voter
             $subject instanceof OtherPublication => true,
             $subject instanceof Advice => true,
             $subject instanceof RequestForAdvice => true,
+            $subject instanceof DraftDecision => true,
             default => false,
         };
     }

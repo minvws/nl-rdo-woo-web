@@ -79,7 +79,7 @@ readonly class SearchResultDtoFactory
             title: $dossier->title,
             link: $this->urlGenerator->generate(
                 'app_admin_dossier',
-                ['prefix' => $dossier->documentPrefix, 'dossierNumber' => $dossier->dossierNumber],
+                ['documentPrefix' => $dossier->documentPrefix, 'dossierNumber' => $dossier->dossierNumber],
             ),
             number: $dossier->dossierNumber,
         );
@@ -98,7 +98,7 @@ readonly class SearchResultDtoFactory
             link: $this->urlGenerator->generate(
                 'app_admin_dossier_woodecision_document',
                 [
-                    'prefix' => $dossier->getDocumentPrefix(),
+                    'documentPrefix' => $dossier->getDocumentPrefix(),
                     'dossierNumber' => $dossier->getDossierNumber(),
                     'documentNumber' => $document->documentNumber,
                 ],
@@ -144,7 +144,7 @@ readonly class SearchResultDtoFactory
 
         return $this->urlGenerator->generate(
             $this->wizardStatusFactory->getWizardStatus($dossier)->getAttachmentStep()->getRouteName(),
-            ['prefix' => $dossierReference->getDocumentPrefix(), 'dossierNumber' => $dossierReference->getDossierNumber()],
+            ['documentPrefix' => $dossierReference->getDocumentPrefix(), 'dossierNumber' => $dossierReference->getDossierNumber()],
         );
     }
 }

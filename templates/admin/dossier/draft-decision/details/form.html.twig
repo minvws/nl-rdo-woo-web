@@ -1,0 +1,11 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+
+    {{ form_row(form.title) }}
+    {{ form_row(form.date) }}
+    {%  include 'admin/dossier/shared/snippets/departments-field.html.twig' with {'formField': form.departments} %}
+    {{ form_row(form.subject) }}
+    {{ form_row(form.internal_reference) }}
+
+    {%  include 'admin/dossier/shared/snippets/reference-number.html.twig' with {'form': form, 'dossier': dossier} %}
+{{ form_end(form) }}

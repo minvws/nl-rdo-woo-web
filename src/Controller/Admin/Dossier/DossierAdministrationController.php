@@ -50,10 +50,10 @@ class DossierAdministrationController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/admin/dossiers/{prefix}/{dossierNumber}', name: 'app_admin_dossier_administration_details', methods: ['GET', 'POST'])]
+    #[Route('/balie/admin/dossiers/{documentPrefix}/{dossierNumber}', name: 'app_admin_dossier_administration_details', methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.dossier.administration')]
     public function dossier(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
@@ -104,7 +104,7 @@ class DossierAdministrationController extends AbstractController
                 ->getSingleScalarResult();
 
             $list[] = [
-                'prefix' => $dossier->getDocumentPrefix(),
+                'documentPrefix' => $dossier->getDocumentPrefix(),
                 'dossierNumber' => $dossier->getDossierNumber(),
                 'expectedDownloadCount' => $expectedDownloadCount,
                 'downloadFileCount' => $download?->getFileCount(),

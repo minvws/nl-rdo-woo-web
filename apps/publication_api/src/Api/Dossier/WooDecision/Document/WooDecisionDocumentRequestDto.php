@@ -11,10 +11,10 @@ use Shared\Domain\Publication\SourceType;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Validator\AllowedFileExtension;
 use Shared\ValueObject\DocumentId;
-use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\FileName;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class WooDecisionDocumentRequestDto
@@ -54,7 +54,7 @@ class WooDecisionDocumentRequestDto
         public ?string $remark,
         public SourceType $sourceType,
         public ?int $threadId,
-        public ?DocumentMatter $matter = null,
+        public PublicationContext $publicationContext,
     ) {
     }
 }

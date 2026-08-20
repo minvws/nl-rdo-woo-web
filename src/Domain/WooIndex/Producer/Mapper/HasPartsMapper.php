@@ -37,7 +37,7 @@ final readonly class HasPartsMapper
         $subpath = $this->urlGenerator->generate(
             name: 'app_dossier_file_download',
             parameters: [
-                'prefix' => $documentPrefix,
+                'documentPrefix' => $documentPrefix,
                 'dossierNumber' => $dossierNumber,
                 'type' => $dto->source->value,
                 'id' => $dto->id,

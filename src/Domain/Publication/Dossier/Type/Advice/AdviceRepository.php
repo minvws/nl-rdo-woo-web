@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\Type\Advice;
 
 use Doctrine\Persistence\ManagerRegistry;
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\Type\AbstractDossierRepository;
 use Shared\Domain\Search\Result\Dossier\Advice\AdviceSearchResult;
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 
 use function sprintf;
 
@@ -23,9 +23,9 @@ class AdviceRepository extends AbstractDossierRepository implements ProvidesDoss
     }
 
     public function getSearchResultViewModel(
-        string $prefix,
+        string $documentPrefix,
         string $dossierNumber,
-        ApplicationMode $mode,
+        ApplicationId $applicationId,
     ): ?AdviceSearchResult {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(
@@ -41,14 +41,14 @@ class AdviceRepository extends AbstractDossierRepository implements ProvidesDoss
                 )',
                 AdviceSearchResult::class,
             ))
-            ->where('dos.documentPrefix = :prefix')
+            ->where('dos.documentPrefix = :documentPrefix')
             ->andWhere('dos.dossierNumber = :dossierNumber')
             ->andWhere('dos.status IN (:statuses)')
             ->leftJoin('dos.attachments', 'att')
             ->groupBy('dos.id')
-            ->setParameter('prefix', $prefix)
+            ->setParameter('documentPrefix', $documentPrefix)
             ->setParameter('dossierNumber', $dossierNumber)
-            ->setParameter('statuses', $mode->getAccessibleDossierStatuses());
+            ->setParameter('statuses', $applicationId->getAccessibleDossierStatuses());
 
         /** @var ?AdviceSearchResult */
         return $qb->getQuery()->getOneOrNullResult();

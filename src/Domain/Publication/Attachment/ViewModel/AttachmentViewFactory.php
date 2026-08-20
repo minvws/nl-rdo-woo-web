@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Attachment\ViewModel;
 
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use function sprintf;
@@ -26,7 +26,7 @@ readonly class AttachmentViewFactory
      */
     public function makeCollection(
         AbstractDossier $dossier,
-        ApplicationMode $mode = ApplicationMode::PUBLIC,
+        ApplicationId $applicationId = ApplicationId::PUBLIC,
     ): array {
         if (! $dossier instanceof EntityWithAttachments) {
             return [];
@@ -35,30 +35,30 @@ readonly class AttachmentViewFactory
         return $dossier
             ->getAttachments()
             ->filter(static fn (AbstractAttachment $entity) => ! $entity->isWithdrawn())
-            ->map(fn (AbstractAttachment $entity): Attachment => $this->make($dossier, $entity, $mode))
+            ->map(fn (AbstractAttachment $entity): Attachment => $this->make($dossier, $entity, $applicationId))
             ->toArray();
     }
 
     public function make(
         AbstractDossier&EntityWithAttachments $dossier,
         AbstractAttachment $attachment,
-        ApplicationMode $mode = ApplicationMode::PUBLIC,
+        ApplicationId $applicationId = ApplicationId::PUBLIC,
     ): Attachment {
         $detailsUrl = $this->urlGenerator->generate(
             sprintf('app_%s_attachment_detail', $dossier->getType()->getValueForRouteName()),
             [
-                'prefix' => $dossier->getDocumentPrefix(),
+                'documentPrefix' => $dossier->getDocumentPrefix(),
                 'dossierNumber' => $dossier->getDossierNumber(),
                 'attachmentId' => $attachment->getId(),
             ],
         );
 
-        $downloadRouteName = $mode === ApplicationMode::ADMIN
+        $downloadRouteName = $applicationId->isAdmin()
             ? 'app_admin_dossier_file_download'
             : 'app_dossier_file_download';
 
         $downloadRouteParameters = [
-            'prefix' => $dossier->getDocumentPrefix(),
+            'documentPrefix' => $dossier->getDocumentPrefix(),
             'dossierNumber' => $dossier->getDossierNumber(),
             'type' => DossierFileType::ATTACHMENT->value,
             'id' => $attachment->getId(),

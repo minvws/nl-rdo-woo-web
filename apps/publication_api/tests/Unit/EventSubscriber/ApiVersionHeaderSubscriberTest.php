@@ -28,7 +28,7 @@ final class ApiVersionHeaderSubscriberTest extends UnitTestCase
         $apiVersion = '1.2.3';
         $subscriber = new ApiVersionHeaderSubscriber($apiVersion);
 
-        $subscriber->addVersionHeader($event);
+        $subscriber->__invoke($event);
 
         $this->assertSame($apiVersion, $response->headers->get(ApiVersionHeaderSubscriber::HEADER_NAME));
         $this->assertSame($apiVersion, $responseheaderBag->get(ApiVersionHeaderSubscriber::HEADER_NAME));

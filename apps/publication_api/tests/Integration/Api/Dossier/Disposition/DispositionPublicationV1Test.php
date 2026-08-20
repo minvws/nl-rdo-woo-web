@@ -154,7 +154,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                             [
-                                'prefix' => $disposition->getDocumentPrefix(),
+                                'documentPrefix' => $disposition->getDocumentPrefix(),
                                 'dossierNumber' => $disposition->getDossierNumber(),
                                 'type' => DossierFileType::MAIN_DOCUMENT->value,
                                 'id' => $dispositionMainDocument->getId(),
@@ -190,7 +190,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                                 [
-                                    'prefix' => $disposition->getDocumentPrefix(),
+                                    'documentPrefix' => $disposition->getDocumentPrefix(),
                                     'dossierNumber' => $disposition->getDossierNumber(),
                                     'type' => DossierFileType::ATTACHMENT->value,
                                     'id' => $dispositionAttachment->getId(),
@@ -504,7 +504,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'organisation' => $organisation,
             'status' => DossierStatus::CONCEPT,
         ]);
-        DispositionMainDocumentFactory::createOne(['dossier' => $disposition]);
+        $mainDocument = DispositionMainDocumentFactory::createOne(['dossier' => $disposition]);
         DispositionAttachmentFactory::createOne(['dossier' => $disposition]);
 
         self::assertDatabaseCount(DispositionAttachment::class, 1);
@@ -518,10 +518,10 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'departmentId' => $department->getId(),
             'subjectId' => $disposition->getSubject()?->getId(),
             'mainDocument' => [
-                'fileName' => $disposition->getMainDocument()?->getFileInfo()->getName(),
-                'formalDate' => $disposition->getMainDocument()?->getFormalDate()->format('Y-m-d'),
-                'type' => $disposition->getMainDocument()?->getType()->value,
-                'language' => $disposition->getMainDocument()?->getLanguage()->value,
+                'fileName' => $mainDocument->getFileInfo()->getName(),
+                'formalDate' => $mainDocument->getFormalDate()->format('Y-m-d'),
+                'type' => $mainDocument->getType()->value,
+                'language' => $mainDocument->getLanguage()->value,
             ],
             'attachments' => [],
         ];
@@ -600,36 +600,6 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 ],
             ],
         ];
-    }
-
-    public function testUpdateDispositionWithNonConceptState(): void
-    {
-        $organisation = OrganisationFactory::createOne();
-        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        $disposition = DispositionFactory::createOne([
-            'dateFrom' => $this->getFaker()->plainDate(),
-            'externalId' => $this->getFaker()->externalId(),
-            'departments' => [$department],
-            'organisation' => $organisation,
-            'status' => $this->getFaker()->randomElement(DossierStatus::nonConceptCases()),
-        ]);
-        DispositionMainDocumentFactory::createOne(['dossier' => $disposition]);
-        DispositionAttachmentFactory::createOne(['dossier' => $disposition]);
-
-        self::assertDatabaseHas(Disposition::class, [
-            'title' => (string) $disposition->getTitle(),
-            'summary' => $disposition->getSummary(),
-        ]);
-
-        $data = $this->createValidDispositionDataPayload($department, null, 0);
-        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $disposition), ['json' => $data]);
-        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertJsonContains(['violations' => [['message' => 'dossier update is not allowed in non-concept state']]]);
-
-        self::assertDatabaseHas(Disposition::class, [
-            'title' => (string) $disposition->getTitle(),
-            'summary' => $disposition->getSummary(),
-        ]);
     }
 
     /**
@@ -998,5 +968,57 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         self::assertDatabaseCount(NoticeNotPublic::class, 0);
         self::assertDatabaseCount(DispositionMainDocument::class, 1);
+    }
+
+    public function testUpdatePublishedDispositionIgnoresPublicationDateChange(): void
+    {
+        $newTitle = 'Updated title for published disposition';
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $disposition = DispositionFactory::createOne([
+            'dateFrom' => PlainDate::create('2022-01-01'),
+            'dateTo' => PlainDate::create('2022-01-02'),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::PUBLISHED,
+            'publicationDate' => PlainDate::create('2025-01-02'),
+        ]);
+        $mainDocument = DispositionMainDocumentFactory::createOne(['dossier' => $disposition]);
+        $attachment = DispositionAttachmentFactory::createOne([
+            'dossier' => $disposition,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $data = [
+            'title' => $newTitle,
+            'dossierNumber' => $disposition->getDossierNumber(),
+            'dossierDate' => $disposition->getDateFrom()?->format('Y-m-d'),
+            'publicationDate' => '2025-02-02',
+            'summary' => $disposition->getSummary(),
+            'departmentId' => $department->getId(),
+            'subjectId' => $disposition->getSubject()?->getId(),
+            'mainDocument' => [
+                'fileName' => $mainDocument->getFileInfo()->getName(),
+                'formalDate' => $mainDocument->getFormalDate()->format('Y-m-d'),
+                'type' => $mainDocument->getType()->value,
+                'language' => $mainDocument->getLanguage()->value,
+            ],
+            'attachments' => [
+                [
+                    'fileName' => $attachment->getFileInfo()->getName(),
+                    'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
+                    'language' => $attachment->getLanguage(),
+                    'type' => $attachment->getType(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
+                ],
+            ],
+        ];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $disposition), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+        self::assertJsonContains(['publicationDate' => '2025-01-02', 'title' => $newTitle]);
+
+        self::assertDatabaseHas(Disposition::class, ['title' => $newTitle]);
     }
 }

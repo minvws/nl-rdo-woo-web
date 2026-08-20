@@ -31,12 +31,12 @@ class InventoryChangeset
 
     public function markAsAdded(DocumentNumber $documentNumber): void
     {
-        $this->setDocumentStatus($documentNumber->getValue(), self::ADDED);
+        $this->setDocumentStatus($documentNumber->toString(), self::ADDED);
     }
 
     public function markAsUpdated(DocumentNumber $documentNumber): void
     {
-        $this->setDocumentStatus($documentNumber->getValue(), self::UPDATED);
+        $this->setDocumentStatus($documentNumber->toString(), self::UPDATED);
     }
 
     public function markAsDeleted(string $documentNumber): void
@@ -46,7 +46,7 @@ class InventoryChangeset
 
     public function markAsUnchanged(DocumentNumber $documentNumber): void
     {
-        $this->setDocumentStatus($documentNumber->getValue(), self::UNCHANGED);
+        $this->setDocumentStatus($documentNumber->toString(), self::UNCHANGED);
     }
 
     public function hasNoChanges(): bool
@@ -61,7 +61,7 @@ class InventoryChangeset
 
     public function getStatus(DocumentNumber $documentNumber): string
     {
-        $key = strtolower($documentNumber->getValue());
+        $key = strtolower($documentNumber->toString());
         if (! array_key_exists($key, $this->documentStatus)) {
             throw new OutOfBoundsException("documentNumber $key not found in InventoryChangeset");
         }

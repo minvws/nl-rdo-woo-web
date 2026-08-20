@@ -40,6 +40,7 @@ use Shared\Tests\Factory\Publication\Dossier\Type\InvestigationReport\Investigat
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
+use Shared\ValueObject\PlainDate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Count;
@@ -153,7 +154,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                             [
-                                'prefix' => $investigationReport->getDocumentPrefix(),
+                                'documentPrefix' => $investigationReport->getDocumentPrefix(),
                                 'dossierNumber' => $investigationReport->getDossierNumber(),
                                 'type' => DossierFileType::MAIN_DOCUMENT->value,
                                 'id' => $investigationReportMainDocument->getId(),
@@ -189,7 +190,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
                                 [
-                                    'prefix' => $investigationReport->getDocumentPrefix(),
+                                    'documentPrefix' => $investigationReport->getDocumentPrefix(),
                                     'dossierNumber' => $investigationReport->getDossierNumber(),
                                     'type' => DossierFileType::ATTACHMENT->value,
                                     'id' => $investigationReportAttachment->getId(),
@@ -571,10 +572,13 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
-            'status' => $this->getFaker()->randomElement(DossierStatus::nonConceptCases()),
+            'status' => DossierStatus::SCHEDULED,
         ]);
         InvestigationReportMainDocumentFactory::createOne(['dossier' => $investigationReport]);
-        InvestigationReportAttachmentFactory::createOne(['dossier' => $investigationReport]);
+        InvestigationReportAttachmentFactory::createOne([
+            'dossier' => $investigationReport,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
 
         self::assertDatabaseHas(InvestigationReport::class, [
             'title' => (string) $investigationReport->getTitle(),
@@ -1016,5 +1020,56 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
 
         self::assertDatabaseCount(NoticeNotPublic::class, 0);
         self::assertDatabaseCount(InvestigationReportMainDocument::class, 1);
+    }
+
+    public function testUpdatePublishedInvestigationReportIgnoresPublicationDateChange(): void
+    {
+        $newTitle = 'Updated title for published investigation report';
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $investigationReport = InvestigationReportFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDate(),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::PUBLISHED,
+            'publicationDate' => PlainDate::create('2025-01-02'),
+        ]);
+        $mainDocument = InvestigationReportMainDocumentFactory::createOne(['dossier' => $investigationReport]);
+        $attachment = InvestigationReportAttachmentFactory::createOne([
+            'dossier' => $investigationReport,
+            'externalId' => $this->getFaker()->externalId(),
+        ]);
+
+        $data = [
+            'title' => $newTitle,
+            'dossierNumber' => $investigationReport->getDossierNumber(),
+            'dossierDate' => $investigationReport->getDateFrom()?->format('Y-m-d'),
+            'publicationDate' => '2025-02-02',
+            'summary' => $investigationReport->getSummary(),
+            'departmentId' => $department->getId(),
+            'subjectId' => $investigationReport->getSubject()?->getId(),
+            'mainDocument' => [
+                'fileName' => $mainDocument->getFileInfo()->getName(),
+                'formalDate' => $mainDocument->getFormalDate()->format('Y-m-d'),
+                'type' => $mainDocument->getType()->value,
+                'language' => $mainDocument->getLanguage()->value,
+            ],
+            'attachments' => [
+                [
+                    'fileName' => $attachment->getFileInfo()->getName(),
+                    'formalDate' => $attachment->getFormalDate()->format('Y-m-d'),
+                    'language' => $attachment->getLanguage(),
+                    'type' => $attachment->getType(),
+                    'externalId' => $attachment->getExternalId()?->toString(),
+                ],
+            ],
+        ];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $investigationReport), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+        self::assertJsonContains(['publicationDate' => '2025-01-02', 'title' => $newTitle]);
+
+        self::assertDatabaseHas(InvestigationReport::class, ['title' => $newTitle]);
     }
 }

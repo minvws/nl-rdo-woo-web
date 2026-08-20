@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Search\Query;
 
+use Shared\ApplicationId;
 use Shared\Domain\Search\Query\Facet\FacetDefinitionInterface;
 use Shared\Domain\Search\Query\Facet\Input\DateFacetInput;
 use Shared\Domain\Search\Query\Facet\Input\FacetInputCollection;
@@ -12,7 +13,6 @@ use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Search\Query\Condition\QueryConditionBuilderInterface;
 use Shared\Service\Search\Query\Sort\SortField;
 use Shared\Service\Search\Query\Sort\SortOrder;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 readonly class SearchParameters
@@ -29,7 +29,7 @@ readonly class SearchParameters
         public SortField $sortField = SortField::SCORE,
         public SortOrder $sortOrder = SortOrder::DESC,
         public ?QueryConditionBuilderInterface $baseQueryConditions = null,
-        public ApplicationMode $mode = ApplicationMode::PUBLIC,
+        public ApplicationId $applicationId = ApplicationId::PUBLIC,
     ) {
     }
 

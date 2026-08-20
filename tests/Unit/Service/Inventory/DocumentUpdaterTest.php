@@ -23,8 +23,8 @@ use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
-use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 use Symfony\Component\Uid\Uuid;
 
 use function str_repeat;
@@ -77,6 +77,7 @@ class DocumentUpdaterTest extends UnitTestCase
         $existingDocument->expects('setSuspended')->with($documentMetadata->isSuspended());
         $existingDocument->expects('setLinks')->with($documentMetadata->getLinks());
         $existingDocument->expects('setRemark')->with($documentMetadata->getRemark());
+        $existingDocument->expects('setPublicationContext')->with($documentMetadata->getPublicationContext());
         $existingDocument->expects('getFileInfo')->times(2)->andReturn($fileInfo);
         $existingDocument->expects('shouldBeUploaded')->andReturnFalse();
         $existingDocument->expects('addDossier')->with($this->dossier);
@@ -110,6 +111,7 @@ class DocumentUpdaterTest extends UnitTestCase
         $existingDocument->expects('setSuspended')->with($documentMetadata->isSuspended());
         $existingDocument->expects('setLinks')->with($documentMetadata->getLinks());
         $existingDocument->expects('setRemark')->with($documentMetadata->getRemark());
+        $existingDocument->expects('setPublicationContext')->with($documentMetadata->getPublicationContext());
         $existingDocument->expects('getFileInfo')->andReturn(new FileInfo());
         $existingDocument->expects('shouldBeUploaded')->andReturnTrue();
         $existingDocument->expects('addDossier')->with($this->dossier);
@@ -143,14 +145,14 @@ class DocumentUpdaterTest extends UnitTestCase
         $this->repository
             ->expects('findByDocumentNumber')
             ->with(Mockery::on(
-                static fn (DocumentNumber $documentNumber): bool => $documentNumber->getValue() === 'PREFIX-matter-123',
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->toString() === 'PREFIX-matter-123',
             ))
             ->andReturn($newReferredDoc);
 
         $this->repository
             ->expects('findByDocumentNumber')
             ->with(Mockery::on(
-                static fn (DocumentNumber $documentNumber): bool => $documentNumber->getValue() === 'PREFIX-matter-456',
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->toString() === 'PREFIX-matter-456',
             ))
             ->andReturn($oldReferredDoc);
 
@@ -199,7 +201,7 @@ class DocumentUpdaterTest extends UnitTestCase
             suspended: true,
             links: ['https://a.dummy.link/here'],
             remark: 'remark',
-            matter: DocumentMatter::create('987'),
+            publicationContext: PublicationContext::fromString('pr3f1x-matt3r'),
             refersTo: ['matter-123'],
         );
     }
@@ -238,6 +240,7 @@ class DocumentUpdaterTest extends UnitTestCase
         $document->expects('setSuspended')->with($documentMetadata->isSuspended());
         $document->expects('setLinks')->with($documentMetadata->getLinks());
         $document->expects('setRemark')->with($documentMetadata->getRemark());
+        $document->expects('setPublicationContext')->with($documentMetadata->getPublicationContext());
         $document->expects('getFileInfo')->andReturn($fileInfo);
         $document->expects('shouldBeUploaded')->andReturnTrue();
         $document->expects('addDossier')->with($this->dossier);

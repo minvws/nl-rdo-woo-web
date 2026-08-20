@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
+use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
@@ -32,6 +33,7 @@ enum DossierType: string implements TranslatableInterface
     case OTHER_PUBLICATION = 'other-publication';       // Overig
     case ADVICE = 'advice';                             // Advies
     case REQUEST_FOR_ADVICE = 'request-for-advice';     // Adviesaanvraag
+    case DRAFT_DECISION = 'draft-decision';             // Ontwerpbesluit
 
     public function isCovenant(): bool
     {
@@ -78,6 +80,11 @@ enum DossierType: string implements TranslatableInterface
         return $this === self::REQUEST_FOR_ADVICE;
     }
 
+    public function isDraftDecision(): bool
+    {
+        return $this === self::DRAFT_DECISION;
+    }
+
     public function hasAttachments(): bool
     {
         return is_subclass_of($this->getDossierClass(), EntityWithAttachments::class);
@@ -95,12 +102,18 @@ enum DossierType: string implements TranslatableInterface
             self::OTHER_PUBLICATION => OtherPublication::class,
             self::ADVICE => Advice::class,
             self::REQUEST_FOR_ADVICE => RequestForAdvice::class,
+            self::DRAFT_DECISION => DraftDecision::class,
         };
     }
 
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
-        return $translator->trans('dossier.type.' . $this->value, locale: $locale);
+        return $translator->trans($this->getTranslationKey(), locale: $locale);
+    }
+
+    public function getTranslationKey(): string
+    {
+        return 'dossier.type.' . $this->value;
     }
 
     public function getValueForRouteName(): string

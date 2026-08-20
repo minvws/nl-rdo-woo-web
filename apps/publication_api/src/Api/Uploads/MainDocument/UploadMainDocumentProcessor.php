@@ -7,6 +7,7 @@ namespace PublicationApi\Api\Uploads\MainDocument;
 use ApiPlatform\Validator\Exception\ValidationException;
 use PublicationApi\Api\DossierLookup;
 use PublicationApi\Api\OrganisationLookup;
+use PublicationApi\FeatureFlag\DocumentUploadGuard;
 use Shared\Domain\Publication\Dossier\Type\DossierRepositoryWithExternalId;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
@@ -17,6 +18,7 @@ readonly class UploadMainDocumentProcessor
     public function __construct(
         private DossierLookup $dossierLookup,
         private OrganisationLookup $organisationLookup,
+        private DocumentUploadGuard $documentUploadGuard,
         private UploadMainDocumentHandler $uploadMainDocumentHandler,
     ) {
     }
@@ -31,6 +33,8 @@ readonly class UploadMainDocumentProcessor
     ): void {
         $organisation = $this->organisationLookup->find($uploadMainDocumentRequest->getOrganisationId());
         $dossier = $this->dossierLookup->find($dossierRepositoryWithExternalId, $organisation, $uploadMainDocumentRequest->getDossierExternalId());
+
+        $this->documentUploadGuard->assertDocumentUploadIsAllowed($dossier);
 
         if (! $dossier instanceof EntityWithMainDocument) {
             throw new ValidationException(ConstraintViolationList::createFromMessage('No main document found'));

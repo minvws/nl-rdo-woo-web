@@ -60,7 +60,16 @@ Click Search Through Documents In Inquiry
 Navigate To Dossier On Public
   [Documentation]  Searches for a dossier by reference and navigates to its detail page. Usable for any dossier type.
   [Arguments]  ${dossier_reference}
-  Search On Public For  ${dossier_reference}  1
+  Wait Until Keyword Succeeds  10x  3s  Search And Click Dossier On Public  ${dossier_reference}
+
+Search And Click Dossier On Public
+  [Documentation]  Retried as a whole so an indexing race (e.g. a document indexed before its
+  ...  dossier) triggers a fresh search instead of failing on the click alone. The result count
+  ...  is not asserted here since it can match a document hit rather than the dossier itself.
+  [Arguments]  ${dossier_reference}
+  Go To Public
+  Initiate Search  ${dossier_reference}
+  Wait For Elements State  css=a[data-e2e-name="main-link"]:has-text("${dossier_reference}")  visible  timeout=5s
   Click  css=a[data-e2e-name="main-link"]:has-text("${dossier_reference}")
 
 Select Filter Options - Dossier
@@ -83,6 +92,8 @@ Select Filter Options - Dossier
     VAR  ${id} =  investigation_report
   ELSE IF  '${dossier_type}' == 'complaint-judgement'
     VAR  ${id} =  complaint_judgement
+  ELSE IF  '${dossier_type}' == 'draft-decision'
+    VAR  ${id} =  draft_decision
   END
   IF  ${checked}
     Check Checkbox  id=input_${id}

@@ -34,7 +34,7 @@
 
             <twig:block name="right">
                 {% if matrix_has_permission('dossier.update') %}
-                <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.detailsPath, {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}" data-e2e-name="edit-basic-details">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.dossiers.workflow.details' | trans() }})</span></a>
+                <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.detailsPath, {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}" data-e2e-name="edit-basic-details">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.dossiers.workflow.details' | trans() }})</span></a>
                 {% endif %}
             </twig:block>
         </twig:Admin:LeftAndRight>
@@ -75,7 +75,7 @@
             <twig:block name="right">
                 {% if matrix_has_permission('dossier.update') %}
                 {% if workflowStatus.isReadyForDecision %}
-                <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.decisionPath, {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}" data-e2e-name="edit-decision">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.dossiers.workflow.details' | trans() }})</span></a>
+                <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.decisionPath, {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}" data-e2e-name="edit-decision">{{ 'admin.global.edit' | trans() }} <span class="sr-only">({{ 'admin.dossiers.workflow.details' | trans() }})</span></a>
                 {% endif %}
                 {% endif %}
             </twig:block>
@@ -140,7 +140,7 @@
                         <a
                             class="bhr-btn-bordered-primary"
                             data-e2e-name="edit-link"
-                            href="{{ path(workflowStatus.documentsPath, {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}"
+                            href="{{ path(workflowStatus.documentsPath, {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}"
                         >Bewerken <span class="sr-only">(documenten)</span></a>
                     {% endif %}
                 </twig:block>
@@ -154,7 +154,7 @@
                     <span data-e2e-name="dossier-inventoryFile">
                     {% if dossier.hasProductionReport  %}
                         <twig:Admin:IconLink
-                            href="{{ path('app_admin_dossier_file_download', {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, type: constant('Shared\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
+                            href="{{ path('app_admin_dossier_file_download', {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, type: constant('Shared\\Domain\\Publication\\Dossier\\FileProvider\\DossierFileType::PRODUCTION_REPORT').value}) }}"
                             icon="file-csv"
                             text="{{ dossier.productionReport.fileInfo.name }}"
                         />
@@ -170,7 +170,7 @@
                     {% if canEditDocuments %}
                     <p class="mt-3">
                         <twig:Admin:IconLink
-                            href="{{ path(workflowStatus.documentsPath, {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}"
+                            href="{{ path(workflowStatus.documentsPath, {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}"
                             icon="folder"
                             text="Naar documenten"
                         />
@@ -209,7 +209,7 @@
             <twig:block name="right">
                 {% if matrix_has_permission('dossier.update') %}
                 {% if workflowStatus.isReadyForPublication %}
-                    <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.publicationPath, {prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}">{{ 'admin.global.edit' | trans }} <span class="sr-only">({{ 'admin.global.publication' | trans }})</span></a>
+                    <a class="bhr-btn-bordered-primary" href="{{ path(workflowStatus.publicationPath, {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber}) }}">{{ 'admin.global.edit' | trans }} <span class="sr-only">({{ 'admin.global.publication' | trans }})</span></a>
                 {% endif %}
                 {% endif %}
             </twig:block>
@@ -233,7 +233,7 @@
 
                 {% if workflowStatus.isPubliclyAvailable or dossier.hasFuturePreviewDate %}
                 <twig:Admin:Definition term="{{ 'admin.dossiers.decision.public_link' | trans }}">
-                    {% set publicDossierUrl = PUBLIC_BASE_URL ~ path('app_woodecision_detail', { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) %}
+                    {% set publicDossierUrl = PUBLIC_BASE_URL ~ path('app_woodecision_detail', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) %}
                     <twig:Admin:CopyToClipboardLayout copy="{{ publicDossierUrl }}">
                         <a class="bhr-a" href="{{ publicDossierUrl }}" data-e2e-name="public-url">
                             {{ publicDossierUrl }}
@@ -291,7 +291,7 @@
             {% if canDeleteDossier %}
                 <h3 class="font-bold{% if canWithdrawDocuments %} mt-10{% endif %}">{{ 'admin.dossiers.decision.delete' | trans }}</h3>
                 {% if workflowStatus.isConcept %}
-                    <a class="bhr-btn-filled-danger mt-10" data-e2e-name="delete-dossier-link" href="{{ path('app_admin_dossier_delete', { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}">{{ 'admin.dossiers.woo-decision.withdraw_decision' | trans }}</a>
+                    <a class="bhr-btn-filled-danger mt-10" data-e2e-name="delete-dossier-link" href="{{ path('app_admin_dossier_delete', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}">{{ 'admin.dossiers.woo-decision.withdraw_decision' | trans }}</a>
                 {% else %}
                     <p>{{ 'admin.dossiers.decision.delete.can_not_be_deleted' | trans }}</p>
                 {% endif %}
@@ -311,7 +311,7 @@
                     <li class="bhr-li">{{ 'admin.dossiers.decision.documents.withdraw_all.bullet_3' | trans }}</li>
                     <li class="bhr-li">{{ 'admin.dossiers.decision.documents.withdraw_all.bullet_4' | trans }}</li>
                 </ul>
-                <a class="bhr-btn-filled-danger" data-e2e-name="withdraw-documents-link" href="{{ path('app_admin_dossier_withdraw_all_documents', { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}">{{ 'admin.dossiers.decision.documents.withdraw_all' | trans }}</a>
+                <a class="bhr-btn-filled-danger" data-e2e-name="withdraw-documents-link" href="{{ path('app_admin_dossier_withdraw_all_documents', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}">{{ 'admin.dossiers.decision.documents.withdraw_all' | trans }}</a>
             {% endif %}
 
             {% if canDeleteDossier %}
@@ -322,7 +322,7 @@
                         <li class="bhr-li">{{ 'admin.dossiers.decision.delete.bullet_2' | trans }}</li>
                         <li class="bhr-li">{{ 'admin.dossiers.decision.delete.bullet_3' | trans }}</li>
                     </ul>
-                    <a class="bhr-btn-filled-danger" data-e2e-name="delete-dossier-link" href="{{ path('app_admin_dossier_delete', { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}">Besluit verwijderen</a>
+                    <a class="bhr-btn-filled-danger" data-e2e-name="delete-dossier-link" href="{{ path('app_admin_dossier_delete', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}">Besluit verwijderen</a>
                 {% else %}
                     <p>{{ 'admin.dossiers.decision.delete.can_not_be_deleted' | trans }}</p>
                 {% endif %}

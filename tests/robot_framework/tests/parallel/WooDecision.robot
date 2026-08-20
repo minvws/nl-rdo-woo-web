@@ -193,6 +193,20 @@ Create A Publication That Becomes Public In The Future
   Click  //*[@data-e2e-name="dossier-public-dossier-link"]
   Verify Page Error  404
 
+In A Public Dossier With N Public Files, Replace The Production Report With One Row Missing
+  ${new_prefix} =  Add A Random Organisation Prefix
+  Click Publications
+  Publish Test WooDecision
+  ...  production_report=files/woodecision/productierapport - 10 openbaar.xlsx
+  ...  documents=files/woodecision/documenten - 10.zip
+  ...  number_of_documents=10
+  ...  prefix=${new_prefix}
+  Search For A Publication  ${DOSSIER_REFERENCE}
+  Click Documents Edit
+  Click Replace Report
+  Upload Production Report  files/woodecision/productierapport - 9 openbaar.xlsx  ${TRUE}
+  Verify Production Report Replace  1001 mist in het productierapport
+
 In A Public Dossier With N Public Files, Replace The Production Report With A Copy Where One Document Is Replaced With A New Document
   ${new_prefix} =  Add A Random Organisation Prefix
   Click Publications
@@ -282,24 +296,43 @@ WooDecision Period Configurations Are Displayed Correctly On Public
   Update Period And Verify On Public  ${EMPTY}  2023-01-31  Tot januari 2023
   Update Period And Verify On Public  ${EMPTY}  ${EMPTY}  Alles
 
-Create WooDecision With 101 Public Documents
+Publish A WooDecision With Production Report Without Matter And PublicationContext Column
+  [Tags]  failing  #  https://github.com/minvws/nl-rdo-woo-web-private/issues/7570
   ${new_prefix} =  Add A Random Organisation Prefix
   Click Publications
-  VAR  ${nr_of_documents} =  101
-  ${test_data_location} =  Generate Test Documents  ${nr_of_documents}
-  ${production_report_location} =  Create Test Production Report  ${test_data_location}
-  Create Zip From Files In Directory  ${test_data_location}  filename=${test_data_location}/Archive.zip
+  Create New Dossier  woo-decision
+  Fill Out Basic Details  prefix=${new_prefix}
+  Fill Out WooDecision Details  Openbaarmaking
+  Upload Production Report
+  ...  files/woodecision/productierapport - 2 openbaar zonder matter en publicatiecontext.xlsx
+  ...  ${TRUE}
+  Verify Production Report Error
+  ...  Productierapport met een kolom "Publicatiecontext" kan geen kolom voor "Matter" bevatten
+
+Publish A WooDecision With Production Report With PublicationContext Column
+  ${new_prefix} =  Add A Random Organisation Prefix
+  Click Publications
   Publish Test WooDecision
-  ...  production_report=${production_report_location}
-  ...  documents=${test_data_location}/Archive.zip
-  ...  number_of_documents=${nr_of_documents}
+  ...  production_report=files/woodecision/productierapport - 2 openbaar met publicatiecontext.xlsx
+  ...  documents=files/woodecision/documenten - 2.zip
+  ...  number_of_documents=2
   ...  prefix=${new_prefix}
   Search For A Publication  ${DOSSIER_REFERENCE}
-  Click Public URL
-  Get Text  //*[@data-e2e-name="tabs-documenten-button-1"]  contains  (101)
-  Get Element Count  //*[@data-e2e-name="tabs-documenten-content-1"]//tbody//tr  should be  100
-  Click  //*[@data-e2e-name="page-number-2"]
-  Get Element Count  //*[@data-e2e-name="tabs-documenten-content-1"]//tbody//tr  should be  1
+  Click Documents Edit
+  Open Document In Dossier  1001
+  Get Text  //*[@data-e2e-name="document-nr"]  equals  PUBCON-1001
+
+Upload A Production Report With Both Matter And PublicationContext Columns Should Fail
+  ${new_prefix} =  Add A Random Organisation Prefix
+  Click Publications
+  Create New Dossier  woo-decision
+  Fill Out Basic Details  prefix=${new_prefix}
+  Fill Out WooDecision Details  Openbaarmaking
+  Upload Production Report
+  ...  files/woodecision/productierapport - 2 openbaar met matter en publicatiecontext.xlsx
+  ...  ${TRUE}
+  Verify Production Report Error
+  ...  Productierapport met een kolom "Publicatiecontext" kan geen kolom voor "Matter" bevatten
 
 Verify PDF Preview Thumbnail
   [Documentation]  Depends on the first testcase, since it needs a fully ingested dossier.
@@ -371,21 +404,6 @@ Check If Public Page Has Notification
   ...  contains
   ...  Dit bestand zal spoedig aangeleverd worden: probeert u later nog eens.
   Go To  ${location}
-
-Verify Publication Action Status
-  [Arguments]  ${dossier_reference}  ${expected_action}
-  Click Publications
-  IF  '${expected_action}' != '${EMPTY}'
-    Get Text
-    ...  //table[@data-e2e-name="dossiers-table"]//tr[contains(.,'${dossier_reference}')]/td[7]
-    ...  contains
-    ...  ${expected_action}
-  ELSE
-    Get Text
-    ...  //table[@data-e2e-name="dossiers-table"]//tr[contains(.,'${dossier_reference}')]/td[7]
-    ...  equals
-    ...  ${EMPTY}
-  END
 
 Update Period And Verify On Public
   [Arguments]  ${date_from}  ${date_to}  ${expected_period}

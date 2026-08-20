@@ -1,0 +1,17 @@
+{% extends 'public/dossier/shared/details.html.twig' %}
+
+{% set tagline = 'public.dossiers.draft-decision.tagline' | trans %}
+{% set description = 'public.dossiers.draft-decision.description' | trans %}
+
+{% block attachments %}
+    {% include 'public/dossier/shared/attachments.html.twig' with {'title': 'public.dossiers.draft-decision.attachments_for' | trans} %}
+{% endblock %}
+
+{% block about %}
+    <twig:Public:Publication:About
+        document="{{ document }}"
+        dossier="{{ dossier }}"
+        noticeNotPublic="{{ noticeNotPublic }}"
+        title="{{ 'public.dossiers.draft-decision.about' | trans }}"
+    />
+{% endblock %}

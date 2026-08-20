@@ -3,7 +3,7 @@
     <h2 class="woo-h2 woo-h2-spacing" id="documenten">{{ 'global.documents' | trans }}</h2>
 
     <twig:Public:DownloadFilesForm
-        action="{{ path('app_woodecision_batch', { prefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
+        action="{{ path('app_woodecision_batch', { documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber }) }}"
         canDownload="{{ publicDocs.count > 0 }}"
         searchUrl="{{ dossier.documentSearchUrl }}"
     />

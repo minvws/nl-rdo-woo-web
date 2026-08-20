@@ -21,7 +21,6 @@ ${IN_USE_SUBJECT}   ${EMPTY}
 *** Test Cases ***
 Get All Subjects
   [Documentation]  Reads all subjects and checks if the E2E Test Subject, from the fixtures, is present.
-  [Tags]  api-single
   ${response} =  GET On Session
   ...  alias=publication_api
   ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/subject

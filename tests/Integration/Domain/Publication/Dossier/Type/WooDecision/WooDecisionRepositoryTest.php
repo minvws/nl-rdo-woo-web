@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision;
 
 use Doctrine\ORM\NoResultException;
+use Shared\ApplicationId;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\DossierReference;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use Shared\Service\Security\ApplicationMode\ApplicationMode;
 use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\OrganisationFactory;
@@ -112,7 +112,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
         $result = $this->wooDecisionRepository->getSearchResultViewModel(
             $wooDecision->getDocumentPrefix(),
             $wooDecision->getDossierNumber(),
-            ApplicationMode::PUBLIC,
+            ApplicationId::PUBLIC,
         );
 
         $this->assertNotNull($result);

@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Shared\Domain\Search\Result\Dossier\DraftDecision;
+
+use Shared\Domain\Search\Result\Dossier\AbstractDossierTypeSearchResult;
+use Shared\ValueObject\PlainDate;
+use Symfony\Component\Uid\Uuid;
+
+readonly class DraftDecisionSearchResult extends AbstractDossierTypeSearchResult
+{
+    public function __construct(
+        Uuid $id,
+        string $dossierNumber,
+        string $documentPrefix,
+        string $title,
+        public ?string $summary,
+        public ?PlainDate $publicationDate,
+        // This count is actually the attachment count + 1 (for the main document)
+        public int $documentCount,
+        public ?PlainDate $date,
+    ) {
+        parent::__construct($id, $dossierNumber, $documentPrefix, $title);
+    }
+}

@@ -16,12 +16,19 @@
     name: branch.communications
 -
     requestForAdvice: false
+    requestForAdviceOrPolicyDocument: false
     name: COVENANT
     value: c_386e74cb
 -
     requestForAdvice: false
+    requestForAdviceOrPolicyDocument: false
     name: COMPLAINT_JUDGEMENT
     value: ww_jc6woe9
+-
+    requestForAdvice: false
+    requestForAdviceOrPolicyDocument: true
+    name: POLICY_DOCUMENT
+    value: c_10eb451d
 -
     branch: false
     attachmentTypes: true

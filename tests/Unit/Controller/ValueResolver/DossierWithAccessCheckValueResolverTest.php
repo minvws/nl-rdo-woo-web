@@ -62,7 +62,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
 
     public function testResolverThrowsExceptionForMissingDocumentId(): void
     {
-        $request = new Request(attributes: ['prefix' => 'foo']);
+        $request = new Request(attributes: ['documentPrefix' => 'foo']);
 
         $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->expects('getType')
@@ -74,7 +74,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
 
     public function testResolverThrowsExceptionWhenDossierCannotBeFound(): void
     {
-        $request = new Request(attributes: ['prefix' => 'foo', 'dossierNumber' => 'bar']);
+        $request = new Request(attributes: ['documentPrefix' => 'foo', 'dossierNumber' => 'bar']);
 
         $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->expects('getType')
@@ -99,7 +99,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
 
     public function testResolverThrowsExceptionWhenDossierIsNotAccessible(): void
     {
-        $request = new Request(attributes: ['prefix' => 'foo', 'dossierNumber' => 'bar']);
+        $request = new Request(attributes: ['documentPrefix' => 'foo', 'dossierNumber' => 'bar']);
 
         $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->expects('getType')
@@ -128,7 +128,7 @@ class DossierWithAccessCheckValueResolverTest extends UnitTestCase
 
     public function testResolverReturnsDossierWhenFoundAndAccessible(): void
     {
-        $request = new Request(attributes: ['prefix' => 'foo', 'dossierNumber' => 'bar']);
+        $request = new Request(attributes: ['documentPrefix' => 'foo', 'dossierNumber' => 'bar']);
 
         $argument = Mockery::mock(ArgumentMetadata::class);
         $argument->expects('getType')

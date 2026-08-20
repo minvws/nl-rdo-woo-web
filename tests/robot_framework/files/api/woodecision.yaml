@@ -46,7 +46,7 @@ baseline:
          isSuspended: false
          judgement: public
          links: []
-         matter: "2025-01"
+         publicationContext: "2025-01"
          refersTo: []
          remark: "Niets op aan te merken"
          sourceType: doc
@@ -61,7 +61,7 @@ baseline:
          isSuspended: false
          judgement: public
          links: []
-         matter: "2025-01"
+         publicationContext: "2025-01"
          refersTo: []
          remark: "Niets op aan te merken"
          sourceType: doc
@@ -76,7 +76,7 @@ baseline:
          isSuspended: false
          judgement: public
          links: []
-         matter: "2025-01"
+         publicationContext: "2025-01"
          refersTo: []
          remark: "Niets op aan te merken"
          sourceType: spreadsheet
@@ -217,7 +217,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: []
               remark: "Niets op aan te merken"
               sourceType: doc
@@ -287,7 +287,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: A
+              publicationContext: A
               refersTo: []
               remark: "Niets op aan te merken"
               sourceType: doc
@@ -316,7 +316,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: A
+              publicationContext: A
               refersTo: []
               remark: "Niets op aan te merken"
               sourceType: doc
@@ -344,7 +344,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: []
               remark: Uploading an xlsx file which does not have the correct magic bytes for an xlsx file.
               sourceType: spreadsheet
@@ -378,7 +378,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: []
               remark: Uploading an xlsx file while metadata says it's a pdf.
               sourceType: doc
@@ -426,7 +426,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: []
               remark: "Niets op aan te merken"
               sourceType: doc
@@ -449,7 +449,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: []
               remark: "Niets op aan te merken"
               sourceType: doc
@@ -484,7 +484,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: []
               remark: "Niets op aan te merken"
               sourceType: doc
@@ -535,7 +535,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: []
               remark: "Niets op aan te merken"
               sourceType: doc
@@ -595,7 +595,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: []
               remark: "Document being referred to"
               sourceType: doc
@@ -623,7 +623,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: [<STORED DOCUMENT EXTERNAL ID>]
               remark: "Document that refers to another document"
               sourceType: doc
@@ -651,7 +651,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: [SELF-REFERENCING-DOC]
               remark: "Document that refers to itself"
               sourceType: doc
@@ -674,7 +674,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: [NOT-AN-EXISTING-EXTERNAL-ID]
               remark: "Document with non-existent refersTo value"
               sourceType: doc
@@ -697,7 +697,7 @@ testcases:
               isSuspended: false
               judgement: public
               links: [not-a-valid-url]
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: []
               remark: "Document with an invalid URL in links"
               sourceType: doc
@@ -721,7 +721,7 @@ testcases:
               isSuspended: false
               judgement: already_public
               links: []
-              matter: "2025-01"
+              publicationContext: "2025-01"
               refersTo: []
               remark: "Niets op aan te merken"
               sourceType: doc

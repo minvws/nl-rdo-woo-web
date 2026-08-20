@@ -28,13 +28,13 @@ class PublicationStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/complaint-judgement/publish/concept/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/complaint-judgement/publish/concept/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_complaintjudgement_publication_concept',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] ComplaintJudgement $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] ComplaintJudgement $dossier,
         Request $request,
     ): Response {
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
@@ -58,13 +58,13 @@ class PublicationStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/complaint-judgement/publish/edit/{prefix}/{dossierNumber}',
+        path: '/balie/dossier/complaint-judgement/publish/edit/{documentPrefix}/{dossierNumber}',
         name: 'app_admin_dossier_complaintjudgement_publication_edit',
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
     public function edit(
-        #[MapEntity(mapping: ['prefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] ComplaintJudgement $dossier,
+        #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] ComplaintJudgement $dossier,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {

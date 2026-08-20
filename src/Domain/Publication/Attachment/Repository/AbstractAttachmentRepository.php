@@ -77,15 +77,15 @@ abstract class AbstractAttachmentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findForDossierByPrefixAndDossierNumber(string $prefix, string $dossierNumber, string $id): ?AbstractAttachment
+    public function findForDossierByPrefixAndDossierNumber(string $documentPrefix, string $dossierNumber, string $id): ?AbstractAttachment
     {
         $qb = $this->createQueryBuilder('a')
             ->where('a.id = :id')
             ->innerJoin('a.dossier', 'dos')
             ->andWhere('dos.dossierNumber = :dossierNumber')
-            ->andWhere('dos.documentPrefix = :prefix')
+            ->andWhere('dos.documentPrefix = :documentPrefix')
             ->setParameter('dossierNumber', $dossierNumber)
-            ->setParameter('prefix', $prefix)
+            ->setParameter('documentPrefix', $documentPrefix)
             ->setParameter('id', $id);
 
         /** @var ?AbstractAttachment */

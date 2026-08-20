@@ -14,10 +14,10 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\SourceType;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
-use Shared\ValueObject\DocumentMatter;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\FileName;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 use function array_map;
@@ -299,7 +299,7 @@ final class WooDecisionDocumentValidatorTest extends UnitTestCase
             remark: null,
             sourceType: SourceType::PDF,
             threadId: null,
-            matter: DocumentMatter::create('test'),
+            publicationContext: PublicationContext::fromString('test'),
         );
     }
 }

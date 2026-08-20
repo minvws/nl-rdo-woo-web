@@ -33,7 +33,7 @@ final class DocumentUploadHandlerTest extends UnitTestCase
         $uploadEntity = Mockery::mock(UploadEntity::class);
         $uploadEntity->expects('getUploadGroupId')->andReturn(UploadGroupId::MAIN_DOCUMENTS);
 
-        $this->handler->onUploadValidated(new UploadValidatedEvent($uploadEntity));
+        $this->handler->__invoke(new UploadValidatedEvent($uploadEntity));
     }
 
     public function testHandleUploadSuccessfully(): void
@@ -53,6 +53,6 @@ final class DocumentUploadHandlerTest extends UnitTestCase
             })
             ->andReturnNull();
 
-        $this->handler->onUploadValidated(new UploadValidatedEvent($uploadEntity));
+        $this->handler->__invoke(new UploadValidatedEvent($uploadEntity));
     }
 }

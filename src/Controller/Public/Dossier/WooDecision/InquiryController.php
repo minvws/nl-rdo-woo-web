@@ -74,12 +74,12 @@ class InquiryController extends AbstractController
         return $this->downloadHelper->getResponseForEntityWithFileInfo($inquiry->getInventory());
     }
 
-    #[Route('/zaak/{token}/download/{prefix}/{dossierNumber}', name: 'app_inquiry_download_zip', methods: ['GET', 'POST'])]
+    #[Route('/zaak/{token}/download/{documentPrefix}/{dossierNumber}', name: 'app_inquiry_download_zip', methods: ['GET', 'POST'])]
     public function downloadZip(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
-        #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] WooDecision $wooDecision,
     ): Response {
-        $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier);
+        $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $wooDecision);
 
         return $this->onDemandZipGenerator->getStreamedResponse($scope);
     }
@@ -92,10 +92,9 @@ class InquiryController extends AbstractController
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem(
-            text: 'public.inquiry.page_title',
+            text: 'global.inquiry',
             route: 'app_inquiry_detail',
             parameters: ['token' => $inquiry->getToken()],
-            translationParameters: ['inquiry_number' => $inquiry->getInquiryNumber()],
         );
         $breadcrumbs->addItem(
             text: 'public.inquiry.dossiers_breadcrumb',
@@ -125,23 +124,21 @@ class InquiryController extends AbstractController
         ]);
     }
 
-    #[Route('/zaak/{token}/dossier/{prefix}/{dossierNumber}', name: 'app_inquiry_dossier', methods: ['GET'])]
+    #[Route('/zaak/{token}/dossier/{documentPrefix}/{dossierNumber}', name: 'app_inquiry_dossier', methods: ['GET'])]
     public function dossier(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
-        #[ValueResolver('dossierWithAccessCheck')] WooDecision $dossier,
+        #[ValueResolver('dossierWithAccessCheck')] WooDecision $wooDecision,
         Request $request,
         Breadcrumbs $breadcrumbs,
     ): Response {
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem(
-            text: 'public.inquiry.page_title',
+            text: 'global.inquiry',
             route: 'app_inquiry_detail',
             parameters: ['token' => $inquiry->getToken()],
-            translationParameters: ['inquiry_number' => $inquiry->getInquiryNumber()],
         );
         $breadcrumbs->addItem(
             text: 'public.inquiry.dossier_detail_breadcrumb',
-            translationParameters: ['title' => $dossier->getTitle()],
         );
 
         $this->inquirySession->saveInquiry($inquiry);
@@ -150,8 +147,8 @@ class InquiryController extends AbstractController
             'app_inquiry_download_zip',
             [
                 'token' => $inquiry->getToken(),
-                'prefix' => $dossier->getDocumentPrefix(),
-                'dossierNumber' => $dossier->getDossierNumber(),
+                'documentPrefix' => $wooDecision->getDocumentPrefix(),
+                'dossierNumber' => $wooDecision->getDossierNumber(),
             ],
         );
 
@@ -159,11 +156,11 @@ class InquiryController extends AbstractController
             'app_search',
             [
                 FacetKey::INQUIRY_DOCUMENTS->getParamName() => [$inquiry->getId()],
-                FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($dossier)],
+                FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($wooDecision)],
             ],
         );
 
-        $docQuery = $this->inquiryRepository->getDocsForInquiryDossierQueryBuilder($inquiry, $dossier);
+        $docQuery = $this->inquiryRepository->getDocsForInquiryDossierQueryBuilder($inquiry, $wooDecision);
 
         $publicPagination = $this->paginator->paginate(
             DocumentConditions::onlyPubliclyAvailable($docQuery),
@@ -195,7 +192,7 @@ class InquiryController extends AbstractController
 
         return $this->render('public/dossier/woo-decision/inquiry/dossier.html.twig', [
             'inquiry' => $inquiry,
-            'dossier' => $dossier,
+            'dossier' => $wooDecision,
             'public_docs' => $publicPagination,
             'already_public_docs' => $alreadyPublicPagination,
             'not_public_docs' => $notPublicPagination,

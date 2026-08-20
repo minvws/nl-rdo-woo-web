@@ -19,12 +19,13 @@ readonly class AttachmentService
 
     /**
      * @param list<AbstractAttachment> $attachments
+     * @param array<array-key, string>|null $validationGroups
      *
      * @throws ValidationFailedException
      */
-    public function validate(array $attachments): void
+    public function validate(array $attachments, ?array $validationGroups = null): void
     {
-        $errors = $this->validator->validate($attachments);
+        $errors = $this->validator->validate($attachments, groups: $validationGroups);
 
         if ($errors->count() > 0) {
             throw new ValidationFailedException($attachments, $errors);

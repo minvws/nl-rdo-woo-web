@@ -7,6 +7,7 @@ namespace PublicationApi\Api\Dossier\WooDecision\Document;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use PublicationApi\Domain\Upload\UploadStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\SourceType;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
@@ -27,7 +28,8 @@ final readonly class WooDecisionDocumentResponseDto
         public string $documentNumber,
         public ?ExternalId $externalId,
         public ?int $familyId,
-        public ?string $filename,
+        public ?string $fileName,
+        public ?SourceType $sourceType,
         public array $grounds,
         public bool $isSuspended,
         public bool $isUploaded,

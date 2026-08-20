@@ -93,7 +93,7 @@ Parse TXT Files Into Excel Rows
 Create New Row Data
   [Arguments]  ${document_id}  ${case_id}=${EMPTY}
   # Define each column
-  VAR  ${matter} =  WOO
+  VAR  ${publication_context} =  WOO
   VAR  ${family} =  1
   VAR  ${email_thread_id} =  1
   ${document_name} =  FakerLibrary.Sentence
@@ -111,7 +111,7 @@ Create New Row Data
   # Create array of fields
   VAR  @{row_data} =
   ...  ${document_id}
-  ...  ${matter}
+  ...  ${publication_context}
   ...  ${family}
   ...  ${email_thread_id}
   ...  ${document_name}

@@ -325,7 +325,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
     public function testFindByDocumentNumber(): void
     {
-        $documentNumber = DocumentNumber::fromString('FOO', null, '123');
+        $documentNumber = DocumentNumber::fromPrefixMatterAndInput('FOO', null, '123');
 
         DocumentFactory::createOne([
             'documentNumber' => $documentNumber,
@@ -486,6 +486,20 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         foreach ($allDocuments as $document) {
             $this->assertContains($document->getId()->toRfc4122(), $expectedDocumentUuids);
         }
+    }
+
+    public function testGetDocumentsMissingPublicationContextIterableReturnsOnlyDocumentsWithoutPublicationContext(): void
+    {
+        $firstDocumentWithoutContext = DocumentFactory::createOne(['publicationContext' => null]);
+        $secondDocumentWithoutContext = DocumentFactory::createOne(['publicationContext' => null]);
+        DocumentFactory::createOne(['publicationContext' => $this->getFaker()->publicationContext()]);
+
+        $iterable = $this->documentRepository->getDocumentsMissingPublicationContextIterable();
+        $documents = iterator_to_array($iterable, false);
+
+        self::assertCount(2, $documents);
+        self::assertSame($firstDocumentWithoutContext->getId(), $documents[0]->getId());
+        self::assertSame($secondDocumentWithoutContext->getId(), $documents[1]->getId());
     }
 
     public function testFindOneBydocumentNumberCaseInsensitive(): void

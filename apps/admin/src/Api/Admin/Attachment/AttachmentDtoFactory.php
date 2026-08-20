@@ -38,7 +38,7 @@ readonly class AttachmentDtoFactory
             withdrawUrl: $this->urlGenerator->generate(
                 'app_admin_dossier_attachment_withdraw',
                 [
-                    'prefix' => $entity->getDossier()->getDocumentPrefix(),
+                    'documentPrefix' => $entity->getDossier()->getDocumentPrefix(),
                     'dossierNumber' => $entity->getDOssier()->getDossierNumber(),
                     'attachmentId' => $entity->getId(),
                 ],
