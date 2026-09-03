@@ -1,0 +1,135 @@
+advice: Advice
+request_for_advice: Request for advice
+advisort_proposal: Proposed advice
+
+budget: Budget
+policy_note: Policy note
+decision_note: Decision note
+annual_plan: Annual plan
+annual_report: Annual report
+geographic_map: Geographic map
+
+official_message: Official message
+evaluation_report: Evaluation report
+inspection_report: Inspection report
+research_report: Research report
+accountability_report: Accountability report
+progress_report: Progress report
+
+term_agenda: Term agenda
+
+decision_to_impose_a_fine: Decision to impose a fine
+decision_to_impose_an_order_under_administrative_enforcement: Decision to impose an order under administrative enforcement
+decision_to_impose_an_order_subject_to_penalty: Decision to impose an order subject to penalty
+
+designation_decision: Designation decision
+appointment_decision: Appointment decision
+concession: Concession
+recognition_decision: Recognition decision
+consent_decision: Consent decision
+exemption_decision: Exemption decision
+subsidy_decision: Subsidy decision
+permit: Permit
+
+letter: Letter
+brochure: Brochure
+circular: Circular
+news_item: News item
+organization_details: Organization details
+press_release: Press release
+speech: Speech
+official_form: Form
+media_text: Media text
+
+covenant: Covenant
+
+objection: Notice of objection
+complaint: Complaint
+complaint_judgement: Complaint judgement
+exemption_request: Exemption request
+subsidy_application: Subsidy application
+permit_application: Permit application
+point_of_view: Statement of views
+
+actions: Proceedings
+parliamentary_document: Parliamentary document
+non_dossier_document: Non-dossier document
+
+parliamentary_question_with_answer: Parliamentary question with answer
+parliamentary_question_without_answer: Parliamentary question without answer
+motion: Motion
+council_of_state_advice: Council of State advice
+parliamentary_letter: Parliamentary letter
+memorandum_of_reply: Memorandum of reply
+explanatory_memorandum: Explanatory memorandum
+further_report: Further report
+further_memorandum_of_reply: Further memorandum of reply
+note_on_further_report: Note on further report
+note_on_report: Memorandum in response to the report
+amendment_note: Amendment note
+legislative_proposal: Legislative proposal
+
+government_gazette: Bulletin of Acts and Decrees
+staatscourant: Government Gazette
+
+policy: Policy rule
+plan: Plan
+diplomatic_declaration: Diplomatic declaration
+regulation: Regulation
+directive: Directive
+
+agenda: Agenda
+decision_list: Decision list
+incoming_document: Incoming document
+meeting_report: Meeting report
+
+decision_on_objection: Decision on objection
+judgement_on_wob_woo_request: Decision on Wob/Woo request
+wob_woo_request: Wob/Woo request
+
+policy_document: Policy document
+
+other: Other
+
+nld: Dutch
+bul: Bulgarian
+dan: Danish
+deu: German
+eng: English
+est: Estonian
+fin: Finnish
+fra: French
+fry: Frisian
+ell: Greek
+hun: Hungarian
+gle: Irish
+ita: Italian
+hrv: Croatian
+lav: Latvian
+lit: Lithuanian
+mlt: Maltese
+pap_aw: Papiamento
+pap_cw: Papiamentu
+pol: Polish
+por: Portuguese
+ron: Romanian
+slv: Slovenian
+slk: Slovak
+spa: Spanish
+ces: Czech
+swe: Swedish
+
+branch.advice_document: Advice document
+branch.policy_document: Policy document
+branch.report: Report
+branch.decision_to_impose: Decision
+branch.decision_to_impose_enforcement: Enforcement decision
+branch.communications: Communications
+branch.citizen_document: Citizen document
+branch.parliamentary_document: Parliamentary document
+branch.parliamentary_question: Parliamentary question
+branch.publication_sheet: Publication sheet
+branch.regulation: Regulation
+branch.meeting_document: Meeting document
+branch.woo_procedure: Woo procedure
+branch.other: Other

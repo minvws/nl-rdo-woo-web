@@ -1,40 +1,30 @@
--
-    configClass: Shared\Domain\Publication\Dossier\Type\Advice\AdviceWorkflow
-    name: ADVICE
-    value: advice_workflow
--
-    configClass: Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportWorkflow
-    name: ANNUAL_REPORT
-    value: annual_report_workflow
--
-    configClass: Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementWorkflow
-    name: COMPLAINT_JUDGEMENT
-    value: complaint_judgement_workflow
--
-    configClass: Shared\Domain\Publication\Dossier\Type\Covenant\CovenantWorkflow
-    name: COVENANT
-    value: covenant_workflow
--
-    configClass: Shared\Domain\Publication\Dossier\Type\Disposition\DispositionWorkflow
-    name: DISPOSITION
-    value: disposition_workflow
--
-    configClass: Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecisionWorkflow
-    name: DRAFT_DECISION
-    value: draft_decision_workflow
--
-    configClass: Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportWorkflow
-    name: INVESTIGATION_REPORT
-    value: investigation_report_workflow
--
-    configClass: Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationWorkflow
-    name: OTHER_PUBLICATION
-    value: other_publication_workflow
--
-    configClass: Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceWorkflow
-    name: REQUEST_FOR_ADVICE
-    value: request_for_advice_workflow
--
-    configClass: Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionWorkflow
-    name: WOO_DECISION
-    value: woo_decision_workflow
+- configClass: Shared\Domain\Publication\Dossier\Type\Advice\AdviceWorkflow
+  name: ADVICE
+  value: advice_workflow
+- configClass: Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportWorkflow
+  name: ANNUAL_REPORT
+  value: annual_report_workflow
+- configClass: Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementWorkflow
+  name: COMPLAINT_JUDGEMENT
+  value: complaint_judgement_workflow
+- configClass: Shared\Domain\Publication\Dossier\Type\Covenant\CovenantWorkflow
+  name: COVENANT
+  value: covenant_workflow
+- configClass: Shared\Domain\Publication\Dossier\Type\Disposition\DispositionWorkflow
+  name: DISPOSITION
+  value: disposition_workflow
+- configClass: Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecisionWorkflow
+  name: DRAFT_DECISION
+  value: draft_decision_workflow
+- configClass: Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportWorkflow
+  name: INVESTIGATION_REPORT
+  value: investigation_report_workflow
+- configClass: Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationWorkflow
+  name: OTHER_PUBLICATION
+  value: other_publication_workflow
+- configClass: Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceWorkflow
+  name: REQUEST_FOR_ADVICE
+  value: request_for_advice_workflow
+- configClass: Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionWorkflow
+  name: WOO_DECISION
+  value: woo_decision_workflow

@@ -44,7 +44,7 @@
                         <td>
                             {% if department.public %}
                                 {{ 'admin.global.yes' | trans }} -
-                                {% if user_can_edit_landingpage(department) %}
+                                {% if user_can_edit_department_landingpage(department) %}
                                     <a class="bhr-a" href="{{ path('app_admin_department_landing_page_edit', { id: department.id }) }}" data-e2e-name="update-landing-page">
                                         {{ 'admin.global.edit' | trans | lower }}<span class="sr-only"> ({{ department.shortTag | default(department.name) }})</span>
                                     </a>

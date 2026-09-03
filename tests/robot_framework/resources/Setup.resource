@@ -36,6 +36,7 @@ ${DOSSIER_REFERENCE}    ${EMPTY}
 *** Keywords ***
 Suite Setup Generic
   [Documentation]  Opens a new browser and sets environment specific credential variables.
+  Set Library Search Order  Browser  XML
   Set DateTime Variables
   Set Tenant Context  %{TENANT}
   IF  '${ENVIRONMENT}' == 'local' or '${ENVIRONMENT}' == 'docker'
@@ -46,6 +47,9 @@ Suite Setup Generic
     ${config} =  Get From Dictionary  ${TENANT_CONFIGS}  %{TENANT}
     Open Browser And BaseUrl  http_username=${config}[HTACCESS_USERNAME]  http_password=${config}[HTACCESS_PASSWORD]
     Set Credential Variables  ${config}[ADMIN_EMAIL]  ${config}[ADMIN_PASSWORD]  ${config}[ADMIN_SECRET]
+  ELSE IF  '${ENVIRONMENT}' == 'prod'
+    # Prod has no fixture credentials committed to the repo; only public (read-only) checks run here.
+    Open Browser And BaseUrl
   ELSE
     Fatal Error  Env var ENVIRONMENT returned unsupported value '${ENVIRONMENT}'.
   END
@@ -103,23 +107,29 @@ Get OTP Secret
 
 Set Tenant Context
   [Documentation]  Sets all tenant-specific Robot Framework variables from the TENANT_CONFIGS dictionary.
+  ...  'prod' only has a URL_PUBLIC configured, since only public (read-only) checks run against it.
   [Arguments]  ${tenant}
-  ${config} =  Get From Dictionary  ${TENANT_CONFIGS}  ${tenant}
   ${env} =  Get Environment Variable  ENVIRONMENT  local
   VAR  ${ENVIRONMENT} =  ${env}  scope=suite
   VAR  ${TENANT} =  ${tenant}  scope=suite
-  VAR  ${URL_ADMIN} =  ${config}[URL_ADMIN]  scope=suite
-  VAR  ${URL_PUBLIC} =  ${config}[URL_PUBLIC]  scope=suite
-  VAR  ${URL_API} =  ${config}[URL_API]  scope=suite
-  VAR  ${CLIENT_CERT} =  ${config}[CLIENT_CERT]  scope=suite
-  VAR  ${CLIENT_KEY} =  ${config}[CLIENT_KEY]  scope=suite
-  VAR  ${CA_BUNDLE} =  ${config}[CA_BUNDLE]  scope=suite
-  VAR  ${OTP_SECRET_PATH} =  secrets/.otp_secret_${TENANT}  scope=suite
-  ${admin_email} =  Get From Dictionary  ${config}  ADMIN_EMAIL  default=${EMPTY}
-  VAR  ${ADMIN_EMAIL} =  ${admin_email}  scope=suite
-  ${admin_password} =  Get From Dictionary  ${config}  ADMIN_PASSWORD  default=${EMPTY}
-  VAR  ${ADMIN_PASSWORD} =  ${admin_password}  scope=suite
-  ${htaccess_username} =  Get From Dictionary  ${config}  HTACCESS_USERNAME  default=${EMPTY}
-  VAR  ${HTACCESS_USERNAME} =  ${htaccess_username}  scope=suite
-  ${htaccess_password} =  Get From Dictionary  ${config}  HTACCESS_PASSWORD  default=${EMPTY}
-  VAR  ${HTACCESS_PASSWORD} =  ${htaccess_password}  scope=suite
+  IF  '${env}' == 'prod'
+    ${config} =  Get From Dictionary  ${TENANT_CONFIGS}  ${TENANT}
+    VAR  ${URL_PUBLIC} =  ${config}[URL_PUBLIC]  scope=suite
+  ELSE
+    ${config} =  Get From Dictionary  ${TENANT_CONFIGS}  ${TENANT}
+    VAR  ${URL_ADMIN} =  ${config}[URL_ADMIN]  scope=suite
+    VAR  ${URL_PUBLIC} =  ${config}[URL_PUBLIC]  scope=suite
+    VAR  ${URL_API} =  ${config}[URL_API]  scope=suite
+    VAR  ${CLIENT_CERT} =  ${config}[CLIENT_CERT]  scope=suite
+    VAR  ${CLIENT_KEY} =  ${config}[CLIENT_KEY]  scope=suite
+    VAR  ${CA_BUNDLE} =  ${config}[CA_BUNDLE]  scope=suite
+    VAR  ${OTP_SECRET_PATH} =  secrets/.otp_secret_${TENANT}  scope=suite
+    ${admin_email} =  Get From Dictionary  ${config}  ADMIN_EMAIL  default=${EMPTY}
+    VAR  ${ADMIN_EMAIL} =  ${admin_email}  scope=suite
+    ${admin_password} =  Get From Dictionary  ${config}  ADMIN_PASSWORD  default=${EMPTY}
+    VAR  ${ADMIN_PASSWORD} =  ${admin_password}  scope=suite
+    ${htaccess_username} =  Get From Dictionary  ${config}  HTACCESS_USERNAME  default=${EMPTY}
+    VAR  ${HTACCESS_USERNAME} =  ${htaccess_username}  scope=suite
+    ${htaccess_password} =  Get From Dictionary  ${config}  HTACCESS_PASSWORD  default=${EMPTY}
+    VAR  ${HTACCESS_PASSWORD} =  ${htaccess_password}  scope=suite
+  END

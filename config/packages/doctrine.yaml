@@ -7,9 +7,12 @@ doctrine:
         profiling_collect_backtrace: '%kernel.debug%'
         types:
             !php/const Shared\Doctrine\ExternalIdType::NAME: Shared\Doctrine\ExternalIdType
+            !php/const Shared\Doctrine\LandingPageSlugType::NAME: Shared\Doctrine\LandingPageSlugType
+            !php/const Shared\Doctrine\LandingPageTitleType::NAME: Shared\Doctrine\LandingPageTitleType
             !php/const Shared\Doctrine\PlainDateType::NAME: Shared\Doctrine\PlainDateType
             !php/const Shared\Doctrine\DocumentIdType::NAME: Shared\Doctrine\DocumentIdType
             !php/const Shared\Doctrine\DossierTitleType::NAME: Shared\Doctrine\DossierTitleType
+            !php/const Shared\Doctrine\OrganisationPrefixType::NAME: Shared\Doctrine\OrganisationPrefixType
             !php/const Shared\Doctrine\PublicationContextType::NAME: Shared\Doctrine\PublicationContextType
     orm:
         validate_xml_mapping: true

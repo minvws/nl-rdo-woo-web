@@ -174,3 +174,7 @@ Click Edit Decision
 
 Click Save And Continue Production Report
   Click  //*[@id="inventory_submit"]
+
+Download WooDecision Inventory
+  ${inventory_file} =  Generic Download Click  //*[@data-e2e-name="download-inventory-file-link"]
+  RETURN  ${inventory_file}

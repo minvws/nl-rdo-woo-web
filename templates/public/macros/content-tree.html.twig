@@ -1,0 +1,22 @@
+{% macro render(nodes, level = 2) %}
+    {% for node in nodes %}
+        {% set headingLevel = level > 6 ? 6 : level %}
+        {% set headingTag = 'h' ~ headingLevel %}
+        {% set headingClass = headingLevel == 2 ? 'woo-h3' : 'font-bold' %}
+        {% set children = '' %}
+
+        {% if level < 6 and node.children is not empty %}
+            {% set children = _self.render(node.children, level + 1) %}
+        {% endif %}
+
+        <twig:Public:Accordion:Item>
+            <twig:block name="title">
+                <{{ headingTag }} class="{{ headingClass }}">{{ node.title }}</{{ headingTag }}>
+            </twig:block>
+
+            <twig:block name="content">{% if node.body is not empty %}{{ node.body | render_markdown }}{% endif %}</twig:block>
+
+            <twig:block name="accordion">{% if children is not empty %}{{ children }}{% endif %}</twig:block>
+        </twig:Public:Accordion:Item>
+    {% endfor %}
+{% endmacro %}

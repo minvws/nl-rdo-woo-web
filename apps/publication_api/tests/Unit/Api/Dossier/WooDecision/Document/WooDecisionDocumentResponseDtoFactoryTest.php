@@ -20,6 +20,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\Url;
 
@@ -57,6 +58,7 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         $document = new Document();
         $document->setJudgement(Judgement::PUBLIC);
         $document->setDocumentNumber('PREFIX-1-1');
+        $document->setDocumentId(DocumentId::create('1'));
         $wooDecision->addDocument($document);
 
         $this->apiUrlGenerator
@@ -99,6 +101,7 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         $document = new Document();
         $document->setJudgement(Judgement::PUBLIC);
         $document->setDocumentNumber('PREFIX-1-1');
+        $document->setDocumentId(DocumentId::create('1'));
         $wooDecision->addDocument($document);
 
         $this->apiUrlGenerator

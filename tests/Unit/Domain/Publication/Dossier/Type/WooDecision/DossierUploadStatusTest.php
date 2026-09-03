@@ -163,7 +163,7 @@ class DossierUploadStatusTest extends UnitTestCase
         ]));
 
         $documentId = DocumentId::create('123');
-        $this->missingUpload->expects('getDocumentId')->times(4)->andReturn($documentId);
+        $this->missingUpload->expects('getDocumentId')->times(2)->andReturn($documentId);
 
         self::assertEquals(
             [$this->missingUpload],

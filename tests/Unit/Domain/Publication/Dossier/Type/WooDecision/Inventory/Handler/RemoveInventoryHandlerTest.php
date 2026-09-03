@@ -87,8 +87,8 @@ class RemoveInventoryHandlerTest extends UnitTestCase
 
         $this->logger->expects('warning');
 
-        $this->inventoryService->shouldNotReceive('removeInventories');
-        $this->dossierService->shouldNotReceive('validateCompletion');
+        $this->inventoryService->expects('removeInventories')->never();
+        $this->dossierService->expects('validateCompletion')->never();
 
         $this->handler->__invoke($message);
     }
@@ -125,7 +125,7 @@ class RemoveInventoryHandlerTest extends UnitTestCase
         $this->wooDecisionRepository->expects('find')->with($dossierId)->andReturn($dossier);
 
         $this->inventoryService->expects('removeInventories')->with($dossier)->andReturnFalse();
-        $this->batchDownloadService->shouldNotReceive('refresh');
+        $this->batchDownloadService->expects('refresh')->never();
         $this->dossierService->expects('validateCompletion')->with($dossier);
 
         $this->handler->__invoke($message);

@@ -11,6 +11,7 @@ final readonly class SubjectResponse
     public function __construct(
         public Uuid $id,
         public string $name,
+        public ?SubjectLandingPageOutputDto $landingPage = null,
     ) {
     }
 }

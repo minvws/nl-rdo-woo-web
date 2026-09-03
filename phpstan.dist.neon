@@ -30,6 +30,7 @@ parameters:
             - Shared\Tests\Faker\DateTimeFakerProvider
             - Shared\Tests\Faker\DocumentFakerProvider
             - Shared\Tests\Faker\DossierFakerProvider
+            - Shared\Tests\Faker\LandingPageFakerProvider
             - Shared\Tests\Faker\FileFakerProvider
             - Shared\Tests\Faker\UuidFakerProvider
     ignoreErrors:

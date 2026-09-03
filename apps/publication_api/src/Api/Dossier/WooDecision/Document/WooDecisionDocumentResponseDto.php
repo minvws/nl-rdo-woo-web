@@ -24,7 +24,7 @@ final readonly class WooDecisionDocumentResponseDto
     public function __construct(
         public array $inquiryNumbers,
         public ?PlainDate $documentDate,
-        public ?DocumentId $documentId,
+        public DocumentId $documentId,
         public string $documentNumber,
         public ?ExternalId $externalId,
         public ?int $familyId,

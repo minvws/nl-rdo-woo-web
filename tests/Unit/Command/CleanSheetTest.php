@@ -18,6 +18,7 @@ use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class CleanSheetTest extends UnitTestCase
 {
@@ -75,10 +76,17 @@ class CleanSheetTest extends UnitTestCase
     {
         $commandTester = new CommandTester($this->command);
 
+        $this->entityManager->expects('createQueryBuilder->delete->getQuery->execute')->times(8);
+
         $this->indexService->expects('delete')
             ->with('woopie');
         $this->indexService->expects('createLatestWithAliases')
             ->with('woopie');
+
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->expects('getStatusCode')->andReturn(204);
+
+        $this->client->expects('request')->with('DELETE', Mockery::type('string'))->andReturn($response);
 
         $this->wooIndexSitemapService->expects('cleanupAllSitemaps');
 

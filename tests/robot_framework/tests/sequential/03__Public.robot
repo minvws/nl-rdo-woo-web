@@ -113,7 +113,8 @@ Test Setup
 Verify Search Results Sort Order
   [Arguments]  ${sorting_order}
   VAR  @{search_results} =  @{EMPTY}
-  ${nr_of_elements} =  Get Element Count  //li[@data-e2e-name="search-result"]//span[@data-e2e-name="publication-date"]
+  ${nr_of_elements} =  Get Element Count
+  ...  //li[@data-e2e-name="search-result"]//span[@data-e2e-name="publication-date"]
   IF  ${nr_of_elements} > 0
     @{result_elements} =  Get Elements  //li[@data-e2e-name="search-result"]//span[@data-e2e-name="publication-date"]
     FOR  ${element}  IN  @{result_elements}

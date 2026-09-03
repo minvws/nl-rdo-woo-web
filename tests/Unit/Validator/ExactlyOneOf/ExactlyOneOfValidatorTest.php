@@ -42,7 +42,7 @@ class ExactlyOneOfValidatorTest extends UnitTestCase
         $object->bar = null;
 
         $context = Mockery::mock(ExecutionContextInterface::class);
-        $context->shouldNotReceive('buildViolation');
+        $context->expects('buildViolation')->never();
 
         $validator = new ExactlyOneOfValidator();
         $validator->initialize($context);

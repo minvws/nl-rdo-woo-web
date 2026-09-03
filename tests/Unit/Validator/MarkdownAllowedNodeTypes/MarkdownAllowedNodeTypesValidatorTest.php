@@ -39,7 +39,7 @@ final class MarkdownAllowedNodeTypesValidatorTest extends UnitTestCase
     public function testNoViolationForNullOrEmptyValue(): void
     {
         $context = Mockery::mock(ExecutionContextInterface::class);
-        $context->shouldNotReceive('buildViolation');
+        $context->expects('buildViolation')->never();
 
         $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
         $validator->initialize($context);
@@ -52,7 +52,7 @@ final class MarkdownAllowedNodeTypesValidatorTest extends UnitTestCase
     public function testNoViolationForAllowedNodeTypes(): void
     {
         $context = Mockery::mock(ExecutionContextInterface::class);
-        $context->shouldNotReceive('buildViolation');
+        $context->expects('buildViolation')->never();
 
         $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
         $validator->initialize($context);

@@ -123,6 +123,7 @@ final class DraftDecisionPublicationV1Test extends ApiPublicationV1DossierTestCa
             'subject' => [
                 'id' => $subject->getId()->toString(),
                 'name' => $subject->getName(),
+                'landingPage' => null,
             ],
             'department' => [
                 'id' => (string) $department->getId(),

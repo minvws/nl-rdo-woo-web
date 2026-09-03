@@ -43,15 +43,4 @@ final class DocumentFileNameTest extends UnitTestCase
 
         new DocumentFileName($document);
     }
-
-    public function testThrowsExceptionIfDocumentHasNoDocumentId(): void
-    {
-        $document = Mockery::mock(Document::class);
-        $document->expects('getFileInfo->getName')->andReturn('my-fancy-name.pdf');
-        $document->expects('getDocumentId')->andReturnNull();
-
-        $this->expectExceptionObject(new InvalidArgumentException('Document must have a documentId'));
-
-        new DocumentFileName($document);
-    }
 }

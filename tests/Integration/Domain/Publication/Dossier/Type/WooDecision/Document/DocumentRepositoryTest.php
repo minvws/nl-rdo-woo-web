@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Integration\Domain\Publication\Dossier\Type\WooDecision\Document;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -21,6 +22,7 @@ use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Attribute\WithStory;
 
@@ -44,6 +46,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
     {
         $document = new Document();
         $document->setDocumentNumber('abc123');
+        $document->setDocumentId(DocumentId::create('abc123'));
 
         $this->documentRepository->save($document, true);
         $result = $this->documentRepository->find($document->getId());
@@ -661,6 +664,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         // Create document manually since setJudgement requires non-null but property is nullable
         $document = new Document();
         $document->setDocumentNumber('DOC-001');
+        $document->setDocumentId(DocumentId::create('001'));
         $document->setFileInfo(FileInfoFactory::createOne(['uploaded' => true]));
         $document->addDossier($dossier);
 
@@ -880,6 +884,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         // Create referred document manually with null judgement
         $referredDocument = new Document();
         $referredDocument->setDocumentNumber('DOC-REFERRED');
+        $referredDocument->setDocumentId(DocumentId::create('referred'));
         $referredDocument->setFileInfo(FileInfoFactory::createOne(['uploaded' => true]));
         $referredDocument->addDossier($dossier);
         $this->documentRepository->save($referredDocument, true);
@@ -993,5 +998,113 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         self::assertCount(2, $result);
         self::assertContains('existing-1', $result);
         self::assertContains('existing-2', $result);
+    }
+
+    public function testDocumentMatchingItsPublicationContextAndIdIsNotReported(): void
+    {
+        DocumentFactory::createOne([
+            'documentNumber' => 'FOO-abc',
+            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentId' => 'abc',
+        ]);
+
+        self::assertSame(0, $this->documentRepository->countDocumentsWithoutPublicationContext());
+        self::assertSame(0, $this->documentRepository->countDocumentsWithDriftedDocumentNumber());
+        self::assertSame(0, $this->documentRepository->countDocumentsWithMixedCaseDocumentId());
+    }
+
+    public function testDocumentWithoutPublicationContextIsReportedOnlyAsMissingContext(): void
+    {
+        DocumentFactory::createOne([
+            'documentNumber' => 'FOO-abc',
+            'publicationContext' => null,
+            'documentId' => 'abc',
+        ]);
+
+        self::assertSame(1, $this->documentRepository->countDocumentsWithoutPublicationContext());
+        self::assertSame(0, $this->documentRepository->countDocumentsWithDriftedDocumentNumber());
+
+        $rows = $this->documentRepository->getDocumentsWithoutPublicationContext(100);
+
+        self::assertCount(1, $rows);
+        self::assertNull($rows[0]->getPublicationContext());
+        self::assertSame('FOO-abc', $rows[0]->getDocumentNumber());
+    }
+
+    public function testDocumentNumberThatDoesNotMatchItsPublicationContextAndIdIsReportedAsDrifted(): void
+    {
+        DocumentFactory::createOne([
+            'documentNumber' => 'BAR-abc',
+            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentId' => 'abc',
+        ]);
+
+        self::assertSame(1, $this->documentRepository->countDocumentsWithDriftedDocumentNumber());
+        self::assertSame(0, $this->documentRepository->countDocumentsWithoutPublicationContext());
+
+        $rows = $this->documentRepository->getDocumentsWithDriftedDocumentNumber(100);
+
+        self::assertCount(1, $rows);
+        self::assertSame('BAR-abc', $rows[0]->getDocumentNumber());
+        self::assertSame('FOO', (string) $rows[0]->getPublicationContext());
+        self::assertSame('abc', (string) $rows[0]->getDocumentId());
+    }
+
+    public function testDocumentNumberDifferingOnlyInCasingIsReportedAsDrifted(): void
+    {
+        DocumentFactory::createOne([
+            'documentNumber' => 'FOO-ABC',
+            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentId' => 'abc',
+        ]);
+
+        self::assertSame(1, $this->documentRepository->countDocumentsWithDriftedDocumentNumber());
+    }
+
+    public function testUppercaseDocumentIdIsReportedAsMixedCaseAndNotAsDrifted(): void
+    {
+        $document = DocumentFactory::createOne([
+            'documentNumber' => 'FOO-ABC',
+            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentId' => 'abc',
+        ]);
+
+        self::fromContainer(EntityManagerInterface::class)->getConnection()->executeStatement(
+            'UPDATE document SET document_id = :documentId WHERE id = :id',
+            ['documentId' => 'ABC', 'id' => (string) $document->getId()],
+        );
+
+        self::assertSame(1, $this->documentRepository->countDocumentsWithMixedCaseDocumentId());
+        self::assertSame(0, $this->documentRepository->countDocumentsWithDriftedDocumentNumber());
+        self::assertCount(1, $this->documentRepository->getDocumentsWithMixedCaseDocumentId(100));
+    }
+
+    public function testDriftedDocumentRowsAreLimitedWhileTheCountCoversEveryRow(): void
+    {
+        DocumentFactory::createOne([
+            'documentNumber' => 'BAR-abc',
+            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentId' => 'abc',
+        ]);
+        DocumentFactory::createOne([
+            'documentNumber' => 'BAR-def',
+            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentId' => 'def',
+        ]);
+        DocumentFactory::createOne([
+            'documentNumber' => 'BAR-ghi',
+            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentId' => 'ghi',
+        ]);
+
+        self::assertSame(3, $this->documentRepository->countDocumentsWithDriftedDocumentNumber());
+
+        $rows = $this->documentRepository->getDocumentsWithDriftedDocumentNumber(2);
+
+        self::assertCount(2, $rows);
+        self::assertSame(
+            ['BAR-abc', 'BAR-def'],
+            array_map(static fn (Document $document): string => $document->getDocumentNumber(), $rows),
+        );
     }
 }

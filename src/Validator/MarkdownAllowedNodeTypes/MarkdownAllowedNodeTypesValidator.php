@@ -12,6 +12,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
+use function array_any;
 use function is_string;
 
 class MarkdownAllowedNodeTypesValidator extends ConstraintValidator
@@ -61,12 +62,6 @@ class MarkdownAllowedNodeTypesValidator extends ConstraintValidator
      */
     private function isAllowedNode(Node $node, array $allowedNodeTypes): bool
     {
-        foreach ($allowedNodeTypes as $allowedClass) {
-            if ($node instanceof $allowedClass) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($allowedNodeTypes, static fn ($allowedClass) => $node instanceof $allowedClass);
     }
 }

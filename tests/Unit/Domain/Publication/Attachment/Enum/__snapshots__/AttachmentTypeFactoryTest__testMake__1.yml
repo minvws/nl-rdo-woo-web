@@ -1,59 +1,45 @@
--
-    branch: false
-    attachmentTypes: true
-    name: branch.advice_document
--
-    branch: true
-    attachmentTypes: true
-    name: branch.policy_document
--
-    branch: true
-    attachmentTypes: true
-    name: branch.decision_to_impose
--
-    branch: false
-    attachmentTypes: true
-    name: branch.communications
--
-    requestForAdvice: false
-    requestForAdviceOrPolicyDocument: false
-    name: COVENANT
-    value: c_386e74cb
--
-    requestForAdvice: false
-    requestForAdviceOrPolicyDocument: false
-    name: COMPLAINT_JUDGEMENT
-    value: ww_jc6woe9
--
-    requestForAdvice: false
-    requestForAdviceOrPolicyDocument: true
-    name: POLICY_DOCUMENT
-    value: c_10eb451d
--
-    branch: false
-    attachmentTypes: true
-    name: branch.citizen_document
--
-    branch: true
-    attachmentTypes: true
-    name: branch.parliamentary_document
--
-    branch: false
-    attachmentTypes: true
-    name: branch.publication_sheet
--
-    branch: false
-    attachmentTypes: true
-    name: branch.regulation
--
-    branch: false
-    attachmentTypes: true
-    name: branch.meeting_document
--
-    branch: false
-    attachmentTypes: true
-    name: branch.woo_procedure
--
-    branch: false
-    attachmentTypes: true
-    name: branch.other
+- branch: false
+  attachmentTypes: true
+  name: branch.advice_document
+- branch: true
+  attachmentTypes: true
+  name: branch.policy_document
+- branch: true
+  attachmentTypes: true
+  name: branch.decision_to_impose
+- branch: false
+  attachmentTypes: true
+  name: branch.communications
+- requestForAdvice: false
+  requestForAdviceOrPolicyDocument: false
+  name: COVENANT
+  value: c_386e74cb
+- requestForAdvice: false
+  requestForAdviceOrPolicyDocument: false
+  name: COMPLAINT_JUDGEMENT
+  value: ww_jc6woe9
+- requestForAdvice: false
+  requestForAdviceOrPolicyDocument: true
+  name: POLICY_DOCUMENT
+  value: c_10eb451d
+- branch: false
+  attachmentTypes: true
+  name: branch.citizen_document
+- branch: true
+  attachmentTypes: true
+  name: branch.parliamentary_document
+- branch: false
+  attachmentTypes: true
+  name: branch.publication_sheet
+- branch: false
+  attachmentTypes: true
+  name: branch.regulation
+- branch: false
+  attachmentTypes: true
+  name: branch.meeting_document
+- branch: false
+  attachmentTypes: true
+  name: branch.woo_procedure
+- branch: false
+  attachmentTypes: true
+  name: branch.other

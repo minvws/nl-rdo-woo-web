@@ -71,4 +71,4 @@ Create Dossier On Tenant
   ...  documents=@{EMPTY}
   Send Put Request WooDecision  ${external_id}  ${body}  200  ${alias}
   Upload Main Document  woo-decision  ${TEST_DATA_ROOT}/dummy.txt  ${external_id}
-  Wait Until Keyword Succeeds  10x  3s  Publication Status Should Be  woo-decision  published
+  Publication Status Should Be  woo-decision  published

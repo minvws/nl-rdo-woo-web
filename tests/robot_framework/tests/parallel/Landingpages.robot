@@ -52,11 +52,11 @@ Create Custom Landingpage
   Click Departments
   Change Department Settings  E2E-DEP3  ${TRUE}
   Click Edit Department Landingpage  E2E-DEP3
-  Fill Text  //*[@id="landing_page_landingpage_title"]  Ministerie van OhCeeWee
+  Fill Text  //*[@id="department_landing_page_landingpage_title"]  Ministerie van OhCeeWee
   Fill Text
-  ...  //*[@id="landing_page_landingpage_description"]
+  ...  //*[@id="department_landing_page_landingpage_description"]
   ...  **OhCeeWee**\n\n_Test_\n\n- item\n- item\n\n1. eerste\n2. tweede
-  Click Submit Landingpage
+  Click Submit Department Landingpage
   Success Alert Is Visible  De landingspagina is aangepast.
   Click Edit Department Landingpage  E2E-DEP3
   Click Logo Tab

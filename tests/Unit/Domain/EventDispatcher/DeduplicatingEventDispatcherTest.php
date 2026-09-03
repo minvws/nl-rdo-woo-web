@@ -94,7 +94,7 @@ final class DeduplicatingEventDispatcherTest extends UnitTestCase
         $eventB = $this->createDeduplicatableEvent('key-1');
 
         $this->inner->expects('dispatch')->with($eventA, 'foo')->once()->andReturn($eventA);
-        $this->inner->shouldNotReceive('dispatch')->with($eventB, 'bar');
+        $this->inner->expects('dispatch')->with($eventB, 'bar')->never();
 
         self::assertSame($eventA, $this->dispatcher->dispatch($eventA, 'foo'));
         self::assertSame($eventB, $this->dispatcher->dispatch($eventB, 'bar'));

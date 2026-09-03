@@ -70,7 +70,7 @@ final class DepartmentFileServiceTest extends UnitTestCase
 
         $this->department->expects('getFileInfo')->andReturn($this->fileInfo);
 
-        $this->assetsStorage->shouldNotReceive('delete');
+        $this->assetsStorage->expects('delete')->never();
 
         $this->departmentFileService->removeDepartmentLogo($this->department);
     }

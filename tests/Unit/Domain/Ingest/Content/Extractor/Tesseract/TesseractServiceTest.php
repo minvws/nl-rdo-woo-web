@@ -74,7 +74,7 @@ final class TesseractServiceTest extends UnitTestCase
 
         $tesseract = $this->getTesseract();
 
-        $tesseract->shouldNotReceive('getNewProcess');
+        $tesseract->expects('getNewProcess')->never();
 
         $result = $tesseract->extract('sourcePdfPath');
 

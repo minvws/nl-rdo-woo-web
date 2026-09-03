@@ -1,0 +1,55 @@
+{% extends 'admin/base.html.twig' %}
+
+{% set page_title = 'Documentnummer controle' %}
+
+{% block body %}
+<div class="bhr-container">
+    <h1 class="bhr-title mb-6">Documentnummer controle (#7686)</h1>
+
+    <div class="bhr-card">
+        <p class="mb-8">
+            Het documentnummer hoort per definitie gelijk te zijn aan publicatiecontext + '-' + document-ID.
+            Hieronder staan de documenten waarvoor dat niet klopt, per controle. Zolang een van deze lijsten
+            niet leeg is, kan het documentnummer niet door de database berekend worden.
+        </p>
+
+        {% for check in checks %}
+            <div class="{{ not loop.first ? 'mt-10' : '' }}">
+                <h2 class="bhr-title-sm mb-2">{{ check.title }}</h2>
+                <p class="mb-2">{{ check.description }}</p>
+                <p class="mb-4 font-bold">Totaal aantal: {{ check.total }}</p>
+
+                {% if check.total == 0 %}
+                    <p>Geen afwijkingen gevonden.</p>
+                {% else %}
+                    <p class="mb-4">In de tabel worden alleen de eerste {{ row_limit }} resultaten getoond.</p>
+
+                    <div class="bhr-responsive-table">
+                        <table class="bhr-table">
+                            <caption class="sr-only">{{ check.title }}</caption>
+                            <thead>
+                                <tr>
+                                    <th class="text-left" scope="col">Documentnummer</th>
+                                    <th class="text-left" scope="col">Publicatiecontext</th>
+                                    <th class="text-left" scope="col">Document-ID</th>
+                                    <th class="text-left" scope="col">Id</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for document in check.rows %}
+                                <tr>
+                                    <td><span class="break-all">{{ document.documentNumber }}</span></td>
+                                    <td><span class="break-all">{{ document.publicationContext ?? '—' }}</span></td>
+                                    <td><span class="break-all">{{ document.documentId }}</span></td>
+                                    <td><span class="break-all text-sm">{{ document.id }}</span></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

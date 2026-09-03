@@ -19,6 +19,7 @@ use PublicationApi\Api\Pagination\CursorPage;
         new Get(
             uriTemplate: '/organisation/{organisationId}/subject/{subjectId}',
             name: 'get_subject',
+            output: SubjectDetailResponse::class,
         ),
         new GetCollection(
             uriTemplate: '/organisation/{organisationId}/subject',
@@ -36,11 +37,13 @@ use PublicationApi\Api\Pagination\CursorPage;
             input: SubjectCreateDto::class,
             read: false,
             name: 'create_subject',
+            output: SubjectDetailResponse::class,
         ),
         new Put(
             uriTemplate: '/organisation/{organisationId}/subject/{subjectId}',
             input: SubjectUpdateDto::class,
             name: 'update_subject',
+            output: SubjectDetailResponse::class,
         ),
         new Delete(
             uriTemplate: '/organisation/{organisationId}/subject/{subjectId}',

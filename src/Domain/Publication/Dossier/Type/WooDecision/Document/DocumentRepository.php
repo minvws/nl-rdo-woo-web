@@ -23,6 +23,7 @@ use Shared\Service\Inventory\DocumentNumber;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 use function intval;
 use function sprintf;
@@ -203,7 +204,7 @@ class DocumentRepository extends ServiceEntityRepository
                     ELSE NULLIF(1,1)
                 END) AS HIDDEN hasNotice')
             ->setParameter('publicJudgements', Judgement::atLeastPartialPublicValues())
-            ->orderBy('doc.documentDate', 'ASC')
+            ->orderBy('doc.documentNumber', 'ASC')
             ->getQuery()
             ->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, SortNullsLastWalker::class);
     }
@@ -279,7 +280,6 @@ class DocumentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('d')
             ->where('d.publicationContext IS NULL')
-            ->andWhere('d.documentId IS NOT NULL')
             ->orderBy('d.id', 'ASC');
 
         return $qb->getQuery()->toIterable();
@@ -457,5 +457,88 @@ class DocumentRepository extends ServiceEntityRepository
             ->setParameter('ids', $externalIds)
             ->getQuery()
             ->getSingleColumnResult();
+    }
+
+    public function countDocumentsWithoutPublicationContext(): int
+    {
+        return $this->count(['publicationContext' => null]);
+    }
+
+    /**
+     * @return array<int, Document>
+     */
+    public function getDocumentsWithoutPublicationContext(int $limit): array
+    {
+        $documents = $this->createQueryBuilder('d')
+            ->where('d.publicationContext IS NULL')
+            ->orderBy('d.documentNumber')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        Assert::allIsInstanceOf($documents, Document::class);
+
+        return $documents;
+    }
+
+    public function countDocumentsWithDriftedDocumentNumber(): int
+    {
+        $count = $this->createQueryBuilder('d')
+            ->select('COUNT(d.id)')
+            ->where('d.publicationContext IS NOT NULL')
+            ->andWhere("d.documentNumber <> CONCAT(d.publicationContext, '-', d.documentId)")
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        Assert::numeric($count);
+
+        return (int) $count;
+    }
+
+    /**
+     * @return array<int, Document>
+     */
+    public function getDocumentsWithDriftedDocumentNumber(int $limit): array
+    {
+        $documents = $this->createQueryBuilder('d')
+            ->where("d.publicationContext IS NOT NULL AND d.documentNumber <> CONCAT(d.publicationContext, '-', d.documentId)")
+            ->orderBy('d.documentNumber')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        Assert::allIsInstanceOf($documents, Document::class);
+
+        return $documents;
+    }
+
+    public function countDocumentsWithMixedCaseDocumentId(): int
+    {
+        $count = $this->createQueryBuilder('d')
+            ->select('COUNT(d.id)')
+            ->where('d.documentId <> LOWER(d.documentId)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        Assert::numeric($count);
+
+        return (int) $count;
+    }
+
+    /**
+     * @return array<int, Document>
+     */
+    public function getDocumentsWithMixedCaseDocumentId(int $limit): array
+    {
+        $documents = $this->createQueryBuilder('d')
+            ->where('d.documentId <> LOWER(d.documentId)')
+            ->orderBy('d.documentNumber')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        Assert::allIsInstanceOf($documents, Document::class);
+
+        return $documents;
     }
 }

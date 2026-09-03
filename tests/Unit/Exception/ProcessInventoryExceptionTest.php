@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Exception;
 
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Exception\ProcessInventoryException;
 use Shared\Exception\TranslatableException;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentId;
 
-final class ProcessInventoryExceptionTest extends TestCase
+final class ProcessInventoryExceptionTest extends UnitTestCase
 {
     public function testForInventoryCannotBeStored(): void
     {
@@ -77,10 +78,12 @@ final class ProcessInventoryExceptionTest extends TestCase
         );
     }
 
-    public function forDocumentExistsInAnotherDossier(): void
+    public function testForDocumentExistsInAnotherDossier(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentId')->andReturn('foo-456');
+        $document->expects('getDocumentId')
+            ->times(2)
+            ->andReturn(DocumentId::create('foo-456'));
 
         self::assertStringContainsString(
             'foo-456',

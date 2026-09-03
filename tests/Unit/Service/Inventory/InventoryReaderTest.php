@@ -92,14 +92,37 @@ class InventoryReaderTest extends UnitTestCase
         self::assertEquals(SourceType::UNKNOWN, $documentMetadata2->getSourceType());
     }
 
-    public function testInventoryReaderWithoutMatterAndPublicationContextCellsDefaultsToNull(): void
+    public function testInventoryReaderAddsExceptionForMissingMatterAndPublicationContext(): void
     {
         $this->reader->open(__DIR__ . '/inventory-missing-matter.xlsx');
 
-        $result = $this->reader->getDocumentMetadataGenerator(new WooDecision())->current();
-        self::assertNotNull($result->getException());
-        self::assertInstanceOf(InventoryReadItem::class, $result);
-        self::assertNull($result->getDocumentMetadata()?->getPublicationContext());
+        $result = iterator_to_array($this->reader->getDocumentMetadataGenerator(new WooDecision()), false);
+
+        self::assertEquals(
+            InventoryReaderException::forMissingMatterAndPublicationContextInRow(2),
+            $result[0]->getException(),
+        );
+        self::assertEquals(
+            InventoryReaderException::forMissingMatterAndPublicationContextInRow(3),
+            $result[1]->getException(),
+        );
+    }
+
+    public function testInventoryReaderAddsExceptionForEmptyMatterAndPublicationContext(): void
+    {
+        $factory = new InventoryReaderFactory([
+            new CsvReaderFactory(),
+        ]);
+        $reader = $factory->create('text/csv');
+
+        $reader->open(__DIR__ . '/inventory-missing-matter-and-publication-context.csv');
+
+        $result = $reader->getDocumentMetadataGenerator(new WooDecision())->current();
+
+        self::assertEquals(
+            InventoryReaderException::forMissingMatterAndPublicationContextInRow(1),
+            $result->getException(),
+        );
     }
 
     public function testInventoryReaderAddsExceptionsForTooLongRemark(): void

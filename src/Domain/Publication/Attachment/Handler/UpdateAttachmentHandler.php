@@ -34,7 +34,9 @@ readonly class UpdateAttachmentHandler
             DossierStatusTransition::UPDATE_ATTACHMENT,
         );
 
+        $metadataBefore = $entity->getMetadataSnapshot();
         $this->mapProperties($command, $entity);
+        $metadataUpdated = $metadataBefore !== $entity->getMetadataSnapshot();
 
         $violations = $this->validator->validate($entity);
         if ($violations->count() > 0) {
@@ -45,7 +47,14 @@ readonly class UpdateAttachmentHandler
 
         $this->attachmentRepository->save($entity, true);
 
-        $this->dispatcher->dispatchAttachmentUpdatedEvent($entity);
+        $fileUpdated = $command->uploadFileReference !== null;
+
+        match (true) {
+            $fileUpdated && $metadataUpdated => $this->dispatcher->dispatchAttachmentMetadataAndFileUpdatedEvent($entity),
+            $fileUpdated => $this->dispatcher->dispatchAttachmentFileUpdatedEvent($entity),
+            $metadataUpdated => $this->dispatcher->dispatchAttachmentMetadataUpdatedEvent($entity),
+            default => null,
+        };
 
         return $entity;
     }

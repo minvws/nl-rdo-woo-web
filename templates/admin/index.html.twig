@@ -70,6 +70,14 @@
                     'admin.content_pages.manage_help' | trans
                 )
                 }}
+                {{
+                _self.table_row(
+                    matrix_has_permission('data_check.read'),
+                    path('app_admin_data_checks'),
+                    'admin.data_checks.manage' | trans,
+                    'admin.data_checks.manage_help' | trans
+                )
+                }}
             </tbody>
         </table>
     </div>

@@ -48,25 +48,6 @@ class GenerateDocumentPublicationContextTest extends UnitTestCase
         self::assertStringContainsString('processed 1, updated 1, skipped 0', $commandTester->getDisplay());
     }
 
-    public function testExecuteSkipsDocumentsWithoutDocumentId(): void
-    {
-        $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentId')
-            ->andReturnNull();
-
-        $documentRepository = Mockery::mock(DocumentRepository::class);
-        $documentRepository->expects('getDocumentsMissingPublicationContextIterable')
-            ->andReturn([$document]);
-
-        $entityManager = Mockery::mock(EntityManagerInterface::class);
-        $entityManager->expects('flush');
-
-        $commandTester = $this->executeCommand($entityManager, $documentRepository, false);
-
-        self::assertSame(Command::SUCCESS, $commandTester->getStatusCode());
-        self::assertStringContainsString('processed 1, updated 0, skipped 1', $commandTester->getDisplay());
-    }
-
     public function testExecuteSkipsDocumentsWhoseNumberDoesNotEndWithTheDocumentId(): void
     {
         $document = Mockery::mock(Document::class);

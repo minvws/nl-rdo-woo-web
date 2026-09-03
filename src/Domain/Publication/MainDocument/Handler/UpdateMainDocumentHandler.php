@@ -54,7 +54,9 @@ readonly class UpdateMainDocumentHandler
 
         $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::UPDATE_MAIN_DOCUMENT);
 
+        $metadataBefore = $mainDocument->getMetadataSnapshot();
         $this->mapProperties($command, $mainDocument);
+        $metadataUpdated = $metadataBefore !== $mainDocument->getMetadataSnapshot();
 
         $violations = $this->validator->validate($mainDocument);
         if ($violations->count() > 0) {
@@ -65,9 +67,12 @@ readonly class UpdateMainDocumentHandler
 
         $mainDocumentRepository->save($mainDocument, true);
 
-        $this->messageBus->dispatch(
-            MainDocumentUpdatedEvent::forDocument($mainDocument),
-        );
+        $fileUpdated = $command->uploadFileReference !== null;
+        if ($fileUpdated || $metadataUpdated) {
+            $this->messageBus->dispatch(
+                MainDocumentUpdatedEvent::forDocument($mainDocument, $fileUpdated, $metadataUpdated),
+            );
+        }
 
         return $mainDocument;
     }

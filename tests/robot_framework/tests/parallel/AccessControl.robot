@@ -211,7 +211,7 @@ Verify Permissions On Department Landingpages
     IF  ${organisation_only}
       Get Element Count  //*[@data-e2e-name="departments-table"]/tbody/tr  should be  2
       Click Edit Department Landingpage  E2E-DEP1
-      Click Submit Landingpage
+      Click Submit Department Landingpage
     ELSE
       Get Element Count  //*[@data-e2e-name="departments-table"]/tbody/tr  should not be  1
       Update Department

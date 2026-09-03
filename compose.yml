@@ -7,8 +7,10 @@ volumes:
     driver: local
   woo_composer:
     external: true
+    name: ${COMPOSE_PROJECT_NAME}_woo_composer
   woo_npm:
     external: true
+    name: ${COMPOSE_PROJECT_NAME}_woo_npm
 
 networks:
   woopie:
@@ -17,7 +19,7 @@ networks:
 services:
 
   public:
-    image: &PHP_IMAGE "ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.16.0}"
+    image: &PHP_IMAGE "ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.18.0}"
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true

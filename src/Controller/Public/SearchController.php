@@ -71,10 +71,7 @@ class SearchController extends AbstractController
             $q = strval($request->request->get('q'));
 
             // Redirect to GET request, so we have the q in the query string.
-            return $this->redirect($this->generateUrl(
-                'app_search',
-                array_merge($request->query->all(), ['q' => $q, 'page' => null]),
-            ));
+            return $this->redirectToRoute('app_search', array_merge($request->query->all(), ['q' => $q, 'page' => null]));
         }
 
         $searchParameters = $this->searchParametersFactory->createFromRequest($request);
@@ -102,7 +99,7 @@ class SearchController extends AbstractController
             $q = strval($request->request->get('q'));
 
             // Redirect to GET request, so we have the q in the query string.
-            return $this->redirect($this->generateUrl('app_browse', ['q' => $q]));
+            return $this->redirectToRoute('app_browse', ['q' => $q]);
         }
 
         // From here we always have a 'q' from the query string

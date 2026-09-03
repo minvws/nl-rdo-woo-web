@@ -301,6 +301,13 @@ auth_matrix:
             }
         },
         {
+            prefix: "data_check",
+            roles: [ "ROLE_SUPER_ADMIN" ],
+            permissions: {
+                read: true,
+            }
+        },
+        {
             prefix: "upload",
             roles: [ "ROLE_SUPER_ADMIN", "ROLE_ORGANISATION_ADMIN", "ROLE_DOSSIER_ADMIN" ],
             permissions: {

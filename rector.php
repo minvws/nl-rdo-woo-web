@@ -9,7 +9,16 @@ use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
 use Rector\Php74\Rector\Property\RestoreDefaultNullToNullableTypePropertyRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Php81\Rector\MethodCall\RemoveReflectionSetAccessibleCallsRector;
-use Rector\Php84\Rector\Class_\DeprecatedAnnotationToDeprecatedAttributeRector;
+use Rector\Symfony\Symfony42\Rector\New_\StringToArrayArgumentProcessRector;
+use Rector\Symfony\Symfony61\Rector\Class_\CommandConfigureToAttributeRector;
+
+// All test directories within the configured paths below.
+$testPaths = [
+    __DIR__ . '/tests',
+    __DIR__ . '/apps/*/tests/*',
+    __DIR__ . '/tenants/*/tests/*',
+    __DIR__ . '/utils/tests/*',
+];
 
 return RectorConfig::configure()
     ->withPaths([
@@ -31,9 +40,9 @@ return RectorConfig::configure()
         ClassPropertyAssignToConstructorPromotionRector::class,
         ClosureToArrowFunctionRector::class,
         RestoreDefaultNullToNullableTypePropertyRector::class,
-        StringClassNameToClassConstantRector::class => [
-            __DIR__ . '/tests',
-        ],
-        DeprecatedAnnotationToDeprecatedAttributeRector::class,
+        StringClassNameToClassConstantRector::class => $testPaths,
+        // Rewrites Mockery `->expects('method')` calls on mocked Process objects into arrays
+        StringToArrayArgumentProcessRector::class => $testPaths,
+        CommandConfigureToAttributeRector::class => $testPaths,
         __DIR__ . '/utils/tests/PHPStan/**/data/*'
     ]);

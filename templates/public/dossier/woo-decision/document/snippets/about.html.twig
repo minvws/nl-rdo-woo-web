@@ -34,12 +34,10 @@
                         <td data-e2e-name="file-type">{{ document.entity.fileInfo.type|upper}} ({{ document.entity.fileInfo.size | size }})</td>
                     </tr>
                 {% endif %}
-                {% if document.entity.documentId is defined %}
-                    <tr>
-                        <th class="woo-table-cell-light" scope="row">{{ 'global.id' | trans | upper }}</th>
-                        <td>{{ document.entity.documentId }}</td>
-                    </tr>
-                {% endif %}
+                <tr>
+                    <th class="woo-table-cell-light" scope="row">{{ 'global.id' | trans | upper }}</th>
+                    <td>{{ document.entity.documentId }}</td>
+                </tr>
                 {% if document.entity.judgement is defined %}
                 <tr>
                     <th class="woo-table-cell-light" scope="row">{{ 'public.documents.judgement' | trans }}</th>

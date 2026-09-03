@@ -244,6 +244,17 @@ tasks:
             run -e ENVIRONMENT=acc -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --exclude failing --exclude skip-test-acc {{.ROBOT_PARAMS}}"
 
+  prod:run:sanity:
+    desc: Run the read-only public sanity checks against Production.
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
+    cmds:
+      - task: :dc
+        vars:
+          SUB_CMD: >
+            run -e ENVIRONMENT=prod -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            /bin/bash -c "uv run robot --include sanity --exclude sanity-admin {{.ROBOT_PARAMS}}"
+
   lint:
     desc: Run Robocop linter
     cmds:

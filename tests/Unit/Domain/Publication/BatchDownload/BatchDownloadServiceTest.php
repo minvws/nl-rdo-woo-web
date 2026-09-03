@@ -11,7 +11,6 @@ use Shared\Domain\Publication\BatchDownload\BatchDownloadDispatcher;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
-use Shared\Domain\Publication\BatchDownload\BatchDownloadStatus;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadStorage;
 use Shared\Domain\Publication\BatchDownload\Type\BatchDownloadTypeInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
@@ -51,22 +50,7 @@ class BatchDownloadServiceTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $scope = BatchDownloadScope::forWooDecision($dossier);
 
-        $oldBatchA = Mockery::mock(BatchDownload::class);
-        $oldBatchA->expects('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
-        $oldBatchA->expects('markAsOutdated');
-
-        $oldBatchB = Mockery::mock(BatchDownload::class);
-        $oldBatchB->expects('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
-        $oldBatchB->expects('markAsOutdated');
-
-        // Already outdated so should not be updated again
-        $oldBatchC = Mockery::mock(BatchDownload::class);
-        $oldBatchC->expects('getStatus')->andReturn(BatchDownloadStatus::OUTDATED);
-
-        $this->batchRepository->expects('getAllForScope')->with($scope)->andReturns([$oldBatchA, $oldBatchB, $oldBatchC]);
-
-        $this->batchRepository->expects('save')->with($oldBatchA);
-        $this->batchRepository->expects('save')->with($oldBatchB);
+        $this->batchRepository->expects('markAllForScopeAsOutdated')->with($scope)->andReturn(2);
 
         $this->typeA->expects('supports')->with($scope)->andReturnFalse();
         $this->typeB->expects('supports')->with($scope)->andReturnTrue();
@@ -93,18 +77,9 @@ class BatchDownloadServiceTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $scope = BatchDownloadScope::forWooDecision($dossier);
 
-        $oldBatchA = Mockery::mock(BatchDownload::class);
-        $oldBatchA->expects('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
-        $oldBatchA->expects('markAsOutdated');
-
-        $oldBatchB = Mockery::mock(BatchDownload::class);
-        $oldBatchB->expects('getStatus')->andReturn(BatchDownloadStatus::COMPLETED);
-        $oldBatchB->expects('markAsOutdated');
-
-        $this->batchRepository->expects('getAllForScope')->with($scope)->andReturns([$oldBatchA, $oldBatchB]);
-
-        $this->batchRepository->expects('save')->with($oldBatchA);
-        $this->batchRepository->expects('save')->with($oldBatchB);
+        $this->batchRepository->expects('markAllForScopeAsOutdated')->with($scope)->andReturn(2);
+        $this->batchRepository->expects('getAllForScope')->never();
+        $this->batchRepository->expects('save')->never();
 
         $this->typeA->expects('supports')->with($scope)->andReturnFalse();
         $this->typeB->expects('supports')->with($scope)->andReturnTrue();
@@ -113,21 +88,15 @@ class BatchDownloadServiceTest extends UnitTestCase
         $this->service->refresh($scope);
     }
 
-    public function refreshForScopeWithBothADossierAndInquiryDoesNothing(): void
+    public function testRefreshForScopeWithBothADossierAndInquiryDoesNothing(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
         $inquiry = Mockery::mock(Inquiry::class);
         $scope = BatchDownloadScope::forInquiryAndWooDecision($inquiry, $dossier);
 
-        $oldBatchA = Mockery::mock(BatchDownload::class);
-        $oldBatchA->expects('markAsOutdated');
-        $oldBatchB = Mockery::mock(BatchDownload::class);
-        $oldBatchB->expects('markAsOutdated');
-
-        $this->batchRepository->expects('getAllForScope')->with($scope)->andReturns([$oldBatchA, $oldBatchB]);
-
-        $this->batchRepository->expects('save')->with($oldBatchA);
-        $this->batchRepository->expects('save')->with($oldBatchB);
+        $this->batchRepository->expects('markAllForScopeAsOutdated')->with($scope)->andReturn(2);
+        $this->batchRepository->expects('getAllForScope')->never();
+        $this->batchRepository->expects('save')->never();
 
         $this->typeA->expects('supports')->with($scope)->andReturnFalse();
         $this->typeB->expects('supports')->with($scope)->andReturnTrue();
@@ -140,7 +109,7 @@ class BatchDownloadServiceTest extends UnitTestCase
             [$this->typeA, $this->typeB],
         ])->makePartial();
 
-        $service->shouldNotReceive('create');
+        $service->expects('create')->never();
 
         $service->refresh($scope);
     }

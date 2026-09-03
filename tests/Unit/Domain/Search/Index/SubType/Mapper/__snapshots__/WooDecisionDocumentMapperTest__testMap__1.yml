@@ -16,9 +16,9 @@ fields:
     date_period: foo-bar
     document_pages: 13
     dossiers: [{ mapped-dossier-data: dummy }]
-    inquiry_ids: [{  }]
+    inquiry_ids: [{}]
     prefixed_dossier_number: [PREFIX|dos-123]
-    organisation_ids: [{  }]
+    organisation_ids: [{}]
     referred_document_nrs: [doc-456, doc-789]
     metadata: [foo]
     pages: { 1: bar }
@@ -39,9 +39,9 @@ documentValues:
     date_period: foo-bar
     document_pages: 13
     dossiers: [{ mapped-dossier-data: dummy }]
-    inquiry_ids: [{  }]
+    inquiry_ids: [{}]
     prefixed_dossier_number: [PREFIX|dos-123]
-    organisation_ids: [{  }]
+    organisation_ids: [{}]
     referred_document_nrs: [doc-456, doc-789]
     metadata: [foo]
     pages: { 1: bar }

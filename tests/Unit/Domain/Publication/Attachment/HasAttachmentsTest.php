@@ -42,7 +42,7 @@ final class HasAttachmentsTest extends UnitTestCase
         $attachment = Mockery::mock(AbstractAttachment::class);
         $collection = Mockery::mock(Collection::class);
         $collection->expects('contains')->with($attachment)->andReturn(true);
-        $collection->shouldNotReceive('add');
+        $collection->expects('add')->never();
 
         $entity = $this->getEntityWithAttachments($collection);
 

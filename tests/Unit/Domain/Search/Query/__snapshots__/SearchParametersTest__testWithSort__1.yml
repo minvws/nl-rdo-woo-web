@@ -4,7 +4,7 @@ queryParameters:
     q: foo
     sort: publication_date
     sortorder: asc
-facetInputs: {  }
+facetInputs: {}
 operator:
     name: AND
     value: and

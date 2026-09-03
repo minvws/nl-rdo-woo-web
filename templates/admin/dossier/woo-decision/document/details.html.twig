@@ -85,7 +85,7 @@
                         <th scope="row">Datum document</th>
                         <td>
                             {% if document.documentDate is not null %}
-                                {{ document.documentDate | format_date('long') }} {{ document.documentDate | format_time('short') }}
+                                {{ document.documentDate | format_date('long') }}
                             {% else %}
                                 {{ 'global.not_available' | trans }}
                             {% endif %}

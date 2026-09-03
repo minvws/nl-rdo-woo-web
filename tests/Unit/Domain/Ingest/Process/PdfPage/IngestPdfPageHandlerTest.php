@@ -91,7 +91,7 @@ final class IngestPdfPageHandlerTest extends UnitTestCase
             'pageNr' => $pageNr,
         ]);
 
-        $this->processor->shouldNotReceive('processEntityPage');
+        $this->processor->expects('processEntityPage')->never();
 
         $handler = new IngestPdfPageHandler($this->processor, $this->doctrine, $this->logger);
         $handler->__invoke($message);

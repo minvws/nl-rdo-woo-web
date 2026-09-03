@@ -1,0 +1,43 @@
+services:
+  public:
+    labels:
+      dev.orbstack.domains: public-minvws-two.local,public-minfin-two.local
+      dev.orbstack.http-port: 80
+    ports: !reset []
+
+  admin:
+    labels:
+      dev.orbstack.domains: admin-minvws-two.local,admin-minfin-two.local
+      dev.orbstack.http-port: 80
+    ports: !reset []
+
+  elasticsearch:
+    labels:
+      dev.orbstack.domains: elasticsearch-woo-two.local
+      dev.orbstack.http-port: 9200
+    ports: !reset []
+
+  redis:
+    labels:
+      dev.orbstack.domains: redis-woo-two.local
+    ports: !reset []
+
+  rabbitmq:
+    labels:
+      dev.orbstack.domains: rabbitmq-woo-two.local
+    ports: !reset []
+
+  postgres:
+    labels:
+      dev.orbstack.domains: postgres-woo-two.local
+    ports: !reset []
+
+  publication_api:
+    ports: !override
+      - 8543:443
+      - 8544:444
+
+  minio:
+    ports: !override
+      - 9100:9000
+      - 9101:9001

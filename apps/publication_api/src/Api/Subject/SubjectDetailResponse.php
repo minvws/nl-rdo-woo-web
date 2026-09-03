@@ -7,12 +7,13 @@ namespace PublicationApi\Api\Subject;
 use PublicationApi\Api\Organisation\OrganisationResponseDto;
 use Symfony\Component\Uid\Uuid;
 
-final class SubjectDetailResponse
+final readonly class SubjectDetailResponse
 {
-    final public function __construct(
+    public function __construct(
         public Uuid $id,
         public OrganisationResponseDto $organisation,
         public string $name,
+        public ?SubjectLandingPageOutputDto $landingPage = null,
     ) {
     }
 }

@@ -82,7 +82,7 @@ class NoIncompleteAttachmentsValidatorTest extends UnitTestCase
 
         /** @var ExecutionContextInterface&MockInterface $context */
         $context = Mockery::mock(ExecutionContextInterface::class);
-        $context->shouldNotReceive('buildViolation');
+        $context->expects('buildViolation')->never();
 
         $validator = new NoIncompleteAttachmentsValidator($repository);
         $validator->initialize($context);

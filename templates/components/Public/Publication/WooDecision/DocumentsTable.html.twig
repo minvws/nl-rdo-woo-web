@@ -11,12 +11,12 @@
             <thead>
                 <tr>
                     {% if isSortable %}
-                        {{ knp_pagination_sortable(documents, 'global.id' | trans | upper, 'doc.documentNumber', { thClassName: "x-min-w-36 x-w-36", 'fragment': fragment }) }}
+                        {{ knp_pagination_sortable(documents, 'global.document_number_short' | trans, 'doc.documentNumber', { thClassName: "x-min-w-36 x-w-36", 'fragment': fragment }) }}
                         <th class="x-min-w-12 x-w-12" scope="col">{{ 'global.document_type' | trans }}</th>
                         {{ knp_pagination_sortable(documents, 'global.document_name' | trans, 'doc.fileInfo.name', { 'fragment': fragment }) }}
                         {{ knp_pagination_sortable(documents, 'global.date' | trans, 'doc.documentDate', { thClassName: 'text-right! x-min-w-40 w-40', 'fragment': fragment }) }}
                     {% else %}
-                        <th scope="row">{{ 'global.id' | trans | upper }}</th>
+                        <th scope="row">{{ 'global.document_number_short' | trans }}</th>
                         <th scope="row">{{ 'global.document_type' | trans }}</th>
                         <th scope="row">{{ 'global.name' | trans }}</th>
                         <th class="text-right" scope="row">{{ 'global.date' | trans }}</th>
@@ -27,7 +27,7 @@
             {% for document in documents %}
                 <tr>
                     <td class="woo-table-cell-light">
-                        {{ document.documentId }}
+                        {{ document.documentNumber }}
                     </td>
                     <td>
                         {% set documentType = document.judgement is defined and document.judgement.isAlreadyPublic ? 'web' : (document.fileInfo.sourceType.value) %}

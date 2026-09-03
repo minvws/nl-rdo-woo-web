@@ -12,6 +12,7 @@ use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
 use Shared\Domain\HasId;
 use Shared\Domain\Organisation\OrganisationRepository;
+use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Service\ApiPlatformService;
 use Symfony\Component\Uid\Exception\InvalidArgumentException;
 use Symfony\Component\Uid\Uuid;
@@ -22,6 +23,7 @@ final readonly class OrganisationProvider implements ProviderInterface
         private OrganisationRepository $organisationRepository,
         private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
+        private SubjectPreviewUrlGenerator $subjectPreviewUrlGenerator,
     ) {
     }
 
@@ -55,7 +57,7 @@ final readonly class OrganisationProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        $mappedDtos = OrganisationMapper::fromEntitiesWithDetail($organisations);
+        $mappedDtos = OrganisationMapper::fromEntitiesWithDetail($organisations, $this->subjectPreviewUrlGenerator);
 
         /** @var list<HasId> $organisations */
         return $this->cursorPageFactory->create(
@@ -74,6 +76,6 @@ final readonly class OrganisationProvider implements ProviderInterface
             throw EntityNotFoundException::for('Organisation', $organisationId);
         }
 
-        return OrganisationMapper::fromEntityWithDetail($organisation);
+        return OrganisationMapper::fromEntityWithDetail($organisation, $this->subjectPreviewUrlGenerator);
     }
 }

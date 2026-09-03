@@ -24,7 +24,7 @@ class DocumentNumberTest extends UnitTestCase
 
         $document = Mockery::mock(Document::class);
         $document->expects('getdocumentNumber')->andReturn($documentNumber);
-        $document->expects('getDocumentId')->times(3)->andReturn(DocumentId::create($documentId));
+        $document->expects('getDocumentId')->times(2)->andReturn(DocumentId::create($documentId));
 
         self::assertEquals($expected, strval(DocumentNumber::fromReferral($dossier, $document, $referral)));
     }

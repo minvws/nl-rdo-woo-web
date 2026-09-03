@@ -83,8 +83,8 @@ final class DossierWorkflowLogSubscriberTest extends UnitTestCase
 
     public function testLogSkipsTheTechnicalTransitionFromNewToConcept(): void
     {
-        $this->historyService->shouldNotReceive('addDossierEntry');
-        $this->logger->shouldNotReceive('info');
+        $this->historyService->expects('addDossierEntry')->never();
+        $this->logger->expects('info')->never();
 
         $this->workflowLog->log(
             $this->createEvent($this->dossier, DossierStatus::NEW->value, DossierStatus::CONCEPT->value),
@@ -93,8 +93,8 @@ final class DossierWorkflowLogSubscriberTest extends UnitTestCase
 
     public function testLogSkipsNonMovingTransitions(): void
     {
-        $this->historyService->shouldNotReceive('addDossierEntry');
-        $this->logger->shouldNotReceive('info');
+        $this->historyService->expects('addDossierEntry')->never();
+        $this->logger->expects('info')->never();
 
         $this->workflowLog->log(
             $this->createEvent($this->dossier, DossierStatus::PUBLISHED->value, DossierStatus::PUBLISHED->value),

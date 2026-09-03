@@ -9,7 +9,7 @@
 
         <twig:block name="right">
             {% if matrix_has_permission('subject.create') %}
-            <a class="bhr-btn-filled-primary" href="{{ path('app_admin_subject_create') }}" data-e2e-name="new-subject">{{ 'admin.subject.create' | trans() }}</a>
+                <a class="bhr-btn-filled-primary" href="{{ path('app_admin_subject_create') }}" data-e2e-name="new-subject">{{ 'admin.subject.create' | trans() }}</a>
             {% endif %}
         </twig:block>
     </twig:Admin:LeftAndRight>
@@ -22,15 +22,44 @@
                 <thead>
                     <tr>
                         {{ knp_pagination_sortable(pagination, 'admin.subject.subject' | trans, 'sub.name', {}, {}, 'admin/layout/sort.html.twig') }}
+                        <th scope="col">{{ "global.id" | trans }}</th>
+                        <th scope="col">{{ "admin.publications.has_landingpage" | trans }}</th>
+                        <th scope="col">{{ "admin.publications.landingpage_url" | trans }}</th>
                     </tr>
                 </thead>
                 <tbody data-e2e-name="subject-list">
-                {% for row in pagination %}
+                {% for subject in pagination %}
                     <tr>
                         <td>
-                            <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_subject_edit', { id: row.id.toBase58 }) }}">
-                                {{ row.name }}
+                            <a class="bhr-a" href="{{ path('app_admin_subject_edit', { id: subject.id.toBase58 }) }}">
+                                {{ subject.name }}
                             </a>
+                        </td>
+                        <td>
+                            <twig:Admin:CopyToClipboardLayout copy="{{ subject.id }}">
+                                {{ subject.id }}
+                            </twig:Admin:CopyToClipboardLayout>
+                        </td>
+                        <td>
+                            {% if subject.hasPublishedLandingPage %}
+                                {{ 'admin.global.yes' | trans }}
+                                {% if matrix_has_permission('subject.update') %}
+                                    - <a class="bhr-a" href="{{ path('app_admin_subject_landing_page_edit', { id: subject.id }) }}">
+                                        {{ 'admin.global.edit' | trans | lower }} <span class="sr-only">({{ subject.name }})</span>
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                {{ 'admin.global.no' | trans }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if subject.hasPublishedLandingPage %}
+                                <a class="bhr-a" href="{{ subject.landingPageUrl }}" target="_blank" rel="noopener noreferrer">
+                                    {{ subject.landingPageUrl }}
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

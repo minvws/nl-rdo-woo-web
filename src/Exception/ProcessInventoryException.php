@@ -92,9 +92,9 @@ class ProcessInventoryException extends TranslatableException
     public static function forDocumentExistsInAnotherDossier(Document $document): self
     {
         return new self(
-            sprintf('Document %s already exists in another dossier', $document->getDocumentId()?->toString() ?? ''),
+            sprintf('Document %s already exists in another dossier', $document->getDocumentId()->toString()),
             'publication.dossier.error.document_already_exists',
-            ['{document_id}' => $document->getDocumentId()?->toString() ?? ''],
+            ['{document_id}' => $document->getDocumentId()->toString()],
         );
     }
 

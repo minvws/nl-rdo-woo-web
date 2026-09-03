@@ -27,7 +27,7 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
         bind:
-            Psr\Log\LoggerInterface $logger: '@Shared\Service\Logging\EnrichedPsrLogger'
+            Psr\Log\LoggerInterface $logger: '@Shared\Domain\Logging\EnrichedPsrLogger'
 
     Shared\ApplicationId:
         factory: ['@kernel', 'getApplicationId']
@@ -119,12 +119,12 @@ services:
             - '@Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler'
             - '%app_secret%'
 
-    Shared\Service\Logging\EnrichedPsrLogger:
+    Shared\Domain\Logging\EnrichedPsrLogger:
         arguments:
             $logger: '@monolog.logger'
 
     Psr\Log\LoggerInterface:
-        alias: 'Shared\Service\Logging\EnrichedPsrLogger'
+        alias: 'Shared\Domain\Logging\EnrichedPsrLogger'
         public: true
 
     Aws\S3\S3Client:

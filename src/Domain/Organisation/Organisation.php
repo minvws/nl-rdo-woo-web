@@ -8,6 +8,7 @@ use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\OrganisationPrefixType;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Department\Department;
 use Shared\Domain\HasId;
@@ -17,6 +18,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Security\User;
+use Shared\ValueObject\OrganisationPrefix;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
@@ -39,6 +41,9 @@ class Organisation implements HasId
 
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $name;
+
+    #[ORM\Column(type: OrganisationPrefixType::NAME, length: OrganisationPrefix::MAX_LENGTH, unique: true, nullable: true)]
+    private ?OrganisationPrefix $prefix = null;
 
     /** @var Collection<array-key,Department> */
     #[ORM\ManyToMany(targetEntity: Department::class, inversedBy: 'organisations')]
@@ -96,6 +101,18 @@ class Organisation implements HasId
     public function setName(string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getPrefix(): ?OrganisationPrefix
+    {
+        return $this->prefix;
+    }
+
+    public function setPrefix(OrganisationPrefix $prefix): static
+    {
+        $this->prefix = $prefix;
 
         return $this;
     }

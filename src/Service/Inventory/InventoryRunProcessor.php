@@ -11,6 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Shared\Domain\Logging\LoggingHelper;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Exception\ProcessInventoryException;
 use Shared\Exception\TranslatableException;
@@ -18,7 +19,6 @@ use Shared\Service\DossierService;
 use Shared\Service\Inventory\Progress\ProgressUpdater;
 use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
-use Shared\Service\Logging\LoggingHelper;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 

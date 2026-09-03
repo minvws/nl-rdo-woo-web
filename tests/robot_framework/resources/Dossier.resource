@@ -87,7 +87,10 @@ Verify Admin Search Results
   [Arguments]  ${search_query}  ${expexted_nr_of_results}
   ${search_query_lowercase} =  Convert To Lower Case  ${search_query}
   Type Text  //div[@data-e2e-name="dossier-search"]//input  ${search_query_lowercase}  delay=50 ms  clear=${TRUE}
-  Get Element Count  //div[@data-e2e-name="search-previews-results"]//tbody/tr  should be  ${expexted_nr_of_results}
+  Get Element Count
+  ...  //div[@data-e2e-name="search-previews-results"]//tbody/tr
+  ...  should be
+  ...  ${expexted_nr_of_results}
 
 Click Documents Edit
   Click  //*[@data-e2e-name="documents-section"]//*[@data-e2e-name="edit-link"]

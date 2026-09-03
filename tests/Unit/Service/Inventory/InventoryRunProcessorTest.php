@@ -10,6 +10,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Shared\Domain\Logging\LoggingHelper;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Exception\TranslatableException;
@@ -22,7 +23,6 @@ use Shared\Service\Inventory\InventoryUpdater;
 use Shared\Service\Inventory\Progress\ProgressUpdater;
 use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
-use Shared\Service\Logging\LoggingHelper;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -86,11 +86,14 @@ class InventoryRunProcessorTest extends UnitTestCase
     {
         $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('hasNoChanges')->andReturnTrue();
+        $changeset->expects('getResultingTotalDocumentCount')->andReturn(0);
         $this->entityManager->expects('isOpen')->andReturnTrue();
-        $this->logger->expects('error');
 
+        $this->run->expects('hasNoErrors')->andReturnTrue();
+        $this->run->expects('hasErrors')->andReturnTrue();
         $this->run->expects('addGenericException');
         $this->run->expects('fail');
+        $this->run->expects('isConfirmed')->andReturnFalse();
         $this->run->expects('isFinal')->andReturnTrue();
         $this->run->expects('isPending')->andReturnTrue();
 

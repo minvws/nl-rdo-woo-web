@@ -41,7 +41,7 @@ class HomeController extends AbstractController
             $q = strval($request->request->get('q'));
 
             // Redirect to GET request, so we have the q in the query string.
-            return $this->redirect($this->generateUrl('app_home', ['q' => $q]));
+            return $this->redirectToRoute('app_home', ['q' => $q]);
         }
 
         // From here we always have a 'q' from the query string

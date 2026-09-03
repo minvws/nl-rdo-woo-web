@@ -127,12 +127,12 @@ class DocumentUpdaterTest extends UnitTestCase
 
         $oldReferredDoc = Mockery::mock(Document::class);
         $oldReferredDoc->expects('getDocumentNumber')->andReturn('PREFIX-matter-456');
-        $oldReferredDoc->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('456'));
+        $oldReferredDoc->expects('getDocumentId')->times(2)->andReturn(DocumentId::create('456'));
 
         $existingDocument = Mockery::mock(Document::class);
         $existingDocument->expects('getRefersTo')->andReturn(new ArrayCollection([$oldReferredDoc]));
         $existingDocument->expects('getDocumentNumber')->andReturn('PREFIX-matter-1');
-        $existingDocument->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('1'));
+        $existingDocument->expects('getDocumentId')->times(2)->andReturn(DocumentId::create('1'));
 
         // Old referred document is no longer in metadata so should be removed
         $existingDocument->expects('removeRefersTo')->with($oldReferredDoc);

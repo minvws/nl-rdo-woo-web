@@ -211,6 +211,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'subject' => [
                 'id' => $subject->getId()->toString(),
                 'name' => $subject->getName(),
+                'landingPage' => null,
             ],
             'department' => [
                 'id' => (string) $department->getId(),
@@ -295,7 +296,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 [
                     'inquiryNumbers' => [],
                     'documentDate' => $wooDecisionDocument1->getDocumentDate()?->format('Y-m-d'),
-                    'documentId' => $wooDecisionDocument1->getDocumentId()?->toString(),
+                    'documentId' => $wooDecisionDocument1->getDocumentId()->toString(),
                     'documentNumber' => $wooDecisionDocument1->getDocumentNumber(),
                     'externalId' => $wooDecisionDocument1->getExternalId()?->toString(),
                     'familyId' => $wooDecisionDocument1->getFamilyId(),
@@ -339,7 +340,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 [
                     'inquiryNumbers' => [],
                     'documentDate' => $wooDecisionDocument2->getDocumentDate()?->format('Y-m-d'),
-                    'documentId' => $wooDecisionDocument2->getDocumentId()?->toString(),
+                    'documentId' => $wooDecisionDocument2->getDocumentId()->toString(),
                     'documentNumber' => $wooDecisionDocument2->getDocumentNumber(),
                     'externalId' => $wooDecisionDocument2->getExternalId()?->toString(),
                     'familyId' => $wooDecisionDocument2->getFamilyId(),
@@ -353,7 +354,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'links' => $wooDecisionDocument2->getLinks(),
                     'refersTo' => [
                         [
-                            'documentId' => $wooDecisionDocument1->getDocumentId()?->toString(),
+                            'documentId' => $wooDecisionDocument1->getDocumentId()->toString(),
                             'externalId' => $wooDecisionDocument1->getExternalId()?->toString(),
                         ],
                     ],
@@ -1824,7 +1825,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             array_merge([
                 'inquiryNumbers' => [],
                 'documentDate' => $this->getFaker()->date(),
-                'documentId' => $document->getDocumentId()?->toString(),
+                'documentId' => $document->getDocumentId()->toString(),
                 'externalId' => $document->getExternalId()?->toString(),
                 'familyId' => $this->getFaker()->numberBetween(1, 1000),
                 'fileName' => $document->getFileInfo()->getName(),
@@ -2192,7 +2193,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             [
                 'inquiryNumbers' => [],
                 'documentDate' => $wooDecisionDocument->getDocumentDate()?->format('Y-m-d'),
-                'documentId' => $wooDecisionDocument->getDocumentId()?->toString(),
+                'documentId' => $wooDecisionDocument->getDocumentId()->toString(),
                 'externalId' => $wooDecisionDocument->getExternalId()?->toString(),
                 'familyId' => $wooDecisionDocument->getFamilyId(),
                 'fileName' => $wooDecisionDocument->getFileInfo()->getName(),
@@ -2251,7 +2252,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             [
                 'inquiryNumbers' => [],
                 'documentDate' => $wooDecisionDocument->getDocumentDate()?->addDays(1)->format('Y-m-d'),
-                'documentId' => $wooDecisionDocument->getDocumentId()?->toString(),
+                'documentId' => $wooDecisionDocument->getDocumentId()->toString(),
                 'externalId' => $wooDecisionDocument->getExternalId()?->toString(),
                 'familyId' => $wooDecisionDocument->getFamilyId(),
                 'fileName' => $wooDecisionDocument->getFileInfo()->getName(),

@@ -7,4 +7,4 @@ index:
     mappingVersion: '3'
     aliases: [woopie-write]
 counts:
-    - { percentage: 0.0, type: { name: WOO_DECISION, value: dossier }, expected: 5, actual: 0, subCounts: {  } }
+    - { percentage: 0.0, type: { name: WOO_DECISION, value: dossier }, expected: 5, actual: 0, subCounts: {} }

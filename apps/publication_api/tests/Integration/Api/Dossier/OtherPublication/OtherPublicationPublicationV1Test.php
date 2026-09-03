@@ -124,6 +124,7 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
             'subject' => [
                 'id' => $subject->getId()->toString(),
                 'name' => $subject->getName(),
+                'landingPage' => null,
             ],
             'department' => [
                 'id' => (string) $department->getId(),

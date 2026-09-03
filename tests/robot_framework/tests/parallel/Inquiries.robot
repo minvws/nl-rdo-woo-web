@@ -301,7 +301,7 @@ Verify Updated Document Name In Public Inventory
   Go To Admin
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Public URL
-  ${inventory_file} =  Generic Download Click  //*[@data-e2e-name="download-inventory-file-link"]
+  ${inventory_file} =  Download WooDecision Inventory
   Open Excel Document  ${inventory_file}  inventory
   ${names_column} =  Read Excel Column  col_num=3  row_offset=0  max_num=10
   Should Contain  ${names_column}  ${new_doc_name}

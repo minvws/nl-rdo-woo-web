@@ -45,7 +45,7 @@ class SubTypeIngesterTest extends UnitTestCase
 
         $this->strategyA->expects('canHandle')->with($document)->andReturnFalse();
         $this->strategyB->expects('canHandle')->with($document)->andReturnTrue();
-        $this->strategyC->shouldNotReceive('canHandle');
+        $this->strategyC->expects('canHandle')->never();
 
         $this->strategyB->expects('handle')->with($document, $options);
 

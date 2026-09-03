@@ -31,7 +31,9 @@ class HistoryRepository extends ServiceEntityRepository
             ->andWhere('h.identifier = :identifier')
             ->setParameter('type', $type)
             ->setParameter('identifier', $identifier)
-            ->orderBy('h.createdDt', 'DESC');
+            ->orderBy('h.createdDt', 'DESC')
+            // createdDt is a TIMESTAMP(0), so entries from one request tie; ids are time-ordered.
+            ->addOrderBy('h.id', 'DESC');
 
         if ($mode === HistoryService::MODE_PUBLIC) {
             if ($type == HistoryService::TYPE_DOSSIER) {

@@ -93,6 +93,7 @@ class UpdateMainDocumentHandlerTest extends UnitTestCase
         $annualReportDocument->expects('setLanguage')->with($language);
         $annualReportDocument->expects('setGrounds')->with($grounds);
         $annualReportDocument->expects('getFileInfo')->andReturn(new FileInfo());
+        $annualReportDocument->expects('getMetadataSnapshot')->twice()->andReturn(['unchanged']);
 
         $this->dossierRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
 
@@ -103,7 +104,12 @@ class UpdateMainDocumentHandlerTest extends UnitTestCase
 
         $this->messageBus
             ->expects('dispatch')
-            ->with(Mockery::type(MainDocumentUpdatedEvent::class))
+            ->with(Mockery::on(static function (MainDocumentUpdatedEvent $event): bool {
+                self::assertTrue($event->fileUpdated);
+                self::assertFalse($event->metadataUpdated);
+
+                return true;
+            }))
             ->andReturns(new Envelope(new stdClass()));
 
         $validatorList = Mockery::mock(ConstraintViolationListInterface::class);
@@ -126,6 +132,124 @@ class UpdateMainDocumentHandlerTest extends UnitTestCase
                 $language,
                 $grounds,
                 $uploadFileReference,
+            ),
+        );
+    }
+
+    public function testUpdateWithoutFileUploadDispatchesMetadataOnlyEvent(): void
+    {
+        $formalDate = PlainDate::today();
+        $internalReference = 'foo bar';
+        $attachmentType = AttachmentType::ANNUAL_PLAN;
+        $language = AttachmentLanguage::NLD;
+        $grounds = ['foo', 'bar'];
+
+        $dossierUuid = Uuid::v6();
+        $dossier = Mockery::mock(AnnualReport::class)->makePartial();
+        $dossier->expects('getId')->times(2)->andReturn($dossierUuid);
+        $dossier->expects('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
+
+        $this->entityManager
+            ->expects('getRepository')
+            ->with(AnnualReportMainDocument::class)
+            ->andReturn($this->annualReportDocumentRepository);
+
+        $annualReportDocument = Mockery::mock(AnnualReportMainDocument::class);
+        $annualReportDocument->expects('getId')->andReturn(Uuid::v6());
+        $annualReportDocument->expects('getDossier')->andReturn($dossier);
+        $annualReportDocument->expects('setFormalDate')->with($formalDate);
+        $annualReportDocument->expects('setInternalReference')->with($internalReference);
+        $annualReportDocument->expects('setType')->with($attachmentType);
+        $annualReportDocument->expects('setLanguage')->with($language);
+        $annualReportDocument->expects('setGrounds')->with($grounds);
+        $annualReportDocument->expects('getFileInfo')->andReturn(new FileInfo());
+        $annualReportDocument->expects('getMetadataSnapshot')->twice()->andReturn(['before'], ['after']);
+
+        $this->dossierRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
+
+        $this->dossierWorkflowManager->expects('applyTransition')->with($dossier, DossierStatusTransition::UPDATE_MAIN_DOCUMENT);
+
+        $this->annualReportDocumentRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($annualReportDocument);
+        $this->annualReportDocumentRepository->expects('save')->with($annualReportDocument, true);
+
+        $this->messageBus
+            ->expects('dispatch')
+            ->with(Mockery::on(static function (MainDocumentUpdatedEvent $event): bool {
+                self::assertFalse($event->fileUpdated);
+                self::assertTrue($event->metadataUpdated);
+
+                return true;
+            }))
+            ->andReturns(new Envelope(new stdClass()));
+
+        $validatorList = Mockery::mock(ConstraintViolationListInterface::class);
+        $validatorList->expects('count')->andReturn(0);
+        $this->validator->expects('validate')->andReturn($validatorList);
+
+        $this->uploadStorer->expects('storeUploadForEntityWithSourceTypeAndName')->never();
+
+        $this->handler->__invoke(
+            new UpdateMainDocumentCommand(
+                $dossierUuid,
+                $formalDate,
+                $internalReference,
+                $attachmentType,
+                $language,
+                $grounds,
+                null,
+            ),
+        );
+    }
+
+    public function testNoEventIsDispatchedWhenNothingChanged(): void
+    {
+        $formalDate = PlainDate::today();
+        $internalReference = 'foo bar';
+        $attachmentType = AttachmentType::ANNUAL_PLAN;
+        $language = AttachmentLanguage::NLD;
+        $grounds = ['foo', 'bar'];
+
+        $dossierUuid = Uuid::v6();
+        $dossier = Mockery::mock(AnnualReport::class)->makePartial();
+        $dossier->expects('getId')->andReturn($dossierUuid);
+        $dossier->expects('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
+
+        $this->entityManager
+            ->expects('getRepository')
+            ->with(AnnualReportMainDocument::class)
+            ->andReturn($this->annualReportDocumentRepository);
+
+        $annualReportDocument = Mockery::mock(AnnualReportMainDocument::class);
+        $annualReportDocument->expects('setFormalDate')->with($formalDate);
+        $annualReportDocument->expects('setInternalReference')->with($internalReference);
+        $annualReportDocument->expects('setType')->with($attachmentType);
+        $annualReportDocument->expects('setLanguage')->with($language);
+        $annualReportDocument->expects('setGrounds')->with($grounds);
+        $annualReportDocument->expects('getMetadataSnapshot')->twice()->andReturn(['unchanged']);
+
+        $this->dossierRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
+
+        $this->dossierWorkflowManager->expects('applyTransition')->with($dossier, DossierStatusTransition::UPDATE_MAIN_DOCUMENT);
+
+        $this->annualReportDocumentRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($annualReportDocument);
+        $this->annualReportDocumentRepository->expects('save')->with($annualReportDocument, true);
+
+        $validatorList = Mockery::mock(ConstraintViolationListInterface::class);
+        $validatorList->expects('count')->andReturn(0);
+        $this->validator->expects('validate')->andReturn($validatorList);
+
+        $this->uploadStorer->expects('storeUploadForEntityWithSourceTypeAndName')->never();
+        $this->messageBus->expects('dispatch')->never();
+
+        $this->handler->__invoke(
+            new UpdateMainDocumentCommand(
+                $dossierUuid,
+                $formalDate,
+                $internalReference,
+                $attachmentType,
+                $language,
+                $grounds,
+                null,
             ),
         );
     }
@@ -183,6 +307,7 @@ class UpdateMainDocumentHandlerTest extends UnitTestCase
         $annualReportDocument->expects('setType')->with($attachmentType);
         $annualReportDocument->expects('setLanguage')->with($language);
         $annualReportDocument->expects('setGrounds')->with($grounds);
+        $annualReportDocument->expects('getMetadataSnapshot')->twice()->andReturn(['unchanged']);
 
         $dossierUuid = Uuid::v6();
         $dossier = Mockery::mock(AnnualReport::class)->makePartial();

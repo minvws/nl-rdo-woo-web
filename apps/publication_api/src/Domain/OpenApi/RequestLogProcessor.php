@@ -6,12 +6,11 @@ namespace PublicationApi\Domain\OpenApi;
 
 use Monolog\Attribute\AsMonologProcessor;
 use Monolog\LogRecord;
-use Monolog\Processor\ProcessorInterface;
 use Shared\Service\Security\ApiUser;
 use Symfony\Bundle\SecurityBundle\Security;
 
 #[AsMonologProcessor()]
-readonly class RequestLogProcessor implements ProcessorInterface
+readonly class RequestLogProcessor
 {
     public function __construct(
         private Security $security,

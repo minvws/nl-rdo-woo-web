@@ -25,22 +25,28 @@ final readonly class MainDocumentHistoryHandler
     #[AsMessageHandler()]
     public function handleCreate(MainDocumentCreatedEvent $event): void
     {
-        $this->logEventToHistory($event, 'main_document_added', HistoryService::MODE_PRIVATE);
+        $this->logEventToHistory($event, 'main_document_added');
     }
 
     #[AsMessageHandler()]
     public function handleUpdate(MainDocumentUpdatedEvent $event): void
     {
-        $this->logEventToHistory($event, 'main_document_updated', HistoryService::MODE_BOTH);
+        if ($event->metadataUpdated) {
+            $this->logEventToHistory($event, 'main_document_updated');
+        }
+
+        if ($event->fileUpdated) {
+            $this->logEventToHistory($event, 'main_document_replaced');
+        }
     }
 
     #[AsMessageHandler()]
     public function handleDelete(MainDocumentDeletedEvent $event): void
     {
-        $this->logEventToHistory($event, 'main_document_deleted', HistoryService::MODE_PRIVATE);
+        $this->logEventToHistory($event, 'main_document_deleted');
     }
 
-    private function logEventToHistory(AbstractMainDocumentEvent $event, string $key, string $mode): void
+    private function logEventToHistory(AbstractMainDocumentEvent $event, string $key): void
     {
         $dossier = $this->repository->findOneByDossierId($event->dossierId);
 
@@ -50,7 +56,7 @@ final readonly class MainDocumentHistoryHandler
             context: [
                 'filename' => $event->filename,
             ],
-            mode: $mode,
+            mode: $dossier->getStatus()->isPublished() ? HistoryService::MODE_BOTH : HistoryService::MODE_PRIVATE,
         );
     }
 }

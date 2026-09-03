@@ -68,4 +68,9 @@ EOF,
             ]);
         });
     }
+
+    protected function getLogger(): LoggerInterface
+    {
+        return $this->logger;
+    }
 }

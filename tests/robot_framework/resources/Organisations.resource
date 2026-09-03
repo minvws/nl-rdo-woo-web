@@ -44,7 +44,8 @@ Select Organisation
   [Arguments]  ${organisation}=E2E Test Organisation
   ${count} =  Get Element Count  //*[@data-e2e-name="organisation-switcher"]
   IF  ${count} > 0
-    ${already_selected} =  Get Element Count  //*[@data-e2e-name="active-organisation"][contains(.,'${organisation}')]
+    ${already_selected} =  Get Element Count
+    ...  //*[@data-e2e-name="active-organisation"][contains(.,'${organisation}')]
     IF  not ${already_selected}
       Click Organisation Selector
       Click  //*[@data-e2e-name="organisation-switcher"]//li[contains(.,'${organisation}')]
@@ -55,7 +56,8 @@ Create New Organisation
   [Arguments]  ${organisation_name}=EMPTY  ${responsible_department_name}=EMPTY  ${prefix}=EMPTY
   Click Organisation Selector
   Click Manage Organisations
-  ${already_exists} =  Get Element Count  //*[@data-e2e-name="organisations-table"][contains(.,'${organisation_name}')]
+  ${already_exists} =  Get Element Count
+  ...  //*[@data-e2e-name="organisations-table"][contains(.,'${organisation_name}')]
   IF  not ${already_exists}
     Click  //a[@data-e2e-name="create-organisation"]
     IF  '${organisation_name}' == 'EMPTY' and '${prefix}' == 'EMPTY'
@@ -123,7 +125,8 @@ Click Save Prefixes
     ...  message=Error shown, even after retry
   END
   # The following check has been added to check if the save went succesful in parallel execution. If the check fails, the upper keyword will retry it.
-  ${prefix_save_error} =  Get Element Count  //*[contains(.,'The prefix can only be set on creation, never updated')]
+  ${prefix_save_error} =  Get Element Count
+  ...  //*[contains(.,'The prefix can only be set on creation, never updated')]
   IF  ${prefix_save_error} > 0
     Log  message=Saving prefixes failed due to parallel execution  level=WARN
   END

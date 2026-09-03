@@ -6,8 +6,6 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 
 use Doctrine\Common\Collections\ReadableCollection;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use Shared\ValueObject\DocumentId;
-use Webmozart\Assert\Assert;
 
 use function array_key_exists;
 
@@ -81,8 +79,7 @@ readonly class DossierUploadStatus
         }
 
         return $this->getMissingDocuments()->filter(
-            static fn (Document $doc): bool => $doc->getDocumentId() !== null
-                && ! array_key_exists($doc->getDocumentId()->toString(), $docIdsToIgnore),
+            static fn (Document $doc): bool => ! array_key_exists($doc->getDocumentId()->toString(), $docIdsToIgnore),
         );
     }
 
@@ -93,11 +90,6 @@ readonly class DossierUploadStatus
     {
         return $this
             ->getMissingDocuments()
-            ->map(static function (Document $document): string {
-                $documentId = $document->getDocumentId();
-                Assert::isInstanceOf($documentId, DocumentId::class);
-
-                return $documentId->toString();
-            });
+            ->map(static fn (Document $document): string => $document->getDocumentId()->toString());
     }
 }

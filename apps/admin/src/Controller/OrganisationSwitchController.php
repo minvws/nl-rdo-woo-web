@@ -45,9 +45,7 @@ class OrganisationSwitchController extends AbstractController
 
         $referer = $request->headers->get('referer');
         if ($referer === null || $referer === '') {
-            return $this->redirect(
-                $this->generateUrl(self::FALLBACK_ROUTE),
-            );
+            return $this->redirectToRoute(self::FALLBACK_ROUTE);
         }
 
         try {
@@ -60,8 +58,6 @@ class OrganisationSwitchController extends AbstractController
             $routeName = self::FALLBACK_ROUTE;
         }
 
-        return $this->redirect(
-            $this->generateUrl($routeName),
-        );
+        return $this->redirectToRoute($routeName);
     }
 }

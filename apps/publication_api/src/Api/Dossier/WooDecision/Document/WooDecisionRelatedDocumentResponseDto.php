@@ -14,7 +14,7 @@ use function array_values;
 final readonly class WooDecisionRelatedDocumentResponseDto
 {
     public function __construct(
-        public ?DocumentId $documentId,
+        public DocumentId $documentId,
         public ?ExternalId $externalId,
     ) {
     }

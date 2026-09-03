@@ -12,7 +12,7 @@ Create WooDecision Dossier In Status
   Send Put Request WooDecision  ${EXTERNAL_ID}  ${body}  200
   Upload Main Document  woo-decision  ${TEST_DATA_ROOT}/dummy.txt  ${EXTERNAL_ID}
   Upload Document  woo-decision  ${TEST_DATA_ROOT}/dummy.txt  ${EXTERNAL_ID}  ${body}[documents][0][externalId]
-  Wait Until Keyword Succeeds  5x  2s  Publication Status Should Be  woo-decision  ${target_status}
+  Publication Status Should Be  woo-decision  ${target_status}
 
 Get Dates For Status
   [Arguments]  ${status}
@@ -104,7 +104,9 @@ Get WooDecision Document By External Id
   ...  alias=publication_api
   ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/external/${dossier_external_id}
   FOR  ${document}  IN  @{get_response.json()}[documents]
-    IF  '${document}[externalId]' == '${document_external_id}'  RETURN  ${document}
+    IF  '${document}[externalId]' == '${document_external_id}'
+      RETURN  ${document}
+    END
   END
   Fatal Error  No document found with externalId '${document_external_id}'
 

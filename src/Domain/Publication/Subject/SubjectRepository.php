@@ -64,6 +64,34 @@ class SubjectRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findPublishedLandingPageBySlug(string $slug): Subject
+    {
+        /** @var Subject */
+        return $this->createQueryBuilder('subject')
+            ->where('subject.landingPageSlug = :slug')
+            ->andWhere('subject.landingPageStatus = :status')
+            // ->andWhere('subject.landingPageContentTree IS NOT NULL')
+            ->setParameter('slug', $slug)
+            ->setParameter('status', SubjectLandingPageStatus::PUBLISHED)
+            ->getQuery()
+            ->getSingleResult();
+    }
+
+    public function findConceptLandingPageByIdAndPreviewToken(string $id, string $previewToken): Subject
+    {
+        /** @var Subject */
+        return $this->createQueryBuilder('subject')
+            ->where('subject.id = :id')
+            ->andWhere('subject.landingPageStatus = :status')
+            ->andWhere('subject.landingPagePreviewToken = :preview_token')
+            ->andWhere('subject.landingPageContentTree IS NOT NULL')
+            ->setParameter('id', $id)
+            ->setParameter('status', SubjectLandingPageStatus::CONCEPT)
+            ->setParameter('preview_token', $previewToken)
+            ->getQuery()
+            ->getSingleResult();
+    }
+
     public function isInUse(Subject $subject): bool
     {
         return (bool) $this->createQueryBuilder('subject')

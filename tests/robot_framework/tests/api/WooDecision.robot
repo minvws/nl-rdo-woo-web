@@ -7,6 +7,7 @@ Documentation       Tests for the WooDecision endpoint, utilizing a custom DataD
 Library             DataDriver  reader_class=libraries/yaml_reader.py  file_path=files/api/woodecision.yaml
 Resource            ../../resources/API.resource
 Resource            ../../resources/Dossier.resource
+Resource            ../../resources/WooDecision.resource
 Suite Setup         Suite Setup
 Test Template       WooDecision Test Case
 Test Tags           api  api-woodecision
@@ -81,7 +82,7 @@ Create WooDecision  # robotcode: ignore
       ...  ${document}[externalId]
       ...  ${document}[expected_response_status]
     END
-    Wait Until Keyword Succeeds  5x  2s  Publication Status Should Be  woo-decision  ${expected_publication_status}
+    Publication Status Should Be  woo-decision  ${expected_publication_status}
   END
 
 Parse And Randomize Dossier Data
@@ -243,9 +244,6 @@ Verify WooDecision Dossier Metadata On Public
   ${reference_lower} =  Convert To Lower Case  ${DOSSIER_REFERENCE}
   Get Text  //*[@data-e2e-name="dossier-metadata-title"]  contains  ${DOSSIER_REFERENCE}
   Get Text  //*[@data-e2e-name="dossier-metadata-number"]  contains  ${reference_lower}
-
-Download WooDecision Inventory
-  Generic Download Click  //*[@data-e2e-name="download-inventory-file-link"]
 
 Download WooDecision Main Document
   Click  //*[@data-e2e-name="main-document-detail-link"]

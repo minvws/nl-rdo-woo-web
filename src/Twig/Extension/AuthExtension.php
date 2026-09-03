@@ -26,7 +26,7 @@ class AuthExtension extends AbstractExtension
     {
         return [
             new TwigFunction('matrix_has_permission', $this->runtime->hasPermission(...)),
-            new TwigFunction('user_can_edit_landingpage', $this->departmentService->userCanEditLandingpage(...)),
+            new TwigFunction('user_can_edit_department_landingpage', $this->departmentService->userCanEditLandingpage(...)),
         ];
     }
 }

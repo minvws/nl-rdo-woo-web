@@ -1,0 +1,41 @@
+@utility woo-accordion-list {
+    @apply border border-solid rounded-md border-woo-gray-200;
+
+    > li:not(:last-child) {
+        @apply border-b border-solid border-woo-gray-200;
+    }
+}
+
+@utility woo-accordion {
+    > summary {
+        @apply relative py-2 pl-8;
+    }
+
+    > summary::before {
+        @apply content-[''] block bg-woo-gray-700 w-6 h-6 absolute left-2 top-2.5 transform -rotate-90 motion-safe:transition-transform;
+        mask-image: url(@img/chevron-down.svg);
+    }
+
+    &::details-content {
+        @apply block overflow-hidden;
+        @apply block-0 motion-safe:transition-[block-size,content-visibility] motion-safe:transition-discrete;
+
+        @media print {
+            @apply block-auto;
+        }
+    }
+
+    &[open] {
+        &::details-content {
+            /* Fallback for browsers that don't support calc-size() function */
+            @apply block-auto;
+
+            /* calc-size() function allows transition to height: auto; */
+            block-size: calc-size(auto, size);
+        }
+
+        > summary::before {
+            @apply rotate-0;
+        }
+    }
+}

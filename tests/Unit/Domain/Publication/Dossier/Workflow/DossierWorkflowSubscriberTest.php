@@ -77,7 +77,7 @@ final class DossierWorkflowSubscriberTest extends UnitTestCase
 
     public function testHandleEntityUpdateThrowsExceptionWhenTheSubjectIsNotADossier(): void
     {
-        $this->dossierService->shouldNotReceive('handleEntityUpdate');
+        $this->dossierService->expects('handleEntityUpdate')->never();
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -97,7 +97,7 @@ final class DossierWorkflowSubscriberTest extends UnitTestCase
 
     public function testSynchronizeArtifactsSkipsDossiersOtherThanWooDecisions(): void
     {
-        $this->dossierDispatcher->shouldNotReceive('dispatchSynchronizeArtifactsCommand');
+        $this->dossierDispatcher->expects('dispatchSynchronizeArtifactsCommand')->never();
 
         $this->subscriber->synchronizeArtifacts(
             $this->createEvent(
@@ -124,7 +124,7 @@ final class DossierWorkflowSubscriberTest extends UnitTestCase
     {
         $this->dossier->expects('getStatus')->andReturn($status);
 
-        $this->dossierDispatcher->shouldNotReceive('dispatchSynchronizeArtifactsCommand');
+        $this->dossierDispatcher->expects('dispatchSynchronizeArtifactsCommand')->never();
 
         $this->subscriber->synchronizeArtifacts(
             $this->createEvent($this->dossier, DossierStatus::CONCEPT->value, $status->value),
@@ -135,7 +135,7 @@ final class DossierWorkflowSubscriberTest extends UnitTestCase
     {
         $this->dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
 
-        $this->dossierDispatcher->shouldNotReceive('dispatchSynchronizeArtifactsCommand');
+        $this->dossierDispatcher->expects('dispatchSynchronizeArtifactsCommand')->never();
 
         $this->subscriber->synchronizeArtifacts(
             $this->createEvent($this->dossier, DossierStatus::CONCEPT->value, DossierStatus::CONCEPT->value),
@@ -144,7 +144,7 @@ final class DossierWorkflowSubscriberTest extends UnitTestCase
 
     public function testSynchronizeArtifactsThrowsExceptionWhenTheSubjectIsNotADossier(): void
     {
-        $this->dossierDispatcher->shouldNotReceive('dispatchSynchronizeArtifactsCommand');
+        $this->dossierDispatcher->expects('dispatchSynchronizeArtifactsCommand')->never();
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -157,7 +157,7 @@ final class DossierWorkflowSubscriberTest extends UnitTestCase
     {
         $this->dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
 
-        $this->dossierDispatcher->shouldNotReceive('dispatchSynchronizeArtifactsCommand');
+        $this->dossierDispatcher->expects('dispatchSynchronizeArtifactsCommand')->never();
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -168,7 +168,7 @@ final class DossierWorkflowSubscriberTest extends UnitTestCase
     {
         $this->dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
 
-        $this->dossierDispatcher->shouldNotReceive('dispatchSynchronizeArtifactsCommand');
+        $this->dossierDispatcher->expects('dispatchSynchronizeArtifactsCommand')->never();
 
         $this->expectException(InvalidArgumentException::class);
 
@@ -183,7 +183,7 @@ final class DossierWorkflowSubscriberTest extends UnitTestCase
     {
         $this->dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
 
-        $this->dossierDispatcher->shouldNotReceive('dispatchSynchronizeArtifactsCommand');
+        $this->dossierDispatcher->expects('dispatchSynchronizeArtifactsCommand')->never();
 
         $this->expectException(InvalidArgumentException::class);
 

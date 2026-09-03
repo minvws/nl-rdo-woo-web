@@ -25,15 +25,7 @@ readonly class BatchDownloadService
 
     public function refresh(BatchDownloadScope $scope): void
     {
-        $batches = $this->batchRepository->getAllForScope($scope);
-        foreach ($batches as $batch) {
-            if ($batch->getStatus()->isOutdated()) {
-                continue;
-            }
-
-            $batch->markAsOutdated();
-            $this->batchRepository->save($batch);
-        }
+        $this->batchRepository->markAllForScopeAsOutdated($scope);
 
         $type = $this->getType($scope);
         if (! $type->isAvailableForBatchDownload($scope)) {

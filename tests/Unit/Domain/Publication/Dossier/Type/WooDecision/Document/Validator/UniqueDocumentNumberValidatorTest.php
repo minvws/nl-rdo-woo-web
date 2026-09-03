@@ -31,10 +31,10 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
     public function testNoViolationWhenValueIsNotADocument(): void
     {
         $repository = Mockery::mock(DocumentRepository::class);
-        $repository->shouldNotReceive('findOneByDocumentNumberCaseInsensitive');
+        $repository->expects('findOneByDocumentNumberCaseInsensitive')->never();
 
         $context = Mockery::mock(ExecutionContextInterface::class);
-        $context->shouldNotReceive('buildViolation');
+        $context->expects('buildViolation')->never();
 
         $validator = new UniqueDocumentNumberValidator($repository);
         $validator->initialize($context);
@@ -51,7 +51,7 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
         $repository->expects('findOneByDocumentNumberCaseInsensitive')->with('PREFIX-sint-doc1')->andReturnNull();
 
         $context = Mockery::mock(ExecutionContextInterface::class);
-        $context->shouldNotReceive('buildViolation');
+        $context->expects('buildViolation')->never();
 
         $validator = new UniqueDocumentNumberValidator($repository);
         $validator->initialize($context);
@@ -74,7 +74,7 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
         $repository->expects('findOneByDocumentNumberCaseInsensitive')->with('PREFIX-sint-doc1')->andReturn($conflicting);
 
         $context = Mockery::mock(ExecutionContextInterface::class);
-        $context->shouldNotReceive('buildViolation');
+        $context->expects('buildViolation')->never();
 
         $validator = new UniqueDocumentNumberValidator($repository);
         $validator->initialize($context);

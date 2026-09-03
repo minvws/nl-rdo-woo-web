@@ -290,7 +290,7 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
 
         $this->batchArchiver->expects('cleanup');
 
-        $this->batchArchiver->shouldNotReceive('addDocument')->with($documentOne);
+        $this->batchArchiver->expects('addDocument')->with($documentOne)->never();
 
         $this->assertFalse($this->zipGenerator->generateArchive($this->batchDownload));
     }
@@ -545,7 +545,7 @@ final class BatchDownloadZipGeneratorTest extends UnitTestCase
 
         $this->batchArchiver->expects('cleanup');
 
-        $this->batchDownload->shouldNotReceive('complete');
+        $this->batchDownload->expects('complete')->never();
 
         $this->assertFalse($this->zipGenerator->generateArchive($this->batchDownload));
     }

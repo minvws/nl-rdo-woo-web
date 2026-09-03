@@ -1,9 +1,6 @@
--
-    name: MINVWS
-    value: minvws
--
-    name: MINFIN
-    value: minfin
--
-    name: MINBUZA
-    value: minbuza
+- name: MINVWS
+  value: minvws
+- name: MINFIN
+  value: minfin
+- name: MINBUZA
+  value: minbuza

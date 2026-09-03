@@ -44,8 +44,8 @@ class MarkdownExtensionRuntimeTest extends UnitTestCase
     {
         $input = null;
         $renderedContent = Mockery::mock(RenderedContentInterface::class);
-        $renderedContent->shouldNotReceive('getContent');
-        $this->converter->shouldNotReceive('convert');
+        $renderedContent->expects('getContent')->never();
+        $this->converter->expects('convert')->never();
 
         $this->assertNull($this->runtime->renderMarkdown($input));
     }

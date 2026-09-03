@@ -11,7 +11,7 @@
 }
 
 @utility bhr-dialog__title {
-  @apply bhr-title-sm mb-6 mr-24;
+  @apply bhr-title-sm text-[1.4rem] mb-6 mr-24;
 }
 
 @utility bhr-dialog__close-btn {

@@ -65,6 +65,17 @@ class InventoryReaderException extends FileReaderException
         );
     }
 
+    public static function forMissingMatterAndPublicationContextInRow(int $rowIndex): self
+    {
+        return new self(
+            "Missing Matter and publication context in inventory row #$rowIndex",
+            'publication.dossier.error.matter_or_publication_context_required',
+            [
+                '{rownumber}' => strval($rowIndex),
+            ],
+        );
+    }
+
     public static function forMatterAndPublicationContextCombination(): self
     {
         return new self(

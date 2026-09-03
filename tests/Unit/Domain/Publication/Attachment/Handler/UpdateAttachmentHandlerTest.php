@@ -76,6 +76,7 @@ class UpdateAttachmentHandlerTest extends UnitTestCase
         );
 
         $attachment = Mockery::mock(AnnualReportAttachment::class);
+        $attachment->expects('getMetadataSnapshot')->twice()->andReturn(['before'], ['after']);
 
         $this->entityLoader
             ->expects('loadAndValidateAttachment')
@@ -89,7 +90,7 @@ class UpdateAttachmentHandlerTest extends UnitTestCase
 
         $this->attachmentRepository->expects('save')->with($attachment, true);
 
-        $this->dispatcher->expects('dispatchAttachmentUpdatedEvent')->with($attachment);
+        $this->dispatcher->expects('dispatchAttachmentMetadataAndFileUpdatedEvent')->with($attachment);
 
         $this->uploadStorer
             ->expects('storeUploadForEntityWithSourceTypeAndName')
@@ -97,6 +98,36 @@ class UpdateAttachmentHandlerTest extends UnitTestCase
                 $attachment,
                 $uploadRef,
             );
+
+        $this->handler->__invoke($command);
+    }
+
+    public function testInvokeDispatchesNoEventWhenNothingChanged(): void
+    {
+        $command = new UpdateAttachmentCommand(
+            $dossierUuid = Uuid::v6(),
+            $attachmentUuid = Uuid::v6(),
+        );
+
+        $attachment = Mockery::mock(AnnualReportAttachment::class);
+        $attachment->expects('getMetadataSnapshot')->twice()->andReturn(['unchanged']);
+
+        $this->entityLoader
+            ->expects('loadAndValidateAttachment')
+            ->with($dossierUuid, $attachmentUuid, DossierStatusTransition::UPDATE_ATTACHMENT)
+            ->andReturn($attachment);
+
+        $violations = Mockery::mock(ConstraintViolationListInterface::class);
+        $violations->expects('count')->andReturn(0);
+
+        $this->validator->expects('validate')->with($attachment)->andReturn($violations);
+
+        $this->attachmentRepository->expects('save')->with($attachment, true);
+
+        $this->dispatcher->expects('dispatchAttachmentMetadataAndFileUpdatedEvent')->never();
+        $this->dispatcher->expects('dispatchAttachmentFileUpdatedEvent')->never();
+        $this->dispatcher->expects('dispatchAttachmentMetadataUpdatedEvent')->never();
+        $this->uploadStorer->expects('storeUploadForEntityWithSourceTypeAndName')->never();
 
         $this->handler->__invoke($command);
     }

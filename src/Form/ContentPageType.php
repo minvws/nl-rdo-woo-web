@@ -11,7 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * @template-extends AbstractType<LandingPageType>
+ * @template-extends AbstractType<ContentPageType>
  */
 class ContentPageType extends AbstractType
 {

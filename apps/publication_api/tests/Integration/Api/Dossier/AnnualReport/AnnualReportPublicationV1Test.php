@@ -123,6 +123,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
             'subject' => [
                 'id' => $subject->getId()->toString(),
                 'name' => $subject->getName(),
+                'landingPage' => null,
             ],
             'department' => [
                 'id' => (string) $department->getId(),

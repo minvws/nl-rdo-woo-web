@@ -50,7 +50,7 @@ final class NoticeNotPublicViewFactoryTest extends UnitTestCase
                 ->with('global.dossiers.notice_not_public')
                 ->andReturn($expectedTitle);
         } else {
-            $translator->shouldNotReceive('trans');
+            $translator->expects('trans')->never();
         }
 
         $noticeNotPublic = Mockery::mock(NoticeNotPublicEntity::class);

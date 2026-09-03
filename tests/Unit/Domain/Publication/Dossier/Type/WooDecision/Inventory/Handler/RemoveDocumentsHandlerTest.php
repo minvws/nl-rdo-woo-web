@@ -89,8 +89,8 @@ class RemoveDocumentsHandlerTest extends UnitTestCase
 
         $this->logger->expects('warning');
 
-        $this->documentService->shouldNotReceive('removeDocumentFromDossier');
-        $this->dossierService->shouldNotReceive('validateCompletion');
+        $this->documentService->expects('removeDocumentFromDossier')->never();
+        $this->dossierService->expects('validateCompletion')->never();
 
         $this->handler->__invoke($message);
     }
@@ -129,7 +129,7 @@ class RemoveDocumentsHandlerTest extends UnitTestCase
 
         $this->wooDecisionRepository->expects('find')->with($dossierId)->andReturn($dossier);
 
-        $this->batchDownloadService->shouldNotReceive('refresh');
+        $this->batchDownloadService->expects('refresh')->never();
         $this->dossierService->expects('validateCompletion')->with($dossier);
 
         $this->handler->__invoke($message);

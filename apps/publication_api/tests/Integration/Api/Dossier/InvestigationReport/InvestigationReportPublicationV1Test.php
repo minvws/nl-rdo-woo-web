@@ -124,6 +124,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
             'subject' => [
                 'id' => $subject->getId()->toString(),
                 'name' => $subject->getName(),
+                'landingPage' => null,
             ],
             'department' => [
                 'id' => (string) $department->getId(),

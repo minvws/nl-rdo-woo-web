@@ -17,10 +17,6 @@ use function sodium_crypto_box_secretkey;
 #[AsCommand(name: 'woopie:auditlog:generate-keys', description: 'Creates a new keypair for auditlog encryption')]
 class AuditLogGenerateKey extends Command
 {
-    protected function configure(): void
-    {
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         unset($input);

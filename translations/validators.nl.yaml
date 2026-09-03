@@ -163,6 +163,13 @@ dossier.main_document.not_uploaded: 'Een dossier zonder geüpload hoofddocument 
 dossier.incomplete_documents: 'Een dossier met onvolledige documenten kan niet gepubliceerd worden'
 dossier.incomplete_attachments: 'Een dossier met onvolledige bijlagen kan niet gepubliceerd worden'
 subject_already_exists: 'Dit onderwerp bestaat al'
+subject_landing_page_description_required: 'Vul een omschrijving voor de landingspagina in'
+subject_landing_page_slug_already_exists: 'Deze landing-page url bestaat al'
+subject_landing_page_slug_invalid_format: 'De URL mag alleen bestaan uit letters, cijfers en streepjes'
+subject_landing_page_slug_invalid_length: 'De URL moet minimaal {{ min }} en maximaal {{ max }} tekens bevatten'
+subject_landing_page_slug_required: 'Vul een URL voor de landingspagina in'
+subject_landing_page_title_invalid_length: 'De titel mag maximaal {{ max }} tekens bevatten'
+subject_landing_page_title_required: 'Vul een titel voor de landingspagina in'
 alpha_numeric_dash_only: 'Prefix mag alleen bestaan uit letters, cijfers en streepjes'
 inquiry_numbers_invalid: "Zaaknummers mogen alleen letters, cijfers en verbindingstekens bevatten. Maximale lengte is 255 tekens."
 external_id_invalid_characters: 'Het externe id mag alleen bestaan uit letters, cijfers en de tekens: -, ., _, ~'

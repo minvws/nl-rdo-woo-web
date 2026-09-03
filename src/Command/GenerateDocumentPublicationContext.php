@@ -99,13 +99,8 @@ class GenerateDocumentPublicationContext extends Command
 
     private function getPublicationContext(SymfonyStyle $io, Document $document): ?PublicationContext
     {
-        $documentId = $document->getDocumentId();
-        if ($documentId === null) {
-            return null;
-        }
-
         $documentNumber = $document->getDocumentNumber();
-        $suffix = sprintf('-%s', $documentId->toString());
+        $suffix = sprintf('-%s', $document->getDocumentId()->toString());
 
         if (! str_ends_with($documentNumber, $suffix)) {
             return null;

@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace Shared\Tests\Integration\Controller\Public\Dossier\WooDecision;
 
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Tests\Factory\DocumentFactory;
+use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\InquiryFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\PlainDate;
 
 use function sprintf;
+use function trim;
 
 final class InquiryControllerTest extends SharedWebTestCase
 {
@@ -94,5 +99,65 @@ final class InquiryControllerTest extends SharedWebTestCase
         self::assertStringContainsString('1 document is hierna gedeeltelijk openbaar gemaakt.', $content);
         self::assertStringContainsString('1 document was reeds openbaar.', $content);
         self::assertStringContainsString('2 documenten worden niet openbaar gemaakt.', $content);
+    }
+
+    public function testDossierSortsDocumentsByDocumentNumberByDefault(): void
+    {
+        $client = self::createClient();
+        $organisation = OrganisationFactory::new()->create();
+        $dossier = WooDecisionFactory::new()->published()->create([
+            'decision' => DecisionType::PUBLIC,
+            'organisation' => $organisation,
+        ]);
+
+        $documentLow = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'judgement' => Judgement::PUBLIC,
+            'documentId' => DocumentId::create('doc-low'),
+            'documentNumber' => 'PREF-MAT-100',
+            'documentDate' => PlainDate::create('2024-02-01'),
+            'fileInfo' => FileInfoFactory::new([
+                'name' => 'alpha.pdf',
+                'uploaded' => true,
+            ]),
+        ]);
+
+        $documentHigh = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'judgement' => Judgement::PUBLIC,
+            'documentId' => DocumentId::create('doc-high'),
+            'documentNumber' => 'PREF-MAT-200',
+            'documentDate' => PlainDate::create('2024-01-01'),
+            'fileInfo' => FileInfoFactory::new([
+                'name' => 'zeta.pdf',
+                'uploaded' => true,
+            ]),
+        ]);
+
+        $inquiry = InquiryFactory::createOne([
+            'organisation' => $organisation,
+            'dossiers' => [$dossier],
+            'documents' => [$documentLow, $documentHigh],
+        ]);
+
+        $client->request(
+            'GET',
+            sprintf(
+                '/zaak/%s/dossier/%s/%s',
+                $inquiry->getToken(),
+                $dossier->getDocumentPrefix(),
+                $dossier->getDossierNumber(),
+            ),
+        );
+
+        self::assertResponseIsSuccessful();
+
+        $rows = $client->getCrawler()
+            ->filter('[data-e2e-name="inquiry-documents"] table.woo-table')
+            ->first()
+            ->filter('tbody tr');
+
+        self::assertSame('PREF-MAT-100', trim($rows->eq(0)->filter('td')->eq(0)->text()));
+        self::assertSame('PREF-MAT-200', trim($rows->eq(1)->filter('td')->eq(0)->text()));
     }
 }

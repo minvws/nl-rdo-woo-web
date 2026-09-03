@@ -135,6 +135,9 @@ Select Filter Options - Dossier
   RETURN  ${total_count}  ${publication_count}
 
 Get Search Result Count
+  ${too_many} =  Get Element Count  //span[@data-e2e-name="result-count"]
+  # when result-count span is absent the page shows the ≥10000 cap message
+  IF  ${too_many} == 0  RETURN  10000
   ${text} =  Get Text  //span[@data-e2e-name="result-count"]
   ${results} =  Remove String Using Regexp  ${text}  \\D
   RETURN  ${results}

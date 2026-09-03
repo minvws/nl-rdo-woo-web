@@ -47,7 +47,7 @@ class NoIncompleteDocumentsValidatorTest extends UnitTestCase
         $repository->expects('hasIncompleteDocumentsForDossier')->with($dossierId)->andReturnFalse();
 
         $context = Mockery::mock(ExecutionContextInterface::class);
-        $context->shouldNotReceive('buildViolation');
+        $context->expects('buildViolation')->never();
 
         $validator = new NoIncompleteDocumentsValidator($repository);
         $validator->initialize($context);

@@ -59,9 +59,9 @@ class Document extends AbstractPublicationItem
     #[ORM\Column(nullable: true)]
     private ?int $familyId = null;
 
-    #[ORM\Column(type: 'document_id', length: 170, nullable: true)]
+    #[ORM\Column(type: 'document_id', length: 170, nullable: false)]
     #[Immutable(groups: [DossierValidationGroup::PUBLICATION_LOCKED->value])]
-    private ?DocumentId $documentId = null;
+    private DocumentId $documentId;
 
     #[ORM\Column(nullable: true)]
     private ?int $threadId = null;
@@ -188,7 +188,7 @@ class Document extends AbstractPublicationItem
         return $this;
     }
 
-    public function getDocumentId(): ?DocumentId
+    public function getDocumentId(): DocumentId
     {
         return $this->documentId;
     }

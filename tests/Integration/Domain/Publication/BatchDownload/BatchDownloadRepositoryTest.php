@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace Shared\Tests\Integration\Domain\Publication\BatchDownload;
 
 use DateTimeImmutable;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\BatchDownload\BatchDownload;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadRepository;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
+use Shared\Domain\Publication\BatchDownload\BatchDownloadStatus;
 use Shared\Tests\Factory\InquiryFactory;
 use Shared\Tests\Factory\Publication\BatchDownload\BatchDownloadFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
+use function abs;
 use function Zenstruck\Foundry\Persistence\save;
 
 class BatchDownloadRepositoryTest extends SharedWebTestCase
@@ -112,6 +117,62 @@ class BatchDownloadRepositoryTest extends SharedWebTestCase
         self::assertEquals(
             $expectedDownload,
             $this->repository->getBestAvailableBatchDownloadForScope($dossierScope),
+        );
+    }
+
+    public function testMarkAllForScopeAsOutdated(): void
+    {
+        $targetDossier = WooDecisionFactory::createOne();
+        $otherDossier = WooDecisionFactory::createOne();
+        $scope = BatchDownloadScope::forWooDecision($targetDossier);
+
+        $targetBatch = new BatchDownload($scope, new DateTimeImmutable('+1 month'));
+        $targetBatch->complete('target.zip', 1, 1);
+        $this->repository->save($targetBatch);
+
+        $outdatedBatch = new BatchDownload($scope, new DateTimeImmutable('+1 month'));
+        $outdatedBatch->markAsOutdated();
+        $unchangedExpiration = $outdatedBatch->getExpiration();
+        $this->repository->save($outdatedBatch);
+
+        $otherBatch = new BatchDownload(
+            BatchDownloadScope::forWooDecision($otherDossier),
+            new DateTimeImmutable('+1 month'),
+        );
+        $otherBatch->complete('other.zip', 1, 1);
+        $this->repository->save($otherBatch);
+
+        $now = new DateTimeImmutable();
+        $changed = $this->repository->markAllForScopeAsOutdated($scope);
+
+        // clear local UnitOfWork state for BatchDownload so subsequent finds read fresh DB state
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        Assert::isInstanceOf($entityManager, EntityManager::class);
+        /** @var EntityManager $entityManager */
+        $entityManager->clear();
+
+        self::assertSame(1, $changed);
+
+        $foundTarget = $this->repository->find($targetBatch->getId());
+        Assert::isInstanceOf($foundTarget, BatchDownload::class);
+        self::assertSame(BatchDownloadStatus::OUTDATED, $foundTarget->getStatus());
+
+        // compare expiration with second precision to be robust against DB timestamp precision
+        $foundOutdated = $this->repository->find($outdatedBatch->getId());
+        Assert::isInstanceOf($foundOutdated, BatchDownload::class);
+        self::assertEquals(
+            $unchangedExpiration->format('Y-m-d H:i:s'),
+            $foundOutdated->getExpiration()->format('Y-m-d H:i:s'),
+        );
+
+        $foundOther = $this->repository->find($otherBatch->getId());
+        Assert::isInstanceOf($foundOther, BatchDownload::class);
+        self::assertSame(BatchDownloadStatus::COMPLETED, $foundOther->getStatus());
+
+        $expected = $now->modify('+15 minutes');
+        self::assertLessThanOrEqual(
+            60,
+            abs($foundTarget->getExpiration()->getTimestamp() - $expected->getTimestamp()),
         );
     }
 

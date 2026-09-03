@@ -13,10 +13,14 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Routing\Exception\NoConfigurationException;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Uid\Uuid;
 
+use function parse_url;
 use function sprintf;
+
+use const PHP_URL_PATH;
 
 class WhereTest extends UnitTestCase
 {
@@ -27,6 +31,7 @@ class WhereTest extends UnitTestCase
         $wooDecisionRepository = Mockery::mock(WooDecisionRepository::class);
         $documentRepository = Mockery::mock(DocumentRepository::class);
         $matcher = Mockery::mock(UrlMatcherInterface::class);
+        $matcher->expects('match')->with(parse_url($url, PHP_URL_PATH))->andThrow(NoConfigurationException::class);
 
         $command = new Where($wooDecisionRepository, $documentRepository, $matcher);
 

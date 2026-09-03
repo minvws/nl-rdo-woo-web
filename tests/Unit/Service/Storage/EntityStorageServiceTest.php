@@ -80,7 +80,7 @@ class EntityStorageServiceTest extends UnitTestCase
             ->with($pathName, 'r')
             ->andReturnFalse();
 
-        $this->remoteFilesystem->shouldNotReceive('writeStream');
+        $this->remoteFilesystem->expects('writeStream')->never();
 
         $result = $this->getStorageService()->store($splFileInfo, 'remotePath');
 
@@ -219,10 +219,10 @@ class EntityStorageServiceTest extends UnitTestCase
 
     public function testDownloadWhenLocal(): void
     {
-        $this->localFilesystem->shouldNotReceive('createTempFile');
-        $this->remoteFilesystem->shouldNotReceive('readStream');
-        $this->localFilesystem->shouldNotReceive('createStream');
-        $this->localFilesystem->shouldNotReceive('copy');
+        $this->localFilesystem->expects('createTempFile')->never();
+        $this->remoteFilesystem->expects('readStream')->never();
+        $this->localFilesystem->expects('createStream')->never();
+        $this->localFilesystem->expects('copy')->never();
 
         $expectedResult = sprintf('%s/%s', $documentRoot = 'documentRoot', $remotePath = 'remotePath');
 
@@ -237,9 +237,9 @@ class EntityStorageServiceTest extends UnitTestCase
             ->expects('createTempFile')
             ->andReturnFalse();
 
-        $this->remoteFilesystem->shouldNotReceive('readStream');
-        $this->localFilesystem->shouldNotReceive('createStream');
-        $this->localFilesystem->shouldNotReceive('copy');
+        $this->remoteFilesystem->expects('readStream')->never();
+        $this->localFilesystem->expects('createStream')->never();
+        $this->localFilesystem->expects('copy')->never();
 
         $result = $this->getStorageService()->download('remotePath');
 
@@ -296,7 +296,7 @@ class EntityStorageServiceTest extends UnitTestCase
 
     public function testRemoveDownloadWhenLocal(): void
     {
-        $this->localFilesystem->shouldNotReceive('deleteFile');
+        $this->localFilesystem->expects('deleteFile')->never();
 
         $this->getStorageService(isLocal: true)->removeDownload('localPath');
     }
@@ -339,8 +339,8 @@ class EntityStorageServiceTest extends UnitTestCase
         $entity->expects('getFileInfo')->andReturn($fileInfo);
 
         $service = $this->getStorageService();
-        $service->shouldNotReceive('generateEntityPath');
-        $service->shouldNotReceive('doDeleteAllFilesForEntity');
+        $service->expects('generateEntityPath')->never();
+        $service->expects('doDeleteAllFilesForEntity')->never();
 
         $result = $service->deleteAllFilesForEntity($entity);
 

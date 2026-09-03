@@ -66,7 +66,7 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
             ElasticField::DATE->value => $entity->getDocumentDate()?->format(DateTimeInterface::ATOM),
             ElasticField::FILENAME->value => $file->getName(),
             ElasticField::FAMILY_ID->value => $entity->getFamilyId() ?? 0,
-            ElasticField::DOCUMENT_ID->value => $entity->getDocumentId()?->toString() ?? '',
+            ElasticField::DOCUMENT_ID->value => $entity->getDocumentId()->toString(),
             ElasticField::THREAD_ID->value => $entity->getThreadId() ?? 0,
             ElasticField::JUDGEMENT->value => $entity->getJudgement(),
             ElasticField::GROUNDS->value => $entity->getGrounds(),

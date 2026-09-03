@@ -91,7 +91,7 @@ final class ThumbnailExtractorTest extends UnitTestCase
         $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
         $context->setLocalPageDocument('/baz_123.pdf');
 
-        $this->pdfToPpmService->shouldNotReceive('createThumbnail');
+        $this->pdfToPpmService->expects('createThumbnail')->never();
 
         $this->extractor->extractSinglePagePdfThumbnail($context);
     }
@@ -121,7 +121,7 @@ final class ThumbnailExtractorTest extends UnitTestCase
             ->with($localPageDocument, $targetPath)
             ->andReturn($pdfToPpmResult);
 
-        $this->thumbnailStorageService->shouldNotReceive('store');
+        $this->thumbnailStorageService->expects('store')->never();
 
         $this->expectException(PdfPageException::class);
 

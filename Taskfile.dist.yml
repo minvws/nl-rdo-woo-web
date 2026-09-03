@@ -42,9 +42,8 @@ vars:
     - worker
     - shared
 
-env:
-  COMPOSE_PROJECT_NAME: nl-rdo-woo-web-private
-  # BUILDKIT_PROGRESS: plain
+# env:
+#   BUILDKIT_PROGRESS: plain
 
 silent: true
 
@@ -176,6 +175,7 @@ tasks:
   up:
     desc: Start development environment
     cmds:
+      - task: d:create-cache-volumes
       - task: setup:if-not-exist
       - task: dc
         vars: { SUB_CMD: 'up -d' }
@@ -197,6 +197,7 @@ tasks:
     cmds:
       - task: dc
         vars: { SUB_CMD: '--profile "*" down --volumes --remove-orphans' }
+      - task: d:remove-legacy-cache-volumes
 
   reset:
     desc: Reset the development environment
@@ -263,9 +264,25 @@ tasks:
         for: [worker, publication_api, admin]
 
   d:create-cache-volumes:
+    run: once
+    vars:
+      PROJECT_NAME:
+        sh: docker compose config --environment | grep '^COMPOSE_PROJECT_NAME=' | cut -d= -f2-
     cmds:
-      - docker volume create woo_composer
-      - docker volume create woo_npm
+      - docker volume create {{ .PROJECT_NAME }}_woo_composer
+      - docker volume create {{ .PROJECT_NAME }}_woo_npm
+
+  # TODO: temporary, remove once everyone has run "task down" at least once.
+  # The composer and npm caches used to be shared between checkouts as
+  # "woo_composer" and "woo_npm"; they are now named per compose project. Errors
+  # are ignored: either the volume is already gone, or another checkout that does
+  # not have this change yet still holds it.
+  d:remove-legacy-cache-volumes:
+    internal: true
+    cmds:
+      - for: [woo_composer, woo_npm]
+        cmd: docker volume rm {{ .ITEM }} 2> /dev/null
+        ignore_error: true
 
   postdeploy:
     desc: Run postdeploy script

@@ -27,7 +27,6 @@ use function array_map;
 use function array_unique;
 use function count;
 use function in_array;
-use function sort;
 
 final readonly class DossierAttachmentValidator
 {
@@ -61,48 +60,13 @@ final readonly class DossierAttachmentValidator
     /**
      * @param list<AttachmentRequestDto> $attachmentRequestDtos
      */
-    public function assertAttachmentSetUnchangedInNonConcept(AbstractDossier&EntityWithAttachments $dossier, array $attachmentRequestDtos): void
-    {
-        if (! in_array($dossier->getStatus(), DossierStatus::nonConceptCases(), true)) {
-            return;
-        }
-
-        $existingExternalIds = [];
-        foreach ($dossier->getAttachments() as $attachment) {
-            $externalId = $attachment->getExternalId();
-            Assert::isInstanceOf($externalId, ExternalId::class);
-
-            $existingExternalIds[] = $externalId->toString();
-        }
-
-        $incomingExternalIds = $this->getExternalIdsAsStrings($attachmentRequestDtos);
-
-        sort($existingExternalIds);
-        sort($incomingExternalIds);
-
-        if ($existingExternalIds !== $incomingExternalIds) {
-            throw new ValidationException(
-                ConstraintViolationBuilder::createList(ConstraintViolationBuilder::forModifiedSubEntity('attachments')),
-            );
-        }
-    }
-
-    /**
-     * @param list<AttachmentRequestDto> $attachmentRequestDtos
-     */
     public function assertNoAttachmentRemovalInNonConcept(AbstractDossier&EntityWithAttachments $dossier, array $attachmentRequestDtos): void
     {
         if (! in_array($dossier->getStatus(), DossierStatus::nonConceptCases(), true)) {
             return;
         }
 
-        $existingExternalIds = [];
-        foreach ($dossier->getAttachments() as $attachment) {
-            $externalId = $attachment->getExternalId();
-            Assert::isInstanceOf($externalId, ExternalId::class);
-
-            $existingExternalIds[] = $externalId->toString();
-        }
+        $existingExternalIds = $this->getExistingExternalIdsAsStrings($dossier);
 
         $incomingExternalIds = $this->getExternalIdsAsStrings($attachmentRequestDtos);
 
@@ -136,6 +100,22 @@ final readonly class DossierAttachmentValidator
                 Unique::IS_NOT_UNIQUE,
             ),
         ]));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function getExistingExternalIdsAsStrings(AbstractDossier&EntityWithAttachments $dossier): array
+    {
+        $existingExternalIds = [];
+        foreach ($dossier->getAttachments() as $attachment) {
+            $externalId = $attachment->getExternalId();
+            Assert::isInstanceOf($externalId, ExternalId::class);
+
+            $existingExternalIds[] = $externalId->toString();
+        }
+
+        return $existingExternalIds;
     }
 
     /**

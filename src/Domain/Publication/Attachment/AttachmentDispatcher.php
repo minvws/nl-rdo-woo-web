@@ -20,10 +20,24 @@ readonly class AttachmentDispatcher
     ) {
     }
 
-    public function dispatchAttachmentUpdatedEvent(AbstractAttachment $entity): void
+    public function dispatchAttachmentMetadataUpdatedEvent(AbstractAttachment $entity): void
     {
         $this->messageBus->dispatch(
-            AttachmentUpdatedEvent::forAttachment($entity),
+            AttachmentUpdatedEvent::forAttachmentWithMetadataUpdated($entity),
+        );
+    }
+
+    public function dispatchAttachmentFileUpdatedEvent(AbstractAttachment $entity): void
+    {
+        $this->messageBus->dispatch(
+            AttachmentUpdatedEvent::forAttachmentWithFileUpdated($entity),
+        );
+    }
+
+    public function dispatchAttachmentMetadataAndFileUpdatedEvent(AbstractAttachment $entity): void
+    {
+        $this->messageBus->dispatch(
+            AttachmentUpdatedEvent::forAttachmentWithMetadataAndFileUpdated($entity),
         );
     }
 

@@ -212,7 +212,11 @@ Upload Generated Attachment
   ...    upload loop in the test template doesn't also try (and fail) to upload it using stale
   ...    externalIds from the yaml.
   [Arguments]  ${dossier_type}
-  Upload Attachment Document  ${dossier_type}  ${TEST_DATA_ROOT}/dummy.txt  ${EXTERNAL_ID}  ${GENERATED_ATTACHMENT}[externalId]
+  Upload Attachment Document
+  ...  ${dossier_type}
+  ...  ${TEST_DATA_ROOT}/dummy.txt
+  ...  ${EXTERNAL_ID}
+  ...  ${GENERATED_ATTACHMENT}[externalId]
 
 Sync Locked Dates From Server
   [Documentation]    This is not unused, it's referenced from yaml files.
@@ -327,6 +331,10 @@ Upload Document
   ...  expected_response_status=${expected_response_status}
 
 Publication Status Should Be
+  [Arguments]  ${dossier_type}  ${expected_status}
+  Wait Until Keyword Succeeds  20 times  3s  Publication Status Check  ${dossier_type}  ${expected_status}
+
+Publication Status Check
   [Arguments]  ${dossier_type}  ${expected_status}
   ${get_response} =  GET On Session
   ...  alias=${API_ALIAS}

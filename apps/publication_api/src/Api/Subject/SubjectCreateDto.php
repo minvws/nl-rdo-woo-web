@@ -11,6 +11,8 @@ class SubjectCreateDto
     public function __construct(
         #[Assert\NotBlank(normalizer: 'trim')]
         public string $name,
+        #[Assert\Valid]
+        public ?SubjectLandingPageInputDto $landingPage = null,
     ) {
     }
 }

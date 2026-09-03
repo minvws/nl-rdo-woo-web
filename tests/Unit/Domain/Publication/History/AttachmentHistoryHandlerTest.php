@@ -145,7 +145,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
         $attachment->expects('getId')->andReturn(Uuid::v6());
         $attachment->expects('getDossier')->andReturn($dossier);
 
-        $event = AttachmentUpdatedEvent::forAttachment($attachment);
+        $event = AttachmentUpdatedEvent::forAttachmentWithMetadataUpdated($attachment);
 
         $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
 
@@ -161,6 +161,89 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
                 ],
                 HistoryService::MODE_BOTH,
             );
+
+        $this->handler->handleUpdate($event);
+    }
+
+    public function testHandleUpdateWithOnlyFileUploadLogsOnlyReplacedEntry(): void
+    {
+        $expectedName = 'my-file-name';
+        $expectedType = 'my-file-type';
+        $expectedSize = 123;
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getName')->andReturn($expectedName);
+        $fileInfo->expects('getType')->andReturn($expectedType);
+        $fileInfo->expects('getSize')->andReturn($expectedSize);
+
+        $dossier = Mockery::mock(Covenant::class);
+        $dossier->expects('getId')->times(3)->andReturn(Uuid::v6());
+        $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
+
+        $attachment = Mockery::mock(CovenantAttachment::class);
+        $attachment->expects('getFileInfo')->times(3)->andReturn($fileInfo);
+        $attachment->expects('getId')->andReturn(Uuid::v6());
+        $attachment->expects('getDossier')->andReturn($dossier);
+
+        $event = AttachmentUpdatedEvent::forAttachmentWithFileUpdated($attachment);
+
+        $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
+
+        $this->historyService
+            ->expects('addDossierEntry')
+            ->with(
+                $dossier->getId(),
+                'attachment_replaced',
+                [
+                    'filename' => $expectedName,
+                    'filetype' => $expectedType,
+                    'filesize' => "$expectedSize bytes",
+                ],
+                HistoryService::MODE_BOTH,
+            );
+
+        $this->handler->handleUpdate($event);
+    }
+
+    public function testHandleUpdateWithFileUploadAndMetadataChangeOnPublishedDossierLogsTwoEntries(): void
+    {
+        $expectedName = 'my-file-name';
+        $expectedType = 'my-file-type';
+        $expectedSize = 123;
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getName')->andReturn($expectedName);
+        $fileInfo->expects('getType')->andReturn($expectedType);
+        $fileInfo->expects('getSize')->andReturn($expectedSize);
+
+        $dossier = Mockery::mock(Covenant::class);
+        $dossier->expects('getId')->times(4)->andReturn(Uuid::v6());
+        $dossier->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
+
+        $attachment = Mockery::mock(CovenantAttachment::class);
+        $attachment->expects('getFileInfo')->times(3)->andReturn($fileInfo);
+        $attachment->expects('getId')->andReturn(Uuid::v6());
+        $attachment->expects('getDossier')->andReturn($dossier);
+
+        $event = AttachmentUpdatedEvent::forAttachmentWithMetadataAndFileUpdated($attachment);
+
+        $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
+
+        $expectedContext = [
+            'filename' => $expectedName,
+            'filetype' => $expectedType,
+            'filesize' => "$expectedSize bytes",
+        ];
+
+        $this->historyService
+            ->expects('addDossierEntry')
+            ->with($dossier->getId(), 'attachment_updated', $expectedContext, HistoryService::MODE_BOTH)
+            ->ordered();
+
+        $this->historyService
+            ->expects('addDossierEntry')
+            ->with($dossier->getId(), 'attachment_replaced', $expectedContext, HistoryService::MODE_BOTH)
+            ->ordered();
 
         $this->handler->handleUpdate($event);
     }
@@ -185,7 +268,7 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
         $attachment->expects('getId')->andReturn(Uuid::v6());
         $attachment->expects('getDossier')->andReturn($dossier);
 
-        $event = AttachmentUpdatedEvent::forAttachment($attachment);
+        $event = AttachmentUpdatedEvent::forAttachmentWithMetadataUpdated($attachment);
 
         $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
 
@@ -217,7 +300,8 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
         $fileInfo->expects('getSize')->andReturn($expectedSize);
 
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->expects('getId')->times(2)->andReturn(Uuid::v6());
+        $dossier->expects('getId')->times(3)->andReturn(Uuid::v6());
+        $dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
 
         $attachment = Mockery::mock(CovenantAttachment::class);
         $attachment->expects('getFileInfo')->times(3)->andReturn($fileInfo);
@@ -225,6 +309,8 @@ final class AttachmentHistoryHandlerTest extends UnitTestCase
         $attachment->expects('getDossier')->andReturn($dossier);
 
         $event = AttachmentDeletedEvent::forAttachment($attachment);
+
+        $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
 
         $this->historyService
             ->expects('addDossierEntry')

@@ -143,7 +143,7 @@ class DocumentComparatorTest extends UnitTestCase
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
         $document->expects('getDocumentNumber')->andReturn('bar-123');
-        $document->expects('getDocumentId')->times(3)->andReturn(DocumentId::create('123'));
+        $document->expects('getDocumentId')->times(2)->andReturn(DocumentId::create('123'));
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123']);
@@ -165,7 +165,7 @@ class DocumentComparatorTest extends UnitTestCase
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
         $document->expects('getDocumentNumber')->times(2)->andReturn('bar-123');
-        $document->expects('getDocumentId')->times(6)->andReturn(DocumentId::create('123'));
+        $document->expects('getDocumentId')->times(4)->andReturn(DocumentId::create('123'));
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123', 'invalid-456']);

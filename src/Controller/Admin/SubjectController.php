@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Controller\Admin;
 
 use Knp\Component\Pager\PaginatorInterface;
+use Shared\Domain\Publication\Dossier\ViewModel\SubjectViewFactory;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectService;
 use Shared\Form\SubjectType;
@@ -15,12 +16,16 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function array_map;
+use function iterator_to_array;
+
 class SubjectController extends AbstractController
 {
     public function __construct(
         private readonly PaginatorInterface $paginator,
         private readonly TranslatorInterface $translator,
         private readonly SubjectService $subjectService,
+        private readonly SubjectViewFactory $subjectViewFactory,
     ) {
     }
 
@@ -32,6 +37,13 @@ class SubjectController extends AbstractController
             $this->subjectService->getSubjectsQueryForActiveOrganisation(),
             $request->query->getInt('page', 1),
             100,
+        );
+
+        /** @var list<Subject> $subjects */
+        $subjects = iterator_to_array($pagination->getItems());
+
+        $pagination->setItems(
+            array_map($this->subjectViewFactory->make(...), $subjects),
         );
 
         return $this->render('admin/subjects/index.html.twig', [

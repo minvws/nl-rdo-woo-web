@@ -52,4 +52,24 @@ class DocumentPrefixRepositoryTest extends SharedWebTestCase
 
         self::assertEquals('AAA', $result?->getPrefix());
     }
+
+    public function testGetAlphabeticallyFirstByOrganisationIgnoresArchivedPrefixes(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        DocumentPrefixFactory::new([
+            'organisation' => $organisation,
+            'prefix' => 'AAA',
+        ])->afterInstantiate(static function (DocumentPrefix $documentPrefix): void {
+            $documentPrefix->archive();
+        })->create();
+        DocumentPrefixFactory::createOne([
+            'organisation' => $organisation,
+            'prefix' => 'BBB',
+        ]);
+
+        $documentPrefixRepository = self::fromContainer(DocumentPrefixRepository::class);
+        $result = $documentPrefixRepository->getAlphabeticallyFirstByOrganisation($organisation);
+
+        self::assertEquals('BBB', $result?->getPrefix());
+    }
 }

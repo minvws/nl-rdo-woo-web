@@ -1,0 +1,96 @@
+name: Sanity checks
+run-name: Sanity checks on ${{ inputs.environment || 'prod' }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment (test/acc/prod)
+        required: true
+        type: string
+        default: prod
+
+jobs:
+  sanity-checks:
+    name: Run sanity checks (${{ inputs.environment || 'prod' }})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup Robot Framework test stack
+        uses: ./.github/actions/setup-rf
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          robot-only: "true"
+      - name: Create certs
+        shell: bash
+        run: |
+          echo "${{ secrets.CLIENT_CERT_TEST }}" > certs/acc/client-minvws-combined.pem
+          echo "${{ secrets.CLIENT_KEY_TEST }}" > certs/acc/client-minvws.key
+          echo "${{ secrets.CA_BUNDLE_STAGING }}" > certs/acc/client-bundle.pem
+          echo "${{ secrets.CLIENT_CERT_TEST }}" > certs/test/client-minvws-combined.pem
+          echo "${{ secrets.CLIENT_KEY_TEST }}" > certs/test/client-minvws.key
+          echo "${{ secrets.CA_BUNDLE_TEST }}" > certs/test/client-bundle.pem
+      - name: Create tenant env files
+        shell: bash
+        run: |
+          mkdir -p tests/robot_framework/envs
+
+          cat > tests/robot_framework/envs/.env.rf.prod.minvws << 'EOF'
+          ENVIRONMENT=prod
+          HEADLESS=true
+          URL_PUBLIC=${{ secrets.URL_PUBLIC_PROD }}
+          EOF
+
+          cat > tests/robot_framework/envs/.env.rf.acc.minvws << 'EOF'
+          HEADLESS=true
+          URL_PUBLIC=${{ secrets.URL_PUBLIC_STAGING }}
+          URL_ADMIN=${{ secrets.URL_ADMIN_STAGING }}
+          HTACCESS_USERNAME=${{ secrets.USERNAME_WOO_STAGING }}
+          HTACCESS_PASSWORD=${{ secrets.PASSWORD_WOO_STAGING }}
+          ADMIN_EMAIL=${{ secrets.EMAIL_WOO_STAGING_BALIE }}
+          ADMIN_PASSWORD=${{ secrets.PASSWORD_WOO_STAGING_BALIE }}
+          ADMIN_SECRET=${{ secrets.SECRET_WOO_STAGING_BALIE }}
+          URL_API=${{ secrets.URL_API_STAGING }}
+          CLIENT_CERT=./certs/acc/client-minvws-combined.pem
+          CLIENT_KEY=./certs/acc/client-minvws.key
+          CA_BUNDLE=./certs/acc/client-bundle.pem
+          EOF
+
+          cat > tests/robot_framework/envs/.env.rf.test.minvws << 'EOF'
+          HEADLESS=true
+          URL_PUBLIC=${{ secrets.URL_PUBLIC_TEST }}
+          URL_ADMIN=${{ secrets.URL_ADMIN_TEST }}
+          HTACCESS_USERNAME=${{ secrets.USERNAME_WOO_TEST }}
+          HTACCESS_PASSWORD=${{ secrets.PASSWORD_WOO_TEST }}
+          ADMIN_EMAIL=${{ secrets.EMAIL_WOO_TEST_BALIE }}
+          ADMIN_PASSWORD=${{ secrets.PASSWORD_WOO_TEST_BALIE }}
+          ADMIN_SECRET=${{ secrets.SECRET_WOO_TEST_BALIE }}
+          URL_API=${{ secrets.URL_API_TEST }}
+          CLIENT_CERT=./certs/test/client-minvws-combined.pem
+          CLIENT_KEY=./certs/test/client-minvws.key
+          CA_BUNDLE=./certs/test/client-bundle.pem
+          EOF
+      - name: Run Robot Framework tests
+        run: |
+          env="${{ inputs.environment || 'prod' }}"
+          if [ "$env" = "prod" ]; then
+            task rf:prod:run:sanity
+          elif [ "$env" = "acc" ]; then
+            task rf:acc:run tag=sanity
+          elif [ "$env" = "test" ]; then
+            task rf:test:run tag=sanity
+          else
+            echo "Unknown environment: $env"
+            exit 1
+          fi
+      - name: Upload test results
+        uses: actions/upload-artifact@v7
+        if: ${{ always() }}
+        with:
+          name: robot-report-sanity-checks
+          path: tests/robot_framework/results
+      - name: Publish test results
+        uses: minvws/action-robotframework-summary@v1.0.0
+        if: ${{ always() }}
+        with:
+          output_file: tests/robot_framework/results/output.xml

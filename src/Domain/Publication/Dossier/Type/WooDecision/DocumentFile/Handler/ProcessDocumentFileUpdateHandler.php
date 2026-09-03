@@ -13,7 +13,6 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\D
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\EntityStorageService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Webmozart\Assert\Assert;
 
 #[AsMessageHandler]
 readonly class ProcessDocumentFileUpdateHandler
@@ -51,13 +50,10 @@ readonly class ProcessDocumentFileUpdateHandler
             return;
         }
 
-        $documentId = $documentFileUpdate->getDocument()->getDocumentId();
-        Assert::notNull($documentId);
-
         $this->fileProcessor->process(
             new UploadedFile($localFile, $documentFileUpdate->getFileInfo()->getName()),
             $documentFileUpdate->getDocumentFileSet()->getDossier(),
-            $documentId,
+            $documentFileUpdate->getDocument()->getDocumentId(),
         );
 
         // Remove the upload file as this has now been 'forwarded' to the Document entity

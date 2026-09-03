@@ -3,6 +3,7 @@ files/generated
 secrets
 envs/.env.rf.test.*
 envs/.env.rf.acc.*
+envs/.env.rf.prod.*
 .venv
 .pabotsuitenames
 .robocop_cache

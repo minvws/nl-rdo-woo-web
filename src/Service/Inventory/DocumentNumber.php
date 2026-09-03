@@ -80,10 +80,6 @@ readonly class DocumentNumber implements Stringable
 
     public static function fromDossierAndDocument(WooDecision $dossier, Document $document): self
     {
-        if ($document->getDocumentId() === null) {
-            throw new RuntimeException('Document has no documentId');
-        }
-
         // Cut prefix and it's separator from the documentNumber start, leaving matter and documentId
         $matterAndDocId = substr($document->getDocumentNumber(), strlen($dossier->getDocumentPrefix()) + 1);
 

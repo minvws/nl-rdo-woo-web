@@ -43,6 +43,7 @@ global.publication: "Publicatie"
 global.document: "Document"
 global.documents: "Documenten"
 global.document_number: "Documentnummer"
+global.document_number_short: "Document #"
 global.document_name: "Documentnaam"
 global.document_date: "Datum document"
 global.document_type: "Type"
@@ -307,6 +308,7 @@ admin.subjects.no_subjects: "Er zijn nog geen onderwerpen aangemaakt"
 admin.subject.select: "Kies een onderwerp"
 admin.subject.create: "Onderwerp toevoegen"
 admin.subject.edit: "Onderwerp wijzigen"
+admin.subject.edit_landing_page: "Wijzig landingspagina voor onderwerp \"{name}\""
 admin.subject.manage: "Onderwerpen beheren"
 admin.subject.all_subjects: "Alle onderwerpen"
 admin.subject.created: "Het onderwerp is aangemaakt"
@@ -314,6 +316,17 @@ admin.subject.modified: "Het onderwerp is aangepast"
 admin.subject.subject: "Onderwerp"
 admin.subject.name: "Naam"
 admin.subject.name_help: "Bijvoorbeeld: 'Vaccinaties en medicatie'. Minimaal 1 en maximaal 50 karakters."
+admin.subject.landing_page.slug: "URL van landingspagina"
+admin.subject.landing_page.slug_help: "Dit komt direct achter \"{ publicBaseUrl }/onderwerp/\" (minimaal 2 en maximaal 50 letters, cijfers of streepjes)"
+admin.subject.landing_page.title: 'Titel'
+admin.subject.landing_page.title_help: 'Verplicht veld, maximaal 200 tekens.'
+admin.subject.landing_page.description: 'Omschrijving'
+admin.subject.landing_page.visible_content_tree: 'Verhaallijn tonen'
+admin.subject.landing_page.status: 'Status'
+admin.subject.landing_page.status_help: "Een concept is alleen zichtbaar via de previewlink, gepubliceerd is zichtbaar op de website"
+admin.subject.landing_page.status.concept: 'Concept'
+admin.subject.landing_page.status.published: 'Gepubliceerd'
+admin.subject.landing_page.modified: 'De landingspagina is aangepast.'
 
 admin.inquiries.manage: "Verzoekenbeheer"
 admin.inquiries.manage_details: "Verzoekenbeheer: details"
@@ -341,6 +354,9 @@ admin.stats.manage: "Statistieken & Monitoring"
 admin.stats.manage_help: "Deze link biedt toegang tot statistieken en monitoring van het systeem."
 admin.elastic.manage: "Elasticsearch management"
 admin.elastic.mange_help: "Deze link biedt toegang tot beheerdersacties voor ElasticSearch."
+admin.data_checks.manage: "Datacontroles"
+admin.data_checks.manage_help: "Deze link biedt toegang tot controles op de consistentie van de opgeslagen gegevens."
+admin.data_checks.intro: "Elke controle hieronder onderzoekt een aanname die de applicatie over de opgeslagen gegevens maakt, en laat zien of die klopt. Wat een afwijking betekent, staat op de pagina van de controle zelf."
 admin.account.profile: "Profiel"
 admin.account.details: "Accountgegevens"
 admin.account.created: "Het account is aangemaakt"
@@ -811,6 +827,8 @@ public.search.start_new_search: "Start een nieuwe zoekopdracht"
 public.search.only_first_set_displayed: "De eerste <span class='font-bold'>{display_count} resultaten</span> van uw zoekopdracht worden getoond."
 public.search.refine_results: "Verfijn uw zoekopdracht door middel van specifieke zoektermen en de beschikbare filteropties."
 
+public.subject.search: "Zoek op onderwerp \"{ subject }\""
+
 public.intro.label.oga: "WooPlatform"
 public.intro.description.oga: "Openbaar gemaakte informatie"
 public.intro.more_about_platform: "Meer over dit platform"
@@ -959,6 +977,8 @@ history.dossier_state_preview.private: 'Online voor verzoekers'
 history.dossier_state_preview.public: null
 history.dossier_state_published.private: 'Openbaar voor iedereen'
 history.dossier_state_published.public: 'Gepubliceerd'
+history.dossier_state_deleted.private: null
+history.dossier_state_deleted.public: null
 history.dossier_update_decision.private: 'Nieuwe besluitbrief toegevoegd ({filename}, {filesize})'
 history.dossier_update_decision.public: 'Besluitbrief vervangen ({filetype}, {filesize})'
 history.dossier_update_inventory.private: 'Nieuwe inventarislijst toegevoegd ({filename}, {filesize})'
@@ -1010,13 +1030,18 @@ history.documents_added.public: '{count} document(en) toegevoegd'
 history.attachment_created.public: 'Bijlage toegevoegd ({filename}, {filesize})'
 history.attachment_created.private: 'Nieuwe bijlage geüpload ({filename}, {filesize})'
 history.attachment_deleted.private: 'Bijlage verwijderd ({filename}, {filesize})'
-history.attachment_updated.public: 'Bijlage vervangen ({filename}, {filesize})'
-history.attachment_updated.private: 'Bijlage gewijzigd ({filename}, {filesize})'
+history.attachment_updated.public: null
+history.attachment_updated.private: 'Gegevens van bijlage {filename} aangepast'
+history.attachment_replaced.public: 'Bijlage vervangen ({filename}, {filesize})'
+history.attachment_replaced.private: 'Nieuwe versie bijlage geüpload ({filename}, {filesize})'
 history.attachment_withdrawn.public: 'Bijlage ingetrokken met reden: {reason}'
 history.attachment_withdrawn.private: 'Bijlage ingetrokken met reden: {reason}, toelichting: {explanation}'
 history.covenant.main_document_added.private: 'Nieuw convenant toegevoegd ({filename})'
-history.covenant.main_document_updated.private: 'Convenant gewijzigd ({filename})'
-history.covenant.main_document_updated.public: 'Convenant vervangen'
+history.covenant.main_document_added.public: null
+history.covenant.main_document_updated.private: 'Gegevens van het convenant aangepast'
+history.covenant.main_document_updated.public: null
+history.covenant.main_document_replaced.private: 'Nieuwe versie convenant geüpload ({filename})'
+history.covenant.main_document_replaced.public: 'Convenant vervangen'
 history.covenant.main_document_deleted.private: 'Convenant verwijderd ({filename})'
 history.covenant.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
 history.covenant.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
@@ -1025,8 +1050,11 @@ history.covenant.notice_not_public_updated.public: "Mededeling 'niet-openbaar' g
 history.covenant.notice_not_public_deleted.private: "Mededeling 'niet-openbaar' verwijderd"
 history.covenant.notice_not_public_deleted.public: "Vastgesteld dat dit document openbaar gemaakt kan worden."
 history.annual-report.main_document_added.private: 'Nieuw jaarplan of jaarverslag toegevoegd ({filename})'
-history.annual-report.main_document_updated.private: 'Jaarplan of jaarverslag gewijzigd ({filename})'
-history.annual-report.main_document_updated.public: 'Jaarplan of jaarverslag vervangen'
+history.annual-report.main_document_added.public: null
+history.annual-report.main_document_updated.private: 'Gegevens van het jaarplan of jaarverslag aangepast'
+history.annual-report.main_document_updated.public: null
+history.annual-report.main_document_replaced.private: 'Nieuwe versie jaarplan of jaarverslag geüpload ({filename})'
+history.annual-report.main_document_replaced.public: 'Jaarplan of jaarverslag vervangen'
 history.annual-report.main_document_deleted.private: 'Jaarplan of jaarverslag verwijderd ({filename})'
 history.annual-report.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
 history.annual-report.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
@@ -1075,6 +1103,7 @@ publication.dossier.error.invalid_family_id: "Rij {rownumber} heeft een ongeldig
 publication.dossier.error.invalid_thread_id: "Rij {rownumber} heeft een ongeldige thread id"
 publication.dossier.error.invalid_matter: "Rij {rownumber} heeft een matter met een incorrect aantal en/of incorrecte karakters"
 publication.dossier.error.invalid_publication_context: "Rij {rownumber} heeft een publicatiecontext met een incorrect aantal en/of incorrecte karakters"
+publication.dossier.error.matter_or_publication_context_required: "Rij {rownumber} moet een waarde bevatten voor \"Matter\" of \"Publicatiecontext\""
 publication.dossier.error.matter_and_publication_context_combination: "Productierapport met een kolom \"Publicatiecontext\" kan geen kolom voor \"Matter\" bevatten"
 publication.dossier.error.remark_too_long: "Rij {rownumber} heeft een te lange toelichting / opmerking (max {max} tekens)"
 publication.dossier.error.link_too_long: "Rij {rownumber} heeft een te lange link (max 2048 tekens)"
@@ -1127,6 +1156,13 @@ admin.dossiers.docision.document.remove: "Document verwijderen"
 #START woo-decision
 admin.dossiers.woo-decision.form.details.title: 'Omschrijving van het besluit'
 admin.dossiers.woo-decision.form.details.description: "Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende woorden zoals Woo, besluit etc.<ul class='my-4'><li class='bhr-form-help__dont text-sm'>Niet: Woo-besluit inzake het verzoek tot openbaarmaking van de besluitvorming over de inzet van boostervaccins voor de najaarsronde 2023</li><li class='bhr-form-help__do text-sm'>Wel: Openbaarmaking besluit inzet boostervaccins</li></ul>"
+history.woo-decision.main_document_added.private: 'Nieuwe besluitbrief toegevoegd ({filename})'
+history.woo-decision.main_document_added.public: null
+history.woo-decision.main_document_updated.private: 'Gegevens van de besluitbrief aangepast'
+history.woo-decision.main_document_updated.public: null
+history.woo-decision.main_document_replaced.private: 'Nieuwe versie besluitbrief geüpload ({filename})'
+history.woo-decision.main_document_replaced.public: 'Besluitbrief vervangen'
+history.woo-decision.main_document_deleted.private: 'Besluitbrief verwijderd ({filename})'
 #END woo-decision
 
 #START investigation-report
@@ -1170,8 +1206,11 @@ admin.dossiers.investigation-report.date: 'Datum'
 admin.dossiers.investigation-report.document: 'Onderzoeksrapport'
 admin.global.investigation-report_on: 'Onderzoeksrapport over:'
 history.investigation-report.main_document_added.private: 'Nieuw onderzoeksrapport toegevoegd ({filename})'
-history.investigation-report.main_document_updated.private: 'Onderzoeksrapport gewijzigd ({filename})'
-history.investigation-report.main_document_updated.public: 'Onderzoeksrapport vervangen'
+history.investigation-report.main_document_added.public: null
+history.investigation-report.main_document_updated.private: 'Gegevens van het onderzoeksrapport aangepast'
+history.investigation-report.main_document_updated.public: null
+history.investigation-report.main_document_replaced.private: 'Nieuwe versie onderzoeksrapport geüpload ({filename})'
+history.investigation-report.main_document_replaced.public: 'Onderzoeksrapport vervangen'
 history.investigation-report.main_document_deleted.private: 'Onderzoeksrapport verwijderd ({filename})'
 history.investigation-report.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
 history.investigation-report.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
@@ -1218,8 +1257,11 @@ admin.dossiers.complaint-judgement.date: 'Datum'
 admin.dossiers.complaint-judgement.document: 'Klachtoordeel'
 admin.global.complaint-judgement_on: 'Klachtoordeel met omschrijving:'
 history.complaint-judgement.main_document_added.private: 'Nieuw klachtoordeel toegevoegd ({filename})'
-history.complaint-judgement.main_document_updated.private: 'Klachtoordeel gewijzigd ({filename})'
-history.complaint-judgement.main_document_updated.public: 'Klachtoordeel vervangen'
+history.complaint-judgement.main_document_added.public: null
+history.complaint-judgement.main_document_updated.private: 'Gegevens van het klachtoordeel aangepast'
+history.complaint-judgement.main_document_updated.public: null
+history.complaint-judgement.main_document_replaced.private: 'Nieuwe versie klachtoordeel geüpload ({filename})'
+history.complaint-judgement.main_document_replaced.public: 'Klachtoordeel vervangen'
 history.complaint-judgement.main_document_deleted.private: 'Klachtoordeel verwijderd ({filename})'
 history.complaint-judgement.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
 history.complaint-judgement.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
@@ -1267,8 +1309,11 @@ admin.dossiers.disposition.date: 'Datum'
 admin.dossiers.disposition.document: 'Beschikking'
 admin.global.disposition_on: 'Beschikking met omschrijving:'
 history.disposition.main_document_added.private: 'Nieuw beschikking toegevoegd ({filename})'
-history.disposition.main_document_updated.private: 'Beschikking gewijzigd ({filename})'
-history.disposition.main_document_updated.public: 'Beschikking vervangen'
+history.disposition.main_document_added.public: null
+history.disposition.main_document_updated.private: 'Gegevens van de beschikking aangepast'
+history.disposition.main_document_updated.public: null
+history.disposition.main_document_replaced.private: 'Nieuwe versie beschikking geüpload ({filename})'
+history.disposition.main_document_replaced.public: 'Beschikking vervangen'
 history.disposition.main_document_deleted.private: 'Beschikking verwijderd ({filename})'
 history.disposition.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
 history.disposition.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
@@ -1319,8 +1364,11 @@ admin.dossiers.other-publication.date: 'Datum'
 admin.dossiers.other-publication.document: 'Informatiestuk'
 admin.global.other-publication_on: 'Overige informatiestuk met omschrijving:'
 history.other-publication.main_document_added.private: 'Nieuw informatiestuk toegevoegd ({filename})'
-history.other-publication.main_document_updated.private: 'Informatiestuk gewijzigd ({filename})'
-history.other-publication.main_document_updated.public: 'Informatiestuk vervangen'
+history.other-publication.main_document_added.public: null
+history.other-publication.main_document_updated.private: 'Gegevens van het informatiestuk aangepast'
+history.other-publication.main_document_updated.public: null
+history.other-publication.main_document_replaced.private: 'Nieuwe versie informatiestuk geüpload ({filename})'
+history.other-publication.main_document_replaced.public: 'Informatiestuk vervangen'
 history.other-publication.main_document_deleted.private: 'Informatiestuk verwijderd ({filename})'
 history.other-publication.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
 history.other-publication.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
@@ -1374,8 +1422,11 @@ admin.dossiers.advice.date: 'Datum'
 admin.dossiers.advice.document: 'Advies'
 admin.global.advice_on: 'Overige advies met omschrijving:'
 history.advice.main_document_added.private: 'Nieuw advies toegevoegd ({filename})'
-history.advice.main_document_updated.private: 'Advies gewijzigd ({filename})'
-history.advice.main_document_updated.public: 'Advies vervangen'
+history.advice.main_document_added.public: null
+history.advice.main_document_updated.private: 'Gegevens van het advies aangepast'
+history.advice.main_document_updated.public: null
+history.advice.main_document_replaced.private: 'Nieuwe versie advies geüpload ({filename})'
+history.advice.main_document_replaced.public: 'Advies vervangen'
 history.advice.main_document_deleted.private: 'Advies verwijderd ({filename})'
 history.advice.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
 history.advice.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
@@ -1437,8 +1488,11 @@ admin.dossiers.request-for-advice.date: 'Datum'
 admin.dossiers.request-for-advice.document: 'Adviesaanvraag'
 admin.global.request-for-advice_on: 'Overige adviesaanvraag met omschrijving:'
 history.request-for-advice.main_document_added.private: 'Nieuwe adviesaanvraag toegevoegd ({filename})'
-history.request-for-advice.main_document_updated.private: 'Adviesaanvraag gewijzigd ({filename})'
-history.request-for-advice.main_document_updated.public: 'Adviesaanvraag vervangen'
+history.request-for-advice.main_document_added.public: null
+history.request-for-advice.main_document_updated.private: 'Gegevens van de adviesaanvraag aangepast'
+history.request-for-advice.main_document_updated.public: null
+history.request-for-advice.main_document_replaced.private: 'Nieuwe versie adviesaanvraag geüpload ({filename})'
+history.request-for-advice.main_document_replaced.public: 'Adviesaanvraag vervangen'
 history.request-for-advice.main_document_deleted.private: 'Adviesaanvraag verwijderd ({filename})'
 history.request-for-advice.notice_not_public_added.private: "Mededeling 'niet-openbaar' toegevoegd"
 history.request-for-advice.notice_not_public_added.public: "Vastgesteld dat dit document in zijn geheel niet openbaar gemaakt kan worden."
@@ -1487,8 +1541,11 @@ admin.dossiers.draft-decision.date: 'Datum'
 admin.dossiers.draft-decision.document: 'Ontwerpbesluit'
 admin.global.draft-decision_on: 'Ontwerpbesluit met omschrijving:'
 history.draft-decision.main_document_added.private: 'Nieuw ontwerpbesluit toegevoegd ({filename})'
-history.draft-decision.main_document_updated.private: 'Ontwerpbesluit gewijzigd ({filename})'
-history.draft-decision.main_document_updated.public: 'Ontwerpbesluit vervangen'
+history.draft-decision.main_document_added.public: null
+history.draft-decision.main_document_updated.private: 'Gegevens van het ontwerpbesluit aangepast'
+history.draft-decision.main_document_updated.public: null
+history.draft-decision.main_document_replaced.private: 'Nieuwe versie ontwerpbesluit geüpload ({filename})'
+history.draft-decision.main_document_replaced.public: 'Ontwerpbesluit vervangen'
 history.draft-decision.main_document_deleted.private: 'Ontwerpbesluit verwijderd ({filename})'
 public.documents.type.draft_decision: "Ontwerpbesluiten"
 public.search.type_description.draft_decision: 'Ontwerpen van wet- en regelgeving met adviesaanvraag'

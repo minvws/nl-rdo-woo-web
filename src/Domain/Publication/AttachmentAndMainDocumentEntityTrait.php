@@ -142,6 +142,20 @@ trait AttachmentAndMainDocumentEntityTrait
         return $this;
     }
 
+    /**
+     * @return array<string, string|list<string>>
+     */
+    public function getMetadataSnapshot(): array
+    {
+        return [
+            'formalDate' => $this->formalDate->toString(),
+            'type' => $this->type->value,
+            'internalReference' => $this->internalReference,
+            'language' => $this->language->value,
+            'grounds' => $this->grounds,
+        ];
+    }
+
     public function getId(): Uuid
     {
         return $this->id;

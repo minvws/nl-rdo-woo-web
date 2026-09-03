@@ -28,15 +28,6 @@ parameters:
 			path: src/Domain/Publication/Dossier/Type/WooDecision/ViewModel/WooDecisionViewFactory.php
 
 		-
-			message: '''
-				#^Call to deprecated method getParamName\(\) of enum Shared\\Service\\Search\\Model\\FacetKey\:
-				use FacetDefinition\:\:\$requestParameter instead, see WOO\-6328$#
-			'''
-			identifier: method.deprecated
-			count: 1
-			path: src/Domain/Publication/Dossier/ViewModel/SubjectViewFactory.php
-
-		-
 			message: '#^Cannot access offset ''_meta'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1

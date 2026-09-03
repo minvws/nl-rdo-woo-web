@@ -125,11 +125,11 @@ final class IngestPdfHandlerTest extends UnitTestCase
             'class' => $entityClass,
         ]);
 
-        $this->doctrine->shouldNotReceive('persist');
-        $this->doctrine->shouldNotReceive('flush');
-        $this->extractor->shouldNotReceive('extract');
-        $this->extractor->shouldNotReceive('getOutPut');
-        $this->processor->shouldNotReceive('processEntity');
+        $this->doctrine->expects('persist')->never();
+        $this->doctrine->expects('flush')->never();
+        $this->extractor->expects('extract')->never();
+        $this->extractor->expects('getOutPut')->never();
+        $this->processor->expects('processEntity')->never();
 
         $this->handler->__invoke($message);
     }

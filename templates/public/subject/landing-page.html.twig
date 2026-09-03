@@ -1,0 +1,33 @@
+{% extends 'public/base.html.twig' %}
+
+{% set page_title = subject.landingPageTitle is not empty ? subject.landingPageTitle : subject.name %}
+
+{% import 'public/macros/content-tree.html.twig' as contentTree %}
+
+{% block search_form_top %}<twig:Public:SearchForm />{% endblock %}
+
+{% block body %}
+    <section class="woo-container woo-container--sm">
+        <div class="woo-readable-width" data-e2e-name="subject-landing-page-body">
+            <h1 class="woo-h1 woo-h1-spacing font-normal">{{ page_title }}</h1>
+
+            {% if subject.landingPageDescription is not empty %}
+                <div class="bg-woo-gray-100 p-6 my-10">
+                    <div class="woo-readable-width woo-rich-text">
+                        <p class="whitespace-pre-line">{{ subject.landingPageDescription }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if subject.hasVisibleLandingPageContentTree and subject.landingPageContentTree is not empty %}
+            <ul class="woo-accordion-list">
+                {{ contentTree.render(subject.landingPageContentTree) }}
+            </ul>
+        {% endif %}
+
+        <p class="mt-4">
+            <twig:Public:ArrowedBoldLink to="{{ subject.searchUrl }}">{{ 'public.subject.search' | trans({'subject': subject.name}) }}</twig:Public:ArrowedBoldLink>
+        </p>
+    </section>
+{% endblock %}

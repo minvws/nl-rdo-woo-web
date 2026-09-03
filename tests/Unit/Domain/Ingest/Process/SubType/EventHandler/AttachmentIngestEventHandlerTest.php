@@ -8,6 +8,9 @@ use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\Process\SubType\EventHandler\AttachmentIngestEventHandler;
 use Shared\Domain\Publication\Attachment\Event\AttachmentCreatedEvent;
+use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
+use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Search\SearchDispatcher;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
@@ -20,13 +23,21 @@ final class AttachmentIngestEventHandlerTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->searchDispatcher = Mockery::mock(SearchDispatcher::class);
-        $this->event = new AttachmentCreatedEvent(
-            dossierId: Uuid::v6(),
-            attachmentId: Uuid::v6(),
-            fileName: 'file-name',
-            fileType: 'mime-type',
-            fileSize: '123',
-        );
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getName')->andReturn('file-name');
+        $fileInfo->expects('getType')->andReturn('mime-type');
+        $fileInfo->expects('getSize')->andReturn(123);
+
+        $dossier = Mockery::mock(Covenant::class);
+        $dossier->expects('getId')->andReturn(Uuid::v6());
+
+        $attachment = Mockery::mock(CovenantAttachment::class);
+        $attachment->expects('getFileInfo')->times(3)->andReturn($fileInfo);
+        $attachment->expects('getId')->andReturn(Uuid::v6());
+        $attachment->expects('getDossier')->andReturn($dossier);
+
+        $this->event = AttachmentCreatedEvent::forAttachment($attachment);
     }
 
     public function testHandleCreate(): void

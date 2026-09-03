@@ -1,0 +1,28 @@
+{% extends 'admin/base.html.twig' %}
+
+{% set page_title = 'admin.data_checks.manage' | trans() %}
+
+{% block body %}
+<div class="bhr-container">
+    <h1 class="bhr-title mb-6">{{ 'admin.data_checks.manage' | trans }}</h1>
+
+    <div class="bhr-card">
+        <p class="mb-6">{{ 'admin.data_checks.intro' | trans }}</p>
+
+        <table class="bhr-table table-fixed">
+            <thead>
+                <tr>
+                    <th class="w-56 text-left" scope="col">{{ 'global.link' | trans }}</th>
+                    <th class="text-left" scope="col">{{ 'global.description' | trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a class="bhr-a" href="{{ path('app_admin_document_number_check') }}">Documentnummer controle</a></td>
+                    <td>Controleert of elk documentnummer af te leiden is uit de publicatiecontext en het document-ID (#7686).</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

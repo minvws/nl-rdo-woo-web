@@ -8,7 +8,7 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Department\DepartmentService;
 use Shared\Domain\Department\LandingPage\ViewModel\DepartmentLandingPageViewFactory;
-use Shared\Form\LandingPageType;
+use Shared\Form\DepartmentLandingPage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,7 +34,7 @@ class DepartmentLandingPageController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $form = $this->createForm(LandingPageType::class, $department);
+        $form = $this->createForm(DepartmentLandingPage::class, $department);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Shared\Doctrine\LandingPageSlugType;
+use Shared\Doctrine\LandingPageTitleType;
 use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
@@ -19,6 +21,7 @@ use function array_map;
 
 #[ORM\Entity(repositoryClass: SubjectRepository::class)]
 #[UniqueEntity(fields: ['name', 'organisation'], message: 'subject_already_exists')]
+#[UniqueEntity(fields: ['landingPageSlug'], message: 'subject_landing_page_slug_already_exists')]
 class Subject implements HasId
 {
     #[ORM\Id]
@@ -37,8 +40,20 @@ class Subject implements HasId
     #[ORM\OneToMany(targetEntity: AbstractDossier::class, mappedBy: 'subject')]
     private Collection $dossiers;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $landingPageTitle = null;
+    #[ORM\Column(
+        type: LandingPageSlugType::NAME,
+        length: LandingPageSlug::MAX_LENGTH,
+        nullable: true,
+        unique: true,
+    )]
+    private ?LandingPageSlug $landingPageSlug = null;
+
+    #[ORM\Column(
+        type: LandingPageTitleType::NAME,
+        length: LandingPageTitle::MAX_LENGTH,
+        nullable: true,
+    )]
+    private ?LandingPageTitle $landingPageTitle = null;
 
     #[ORM\Column(length: 10000, nullable: true)]
     private ?string $landingPageDescription = null;
@@ -52,6 +67,9 @@ class Subject implements HasId
     /** @var list<array<string, mixed>>|null */
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['jsonb' => true])]
     private ?array $landingPageContentTree = null;
+
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $hasVisibleLandingPageContentTree = false;
 
     public function __construct()
     {
@@ -108,29 +126,52 @@ class Subject implements HasId
      * @param list<SubjectContentNode> $contentTree
      */
     public function setLandingPage(
-        string $title,
+        LandingPageSlug $slug,
+        LandingPageTitle $title,
         string $description,
         SubjectLandingPageStatus $status,
         array $contentTree,
     ): self {
+        $this->landingPageSlug = $slug;
         $this->landingPageTitle = $title;
         $this->landingPageDescription = $description;
-        $this->landingPageStatus = $status;
         $this->landingPageContentTree = array_map(
             static fn (SubjectContentNode $node): array => $node->toArray(),
             $contentTree,
         );
 
-        if ($status === SubjectLandingPageStatus::CONCEPT && $this->landingPagePreviewToken === null) {
-            $this->landingPagePreviewToken = Uuid::v4();
-        }
+        $this->setLandingPageStatus($status);
 
         return $this;
     }
 
-    public function getLandingPageTitle(): ?string
+    public function hasPublishedLandingPage(): bool
+    {
+        return $this->landingPageStatus === SubjectLandingPageStatus::PUBLISHED;
+    }
+
+    public function getLandingPageSlug(): ?LandingPageSlug
+    {
+        return $this->landingPageSlug;
+    }
+
+    public function setLandingPageSlug(LandingPageSlug $slug): self
+    {
+        $this->landingPageSlug = $slug;
+
+        return $this;
+    }
+
+    public function getLandingPageTitle(): ?LandingPageTitle
     {
         return $this->landingPageTitle;
+    }
+
+    public function setLandingPageTitle(LandingPageTitle $title): self
+    {
+        $this->landingPageTitle = $title;
+
+        return $this;
     }
 
     public function getLandingPageDescription(): ?string
@@ -138,9 +179,29 @@ class Subject implements HasId
         return $this->landingPageDescription;
     }
 
+    public function setLandingPageDescription(?string $description): self
+    {
+        $this->landingPageDescription = ($description === null || $description === '')
+            ? null
+            : $description;
+
+        return $this;
+    }
+
     public function getLandingPageStatus(): ?SubjectLandingPageStatus
     {
         return $this->landingPageStatus;
+    }
+
+    public function setLandingPageStatus(SubjectLandingPageStatus $status): self
+    {
+        $this->landingPageStatus = $status;
+
+        if ($status === SubjectLandingPageStatus::CONCEPT && $this->landingPagePreviewToken === null) {
+            $this->landingPagePreviewToken = Uuid::v4();
+        }
+
+        return $this;
     }
 
     public function getLandingPagePreviewToken(): ?Uuid
@@ -154,5 +215,17 @@ class Subject implements HasId
     public function getLandingPageContentTree(): ?array
     {
         return $this->landingPageContentTree;
+    }
+
+    public function hasVisibleLandingPageContentTree(): bool
+    {
+        return $this->hasVisibleLandingPageContentTree;
+    }
+
+    public function setHasVisibleLandingPageContentTree(bool $hasVisibleLandingPageContentTree): self
+    {
+        $this->hasVisibleLandingPageContentTree = $hasVisibleLandingPageContentTree;
+
+        return $this;
     }
 }

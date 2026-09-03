@@ -259,7 +259,14 @@ class InventoryReader implements InventoryReaderInterface
         $matter = $this->reader->getOptionalString($rowIdx, MetadataField::MATTER->value);
         $publicationContext = $this->reader->getOptionalString($rowIdx, MetadataField::PUBLICATION_CONTEXT->value);
 
-        if ($matter !== null && trim($matter) !== '' && $publicationContext !== null && trim($publicationContext) !== '') {
+        $hasMatter = $matter !== null && trim($matter) !== '';
+        $hasPublicationContext = $publicationContext !== null && trim($publicationContext) !== '';
+
+        if (! $hasMatter && ! $hasPublicationContext) {
+            throw InventoryReaderException::forMissingMatterAndPublicationContextInRow($rowIdx);
+        }
+
+        if ($hasMatter && $hasPublicationContext) {
             throw InventoryReaderException::forMatterAndPublicationContextCombination();
         }
     }

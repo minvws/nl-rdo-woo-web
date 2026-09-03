@@ -8,6 +8,7 @@ Library             DateTime
 Library             OperatingSystem
 Library             String
 Library             ../libraries/LogDisable.py
+Library             ../libraries/ProductionReport.py
 Library             ArchiveLibrary
 Library             Browser
 Library             DebugLibrary
@@ -24,6 +25,19 @@ ${PDF_TEMPLATE}                 ${TEST_DATA_ROOT}/template.html
 
 
 *** Keywords ***
+Randomize Production Report
+  [Arguments]  ${production_report}  ${documents}=${NONE}  ${existing_mapping}=${NONE}
+  ${excel}  ${docs}  ${id_map} =  ProductionReport.Randomize
+  ...  ${production_report}
+  ...  ${documents}
+  ...  ${existing_mapping}
+  RETURN  ${excel}  ${docs}  ${id_map}
+
+Rename Document File
+  [Arguments]  ${file_path}  ${id_map}
+  ${new_path} =  ProductionReport.Rename Document File  ${file_path}  ${id_map}
+  RETURN  ${new_path}
+
 Generate Test Data Set
   [Documentation]  Generates test data and stores their location in environment variables with test scope.
   [Arguments]  ${type}  ${has_attachment}=${FALSE}  ${case_id}=${EMPTY}

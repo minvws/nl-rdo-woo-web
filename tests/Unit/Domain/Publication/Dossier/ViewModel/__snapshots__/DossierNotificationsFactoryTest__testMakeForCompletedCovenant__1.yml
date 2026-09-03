@@ -1,5 +1,5 @@
 anyDocumentNotifications: false
-dossierNotifications: {  }
+dossierNotifications: {}
 isNotCompleted: false
 missingUploads: 0
 withdrawnDocuments: 0

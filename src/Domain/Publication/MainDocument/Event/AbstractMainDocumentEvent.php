@@ -13,15 +13,22 @@ abstract readonly class AbstractMainDocumentEvent
         public Uuid $documentId,
         public Uuid $dossierId,
         public string $filename,
+        public bool $fileUpdated = false,
+        public bool $metadataUpdated = false,
     ) {
     }
 
-    public static function forDocument(AbstractMainDocument $document): static
-    {
+    public static function forDocument(
+        AbstractMainDocument $document,
+        bool $fileUpdated = false,
+        bool $metadataUpdated = false,
+    ): static {
         return new static(
             $document->getId(),
             $document->getDossier()->getId(),
             $document->getFileInfo()->getName() ?? '',
+            $fileUpdated,
+            $metadataUpdated,
         );
     }
 }

@@ -129,6 +129,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
             'subject' => [
                 'id' => $subject->getId()->toString(),
                 'name' => $subject->getName(),
+                'landingPage' => null,
             ],
             'department' => [
                 'id' => (string) $department->getId(),

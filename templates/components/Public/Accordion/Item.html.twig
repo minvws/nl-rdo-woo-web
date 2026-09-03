@@ -1,0 +1,23 @@
+<li>
+    <details class="woo-accordion">
+        <summary>
+            {% block title %}{% endblock %}
+        </summary>
+
+        <div class="px-4 pb-2">
+            {% if block('content') is not empty %}
+                <div class="woo-rich-text">
+                    {% block content %}{% endblock %}
+                </div>
+            {% endif %}
+
+            {% if block('accordion') is not empty %}
+                <div class="py-2">
+                    <ul class="woo-accordion-list">
+                        {% block accordion %}{% endblock %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </details>
+</li>

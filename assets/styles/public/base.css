@@ -91,4 +91,24 @@
     :focus {
         @apply outline-dotted outline-2 outline-black;
     }
+
+    @media print {
+        /* Newer browsers: override content-visibility on the pseudo-element */
+        details::details-content {
+            content-visibility: visible !important;
+        }
+
+        /* Fallback for older browsers that hide the children directly */
+        details:not([open]) > *:not(summary) {
+            display: block !important;
+        }
+
+        /* Hide the open/close triangle when printing */
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    }
 }

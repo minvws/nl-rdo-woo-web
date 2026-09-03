@@ -1,7 +1,7 @@
 dossierId: 00000000-0000-0000-0000-000000000001
 status: !php/enum Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus::NEEDS_CONFIRMATION
 canProcess: true
-uploadedFiles: {  }
+uploadedFiles: {}
 expectedDocumentsCount: 4
 currentDocumentsCount: 1
 missingDocuments:

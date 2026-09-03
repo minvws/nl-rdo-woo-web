@@ -49,8 +49,8 @@ final class ProcessUploadedDocumentsHandlerTest extends UnitTestCase
 
         $this->wooDecisionRepository->expects('find')->with($wooDecisionId)->andReturnNull();
 
-        $this->processUploadedDocumentAction->shouldNotReceive('execute');
-        $this->documentFileService->shouldNotReceive('startSaveProcessingUploads');
+        $this->processUploadedDocumentAction->expects('execute')->never();
+        $this->documentFileService->expects('startSaveProcessingUploads')->never();
 
         $command = new ProcessUploadedDocumentsCommand($wooDecisionId, $uploadEntityId);
 
@@ -67,8 +67,8 @@ final class ProcessUploadedDocumentsHandlerTest extends UnitTestCase
         $this->wooDecisionRepository->expects('find')->with($wooDecisionId)->andReturn($wooDecision);
         $this->uploadEntityRepository->expects('find')->with($uploadEntityId)->andReturnNull();
 
-        $this->processUploadedDocumentAction->shouldNotReceive('execute');
-        $this->documentFileService->shouldNotReceive('startSaveProcessingUploads');
+        $this->processUploadedDocumentAction->expects('execute')->never();
+        $this->documentFileService->expects('startSaveProcessingUploads')->never();
 
         $command = new ProcessUploadedDocumentsCommand($wooDecisionId, $uploadEntityId);
 

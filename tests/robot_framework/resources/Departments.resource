@@ -94,8 +94,8 @@ Inner Keyword Click Logo Tab
   Click  //*[@data-e2e-name="tabs-landingspagina-button-2"]
   Wait For Elements State  //*[@data-e2e-name="tabs-landingspagina-content-2"]  visible
 
-Click Submit Landingpage
-  Click  //*[@id="landing_page_submit"]
+Click Submit Department Landingpage
+  Click  //*[@id="department_landing_page_submit"]
 
 Upload Logo
   [Arguments]  ${file_path}

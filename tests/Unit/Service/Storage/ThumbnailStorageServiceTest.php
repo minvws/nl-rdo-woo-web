@@ -103,9 +103,9 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
             ->with(dirname($remotePath))
             ->andReturnFalse();
 
-        $this->remoteFilesystem->shouldNotReceive('createDirectory');
+        $this->remoteFilesystem->expects('createDirectory')->never();
 
-        $service->shouldNotReceive('doStore');
+        $service->expects('doStore')->never();
 
         $result = $service->store($entity, $localFile, $pageNr);
 
@@ -201,13 +201,13 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
     {
         $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->expects('isPaginatable')->andReturnFalse();
-        $fileInfo->shouldNotReceive('getPageCount');
+        $fileInfo->expects('getPageCount')->never();
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->expects('getFileInfo')->andReturn($fileInfo);
 
         $service = $this->getStorageService();
-        $service->shouldNotReceive('generateThumbPath');
+        $service->expects('generateThumbPath')->never();
 
         $service->deleteAllThumbsForEntity($entity);
     }

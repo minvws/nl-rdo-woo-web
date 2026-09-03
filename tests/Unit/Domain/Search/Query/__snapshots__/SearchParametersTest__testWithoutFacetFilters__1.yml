@@ -4,7 +4,7 @@ queryParameters:
     q: foo
     sort: _score
     sortorder: desc
-facetInputs: {  }
+facetInputs: {}
 operator:
     name: AND
     value: and

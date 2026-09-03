@@ -211,8 +211,8 @@ class ContentExtractServiceTest extends UnitTestCase
         $contentExtractOptions = ContentExtractOptions::create()->withExtractor(ContentExtractorKey::TIKA);
 
         $this->extractorA->expects('getKey')->andReturn(ContentExtractorKey::TESSERACT);
-        $this->extractorA->shouldNotReceive('supports');
-        $this->extractorA->shouldNotReceive('getContent');
+        $this->extractorA->expects('supports')->never();
+        $this->extractorA->expects('getContent')->never();
 
         $service = new ContentExtractService(
             $this->entityStorage,
@@ -244,9 +244,9 @@ class ContentExtractServiceTest extends UnitTestCase
         $this->extractorA->expects('supports')->andReturn(true);
         $this->extractorA->expects('getContent')->andThrow(new Exception($exMessage = 'Extractor A failed'));
 
-        $this->extractorB->shouldNotReceive('getKey');
-        $this->extractorB->shouldNotReceive('supports');
-        $this->extractorB->shouldNotReceive('getContent');
+        $this->extractorB->expects('getKey')->never();
+        $this->extractorB->expects('supports')->never();
+        $this->extractorB->expects('getContent')->never();
 
         $this->logger->expects('log')->with(
             LogLevel::ERROR,

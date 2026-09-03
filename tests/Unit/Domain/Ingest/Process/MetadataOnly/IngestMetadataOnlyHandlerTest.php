@@ -84,7 +84,7 @@ final class IngestMetadataOnlyHandlerTest extends UnitTestCase
             'id' => $id->toRfc4122(),
             'class' => $entityClass,
         ]);
-        $this->subTypeIndexer->shouldNotReceive('index');
+        $this->subTypeIndexer->expects('index')->never();
 
         $handler = new IngestMetadataOnlyHandler($this->doctrine, $this->logger, $this->subTypeIndexer);
         $handler->__invoke($message);

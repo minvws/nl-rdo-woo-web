@@ -13,6 +13,7 @@ use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
 use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Service\ApiPlatformService;
 use Symfony\Component\Uid\Exception\InvalidArgumentException;
@@ -25,6 +26,7 @@ final readonly class SubjectProvider implements ProviderInterface
         private SubjectRepository $subjectRepository,
         private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
+        private SubjectPreviewUrlGenerator $subjectPreviewUrlGenerator,
     ) {
     }
 
@@ -64,7 +66,7 @@ final readonly class SubjectProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        $mappedDtos = SubjectMapper::fromEntitiesWithDetail($subjects);
+        $mappedDtos = SubjectMapper::fromEntitiesWithDetail($subjects, $this->subjectPreviewUrlGenerator);
 
         /** @var list<HasId> $subjects */
         return $this->cursorPageFactory->create(
@@ -83,6 +85,6 @@ final readonly class SubjectProvider implements ProviderInterface
             throw EntityNotFoundException::for('Subject', $subjectId);
         }
 
-        return SubjectMapper::fromEntityWithDetail($subject);
+        return SubjectMapper::fromEntityWithDetail($subject, $this->subjectPreviewUrlGenerator);
     }
 }

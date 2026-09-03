@@ -41,23 +41,38 @@ final readonly class AttachmentHistoryHandler
     public function handleUpdate(AttachmentUpdatedEvent $event): void
     {
         $dossier = $this->getDossier($event);
+        $context = $this->getContext($event);
+        $mode = $dossier->getStatus()->isPublished() ? HistoryService::MODE_BOTH : HistoryService::MODE_PRIVATE;
 
-        $this->historyService->addDossierEntry(
-            dossierId: $event->dossierId,
-            key: 'attachment_updated',
-            context: $this->getContext($event),
-            mode: $dossier->getStatus()->isPublished() ? HistoryService::MODE_BOTH : HistoryService::MODE_PRIVATE,
-        );
+        if ($event->metadataUpdated) {
+            $this->historyService->addDossierEntry(
+                dossierId: $event->dossierId,
+                key: 'attachment_updated',
+                context: $context,
+                mode: $mode,
+            );
+        }
+
+        if ($event->fileUpdated) {
+            $this->historyService->addDossierEntry(
+                dossierId: $event->dossierId,
+                key: 'attachment_replaced',
+                context: $context,
+                mode: $mode,
+            );
+        }
     }
 
     #[AsMessageHandler()]
     public function handleDelete(AttachmentDeletedEvent $event): void
     {
+        $dossier = $this->getDossier($event);
+
         $this->historyService->addDossierEntry(
             dossierId: $event->dossierId,
             key: 'attachment_deleted',
             context: $this->getContext($event),
-            mode: HistoryService::MODE_PRIVATE,
+            mode: $dossier->getStatus()->isPublished() ? HistoryService::MODE_BOTH : HistoryService::MODE_PRIVATE,
         );
     }
 

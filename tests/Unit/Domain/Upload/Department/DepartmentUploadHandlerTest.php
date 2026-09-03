@@ -78,7 +78,7 @@ final class DepartmentUploadHandlerTest extends UnitTestCase
             ->expects('getUploadGroupId')
             ->andReturn(UploadGroupId::MAIN_DOCUMENTS);
 
-        $this->entityUploadStorer->shouldNotReceive('storeDepartmentAssetForEntity');
+        $this->entityUploadStorer->expects('storeDepartmentAssetForEntity')->never();
 
         $this->departmentUploadHandler->__invoke($this->event);
     }

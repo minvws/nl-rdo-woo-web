@@ -6,6 +6,7 @@ namespace Shared\Tests\Unit\Domain\Publication\Attachment;
 
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
 use Shared\Domain\Publication\Attachment\Command\WithDrawAttachmentCommand;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
@@ -39,7 +40,32 @@ class AttachmentDispatcherTest extends UnitTestCase
         );
     }
 
-    public function testDispatchAttachmentUpdatedEvent(): void
+    /**
+     * @return array<string, array{method: string, fileUpdated: bool, metadataUpdated: bool}>
+     */
+    public static function updatedEventDataProvider(): array
+    {
+        return [
+            'metadata only' => [
+                'method' => 'dispatchAttachmentMetadataUpdatedEvent',
+                'fileUpdated' => false,
+                'metadataUpdated' => true,
+            ],
+            'file only' => [
+                'method' => 'dispatchAttachmentFileUpdatedEvent',
+                'fileUpdated' => true,
+                'metadataUpdated' => false,
+            ],
+            'metadata and file' => [
+                'method' => 'dispatchAttachmentMetadataAndFileUpdatedEvent',
+                'fileUpdated' => true,
+                'metadataUpdated' => true,
+            ],
+        ];
+    }
+
+    #[DataProvider('updatedEventDataProvider')]
+    public function testDispatchAttachmentUpdatedEvent(string $method, bool $fileUpdated, bool $metadataUpdated): void
     {
         $dossier = Mockery::mock(Covenant::class);
         $dossier->expects('getId')->andReturn($dossierId = Uuid::v6());
@@ -59,18 +85,27 @@ class AttachmentDispatcherTest extends UnitTestCase
         $attachment->setFileInfo($fileInfo);
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static function (AttachmentUpdatedEvent $event) use ($attachment, $dossierId, $fileName, $fileType) {
+            static function (AttachmentUpdatedEvent $event) use (
+                $attachment,
+                $dossierId,
+                $fileName,
+                $fileType,
+                $fileUpdated,
+                $metadataUpdated,
+            ) {
                 self::assertEquals($dossierId, $event->dossierId);
                 self::assertEquals($attachment->getId(), $event->attachmentId);
                 self::assertEquals($fileName, $event->fileName);
                 self::assertEquals($fileType, $event->fileType);
                 self::assertEquals('123 bytes', $event->fileSize);
+                self::assertSame($fileUpdated, $event->fileUpdated);
+                self::assertSame($metadataUpdated, $event->metadataUpdated);
 
                 return true;
             },
         ))->andReturns(new Envelope(new stdClass()));
 
-        $this->dispatcher->dispatchAttachmentUpdatedEvent($attachment);
+        $this->dispatcher->{$method}($attachment);
     }
 
     public function testDispatchAttachmentCreatedEvent(): void

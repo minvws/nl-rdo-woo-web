@@ -43,7 +43,7 @@ final class FilePreprocessorTest extends UnitTestCase
             ->with($this->file)
             ->andReturnTrue();
 
-        $this->firstPreprocessor->shouldNotReceive('process');
+        $this->firstPreprocessor->expects('process')->never();
         $this->secondPreprocessor
             ->expects('process')
             ->with($this->file)
@@ -61,13 +61,13 @@ final class FilePreprocessorTest extends UnitTestCase
             ->expects('canProcess')
             ->with($this->file)
             ->andReturnTrue();
-        $this->secondPreprocessor->shouldNotReceive('canProcess');
+        $this->secondPreprocessor->expects('canProcess')->never();
 
         $this->firstPreprocessor
             ->expects('process')
             ->with($this->file)
             ->andReturn($this->iterableToGenerator($expectedResult = [Mockery::mock(UploadedFile::class), Mockery::mock(UploadedFile::class)]));
-        $this->secondPreprocessor->shouldNotReceive('process');
+        $this->secondPreprocessor->expects('process')->never();
 
         $preprocessor = new FilePreprocessor(new ArrayIterator([$this->firstPreprocessor, $this->secondPreprocessor]));
         $result = $preprocessor->process($this->file);
@@ -86,8 +86,8 @@ final class FilePreprocessorTest extends UnitTestCase
             ->with($this->file)
             ->andReturnFalse();
 
-        $this->firstPreprocessor->shouldNotReceive('process');
-        $this->secondPreprocessor->shouldNotReceive('process');
+        $this->firstPreprocessor->expects('process')->never();
+        $this->secondPreprocessor->expects('process')->never();
 
         $preprocessor = new FilePreprocessor([$this->firstPreprocessor, $this->secondPreprocessor]);
         $result = $preprocessor->process($this->file);

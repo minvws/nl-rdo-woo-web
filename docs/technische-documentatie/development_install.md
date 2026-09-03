@@ -105,6 +105,20 @@ echo $CR_PAT | docker login ghcr.io -u USERNAME --password-stdin
 
 ## Step 4: Setup and start docker containers
 
+If you use [OrbStack](https://orbstack.dev/), first put a compose override in place so the services get host names
+instead of published ports:
+
+```shell
+cp ./docker/compose/compose.orbstack.yml compose.override.yml
+```
+
+`compose.override.yml` is loaded automatically by Docker Compose and is git-ignored, so everyone picks their own. See
+[docker/compose/README.md](../../docker/compose/README.md) for the available variants, including how to run a second
+instance of the application alongside the first. Skipping this step is fine too — you then reach everything on
+localhost ports, see [Step 6](#step-6-browse-to-the-site).
+
+Then start the containers:
+
 ```shell
 task up
 ```
@@ -178,9 +192,10 @@ Both methods will generate a password and a 2FA token with which you can log int
 
 ## Step 6: Browse to the site
 
-How you reach the site depends on `compose.override.yml`, which is committed and which Docker Compose loads
-automatically. It configures [OrbStack](https://orbstack.dev/) domains and **resets the published ports** for `public`,
-`admin`, `elasticsearch`, `redis`, `rabbitmq` and `postgres`. So with the override in place you use host names:
+How you reach the site depends on whether you copied a `compose.override.yml` into place in
+[Step 4](#step-4-setup-and-start-docker-containers). With `docker/compose/compose.orbstack.yml` in place, every service
+gets an OrbStack domain and the published ports of `public`, `admin`, `elasticsearch`, `redis`, `rabbitmq` and
+`postgres` are **reset**, so you use host names:
 
 | What            | minvws                                  | minfin                                  |
 |-----------------|-----------------------------------------|-----------------------------------------|
@@ -188,16 +203,21 @@ automatically. It configures [OrbStack](https://orbstack.dev/) domains and **res
 | Admin (balie)   | <http://admin-minvws.local/balie/login> | <http://admin-minfin.local/balie/login> |
 | Publication API | <https://localhost:8443>                | <https://localhost:8444>                |
 
-The public and admin host names can be changed with `<TENANT>_PUBLIC_HOST` and `<TENANT>_ADMIN_HOST`. The supporting
-services get `elasticsearch-woo.local`, `redis-woo.local`, `rabbitmq-woo.local` and `postgres-woo.local`.
+The supporting services get `elasticsearch-woo.local`, `redis-woo.local`, `rabbitmq-woo.local` and
+`postgres-woo.local`.
+
+The public and admin host names come from `<TENANT>_PUBLIC_HOST` and `<TENANT>_ADMIN_HOST`, but mind that these have two
+consumers that read different files: Docker Compose interpolates them for the OrbStack labels from the root `.env` or
+from your shell, while the application reads them from `.env.dev.local`. Changing them means changing both — see
+[docker/compose/README.md](../../docker/compose/README.md), which does exactly that for the second instance.
 
 The Publication API and MinIO keep their published ports, so they are on localhost either way: the API on `8443` /
 `8444` (mTLS, so it needs a client certificate from `task certs:gen`) and MinIO on `9000` with its console on `9001`.
 
-If you are not using OrbStack, remove or replace `compose.override.yml` and the port mappings from `compose.yml` apply
-instead: public on `8000` / `8100`, admin on `8001` / `8101`, Elasticsearch on `9200`, RabbitMQ management on `15672` and
-PostgreSQL on `5432`. All of these can be overridden with the `DOCKER_*_PORT` environment variables, which is handy if
-you run more than one checkout.
+If you are not using OrbStack, leave `compose.override.yml` out and the port mappings from `compose.yml` apply instead:
+public on `8000` / `8100`, admin on `8001` / `8101`, Elasticsearch on `9200`, RabbitMQ management on `15672` and
+PostgreSQL on `5432`. All of these can be overridden with the `DOCKER_*_PORT` environment variables (in the root `.env`
+or in your shell, since Docker Compose reads those), which is handy if you run more than one checkout.
 
 You can log into the balie with your generated credentials.
 

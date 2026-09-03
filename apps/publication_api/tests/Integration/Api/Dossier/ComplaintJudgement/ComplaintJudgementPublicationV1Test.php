@@ -112,6 +112,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
             'subject' => [
                 'id' => $subject->getId()->toString(),
                 'name' => $subject->getName(),
+                'landingPage' => null,
             ],
             'department' => [
                 'id' => (string) $department->getId(),

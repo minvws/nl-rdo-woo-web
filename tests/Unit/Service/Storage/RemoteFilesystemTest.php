@@ -129,7 +129,7 @@ final class RemoteFilesystemTest extends UnitTestCase
             ->expects('directoryExists')
             ->with($location = 'foo/bar')
             ->andReturnTrue();
-        $remoteFilesystem->shouldNotReceive('createDirectory');
+        $remoteFilesystem->expects('createDirectory')->never();
 
         $result = $remoteFilesystem->createDirectoryIfNotExist($location);
 

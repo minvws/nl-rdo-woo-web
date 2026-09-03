@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain\Publication\History;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\FileInfo;
@@ -43,7 +44,7 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
         $fileInfo = $this->getFileInfo(
             $expectedName = 'my-file-name',
         );
-        $dossier = $this->getDossier();
+        $dossier = $this->getDossier(DossierStatus::CONCEPT);
         $mainDocument = $this->getMainDocument($fileInfo, $dossier);
 
         $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
@@ -64,17 +65,17 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
         $this->handler->handleCreate($event);
     }
 
-    public function testHandleUpdate(): void
+    public function testHandleUpdateWithoutFileUpload(): void
     {
         $fileInfo = $this->getFileInfo(
             $expectedName = 'my-file-name',
         );
-        $dossier = $this->getDossier();
+        $dossier = $this->getDossier(DossierStatus::PUBLISHED);
         $mainDocument = $this->getMainDocument($fileInfo, $dossier);
 
         $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
 
-        $event = MainDocumentUpdatedEvent::forDocument($mainDocument);
+        $event = MainDocumentUpdatedEvent::forDocument($mainDocument, fileUpdated: false, metadataUpdated: true);
 
         $this->historyService
             ->expects('addDossierEntry')
@@ -90,12 +91,80 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
         $this->handler->handleUpdate($event);
     }
 
+    public function testHandleUpdateWithOnlyFileUploadLogsOnlyReplacedEntry(): void
+    {
+        $fileInfo = $this->getFileInfo(
+            $expectedName = 'my-file-name',
+        );
+        $dossier = $this->getDossier(DossierStatus::PUBLISHED);
+        $mainDocument = $this->getMainDocument($fileInfo, $dossier);
+
+        $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
+
+        $event = MainDocumentUpdatedEvent::forDocument($mainDocument, fileUpdated: true, metadataUpdated: false);
+
+        $this->historyService
+            ->expects('addDossierEntry')
+            ->with(
+                $dossier->getId(),
+                'covenant.main_document_replaced',
+                [
+                    'filename' => $expectedName,
+                ],
+                HistoryService::MODE_BOTH,
+            );
+
+        $this->handler->handleUpdate($event);
+    }
+
+    public function testHandleUpdateWithFileUploadAndMetadataChangeLogsTwoEntries(): void
+    {
+        $fileInfo = $this->getFileInfo(
+            $expectedName = 'my-file-name',
+        );
+        $dossier = $this->getDossier(DossierStatus::PUBLISHED, getIdTimes: 6, times: 2);
+        $mainDocument = $this->getMainDocument($fileInfo, $dossier);
+
+        $this->repository->expects('findOneByDossierId')->times(2)->with($dossier->getId())->andReturn($dossier);
+
+        $event = MainDocumentUpdatedEvent::forDocument($mainDocument, fileUpdated: true, metadataUpdated: true);
+
+        $this->historyService
+            ->expects('addDossierEntry')
+            ->with($dossier->getId(), 'covenant.main_document_updated', ['filename' => $expectedName], HistoryService::MODE_BOTH)
+            ->ordered();
+
+        $this->historyService
+            ->expects('addDossierEntry')
+            ->with($dossier->getId(), 'covenant.main_document_replaced', ['filename' => $expectedName], HistoryService::MODE_BOTH)
+            ->ordered();
+
+        $this->handler->handleUpdate($event);
+    }
+
+    public function testHandleUpdateWithoutAnyChangeLogsNothing(): void
+    {
+        $fileInfo = $this->getFileInfo('my-file-name');
+
+        $dossier = Mockery::mock(Covenant::class);
+        $dossier->expects('getId')->andReturn(Uuid::v6());
+
+        $mainDocument = $this->getMainDocument($fileInfo, $dossier);
+
+        $event = MainDocumentUpdatedEvent::forDocument($mainDocument, fileUpdated: false, metadataUpdated: false);
+
+        $this->repository->expects('findOneByDossierId')->never();
+        $this->historyService->expects('addDossierEntry')->never();
+
+        $this->handler->handleUpdate($event);
+    }
+
     public function testHandleDelete(): void
     {
         $fileInfo = $this->getFileInfo(
             $expectedName = 'my-file-name',
         );
-        $dossier = $this->getDossier();
+        $dossier = $this->getDossier(DossierStatus::CONCEPT);
         $mainDocument = $this->getMainDocument($fileInfo, $dossier);
 
         $this->repository->expects('findOneByDossierId')->with($dossier->getId())->andReturn($dossier);
@@ -116,11 +185,12 @@ final class MainDocumentHistoryHandlerTest extends UnitTestCase
         $this->handler->handleDelete($event);
     }
 
-    private function getDossier(): Covenant
+    private function getDossier(DossierStatus $status, int $getIdTimes = 4, int $times = 1): Covenant
     {
         $dossier = Mockery::mock(Covenant::class);
-        $dossier->expects('getId')->times(4)->andReturn(Uuid::v6());
-        $dossier->expects('getType')->andReturn(DossierType::COVENANT);
+        $dossier->expects('getId')->times($getIdTimes)->andReturn(Uuid::v6());
+        $dossier->expects('getType')->times($times)->andReturn(DossierType::COVENANT);
+        $dossier->expects('getStatus')->times($times)->andReturn($status);
 
         return $dossier;
     }

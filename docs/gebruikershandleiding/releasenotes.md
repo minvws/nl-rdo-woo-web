@@ -2,6 +2,38 @@
 
 # Release notes
 
+## v3.4.0
+
+### Highlights
+
+- **Landingspagina’s voor onderwerpen** Onderwerpen kunnen nu worden voorzien van een eigen landingspagina met aanvullende informatie. Bezoekers kunnen vanaf deze pagina ook direct doorklikken naar alle publicaties die bij het onderwerp horen.
+- **Uitgebreide content bij onderwerpen (Verhaallijnen)** Via de Publication API kan gestructureerde content voor onderwerpen worden aangeleverd, waaronder introducties, meerdere niveaus van subsecties en afsluitende content.
+De aangeleverde volgorde en structuur blijven behouden.
+
+### Publieke website
+
+- **Documenten standaard gesorteerd op documentnummer** Documentlijsten bij Woo-publicaties worden standaard oplopend op documentnummer gesorteerd. Hierdoor worden documenten in een meer voorspelbare volgorde weergegeven.
+
+### Balie
+
+- **Documentdatum zonder tijd** Bij documenten wordt voortaan alleen de documentdatum getoond en opgeslagen waar een tijdcomponent niet van toepassing is.
+- **Duidelijkere foutmelding bij ontbrekende gegevens** Bij het uploaden van een productierapport wordt duidelijker aangegeven welke vereiste kolommen ontbreken.
+- **Beheer van onderwerp-landingspagina’s** Beheerders kunnen voor onderwerpen een landingspagina activeren, content toevoegen en wijzigen en de pagina weer uitschakelen. Ingevoerde content blijft bewaard wanneer een landingspagina tijdelijk wordt uitgeschakeld.
+
+### Publication Api
+
+- **Uitgebreide ondersteuning voor onderwerpcontent** De API ondersteunt het aanleveren van gestructureerde content (Verhaallijnen) die aan een onderwerp is gekoppeld. Dit vormt de basis voor uitgebreidere onderwerp-landingspagina’s op de publieke website.
+
+- **Betere afscherming van onderwerpen** Bij het wijzigen of verwijderen van een onderwerp controleert de API nu ook of het onderwerp bij de juiste organisatie hoort. Hiermee wordt voorkomen dat een onderwerp buiten de bedoelde organisatiecontext wordt aangepast.
+- **Verbeterde API-documentatie** Ontbrekende Engelse vertalingen voor keuzewaarden zijn toegevoegd, zodat de API-documentatie geen interne vertaalsleutels meer toont.
+- **Betrouwbaardere verwerking van organisatieprefixen** Bij het bepalen van een prefix via de API worden gearchiveerde prefixes niet langer meegenomen.
+
+### Overige verbeteringen
+
+- **Documentidentificatie aangescherpt** Elk document moet nu een document-ID hebben. Dit versterkt de consistentie van documentnummers en voorkomt ongeldige documentrecords.
+- **Basis voor één prefix per organisatie** Er is een nieuwe basis toegevoegd waarmee een organisatie één eigen prefix kan gebruiken. Bestaande dossier- en publieke URL’s blijven hierbij ongewijzigd.
+- **Uitgebreidere logging** Er is extra logging toegevoegd om incidentele API-fouten beter te kunnen analyseren. Omdat uit het issue geen directe verandering voor eindgebruikers blijkt, is dit niet opgenomen in de hoofdrelease notes.
+
 ## v3.3.0
 
 ### Highlights

@@ -17,6 +17,7 @@ class FakerFactory
         DateTimeFakerProvider::class,
         DocumentFakerProvider::class,
         DossierFakerProvider::class,
+        LandingPageFakerProvider::class,
         FileFakerProvider::class,
         UuidFakerProvider::class,
     ];

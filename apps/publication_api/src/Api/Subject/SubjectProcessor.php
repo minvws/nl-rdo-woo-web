@@ -9,25 +9,30 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\State\ProcessorInterface;
-use PublicationApi\Api\Organisation\OrganisationResolver;
+use PublicationApi\Api\Organisation\OrganisationResolverInterface;
 use PublicationApi\Domain\Exception\ResourceInUseException;
 use PublicationApi\Domain\Validator\EntityValidator;
+use PublicationApi\FeatureFlag\SubjectLandingPageGuard;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Domain\Publication\Subject\SubjectService;
+use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
 /**
- * @implements ProcessorInterface<SubjectCreateDto|SubjectUpdateDto,?SubjectResponse>
+ * @implements ProcessorInterface<SubjectCreateDto|SubjectUpdateDto,?SubjectDetailResponse>
  */
 final readonly class SubjectProcessor implements ProcessorInterface
 {
     public function __construct(
-        private OrganisationResolver $organisationResolver,
+        private OrganisationResolverInterface $organisationResolver,
         private SubjectRepository $subjectRepository,
         private SubjectService $subjectService,
         private EntityValidator $validator,
+        private SubjectPreviewUrlGenerator $subjectPreviewUrlGenerator,
+        private SubjectLandingPageGuard $subjectLandingPageGuard,
     ) {
     }
 
@@ -41,17 +46,21 @@ final readonly class SubjectProcessor implements ProcessorInterface
             Assert::isInstanceOf($data, SubjectCreateDto::class);
             $subject = $this->create($organisation, $data);
 
-            return SubjectMapper::fromEntityWithDetail($subject);
+            return SubjectMapper::fromEntityWithDetail($subject, $this->subjectPreviewUrlGenerator);
         }
 
-        $subject = $this->subjectRepository->find($uriVariables['subjectId']);
+        Assert::string($uriVariables['subjectId']);
+        $subject = $this->subjectRepository->findByOrganisationAndId(
+            $organisation,
+            Uuid::fromString($uriVariables['subjectId']),
+        );
         Assert::isInstanceOf($subject, Subject::class);
 
         if ($operation instanceof Put) {
             Assert::isInstanceOf($data, SubjectUpdateDto::class);
             $this->update($subject, $data);
 
-            return SubjectMapper::fromEntityWithDetail($subject);
+            return SubjectMapper::fromEntityWithDetail($subject, $this->subjectPreviewUrlGenerator);
         }
 
         if ($operation instanceof Delete) {
@@ -63,6 +72,10 @@ final readonly class SubjectProcessor implements ProcessorInterface
 
     private function create(Organisation $organisation, SubjectCreateDto $subjectCreateDto): Subject
     {
+        if ($subjectCreateDto->landingPage !== null) {
+            $this->subjectLandingPageGuard->assertEnabled();
+        }
+
         $subject = SubjectMapper::fromCreateDto($subjectCreateDto, $organisation);
 
         $this->validator->throwExceptionIfNotValid($subject);
@@ -74,6 +87,10 @@ final readonly class SubjectProcessor implements ProcessorInterface
 
     private function update(Subject $subject, SubjectUpdateDto $subjectUpdateDto): Subject
     {
+        if ($subjectUpdateDto->landingPage !== null) {
+            $this->subjectLandingPageGuard->assertEnabled();
+        }
+
         $subject = SubjectMapper::fromUpdateDto($subject, $subjectUpdateDto);
 
         $this->validator->throwExceptionIfNotValid($subject);

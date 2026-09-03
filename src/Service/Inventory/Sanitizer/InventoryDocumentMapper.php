@@ -30,7 +30,7 @@ readonly class InventoryDocumentMapper
         Assert::isInstanceOf($dossier, WooDecision::class);
 
         return [
-            $document->getDocumentId()?->toString() ?? '',
+            $document->getDocumentId()->toString(),
             $document->getDocumentNumber(),
             $document->getFileInfo()->getName() ?: '',
             $document->getJudgement() ? $this->translator->trans('public.documents.judgment.short.' . $document->getJudgement()->value) : '',

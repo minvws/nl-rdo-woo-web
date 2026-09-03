@@ -58,7 +58,7 @@ class DossierNumberChangedHandlerTest extends UnitTestCase
             ->with($event->dossierId)
             ->andReturn(new Covenant());
 
-        $this->dossierDispatcher->shouldNotReceive('dispatchSynchronizeArtifactsCommand');
+        $this->dossierDispatcher->expects('dispatchSynchronizeArtifactsCommand')->never();
 
         $this->handler->__invoke($event);
     }

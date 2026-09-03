@@ -152,7 +152,7 @@ class DeleteDossierHandlerTest extends UnitTestCase
 
         $this->entityManager->expects('beginTransaction');
 
-        $this->dossierWorkflowManager->shouldNotReceive('applyTransition');
+        $this->dossierWorkflowManager->expects('applyTransition')->never();
         $this->strategyA->expects('deleteWithOverride')->with($this->dossier);
         $this->strategyB->expects('deleteWithOverride')->with($this->dossier);
 

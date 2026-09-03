@@ -11,6 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 /**
  * @extends ServiceEntityRepository<BatchDownload>
@@ -44,6 +45,24 @@ class BatchDownloadRepository extends ServiceEntityRepository
             ->setParameter('now', new DateTimeImmutable())
             ->getQuery()
             ->getResult();
+    }
+
+    public function markAllForScopeAsOutdated(BatchDownloadScope $scope, string $expirationTime = '+15 minutes'): int
+    {
+        $expiration = new DateTimeImmutable($expirationTime);
+        $qb = $this->getBaseScopeQuery($scope)
+            ->update(BatchDownload::class, 'b')
+            ->set('b.status', ':outdated')
+            ->set('b.expiration', ':expiration')
+            ->setParameter('outdated', BatchDownloadStatus::OUTDATED)
+            ->setParameter('expiration', $expiration)
+            ->andWhere('b.status != :outdated');
+
+        $affected = $qb->getQuery()->execute();
+
+        Assert::integer($affected);
+
+        return $affected;
     }
 
     public function getBestAvailableBatchDownloadForScope(BatchDownloadScope $scope): ?BatchDownload

@@ -86,6 +86,7 @@ class DocumentPrefixRepository extends ServiceEntityRepository
         $documentPrefix = $this->createQueryBuilder('document_prefix')
             ->where('document_prefix.organisation = :organisation')
             ->setParameter('organisation', $organisation)
+            ->andWhere('document_prefix.archived = false')
             ->orderBy('document_prefix.prefix')
             ->setMaxResults(1)
             ->getQuery()

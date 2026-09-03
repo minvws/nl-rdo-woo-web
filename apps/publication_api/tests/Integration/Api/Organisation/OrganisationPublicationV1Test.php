@@ -69,10 +69,12 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
                 [
                     'id' => (string) $subjectA->getId(),
                     'name' => $subjectA->getName(),
+                    'landingPage' => null,
                 ],
                 [
                     'id' => (string) $subjectB->getId(),
                     'name' => $subjectB->getName(),
+                    'landingPage' => null,
                 ],
             ],
             'prefixes' => [

@@ -158,66 +158,6 @@ class DossierAttachmentValidatorTest extends UnitTestCase
         ]);
     }
 
-    public function testAssertAttachmentSetUnchangedInNonConceptPassesWhenAttachmentsAreUnchanged(): void
-    {
-        $attachmentService = Mockery::mock(AttachmentService::class);
-        $dossierAttachmentValidator = new DossierAttachmentValidator($attachmentService);
-
-        $externalId = self::getFaker()->externalId();
-
-        $attachment = Mockery::mock(AbstractAttachment::class);
-        $attachment->expects('getExternalId')
-            ->andReturn($externalId);
-
-        $dossier = Mockery::mock(Disposition::class);
-        $dossier->expects('getStatus')
-            ->andReturn(DossierStatus::PUBLISHED);
-        $dossier->expects('getAttachments')
-            ->andReturn(new ArrayCollection([$attachment]));
-
-        $dossierAttachmentValidator->assertAttachmentSetUnchangedInNonConcept($dossier, [
-            new AttachmentRequestDto(
-                fileName: FileName::create(sprintf('%s.pdf', self::getFaker()->word())),
-                formalDate: self::getFaker()->plainDate(),
-                language: self::getFaker()->attachmentLanguage(),
-                type: self::getFaker()->attachmentType(),
-                externalId: $externalId,
-            ),
-        ]);
-    }
-
-    public function testAssertAttachmentSetUnchangedInNonConceptIsSkippedForConceptDossier(): void
-    {
-        $attachmentService = Mockery::mock(AttachmentService::class);
-        $dossierAttachmentValidator = new DossierAttachmentValidator($attachmentService);
-
-        $dossier = Mockery::mock(Disposition::class);
-        $dossier->expects('getStatus')
-            ->andReturn(DossierStatus::CONCEPT);
-
-        $dossierAttachmentValidator->assertAttachmentSetUnchangedInNonConcept($dossier, []);
-    }
-
-    public function testAssertAttachmentSetUnchangedInNonConceptThrowsWhenAttachmentIsRemoved(): void
-    {
-        $attachmentService = Mockery::mock(AttachmentService::class);
-        $dossierAttachmentValidator = new DossierAttachmentValidator($attachmentService);
-
-        $attachment = Mockery::mock(AbstractAttachment::class);
-        $attachment->expects('getExternalId')
-            ->andReturn(self::getFaker()->externalId());
-
-        $dossier = Mockery::mock(Disposition::class);
-        $dossier->expects('getStatus')
-            ->andReturn(DossierStatus::PUBLISHED);
-        $dossier->expects('getAttachments')
-            ->andReturn(new ArrayCollection([$attachment]));
-
-        self::expectException(ValidationException::class);
-
-        $dossierAttachmentValidator->assertAttachmentSetUnchangedInNonConcept($dossier, []);
-    }
-
     public function testAssertNoAttachmentRemovalInNonConceptPassesWhenAttachmentIsAdded(): void
     {
         $attachmentService = Mockery::mock(AttachmentService::class);
@@ -253,43 +193,6 @@ class DossierAttachmentValidatorTest extends UnitTestCase
         ]);
 
         $this->addToAssertionCount(1);
-    }
-
-    public function testAssertAttachmentSetUnchangedInNonConceptThrowsWhenAttachmentIsAdded(): void
-    {
-        $attachmentService = Mockery::mock(AttachmentService::class);
-        $dossierAttachmentValidator = new DossierAttachmentValidator($attachmentService);
-
-        $externalId = self::getFaker()->externalId();
-
-        $attachment = Mockery::mock(AbstractAttachment::class);
-        $attachment->expects('getExternalId')
-            ->andReturn($externalId);
-
-        $dossier = Mockery::mock(Disposition::class);
-        $dossier->expects('getStatus')
-            ->andReturn(DossierStatus::PUBLISHED);
-        $dossier->expects('getAttachments')
-            ->andReturn(new ArrayCollection([$attachment]));
-
-        self::expectException(ValidationException::class);
-
-        $dossierAttachmentValidator->assertAttachmentSetUnchangedInNonConcept($dossier, [
-            new AttachmentRequestDto(
-                fileName: FileName::create(sprintf('%s.pdf', self::getFaker()->word())),
-                formalDate: self::getFaker()->plainDate(),
-                language: self::getFaker()->attachmentLanguage(),
-                type: self::getFaker()->attachmentType(),
-                externalId: $externalId,
-            ),
-            new AttachmentRequestDto(
-                fileName: FileName::create(sprintf('%s.pdf', self::getFaker()->word())),
-                formalDate: self::getFaker()->plainDate(),
-                language: self::getFaker()->attachmentLanguage(),
-                type: self::getFaker()->attachmentType(),
-                externalId: self::getFaker()->externalId(),
-            ),
-        ]);
     }
 
     public function testAssertNoAttachmentRemovalInNonConceptThrowsWhenAttachmentIsRemoved(): void

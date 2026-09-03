@@ -17,6 +17,7 @@ use Shared\Service\Search\Result\ResultTransformer;
 use Shared\Service\Search\SearchService;
 use Shared\Tests\ElasticConfigFactory;
 use Spatie\Snapshots\MatchesSnapshots;
+use Webmozart\Assert\Assert;
 
 trait QueryDefinitionTestTrait
 {
@@ -51,6 +52,8 @@ trait QueryDefinitionTestTrait
             $queryDefinition,
             $searchParameters,
         );
+
+        Assert::isMap($searchData);
 
         return $searchData;
     }

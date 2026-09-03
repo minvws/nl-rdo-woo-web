@@ -110,7 +110,7 @@ class BatchDownloadStorageTest extends UnitTestCase
         $batch = Mockery::mock(BatchDownload::class);
         $batch->expects('getFilename')->andReturn('');
 
-        $this->filesystemOperator->shouldNotReceive('delete');
+        $this->filesystemOperator->expects('delete')->never();
 
         self::assertTrue(
             $this->storage->removeFileForBatch($batch),

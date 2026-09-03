@@ -42,10 +42,7 @@ class ThemeController extends AbstractController
             $q = strval($request->request->get('q'));
 
             // Redirect to GET request, so we have the q in the query string.
-            return $this->redirect($this->generateUrl(
-                'app_theme',
-                array_merge($request->query->all(), ['q' => $q, 'page' => null, 'name' => $name]),
-            ));
+            return $this->redirectToRoute('app_theme', array_merge($request->query->all(), ['q' => $q, 'page' => null, 'name' => $name]));
         }
 
         $theme = $this->getTheme($name);
