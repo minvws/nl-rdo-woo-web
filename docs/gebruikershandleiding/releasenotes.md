@@ -2,6 +2,35 @@
 
 # Release notes
 
+## v3.5.0
+
+### Publieke website
+
+- **Opmaak in omschrijvingen van onderwerpen** Vetgedrukte, cursieve tekst en links in de omschrijving van een onderwerppagina worden nu correct weergegeven op de publieke website.
+- **Onderwerppagina’s op homepage en categorieoverzicht** Op de homepage en het overzicht met alle categorieën worden onderwerpen met een beschikbare landingspagina getoond. Bij meer dan tien onderwerpen is er een link naar het volledige overzicht.
+
+### Balie
+
+- **Verhaallijn aanmaken en bewerken** Bij een onderwerp kan een verhaallijn worden opgebouwd met een titel, achtergrond, conclusie en verschillende onderliggende onderdelen. Tijdens het bewerken is een eenvoudige preview van de inhoud beschikbaar.
+- **Duidelijkere kolomnamen in de inventarislijst** De namen van verschillende kolommen in de inventarislijst zijn verduidelijkt, zodat beter zichtbaar is welke informatie over het document en gerelateerde documenten wordt getoond.
+- **Betrouwbaardere weergave na uploaden** Een succesvol geüpload bestand wordt nu ook correct weergegeven wanneer de gebruikelijke animatie na het uploaden niet volledig wordt uitgevoerd.
+- **Eén vaste prefix per organisatie** Een organisatie heeft voortaan één vaste en verplichte prefix. Bij het aanmaken van een organisatie wordt deze ingesteld en daarna kan de prefix niet meer worden gewijzigd.
+
+### Publication Api
+
+- **Previewlinks voor gekoppelde zaken** Bij Woo-besluiten met gekoppelde zaken kan de API de bijbehorende preview links teruggeven. Hierdoor kunnen bestaande preview links rechtstreeks via de API worden opgevraagd.
+- **Beheer van onderwerplandingspagina’s uitgebreid** Via de API kunnen nu dezelfde eigenschappen van een onderwerplandingspagina worden beheerd als via de Balie, waaronder de slug, titel, omschrijving, verhaallijn en zichtbaarheid daarvan.
+- **Vereenvoudigd gebruik van organisatieprefix** De API werkt met één vaste prefix per organisatie. De eerdere lijst met prefixes en het aparte endpoint voor organisatieprefixes zijn verwijderd.
+
+### Overige verbeteringen
+
+- **Geschiedenis bij vervangen van documenten** Wanneer een besluitbrief of bijlage wordt vervangen, wordt deze wijziging nu zichtbaar in de geschiedenis.
+- **Documentnummers consistenter verwerkt** De interne verwerking van documentnummers is vereenvoudigd zonder de bestaande documentnummers, openbare URL’s, zoekresultaten, exports en downloadnamen te wijzigen.
+- **Documentatie rond publicatiecontext bijgewerkt** De documentatie is uitgebreid met informatie over publicatiecontext en de opbouw van documentnummers als combinatie van publicatiecontext en document-id.
+- **Publicatiecontext in zoeken** De publicatiecontext van documenten is toegevoegd aan de zoekindex en kan daardoor worden gebruikt bij het zoeken naar documenten.
+- **Nieuwe bijlage bij een al gepubliceerd Woo-besluit** Bij het toevoegen van een bijlage aan een gepubliceerd Woo-besluit kon een foutmelding ontstaan wanneer de metadata al was bijgewerkt,
+ maar het document zelf nog niet volledig was geüpload. Dit wordt nu ondervangen door een melding te tonen dat het document nog wordt geüpload.
+
 ## v3.4.0
 
 ### Highlights

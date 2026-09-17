@@ -20,7 +20,6 @@ Metadata Update On Published Dossier Stays Published
   [Documentation]  title and summary have no Immutable(groups: [PUBLICATION_LOCKED]) constraint, so they
   ...  stay editable after publish, unlike decision/previewDate/publicationDate/dossierNumber.
   Create WooDecision Dossier In Status  published
-  Sync Locked Dates From Server  woo-decision
   ${body} =  Copy Dictionary  ${PREVIOUS_REQUEST_BODY}  deep=True
   Set To Dictionary  ${body}  title  Updated title after publish
   Set To Dictionary  ${body}  summary  Updated summary after publish
@@ -32,7 +31,6 @@ Metadata Update On Published Dossier Stays Published
 
 Adding A Document To A Published Dossier Is Allowed
   Create WooDecision Dossier In Status  published
-  Sync Locked Dates From Server  woo-decision
   ${body} =  Copy Dictionary  ${PREVIOUS_REQUEST_BODY}  deep=True
   ${extra_document} =  Build Additional WooDecision Document
   ${documents} =  Copy List  ${body}[documents]
@@ -52,7 +50,6 @@ Removing A Document From A Published Dossier Is Rejected
 
 Adding An Attachment To A Published Dossier Is Allowed
   Create WooDecision Dossier In Status  published
-  Sync Locked Dates From Server  woo-decision
   ${body} =  Copy Dictionary  ${PREVIOUS_REQUEST_BODY}  deep=True
   ${attachment} =  Generate Attachment  ${{ ['c_c2f56984'] }}
   Set To Dictionary  ${body}  attachments  ${{ [$attachment] }}
@@ -63,7 +60,6 @@ Adding An Attachment To A Published Dossier Is Allowed
 
 Removing An Attachment From A Published Dossier Is Rejected
   Create WooDecision Dossier In Status  published
-  Sync Locked Dates From Server  woo-decision
   ${body} =  Copy Dictionary  ${PREVIOUS_REQUEST_BODY}  deep=True
   ${attachment} =  Generate Attachment  ${{ ['c_c2f56984'] }}
   Set To Dictionary  ${body}  attachments  ${{ [$attachment] }}
@@ -72,6 +68,17 @@ Removing An Attachment From A Published Dossier Is Rejected
   Set To Dictionary  ${body}  attachments  ${{ [] }}
   Send Put Request WooDecision  ${EXTERNAL_ID}  ${body}  422
   Publication Status Should Be  woo-decision  published
+
+Changing Attachment Metadata On A Published Dossier Does Not Force Reupload
+  Create WooDecision Dossier In Status  published  with_attachment=${TRUE}
+  ${body} =  Copy Dictionary  ${PREVIOUS_REQUEST_BODY}  deep=True
+  Set To Dictionary  ${body}[attachments][0]  formalDate  2020-06-02
+  Send Put Request WooDecision  ${EXTERNAL_ID}  ${body}  200
+  Publication Status Should Be  woo-decision  published
+  ${dossier} =  Get WooDecision
+  Should Be Equal  ${dossier}[attachments][0][uploadStatus]  processed
+  Wait Until Keyword Succeeds  5x  2s
+  ...  WooDecision Attachment File Should Be Downloadable  ${EXTERNAL_ID}  ${body}[attachments][0][externalId]
 
 Changing Decision On A Published Dossier Is Rejected
   [Documentation]  decision is Immutable(groups: [PUBLICATION_LOCKED]), so it can no longer be
@@ -82,23 +89,43 @@ Changing Decision On A Published Dossier Is Rejected
   Send Put Request WooDecision  ${EXTERNAL_ID}  ${body}  422
   Publication Status Should Be  woo-decision  published
 
-Changing Document Metadata On A Published Dossier Forces Reupload
-  [Documentation]  WooDecisionDocumentMapper hashes each document and clears its uploaded flag
-  ...  when any field changes, regardless of dossier status.
+Changing Document Metadata On A Published Dossier Does Not Force Reupload
   Create WooDecision Dossier In Status  published
-  Sync Locked Dates From Server  woo-decision
   ${body} =  Copy Dictionary  ${PREVIOUS_REQUEST_BODY}  deep=True
-  Set To Dictionary  ${body}[documents][0]  documentDate  2020-06-02
+  Set To Dictionary  ${body}[documents][0]  remark  Updated remark after publish
   Send Put Request WooDecision  ${EXTERNAL_ID}  ${body}  200
   Publication Status Should Be  woo-decision  published
   ${dossier} =  Get WooDecision
-  Should Be Equal  ${dossier}[documents][0][uploadStatus]  upload_required
+  Should Be Equal  ${dossier}[documents][0][uploadStatus]  processed
+  Wait Until Keyword Succeeds  5x  2s
+  ...  WooDecision Document File Should Be Downloadable  ${EXTERNAL_ID}  ${body}[documents][0][externalId]
+
+Changing Document Judgement To Not Public On A Published Dossier Removes The File
+  Create WooDecision Dossier In Status  published
+  ${body} =  Copy Dictionary  ${PREVIOUS_REQUEST_BODY}  deep=True
+  Set To Dictionary  ${body}[documents][0]  judgement  not_public
+  Send Put Request WooDecision  ${EXTERNAL_ID}  ${body}  200
+  Publication Status Should Be  woo-decision  published
+  ${dossier} =  Get WooDecision
+  Should Be Equal  ${dossier}[documents][0][uploadStatus]  no_upload_required
+  Wait Until Keyword Succeeds  5x  2s
+  ...  WooDecision Document File Should Not Be Downloadable  ${EXTERNAL_ID}  ${body}[documents][0][externalId]
+
+Suspending A Document On A Published Dossier Removes The File
+  Create WooDecision Dossier In Status  published
+  ${body} =  Copy Dictionary  ${PREVIOUS_REQUEST_BODY}  deep=True
+  Set To Dictionary  ${body}[documents][0]  isSuspended  ${TRUE}
+  Send Put Request WooDecision  ${EXTERNAL_ID}  ${body}  200
+  Publication Status Should Be  woo-decision  published
+  ${dossier} =  Get WooDecision
+  Should Be Equal  ${dossier}[documents][0][uploadStatus]  no_upload_required
+  Wait Until Keyword Succeeds  5x  2s
+  ...  WooDecision Document File Should Not Be Downloadable  ${EXTERNAL_ID}  ${body}[documents][0][externalId]
 
 Changing Main Document Metadata On A Published Dossier Does Not Force Reupload
   [Documentation]  Unlike Document, WooDecisionMainDocumentRequestMapper does not hash-compare
   ...  or clear the uploaded flag, so metadata-only changes keep the main document processed.
   Create WooDecision Dossier In Status  published
-  Sync Locked Dates From Server  woo-decision
   ${body} =  Copy Dictionary  ${PREVIOUS_REQUEST_BODY}  deep=True
   ${new_grounds} =  Get Random Grounds
   Set To Dictionary  ${body}[mainDocument]  grounds  ${new_grounds}

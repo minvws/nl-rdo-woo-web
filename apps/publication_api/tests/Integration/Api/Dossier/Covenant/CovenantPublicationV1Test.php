@@ -14,9 +14,12 @@ use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Controller\Public\Dossier\DossierFileController;
 use Shared\Domain\Department\Department;
+use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
+use Shared\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
 use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
@@ -25,13 +28,15 @@ use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\History\History;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\Service\HistoryService;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\OrganisationFactory;
-use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\NoticeNotPublic\NoticeNotPublicFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
@@ -44,15 +49,27 @@ use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Type;
 
 use function array_map;
 use function array_merge;
+use function array_values;
 use function range;
 use function sprintf;
 use function str_repeat;
 
+/**
+ * @phpstan-type CovenantFixture array{
+ *     organisation: Organisation,
+ *     department: Department,
+ *     covenant: Covenant,
+ *     mainDocument: CovenantMainDocument,
+ *     attachment: CovenantAttachment,
+ * }
+ */
 final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
 {
     public function getDossierApiUriSegment(): string
@@ -260,7 +277,6 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
@@ -276,7 +292,6 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
@@ -293,7 +308,6 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
@@ -311,7 +325,6 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
@@ -340,7 +353,6 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $data = $this->createValidCovenantDataPayload($department, $subject, 1);
         $externalId = $this->getFaker()->externalId();
@@ -366,7 +378,6 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
@@ -612,6 +623,202 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
             'title' => (string) $covenant->getTitle(),
             'summary' => $covenant->getSummary(),
         ]);
+    }
+
+    public function testCreateCovenantWritesDossierCreatedHistory(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+
+        $data = $this->createValidCovenantDataPayload($department, null, 1);
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::assertResponseIsSuccessful();
+
+        self::assertDatabaseHas(History::class, [
+            'type' => HistoryService::TYPE_DOSSIER,
+            'contextKey' => 'dossier_created',
+        ]);
+    }
+
+    public function testUpdateCovenantMainDocumentMetadataQueuesAMetadataUpdatedEvent(): void
+    {
+        $fixture = $this->createConceptCovenantWithAttachment();
+
+        $data = $this->createCovenantUpdatePayload($fixture, mainDocumentFormalDate: '2020-01-01');
+
+        $events = $this->putAndCollectQueuedEvents($fixture, $data);
+
+        self::assertSame([MainDocumentUpdatedEvent::class], $this->getEventClasses($events));
+        self::assertInstanceOf(MainDocumentUpdatedEvent::class, $events[0]);
+        self::assertTrue($events[0]->metadataUpdated);
+        self::assertFalse($events[0]->fileUpdated);
+    }
+
+    public function testUpdateCovenantAttachmentMetadataQueuesAMetadataUpdatedEvent(): void
+    {
+        $fixture = $this->createConceptCovenantWithAttachment();
+
+        $data = $this->createCovenantUpdatePayload($fixture, attachmentFormalDate: '2020-01-01');
+
+        $events = $this->putAndCollectQueuedEvents($fixture, $data);
+
+        self::assertSame([AttachmentUpdatedEvent::class], $this->getEventClasses($events));
+        self::assertInstanceOf(AttachmentUpdatedEvent::class, $events[0]);
+        self::assertTrue($events[0]->metadataUpdated);
+        self::assertFalse($events[0]->fileUpdated);
+    }
+
+    public function testUpdateCovenantWithoutAnAttachmentQueuesADeletedEvent(): void
+    {
+        $fixture = $this->createConceptCovenantWithAttachment();
+
+        $data = $this->createCovenantUpdatePayload($fixture, includeAttachment: false);
+
+        $events = $this->putAndCollectQueuedEvents($fixture, $data);
+
+        self::assertSame([AttachmentDeletedEvent::class], $this->getEventClasses($events));
+        self::assertInstanceOf(AttachmentDeletedEvent::class, $events[0]);
+        self::assertTrue($fixture['attachment']->getId()->equals($events[0]->attachmentId));
+    }
+
+    public function testUpdateCovenantWithoutChangesQueuesNothing(): void
+    {
+        $fixture = $this->createConceptCovenantWithAttachment();
+
+        $events = $this->putAndCollectQueuedEvents($fixture, $this->createCovenantUpdatePayload($fixture));
+
+        self::assertSame([], $this->getEventClasses($events));
+    }
+
+    /**
+     * @param list<object> $events
+     *
+     * @return list<string>
+     */
+    private function getEventClasses(array $events): array
+    {
+        return array_values(array_map(static fn (object $event): string => $event::class, $events));
+    }
+
+    /**
+     * @return CovenantFixture
+     */
+    private function createConceptCovenantWithAttachment(): array
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $covenant = CovenantFactory::createOne([
+            'dateFrom' => $this->getFaker()->plainDateBetween('-3 weeks', '-2 weeks'),
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'parties' => [$this->getFaker()->company(), $this->getFaker()->company()],
+            'status' => DossierStatus::CONCEPT,
+        ]);
+
+        return [
+            'organisation' => $organisation,
+            'department' => $department,
+            'covenant' => $covenant,
+            // Empty grounds: the factories generate values outside Citation::ALL_GROUND_KEYS, which
+            // cannot be echoed back in a payload the API accepts.
+            'mainDocument' => CovenantMainDocumentFactory::createOne([
+                'dossier' => $covenant,
+                'grounds' => [],
+            ]),
+            'attachment' => CovenantAttachmentFactory::createOne([
+                'dossier' => $covenant,
+                'externalId' => $this->getFaker()->externalId(),
+                'grounds' => [],
+            ]),
+        ];
+    }
+
+    /**
+     * @param CovenantFixture $fixture
+     * @param array<string, mixed> $data
+     *
+     * @return list<object>
+     */
+    private function putAndCollectQueuedEvents(array $fixture, array $data): array
+    {
+        $this->getEsUpdaterTransport()->reset();
+
+        self::createPublicationApiRequest(
+            Request::METHOD_PUT,
+            $this->buildUrl($fixture['organisation'], $fixture['covenant']),
+            ['json' => $data],
+        );
+        self::assertResponseIsSuccessful();
+
+        return $this->getQueuedEvents();
+    }
+
+    /**
+     * @param CovenantFixture $fixture
+     *
+     * @return array<string, mixed>
+     */
+    private function createCovenantUpdatePayload(
+        array $fixture,
+        ?string $mainDocumentFormalDate = null,
+        ?string $attachmentFormalDate = null,
+        bool $includeAttachment = true,
+    ): array {
+        $covenant = $fixture['covenant'];
+        $mainDocument = $fixture['mainDocument'];
+        $attachment = $fixture['attachment'];
+
+        $attachments = $includeAttachment ? [
+            [
+                'fileName' => $attachment->getFileInfo()->getName(),
+                'formalDate' => $attachmentFormalDate ?? $attachment->getFormalDate()->format('Y-m-d'),
+                'language' => $attachment->getLanguage()->value,
+                'type' => $attachment->getType()->value,
+                'externalId' => $attachment->getExternalId()?->toString(),
+                'grounds' => $attachment->getGrounds(),
+            ],
+        ] : [];
+
+        return [
+            'title' => (string) $covenant->getTitle(),
+            'dossierNumber' => $covenant->getDossierNumber(),
+            'dateFrom' => $covenant->getDateFrom()?->format('Y-m-d'),
+            'dateTo' => $covenant->getDateTo()?->format('Y-m-d'),
+            'publicationDate' => $covenant->getPublicationDate()?->format('Y-m-d'),
+            'summary' => $covenant->getSummary(),
+            'departmentId' => $fixture['department']->getId(),
+            'subjectId' => $covenant->getSubject()?->getId(),
+            'previousVersionLink' => $covenant->getPreviousVersionLink(),
+            'parties' => $covenant->getParties(),
+            'mainDocument' => [
+                'fileName' => $mainDocument->getFileInfo()->getName(),
+                'formalDate' => $mainDocumentFormalDate ?? $mainDocument->getFormalDate()->format('Y-m-d'),
+                'type' => $mainDocument->getType()->value,
+                'language' => $mainDocument->getLanguage()->value,
+                'grounds' => $mainDocument->getGrounds(),
+            ],
+            'attachments' => $attachments,
+        ];
+    }
+
+    /**
+     * @return list<object>
+     */
+    private function getQueuedEvents(): array
+    {
+        return array_values(array_map(
+            static fn (Envelope $envelope): object => $envelope->getMessage(),
+            $this->getEsUpdaterTransport()->getSent(),
+        ));
+    }
+
+    private function getEsUpdaterTransport(): InMemoryTransport
+    {
+        $transport = self::getContainer()->get('messenger.transport.esupdater');
+        self::assertInstanceOf(InMemoryTransport::class, $transport);
+
+        return $transport;
     }
 
     /**
@@ -918,7 +1125,6 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
@@ -941,7 +1147,6 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
@@ -965,7 +1170,6 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 
@@ -986,7 +1190,6 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(Covenant::class, 0);
 

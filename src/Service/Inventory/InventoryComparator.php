@@ -12,9 +12,11 @@ use Shared\Exception\ProcessInventoryException;
 use Shared\Exception\TranslatableException;
 use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
+use Shared\ValueObject\DocumentNumber;
 
 use function array_fill_keys;
 use function array_keys;
+use function array_map;
 
 class InventoryComparator
 {
@@ -52,11 +54,11 @@ class InventoryComparator
             }
 
             try {
-                $documentNumber = DocumentNumber::fromPublicationContextAndDossierId(
+                $documentNumber = DocumentNumber::fromPublicationContextAndDocumentId(
                     $documentMetadata->getPublicationContext(),
                     $documentMetadata->getId(),
                 );
-                $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber->toString());
+                $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber);
 
                 if ($document === null) {
                     $changeset->markAsAdded($documentNumber);
@@ -69,7 +71,7 @@ class InventoryComparator
                 }
 
                 // This document is still in the inventory, so remove it from the tobeRemovedDocs array
-                unset($tobeRemovedDocs[$document->getDocumentNumber()]);
+                unset($tobeRemovedDocs[$document->getDocumentNumber()->toString()]);
 
                 if ($this->documentComparator->needsUpdate($dossier, $document, $documentMetadata)) {
                     $changeset->markAsUpdated($documentNumber);
@@ -111,7 +113,13 @@ class InventoryComparator
         $documentNumbers = $this->documentRepository->getAllDocumentNumbersForDossier($dossier);
 
         // Use values as keys for faster lookups
-        return array_fill_keys($documentNumbers, 1);
+        return array_fill_keys(
+            array_map(
+                static fn (DocumentNumber $documentNumber): string => $documentNumber->toString(),
+                $documentNumbers,
+            ),
+            1,
+        );
     }
 
     /**
@@ -128,7 +136,7 @@ class InventoryComparator
                 $run->addGenericException(ProcessInventoryException::forMissingDocument($documentNumber));
             }
 
-            $changeset->markAsDeleted($documentNumber);
+            $changeset->markAsDeleted(DocumentNumber::fromString($documentNumber));
         }
     }
 }

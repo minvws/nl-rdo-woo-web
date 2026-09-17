@@ -44,6 +44,8 @@ class MainDocumentUploadProcessor
             return;
         }
 
+        $initialUpload = $this->isInitialUpload($mainDocument);
+
         $uploadId = Uuid::v6();
         $fileName = $mainDocument->getFileInfo()->getName();
         Assert::string($fileName);
@@ -69,7 +71,13 @@ class MainDocumentUploadProcessor
         $this->handle(new UpdateMainDocumentCommand(
             dossierId: $dossier->getId(),
             uploadFileReference: $uploadId->toRfc4122(),
+            initialUpload: $initialUpload,
         ));
+    }
+
+    private function isInitialUpload(AbstractMainDocument $mainDocument): bool
+    {
+        return $this->mainDocumentUploadStatusService->getUploadStatus($mainDocument) === UploadStatus::UPLOAD_REQUIRED;
     }
 
     private function isAlreadyUploaded(AbstractMainDocument $mainDocument, StreamInterface $stream): bool

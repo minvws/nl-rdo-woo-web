@@ -58,9 +58,10 @@
                         </thead>
                         <tbody>
                             {% for document in pagination %}
+                                {% set documentNumber = document.documentNumber.toString() %}
                                 <tr>
                                     <td>
-                                        <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_woodecision_document', {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, documentNumber: document.documentNumber}) }}" data-e2e-name="doc-link">
+                                        <a class="bhr-a js-bhr-clickable-row-link" href="{{ path('app_admin_dossier_woodecision_document', {documentPrefix: dossier.documentPrefix, dossierNumber: dossier.dossierNumber, documentNumber: documentNumber}) }}" data-e2e-name="doc-link">
                                             {{ document.documentId }}
                                         </a>
                                     </td>

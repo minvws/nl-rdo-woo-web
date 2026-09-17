@@ -173,8 +173,9 @@ tasks:
       - task: :dc
         vars:
           SUB_CMD: >
-            run -e ENVIRONMENT=docker -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            run -e ENVIRONMENT=docker -e TENANT={{.tenant}} -e HEADLESS=true -e CI=true --rm robot
             /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include ci --exclude init --exclude sitemap --exclude failing --ordering order.txt {{.ROBOT_PARAMS}}"
+      - task: clear-generated-testdata
 
   docker:run:api:
     aliases: [run-api]
@@ -286,6 +287,12 @@ tasks:
     cmds:
       - cmd: mkdir -p results
       - cmd: rm -rf results/*
+
+  clear-generated-testdata:
+    desc: Empties the shared generated test data folder after a full parallel CI run
+    internal: true
+    cmds:
+      - cmd: rm -rf files/generated
 
   disable-toolbar:
     desc: Disable the Symfony debug toolbar in Robot Framework tests

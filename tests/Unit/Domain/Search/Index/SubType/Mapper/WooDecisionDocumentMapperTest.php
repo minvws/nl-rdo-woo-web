@@ -16,10 +16,13 @@ use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Search\Index\Dossier\Mapper\WooDecisionMapper;
 use Shared\Domain\Search\Index\ElasticDocument;
+use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Index\SubType\Mapper\WooDecisionDocumentMapper;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 use Symfony\Component\Uid\Uuid;
 
 class WooDecisionDocumentMapperTest extends UnitTestCase
@@ -52,6 +55,38 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
 
     public function testMap(): void
     {
+        $document = $this->createDocumentMock(PublicationContext::fromString('PUBCON'));
+
+        $this->assertMatchesSnapshot(
+            $this->mapper->map($document, ['foo'], [1 => 'bar']),
+        );
+    }
+
+    public function testMapWithoutPublicationContextIndexesNull(): void
+    {
+        $document = $this->createDocumentMock(null);
+
+        $fields = $this->mapper->map($document, ['foo'], [1 => 'bar'])->getDocumentValues();
+
+        self::assertArrayHasKey(ElasticField::PUBLICATION_CONTEXT->value, $fields);
+        self::assertNull($fields[ElasticField::PUBLICATION_CONTEXT->value]);
+    }
+
+    public function testMapWritesTheSameReferredDocumentNumbersToBothFields(): void
+    {
+        $document = $this->createDocumentMock(PublicationContext::fromString('PUBCON'));
+
+        $fields = $this->mapper->map($document, ['foo'], [1 => 'bar'])->getDocumentValues();
+
+        self::assertNotEmpty($fields[ElasticField::REFERRED_DOCUMENT_NRS->value]);
+        self::assertSame(
+            $fields[ElasticField::REFERRED_DOCUMENT_NRS->value],
+            $fields[ElasticField::REFERRED_DOCUMENT_NUMBERS->value],
+        );
+    }
+
+    private function createDocumentMock(?PublicationContext $publicationContext): Document&MockInterface
+    {
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getDossierNumber')->andReturn('dos-123');
         $dossier->expects('getDocumentPrefix')->andReturn('PREFIX');
@@ -78,17 +113,18 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
         $fileInfo->expects('getPageCount')->andReturn(13);
 
         $referredDocumentA = Mockery::mock(Document::class);
-        $referredDocumentA->expects('getDocumentNumber')->andReturn('doc-456');
+        $referredDocumentA->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('doc-456'));
 
         $referredDocumentB = Mockery::mock(Document::class);
-        $referredDocumentB->expects('getDocumentNumber')->andReturn('doc-789');
+        $referredDocumentB->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('doc-789'));
 
         $document = Mockery::mock(Document::class);
         $document->expects('getId->toRfc4122')->andReturn('doc-456');
         $document->expects('getDossiers')->andReturn(new ArrayCollection([$dossier]));
         $document->expects('getInquiries')->andReturn(new ArrayCollection([$inquiry]));
         $document->expects('getReferredBy')->andReturn(new ArrayCollection([$referredDocumentA, $referredDocumentB]));
-        $document->expects('getDocumentNumber')->andReturn('doc-123');
+        $document->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('doc-123'));
+        $document->expects('getPublicationContext')->andReturn($publicationContext);
         $document->expects('getFileInfo')->times(2)->andReturn($fileInfo);
         $document->expects('getDocumentDate')->andReturn(PlainDate::create('2024-04-16'));
         $document->expects('getFamilyId')->andReturn(789);
@@ -98,8 +134,6 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
         $document->expects('getGrounds')->andReturn(['x', 'y']);
         $document->expects('getPeriod')->andReturn('foo-bar');
 
-        $this->assertMatchesSnapshot(
-            $this->mapper->map($document, ['foo'], [1 => 'bar']),
-        );
+        return $document;
     }
 }

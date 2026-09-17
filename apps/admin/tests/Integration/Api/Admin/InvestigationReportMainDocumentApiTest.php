@@ -87,7 +87,7 @@ final class InvestigationReportMainDocumentApiTest extends AdminApiTestCase
             'internalReference' => 'foo bar',
             'type' => AttachmentType::EVALUATION_REPORT->value,
             'language' => AttachmentLanguage::NLD->value,
-            'grounds' => ['foo', 'bar'],
+            'grounds' => ['bar', 'foo'],
             'uploadUuid' => $upload->getUploadId(),
         ];
         self::createAdminApiClient($user)
@@ -213,7 +213,7 @@ final class InvestigationReportMainDocumentApiTest extends AdminApiTestCase
             'internalReference' => 'foo bar',
             'type' => AttachmentType::COVENANT->value,
             'language' => AttachmentLanguage::NLD->value,
-            'grounds' => ['foo', 'bar'],
+            'grounds' => ['bar', 'foo'],
             'uploadUuid' => Uuid::v6(),
         ];
 

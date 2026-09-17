@@ -13,6 +13,7 @@ use Doctrine\ORM\Events;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeWithPreview;
 use Shared\Service\HistoryService;
+use Shared\ValueObject\Equatable;
 use Shared\ValueObject\PlainDate;
 use Webmozart\Assert\Assert;
 
@@ -127,7 +128,17 @@ final class DossierEntityUpdateListener
             return false;
         }
 
-        return $args->getOldValue($fieldName) !== null && $args->getOldValue($fieldName) !== '';
+        $oldValue = $args->getOldValue($fieldName);
+        if ($oldValue === null || $oldValue === '') {
+            return false;
+        }
+
+        $newValue = $args->getNewValue($fieldName);
+        if ($oldValue instanceof Equatable && $newValue instanceof Equatable) {
+            return ! $oldValue->equalTo($newValue);
+        }
+
+        return true;
     }
 
     /**

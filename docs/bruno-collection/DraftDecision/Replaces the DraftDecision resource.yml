@@ -1,0 +1,560 @@
+info:
+  name: Replaces the DraftDecision resource.
+  type: http
+  seq: 3
+  tags:
+    - DraftDecision
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/organisation/:organisationId/dossiers/draft-decision/external/:dossierExternalId"
+  params:
+    - name: organisationId
+      value: "{{organisationId}}"
+      type: path
+    - name: dossierExternalId
+      value: "{{draftDecisionDossierExternalId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "departmentId":  "{{departmentId}}",
+        "mainDocument": {
+          "fileName": "main-document.pdf",
+          "formalDate": "2026-02-01",
+          "language": "NLD",
+          "type": "c_33d7570c"
+        },
+        "subjectId": "{{subjectId}}",
+        "summary": "Summary of the draft decision",
+        "title": "Bruno - Draft decision",
+        "attachments": [
+          {
+            "fileName": "attachment.pdf",
+            "formalDate": "2026-02-01",
+            "language": "NLD",
+            "type": "c_a40458df",
+            "externalId": "{{draftDecisionAttachmentExternalId}}"
+          }
+        ],
+        "dossierDate": "2025-01-01",
+        "dossierNumber": "bruno-{{sessionTimestamp}}",
+        "publicationDate": "2026-02-01"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        if (bru.isSafeMode()) {
+          throw new Error("Enable develop mode to support the scripts");
+        }
+
+        const crypto = require('crypto');
+
+        if (!bru.getVar("draftDecisionDossierExternalId")) {
+          bru.setVar("draftDecisionDossierExternalId", crypto.randomUUID());
+        }
+        if (!bru.getVar("draftDecisionAttachmentExternalId")) {
+          bru.setVar("draftDecisionAttachmentExternalId", crypto.randomUUID());
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: 200 Response
+    description: DraftDecision resource updated
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/draft-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_33d7570c"
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_a40458df",
+                "externalId": ""
+              }
+            ],
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "id": "",
+            "externalId": "",
+            "organisation": {
+              "id": "",
+              "name": ""
+            },
+            "dossierNumber": "",
+            "title": "",
+            "summary": "",
+            "subject": "",
+            "department": {
+              "id": "",
+              "name": ""
+            },
+            "publicationDate": "2025-12-21",
+            "status": "new",
+            "mainDocument": {
+              "id": "",
+              "type": "c_33d7570c",
+              "language": "NLD",
+              "formalDate": "",
+              "fileName": "",
+              "uploadStatus": "no_upload_required"
+            },
+            "attachments": [
+              {
+                "id": "",
+                "type": "c_a40458df",
+                "language": "NLD",
+                "formalDate": "",
+                "fileName": "",
+                "externalId": "",
+                "uploadStatus": "no_upload_required"
+              }
+            ],
+            "dossierDate": ""
+          }
+  - name: 400 Response
+    description: Invalid input
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/draft-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_33d7570c"
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_a40458df",
+                "externalId": ""
+              }
+            ],
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 401 Response
+    description: Unauthorized
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/draft-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_33d7570c"
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_a40458df",
+                "externalId": ""
+              }
+            ],
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 401
+      statusText: Unauthorized
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/draft-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_33d7570c"
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_a40458df",
+                "externalId": ""
+              }
+            ],
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 403
+      statusText: Forbidden
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/draft-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_33d7570c"
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_a40458df",
+                "externalId": ""
+              }
+            ],
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 405 Response
+    description: Method Not Allowed
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/draft-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_33d7570c"
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_a40458df",
+                "externalId": ""
+              }
+            ],
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 405
+      statusText: Method Not Allowed
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 422 Response
+    description: An error occurred
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/draft-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_33d7570c"
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_a40458df",
+                "externalId": ""
+              }
+            ],
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "violations": [
+              {
+                "propertyPath": "",
+                "message": "",
+                "code": "",
+                "hint": "",
+                "payload": {}
+              }
+            ],
+            "detail": "",
+            "type": "",
+            "title": "",
+            "instance": ""
+          }
+  - name: 500 Response
+    description: Internal Server Error
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/draft-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_33d7570c"
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_a40458df",
+                "externalId": ""
+              }
+            ],
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 500
+      statusText: Internal Server Error
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+
+docs: |-
+  Replaces the DraftDecision resource.
+
+  Documents of this publication type may not be redacted, so the main document
+  and attachments have no `grounds` property. The main document is required and
+  must be of type `c_33d7570c` (legislative proposal). At least one attachment
+  of type `c_a40458df` (request for advice) or `c_10eb451d` (policy document)
+  is required.

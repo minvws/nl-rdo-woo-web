@@ -19,10 +19,10 @@ use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicService;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use PublicationApi\Domain\Dossier\MetadataSnapshot;
 use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
@@ -49,7 +49,6 @@ final readonly class DispositionProcessor implements ProcessorInterface
         private DossierRepository $dossierRepository,
         private DossierValidator $dossierValidator,
         private DispositionMapper $dispositionMapper,
-        private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
         private OrganisationResolver $organisationResolver,
         private NoticeNotPublicService $noticeNotPublicService,
@@ -82,7 +81,7 @@ final readonly class DispositionProcessor implements ProcessorInterface
         }
 
         if ($dossier === null) {
-            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $documentPrefix = $organisation->getPrefix()->toString();
             $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
             $dossier = $this->create($organisation, $department, $subject, $data, $dispositionExternalId, $documentPrefix);
 
@@ -135,6 +134,7 @@ final readonly class DispositionProcessor implements ProcessorInterface
         $this->dossierValidator->validateDossier($disposition);
         $this->dossierSupportService->autoPublish($disposition);
         $this->dossierSupportService->validateCompletionAndPersist($disposition);
+        $this->dossierSupportService->dispatchDossierCreatedEvent($disposition);
         $this->dossierSupportService->synchronizeArtifacts($disposition);
 
         return $disposition;
@@ -148,6 +148,8 @@ final readonly class DispositionProcessor implements ProcessorInterface
         DispositionRequestDto $dispositionRequestDto,
     ): void {
         $disposition = DispositionMapper::update($disposition, $dispositionRequestDto, $organisation, $department, $subject);
+
+        $mainDocumentSnapshot = MetadataSnapshot::ofNullable($disposition->getMainDocument());
 
         if ($dispositionRequestDto->mainDocument !== null) {
             if ($disposition->getNoticeNotPublic() !== null) {
@@ -177,11 +179,12 @@ final readonly class DispositionProcessor implements ProcessorInterface
         $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($disposition, $dispositionRequestDto->attachments);
         $attachments = $this->getAttachments($disposition, $dispositionRequestDto->attachments);
         $this->dossierAttachmentValidator->validate($attachments, $disposition->getStatus());
-        $this->attachmentSynchronizer->sync($disposition, $dispositionRequestDto->attachments);
+        $attachmentEvents = $this->attachmentSynchronizer->sync($disposition, $dispositionRequestDto->attachments);
 
         $this->dossierValidator->validateDossier($disposition);
         $this->dossierSupportService->autoPublish($disposition);
         $this->dossierSupportService->validateCompletionAndPersist($disposition);
+        $this->dossierSupportService->dispatchPublicationEvents($disposition, $mainDocumentSnapshot, $attachmentEvents);
         $this->dossierSupportService->synchronizeArtifacts($disposition);
     }
 

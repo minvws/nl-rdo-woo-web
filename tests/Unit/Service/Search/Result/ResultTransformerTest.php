@@ -23,6 +23,7 @@ use Shared\Service\Search\Result\AggregationMapper;
 use Shared\Service\Search\Result\ResultTransformer;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\Translation\LocaleSwitcher;
 
 use function file_get_contents;
 use function json_decode;
@@ -62,7 +63,7 @@ class ResultTransformerTest extends UnitTestCase
                 new PrefixedDossierNumberFacet(),
                 new ParameterBag(),
             ),
-            FacetKey::DATE->value => DateFacetInput::fromParameterBag(new DateFacet(), new ParameterBag()),
+            FacetKey::DATE->value => DateFacetInput::fromParameterBag(new DateFacet(new LocaleSwitcher('nl', [])), new ParameterBag()),
         ]);
 
         $searchParameters = new SearchParameters(

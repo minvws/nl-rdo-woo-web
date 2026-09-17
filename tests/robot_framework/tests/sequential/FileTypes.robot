@@ -12,14 +12,10 @@ Test Setup          Go To Admin
 Test Tags           ci  filetypes
 
 
-*** Variables ***
-${NEW_PREFIX}   ${EMPTY}
-
-
 *** Test Cases ***
 Create A Dossier With Different Filetypes Using Individual Files, Zip And 7z
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=${NEW_PREFIX}
+  Fill Out Basic Details
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  files/filetypes/productierapport.xlsx
   Verify Document Upload Remaining  Nog te uploaden: 15 van 15 documenten.

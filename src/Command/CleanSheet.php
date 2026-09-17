@@ -9,7 +9,6 @@ use Exception;
 use RuntimeException;
 use Shared\Domain\Publication\BatchDownload\BatchDownload;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
-use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\History\History;
@@ -55,7 +54,6 @@ class CleanSheet extends Command
             ->setDefinition([
                 new InputOption('force', null, InputOption::VALUE_NONE, 'Force the operation without confirmation'),
                 new InputOption('users', 'u', InputOption::VALUE_NONE, 'Reset users'),
-                new InputOption('keep-prefixes', 'p', InputOption::VALUE_NONE, 'Do not remove prefixes'),
                 new InputOption('keep-subjects', 's', InputOption::VALUE_NONE, 'Do not remove subjects'),
                 new InputOption('index', null, InputOption::VALUE_REQUIRED, 'ES index name'),
             ]);
@@ -98,10 +96,6 @@ class CleanSheet extends Command
 
         if ($input->getOption('users')) {
             $this->deleteAllEntities(User::class, $output);
-        }
-
-        if (! $input->getOption('keep-prefixes')) {
-            $this->deleteAllEntities(DocumentPrefix::class, $output);
         }
 
         $this->clearContentExtractCache($output);

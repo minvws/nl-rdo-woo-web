@@ -36,7 +36,7 @@ Each mapping file declares its own version:
 
 ```json
 {
-    "_meta": { "version": 30 },
+    "_meta": { "version": 31 },
     "properties": { }
 }
 ```
@@ -78,12 +78,15 @@ Broadly, the root properties fall into:
 
 | Group                  | Examples                                                                                                                                                                                                                 |
 |------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Identity and type      | `id`, `type`, `toplevel_type`, `sublevel_type`, `document_number`                                                                                                                                                        |
+| Identity and type      | `id`, `type`, `toplevel_type`, `sublevel_type`, `document_number`, `publication_context`                                                                                                                                 |
 | File metadata          | `file_type`, `file_size`, `mime_type`, `source_type`, `filename`, `document_pages`                                                                                                                                       |
 | Document metadata      | `date`, `family_id`, `document_id`, `thread_id`, `judgement`, `grounds`                                                                                                                                                  |
 | Dossier (denormalised) | `dossier_number`, `prefixed_dossier_number`, `title`, `summary`, `status`, `document_prefix`, `publication_reason`, `decision`, `decision_date`, `publication_date`, `date_from`, `date_to`, `date_range`, `date_period` |
-| Relations              | `departments`, `department_names`, `subject`, `subject_names`, `organisation_id`, `inquiry_ids`, `inquiry_numbers`, `referred_document_numbers`                                                                          |
+| Relations              | `departments`, `department_names`, `subject`, `subject_names`, `organisation_id`, `inquiry_ids`, `inquiry_numbers`, `referred_document_nrs`                                                                              |
 | Content                | `pages.content`, `content_for_suggestions`                                                                                                                                                                               |
+
+`referred_document_numbers` is the successor to `referred_document_nrs`. Both are mapped and both are written with the
+same value, so that search can be switched over to the new field and the old one dropped without a re-index.
 
 ## Analysis
 

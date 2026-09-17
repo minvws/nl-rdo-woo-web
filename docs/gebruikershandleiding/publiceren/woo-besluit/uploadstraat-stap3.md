@@ -5,7 +5,7 @@
 In stap 3 upload je eerst het productierapport. Het productierapport is een Excel-document met daarin de metadata van de te uploaden
 Woo-documenten. Meer informatie over de inhoud van het productierapport lees je in hoofdstuk 5. Tijdens het uploaden wordt het
 productierapport gecontroleerd door het systeem. Het kan voorkomen dat naar aanleiding hiervan een foutmelding verschijnt. Het kan
-bijvoorbeeld zijn dat er een verplichte kolom mist in het productierapport of dat de combinatie van matter en ID al voorkomt bij een andere publicatie.
+bijvoorbeeld zijn dat er een verplichte kolom mist in het productierapport of dat de combinatie van publicatiecontext en ID al voorkomt bij een andere publicatie.
 
 Nadat het productierapport succesvol is geüpload, verschijnt de zogenaamde dropzone voor het uploaden van de Woo-documenten met
 de beoordeling ‘openbaar’ en ‘deels openbaar’. Het is mogelijk om de betreffende documenten te selecteren en te uploaden of om

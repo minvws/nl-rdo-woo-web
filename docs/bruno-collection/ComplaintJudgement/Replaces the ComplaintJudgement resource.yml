@@ -1,0 +1,618 @@
+info:
+  name: Replaces the ComplaintJudgement resource.
+  type: http
+  seq: 3
+  tags:
+    - ComplaintJudgement
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+  params:
+    - name: organisationId
+      value: "{{organisationId}}"
+      type: path
+    - name: dossierExternalId
+      value: "{{complaintJudgementDossierExternalId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "departmentId": "{{departmentId}}",
+        "mainDocument": {
+          "fileName": "main-document.pdf",
+          "formalDate": "2026-02-01",
+          "language": "NLD",
+          "type": "ww_jc6woe9",
+          "grounds": []
+        },
+        "subjectId": "{{subjectId}}",
+        "summary": "Summary of the complaint judgement",
+        "title": "Bruno - Complaint judgement",
+        "dossierDate": "2025-01-01",
+        "dossierNumber": "bruno-{{sessionTimestamp}}",
+        "publicationDate": "2026-02-01"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        if (bru.isSafeMode()) {
+          throw new Error("Enable develop mode to support the scripts");
+        }
+
+        const crypto = require('crypto');
+
+        if (!bru.getVar("complaintJudgementDossierExternalId")) {
+          bru.setVar("complaintJudgementDossierExternalId", crypto.randomUUID());
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: 200 Response
+    description: ComplaintJudgement resource updated
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "id": "",
+            "externalId": "",
+            "organisation": {
+              "id": "",
+              "name": ""
+            },
+            "dossierNumber": "",
+            "title": "",
+            "summary": "",
+            "subject": "",
+            "department": {
+              "id": "",
+              "name": ""
+            },
+            "publicationDate": "2025-12-21",
+            "status": "new",
+            "mainDocument": {
+              "id": "",
+              "type": "c_d506b718",
+              "language": "NLD",
+              "formalDate": "",
+              "grounds": [],
+              "fileName": "",
+              "uploadStatus": "no_upload_required"
+            },
+            "dossierDate": ""
+          }
+  - name: 400 Response
+    description: Invalid input
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 400 Response
+    description: Invalid input
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 401 Response
+    description: Unauthorized
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 401
+      statusText: Unauthorized
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 403
+      statusText: Forbidden
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 405 Response
+    description: Method Not Allowed
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 405
+      statusText: Method Not Allowed
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 422 Response
+    description: An error occurred
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "violations": [
+              {
+                "propertyPath": "",
+                "message": "",
+                "code": "",
+                "hint": "",
+                "payload": {}
+              }
+            ],
+            "detail": "",
+            "type": "",
+            "title": "",
+            "instance": ""
+          }
+  - name: 422 Response
+    description: An error occurred
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "violations": [
+              {
+                "propertyPath": "",
+                "message": "",
+                "code": "",
+                "hint": "",
+                "payload": {}
+              }
+            ],
+            "detail": "",
+            "type": "",
+            "title": "",
+            "instance": ""
+          }
+  - name: 500 Response
+    description: Internal Server Error
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/complaint-judgement/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "dossierDate": "",
+            "dossierNumber": "",
+            "publicationDate": ""
+          }
+    response:
+      status: 500
+      statusText: Internal Server Error
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+
+docs: Replaces the ComplaintJudgement resource.

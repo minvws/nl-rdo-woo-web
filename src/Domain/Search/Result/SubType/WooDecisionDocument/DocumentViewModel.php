@@ -8,6 +8,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\FileIn
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Search\Result\SubType\SubTypeViewModelInterface;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\PlainDate;
 
 readonly class DocumentViewModel implements SubTypeViewModelInterface
@@ -17,7 +18,7 @@ readonly class DocumentViewModel implements SubTypeViewModelInterface
 
     public function __construct(
         public string $documentId,
-        public string $documentNumber,
+        public DocumentNumber $documentNumber,
         string $fileName,
         public SourceType $fileSourceType,
         bool $fileUploaded,

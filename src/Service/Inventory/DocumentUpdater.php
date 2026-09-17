@@ -9,13 +9,13 @@ use Shared\Domain\Ingest\IngestDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ObsoleteFileRemover;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Service\Storage\EntityStorageService;
-use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\ExternalId;
 
 use function array_diff;
-use function array_map;
+use function array_keys;
 use function grapheme_strlen;
 use function grapheme_substr;
 
@@ -25,9 +25,9 @@ use function grapheme_substr;
 readonly class DocumentUpdater
 {
     public function __construct(
-        private EntityStorageService $entityStorageService,
-        private ThumbnailStorageService $thumbStorage,
+        private ObsoleteFileRemover $obsoleteFileRemover,
         private DocumentRepository $documentRepository,
+        private LegacyDocumentNumberFactory $documentNumberFactory,
         private DocumentDispatcher $documentDispatcher,
         private IngestDispatcher $ingestDispatcher,
     ) {
@@ -46,7 +46,7 @@ readonly class DocumentUpdater
 
         $document->addDossier($dossier);
 
-        $this->removeObsoleteUpload($document);
+        $this->obsoleteFileRemover->removeIfObsolete($document);
 
         $this->documentRepository->save($document);
 
@@ -77,8 +77,11 @@ readonly class DocumentUpdater
         $this->documentDispatcher->dispatchRemoveDocumentCommand($dossier->getId(), $document->getId());
     }
 
-    private function mapMetadataToDocument(DocumentMetadata $documentMetadata, Document $document, string $documentNumber): void
-    {
+    private function mapMetadataToDocument(
+        DocumentMetadata $documentMetadata,
+        Document $document,
+        DocumentNumber $documentNumber,
+    ): void {
         $document->setJudgement($documentMetadata->getJudgement());
         $document->setDocumentDate($documentMetadata->getDate());
         $document->setFamilyId($documentMetadata->getFamilyId());
@@ -96,15 +99,6 @@ readonly class DocumentUpdater
         $file = $document->getFileInfo();
         $file->setSourceType($documentMetadata->getSourceType());
         $file->setName($this->buildName($fileName));
-    }
-
-    private function removeObsoleteUpload(Document $document): void
-    {
-        if (! $document->shouldBeUploaded()) {
-            $this->entityStorageService->deleteAllFilesForEntity($document);
-            $this->thumbStorage->deleteAllThumbsForEntity($document);
-            $document->getFileInfo()->removeFileProperties();
-        }
     }
 
     private function buildName(?string $subject): string
@@ -129,25 +123,29 @@ readonly class DocumentUpdater
      */
     public function updateDocumentReferralsByDocumentNumber(WooDecision $dossier, Document $document, array $refersTo): void
     {
-        // First convert '[matter]-[documentId]' string format to DocumentNumber instances that include the dossier prefix.
-        $newReferrals = array_map(
-            static fn (string $referral): DocumentNumber => DocumentNumber::fromReferral($dossier, $document, $referral),
-            $refersTo,
-        );
+        /** @var array<string, DocumentNumber> $newReferrals */
+        $newReferrals = [];
+        foreach ($refersTo as $referral) {
+            $documentNumber = $this->documentNumberFactory->fromReferral($dossier, $document, $referral);
+            $newReferrals[$documentNumber->toString()] = $documentNumber;
+        }
 
-        $currentReferrals = $document->getRefersTo()->map(
-            static fn (Document $doc): DocumentNumber => DocumentNumber::fromDossierAndDocument($dossier, $doc),
-        )->toArray();
+        /** @var array<string, DocumentNumber> $currentReferrals */
+        $currentReferrals = [];
+        foreach ($document->getRefersTo() as $referredDocument) {
+            $documentNumber = $this->documentNumberFactory->fromDossierAndDocument($dossier, $referredDocument);
+            $currentReferrals[$documentNumber->toString()] = $documentNumber;
+        }
 
-        foreach (array_diff($currentReferrals, $newReferrals) as $refersToRemove) {
-            $documentToRemove = $this->documentRepository->findByDocumentNumber($refersToRemove);
+        foreach (array_diff(array_keys($currentReferrals), array_keys($newReferrals)) as $refersToRemove) {
+            $documentToRemove = $this->documentRepository->findByDocumentNumber($currentReferrals[$refersToRemove]);
             if ($documentToRemove) {
                 $document->removeRefersTo($documentToRemove);
             }
         }
 
-        foreach (array_diff($newReferrals, $currentReferrals) as $refersToAdd) {
-            $documentToAdd = $this->documentRepository->findByDocumentNumber($refersToAdd);
+        foreach (array_diff(array_keys($newReferrals), array_keys($currentReferrals)) as $refersToAdd) {
+            $documentToAdd = $this->documentRepository->findByDocumentNumber($newReferrals[$refersToAdd]);
 
             if ($documentToAdd) {
                 $document->addRefersTo($documentToAdd);

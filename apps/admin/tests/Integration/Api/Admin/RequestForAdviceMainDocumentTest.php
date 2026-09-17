@@ -85,7 +85,7 @@ final class RequestForAdviceMainDocumentTest extends AdminApiTestCase
             'internalReference' => 'foo bar',
             'type' => AttachmentType::REQUEST_FOR_ADVICE->value,
             'language' => AttachmentLanguage::NLD->value,
-            'grounds' => ['foo', 'bar'],
+            'grounds' => ['bar', 'foo'],
             'uploadUuid' => $upload->getUploadId(),
         ];
         self::createAdminApiClient($user)

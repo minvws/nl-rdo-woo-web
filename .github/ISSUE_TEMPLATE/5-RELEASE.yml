@@ -1,6 +1,6 @@
 name: Release ticket
 description: Create a release ticket for WOO-WEB (in English).
-title: "Release [VUL TAG IN] naar PROD"
+title: "WOO: release [VUL TAG IN] naar PROD"
 labels: ["Release"]
 projects: ["minvws/30"]
 body:
@@ -30,70 +30,7 @@ body:
   - type: textarea
     attributes:
       label: 'Tickets in release:'
-  - type: checkboxes
-    id: general
+  - type: textarea
     attributes:
-      label: General
-      description: General checks for this release
-      options:
-        - label: Create release notes and a release summary
-        - label: 'Check: are there any changes that may have an effect on the DPIA or otherwise on privacy? If so: discuss with privacy and discuss changes/implications?'
-        - label: 'Check: will the release trigger additional cost? If so: confirm budget availability or request additional budget.'
-        - label: 'Check: have any new features been checked against accessibility guidelines?'
-  - type: checkboxes
-    id: communication
-    attributes:
-      label: Communication
-      description: Communication checks for this release
-      options:
-        - label: 'Notify relevant stakeholders (open: we will notify relevant stakeholders after IBMF approval)'
-        - label: 'Check: is any public notification needed? If so: communication requested?'
-        - label: Adjust the software manual
-        - label: 'Inform the helpdesk (open: we will inform the helpdesk after IBMF approval)'
-  - type: checkboxes
-    id: qa
-    attributes:
-      label: QA
-      description: QA checks for this release
-      options:
-        - label: 'Check: code coverage meets specifications'
-        - label: Test new logging items and inform SOC SIEM/CSIRT
-        - label: Discuss changes/issues with QA to ensure accurate/rapid testing
-        - label: Test report created ([See template](https://github.com/minvws/nl-rdo-quality-coordination/blob/main/Kwaliteitsmanagement/Kwaliteitsaanpak/Testrapport/Testrapport.md))
-        - label: Arrange any required post-release tests and/or monitoring.
-  - type: checkboxes
-    id: security
-    attributes:
-      label: Security
-      description: Security (liaison) checks for this release
-      options:
-        - label: If it is a patch release, discuss changes with liaison
-        - label: If it is a minor or major release, liaison must comment if pentest, SCSA or nothing is needed
-  - type: checkboxes
-    id: dependencies
-    attributes:
-      label: Dependencies
-      description: Dependencies checks for this release
-      options:
-        - label: Make sure all Dependabot PR's are merged (to be sure of the latest versions)
-        - label: Calculate dependencies on other systems, are there any breaking changes down-/upstream?
-        - label: 'Check: any database changes required? If so: prepare database schema schedule release'
-        - label: 'Check: are there (certificate/specification) changes to (API) eindpoints? If so, notify clients'
-  - type: checkboxes
-    id: rollout
-    attributes:
-      label: Roll-out
-      description: Roll-out checks for this release
-      options:
-        - label: Rollback procedure present?
-        - label: 'Is a release date present? (open: we will set a release date after IBMF approval)'
-        - label: Are there any dependencies and/or is a specific release order required?
-        - label: '*Approval PO*'
-        - label: '*Approval IBMF*, add screenshot of checklist and explanation of any unchecked or striked out items'
-  - type: checkboxes
-    id: approvalleadqa
-    attributes:
-      label: Approval Lead QA
-      description: The procedure to request a production release is described in [Release-proces.md](https://github.com/minvws/nl-rdo-quality-coordination/blob/main/Kwaliteitsmanagement/Kwaliteitsaanpak/Release%20proces/Release-proces.md)
-      options:
-        - label: '*Approval QA Lead*, the QA Lead will check this release checklist and the test report and add a screenshot of this checklist to the Zammad ticket and move the request for installation to Operations.'
+      label: 'Checklist'
+      value: Copy checklist content from https://github.com/minvws/nl-rdo-quality-coordination/blob/main/Projectdocumentatie/Templates/Release%20Checklist.md

@@ -8,6 +8,7 @@ use Elastic\Elasticsearch\Response\Elasticsearch;
 use Knp\Component\Pager\Pagination\AbstractPagination;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use MinVWS\TypeArray\Exception\IncorrectDataTypeException;
 use MinVWS\TypeArray\TypeArray;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Search\Query\Facet\Input\DateFacetInput;
@@ -19,6 +20,7 @@ use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Search\Model\Suggestion;
 use Shared\Service\Search\Model\SuggestionEntry;
 use Shared\Service\Search\Query\Sort\ViewModel\SortItemViewFactory;
+use Webmozart\Assert\Assert;
 
 use function array_filter;
 use function array_merge;
@@ -132,6 +134,8 @@ readonly class ResultTransformer
         // Add all found hits and their documents
         $entries = [];
         foreach ($typedResponse->getIterable('[hits][hits]') as $hit) {
+            Assert::isInstanceOf($hit, TypeArray::class);
+
             $entries[] = $this->resultFactory->map($hit, $searchParameters->applicationId);
         }
 
@@ -152,7 +156,11 @@ readonly class ResultTransformer
 
         $ret = [];
         foreach ($response->getIterable('[suggest]') as $name => $entry) {
+            Assert::isInstanceOf($entry, TypeArray::class);
+
             foreach ($entry->toArray() as $suggestion) {
+                Assert::isArray($suggestion);
+
                 $suggestion = new TypeArray($suggestion);
 
                 $entries = [];
@@ -201,7 +209,7 @@ readonly class ResultTransformer
 
             $ret[] = $this->aggregationMapper->map(
                 strval($name),
-                $aggregation->getIterable('[buckets]'),
+                $this->getBuckets($aggregation),
                 $searchParameters,
             );
         }
@@ -223,5 +231,23 @@ readonly class ResultTransformer
         }
 
         return false;
+    }
+
+    /**
+     * @return array<array-key, TypeArray>
+     *
+     * @throws IncorrectDataTypeException
+     */
+    private function getBuckets(TypeArray $aggregation): array
+    {
+        $buckets = [];
+
+        foreach ($aggregation->getIterable('[buckets]') as $bucketKey => $bucket) {
+            Assert::isInstanceOf($bucket, TypeArray::class);
+
+            $buckets[$bucketKey] = $bucket;
+        }
+
+        return $buckets;
     }
 }

@@ -19,10 +19,10 @@ use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicService;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use PublicationApi\Domain\Dossier\MetadataSnapshot;
 use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
@@ -49,7 +49,6 @@ final readonly class InvestigationReportProcessor implements ProcessorInterface
         private DossierRepository $dossierRepository,
         private DossierValidator $dossierValidator,
         private InvestigationReportMapper $investigationReportMapper,
-        private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
         private OrganisationResolver $organisationResolver,
         private NoticeNotPublicService $noticeNotPublicService,
@@ -82,7 +81,7 @@ final readonly class InvestigationReportProcessor implements ProcessorInterface
         }
 
         if ($dossier === null) {
-            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $documentPrefix = $organisation->getPrefix()->toString();
             $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
             $dossier = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
 
@@ -135,6 +134,7 @@ final readonly class InvestigationReportProcessor implements ProcessorInterface
         $this->dossierValidator->validateDossier($investigationReport);
         $this->dossierSupportService->autoPublish($investigationReport);
         $this->dossierSupportService->validateCompletionAndPersist($investigationReport);
+        $this->dossierSupportService->dispatchDossierCreatedEvent($investigationReport);
         $this->dossierSupportService->synchronizeArtifacts($investigationReport);
 
         return $investigationReport;
@@ -154,6 +154,8 @@ final readonly class InvestigationReportProcessor implements ProcessorInterface
             $department,
             $subject,
         );
+
+        $mainDocumentSnapshot = MetadataSnapshot::ofNullable($investigationReport->getMainDocument());
 
         if ($investigationReportRequestDto->mainDocument !== null) {
             if ($investigationReport->getNoticeNotPublic() !== null) {
@@ -186,11 +188,12 @@ final readonly class InvestigationReportProcessor implements ProcessorInterface
         );
         $attachments = $this->getAttachments($investigationReport, $investigationReportRequestDto->attachments);
         $this->dossierAttachmentValidator->validate($attachments, $investigationReport->getStatus());
-        $this->attachmentSynchronizer->sync($investigationReport, $investigationReportRequestDto->attachments);
+        $attachmentEvents = $this->attachmentSynchronizer->sync($investigationReport, $investigationReportRequestDto->attachments);
 
         $this->dossierValidator->validateDossier($investigationReport);
         $this->dossierSupportService->autoPublish($investigationReport);
         $this->dossierSupportService->validateCompletionAndPersist($investigationReport);
+        $this->dossierSupportService->dispatchPublicationEvents($investigationReport, $mainDocumentSnapshot, $attachmentEvents);
         $this->dossierSupportService->synchronizeArtifacts($investigationReport);
     }
 

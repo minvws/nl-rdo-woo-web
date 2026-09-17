@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Organisation;
 
 use PublicationApi\Api\Department\DepartmentMapper;
-use PublicationApi\Api\Prefix\PrefixMapper;
 use PublicationApi\Api\Subject\SubjectMapper;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
@@ -55,9 +54,9 @@ class OrganisationMapper
         return new OrganisationDetailResponseDto(
             $organisation->getId(),
             $organisation->getName(),
+            $organisation->getPrefix()->toString(),
             DepartmentMapper::fromEntities($organisation->getDepartments()->toArray()),
             SubjectMapper::fromEntities($organisation->getSubjects()->toArray(), $previewUrlGenerator),
-            PrefixMapper::fromEntities($organisation->getDocumentPrefixes()->toArray()),
         );
     }
 }

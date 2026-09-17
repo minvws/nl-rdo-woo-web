@@ -209,7 +209,7 @@ To add support for a new dossier type:
 - Add test coverage:
   - An integration test covering the full publication flow, see `PublicationApi\Tests\Integration\Api\Dossier\AnnualReport\AnnualReportPublicationV1Test` as an example.
   - Integration and unit tests for the upload endpoints, see the `AnnualReportUploadMainDocumentTest` and `AnnualReportUploadMainDocumentProcessorTest` as examples.
-- Update the Bruno collection: add a folder `docs/bruno-collection/FooBar` with a `.bru` request file per endpoint (including a `folder.bru`). See `docs/bruno-collection/AnnualReport` as an example and `docs/bruno-collection/README.md` for how to use the collection.
+- Update the Bruno collection: add a folder `docs/bruno-collection/FooBar` with a `.yml` request file per endpoint (including a `folder.yml`). See `docs/bruno-collection/AnnualReport` as an example and `docs/bruno-collection/README.md` for how to use the collection.
 
 See `apps/publication_api/src/Api/Dossier/AnnualReport` for a complete reference implementation.
 

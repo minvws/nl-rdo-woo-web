@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Inventory;
 
 use Shared\Exception\ProcessInventoryException;
-use Shared\Service\Inventory\DocumentNumber;
 use Shared\Service\Inventory\InventoryChangeset;
 use Shared\Tests\Unit\UnitTestCase;
-use Shared\ValueObject\DocumentMatter;
+use Shared\ValueObject\DocumentNumber;
 
 class InventoryChangesetTest extends UnitTestCase
 {
@@ -22,7 +21,7 @@ class InventoryChangesetTest extends UnitTestCase
         $changeset = new InventoryChangeset();
         self::assertTrue($changeset->hasNoChanges());
 
-        $documentNumber = DocumentNumber::fromPrefixMatterAndInput('test', DocumentMatter::create('x'), '123a');
+        $documentNumber = DocumentNumber::fromString('test-x-123a');
         $changeset->markAsAdded($documentNumber);
 
         self::assertFalse($changeset->hasNoChanges());
@@ -30,7 +29,7 @@ class InventoryChangesetTest extends UnitTestCase
 
     public function testHandlingOfAdded(): void
     {
-        $documentNumber = DocumentNumber::fromPrefixMatterAndInput('test', DocumentMatter::create('x'), '123a');
+        $documentNumber = DocumentNumber::fromString('test-x-123a');
 
         $changeset = new InventoryChangeset();
         $changeset->markAsAdded($documentNumber);
@@ -53,7 +52,7 @@ class InventoryChangesetTest extends UnitTestCase
 
     public function testHandlingOfUpdated(): void
     {
-        $documentNumber = DocumentNumber::fromPrefixMatterAndInput('test', DocumentMatter::create('x'), '123a');
+        $documentNumber = DocumentNumber::fromString('test-x-123a');
 
         $changeset = new InventoryChangeset();
         $changeset->markAsUpdated($documentNumber);
@@ -76,13 +75,13 @@ class InventoryChangesetTest extends UnitTestCase
 
     public function testHandlingOfDeleted(): void
     {
-        $documentNumber = DocumentNumber::fromPrefixMatterAndInput('test', DocumentMatter::create('x'), '123a');
+        $documentNumber = DocumentNumber::fromString('test-x-123a');
 
         $changeset = new InventoryChangeset();
-        $changeset->markAsDeleted($documentNumber->toString());
+        $changeset->markAsDeleted($documentNumber);
 
         self::assertEquals(InventoryChangeset::DELETED, $changeset->getStatus($documentNumber));
-        self::assertEquals([$documentNumber->toString()], $changeset->getDeleted());
+        self::assertEquals([$documentNumber], $changeset->getDeleted());
         self::assertEquals(
             [
                 InventoryChangeset::ADDED => 0,
@@ -100,7 +99,7 @@ class InventoryChangesetTest extends UnitTestCase
 
     public function testHandlingOfUnchanged(): void
     {
-        $documentNumber = DocumentNumber::fromPrefixMatterAndInput('test', DocumentMatter::create('x'), '123a');
+        $documentNumber = DocumentNumber::fromString('test-x-123a');
 
         $changeset = new InventoryChangeset();
         $changeset->markAsUnchanged($documentNumber);
@@ -126,8 +125,8 @@ class InventoryChangesetTest extends UnitTestCase
     {
         $changeset = new InventoryChangeset();
 
-        $documentNumber = DocumentNumber::fromPrefixMatterAndInput('test', DocumentMatter::create('x'), '123a');
-        $duplicateDocumentNumber = DocumentNumber::fromPrefixMatterAndInput('test', DocumentMatter::create('x'), '123a');
+        $documentNumber = DocumentNumber::fromString('test-x-123a');
+        $duplicateDocumentNumber = DocumentNumber::fromString('test-x-123a');
 
         $expectedException = ProcessInventoryException::forDuplicateDocumentNumber($duplicateDocumentNumber->toString());
 
@@ -140,7 +139,7 @@ class InventoryChangesetTest extends UnitTestCase
         $changeset->markAsUpdated($duplicateDocumentNumber);
 
         $this->expectExceptionObject($expectedException);
-        $changeset->markAsDeleted($duplicateDocumentNumber->toString());
+        $changeset->markAsDeleted($duplicateDocumentNumber);
 
         $this->expectExceptionObject($expectedException);
         $changeset->markAsUnchanged($duplicateDocumentNumber);
@@ -150,14 +149,14 @@ class InventoryChangesetTest extends UnitTestCase
 
     public function testGetResultingTotalDocumentCount(): void
     {
-        $documentNumberA = DocumentNumber::fromPrefixMatterAndInput('test', DocumentMatter::create('x'), '123a');
-        $documentNumberB = DocumentNumber::fromPrefixMatterAndInput('test', DocumentMatter::create('x'), '123b');
-        $documentNumberC = DocumentNumber::fromPrefixMatterAndInput('test', DocumentMatter::create('x'), '123c');
-        $documentNumberD = DocumentNumber::fromPrefixMatterAndInput('test', DocumentMatter::create('x'), '123d');
+        $documentNumberA = DocumentNumber::fromString('test-x-123a');
+        $documentNumberB = DocumentNumber::fromString('test-x-123b');
+        $documentNumberC = DocumentNumber::fromString('test-x-123c');
+        $documentNumberD = DocumentNumber::fromString('test-x-123d');
 
         $changeset = new InventoryChangeset();
         $changeset->markAsAdded($documentNumberA);
-        $changeset->markAsDeleted($documentNumberB->toString());
+        $changeset->markAsDeleted($documentNumberB);
         $changeset->markAsUnchanged($documentNumberC);
         $changeset->markAsUpdated($documentNumberD);
 

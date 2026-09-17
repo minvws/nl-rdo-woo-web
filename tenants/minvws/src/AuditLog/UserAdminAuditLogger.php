@@ -120,9 +120,7 @@ readonly class UserAdminAuditLogger
     private function getActor(UserCreatedEvent|UserResetEvent $event): LoggableUser
     {
         $actor = $event->actor;
-        if ($actor === null) {
-            $actor = new AuditUser('cli user', 'system', [], 'system@localhost');
-        }
+        $actor ??= new AuditUser('cli user', 'system', [], 'system@localhost');
 
         return $actor;
     }

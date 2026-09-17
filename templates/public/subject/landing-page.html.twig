@@ -14,16 +14,34 @@
             {% if subject.landingPageDescription is not empty %}
                 <div class="bg-woo-gray-100 p-6 my-10">
                     <div class="woo-readable-width woo-rich-text">
-                        <p class="whitespace-pre-line">{{ subject.landingPageDescription }}</p>
+                        {{ subject.landingPageDescription | render_markdown }}
                     </div>
                 </div>
             {% endif %}
         </div>
 
-        {% if subject.hasVisibleLandingPageContentTree and subject.landingPageContentTree is not empty %}
-            <ul class="woo-accordion-list">
-                {{ contentTree.render(subject.landingPageContentTree) }}
-            </ul>
+        {% if subject.hasVisibleLandingPageContentTree %}
+            {% if subject.landingPageContentTree.title is not empty %}
+                <h2 class="woo-h2 mb-2">{{ subject.landingPageContentTree.title }}</h2>
+            {% endif %}
+
+            {% if subject.landingPageContentTree.intro is not empty %}
+                <div class="woo-rich-text">
+                    {{ subject.landingPageContentTree.intro | render_markdown }}
+                </div>
+            {% endif %}
+
+            {% if subject.landingPageContentTree.children is not empty %}
+                <ul class="woo-accordion-list mt-4">
+                    {{ contentTree.render(subject.landingPageContentTree.children) }}
+                </ul>
+            {% endif %}
+
+            {% if subject.landingPageContentTree.outro is not empty %}
+                <div class="woo-rich-text mt-4">
+                    {{ subject.landingPageContentTree.outro | render_markdown }}
+                </div>
+            {% endif %}
         {% endif %}
 
         <p class="mt-4">

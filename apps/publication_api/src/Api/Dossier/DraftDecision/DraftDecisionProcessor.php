@@ -17,10 +17,10 @@ use PublicationApi\Api\Dossier\ExternalIdInUseException;
 use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use PublicationApi\Domain\Dossier\MetadataSnapshot;
 use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
 use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecisionAttachment;
@@ -42,7 +42,6 @@ final readonly class DraftDecisionProcessor implements ProcessorInterface
         private DossierUpdateGuard $dossierUpdateGuard,
         private DossierRepository $dossierRepository,
         private DraftDecisionMapper $draftDecisionMapper,
-        private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
         private OrganisationResolver $organisationResolver,
         private DossierValidator $dossierValidator,
@@ -77,7 +76,7 @@ final readonly class DraftDecisionProcessor implements ProcessorInterface
         }
 
         if ($dossier === null) {
-            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $documentPrefix = $organisation->getPrefix()->toString();
             $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
             $dossier = $this->create($organisation, $department, $subject, $data, $draftDecisionExternalId, $documentPrefix);
 
@@ -125,6 +124,7 @@ final readonly class DraftDecisionProcessor implements ProcessorInterface
         $this->dossierValidator->validateDossier($draftDecision);
         $this->dossierSupportService->autoPublish($draftDecision);
         $this->dossierSupportService->validateCompletionAndPersist($draftDecision);
+        $this->dossierSupportService->dispatchDossierCreatedEvent($draftDecision);
         $this->dossierSupportService->synchronizeArtifacts($draftDecision);
 
         return $draftDecision;
@@ -138,6 +138,7 @@ final readonly class DraftDecisionProcessor implements ProcessorInterface
         DraftDecisionRequestDto $draftDecisionRequestDto,
     ): void {
         $draftDecision = DraftDecisionMapper::update($draftDecision, $draftDecisionRequestDto, $organisation, $department, $subject);
+        $mainDocumentSnapshot = MetadataSnapshot::ofNullable($draftDecision->getMainDocument());
 
         $mainDocumentDto = $draftDecisionRequestDto->mainDocument;
         Assert::notNull($mainDocumentDto);
@@ -153,11 +154,12 @@ final readonly class DraftDecisionProcessor implements ProcessorInterface
         $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($draftDecision, $attachmentRequestDtos);
         $attachments = $this->getAttachments($draftDecision, $attachmentRequestDtos);
         $this->dossierAttachmentValidator->validate($attachments, $draftDecision->getStatus());
-        $this->attachmentSynchronizer->sync($draftDecision, $attachmentRequestDtos);
+        $attachmentEvents = $this->attachmentSynchronizer->sync($draftDecision, $attachmentRequestDtos);
 
         $this->dossierValidator->validateDossier($draftDecision);
         $this->dossierSupportService->autoPublish($draftDecision);
         $this->dossierSupportService->validateCompletionAndPersist($draftDecision);
+        $this->dossierSupportService->dispatchPublicationEvents($draftDecision, $mainDocumentSnapshot, $attachmentEvents);
         $this->dossierSupportService->synchronizeArtifacts($draftDecision);
     }
 

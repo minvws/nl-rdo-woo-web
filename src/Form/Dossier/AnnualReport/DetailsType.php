@@ -48,7 +48,6 @@ class DetailsType extends AbstractDossierStepType
         $dossierForm->addDepartmentsField();
         $dossierForm->addSubjectField();
         $dossierForm->addDossierNumberField();
-        $dossierForm->addDocumentPrefixField();
         $dossierForm->addSubmits();
     }
 }

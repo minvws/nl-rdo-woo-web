@@ -16,10 +16,10 @@ use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicService;
 use PublicationApi\Api\Organisation\OrganisationResolver;
+use PublicationApi\Domain\Dossier\MetadataSnapshot;
 use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
@@ -41,7 +41,6 @@ final readonly class ComplaintJudgementProcessor implements ProcessorInterface
         private DossierRepository $dossierRepository,
         private DossierValidator $dossierValidator,
         private ComplaintJudgementMapper $complaintJudgementMapper,
-        private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private OrganisationResolver $organisationResolver,
         private NoticeNotPublicService $noticeNotPublicService,
         private MessageBusInterface $messageBus,
@@ -73,7 +72,7 @@ final readonly class ComplaintJudgementProcessor implements ProcessorInterface
         }
 
         if ($dossier === null) {
-            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $documentPrefix = $organisation->getPrefix()->toString();
             $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
             $dossier = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
 
@@ -121,6 +120,7 @@ final readonly class ComplaintJudgementProcessor implements ProcessorInterface
         $this->dossierValidator->validateDossier($complaintJudgement);
         $this->dossierSupportService->autoPublish($complaintJudgement);
         $this->dossierSupportService->validateCompletionAndPersist($complaintJudgement);
+        $this->dossierSupportService->dispatchDossierCreatedEvent($complaintJudgement);
         $this->dossierSupportService->synchronizeArtifacts($complaintJudgement);
 
         return $complaintJudgement;
@@ -140,6 +140,8 @@ final readonly class ComplaintJudgementProcessor implements ProcessorInterface
             $department,
             $subject,
         );
+
+        $mainDocumentSnapshot = MetadataSnapshot::ofNullable($complaintJudgement->getMainDocument());
 
         if ($complaintJudgementRequestDto->mainDocument !== null) {
             if ($complaintJudgement->getNoticeNotPublic() !== null) {
@@ -168,6 +170,7 @@ final readonly class ComplaintJudgementProcessor implements ProcessorInterface
         $this->dossierValidator->validateDossier($complaintJudgement);
         $this->dossierSupportService->autoPublish($complaintJudgement);
         $this->dossierSupportService->validateCompletionAndPersist($complaintJudgement);
+        $this->dossierSupportService->dispatchPublicationEvents($complaintJudgement, $mainDocumentSnapshot, []);
         $this->dossierSupportService->synchronizeArtifacts($complaintJudgement);
     }
 }

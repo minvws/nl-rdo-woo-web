@@ -14,6 +14,7 @@ use Shared\Domain\Search\Query\Facet\Input\DateFacetInputInterface;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\Translation\LocaleSwitcher;
 
 #[Group('facet')]
 #[Group('facetInput')]
@@ -27,7 +28,7 @@ final class DateFacetInputTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->facet = new DateFacet();
+        $this->facet = new DateFacet(new LocaleSwitcher('nl', []));
         $this->bag = Mockery::mock(ParameterBag::class);
         $this->bag->expects('all')->with($this->facet->getRequestParameter())->andReturn([])->byDefault();
     }

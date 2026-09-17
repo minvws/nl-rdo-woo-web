@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\ViewModel\CommonDossierPropertiesViewFacto
 use Shared\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
 use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
+use Shared\Domain\Search\Query\Facet\FacetDefinitions;
 use Shared\Service\Search\Model\FacetKey;
 use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
@@ -22,6 +23,7 @@ final readonly class WooDecisionViewFactory
         private CommonDossierPropertiesViewFactory $commonDossierViewFactory,
         private MainDocumentViewFactory $mainDocumentViewFactory,
         private RouterInterface $router,
+        private FacetDefinitions $facetDefinitions,
     ) {
     }
 
@@ -41,6 +43,8 @@ final readonly class WooDecisionViewFactory
 
         $departments = $this->departmentViewFactory->makeCollection($dossier->getDepartments());
 
+        $dossierNumberParam = $this->facetDefinitions->get(FacetKey::PREFIXED_DOSSIER_NUMBER)->getRequestParameter();
+
         return new WooDecision(
             commonDossier: $this->commonDossierViewFactory->make($dossier),
             counts: $this->wooDecisionRepository->getDossierCounts($dossier),
@@ -57,7 +61,7 @@ final readonly class WooDecisionViewFactory
             documentSearchUrl: $this->router->generate(
                 'app_search',
                 [
-                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($dossier)],
+                    $dossierNumberParam => [PrefixedDossierNumber::forDossier($dossier)],
                 ],
             ),
         );

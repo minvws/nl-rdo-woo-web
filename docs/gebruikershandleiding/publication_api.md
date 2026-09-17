@@ -12,6 +12,14 @@ The OpenAPI documentation of the Publication API can be found at {public}`api`.
 To test interaction with the API, a [Bruno](https://www.usebruno.com/) collection is available on our [public repo](https://github.com/minvws/nl-rdo-woo-web/tree/main/docs/bruno-collection).
 See the [README](https://github.com/minvws/nl-rdo-woo-web/tree/main/docs/bruno-collection/README.md) for instructions.
 
+## Document identification
+
+For documents in a Woo decision, `publicationContext` is required. The platform composes the document number from the
+publication context and the document ID in the format `{publicationContext}-{documentId}`.
+
+The legacy `matter` property is not part of the Publication API contract. Requests that include `matter` are rejected and
+the field must not be sent.
+
 ## Platform Summary
 
 A more extensive description of the platform can be found in the User Manual. However, for purposes of understanding the API, a brief summary is provided here.

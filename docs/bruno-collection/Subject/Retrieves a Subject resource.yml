@@ -1,0 +1,268 @@
+info:
+  name: Retrieves a Subject resource.
+  type: http
+  seq: 3
+  tags:
+    - Subject
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organisation/:organisationId/subject/:subjectId"
+  params:
+    - name: organisationId
+      value: "{{organisationId}}"
+      type: path
+    - name: subjectId
+      value: "{{subjectId}}"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: 200 Response
+    description: Subject resource
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/subject/:subjectId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: subjectId
+          value: "{{subjectId}}"
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "id": "",
+            "organisation": {
+              "id": "",
+              "name": ""
+            },
+            "name": "",
+            "landingPage": {
+              "status": "concept",
+              "slug": "",
+              "title": "",
+              "description": "",
+              "contentTree": [
+                {
+                  "title": "",
+                  "body": "",
+                  "children": []
+                }
+              ],
+              "previewUrl": ""
+            }
+          }
+  - name: 400 Response
+    description: Bad Request
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/subject/:subjectId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: subjectId
+          value: "{{subjectId}}"
+          type: path
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 401 Response
+    description: Unauthorized
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/subject/:subjectId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: subjectId
+          value: "{{subjectId}}"
+          type: path
+    response:
+      status: 401
+      statusText: Unauthorized
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/subject/:subjectId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: subjectId
+          value: "{{subjectId}}"
+          type: path
+    response:
+      status: 403
+      statusText: Forbidden
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/subject/:subjectId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: subjectId
+          value: "{{subjectId}}"
+          type: path
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/subject/:subjectId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: subjectId
+          value: "{{subjectId}}"
+          type: path
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 405 Response
+    description: Method Not Allowed
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/subject/:subjectId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: subjectId
+          value: "{{subjectId}}"
+          type: path
+    response:
+      status: 405
+      statusText: Method Not Allowed
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 500 Response
+    description: Internal Server Error
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/subject/:subjectId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: subjectId
+          value: "{{subjectId}}"
+          type: path
+    response:
+      status: 500
+      statusText: Internal Server Error
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+
+docs: Retrieves a Subject resource.

@@ -15,9 +15,11 @@ readonly class DownloadFilenameGenerator
     public function getFileName(EntityWithFileInfo $entity): string
     {
         if ($entity instanceof Document) {
+            $documentNumber = $entity->getDocumentNumber()->toString();
+
             return sprintf(
                 '%s.%s',
-                $entity->getDocumentNumber(),
+                $documentNumber,
                 $entity->getFileInfo()->getType(),
             );
         }

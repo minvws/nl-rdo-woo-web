@@ -33,7 +33,6 @@ Preview Inquiry Access
   ...  documents=${DOCUMENTS}
   ...  number_of_documents=${NUMBER_OF_DOCUMENTS}
   ...  publication_status=Gepland
-  ...  prefix=${NEW_PREFIX}
   Wait For Queue To Empty
   # Verify the document can be found through the inquiry
   Click Inquiries
@@ -60,7 +59,6 @@ Inquiry With Multiple Dossiers
   ...  documents=files/inquiries/documenten7a.zip
   ...  number_of_documents=9
   ...  publication_status=Concept
-  ...  prefix=${NEW_PREFIX}
   VAR  ${concept_dossier} =  ${DOSSIER_REFERENCE}
   VAR  ${dossier1} =  ${DOSSIER_REFERENCE}
   VAR  @{concept_doc_ids} =  3601  3602
@@ -68,7 +66,6 @@ Inquiry With Multiple Dossiers
   ...  production_report=files/inquiries/productierapport7b.xlsx
   ...  documents=files/inquiries/documenten7b.zip
   ...  number_of_documents=3
-  ...  prefix=${NEW_PREFIX}
   VAR  ${dossier2} =  ${DOSSIER_REFERENCE}
   Verify That Inventory Doesn't Contain Concept Docs  ${concept_doc_ids}
   Publish The Concept Dossier  ${concept_dossier}
@@ -86,7 +83,6 @@ Verify Download Of Full Inquiry
   ...  documents=files/inquiries/documenten8.zip
   ...  number_of_documents=5
   ...  publication_status=Gepland
-  ...  prefix=${NEW_PREFIX}
   Click Inquiries
   Open Inquiry  8000-01
   Click First Dossier In Inquiry
@@ -98,7 +94,6 @@ Link Inquiries Using Production Report
   ...  production_report=files/inquiries/productierapport1.xlsx
   ...  documents=files/inquiries/documenten1.zip
   ...  number_of_documents=9
-  ...  prefix=${NEW_PREFIX}
   Click Inquiries
   Open Inquiry  2024-01
   ${ids} =  Evaluate  [3001, 3002, 3003, 3004, 3009],[],[3010],[]
@@ -120,7 +115,6 @@ Manually Link Inquiry To Decision
   ...  production_report=files/inquiries/productierapport2.xlsx
   ...  documents=files/inquiries/documenten2.zip
   ...  number_of_documents=3
-  ...  prefix=${NEW_PREFIX}
   Click Inquiries
   Click Manual Inquiry Linking
   Click Manual Woo Decision Linking
@@ -135,7 +129,6 @@ Manually Link Inquiry To Documents
   ...  production_report=files/inquiries/productierapport3.xlsx
   ...  documents=files/inquiries/documenten3.zip
   ...  number_of_documents=3
-  ...  prefix=${NEW_PREFIX}
   Click Inquiries
   Click Manual Inquiry Linking
   Click Manual Woo Document Linking
@@ -150,7 +143,6 @@ Production Report Inquiry Does Not Unlink
   ...  production_report=files/inquiries/productierapport5.xlsx
   ...  documents=files/inquiries/documenten5.zip
   ...  number_of_documents=2
-  ...  prefix=${NEW_PREFIX}
   Click Publications
   Click Publication By Value  ${DOSSIER_REFERENCE}
   Click Documents Edit
@@ -164,7 +156,6 @@ Manual Links Are Not Overwritten When Reuploading Production Report
   ...  production_report=files/inquiries/productierapport6.xlsx
   ...  documents=files/inquiries/documenten6.zip
   ...  number_of_documents=2
-  ...  prefix=${NEW_PREFIX}
   Click Inquiries
   Click Manual Inquiry Linking
   Click Manual Woo Document Linking
@@ -191,7 +182,6 @@ Large Inquiry
     ...  production_report=${production_report_location}
     ...  documents=${test_data_location}/Archive.zip
     ...  number_of_documents=${nr_of_documents}
-    ...  prefix=${NEW_PREFIX}
   END
   Set Browser Timeout  30s
   Click Inquiries
@@ -233,7 +223,6 @@ Replacing Production Report Updates Document Names In Inventory Pages
   ...  production_report=${PRODUCTION_REPORT}
   ...  documents=${DOCUMENTS}
   ...  number_of_documents=${NUMBER_OF_DOCUMENTS}
-  ...  prefix=${NEW_PREFIX}
   Wait For Queue To Empty
   # Update the production report file with a new document name
   ${new_doc_name} =  FakerLibrary.Sentence  nb_words=4

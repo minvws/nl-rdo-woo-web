@@ -15,7 +15,8 @@ use League\CommonMark\Node\Block\Paragraph;
 use League\CommonMark\Node\Inline\Newline;
 use League\CommonMark\Node\Inline\Text;
 use Shared\Validator\MarkdownAllowedNodeTypes\MarkdownAllowedNodeTypes;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints as SymfonyAssert;
+use Webmozart\Assert\Assert;
 
 use function array_map;
 
@@ -33,7 +34,7 @@ final readonly class SubjectContentNode
         ])]
         public string $body,
         /** @var list<SubjectContentNode> */
-        #[Assert\Valid]
+        #[SymfonyAssert\Valid]
         public array $children = [],
     ) {
     }
@@ -50,5 +51,32 @@ final readonly class SubjectContentNode
             'body' => $this->body,
             'children' => array_map(static fn (SubjectContentNode $child): array => $child->toArray(), $this->children),
         ];
+    }
+
+    /**
+     * @param array<array-key, mixed> $data
+     */
+    public static function fromArray(array $data): self
+    {
+        Assert::keyExists($data, 'title');
+        Assert::keyExists($data, 'body');
+        Assert::string($data['title']);
+        Assert::string($data['body']);
+
+        $children = $data['children'] ?? [];
+        Assert::isList($children);
+
+        return new self(
+            title: $data['title'],
+            body: $data['body'],
+            children: array_map(
+                static function (mixed $child): self {
+                    Assert::isArray($child);
+
+                    return self::fromArray($child);
+                },
+                $children,
+            ),
+        );
     }
 }

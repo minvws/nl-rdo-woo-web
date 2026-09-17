@@ -50,6 +50,7 @@ readonly class UpdateAttachmentHandler
         $fileUpdated = $command->uploadFileReference !== null;
 
         match (true) {
+            $command->initialUpload => $this->dispatcher->dispatchAttachmentCreatedEvent($entity),
             $fileUpdated && $metadataUpdated => $this->dispatcher->dispatchAttachmentMetadataAndFileUpdatedEvent($entity),
             $fileUpdated => $this->dispatcher->dispatchAttachmentFileUpdatedEvent($entity),
             $metadataUpdated => $this->dispatcher->dispatchAttachmentMetadataUpdatedEvent($entity),

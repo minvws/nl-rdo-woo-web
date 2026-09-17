@@ -6,12 +6,20 @@ Resource    Dossier.resource
 
 *** Keywords ***
 Create WooDecision Dossier In Status
-  [Arguments]  ${target_status}
+  [Arguments]  ${target_status}  ${with_attachment}=${FALSE}
   Generate External ID
   ${body} =  Build Request Body For WooDecision  ${target_status}
+  IF  ${with_attachment}
+    ${attachment} =  Generate Attachment  ${{ ['c_c2f56984'] }}
+    Set To Dictionary  ${body}  attachments  ${{ [$attachment] }}
+    VAR  ${PREVIOUS_REQUEST_BODY} =  ${body}  scope=test  # robotcode: ignore
+  END
   Send Put Request WooDecision  ${EXTERNAL_ID}  ${body}  200
   Upload Main Document  woo-decision  ${TEST_DATA_ROOT}/dummy.txt  ${EXTERNAL_ID}
   Upload Document  woo-decision  ${TEST_DATA_ROOT}/dummy.txt  ${EXTERNAL_ID}  ${body}[documents][0][externalId]
+  IF  ${with_attachment}
+    Upload Attachment Document  woo-decision  ${TEST_DATA_ROOT}/dummy.txt  ${EXTERNAL_ID}  ${attachment}[externalId]
+  END
   Publication Status Should Be  woo-decision  ${target_status}
 
 Get Dates For Status
@@ -125,6 +133,40 @@ WooDecision Document File Should Not Be Downloadable
   ...  ${response.status_code}
   ...  404
   ...  msg=Expected withdrawn document file ${path} to return 404 but got ${response.status_code}
+
+WooDecision Document File Should Be Downloadable
+  [Arguments]  ${dossier_external_id}  ${document_external_id}
+  ${document} =  Get WooDecision Document By External Id  ${dossier_external_id}  ${document_external_id}
+  Create Public Session
+  ${path} =  Remove String Using Regexp  ${document}[_links][file][href]  ^https?://[^/]+
+  ${response} =  GET On Session  alias=public  url=${path}  expected_status=any
+  Should Be Equal As Integers
+  ...  ${response.status_code}
+  ...  200
+  ...  msg=Expected document file ${path} to be downloadable but got ${response.status_code}
+
+Get WooDecision Attachment By External Id
+  [Arguments]  ${dossier_external_id}  ${attachment_external_id}
+  ${get_response} =  GET On Session
+  ...  alias=publication_api
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/external/${dossier_external_id}
+  FOR  ${attachment}  IN  @{get_response.json()}[attachments]
+    IF  '${attachment}[externalId]' == '${attachment_external_id}'
+      RETURN  ${attachment}
+    END
+  END
+  Fatal Error  No attachment found with externalId '${attachment_external_id}'
+
+WooDecision Attachment File Should Be Downloadable
+  [Arguments]  ${dossier_external_id}  ${attachment_external_id}
+  ${attachment} =  Get WooDecision Attachment By External Id  ${dossier_external_id}  ${attachment_external_id}
+  Create Public Session
+  ${path} =  Remove String Using Regexp  ${attachment}[_links][file][href]  ^https?://[^/]+
+  ${response} =  GET On Session  alias=public  url=${path}  expected_status=any
+  Should Be Equal As Integers
+  ...  ${response.status_code}
+  ...  200
+  ...  msg=Expected attachment file ${path} to be downloadable but got ${response.status_code}
 
 WooDecision Document Detail Page Should Show Withdrawn Notice
   [Arguments]  ${dossier_external_id}  ${document_external_id}

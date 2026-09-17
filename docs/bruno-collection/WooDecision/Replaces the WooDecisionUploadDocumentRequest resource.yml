@@ -1,0 +1,420 @@
+info:
+  name: Replaces the WooDecisionUploadDocumentRequest resource.
+  type: http
+  seq: 5
+  tags:
+    - WooDecision
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/external/:documentExternalId"
+  params:
+    - name: documentExternalId
+      value: "{{wooDecisionDocumentExternalId}}"
+      type: path
+    - name: organisationId
+      value: "{{organisationId}}"
+      type: path
+    - name: dossierExternalId
+      value: "{{wooDecisionDossierExternalId}}"
+      type: path
+  body:
+    type: file
+    data:
+      - filePath: dummy.pdf
+        contentType: application/octet-stream
+        selected: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: 204 Response
+    description: WooDecisionUploadDocumentRequest resource updated
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/:documentExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+        - name: documentExternalId
+          value: "E:"
+          type: path
+      body:
+        type: text
+        data: ""
+    response:
+      status: 204
+      statusText: No Content
+      body:
+        type: text
+        data: ""
+  - name: 400 Response
+    description: Invalid input
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/:documentExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+        - name: documentExternalId
+          value: "E:"
+          type: path
+      body:
+        type: text
+        data: ""
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 400 Response
+    description: Invalid input
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/:documentExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+        - name: documentExternalId
+          value: "E:"
+          type: path
+      body:
+        type: text
+        data: ""
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 401 Response
+    description: Unauthorized
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/:documentExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+        - name: documentExternalId
+          value: "E:"
+          type: path
+      body:
+        type: text
+        data: ""
+    response:
+      status: 401
+      statusText: Unauthorized
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/:documentExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+        - name: documentExternalId
+          value: "E:"
+          type: path
+      body:
+        type: text
+        data: ""
+    response:
+      status: 403
+      statusText: Forbidden
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/:documentExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+        - name: documentExternalId
+          value: "E:"
+          type: path
+      body:
+        type: text
+        data: ""
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/:documentExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+        - name: documentExternalId
+          value: "E:"
+          type: path
+      body:
+        type: text
+        data: ""
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 405 Response
+    description: Method Not Allowed
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/:documentExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+        - name: documentExternalId
+          value: "E:"
+          type: path
+      body:
+        type: text
+        data: ""
+    response:
+      status: 405
+      statusText: Method Not Allowed
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 422 Response
+    description: An error occurred
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/:documentExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+        - name: documentExternalId
+          value: "E:"
+          type: path
+      body:
+        type: text
+        data: ""
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "violations": [
+              {
+                "propertyPath": "",
+                "message": "",
+                "code": "",
+                "hint": "",
+                "payload": {}
+              }
+            ],
+            "detail": "",
+            "type": "",
+            "title": "",
+            "instance": ""
+          }
+  - name: 422 Response
+    description: An error occurred
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/:documentExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+        - name: documentExternalId
+          value: "E:"
+          type: path
+      body:
+        type: text
+        data: ""
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "violations": [
+              {
+                "propertyPath": "",
+                "message": "",
+                "code": "",
+                "hint": "",
+                "payload": {}
+              }
+            ],
+            "detail": "",
+            "type": "",
+            "title": "",
+            "instance": ""
+          }
+  - name: 500 Response
+    description: Internal Server Error
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId/uploads/document/:documentExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+        - name: documentExternalId
+          value: "E:"
+          type: path
+      body:
+        type: text
+        data: ""
+    response:
+      status: 500
+      statusText: Internal Server Error
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+
+docs: Replaces the WooDecisionUploadDocumentRequest resource.

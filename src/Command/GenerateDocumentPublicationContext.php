@@ -99,7 +99,7 @@ class GenerateDocumentPublicationContext extends Command
 
     private function getPublicationContext(SymfonyStyle $io, Document $document): ?PublicationContext
     {
-        $documentNumber = $document->getDocumentNumber();
+        $documentNumber = $document->getDocumentNumber()->toString();
         $suffix = sprintf('-%s', $document->getDocumentId()->toString());
 
         if (! str_ends_with($documentNumber, $suffix)) {

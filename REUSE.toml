@@ -1,0 +1,21 @@
+version = 1
+
+[[annotations]]
+path = ["**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "iRealisatie - Ministerie van Volksgezondheid, Welzijn en Sport"
+SPDX-License-Identifier = "EUPL-1.2"
+
+[[annotations]]
+path = "docs/**"
+precedence = "override"
+SPDX-FileCopyrightText = "iRealisatie - Ministerie van Volksgezondheid, Welzijn en Sport"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "Bij het citeren van de inhoud mag niet de indruk gewekt worden dat de Rijksoverheid zonder meer de strekking van het afgeleide werk onderschrijft."
+
+[[annotations]]
+path = "**/non-free/**"
+precedence = "override"
+SPDX-FileCopyrightText = "iRealisatie - Ministerie van Volksgezondheid, Welzijn en Sport"
+SPDX-License-Identifier = "LicenseRef-Proprietary"
+SPDX-FileComment = "For any file with a full path containing \"non-free\", please refer to it's related license file(s)."

@@ -29,7 +29,7 @@ readonly class ReferredDocumentNumberFacet implements FacetDefinitionInterface
 
     public function getField(): ElasticField
     {
-        return ElasticField::REFERRED_DOCUMENT_NUMBERS;
+        return ElasticField::REFERRED_DOCUMENT_NRS;
     }
 
     public function getRequestParameter(): string

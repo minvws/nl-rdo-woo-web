@@ -19,11 +19,17 @@ use Shared\Service\Search\Query\Aggregation\DateTermAggregationStrategy;
 use Shared\Service\Search\Query\Filter\FilterInterface;
 use Shared\Service\Search\Query\Filter\PeriodFilter;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\Translation\LocaleSwitcher;
 
 use function sprintf;
 
 readonly class DateFacet implements FacetDefinitionInterface
 {
+    public function __construct(
+        private LocaleSwitcher $localeSwitcher,
+    ) {
+    }
+
     public function getKey(): FacetKey
     {
         return FacetKey::DATE;
@@ -86,7 +92,7 @@ readonly class DateFacet implements FacetDefinitionInterface
         }
 
         return UntranslatedStringFacetDisplayValue::fromString(
-            IntlDateFormatter::formatObject(new DateTimeImmutable($value), 'd MMMM YYYY', 'nl_NL'),
+            IntlDateFormatter::formatObject(new DateTimeImmutable($value), 'd MMMM YYYY', $this->localeSwitcher->getLocale()),
         );
     }
 

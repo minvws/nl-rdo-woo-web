@@ -10,6 +10,7 @@ use Mockery\MockInterface;
 use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Publication\Subject\SubjectContentTree;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Tests\Unit\UnitTestCase;
@@ -27,7 +28,7 @@ class SubjectPreviewUrlGeneratorTest extends UnitTestCase
             LandingPageTitle::create('T'),
             'D',
             SubjectLandingPageStatus::CONCEPT,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
 
         $url = $generator->generatePreviewUrl($subject);
@@ -49,7 +50,7 @@ class SubjectPreviewUrlGeneratorTest extends UnitTestCase
             LandingPageTitle::create('T'),
             'D',
             SubjectLandingPageStatus::PUBLISHED,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
 
         self::assertNull($generator->generatePreviewUrl($subject));
@@ -91,7 +92,7 @@ class SubjectPreviewUrlGeneratorTest extends UnitTestCase
             LandingPageTitle::create('T'),
             'D',
             SubjectLandingPageStatus::CONCEPT,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
 
         $url = $generator->generatePreviewUrl($subject);

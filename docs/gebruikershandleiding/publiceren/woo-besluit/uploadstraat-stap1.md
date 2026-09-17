@@ -4,7 +4,7 @@
 
 Voordat je een document kunt uploaden moet je eerst enkele basisgegevens invullen. Deze gegevens helpen om het besluit gemakkelijker
 terug te vinden. Zolang het besluit nog niet is gepubliceerd kunnen de basisgegevens nog gedeeltelijk worden aangepast.
-Ook na publicatie kunnen de basisgegevens nog worden bijgewerkt. Het referentienummer en de prefix kunnen achteraf niet meer aangepast worden.
+Ook na publicatie kunnen de basisgegevens nog worden bijgewerkt. Het referentienummer kan achteraf niet meer aangepast worden.
 
 ## Onderwerp van het besluit
 
@@ -34,13 +34,9 @@ Keuze uit: Wob-besluit en Woo-besluit. Standaard is het type Woo-besluit geselec
 
 ## Prefix voor documenten
 
-Kies uit het dropdown-menu een prefix. Is er slechts één keuze, dan is deze optie voor je geselecteerd. De combinatie van prefix
-en referentienummer moet uniek zijn binnen de organisatie. Dit veld is verplicht om in te vullen.
-
-:::{admonition} Let op!
-:class: warning
-Het is niet mogelijk om de prefix te wijzigen, nadat je deze hebt opgeslagen.
-:::
+De vaste prefix van je organisatie wordt automatisch gebruikt. Je hoeft geen prefix
+te selecteren of in te vullen. De combinatie van de prefix en het referentienummer
+moet uniek zijn binnen de organisatie.
 
 ## Interne referentie
 

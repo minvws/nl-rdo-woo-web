@@ -19,6 +19,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Sitemap\SitemapDocumentSubscriber;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SitemapDocumentSubscriberTest extends UnitTestCase
@@ -42,7 +43,7 @@ class SitemapDocumentSubscriberTest extends UnitTestCase
     {
         $document = Mockery::mock(Document::class);
         $document->expects('getUpdatedAt')->andReturn($documentUpdatedAt = new DateTimeImmutable());
-        $document->expects('getDocumentNumber')->andReturn($documentNumber = 'doc-123');
+        $document->expects('getDocumentNumber')->andReturn($documentNumber = DocumentNumber::fromString('doc-123'));
 
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
@@ -74,7 +75,7 @@ class SitemapDocumentSubscriberTest extends UnitTestCase
             [
                 'documentPrefix' => $prefix,
                 'dossierNumber' => $dossierNumber,
-                'documentNumber' => $documentNumber,
+                'documentNumber' => $documentNumber->toString(),
             ],
             0,
         )->andReturn($docUrl = '/foo/bar/doc-123');

@@ -10,6 +10,7 @@ use Shared\Command\GenerateDocumentPublicationContext;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\PublicationContext;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -29,7 +30,7 @@ class GenerateDocumentPublicationContextTest extends UnitTestCase
         $document->expects('getDocumentId')
             ->andReturn($documentId);
         $document->expects('getDocumentNumber')
-            ->andReturn(sprintf('%s-%s', $publicationContext->toString(), $documentId->toString()));
+            ->andReturn(DocumentNumber::fromString(sprintf('%s-%s', $publicationContext->toString(), $documentId->toString())));
         $document->expects('setPublicationContext')
             ->with(Mockery::on(static function (PublicationContext $actualPublicationContext) use ($publicationContext): bool {
                 return $actualPublicationContext->toString() === $publicationContext->toString();
@@ -54,7 +55,7 @@ class GenerateDocumentPublicationContextTest extends UnitTestCase
         $document->expects('getDocumentId')
             ->andReturn($this->getFaker()->documentId());
         $document->expects('getDocumentNumber')
-            ->andReturn($this->getFaker()->word());
+            ->andReturn(DocumentNumber::fromString($this->getFaker()->word()));
 
         $documentRepository = Mockery::mock(DocumentRepository::class);
         $documentRepository->expects('getDocumentsMissingPublicationContextIterable')
@@ -79,7 +80,7 @@ class GenerateDocumentPublicationContextTest extends UnitTestCase
         $document->expects('getDocumentId')
             ->andReturn($documentId);
         $document->expects('getDocumentNumber')
-            ->andReturn(sprintf('-%s', $documentId->toString()));
+            ->andReturn(DocumentNumber::fromString(sprintf('-%s', $documentId->toString())));
 
         $documentRepository = Mockery::mock(DocumentRepository::class);
         $documentRepository->expects('getDocumentsMissingPublicationContextIterable')
@@ -103,7 +104,7 @@ class GenerateDocumentPublicationContextTest extends UnitTestCase
         $document->expects('getDocumentId')
             ->andReturn($documentId);
         $document->expects('getDocumentNumber')
-            ->andReturn(sprintf('%s-%s', $publicationContext->toString(), $documentId->toString()));
+            ->andReturn(DocumentNumber::fromString(sprintf('%s-%s', $publicationContext->toString(), $documentId->toString())));
         $document->expects('setPublicationContext')
             ->with(Mockery::on(static function (PublicationContext $actualPublicationContext) use ($publicationContext): bool {
                 return $actualPublicationContext->toString() === $publicationContext->toString();
@@ -149,7 +150,7 @@ class GenerateDocumentPublicationContextTest extends UnitTestCase
         $document->expects('getDocumentId')
             ->andReturn($documentId);
         $document->expects('getDocumentNumber')
-            ->andReturn($documentNumber);
+            ->andReturn(DocumentNumber::fromString($documentNumber));
 
         $documentRepository = Mockery::mock(DocumentRepository::class);
         $documentRepository->expects('getDocumentsMissingPublicationContextIterable')

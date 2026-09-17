@@ -7,7 +7,7 @@ namespace Shared\Domain\Search\Index\ElasticIndex;
 readonly class ElasticIndexDetails
 {
     /**
-     * @param array<array-key, string> $aliases
+     * @param array<array-key, int|string> $aliases
      */
     public function __construct(
         public string $name,

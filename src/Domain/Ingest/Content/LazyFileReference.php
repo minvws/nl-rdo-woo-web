@@ -21,9 +21,7 @@ class LazyFileReference implements FileReferenceInterface
 
     public function getPath(): string
     {
-        if ($this->path === null) {
-            $this->path = ($this->loader)();
-        }
+        $this->path ??= ($this->loader)();
 
         return $this->path;
     }

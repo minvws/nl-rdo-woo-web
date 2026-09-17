@@ -9,6 +9,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Publication\Subject\SubjectContentTree;
 use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Webmozart\Assert\Assert;
 
@@ -110,6 +111,8 @@ class SubjectMapper
             $landingPage->status,
             $landingPage->contentTree,
         );
+
+        $subject->setHasVisibleLandingPageContentTree($landingPage->hasVisibleContentTree);
     }
 
     private static function mapLandingPage(
@@ -128,12 +131,20 @@ class SubjectMapper
         Assert::isInstanceOf($title, LandingPageTitle::class);
         Assert::string($description);
 
+        $contentTree = $subject->getLandingPageContentTree() ?? new SubjectContentTree(
+            title: '',
+            intro: '',
+            children: [],
+            outro: '',
+        );
+
         return new SubjectLandingPageOutputDto(
             $status,
             (string) $slug,
             $title->toString(),
             $description,
-            $subject->getLandingPageContentTree() ?? [],
+            $subject->hasVisibleLandingPageContentTree(),
+            $contentTree,
             $previewUrlGenerator?->generatePreviewUrl($subject),
         );
     }

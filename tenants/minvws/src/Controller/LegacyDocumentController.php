@@ -22,13 +22,14 @@ class LegacyDocumentController extends AbstractController
         #[MapEntity(mapping: ['documentNumber' => 'documentNumber'])] Document $document,
     ): RedirectResponse {
         $this->validateAccess($dossier, $document);
+        $documentNumber = $document->getDocumentNumber()->toString();
 
         return $this->redirectToRoute(
             'app_document_detail',
             [
                 'prefix' => $dossier->getDocumentPrefix(),
                 'dossierNumber' => $dossier->getDossierNumber(),
-                'documentNumber' => $document->getDocumentNumber(),
+                'documentNumber' => $documentNumber,
             ],
             301,
         );

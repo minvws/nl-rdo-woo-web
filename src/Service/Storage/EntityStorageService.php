@@ -184,9 +184,7 @@ class EntityStorageService extends StorageService
 
     public function generateEntityPath(EntityWithFileInfo $entity, ?string $filename = null): string
     {
-        if ($filename === null) {
-            $filename = $this->getBasenameOfFilePath($entity);
-        }
+        $filename ??= $this->getBasenameOfFilePath($entity);
 
         return sprintf('%s/%s', $this->getRootPathForEntity($entity), $filename);
     }

@@ -90,9 +90,10 @@ readonly class SearchResultDtoFactory
         $dossier = $entry->getDossiers()[0];
         /** @var DocumentViewModel $document */
         $document = $entry->getViewModel();
+        $documentNumber = $document->documentNumber->toString();
 
         return new SearchResultDto(
-            id: $document->documentNumber,
+            id: $documentNumber,
             type: SearchResultType::DOCUMENT,
             title: $document->fileInfo->getName() ?? '',
             link: $this->urlGenerator->generate(
@@ -100,10 +101,10 @@ readonly class SearchResultDtoFactory
                 [
                     'documentPrefix' => $dossier->getDocumentPrefix(),
                     'dossierNumber' => $dossier->getDossierNumber(),
-                    'documentNumber' => $document->documentNumber,
+                    'documentNumber' => $documentNumber,
                 ],
             ),
-            number: $document->documentNumber,
+            number: $documentNumber,
         );
     }
 

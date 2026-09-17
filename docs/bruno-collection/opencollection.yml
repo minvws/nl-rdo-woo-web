@@ -1,0 +1,44 @@
+opencollection: 1.0.0
+
+info:
+  name: Woo Publication Platform Publication V1 API
+config:
+  clientCertificates:
+    - domain: localhost:8443
+      type: pem
+      certificateFilePath: ../../certs/dev/client-minvws.pem
+      privateKeyFilePath: ../../certs/dev/client-minvws.key
+    - domain: localhost:8444
+      type: pem
+      certificateFilePath: ../../certs/dev/client-minfin.pem
+      privateKeyFilePath: ../../certs/dev/client-minfin.key
+    - domain: "{{process.env.DOMAIN_TEST_MINVWS}}"
+      type: pem
+      certificateFilePath: ../../certs/test/client-minvws-combined.pem
+      privateKeyFilePath: ../../certs/test/client-minvws.key
+    - domain: "{{process.env.DOMAIN_ACC_MINVWS}}"
+      type: pem
+      certificateFilePath: ../../certs/acc/client-minvws-combined.pem
+      privateKeyFilePath: ../../certs/acc/client-minvws.key
+    - domain: "{{process.env.DOMAIN_TEST_MINFIN}}"
+      type: pem
+      certificateFilePath: ../../certs/test/client-minfin-combined.pem
+      privateKeyFilePath: ../../certs/test/client-minfin.key
+    - domain: "{{process.env.DOMAIN_ACC_MINFIN}}"
+      type: pem
+      certificateFilePath: ../../certs/acc/client-minfin-combined.pem
+      privateKeyFilePath: ../../certs/acc/client-minfin.key
+
+request:
+  scripts:
+    - type: before-request
+      code: |-
+        if (!bru.getVar("sessionTimestamp")) {
+          bru.setVar("sessionTimestamp", Date.now().toString());
+        }
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git

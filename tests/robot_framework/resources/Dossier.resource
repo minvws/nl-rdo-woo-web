@@ -22,7 +22,6 @@ Fill Out Basic Details
   [Arguments]  ${date_from}=2021-12-01
   ...  ${date_to}=2023-01-31
   ...  ${type}=${EMPTY}
-  ...  ${prefix}=E2E-A
   ...  ${department}=${EMPTY}
   Generate Dossier Reference Number
   Fill Text  id=details_title  Robot Admin ${DOSSIER_REFERENCE}
@@ -43,7 +42,6 @@ Fill Out Basic Details
     Check Checkbox  id=details_publication_reason_1
   END
   Select Random Subject
-  Select Options By  id=details_documentPrefix_documentPrefix  text  ${prefix}
   Fill Text  id=details_dossierNumber  robot-admin-${DOSSIER_REFERENCE}
   Click Save And Continue
   Assert No Input Errors
@@ -63,12 +61,20 @@ Select Random Department
   Select Options By  //select[@name="details[departments][0]"]  index  ${random_index}
 
 Select Random Subject
-  ${nr_of_subjects} =  Get Element Count  //select[@name="details[subject]"]/option
+  [Documentation]  Excludes subjects created by the Pagination API suite (name prefix "PG-")
+  ...  from the random pool. Those subjects only exist for that suite's run; picking one here
+  ...  links it to a dossier, making the suite's teardown DELETE fail with 405 (subject in use)
+  ...  when tests run in parallel.
+  VAR  ${xpath_eligible_options} =
+  ...  //select[@name="details[subject]"]/option[not(starts-with(normalize-space(text()), 'PG-'))]
+  ${nr_of_subjects} =  Get Element Count  ${xpath_eligible_options}
   ${max_index} =  Evaluate  max(0, ${nr_of_subjects} - 1)
   ${min_index} =  Evaluate  min(1, ${max_index})
   ${random_index} =  Evaluate  # index 0 is a placeholder, skipped when possible
   ...  random.randint(${min_index}, ${max_index})
-  Select Options By  //select[@name="details[subject]"]  index  ${random_index}
+  ${xpath_position} =  Evaluate  ${random_index} + 1
+  ${subject_name} =  Get Text  (${xpath_eligible_options})[${xpath_position}]
+  Select Options By  //select[@name="details[subject]"]  label  ${subject_name}
 
 Generate Dossier Reference Number
   ${reference_number} =  Generate Random String  10  [NUMBERS][UPPER]
@@ -77,9 +83,19 @@ Generate Dossier Reference Number
 
 Search For A Publication
   [Documentation]  Clicks the link with matching text, if multiple are present it will fail.
+  ...  Retried as a whole so an indexing race (the dossier not being in Elasticsearch yet
+  ...  right after creation) triggers a fresh search instead of failing on the click alone.
+  [Arguments]  ${search_query}
+  Wait Until Keyword Succeeds  10x  3s  Search And Click Publication  ${search_query}
+
+Search And Click Publication
   [Arguments]  ${search_query}
   ${search_query_lowercase} =  Convert To Lower Case  ${search_query}
   Type Text  //div[@data-e2e-name="dossier-search"]//input  ${search_query_lowercase}  delay=50 ms  clear=${TRUE}
+  Wait For Elements State
+  ...  //div[@data-e2e-name="search-previews-results"]//table[@data-e2e-name="table-dossier"]//a[contains(@href,'${search_query_lowercase}')]
+  ...  visible
+  ...  timeout=5s
   Click
   ...  //div[@data-e2e-name="search-previews-results"]//table[@data-e2e-name="table-dossier"]//a[contains(@href,'${search_query_lowercase}')]
 

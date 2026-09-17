@@ -26,6 +26,7 @@ use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectContentNode;
+use Shared\Domain\Publication\Subject\SubjectContentTree;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Domain\Publication\Subject\SubjectRepository;
@@ -123,7 +124,8 @@ class SubjectProcessorTest extends UnitTestCase
             LandingPageTitle::create('Landing page title'),
             'Landing page description',
             SubjectLandingPageStatus::CONCEPT,
-            [new SubjectContentNode('Section', 'Section body')],
+            new SubjectContentTree(title: '', intro: '', children: [new SubjectContentNode('Section', 'Section body')], outro: ''),
+            false,
         );
 
         $this->organisationResolver->expects('resolve')->with($uriVariables)->andReturn($organisation);
@@ -248,7 +250,13 @@ class SubjectProcessorTest extends UnitTestCase
             LandingPageTitle::create('Landing page title'),
             'Landing page description',
             SubjectLandingPageStatus::CONCEPT,
-            [new SubjectContentNode('Section', 'Section body')],
+            new SubjectContentTree(
+                children: [new SubjectContentNode('Section', 'Section body')],
+                title: 'Tree title',
+                intro: 'Tree intro',
+                outro: 'Tree outro',
+            ),
+            true,
         );
 
         $result = $this->processor->process(
@@ -263,9 +271,8 @@ class SubjectProcessorTest extends UnitTestCase
         self::assertSame('landing-page', $result->landingPage->slug);
         self::assertSame('Landing page title', $result->landingPage->title);
         self::assertSame('Landing page description', $result->landingPage->description);
-        self::assertSame([
-            ['title' => 'Section', 'body' => 'Section body', 'children' => []],
-        ], $result->landingPage->contentTree);
+        self::assertTrue($result->landingPage->hasVisibleContentTree);
+        self::assertEquals($landingPage->contentTree, $result->landingPage->contentTree);
         self::assertSame(
             sprintf('https://example.com/onderwerp/%s/preview/%s', $subject->getId(), $subject->getLandingPagePreviewToken()),
             $result->landingPage->previewUrl,
@@ -292,7 +299,8 @@ class SubjectProcessorTest extends UnitTestCase
             LandingPageTitle::create('Landing page title'),
             'Landing page description',
             SubjectLandingPageStatus::CONCEPT,
-            [new SubjectContentNode('Section', 'Section body')],
+            new SubjectContentTree(title: '', intro: '', children: [new SubjectContentNode('Section', 'Section body')], outro: ''),
+            false,
         );
         $processor = new SubjectProcessor(
             $this->organisationResolver,

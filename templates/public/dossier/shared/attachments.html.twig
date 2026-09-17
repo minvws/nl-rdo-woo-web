@@ -20,7 +20,7 @@
                 <tr data-e2e-name="dossier-attachments-row">
                     <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ attachment.type | trans | capitalize }}</th>
                     <td>
-                        <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a> ({{ attachment.sourceType | trans }}, {{ attachment.size | size }})
+                        <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a>{% if attachment.isDownloadable %} ({{ attachment.sourceType | trans }}, {{ attachment.size | size }}){% endif %}
                     </td>
                 </tr>
                 {% endfor %}

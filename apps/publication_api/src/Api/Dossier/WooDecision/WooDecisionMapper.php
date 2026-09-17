@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Exception\ResourceClassNotFoundException;
 use PublicationApi\Api\Attachment\AttachmentResponseDtoFactory;
 use PublicationApi\Api\Department\DepartmentMapper;
 use PublicationApi\Api\Dossier\WooDecision\Document\WooDecisionDocumentResponseDtoFactory;
+use PublicationApi\Api\Dossier\WooDecision\Inquiry\InquiryLinkFactory;
 use PublicationApi\Api\Dossier\WooDecision\Uploads\Attachment\WooDecisionUploadAttachmentResource;
 use PublicationApi\Api\Dossier\WooDecision\Uploads\MainDocument\WooDecisionUploadMainDocumentResource;
 use PublicationApi\Api\MainDocument\MainDocumentResponseDtoFactory;
@@ -35,6 +36,7 @@ readonly class WooDecisionMapper
         private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
         private DossierPathHelper $dossierPathHelper,
+        private InquiryLinkFactory $inquiryLinkFactory,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
         private WooDecisionDocumentResponseDtoFactory $wooDecisionDocumentResponseDtoFactory,
     ) {
@@ -147,6 +149,10 @@ readonly class WooDecisionMapper
 
         if ($wooDecision->getStatus()->isPublished()) {
             $linkCollection->set(LinkCollection::PUBLIC, new Link(Url::create($this->dossierPathHelper->getAbsoluteDetailsPath($wooDecision))));
+        }
+
+        foreach ($wooDecision->getInquiries() as $inquiry) {
+            $linkCollection->add(LinkCollection::INQUIRIES, $this->inquiryLinkFactory->fromInquiry($inquiry));
         }
 
         return $linkCollection;

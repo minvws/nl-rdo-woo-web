@@ -16,6 +16,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use Shared\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Uid\Uuid;
 
 use function sprintf;
@@ -53,7 +54,7 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
     /**
      * @return array<array-key, DossierReference>
      */
-    public function getDossierReferencesForDocument(string $documentNumber): array
+    public function getDossierReferencesForDocument(DocumentNumber $documentNumber): array
     {
         $qb = $this->createQueryBuilder('dos')
             ->select(sprintf(

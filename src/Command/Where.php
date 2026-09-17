@@ -7,6 +7,7 @@ namespace Shared\Command;
 use Exception;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -71,7 +72,9 @@ class Where extends Command
         }
 
         if (array_key_exists('documentNumber', $match)) {
-            $document = $this->documentRepository->findOneBy(['documentNumber' => $match['documentNumber']]);
+            Assert::string($match['documentNumber']);
+            $documentNumber = DocumentNumber::fromString($match['documentNumber']);
+            $document = $this->documentRepository->findOneBy(['documentNumber' => $documentNumber]);
             $documents = [$document];
         } else {
             $documents = $dossier->getDocuments();

@@ -64,20 +64,6 @@ final readonly class DossierForm
         $this->formBuilder->add('document', DocumentType::class);
     }
 
-    public function addDocumentPrefixField(): void
-    {
-        $dossier = $this->getDossier();
-
-        if ($dossier->getStatus()->isNew()) {
-            $this->formBuilder->add('documentPrefix', DocumentPrefixType::class, [
-                'label' => false,
-                'error_mapping' => [
-                    '.' => 'documentPrefix',
-                ],
-            ]);
-        }
-    }
-
     public function addDossierNumberField(): void
     {
         $dossier = $this->getDossier();

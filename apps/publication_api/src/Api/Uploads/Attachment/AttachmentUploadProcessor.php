@@ -44,6 +44,8 @@ class AttachmentUploadProcessor
             return;
         }
 
+        $initialUpload = $this->isInitialUpload($attachment);
+
         $uploadId = Uuid::v6();
         $fileName = $attachment->getFileInfo()->getName();
         Assert::string($fileName);
@@ -70,7 +72,13 @@ class AttachmentUploadProcessor
             dossierId: $dossier->getId(),
             attachmentId: $attachment->getId(),
             uploadFileReference: $uploadId->toRfc4122(),
+            initialUpload: $initialUpload,
         ));
+    }
+
+    private function isInitialUpload(AbstractAttachment $attachment): bool
+    {
+        return $this->attachmentUploadStatusService->getUploadStatus($attachment) === UploadStatus::UPLOAD_REQUIRED;
     }
 
     private function isAlreadyUploaded(AbstractAttachment $attachment, StreamInterface $stream): bool

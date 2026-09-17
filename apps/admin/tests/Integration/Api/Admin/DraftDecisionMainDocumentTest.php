@@ -85,7 +85,7 @@ final class DraftDecisionMainDocumentTest extends AdminApiTestCase
             'internalReference' => 'foo bar',
             'type' => AttachmentType::LEGISLATIVE_PROPOSAL->value,
             'language' => AttachmentLanguage::NLD->value,
-            'grounds' => ['foo', 'bar'],
+            'grounds' => ['bar', 'foo'],
             'uploadUuid' => $upload->getUploadId(),
         ];
         self::createAdminApiClient($user)

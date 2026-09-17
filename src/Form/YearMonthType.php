@@ -5,18 +5,21 @@ declare(strict_types=1);
 namespace Shared\Form;
 
 use DateTimeImmutable;
+use IntlDateFormatter;
 use Override;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\ChoiceList\Factory\ChoiceListFactoryInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\LocaleSwitcher;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Webmozart\Assert\Assert;
 
 use function array_key_exists;
 use function array_reverse;
-use function datefmt_format_object;
 use function is_string;
 use function strval;
 
@@ -30,6 +33,14 @@ class YearMonthType extends ChoiceType
     public const string DAY_MODE = 'day_mode';
     public const string REVERSE = 'reverse';
     public const string DOSSIER = 'dossier';
+
+    public function __construct(
+        private readonly LocaleSwitcher $localeSwitcher,
+        ?ChoiceListFactoryInterface $choiceListFactory = null,
+        ?TranslatorInterface $translator = null,
+    ) {
+        parent::__construct($choiceListFactory, $translator);
+    }
 
     #[Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -69,7 +80,11 @@ class YearMonthType extends ChoiceType
                 ? $current->lastOfMonth()
                 : $current->firstOfMonth();
 
-            $description = strval(datefmt_format_object(new DateTimeImmutable($date->toString()), 'MMMM y'));
+            $description = strval(IntlDateFormatter::formatObject(
+                new DateTimeImmutable($date->toString()),
+                'MMMM y',
+                $this->localeSwitcher->getLocale(),
+            ));
             $options[$year][$description] = $date->format(PlainDate::DEFAULT_STRING_FORMAT);
 
             $current = $current->addMonths(1);

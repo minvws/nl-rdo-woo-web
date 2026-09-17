@@ -148,8 +148,14 @@ Write Rows To Excel File
   Close All Excel Documents
 
 Clear TestData Folder
-  ${directory_exists} =  Run Keyword And Return Status  Directory Should Exist  ${TEST_DATA_ROOT}/generated
-  IF  ${directory_exists}  Empty Directory  ${TEST_DATA_ROOT}/generated
+  [Documentation]  Suites/tests running in parallel share this folder, so on CI (where suites
+  ...  run in parallel via pabot) clearing it per suite would delete another suite's in-flight
+  ...  test data. There, cleanup happens once after the full run instead (see Taskfile.rf.yml).
+  ${is_ci} =  Get Environment Variable  CI  default=${EMPTY}
+  IF  '${is_ci}' == '${EMPTY}'
+    ${directory_exists} =  Run Keyword And Return Status  Directory Should Exist  ${TEST_DATA_ROOT}/generated
+    IF  ${directory_exists}  Empty Directory  ${TEST_DATA_ROOT}/generated
+  END
 
 Create TXT Document
   [Arguments]  ${output_location}

@@ -45,20 +45,24 @@ readonly class MainDocumentViewFactory
             'id' => $mainDocument->getId(),
         ];
 
+        $fileInfo = $mainDocument->getFileInfo();
+        $fileSize = $fileInfo->getSize();
+
         return new MainDocument(
             id: $mainDocument->getId()->toRfc4122(),
-            name: $mainDocument->getFileInfo()->getName(),
+            name: $fileInfo->getName(),
             formalDate: $mainDocument->getFormalDate()->format('Y-m-d'),
             type: $mainDocument->getType(),
-            mimeType: $mainDocument->getFileInfo()->getMimetype(),
-            sourceType: $mainDocument->getFileInfo()->getSourceType(),
-            size: $mainDocument->getFileInfo()->getSize(),
+            mimeType: $fileInfo->getMimetype(),
+            sourceType: $fileInfo->getSourceType(),
+            size: $fileSize,
             internalReference: $mainDocument->getInternalReference(),
             language: $mainDocument->getLanguage(),
             grounds: Citation::sortWooCitations($mainDocument->getGrounds()),
             downloadUrl: $this->urlGenerator->generate($downloadRouteName, $downloadRouteParameters),
             detailsUrl: $detailsUrl,
-            pageCount: $mainDocument->getFileInfo()->getPageCount() ?? 0,
+            pageCount: $fileInfo->getPageCount() ?? 0,
+            isDownloadable: $fileInfo->isUploaded() && $fileSize > 0,
         );
     }
 }

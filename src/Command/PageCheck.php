@@ -38,6 +38,8 @@ class PageCheck extends Command
         $dossiers = $this->wooDecisionRepository->findAll();
         foreach ($dossiers as $dossier) {
             foreach ($dossier->getDocuments() as $document) {
+                $documentNumber = $document->getDocumentNumber()->toString();
+
                 // Get the count from elastic
                 $esDocument = $this->elasticService->getDocument(
                     ElasticDocumentId::forObject($document),
@@ -48,7 +50,7 @@ class PageCheck extends Command
                         $output->writeln(sprintf(
                             'Dossier %s Document %s Page %d does not exist in elastic...',
                             $dossier->getDossierNumber(),
-                            $document->getDocumentNumber(),
+                            $documentNumber,
                             $i,
                         ));
                         $failed = true;

@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inquiry;
 
+use Shared\ValueObject\DocumentNumber;
+
 class InquiryDocumentsLink
 {
     /**
      * @param array<array-key, string> $inquiryNumbers
      */
     public function __construct(
-        private readonly string $documentNumber,
+        private readonly DocumentNumber $documentNumber,
         private readonly array $inquiryNumbers,
     ) {
     }
 
-    public function getDocumentNumber(): string
+    public function getDocumentNumber(): DocumentNumber
     {
         return $this->documentNumber;
     }

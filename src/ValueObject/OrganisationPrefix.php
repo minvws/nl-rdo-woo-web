@@ -11,6 +11,7 @@ use Webmozart\Assert\Assert;
 
 use function preg_match;
 use function strtoupper;
+use function trim;
 
 /**
  * @implements Equatable<OrganisationPrefix>
@@ -28,6 +29,8 @@ final readonly class OrganisationPrefix implements Stringable, Equatable
 
     public static function create(string $prefix): self
     {
+        $prefix = trim($prefix);
+
         try {
             Assert::minLength($prefix, self::MIN_LENGTH);
         } catch (InvalidArgumentException) {

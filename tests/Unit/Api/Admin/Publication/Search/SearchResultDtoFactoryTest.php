@@ -28,6 +28,7 @@ use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use Shared\Service\DossierWizard\DossierWizardStatus;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\PlainDate;
 use stdClass;
@@ -118,7 +119,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
         $entry = new SubTypeSearchResultEntry(
             new DocumentViewModel(
                 'document123',
-                $documentNumber = '123',
+                $documentNumber = DocumentNumber::fromString('123'),
                 '123.pdf',
                 SourceType::PDF,
                 true,
@@ -144,7 +145,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
             ->with('app_admin_dossier_woodecision_document', [
                 'documentPrefix' => $wooDecisionPrefix,
                 'dossierNumber' => $wooDecisionNr,
-                'documentNumber' => $documentNumber,
+                'documentNumber' => $documentNumber->toString(),
             ])
             ->andReturn('/link/to/woo-decision-document');
 
@@ -170,6 +171,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
                 '',
                 '',
                 1,
+                false,
                 false,
                 null,
                 null,
@@ -232,6 +234,7 @@ class SearchResultDtoFactoryTest extends UnitTestCase
                 '',
                 '',
                 1,
+                false,
                 false,
             ),
             [

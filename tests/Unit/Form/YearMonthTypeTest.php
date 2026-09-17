@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Shared\Form\YearMonthType;
 use Shared\ValueObject\PlainDate;
+use Symfony\Component\Translation\LocaleSwitcher;
 
 use function is_string;
 
@@ -16,7 +17,7 @@ final class YearMonthTypeTest extends TestCase
     public function testGetChoicesModeFrom(): void
     {
         $now = PlainDate::create('2024-04-30');
-        $yearMonthType = new YearMonthType(null, null);
+        $yearMonthType = new YearMonthType(new LocaleSwitcher('en', []));
         $choices = $yearMonthType->getChoices(YearMonthType::MODE_FROM, $now->subYears(1), 1, false, $now);
 
         $this->assertEquals(
@@ -58,7 +59,7 @@ final class YearMonthTypeTest extends TestCase
     public function testGetChoicesModeFromReversed(): void
     {
         $now = PlainDate::create('2024-04-30');
-        $yearMonthType = new YearMonthType(null, null);
+        $yearMonthType = new YearMonthType(new LocaleSwitcher('en', []));
         $choices = $yearMonthType->getChoices(YearMonthType::MODE_FROM, $now->subYears(1), 1, true, $now);
 
         $this->assertEquals(
@@ -100,7 +101,7 @@ final class YearMonthTypeTest extends TestCase
     public function testGetChoicesModeTo(): void
     {
         $now = PlainDate::create('2024-04-30');
-        $yearMonthType = new YearMonthType(null, null);
+        $yearMonthType = new YearMonthType(new LocaleSwitcher('en', []));
         $choices = $yearMonthType->getChoices(YearMonthType::MODE_TO, $now->subYears(1), 1, false, $now);
 
         $this->assertEquals(

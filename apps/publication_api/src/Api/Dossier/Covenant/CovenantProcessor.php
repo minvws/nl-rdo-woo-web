@@ -19,10 +19,10 @@ use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicService;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use PublicationApi\Domain\Dossier\MetadataSnapshot;
 use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
@@ -47,7 +47,6 @@ final readonly class CovenantProcessor implements ProcessorInterface
         private DossierRepository $dossierRepository,
         private DossierValidator $dossierValidator,
         private CovenantMapper $covenantMapper,
-        private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
         private DossierAttachmentValidator $dossierAttachmentValidator,
         private DossierMainDocumentValidator $dossierMainDocumentValidator,
@@ -82,7 +81,7 @@ final readonly class CovenantProcessor implements ProcessorInterface
         }
 
         if ($dossier === null) {
-            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $documentPrefix = $organisation->getPrefix()->toString();
             $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
             $dossier = $this->create($organisation, $department, $subject, $data, $covenantExternalId, $documentPrefix);
 
@@ -135,6 +134,7 @@ final readonly class CovenantProcessor implements ProcessorInterface
         $this->dossierValidator->validateDossier($covenant);
         $this->dossierSupportService->autoPublish($covenant);
         $this->dossierSupportService->validateCompletionAndPersist($covenant);
+        $this->dossierSupportService->dispatchDossierCreatedEvent($covenant);
         $this->dossierSupportService->synchronizeArtifacts($covenant);
 
         return $covenant;
@@ -148,6 +148,7 @@ final readonly class CovenantProcessor implements ProcessorInterface
         CovenantRequestDto $covenantRequestDto,
     ): void {
         $covenant = CovenantMapper::update($covenant, $covenantRequestDto, $organisation, $department, $subject);
+        $mainDocumentSnapshot = MetadataSnapshot::ofNullable($covenant->getMainDocument());
 
         if ($covenantRequestDto->mainDocument !== null) {
             if ($covenant->getNoticeNotPublic() !== null) {
@@ -177,11 +178,12 @@ final readonly class CovenantProcessor implements ProcessorInterface
         $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($covenant, $covenantRequestDto->attachments);
         $attachments = $this->getAttachments($covenant, $covenantRequestDto->attachments);
         $this->dossierAttachmentValidator->validate($attachments, $covenant->getStatus());
-        $this->attachmentSynchronizer->sync($covenant, $covenantRequestDto->attachments);
+        $attachmentEvents = $this->attachmentSynchronizer->sync($covenant, $covenantRequestDto->attachments);
 
         $this->dossierValidator->validateDossier($covenant);
         $this->dossierSupportService->autoPublish($covenant);
         $this->dossierSupportService->validateCompletionAndPersist($covenant);
+        $this->dossierSupportService->dispatchPublicationEvents($covenant, $mainDocumentSnapshot, $attachmentEvents);
         $this->dossierSupportService->synchronizeArtifacts($covenant);
     }
 

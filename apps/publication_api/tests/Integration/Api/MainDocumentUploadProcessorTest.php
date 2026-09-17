@@ -11,6 +11,7 @@ use PublicationApi\Api\Uploads\MainDocument\MainDocumentUploadProcessor;
 use PublicationApi\Domain\Upload\MainDocumentUploadStatusService;
 use PublicationApi\Domain\Upload\UploadValidationService;
 use PublicationApi\Tests\Integration\PublicationApiTestCase;
+use Shared\Domain\Publication\MainDocument\Command\UpdateMainDocumentCommand;
 use Shared\Domain\Upload\UploadService;
 use Shared\Service\Storage\FileHashService;
 use Shared\Tests\Factory\FileInfoFactory;
@@ -151,6 +152,66 @@ class MainDocumentUploadProcessorTest extends PublicationApiTestCase
         );
 
         $mainDocumentUploadProcessor->process($wooDecision, $mainDocument, $stream);
+    }
+
+    public function testProcessMarksTheFirstUploadAsInitial(): void
+    {
+        $wooDecision = WooDecisionFactory::createOne();
+        $stream = Utils::streamFor(self::getFaker()->word());
+        $mainDocument = WooDecisionMainDocumentFactory::createOne([
+            'fileInfo' => FileInfoFactory::createOne([
+                'hash' => null,
+                'uploaded' => false,
+            ]),
+        ]);
+
+        $this->createProcessor($this->expectCommandWithInitialUpload(true))
+            ->process($wooDecision, $mainDocument, $stream);
+    }
+
+    public function testProcessMarksAnUploadOnAStoredFileAsReplacement(): void
+    {
+        $wooDecision = WooDecisionFactory::createOne();
+        $stream = Utils::streamFor(self::getFaker()->word());
+        $mainDocument = WooDecisionMainDocumentFactory::createOne([
+            'fileInfo' => FileInfoFactory::createOne([
+                'hash' => self::getFaker()->sha256(),
+                'uploaded' => true,
+            ]),
+        ]);
+
+        $this->createProcessor($this->expectCommandWithInitialUpload(false))
+            ->process($wooDecision, $mainDocument, $stream);
+    }
+
+    private function expectCommandWithInitialUpload(bool $expected): MessageBusInterface&Mockery\MockInterface
+    {
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')
+            ->withArgs(static function (UpdateMainDocumentCommand $command) use ($expected): bool {
+                self::assertSame($expected, $command->initialUpload);
+
+                return true;
+            })
+            ->andReturn(new Envelope(new stdClass(), [new HandledStamp(true, self::getFaker()->word())]));
+
+        return $messageBus;
+    }
+
+    private function createProcessor(MessageBusInterface $messageBus): MainDocumentUploadProcessor
+    {
+        $uploadValidationService = Mockery::mock(UploadValidationService::class);
+        $uploadValidationService->expects('getValidationErrorsForUpload')->andReturn([]);
+
+        $uploadService = Mockery::mock(UploadService::class);
+        $uploadService->expects('handleUpload');
+
+        return new MainDocumentUploadProcessor(
+            self::fromContainer(MainDocumentUploadStatusService::class),
+            $uploadValidationService,
+            $uploadService,
+            $messageBus,
+        );
     }
 
     public function testProcessThrowsValidationExceptionWhenUploadValidationFails(): void

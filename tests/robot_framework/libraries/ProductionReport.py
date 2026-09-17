@@ -10,6 +10,7 @@ import zipfile
 import openpyxl
 
 _DOC_ID_COL = 0  # column A = "ID"
+_RELATED_ID_HEADER = 'Gerelateerd ID'
 _ID_MIN = 100_000_000
 _ID_MAX = 999_999_999
 
@@ -25,8 +26,10 @@ def randomize(excel_path: str, docs_path: str | None = None, existing_mapping: d
     """Return (new_excel_path, new_docs_path_or_None, {str(old_id): str(new_id)}).
 
     Copies the Excel to a temp dir and replaces every value in col A (doc ID) with a
-    random 9-digit number. When docs_path is a ZIP each file whose stem matches an old ID
-    is renamed to the new ID. When docs_path is a single file it is renamed likewise.
+    random 9-digit number. Any "Gerelateerd ID" (related document ID) value referencing
+    one of those IDs is remapped too, so document relations survive the randomization.
+    When docs_path is a ZIP each file whose stem matches an old ID is renamed to the new
+    ID. When docs_path is a single file it is renamed likewise.
     Pass existing_mapping to reuse IDs from a previous call (e.g. for replacement reports).
     """
     id_map: dict[str, str] = dict(existing_mapping or {})
@@ -35,6 +38,9 @@ def randomize(excel_path: str, docs_path: str | None = None, existing_mapping: d
 
     wb = openpyxl.load_workbook(excel_path)
     ws = wb.active
+
+    header = [cell.value for cell in ws[1]]
+    related_id_col = header.index(_RELATED_ID_HEADER) if _RELATED_ID_HEADER in header else None
 
     for row in ws.iter_rows(min_row=2):
         cell = row[_DOC_ID_COL]
@@ -46,7 +52,17 @@ def randomize(excel_path: str, docs_path: str | None = None, existing_mapping: d
                     new_id = str(random.randint(_ID_MIN, _ID_MAX))
                 id_map[key] = new_id
                 used_ids.add(new_id)
-            cell.value = int(id_map[key])
+
+    for row in ws.iter_rows(min_row=2):
+        cell = row[_DOC_ID_COL]
+        if cell.value is not None:
+            cell.value = int(id_map[str(cell.value)])
+        if related_id_col is not None:
+            related_cell = row[related_id_col]
+            if related_cell.value is not None:
+                key = str(related_cell.value)
+                if key in id_map:
+                    related_cell.value = int(id_map[key])
 
     new_excel = os.path.join(tmp_dir, os.path.basename(excel_path))
     wb.save(new_excel)

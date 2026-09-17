@@ -22,6 +22,7 @@ readonly class UpdateMainDocumentCommand
         public ?AttachmentLanguage $language = null,
         public ?array $grounds = null,
         public ?string $uploadFileReference = null,
+        public bool $initialUpload = false,
     ) {
     }
 }

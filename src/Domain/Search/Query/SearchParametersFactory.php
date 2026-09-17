@@ -11,6 +11,7 @@ use Shared\Domain\Search\Index\Dossier\Mapper\DepartmentFieldMapper;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Query\Facet\Definition\PrefixedDossierNumberFacet;
 use Shared\Domain\Search\Query\Facet\Definition\TypeFacet;
+use Shared\Domain\Search\Query\Facet\FacetDefinitions;
 use Shared\Domain\Search\Query\Facet\Input\FacetInputFactory;
 use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
 use Shared\Service\Search\Model\FacetKey;
@@ -32,6 +33,7 @@ readonly class SearchParametersFactory
 
     public function __construct(
         private FacetInputFactory $facetInputFactory,
+        private FacetDefinitions $facetDefinitions,
     ) {
     }
 
@@ -81,7 +83,7 @@ readonly class SearchParametersFactory
         $facetKey = FacetKey::DEPARTMENT;
 
         $params = new ParameterBag([
-            $facetKey->getParamName() => [
+            $this->facetDefinitions->get($facetKey)->getRequestParameter() => [
                 DepartmentFieldMapper::fromDepartment($department)->getIndexValue(),
             ],
         ]);

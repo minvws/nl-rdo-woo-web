@@ -79,7 +79,7 @@ class InquiryLinkDossierFormType extends AbstractType
     }
 
     /**
-     * This validates if all given prefixes in the collection are unique (not adding the same value twice).
+     * This validates the submitted inquiry numbers.
      */
     public function validateInquiryNumbers(string $input, ExecutionContextInterface $context): void
     {

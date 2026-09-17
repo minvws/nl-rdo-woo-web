@@ -42,10 +42,10 @@ readonly class InventorySanitizer
             'Beoordelingsgrond',
             'Toelichting',
             'Publieke link',
-            'Locatie document ID',
+            'Locatie document',
             'Opgeschort',
-            'Gerelateerd Documentnummer',
-            'Locatie gerelateerd ID',
+            'Gerelateerd document',
+            'Locatie gerelateerd document',
             'Besluitnaam',
         );
 

@@ -7,6 +7,7 @@ namespace Shared\Service\Search\Query\Dsl;
 use Erichard\ElasticQueryBuilder\Aggregation\AbstractAggregation;
 use Override;
 use stdClass;
+use Webmozart\Assert\Assert;
 
 /**
  * A global aggregation ignores the query/filters.
@@ -30,6 +31,7 @@ class GlobalAggregation extends AbstractAggregation
         ];
 
         $this->buildAggregationsTo($data);
+        Assert::isMap($data);
 
         return $data;
     }

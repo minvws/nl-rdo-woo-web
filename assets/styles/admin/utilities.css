@@ -21,6 +21,7 @@
 @import './utilities/paragraph.css';
 @import './utilities/pill.css';
 @import './utilities/progress.css';
+@import './utilities/readable-width.css';
 @import './utilities/site-footer-nav-item.css';
 @import './utilities/site-header-nav-item.css';
 @import './utilities/step.css';

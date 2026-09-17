@@ -139,6 +139,7 @@ In A Public Dossier With N Public And M Non-public Documents, Replace The Produc
   Get Text  //div[@data-e2e-name="has-changes"]  contains  0 documenten opnieuw publiceren
   Get Text  //div[@data-e2e-name="has-changes"]  contains  0 documenten vervangen
   Click  //button[@data-e2e-name="confirm-document-processing"]
+  Wait For Elements State  //button[@data-e2e-name="back-to-uploading"]  visible  timeout=120s
   Click  //button[@data-e2e-name="back-to-uploading"]
   Wait For Elements State  //button[@data-e2e-name="back-to-uploading"]  detached
   Wait For Elements State  //div[@data-e2e-name="upload-busy"]  detached  timeout=30s

@@ -6,11 +6,13 @@ namespace Shared\Service\Inventory;
 
 use OutOfBoundsException;
 use Shared\Exception\ProcessInventoryException;
+use Shared\ValueObject\DocumentNumber;
 use Webmozart\Assert\Assert;
 
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
+use function array_map;
 use function array_reduce;
 use function count;
 use function key_exists;
@@ -39,9 +41,9 @@ class InventoryChangeset
         $this->setDocumentStatus($documentNumber->toString(), self::UPDATED);
     }
 
-    public function markAsDeleted(string $documentNumber): void
+    public function markAsDeleted(DocumentNumber $documentNumber): void
     {
-        $this->setDocumentStatus($documentNumber, self::DELETED);
+        $this->setDocumentStatus($documentNumber->toString(), self::DELETED);
     }
 
     public function markAsUnchanged(DocumentNumber $documentNumber): void
@@ -70,14 +72,17 @@ class InventoryChangeset
     }
 
     /**
-     * @return array<array-key, string>
+     * @return list<DocumentNumber>
      */
     public function getDeleted(): array
     {
-        return array_keys(array_filter(
-            $this->documentStatus,
-            static fn (string $status) => $status === self::DELETED,
-        ));
+        return array_map(
+            DocumentNumber::fromString(...),
+            array_keys(array_filter(
+                $this->documentStatus,
+                static fn (string $status): bool => $status === self::DELETED,
+            )),
+        );
     }
 
     /**

@@ -51,17 +51,27 @@ final readonly class UrlProducer
                 throw UnconsumedPreviousChunkGeneratorException::create();
             }
 
-            yield $chunkGen = (static function () use ($chunkSize, &$producer) {
-                for ($i = 0; $i < $chunkSize && $producer->valid(); $i++) {
-                    $signal = yield $producer->current();
+            yield $chunkGen = $this->produceChunk($producer, $chunkSize);
+        }
+    }
 
-                    if ($signal === ProducerSignal::STOP_CHUNK) {
-                        break;
-                    }
+    /**
+     * @template T
+     *
+     * @param Generator<int,T> $producer
+     *
+     * @return Generator<int,T>
+     */
+    private function produceChunk(Generator $producer, int $chunkSize): Generator
+    {
+        for ($i = 0; $i < $chunkSize && $producer->valid(); $i++) {
+            $signal = yield $producer->current();
 
-                    $producer->next();
-                }
-            })();
+            if ($signal === ProducerSignal::STOP_CHUNK) {
+                break;
+            }
+
+            $producer->next();
         }
     }
 

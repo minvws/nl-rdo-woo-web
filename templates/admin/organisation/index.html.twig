@@ -20,7 +20,7 @@
                 <tr>
                     <th scope="col">{{ 'global.organisation' | trans() }}</th>
                     <th scope="col">{{ 'global.departments' | trans() }}</th>
-                    <th scope="col">{{ 'global.prefixes' | trans() }}</th>
+                    <th scope="col">{{ 'global.prefix' | trans() }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,9 +38,7 @@
                             {% endfor %}
                         </td>
                         <td>
-                            {% for documentPrefix in organisation.documentPrefixes %}
-                                {{ documentPrefix.prefix }}{% if not loop.last %},{% endif %}
-                            {% endfor %}
+                            {{ organisation.prefix }}
                         </td>
                     </tr>
                 {% endfor %}

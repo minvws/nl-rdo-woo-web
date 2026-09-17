@@ -15,7 +15,7 @@ use Shared\Service\Security\OrganisationSwitcher;
 use Shared\TenantId;
 use Shared\Tests\CarbonHelpers;
 use Shared\Tests\Faker\FakerFactory;
-use Spatie\Snapshots\MatchesSnapshots;
+use Shared\Tests\Snapshots\MatchesSnapshots;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Test\Factories;

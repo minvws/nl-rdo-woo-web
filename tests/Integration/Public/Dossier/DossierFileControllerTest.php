@@ -60,7 +60,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
             $dossier,
             $document,
             DossierFileType::DOCUMENT,
-            expectedDownloadFileName: $document->getDocumentNumber() . '.pdf',
+            expectedDownloadFileName: $document->getDocumentNumber()->toString() . '.pdf',
         );
     }
 
@@ -83,7 +83,7 @@ final class DossierFileControllerTest extends SharedWebTestCase
             $dossier,
             $document,
             DossierFileType::DOCUMENT,
-            expectedDownloadFileName: $document->getDocumentNumber() . '.pdf',
+            expectedDownloadFileName: $document->getDocumentNumber()->toString() . '.pdf',
         );
     }
 

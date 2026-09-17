@@ -1,0 +1,34 @@
+info:
+  name: Get Organisation
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organisation"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const data = res.getBody();
+        const items = data.items;
+
+        const org = items.find(item => item.name === "E2E Test Organisation");
+
+        if (org) {
+          bru.setVar("organisationId", org.id);
+        } else if (items.length > 0) {
+          console.warn('Set the first organisation found instead of "E2E Test Organisation"');
+          bru.setVar("organisationId", items[0].id);
+        } else {
+          throw new Error("E2E Test Organisation not found, variable could not be set");
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

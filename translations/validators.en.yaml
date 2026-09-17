@@ -7,8 +7,10 @@ use_only_letters_and_numbers: 'Use only letters and numbers. Remove any invalid 
 date_must_not_be_in_future: 'This date must not be in the future'
 min_max_parties: 'Enter a minimum of 2 and a maximum of 10 parties'
 at_least_one_department_required: 'Choose at least 1 administrative body'
-at_least_one_prefix_required: 'Enter at least 1 prefix'
-no_double_prefixes_allowed: 'Duplicate prefixes are not allowed'
+organisation.prefix_too_short: "The prefix must contain at least {{ limit }} characters."
+organisation.prefix_too_long: "The prefix may contain at most {{ limit }} characters."
+organisation.prefix_invalid_format: "The prefix may only contain letters, numbers, and dashes."
+organisation.prefix_already_exists: "This prefix is already in use."
 preview_date_must_be_today_or_future: 'The date of actual disclosure must be today or in the future'
 publication_date_must_be_today_or_past_preview_date: 'The public publication date must be on or after the date of actual disclosure'
 publication_date_must_be_today_or_future: 'The public publication date must be today or in the future'
@@ -26,6 +28,8 @@ dossier.main_document.not_uploaded: 'A dossier without an uploaded main document
 dossier.incomplete_documents: 'A dossier with incomplete documents cannot be published'
 dossier.incomplete_attachments: 'A dossier with incomplete attachments cannot be published'
 subject_already_exists: 'This subject already exists'
+subject_landing_page_content_tree_invalid_json: 'The content tree does not contain valid JSON'
+subject_landing_page_content_tree_invalid_structure: 'The content tree has an invalid structure'
 subject_landing_page_description_required: 'Enter a description for the landing page'
 subject_landing_page_slug_already_exists: 'This landing page URL already exists'
 subject_landing_page_slug_invalid_format: 'The URL may only contain letters, digits and dashes'
@@ -33,7 +37,6 @@ subject_landing_page_slug_invalid_length: 'The URL must contain at least {{ min 
 subject_landing_page_slug_required: 'Enter a URL for the landing page'
 subject_landing_page_title_invalid_length: 'The title may contain at most {{ max }} characters'
 subject_landing_page_title_required: 'Enter a title for the landing page'
-alpha_numeric_dash_only: 'Prefix may only consist of letters, numbers, and dashes'
 inquiry_numbers_invalid: 'Inquiry numbers may only contain letters, numbers, and dashes. Maximum length is 255 characters.'
 external_id_invalid_characters: 'The external ID may only consist of letters, numbers, and the characters: -, ., _, ~'
 dossier.dossier_number_not_unique: 'This decision number is already in use'

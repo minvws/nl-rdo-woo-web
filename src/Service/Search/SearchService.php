@@ -40,9 +40,7 @@ readonly class SearchService
         string $routeName = Result::DEFAULT_ROUTE_NAME,
         array $routeParameters = [],
     ): Result {
-        if ($searchParameters === null) {
-            $searchParameters = $this->searchParametersFactory->createDefault();
-        }
+        $searchParameters ??= $this->searchParametersFactory->createDefault();
 
         $queryBuilder = new QueryBuilder();
         $queryBuilder->setIndex($this->elasticConfig->readIndex);

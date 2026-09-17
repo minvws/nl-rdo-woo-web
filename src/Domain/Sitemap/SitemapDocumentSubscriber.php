@@ -37,12 +37,14 @@ readonly class SitemapDocumentSubscriber
             Assert::isInstanceOf($dossier, WooDecision::class);
 
             foreach ($dossier->getDocuments() as $document) {
+                $documentNumber = $document->getDocumentNumber()->toString();
+
                 $event->getUrlContainer()->addUrl(
                     new UrlConcrete(
                         $event->getUrlGenerator()->generate('app_document_detail', [
                             'documentPrefix' => $dossier->getDocumentPrefix(),
                             'dossierNumber' => $dossier->getDossierNumber(),
-                            'documentNumber' => $document->getDocumentNumber(),
+                            'documentNumber' => $documentNumber,
                         ], UrlGeneratorInterface::ABSOLUTE_URL),
                         $document->getUpdatedAt(),
                         UrlConcrete::CHANGEFREQ_MONTHLY,

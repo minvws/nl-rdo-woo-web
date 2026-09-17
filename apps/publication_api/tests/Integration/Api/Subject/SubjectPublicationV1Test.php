@@ -48,7 +48,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
         self::assertInstanceOf(LandingPageSlug::class, $data->landingPage->slug);
         self::assertInstanceOf(LandingPageTitle::class, $data->landingPage->title);
         self::assertSame('foo-bar', (string) $data->landingPage->slug);
-        self::assertSame('Pagina titel', (string) $data->landingPage->title);
+        self::assertSame('Page title', (string) $data->landingPage->title);
     }
 
     public function testGetSubject(): void
@@ -111,8 +111,9 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
         self::assertEquals([
             'slug' => 'foo-bar',
             'status' => 'concept',
-            'title' => 'Pagina titel',
-            'description' => 'Introductietekst als plain text.',
+            'title' => 'Page title',
+            'description' => 'Introduction text as plain text.',
+            'hasVisibleContentTree' => $payload['hasVisibleContentTree'],
             'contentTree' => $payload['contentTree'],
             'previewUrl' => $landingPage['previewUrl'],
         ], $response->toArray()['landingPage']);
@@ -167,6 +168,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             'slug' => 'foo-bar',
             'title' => $payload['title'],
             'description' => $payload['description'],
+            'hasVisibleContentTree' => $payload['hasVisibleContentTree'],
             'contentTree' => $payload['contentTree'],
             'previewUrl' => null,
         ], $publishedResponse->toArray()['landingPage']);
@@ -487,12 +489,13 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
         self::assertMatchesResourceItemJsonSchema(SubjectResource::class);
-        /** @var array{id: string, landingPage: array{slug: string, status: string, title: string, description: string, contentTree: list<array<string, mixed>>, previewUrl: string}} $created */
+        /** @var array{id: string, landingPage: array{slug: string, status: string, title: string, description: string, hasVisibleContentTree: bool, contentTree: array<string, mixed>, previewUrl: string}} $created */
         $created = $response->toArray();
         self::assertSame('foo-bar', $created['landingPage']['slug']);
         self::assertSame($payload['status'], $created['landingPage']['status']);
         self::assertSame($payload['title'], $created['landingPage']['title']);
         self::assertSame($payload['description'], $created['landingPage']['description']);
+        self::assertSame($payload['hasVisibleContentTree'], $created['landingPage']['hasVisibleContentTree']);
         self::assertEquals($payload['contentTree'], $created['landingPage']['contentTree']);
         self::assertIsString($created['landingPage']['previewUrl']);
 
@@ -729,10 +732,12 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
      *     status?: string,
      *     title?: string,
      *     description?: string,
-     *     contentTree?: list<array{
-     *         title: string,
-     *         body: string,
-     *         children: list<array{
+     *     hasVisibleContentTree?: bool,
+     *     contentTree?: array{
+     *         title?: string,
+     *         intro?: string,
+     *         outro?: string,
+     *         children?: list<array{
      *             title: string,
      *             body: string,
      *             children: list<array{
@@ -741,7 +746,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
      *                 children: array{}
      *             }>
      *         }>
-     *     }>
+     *     }
      * } $overrides
      *
      * @return array{
@@ -749,9 +754,11 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
      *     status: string,
      *     title: string,
      *     description: string,
-     *     contentTree: list<array{
+     *     hasVisibleContentTree: bool,
+     *     contentTree: array{
      *         title: string,
-     *         body: string,
+     *         intro: string,
+     *         outro: string,
      *         children: list<array{
      *             title: string,
      *             body: string,
@@ -761,7 +768,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
      *                 children: array{}
      *             }>
      *         }>
-     *     }>
+     *     }
      * }
      */
     private function landingPagePayload(array $overrides = []): array
@@ -771,9 +778,11 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
          *     status: string,
          *     title: string,
          *     description: string,
-         *     contentTree: list<array{
+         *     hasVisibleContentTree: bool,
+         *     contentTree: array{
          *         title: string,
-         *         body: string,
+         *         intro: string,
+         *         outro: string,
          *         children: list<array{
          *             title: string,
          *             body: string,
@@ -783,31 +792,37 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
          *                 children: array{}
          *             }>
          *         }>
-         *     }>
+         *     }
          * } $payload */
         $payload = array_replace_recursive([
             'slug' => 'Foo-Bar',
             'status' => 'concept',
-            'title' => 'Pagina titel',
-            'description' => 'Introductietekst als plain text.',
+            'title' => 'Page title',
+            'description' => 'Introduction text as plain text.',
+            'hasVisibleContentTree' => true,
             'contentTree' => [
-                [
-                    'title' => 'Tijdlijn 2024',
-                    'body' => 'Toelichting.',
-                    'children' => [
-                        [
-                            'title' => 'Januari',
-                            'body' => 'Gebeurtenis.',
-                            'children' => [
-                                [
-                                    'title' => 'Week 1',
-                                    'body' => 'Detail.',
-                                    'children' => [],
+                'title' => 'Storyline title',
+                'intro' => 'Storyline intro.',
+                'children' => [
+                    [
+                        'title' => 'Storyline 2024',
+                        'body' => 'Explanation.',
+                        'children' => [
+                            [
+                                'title' => 'January',
+                                'body' => 'Event.',
+                                'children' => [
+                                    [
+                                        'title' => 'Week 1',
+                                        'body' => 'Detail.',
+                                        'children' => [],
+                                    ],
                                 ],
                             ],
                         ],
                     ],
                 ],
+                'outro' => 'Storyline outro.',
             ],
         ], $overrides);
 
@@ -823,127 +838,182 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             [
                 'slug' => 'foo-bar',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
-                'contentTree' => [['title' => 123, 'body' => 'Body', 'children' => []]],
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
+                'contentTree' => [
+                    'title' => 'Storyline title',
+                    'intro' => 'Storyline intro.',
+                    'outro' => 'Storyline outro.',
+                    'children' => [['title' => 123, 'body' => 'Body', 'children' => []]],
+                ],
             ],
-            'landingPage.contentTree[0].title',
+            'landingPage.contentTree.children[0].title',
             'This value should be of type string.',
         ];
         yield 'non-string body' => [
             [
                 'slug' => 'foo-bar',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
-                'contentTree' => [['title' => 'Title', 'body' => 123, 'children' => []]],
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
+                'contentTree' => [
+                    'title' => 'Storyline title',
+                    'intro' => 'Storyline intro.',
+                    'outro' => 'Storyline outro.',
+                    'children' => [['title' => 'Title', 'body' => 123, 'children' => []]],
+                ],
             ],
-            'landingPage.contentTree[0].body',
+            'landingPage.contentTree.children[0].body',
             'This value should be of type string.',
         ];
         yield 'disallowed markdown node in root body' => [
             [
                 'slug' => 'foo-bar',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
-                'contentTree' => [['title' => 'Title', 'body' => '# Heading', 'children' => []]],
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
+                'contentTree' => [
+                    'title' => 'Storyline title',
+                    'intro' => 'Storyline intro.',
+                    'outro' => 'Storyline outro.',
+                    'children' => [['title' => 'Title', 'body' => '# Heading', 'children' => []]],
+                ],
             ],
-            'landingPage.contentTree[0].body',
+            'landingPage.contentTree.children[0].body',
             'The Markdown contains an element that is not allowed (Heading).',
         ];
         yield 'disallowed markdown node in child body' => [
             [
                 'slug' => 'foo-bar',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
-                'contentTree' => [[
-                    'title' => 'Parent',
-                    'body' => 'Body',
-                    'children' => [['title' => 'Child', 'body' => '# Heading', 'children' => []]],
-                ]],
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
+                'contentTree' => [
+                    'title' => 'Storyline title',
+                    'intro' => 'Storyline intro.',
+                    'outro' => 'Storyline outro.',
+                    'children' => [[
+                        'title' => 'Parent',
+                        'body' => 'Body',
+                        'children' => [['title' => 'Child', 'body' => '# Heading', 'children' => []]],
+                    ]],
+                ],
             ],
-            'landingPage.contentTree[0].children[0].body',
+            'landingPage.contentTree.children[0].children[0].body',
             'The Markdown contains an element that is not allowed (Heading).',
         ];
         yield 'non-array children' => [
             [
                 'slug' => 'foo-bar',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
-                'contentTree' => [['title' => 'Title', 'body' => 'Body', 'children' => 'invalid']],
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
+                'contentTree' => [
+                    'title' => 'Storyline title',
+                    'intro' => 'Storyline intro.',
+                    'outro' => 'Storyline outro.',
+                    'children' => [['title' => 'Title', 'body' => 'Body', 'children' => 'invalid']],
+                ],
             ],
-            'landingPage.contentTree[0].children',
+            'landingPage.contentTree.children[0].children',
             'This value should be of type array.',
         ];
         yield 'missing body' => [
             [
                 'slug' => 'foo-bar',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
-                'contentTree' => [['title' => 'Title', 'children' => []]],
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
+                'contentTree' => [
+                    'title' => 'Storyline title',
+                    'intro' => 'Storyline intro.',
+                    'outro' => 'Storyline outro.',
+                    'children' => [['title' => 'Title', 'children' => []]],
+                ],
             ],
-            'landingPage.contentTree[0].body',
+            'landingPage.contentTree.children[0].body',
             'This value should be of type string.',
         ];
         yield 'fourth nesting level' => [
             [
                 'slug' => 'foo-bar',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
-                'contentTree' => [[
-                    'title' => 'Level 1',
-                    'body' => 'Body',
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
+                'contentTree' => [
+                    'title' => 'Storyline title',
+                    'intro' => 'Storyline intro.',
+                    'outro' => 'Storyline outro.',
                     'children' => [[
-                        'title' => 'Level 2',
+                        'title' => 'Level 1',
                         'body' => 'Body',
                         'children' => [[
-                            'title' => 'Level 3',
+                            'title' => 'Level 2',
                             'body' => 'Body',
                             'children' => [[
-                                'title' => 'Level 4',
+                                'title' => 'Level 3',
                                 'body' => 'Body',
-                                'children' => [],
+                                'children' => [[
+                                    'title' => 'Level 4',
+                                    'body' => 'Body',
+                                    'children' => [],
+                                ]],
                             ]],
                         ]],
                     ]],
-                ]],
+                ],
             ],
-            'landingPage.contentTree[0].children[0].children[0].children',
+            'landingPage.contentTree.children[0].children[0].children[0].children',
             'subject.content_tree.max_depth_exceeded',
         ];
         yield 'body exceeding maximum length' => [
             [
                 'slug' => 'foo-bar',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
-                'contentTree' => [['title' => 'Title', 'body' => str_repeat('x', 10001), 'children' => []]],
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
+                'contentTree' => [
+                    'title' => 'Storyline title',
+                    'intro' => 'Storyline intro.',
+                    'outro' => 'Storyline outro.',
+                    'children' => [['title' => 'Title', 'body' => str_repeat('x', 10001), 'children' => []]],
+                ],
             ],
-            'landingPage.contentTree[0].body',
+            'landingPage.contentTree.children[0].body',
             'subject.content_tree.body_too_long',
         ];
         yield 'tree exceeding maximum node count' => [
             [
                 'slug' => 'foo-bar',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
-                'contentTree' => array_fill(0, 101, ['title' => 'Title', 'body' => 'Body', 'children' => []]),
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
+                'contentTree' => [
+                    'title' => 'Storyline title',
+                    'intro' => 'Storyline intro.',
+                    'outro' => 'Storyline outro.',
+                    'children' => array_fill(0, 101, ['title' => 'Title', 'body' => 'Body', 'children' => []]),
+                ],
             ],
-            'landingPage.contentTree[100]',
+            'landingPage.contentTree.children[100]',
             'subject.content_tree.too_many_nodes',
         ];
         yield 'slug with whitespace' => [
             [
                 'slug' => 'foo bar',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
                 'contentTree' => [],
             ],
             'landingPage.slug',
@@ -953,8 +1023,9 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             [
                 'slug' => 'foo_bar',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
                 'contentTree' => [],
             ],
             'landingPage.slug',
@@ -964,8 +1035,9 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             [
                 'slug' => 'a',
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
                 'contentTree' => [],
             ],
             'landingPage.slug',
@@ -975,8 +1047,9 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             [
                 'slug' => str_repeat('a', 51),
                 'status' => 'concept',
-                'title' => 'Pagina titel',
-                'description' => 'Beschrijving',
+                'title' => 'Page title',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
                 'contentTree' => [],
             ],
             'landingPage.slug',
@@ -987,7 +1060,8 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'slug' => 'foo-bar',
                 'status' => 'concept',
                 'title' => str_repeat('a', 201),
-                'description' => 'Beschrijving',
+                'description' => 'Description',
+                'hasVisibleContentTree' => true,
                 'contentTree' => [],
             ],
             'landingPage.title',

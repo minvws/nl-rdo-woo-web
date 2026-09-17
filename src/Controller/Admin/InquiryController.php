@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Shared\Controller\Admin;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use Shared\Form\ChoiceLoader\DocumentPrefixChoiceLoader;
 use Shared\Form\ChoiceLoader\WooDecisionChoiceLoader;
 use Shared\Form\Inquiry\InquiryLinkDocumentsFormType;
 use Shared\Form\Inquiry\InquiryLinkDossierFormType;
@@ -37,7 +34,6 @@ class InquiryController extends AbstractController
         private readonly InquiryRepository $repository,
         private readonly PaginatorInterface $paginator,
         private readonly WooDecisionRepository $wooDecisionRepository,
-        private readonly EntityManagerInterface $doctrine,
         private readonly AuthorizationMatrix $authorizationMatrix,
         private readonly Security $security,
         private readonly InquiryService $inquiryService,
@@ -73,8 +69,7 @@ class InquiryController extends AbstractController
     #[IsGranted('AuthMatrix.inquiry.create')]
     public function linkDocuments(Request $request): Response
     {
-        $choiceLoader = new DocumentPrefixChoiceLoader($this->doctrine, $this->authorizationMatrix, $this->security);
-        $form = $this->createForm(InquiryLinkDocumentsFormType::class, null, ['choice_loader' => $choiceLoader]);
+        $form = $this->createForm(InquiryLinkDocumentsFormType::class);
 
         $form->handleRequest($request);
 
@@ -89,13 +84,9 @@ class InquiryController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('upload')->getData();
             if ($uploadedFile instanceof UploadedFile) {
-                $prefix = $form->get('prefix')->getData();
-                Assert::isInstanceOf($prefix, DocumentPrefix::class);
-
                 $result = $this->inquiryImporter->import(
                     $this->authorizationMatrix->getActiveOrganisation(),
                     $uploadedFile,
-                    $prefix,
                 );
             }
         }

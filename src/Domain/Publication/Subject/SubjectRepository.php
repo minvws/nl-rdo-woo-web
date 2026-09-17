@@ -70,11 +70,28 @@ class SubjectRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('subject')
             ->where('subject.landingPageSlug = :slug')
             ->andWhere('subject.landingPageStatus = :status')
-            // ->andWhere('subject.landingPageContentTree IS NOT NULL')
             ->setParameter('slug', $slug)
             ->setParameter('status', SubjectLandingPageStatus::PUBLISHED)
             ->getQuery()
             ->getSingleResult();
+    }
+
+    /**
+     * @return list<Subject>
+     */
+    public function findWithPublishedLandingPage(?int $maxResults = null): array
+    {
+        $queryBuilder = $this->createQueryBuilder('subject')
+            ->where('subject.landingPageStatus = :status')
+            ->andWhere('subject.landingPageSlug IS NOT NULL')
+            ->setParameter('status', SubjectLandingPageStatus::PUBLISHED)
+            ->orderBy('subject.name', 'ASC');
+
+        if ($maxResults !== null) {
+            $queryBuilder->setMaxResults($maxResults);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
     }
 
     public function findConceptLandingPageByIdAndPreviewToken(string $id, string $previewToken): Subject

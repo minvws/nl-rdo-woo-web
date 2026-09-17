@@ -8,6 +8,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\SourceType;
 use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\PlainDate;
 use Shared\ValueObject\PublicationContext;
 
@@ -40,11 +41,11 @@ readonly class DocumentMetadata
         return $this->date;
     }
 
-    public function getFilename(string $documentNumber): string
+    public function getFilename(DocumentNumber $documentNumber): string
     {
         if ($this->filename === '') {
             // Assume that when we have no filename, we can use the documentNumber as filename and its extension is PDF.
-            return $documentNumber . '.pdf';
+            return $documentNumber->toString() . '.pdf';
         }
 
         return $this->filename;

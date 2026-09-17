@@ -18,9 +18,7 @@ enum SearchType: string
     public static function fromParameterBag(ParameterBag $parameterBag): self
     {
         $type = self::tryFrom($parameterBag->getString('type', ''));
-        if ($type === null) {
-            $type = self::DEFAULT;
-        }
+        $type ??= self::DEFAULT;
 
         return $type;
     }

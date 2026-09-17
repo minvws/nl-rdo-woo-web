@@ -7,7 +7,6 @@ namespace Shared\Tests\Unit\Service\Inquiry;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Exception\InquiryLinkImportException;
 use Shared\Service\Inquiry\DocumentInquiryNumbers;
@@ -18,6 +17,8 @@ use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inquiry\InquiryService;
 use Shared\Tests\Unit\Domain\Upload\IterableToGenerator;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentNumber;
+use Shared\ValueObject\OrganisationPrefix;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Uid\Uuid;
 
@@ -45,36 +46,18 @@ class InquiryLinkImporterTest extends UnitTestCase
         parent::setUp();
     }
 
-    public function testParseFailsWithAGenericExceptionIfPrefixDoesNotMatchTheActiveOrganisation(): void
-    {
-        $upload = Mockery::mock(UploadedFile::class);
-
-        $organisationA = Mockery::mock(Organisation::class);
-        $organisationB = Mockery::mock(Organisation::class);
-
-        $prefix = Mockery::mock(DocumentPrefix::class);
-        $prefix->expects('getOrganisation')->andReturn($organisationB);
-
-        $result = $this->importer->import($organisationA, $upload, $prefix);
-
-        self::assertFalse($result->isSuccessful());
-        self::assertTrue($result->hasGenericExceptions());
-    }
-
     public function testParseSuccessful(): void
     {
         $upload = Mockery::mock(UploadedFile::class);
         $organisation = Mockery::mock(Organisation::class);
-
-        $prefix = Mockery::mock(DocumentPrefix::class);
-        $prefix->expects('getOrganisation')->andReturn($organisation);
+        $organisation->expects('getPrefix')->andReturn(OrganisationPrefix::create('FOO-1'));
 
         $documentNumberA = 'foo-xx-123';
         $documentNumberB = 'foo-xx-456';
 
         $this->parser
             ->expects('parse')
-            ->with($upload, $prefix)
+            ->with($upload, 'FOO-1')
             ->andReturn($this->iterableToGenerator([
                 $documentNumberA => ['case1', 'case2'],
                 $documentNumberB => ['case1'],
@@ -82,14 +65,18 @@ class InquiryLinkImporterTest extends UnitTestCase
 
         $this->documentRepository
             ->expects('getDocumentInquiryNumbers')
-            ->with($documentNumberA)
+            ->with(Mockery::on(
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->toString() === $documentNumberA,
+            ))
             ->andReturn(
                 new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), InquiryNumbers::empty()),
             );
 
         $this->documentRepository
             ->expects('getDocumentInquiryNumbers')
-            ->with($documentNumberB)
+            ->with(Mockery::on(
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->toString() === $documentNumberB,
+            ))
             ->andReturn(
                 new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), InquiryNumbers::empty()),
             );
@@ -102,7 +89,7 @@ class InquiryLinkImporterTest extends UnitTestCase
             },
         ));
 
-        $result = $this->importer->import($organisation, $upload, $prefix);
+        $result = $this->importer->import($organisation, $upload);
 
         self::assertTrue($result->isSuccessful());
         self::assertEquals(3, $result->getAddedRelationsCount());
@@ -113,16 +100,14 @@ class InquiryLinkImporterTest extends UnitTestCase
         $upload = Mockery::mock(UploadedFile::class);
 
         $organisation = Mockery::mock(Organisation::class);
-
-        $prefix = Mockery::mock(DocumentPrefix::class);
-        $prefix->expects('getOrganisation')->andReturn($organisation);
+        $organisation->expects('getPrefix')->andReturn(OrganisationPrefix::create('FOO-1'));
 
         $documentNumberA = 'foo-xx-123';
         $documentNumberB = 'foo-xx-456';
 
         $this->parser
             ->expects('parse')
-            ->with($upload, $prefix)
+            ->with($upload, 'FOO-1')
             ->andReturn($this->iterableToGenerator([
                 $documentNumberA => ['case1', 'case2'],
                 $documentNumberB => ['case1', '<script>foo</script>'],
@@ -130,14 +115,18 @@ class InquiryLinkImporterTest extends UnitTestCase
 
         $this->documentRepository
             ->expects('getDocumentInquiryNumbers')
-            ->with($documentNumberA)
+            ->with(Mockery::on(
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->toString() === $documentNumberA,
+            ))
             ->andReturn(
                 new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b2'), InquiryNumbers::empty()),
             );
 
         $this->documentRepository
             ->expects('getDocumentInquiryNumbers')
-            ->with($documentNumberB)
+            ->with(Mockery::on(
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->toString() === $documentNumberB,
+            ))
             ->andReturn(
                 new DocumentInquiryNumbers(Uuid::fromRfc4122('1ef3ea0e-678d-6cee-9604-c962be9d60b1'), InquiryNumbers::empty()),
             );
@@ -150,7 +139,7 @@ class InquiryLinkImporterTest extends UnitTestCase
             },
         ));
 
-        $result = $this->importer->import($organisation, $upload, $prefix);
+        $result = $this->importer->import($organisation, $upload);
 
         self::assertFalse($result->isSuccessful());
         self::assertEquals(

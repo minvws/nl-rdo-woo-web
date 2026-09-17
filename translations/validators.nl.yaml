@@ -144,8 +144,10 @@ use_only_letters_and_numbers: 'Gebruik alleen letters en cijfers. Haal niet-toeg
 date_must_not_be_in_future: 'Deze datum mag niet in de toekomst liggen'
 min_max_parties: 'Vul minimaal 2 en maximaal 10 partijen in'
 at_least_one_department_required: 'Kies minimaal 1 bestuursorgaan'
-at_least_one_prefix_required: 'Vul minimaal 1 prefix in'
-no_double_prefixes_allowed: 'Er mogen geen dubbele prefixes ingevoerd worden'
+organisation.prefix_too_short: "De prefix moet minimaal {{ limit }} tekens bevatten."
+organisation.prefix_too_long: "De prefix mag maximaal {{ limit }} tekens bevatten."
+organisation.prefix_invalid_format: "De prefix mag alleen bestaan uit letters, cijfers en streepjes."
+organisation.prefix_already_exists: "Deze prefix is al in gebruik."
 preview_date_must_be_today_or_future: 'De datum van feitelijke verstrekking moet gelijk of later zijn dan vandaag'
 publication_date_must_be_today_or_past_preview_date: 'De datum van openbare publicatie moet gelijk of later zijn dan de datum van feitelijke verstrekking'
 publication_date_must_be_today_or_future: 'De datum van openbare publicatie moet gelijk of later zijn dan vandaag'
@@ -163,6 +165,8 @@ dossier.main_document.not_uploaded: 'Een dossier zonder geüpload hoofddocument 
 dossier.incomplete_documents: 'Een dossier met onvolledige documenten kan niet gepubliceerd worden'
 dossier.incomplete_attachments: 'Een dossier met onvolledige bijlagen kan niet gepubliceerd worden'
 subject_already_exists: 'Dit onderwerp bestaat al'
+subject_landing_page_content_tree_invalid_json: 'De verhaallijn bevat geen geldige JSON'
+subject_landing_page_content_tree_invalid_structure: 'De verhaallijn heeft een ongeldige structuur'
 subject_landing_page_description_required: 'Vul een omschrijving voor de landingspagina in'
 subject_landing_page_slug_already_exists: 'Deze landing-page url bestaat al'
 subject_landing_page_slug_invalid_format: 'De URL mag alleen bestaan uit letters, cijfers en streepjes'
@@ -170,7 +174,6 @@ subject_landing_page_slug_invalid_length: 'De URL moet minimaal {{ min }} en max
 subject_landing_page_slug_required: 'Vul een URL voor de landingspagina in'
 subject_landing_page_title_invalid_length: 'De titel mag maximaal {{ max }} tekens bevatten'
 subject_landing_page_title_required: 'Vul een titel voor de landingspagina in'
-alpha_numeric_dash_only: 'Prefix mag alleen bestaan uit letters, cijfers en streepjes'
 inquiry_numbers_invalid: "Zaaknummers mogen alleen letters, cijfers en verbindingstekens bevatten. Maximale lengte is 255 tekens."
 external_id_invalid_characters: 'Het externe id mag alleen bestaan uit letters, cijfers en de tekens: -, ., _, ~'
 dossier.dossier_number_not_unique: 'Dit besluitnummer is al in gebruik'

@@ -11,6 +11,7 @@ readonly class Link implements JsonSerializable
 {
     public function __construct(
         public Url $href,
+        public ?string $name = null,
     ) {
     }
 
@@ -19,8 +20,14 @@ readonly class Link implements JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        return [
+        $data = [
             'href' => $this->href->toString(),
         ];
+
+        if ($this->name !== null) {
+            $data['name'] = $this->name;
+        }
+
+        return $data;
     }
 }

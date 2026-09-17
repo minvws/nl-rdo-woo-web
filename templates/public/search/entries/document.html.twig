@@ -1,6 +1,7 @@
 {% extends 'public/search/entries/base.html.twig' %}
 
-{% set resultUrl = path('app_document_detail', { documentPrefix: entry.dossiers[0].documentPrefix, dossierNumber: entry.dossiers[0].dossierNumber, documentNumber: entry.viewmodel.documentNumber }) %}
+{% set documentNumber = entry.viewmodel.documentNumber.toString() %}
+{% set resultUrl = path('app_document_detail', { documentPrefix: entry.dossiers[0].documentPrefix, dossierNumber: entry.dossiers[0].dossierNumber, documentNumber: documentNumber }) %}
 {% set resultTitle = entry.viewmodel.fileInfo.name %}
 {% set hasRoundedIcon = false %}
 {% set resultIconName = entry.viewmodel.fileInfo.sourceType %}
@@ -42,7 +43,7 @@
     </li>
     {% endif %}
     <li class="woo-search-result__spec">
-        {{ 'global.document_number' | trans() }} {{ entry.viewmodel.documentNumber }}
+        {{ 'global.document_number' | trans() }} {{ documentNumber }}
     </li>
 {% endblock %}
 

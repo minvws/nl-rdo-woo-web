@@ -85,7 +85,7 @@ final class OtherPublicationMainDocumentTest extends AdminApiTestCase
             'internalReference' => 'foo bar',
             'type' => AttachmentType::EVALUATION_REPORT->value,
             'language' => AttachmentLanguage::NLD->value,
-            'grounds' => ['foo', 'bar'],
+            'grounds' => ['bar', 'foo'],
             'uploadUuid' => $upload->getUploadId(),
         ];
         self::createAdminApiClient($user)

@@ -1,0 +1,5 @@
+variables:
+  - name: baseUrl
+    value: https://{{process.env.DOMAIN_ACC_MINFIN}}/api/publication/v1
+  - name: organisationId
+    value: ""

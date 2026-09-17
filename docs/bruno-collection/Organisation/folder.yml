@@ -1,0 +1,7 @@
+info:
+  name: Organisation
+  type: folder
+  seq: 11
+
+request:
+  auth: inherit

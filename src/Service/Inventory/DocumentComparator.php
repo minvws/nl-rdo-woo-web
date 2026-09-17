@@ -16,6 +16,7 @@ readonly class DocumentComparator
 {
     public function __construct(
         private DocumentRepository $documentRepository,
+        private LegacyDocumentNumberFactory $documentNumberFactory,
     ) {
     }
 
@@ -78,18 +79,18 @@ readonly class DocumentComparator
     public function hasRefersToUpdate(WooDecision $dossier, Document $document, DocumentMetadata $metadata): bool
     {
         $currentDocNrs = $document->getRefersTo()->map(
-            static fn (Document $doc) => $doc->getDocumentNumber(),
+            static fn (Document $referredDocument): string => $referredDocument->getDocumentNumber()->toString(),
         )->toArray();
 
         $newDocNrs = [];
         foreach ($metadata->getRefersTo() as $referral) {
-            $documentNumber = DocumentNumber::fromReferral($dossier, $document, $referral);
+            $documentNumber = $this->documentNumberFactory->fromReferral($dossier, $document, $referral);
             $referredDocument = $this->documentRepository->findByDocumentNumber($documentNumber);
             if (! $referredDocument) {
                 continue;
             }
 
-            $newDocNrs[] = $referredDocument->getDocumentNumber();
+            $newDocNrs[] = $referredDocument->getDocumentNumber()->toString();
         }
 
         return count($currentDocNrs) !== count($newDocNrs) || array_diff($currentDocNrs, $newDocNrs);

@@ -13,6 +13,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inventory\Sanitizer\InventoryDocumentMapper;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\DossierTitle;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -48,12 +49,16 @@ class InventoryDocumentMapperTest extends UnitTestCase
         $dossier->expects('getTitle')->andReturn(DossierTitle::create('Foo Bar'));
 
         $referredDocA = Mockery::mock(Document::class);
-        $referredDocA->expects('getDocumentNumber')->times(2)->andReturn($refDocIdA = 'PREFIX-matterA-a');
+        $referredDocA->expects('getDocumentNumber')
+            ->times(2)
+            ->andReturn(DocumentNumber::fromString($refDocIdA = 'PREFIX-matterA-a'));
         $referredDocA->expects('getDocumentId')->never();
         $referredDocA->expects('getDossiers')->times(1)->andReturn(new ArrayCollection([$dossier]));
 
         $referredDocB = Mockery::mock(Document::class);
-        $referredDocB->expects('getDocumentNumber')->times(2)->andReturn($refDocIdB = 'PREFIX-matterB-b');
+        $referredDocB->expects('getDocumentNumber')
+            ->times(2)
+            ->andReturn(DocumentNumber::fromString($refDocIdB = 'PREFIX-matterB-b'));
         $referredDocB->expects('getDocumentId')->never();
         $referredDocB->expects('getDossiers')->times(1)->andReturn(new ArrayCollection([$dossier]));
 
@@ -69,7 +74,9 @@ class InventoryDocumentMapperTest extends UnitTestCase
 
         $document = Mockery::mock(Document::class);
         $document->expects('getDocumentId')->times(1)->andReturn(DocumentId::create('123'));
-        $document->expects('getDocumentNumber')->times(2)->andReturn($docNr = 'PREFIX-matterA-123');
+        $document->expects('getDocumentNumber')
+            ->times(2)
+            ->andReturn(DocumentNumber::fromString($docNr = 'PREFIX-matterA-123'));
         $document->expects('getFileInfo->getName')->andReturn('test-doc-name');
         $document->expects('getJudgement')->times(2)->andReturn(Judgement::PARTIAL_PUBLIC);
         $document->expects('getGrounds')->andReturn(['a', 'b']);

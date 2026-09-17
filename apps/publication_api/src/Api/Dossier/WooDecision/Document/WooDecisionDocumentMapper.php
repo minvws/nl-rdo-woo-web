@@ -5,50 +5,38 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\WooDecision\Document;
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use Shared\Domain\Upload\UploadEntityRepository;
-use Shared\Service\Inventory\DocumentNumber;
-use Shared\Service\ObjectHasher;
-use Shared\Service\Storage\EntityStorageService;
+use Shared\ValueObject\DocumentNumber;
 
-readonly class WooDecisionDocumentMapper
+class WooDecisionDocumentMapper
 {
-    public function __construct(
-        private EntityStorageService $entityStorageService,
-        private ObjectHasher $objectHasher,
-        private UploadEntityRepository $uploadEntityRepository,
-    ) {
-    }
-
-    public function create(
+    public static function create(
         WooDecisionDocumentRequestDto $wooDecisionDocumentRequestDto,
     ): Document {
-        $documentNumber = DocumentNumber::fromPublicationContextAndDossierId(
+        $documentNumber = DocumentNumber::fromPublicationContextAndDocumentId(
             $wooDecisionDocumentRequestDto->publicationContext,
             $wooDecisionDocumentRequestDto->documentId,
         );
 
         $document = new Document();
         $document->setExternalId($wooDecisionDocumentRequestDto->externalId);
-        $document->setDocumentNumber($documentNumber->toString());
+        $document->setDocumentNumber($documentNumber);
         $document->getFileInfo()->setName($wooDecisionDocumentRequestDto->fileName->toString());
 
-        return $this->update($document, $wooDecisionDocumentRequestDto);
+        return self::update($document, $wooDecisionDocumentRequestDto);
     }
 
-    public function update(
+    public static function update(
         Document $document,
         WooDecisionDocumentRequestDto $wooDecisionDocumentRequestDto,
     ): Document {
-        $documentHash = $this->objectHasher->get($document);
-
-        $documentNumber = DocumentNumber::fromPublicationContextAndDossierId(
+        $documentNumber = DocumentNumber::fromPublicationContextAndDocumentId(
             $wooDecisionDocumentRequestDto->publicationContext,
             $wooDecisionDocumentRequestDto->documentId,
         );
 
         $document->setDocumentDate($wooDecisionDocumentRequestDto->documentDate);
         $document->setDocumentId($wooDecisionDocumentRequestDto->documentId);
-        $document->setDocumentNumber($documentNumber->toString());
+        $document->setDocumentNumber($documentNumber);
         $document->setFamilyId($wooDecisionDocumentRequestDto->familyId);
         $document->setGrounds($wooDecisionDocumentRequestDto->grounds);
         $document->setJudgement($wooDecisionDocumentRequestDto->judgement);
@@ -61,12 +49,6 @@ readonly class WooDecisionDocumentMapper
         $fileInfo = $document->getFileInfo();
         $fileInfo->setName($wooDecisionDocumentRequestDto->fileName->toString());
         $fileInfo->setSourceType($wooDecisionDocumentRequestDto->sourceType);
-
-        if ($this->objectHasher->isNotEqual($document, $documentHash)) {
-            $this->entityStorageService->deleteAllFilesForEntity($document);
-            $this->uploadEntityRepository->removeAllByContextData('documentId', $document->getId()->toRfc4122());
-            $fileInfo->removeFileProperties();
-        }
 
         $document->setFileInfo($fileInfo);
 

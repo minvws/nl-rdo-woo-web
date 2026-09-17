@@ -69,9 +69,7 @@ readonly class OrganisationService
     {
         /** @var User|null $loggedInUser */
         $loggedInUser = $this->tokenStorage->getToken()?->getUser() ?? null;
-        if ($loggedInUser === null) {
-            $loggedInUser = new AuditUser('cli user', 'system', [], 'system@localhost');
-        }
+        $loggedInUser ??= new AuditUser('cli user', 'system', [], 'system@localhost');
 
         return $loggedInUser;
     }

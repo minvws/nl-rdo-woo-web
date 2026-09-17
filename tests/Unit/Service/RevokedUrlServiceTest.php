@@ -13,6 +13,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentReposito
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\RevokedUrlService;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Routing\RouterInterface;
 
 use function iterator_to_array;
@@ -55,19 +56,19 @@ class RevokedUrlServiceTest extends UnitTestCase
         $documentInPublishedDossier = Mockery::mock(Document::class);
         $documentInPublishedDossier->expects('getDossiers')
             ->andReturn(new ArrayCollection([$publishedDossier]));
-        $documentInPublishedDossier->expects('getDocumentNumber')->andReturn($docNrA = 'D1');
+        $documentInPublishedDossier->expects('getDocumentNumber')->andReturn($docNrA = DocumentNumber::fromString('D1'));
 
         $documentInConceptAndPublishedDossier = Mockery::mock(Document::class);
         $documentInConceptAndPublishedDossier->expects('getDossiers')
             ->andReturn(new ArrayCollection([$conceptDossier, $publishedDossier]));
-        $documentInConceptAndPublishedDossier->expects('getDocumentNumber')->andReturn($docNrB = 'D2');
+        $documentInConceptAndPublishedDossier->expects('getDocumentNumber')->andReturn($docNrB = DocumentNumber::fromString('D2'));
 
         $this->router->expects('generate')->with(
             'app_document_detail',
             [
                 'documentPrefix' => $documentPrefix,
                 'dossierNumber' => $dossierNumber,
-                'documentNumber' => $docNrA,
+                'documentNumber' => $docNrA->toString(),
             ],
         )->andReturn('link_A');
 
@@ -75,7 +76,7 @@ class RevokedUrlServiceTest extends UnitTestCase
             'app_legacy_document_detail',
             [
                 'dossierNumber' => $dossierNumber,
-                'documentNumber' => $docNrA,
+                'documentNumber' => $docNrA->toString(),
             ],
         )->andReturn('link_B');
 
@@ -84,7 +85,7 @@ class RevokedUrlServiceTest extends UnitTestCase
             [
                 'documentPrefix' => $documentPrefix,
                 'dossierNumber' => $dossierNumber,
-                'documentNumber' => $docNrB,
+                'documentNumber' => $docNrB->toString(),
             ],
         )->andReturn('link_C');
 
@@ -92,7 +93,7 @@ class RevokedUrlServiceTest extends UnitTestCase
             'app_legacy_document_detail',
             [
                 'dossierNumber' => $dossierNumber,
-                'documentNumber' => $docNrB,
+                'documentNumber' => $docNrB->toString(),
             ],
         )->andReturn('link_D');
 

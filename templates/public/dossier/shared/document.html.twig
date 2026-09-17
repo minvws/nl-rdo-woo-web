@@ -28,13 +28,21 @@
             </div>
         </twig:Public:Alert>
     {% else %}
-        {% if file.hasPages %}
-            <twig:Public:PdfViewer file="{{ file }}" />
-        {% endif %}
+        {% if document.isDownloadable %}
+            {% if file.hasPages %}
+                <twig:Public:PdfViewer file="{{ file }}" />
+            {% endif %}
 
-        <div class="mt-8">
-            <twig:Public:DownloadFileButton href="{{ document.downloadUrl }}">{{ 'global.download_document' | trans }} ({{ document.sourceType | trans }}, {{ document.size | size }})</twig:Public:DownloadFileButton>
-        </div>
+            <div class="mt-8">
+                <twig:Public:DownloadFileButton href="{{ document.downloadUrl }}">{{ 'global.download_document' | trans }} ({{ document.sourceType | trans }}, {{ document.size | size }})</twig:Public:DownloadFileButton>
+            </div>
+        {% else %}
+            <div class="mt-8">
+                <twig:Public:Notification>
+                    {{ 'public.global.not-ready' | trans }}
+                </twig:Public:Notification>
+            </div>
+        {% endif %}
     {% endif %}
 
     <div class="mt-16">
@@ -61,6 +69,7 @@
                             {{ document.type | trans | capitalize }}
                         </td>
                     </tr>
+                    {% if document.isDownloadable and document.sourceType is not null %}
                     <tr>
                         <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.type' | trans }}</th>
                         <td>
@@ -68,7 +77,8 @@
                             {{ document.sourceType | trans }}
                         </td>
                     </tr>
-                    {% if not document.withdrawn %}
+                    {% endif %}
+                    {% if document.isDownloadable %}
                     <tr>
                         <th class="woo-table-cell-light" scope="row">{{ 'public.documents.document.download_type' | trans }}</th>
                         <td>{{ document.sourceType | trans }}, {{ document.size | size }}</td>
@@ -125,7 +135,7 @@
                         <tr>
                             <th class="woo-table-cell-light w-64 min-w-64" scope="row">{{ attachment.type | trans | capitalize }}</th>
                             <td>
-                                <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a> ({{ attachment.sourceType | trans }}, {{ attachment.size | size }})
+                                <a class="woo-a" href="{{ attachment.detailsUrl }}">{{ attachment.name }}</a>{% if attachment.isDownloadable %} ({{ attachment.sourceType | trans }}, {{ attachment.size | size }}){% endif %}
                             </td>
                         </tr>
                         {% endfor %}

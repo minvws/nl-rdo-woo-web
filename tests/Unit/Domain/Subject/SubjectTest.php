@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectContentNode;
+use Shared\Domain\Publication\Subject\SubjectContentTree;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
@@ -37,15 +38,20 @@ class SubjectTest extends UnitTestCase
         $subject = new Subject();
         $slug = LandingPageSlug::create('landing-page');
         $title = LandingPageTitle::create('Landing page title');
-        $contentTree = [
-            new SubjectContentNode(
-                'Root title',
-                'Root body',
-                [
-                    new SubjectContentNode('Child title', 'Child body'),
-                ],
-            ),
-        ];
+        $contentTree = new SubjectContentTree(
+            children: [
+                new SubjectContentNode(
+                    'Root title',
+                    'Root body',
+                    [
+                        new SubjectContentNode('Child title', 'Child body'),
+                    ],
+                ),
+            ],
+            title: 'Content tree title',
+            intro: 'Content tree intro',
+            outro: 'Content tree outro',
+        );
 
         $result = $subject->setLandingPage(
             $slug,
@@ -61,22 +67,7 @@ class SubjectTest extends UnitTestCase
         self::assertSame('Landing page description', $subject->getLandingPageDescription());
         self::assertSame(SubjectLandingPageStatus::PUBLISHED, $subject->getLandingPageStatus());
         self::assertNull($subject->getLandingPagePreviewToken());
-        self::assertSame(
-            [
-                [
-                    'title' => 'Root title',
-                    'body' => 'Root body',
-                    'children' => [
-                        [
-                            'title' => 'Child title',
-                            'body' => 'Child body',
-                            'children' => [],
-                        ],
-                    ],
-                ],
-            ],
-            $subject->getLandingPageContentTree(),
-        );
+        self::assertSame($contentTree, $subject->getLandingPageContentTree());
     }
 
     public function testSetLandingPageGeneratesAndPreservesConceptPreviewToken(): void
@@ -88,7 +79,7 @@ class SubjectTest extends UnitTestCase
             LandingPageTitle::create('Landing page title'),
             'Landing page description',
             SubjectLandingPageStatus::CONCEPT,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
 
         $previewToken = $subject->getLandingPagePreviewToken();
@@ -99,7 +90,7 @@ class SubjectTest extends UnitTestCase
             LandingPageTitle::create('Updated landing page title'),
             'Updated landing page description',
             SubjectLandingPageStatus::CONCEPT,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
 
         self::assertSame($previewToken, $subject->getLandingPagePreviewToken());
@@ -112,15 +103,21 @@ class SubjectTest extends UnitTestCase
         $node = new SubjectContentNode('Title', 'Body text');
         $slug = LandingPageSlug::create('page-title');
         $title = LandingPageTitle::create('Page title');
-        $subject->setLandingPage($slug, $title, 'Page description', SubjectLandingPageStatus::CONCEPT, [$node]);
+        $subject->setLandingPage(
+            $slug,
+            $title,
+            'Page description',
+            SubjectLandingPageStatus::CONCEPT,
+            new SubjectContentTree(title: '', intro: '', children: [$node], outro: ''),
+        );
 
         self::assertSame($slug, $subject->getLandingPageSlug());
         self::assertSame($title, $subject->getLandingPageTitle());
         self::assertSame('Page description', $subject->getLandingPageDescription());
         self::assertSame(SubjectLandingPageStatus::CONCEPT, $subject->getLandingPageStatus());
         self::assertNotNull($subject->getLandingPagePreviewToken());
-        self::assertSame(
-            [['title' => 'Title', 'body' => 'Body text', 'children' => []]],
+        self::assertEquals(
+            new SubjectContentTree(title: '', intro: '', children: [$node], outro: ''),
             $subject->getLandingPageContentTree(),
         );
     }
@@ -148,15 +145,14 @@ class SubjectTest extends UnitTestCase
             LandingPageTitle::create('T'),
             'D',
             SubjectLandingPageStatus::CONCEPT,
-            [$root],
+            new SubjectContentTree(title: '', intro: '', children: [$root], outro: ''),
         );
 
-        /** @var list<array{title: string, body: string, children: list<array{title: string, body: string, children: list<array{title: string, body: string, children: list<mixed>}>}>}> $tree */
         $tree = $subject->getLandingPageContentTree();
-        self::assertIsArray($tree);
-        self::assertSame('L1', $tree[0]['title']);
-        self::assertSame('L2', $tree[0]['children'][0]['title']);
-        self::assertSame('L3', $tree[0]['children'][0]['children'][0]['title']);
+        self::assertInstanceOf(SubjectContentTree::class, $tree);
+        self::assertSame('L1', $tree->children[0]->title);
+        self::assertSame('L2', $tree->children[0]->children[0]->title);
+        self::assertSame('L3', $tree->children[0]->children[0]->children[0]->title);
     }
 
     public function testTokenStableAcrossConceptToConceptSave(): void
@@ -167,7 +163,7 @@ class SubjectTest extends UnitTestCase
             LandingPageTitle::create('T'),
             'D',
             SubjectLandingPageStatus::CONCEPT,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
 
         $firstToken = $subject->getLandingPagePreviewToken();
@@ -178,7 +174,7 @@ class SubjectTest extends UnitTestCase
             LandingPageTitle::create('T2'),
             'D2',
             SubjectLandingPageStatus::CONCEPT,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
 
         self::assertSame($firstToken->toRfc4122(), $subject->getLandingPagePreviewToken()?->toRfc4122());
@@ -192,7 +188,7 @@ class SubjectTest extends UnitTestCase
             LandingPageTitle::create('T'),
             'D',
             SubjectLandingPageStatus::CONCEPT,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
 
         $firstToken = $subject->getLandingPagePreviewToken();
@@ -203,7 +199,7 @@ class SubjectTest extends UnitTestCase
             LandingPageTitle::create('T'),
             'D',
             SubjectLandingPageStatus::PUBLISHED,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
 
         self::assertSame($firstToken->toRfc4122(), $subject->getLandingPagePreviewToken()?->toRfc4122());
@@ -217,7 +213,7 @@ class SubjectTest extends UnitTestCase
             LandingPageTitle::create('T'),
             'D',
             SubjectLandingPageStatus::PUBLISHED,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
 
         self::assertNull($subject->getLandingPagePreviewToken());

@@ -28,7 +28,6 @@ use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
-use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\NoticeNotPublic\NoticeNotPublicFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Advice\AdviceFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
@@ -204,7 +203,6 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(ComplaintJudgement::class, 0);
 
@@ -222,7 +220,6 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(ComplaintJudgement::class, 0);
 
@@ -241,7 +238,6 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(ComplaintJudgement::class, 0);
 
@@ -273,7 +269,6 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $data = $this->createValidComplaintJudgementDataPayload($department, $subject);
         $externalId = $this->getFaker()->externalId();
@@ -304,7 +299,6 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(ComplaintJudgement::class, 0);
 
@@ -498,7 +492,6 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(ComplaintJudgement::class, 0);
 
@@ -521,7 +514,6 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(ComplaintJudgement::class, 0);
 
@@ -545,7 +537,6 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(ComplaintJudgement::class, 0);
 
@@ -566,7 +557,6 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(ComplaintJudgement::class, 0);
 

@@ -25,9 +25,10 @@
             </thead>
             <tbody>
             {% for document in documents %}
+                {% set documentNumber = document.documentNumber.toString() %}
                 <tr>
                     <td class="woo-table-cell-light">
-                        {{ document.documentNumber }}
+                        {{ documentNumber }}
                     </td>
                     <td>
                         {% set documentType = document.judgement is defined and document.judgement.isAlreadyPublic ? 'web' : (document.fileInfo.sourceType.value) %}
@@ -36,7 +37,7 @@
                     </td>
                     <td>
                         <div class="woo-readable-width">
-                            <a class="woo-a break-all" href="{{ path('app_document_detail', { documentPrefix: dossier.documentPrefix ?? document.dossiers.first.documentPrefix, dossierNumber: dossier.dossierNumber ?? document.dossiers.first.dossierNumber, documentNumber: document.documentNumber }) }}">{{ document.fileInfo.name }}</a>
+                            <a class="woo-a break-all" href="{{ path('app_document_detail', { documentPrefix: dossier.documentPrefix ?? document.dossiers.first.documentPrefix, dossierNumber: dossier.dossierNumber ?? document.dossiers.first.dossierNumber, documentNumber: documentNumber }) }}">{{ document.fileInfo.name }}</a>
                         </div>
                     </td>
                     <td class="text-right whitespace-nowrap">

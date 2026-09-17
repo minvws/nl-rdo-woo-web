@@ -159,11 +159,6 @@ testcases:
   steps:
     - name: Create dossier
       request: {}
-    - name: Sync locked dates before resend
-      keyword:
-        name: Sync Locked Dates From Server
-        args:
-          - covenant
     - name: Change title before resend
       keyword:
         name: Update Previous Request Body
@@ -182,11 +177,6 @@ testcases:
   steps:
     - name: Create dossier
       request: {}
-    - name: Sync locked dates before resend
-      keyword:
-        name: Sync Locked Dates From Server
-        args:
-          - covenant
     - name: Add an extra attachment before resend
       keyword:
         name: Add Generated Attachment To Previous Request Body

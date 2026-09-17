@@ -1,0 +1,34 @@
+info:
+  name: Get Department
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/department"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const data = res.getBody();
+        const items = data.items;
+
+        const dept = items.find(item => item.name === "E2E Test Department 1");
+
+        if (dept) {
+          bru.setVar("departmentId", dept.id);
+        } else if (items.length > 0) {
+          console.warn('Set the first department found instead of "E2E Test Department 1"');
+          bru.setVar("departmentId", items[0].id);
+        } else {
+          throw new Error("E2E Test Department 1 not found, variable could not be set");
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

@@ -66,8 +66,11 @@ class LinkCollectionTest extends UnitTestCase
         $collection->set(LinkCollection::SELF, new Link($secondUrl));
 
         $serialized = $collection->jsonSerialize();
+        $link = $serialized->offsetGet(LinkCollection::SELF);
+
         $this->assertCount(1, $serialized);
-        $this->assertEquals($secondUrl->toString(), $serialized->offsetGet(LinkCollection::SELF)?->href->toString());
+        $this->assertInstanceOf(Link::class, $link);
+        $this->assertSame($secondUrl->toString(), $link->href->toString());
     }
 
     public function testJsonSerializeReturnsEmptyArrayObjectWhenNoLinksSet(): void
@@ -75,5 +78,71 @@ class LinkCollectionTest extends UnitTestCase
         $collection = new LinkCollection();
 
         $this->assertEquals(new ArrayObject(), $collection->jsonSerialize());
+    }
+
+    public function testAddStoresAllLinksUnderASingleKey(): void
+    {
+        $collection = new LinkCollection();
+        $firstLink = new Link(Url::create($this->getFaker()->url()), 'C-1');
+        $secondLink = new Link(Url::create($this->getFaker()->url()), 'C-2');
+
+        $collection->add(LinkCollection::INQUIRIES, $firstLink);
+        $collection->add(LinkCollection::INQUIRIES, $secondLink);
+
+        $this->assertEquals(
+            new ArrayObject([LinkCollection::INQUIRIES => [$firstLink, $secondLink]]),
+            $collection->jsonSerialize(),
+        );
+    }
+
+    public function testAddStoresASingleLinkAsAList(): void
+    {
+        $collection = new LinkCollection();
+        $link = new Link(Url::create($this->getFaker()->url()), 'C-1');
+
+        $collection->add(LinkCollection::INQUIRIES, $link);
+
+        $this->assertEquals(
+            new ArrayObject([LinkCollection::INQUIRIES => [$link]]),
+            $collection->jsonSerialize(),
+        );
+    }
+
+    public function testSingleLinksAndListsAreSerializedTogether(): void
+    {
+        $collection = new LinkCollection();
+        $link = new Link(Url::create($this->getFaker()->url()));
+        $inquiryLink = new Link(Url::create($this->getFaker()->url()), 'C-1');
+
+        $collection->set(LinkCollection::SELF, $link);
+        $collection->add(LinkCollection::INQUIRIES, $inquiryLink);
+
+        $this->assertEquals(
+            new ArrayObject([
+                LinkCollection::SELF => $link,
+                LinkCollection::INQUIRIES => [$inquiryLink],
+            ]),
+            $collection->jsonSerialize(),
+        );
+    }
+
+    public function testLinkWithoutNameOnlySerializesHref(): void
+    {
+        $url = Url::create($this->getFaker()->url());
+
+        $this->assertEquals(
+            ['href' => $url->toString()],
+            new Link($url)->jsonSerialize(),
+        );
+    }
+
+    public function testLinkWithNameSerializesHrefAndName(): void
+    {
+        $url = Url::create($this->getFaker()->url());
+
+        $this->assertEquals(
+            ['href' => $url->toString(), 'name' => 'C-1'],
+            new Link($url, 'C-1')->jsonSerialize(),
+        );
     }
 }

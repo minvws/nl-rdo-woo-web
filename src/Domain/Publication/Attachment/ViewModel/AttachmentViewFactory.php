@@ -64,20 +64,24 @@ readonly class AttachmentViewFactory
             'id' => $attachment->getId(),
         ];
 
+        $fileInfo = $attachment->getFileInfo();
+        $fileSize = $fileInfo->getSize();
+
         return new Attachment(
             id: $attachment->getId()->toRfc4122(),
-            name: $attachment->getFileInfo()->getName(),
+            name: $fileInfo->getName(),
             formalDate: $attachment->getFormalDate()->format('Y-m-d'),
             type: $attachment->getType(),
-            mimeType: $attachment->getFileInfo()->getMimetype(),
-            sourceType: $attachment->getFileInfo()->getSourceType(),
-            size: $attachment->getFileInfo()->getSize(),
+            mimeType: $fileInfo->getMimetype(),
+            sourceType: $fileInfo->getSourceType(),
+            size: $fileSize,
             internalReference: $attachment->getInternalReference(),
             language: $attachment->getLanguage(),
             grounds: Citation::sortWooCitations($attachment->getGrounds()),
             downloadUrl: $this->urlGenerator->generate($downloadRouteName, $downloadRouteParameters),
             detailsUrl: $detailsUrl,
-            pageCount: $attachment->getFileInfo()->getPageCount() ?? 0,
+            pageCount: $fileInfo->getPageCount() ?? 0,
+            isDownloadable: $fileInfo->isUploaded() && $fileSize > 0,
             withdrawn: $attachment->isWithdrawn(),
             withdrawReason: $attachment->getWithdrawReason(),
             withdrawDate: $attachment->getWithdrawDate(),

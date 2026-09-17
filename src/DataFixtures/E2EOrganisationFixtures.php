@@ -10,7 +10,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\ValueObject\OrganisationPrefix;
 
 /**
  * This is a set of fixtures for the Organisation entity. It is not meant to be used in production.
@@ -29,37 +29,50 @@ class E2EOrganisationFixtures extends Fixture implements DependentFixtureInterfa
 
     public function load(ObjectManager $manager): void
     {
-        $organisationName = 'E2E Test Organisation';
-
         $department1 = $this->getReference(E2EDepartmentFixtures::REFERENCE_1, Department::class);
         $department2 = $this->getReference(E2EDepartmentFixtures::REFERENCE_2, Department::class);
 
-        $existingOrg = $manager->getRepository(Organisation::class)->findOneBy(['name' => $organisationName]);
-        if ($existingOrg) {
-            // Self-heal partial state: an organisation left without its department links (e.g. by an
-            // interrupted earlier load) renders an empty "bestuursorgaan" dropdown and blocks dossier
-            // creation. addDepartment() is idempotent, so re-running restores the links without duplicates.
-            $existingOrg->addDepartment($department1);
-            $existingOrg->addDepartment($department2);
-            $manager->flush();
-            $this->addReference(self::REFERENCE, $existingOrg);
+        $organisation = $this->getOrCreateOrganisation(
+            manager: $manager,
+            name: 'E2E Test Organisation',
+            organisationPrefix: OrganisationPrefix::create('E2E-A'),
+            departments: [$department1, $department2],
+        );
+        $this->getOrCreateOrganisation(
+            manager: $manager,
+            name: 'Test Org 1',
+            organisationPrefix: OrganisationPrefix::create('TESTORG1'),
+            departments: [$department1],
+        );
 
-            return;
+        $manager->flush();
+        $this->addReference(self::REFERENCE, $organisation);
+    }
+
+    /**
+     * @param list<Department> $departments
+     */
+    private function getOrCreateOrganisation(
+        ObjectManager $manager,
+        string $name,
+        OrganisationPrefix $organisationPrefix,
+        array $departments,
+    ): Organisation {
+        $organisation = $manager->getRepository(Organisation::class)->findOneBy(['name' => $name]);
+
+        if (! $organisation instanceof Organisation) {
+            $organisation = new Organisation();
+            $organisation->setName($name);
+            $organisation->setPrefix($organisationPrefix);
+            $manager->persist($organisation);
         }
 
-        $documentPrefix1 = new DocumentPrefix('E2E-A');
-        $documentPrefix2 = new DocumentPrefix('E2E-B');
+        // Restore links when a previous fixture load was interrupted.
+        foreach ($departments as $department) {
+            $organisation->addDepartment($department);
+        }
 
-        $entity = new Organisation();
-        $entity->setName($organisationName);
-        $entity->addDocumentPrefix($documentPrefix1);
-        $entity->addDocumentPrefix($documentPrefix2);
-        $entity->addDepartment($department1);
-        $entity->addDepartment($department2);
-
-        $manager->persist($entity);
-        $manager->flush();
-        $this->addReference(self::REFERENCE, $entity);
+        return $organisation;
     }
 
     /**

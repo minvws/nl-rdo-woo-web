@@ -213,6 +213,16 @@
     {% endif %}
 {%- endblock textarea_widget -%}
 
+{%- block content_tree_widget -%}
+    <div {{ vue_component('GenericController', {
+        componentName: 'ContentTree',
+
+        id: id,
+        name: full_name,
+        value: value,
+    }) }}></div>
+{%- endblock content_tree_widget -%}
+
 {%- block widget_attributes -%}
     {# Make the widget_errors_class a space to not fill it with some defaults defined in the functionality of this form package #}
     {% set widget_errors_class = widget_errors_class|default(' ') %}

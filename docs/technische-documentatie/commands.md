@@ -318,7 +318,9 @@ spreadsheet is required. Use `--dry-run` (`-d`) to see what would change without
 bin/console --tenant=minvws woopie:document:generate-document-publication-context [--dry-run]
 ```
 
-Generate the publicationContext of documents that do not have one yet. Use `--dry-run` (`-d`) to preview the effect.
+Generate the publicationContext of existing documents that do not have one yet. This is a temporary migration command and is no
+longer needed once every document has a publicationContext and the database enforces that value. Use `--dry-run` (`-d`) to preview
+the effect.
 
 ## Development commands
 
@@ -333,12 +335,13 @@ Converts doctrine migrations (PHP code) into plain SQL files
 ### Clean sheet
 
 ```shell
-bin/console --tenant=minvws woopie:dev:clean-sheet --index <index> [--force] [--users] [--keep-prefixes] [--keep-subjects]
+bin/console --tenant=minvws woopie:dev:clean-sheet --index <index> [--force] [--users] [--keep-subjects]
 ```
 
 Resets data from search index, database, file storage and message queue. `--index` names the Elasticsearch index to
-reset. `--force` skips the confirmation prompt, `--users` also resets users, and `--keep-prefixes` / `--keep-subjects`
-preserve those. Locally, prefer `task cleansheet`, which passes sensible defaults and clears the MinIO buckets too.
+reset. `--force` skips the confirmation prompt, `--users` also resets users, and `--keep-subjects` preserves subjects.
+The retained legacy `document_prefix` table is not cleared by this command. Locally, prefer `task cleansheet`, which
+passes sensible defaults and clears the MinIO buckets too.
 
 ### Content extraction
 

@@ -1,9 +1,11 @@
 import Collapsible from '@admin-fe/component/Collapsible.vue';
 import { VueWrapper, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { h } from 'vue';
+import { h, nextTick } from 'vue';
 
 describe('The "Collapsible" component', () => {
+  let animationFrameCallbacks: FrameRequestCallback[];
+
   const createComponent = (isCollapsed = false) => {
     const wrapper = mount(Collapsible, {
       props: {
@@ -26,11 +28,23 @@ describe('The "Collapsible" component', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
+    animationFrameCallbacks = [];
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      animationFrameCallbacks.push(callback);
+      return animationFrameCallbacks.length;
+    });
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.useRealTimers();
   });
+
+  const runNextAnimationFrame = async () => {
+    const callbacks = animationFrameCallbacks.splice(0);
+    callbacks.forEach((callback) => callback(0));
+    await nextTick();
+  };
 
   const getCollapsingElement = (component: VueWrapper) => component.find('div');
   const isCollapsed = (component: VueWrapper) => {
@@ -46,13 +60,16 @@ describe('The "Collapsible" component', () => {
   const collapse = async (component: VueWrapper) => {
     await component.setProps({ modelValue: true });
     await component.vm.$nextTick();
-    vi.advanceTimersByTime(100);
-    getCollapsingElement(component).trigger('transitionend');
+    await runNextAnimationFrame();
+    await runNextAnimationFrame();
+    await getCollapsingElement(component).trigger('transitionend');
   };
   const expand = async (component: VueWrapper) => {
-    component.setProps({ modelValue: false });
+    await component.setProps({ modelValue: false });
     await component.vm.$nextTick();
-    getCollapsingElement(component).trigger('transitionend');
+    await runNextAnimationFrame();
+    await runNextAnimationFrame();
+    await getCollapsingElement(component).trigger('transitionend');
   };
 
   describe('when collapsing', () => {
@@ -71,6 +88,53 @@ describe('The "Collapsible" component', () => {
       await collapse(component);
       expect(component.emitted().collapsed).toHaveLength(1);
     });
+
+    test('should emit "collapsed" when transitionend does not fire', async () => {
+      const component = createComponent();
+
+      await component.setProps({ modelValue: true });
+      await component.vm.$nextTick();
+      await runNextAnimationFrame();
+      await runNextAnimationFrame();
+
+      vi.advanceTimersByTime(499);
+      expect(component.emitted().collapsed).toBeUndefined();
+
+      vi.advanceTimersByTime(1);
+      expect(component.emitted().collapsed).toHaveLength(1);
+    });
+
+    test('should not emit twice when transitionend and fallback both fire', async () => {
+      const component = createComponent();
+
+      await component.setProps({ modelValue: true });
+      await component.vm.$nextTick();
+      await runNextAnimationFrame();
+      await runNextAnimationFrame();
+      await getCollapsingElement(component).trigger('transitionend');
+
+      vi.advanceTimersByTime(500);
+      expect(component.emitted().collapsed).toHaveLength(1);
+    });
+
+    test('should not complete a previous collapse after toggling to expand', async () => {
+      const component = createComponent();
+
+      await component.setProps({ modelValue: true });
+      await component.vm.$nextTick();
+      await runNextAnimationFrame();
+      await runNextAnimationFrame();
+
+      await component.setProps({ modelValue: false });
+      await component.vm.$nextTick();
+      await runNextAnimationFrame();
+      await runNextAnimationFrame();
+      vi.advanceTimersByTime(500);
+      await nextTick();
+
+      expect(component.emitted().collapsed).toBeUndefined();
+      expect(isExpanded(component)).toBe(true);
+    });
   });
 
   describe('when expanded', () => {
@@ -81,6 +145,20 @@ describe('The "Collapsible" component', () => {
       expect(isExpanded(component)).toBe(false);
 
       await expand(component);
+      expect(isExpanded(component)).toBe(true);
+    });
+
+    test('should reset the height and overflow properties when transitionend does not fire', async () => {
+      const component = createComponent(true);
+      await component.vm.$nextTick();
+
+      await component.setProps({ modelValue: false });
+      await component.vm.$nextTick();
+      await runNextAnimationFrame();
+      await runNextAnimationFrame();
+      vi.advanceTimersByTime(500);
+      await nextTick();
+
       expect(isExpanded(component)).toBe(true);
     });
   });

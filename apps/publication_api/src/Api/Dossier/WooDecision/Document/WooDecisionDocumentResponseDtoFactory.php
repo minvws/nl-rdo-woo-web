@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\WooDecision\Document;
 
 use Doctrine\Common\Collections\Collection;
+use PublicationApi\Api\Dossier\WooDecision\Inquiry\InquiryLinkFactory;
 use PublicationApi\Api\Dossier\WooDecision\Uploads\Document\WooDecisionUploadDocumentResource;
 use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\OpenApi\Links\Link;
@@ -28,6 +29,7 @@ readonly class WooDecisionDocumentResponseDtoFactory
         private ApiUrlGenerator $apiUrlGenerator,
         private DossierPathHelper $dossierPathHelper,
         private DocumentUploadStatusService $documentUploadStatusService,
+        private InquiryLinkFactory $inquiryLinkFactory,
         private PublicUrlGenerator $publicUrlGenerator,
         private WooDecisionRelatedDocumentResponseDtoFactory $wooDecisionRelatedDocumentResponseDtoFactory,
     ) {
@@ -112,6 +114,10 @@ readonly class WooDecisionDocumentResponseDtoFactory
                     'id' => $document->getId(),
                 ])),
             );
+        }
+
+        foreach ($document->getInquiries() as $inquiry) {
+            $linkCollection->add(LinkCollection::INQUIRIES, $this->inquiryLinkFactory->fromInquiry($inquiry));
         }
 
         return $linkCollection;

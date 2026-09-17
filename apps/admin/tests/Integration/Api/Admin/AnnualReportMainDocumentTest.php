@@ -87,7 +87,7 @@ final class AnnualReportMainDocumentTest extends AdminApiTestCase
             'internalReference' => 'foo bar',
             'type' => AttachmentType::ANNUAL_REPORT->value,
             'language' => AttachmentLanguage::NLD->value,
-            'grounds' => ['foo', 'bar'],
+            'grounds' => ['bar', 'foo'],
             'uploadUuid' => $upload->getUploadId(),
         ];
         self::createAdminApiClient($user)
@@ -215,7 +215,7 @@ final class AnnualReportMainDocumentTest extends AdminApiTestCase
             'internalReference' => 'foo bar',
             'type' => AttachmentType::PROGRESS_REPORT->value,
             'language' => AttachmentLanguage::NLD->value,
-            'grounds' => ['foo', 'bar'],
+            'grounds' => ['bar', 'foo'],
             'uploadUuid' => Uuid::v6(),
         ];
         self::createAdminApiClient($user)

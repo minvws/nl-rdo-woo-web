@@ -44,3 +44,8 @@ Om met de Test en Acceptatie te communiceren, doe dan het volgende:
    Dit zal de `organisationId` variabele vullen met de waarde van *E2E Test Organisation* van de betreffende omgeving.
 
 Nu zullen alle queries naar het betreffende organisation en environment gaan.
+
+## WooDecision-documenten
+
+Bij het aanleveren of wijzigen van WooDecision-documenten is `publicationContext` verplicht. Het documentnummer wordt samengesteld
+als `{publicationContext}-{documentId}`. Het veld `matter` hoort niet meer bij het API-contract en mag niet worden meegestuurd.

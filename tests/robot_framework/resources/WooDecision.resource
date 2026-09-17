@@ -20,11 +20,10 @@ Publish Test WooDecision
   ...  ${production_report}
   ...  ${documents}
   ...  ${number_of_documents}
-  ...  ${prefix}=E2E-A
   ...  ${publication_status}=Gepubliceerd
   ...  ${department}=${EMPTY}
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=${prefix}  type=woo-decision  department=${department}
+  Fill Out Basic Details  type=woo-decision  department=${department}
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  ${production_report}
   Verify Document Upload Remaining  Nog te uploaden: ${number_of_documents} van ${number_of_documents} document
@@ -44,7 +43,6 @@ Publish Generated Test WooDecision
   ...  production_report=${PRODUCTION_REPORT}
   ...  documents=${DOCUMENTS}
   ...  number_of_documents=${NUMBER_OF_DOCUMENTS}
-  ...  prefix=${prefix}
   ...  publication_status=${publication_status}
   ...  department=${department}
 

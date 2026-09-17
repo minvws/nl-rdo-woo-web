@@ -76,7 +76,7 @@ class CleanSheetTest extends UnitTestCase
     {
         $commandTester = new CommandTester($this->command);
 
-        $this->entityManager->expects('createQueryBuilder->delete->getQuery->execute')->times(8);
+        $this->entityManager->expects('createQueryBuilder->delete->getQuery->execute')->times(7);
 
         $this->indexService->expects('delete')
             ->with('woopie');

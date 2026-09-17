@@ -22,6 +22,7 @@ use Shared\Service\Search\Query\Sort\SortField;
 use Shared\Service\Search\Query\Sort\SortOrder;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\Translation\LocaleSwitcher;
 
 class SearchParametersTest extends UnitTestCase
 {
@@ -113,7 +114,7 @@ class SearchParametersTest extends UnitTestCase
     public function testIncludeWithoutDate(): void
     {
         $dateFacetInput = DateFacetInput::fromParameterBag(
-            new DateFacet(),
+            new DateFacet(new LocaleSwitcher('nl', [])),
             new ParameterBag([
                 'dt' => ['from' => '2021-01-15'],
             ]),
@@ -196,7 +197,7 @@ class SearchParametersTest extends UnitTestCase
 
     public function testWithoutFacetFilter(): void
     {
-        $dateFacetDefinition = new DateFacet();
+        $dateFacetDefinition = new DateFacet(new LocaleSwitcher('nl', []));
 
         $dateFacetInput = DateFacetInput::fromParameterBag(
             $dateFacetDefinition,
@@ -222,7 +223,7 @@ class SearchParametersTest extends UnitTestCase
 
     public function testWithoutFacetFilters(): void
     {
-        $dateFacetDefinition = new DateFacet();
+        $dateFacetDefinition = new DateFacet(new LocaleSwitcher('nl', []));
 
         $dateFacetInput = DateFacetInput::fromParameterBag(
             $dateFacetDefinition,

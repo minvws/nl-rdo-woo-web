@@ -19,10 +19,10 @@ use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicService;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use PublicationApi\Domain\Dossier\MetadataSnapshot;
 use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachment;
@@ -49,7 +49,6 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
         private DossierRepository $dossierRepository,
         private DossierValidator $dossierValidator,
         private OtherPublicationMapper $otherPublicationMapper,
-        private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
         private OrganisationResolver $organisationResolver,
         private NoticeNotPublicService $noticeNotPublicService,
@@ -82,7 +81,7 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
         }
 
         if ($dossier === null) {
-            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $documentPrefix = $organisation->getPrefix()->toString();
             $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
             $dossier = $this->create($organisation, $department, $subject, $data, $otherPublicationExternalId, $documentPrefix);
 
@@ -135,6 +134,7 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
         $this->dossierValidator->validateDossier($otherPublication);
         $this->dossierSupportService->autoPublish($otherPublication);
         $this->dossierSupportService->validateCompletionAndPersist($otherPublication);
+        $this->dossierSupportService->dispatchDossierCreatedEvent($otherPublication);
         $this->dossierSupportService->synchronizeArtifacts($otherPublication);
 
         return $otherPublication;
@@ -148,6 +148,8 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
         OtherPublicationRequestDto $otherPublicationRequestDto,
     ): void {
         $otherPublication = OtherPublicationMapper::update($otherPublication, $otherPublicationRequestDto, $organisation, $department, $subject);
+
+        $mainDocumentSnapshot = MetadataSnapshot::ofNullable($otherPublication->getMainDocument());
 
         if ($otherPublicationRequestDto->mainDocument !== null) {
             if ($otherPublication->getNoticeNotPublic() !== null) {
@@ -177,11 +179,12 @@ final readonly class OtherPublicationProcessor implements ProcessorInterface
         $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($otherPublication, $otherPublicationRequestDto->attachments);
         $attachments = $this->getAttachments($otherPublication, $otherPublicationRequestDto->attachments);
         $this->dossierAttachmentValidator->validate($attachments, $otherPublication->getStatus());
-        $this->attachmentSynchronizer->sync($otherPublication, $otherPublicationRequestDto->attachments);
+        $attachmentEvents = $this->attachmentSynchronizer->sync($otherPublication, $otherPublicationRequestDto->attachments);
 
         $this->dossierValidator->validateDossier($otherPublication);
         $this->dossierSupportService->autoPublish($otherPublication);
         $this->dossierSupportService->validateCompletionAndPersist($otherPublication);
+        $this->dossierSupportService->dispatchPublicationEvents($otherPublication, $mainDocumentSnapshot, $attachmentEvents);
         $this->dossierSupportService->synchronizeArtifacts($otherPublication);
     }
 

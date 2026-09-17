@@ -15,6 +15,7 @@ use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
 use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentSearchResultMapper;
 use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentNumber;
 
 class DocumentResultMapperTest extends UnitTestCase
 {
@@ -43,18 +44,28 @@ class DocumentResultMapperTest extends UnitTestCase
 
     public function testMapReturnsNullWhenViewModelCannotBeLoaded(): void
     {
+        $documentNumber = DocumentNumber::fromString('Prefix-Matter_01-Doc.123');
         $hit = Mockery::mock(TypeArray::class);
-        $hit->expects('getStringOrNull')->with('[fields][document_number][0]')->andReturn('foo');
+        $hit->expects('getStringOrNull')->with('[fields][document_number][0]')->andReturn($documentNumber->toString());
 
-        $this->documentRepository->expects('getDocumentSearchEntry')->with('foo')->andReturnNull();
+        $this->documentRepository
+            ->expects('getDocumentSearchEntry')
+            ->with(Mockery::on(static function (DocumentNumber $value) use ($documentNumber): bool {
+                self::assertSame($documentNumber->toString(), $value->toString());
+
+                return true;
+            }))
+            ->andReturnNull();
 
         $this->assertNull($this->mapper->map($hit));
     }
 
     public function testMapSuccessful(): void
     {
+        $documentNumber = DocumentNumber::fromString('Prefix-Matter_01-Doc.123');
+        $capturedDocumentNumber = null;
         $hit = Mockery::mock(TypeArray::class);
-        $hit->expects('getStringOrNull')->with('[fields][document_number][0]')->andReturn('foo');
+        $hit->expects('getStringOrNull')->with('[fields][document_number][0]')->andReturn($documentNumber->toString());
         $hit->expects('exists')->with('[highlight][pages.content]')->andReturnTrue();
         $hit->expects('getTypeArray->toArray')->andReturn(['x', 'y']);
         $hit->expects('exists')->with('[highlight][dossiers.title]')->andReturnFalse();
@@ -63,8 +74,25 @@ class DocumentResultMapperTest extends UnitTestCase
         $viewModel = Mockery::mock(DocumentViewModel::class);
         $dossierReference = Mockery::mock(DossierReference::class);
 
-        $this->documentRepository->expects('getDocumentSearchEntry')->with('foo')->andReturn($viewModel);
-        $this->dossierRepository->expects('getDossierReferencesForDocument')->with('foo')->andReturn([$dossierReference]);
+        $this->documentRepository
+            ->expects('getDocumentSearchEntry')
+            ->with(Mockery::on(static function (DocumentNumber $value) use (&$capturedDocumentNumber, $documentNumber): bool {
+                self::assertSame($documentNumber->toString(), $value->toString());
+                $capturedDocumentNumber = $value;
+
+                return true;
+            }))
+            ->andReturn($viewModel);
+        $this->dossierRepository
+            ->expects('getDossierReferencesForDocument')
+            ->with(Mockery::on(static function (DocumentNumber $value) use (&$capturedDocumentNumber, $documentNumber): bool {
+                self::assertNotNull($capturedDocumentNumber);
+                self::assertSame($capturedDocumentNumber, $value);
+                self::assertSame($documentNumber->toString(), $value->toString());
+
+                return true;
+            }))
+            ->andReturn([$dossierReference]);
 
         $entry = $this->mapper->map($hit);
 

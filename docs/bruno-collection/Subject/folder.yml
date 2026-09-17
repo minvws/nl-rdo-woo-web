@@ -1,0 +1,7 @@
+info:
+  name: Subject
+  type: folder
+  seq: 15
+
+request:
+  auth: inherit

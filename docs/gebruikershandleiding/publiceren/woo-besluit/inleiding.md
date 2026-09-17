@@ -35,7 +35,7 @@ De basisgegevens (metadata) van de publicatie vul je in stap 1 van de uploadstra
 | Verantwoordelijk bestuursorgaan                          | Ja      | Het bestuursorgaan dat verantwoordelijk is voor het Woo-besluit. Keuze uit een dropdownmenu.                                                                               |
 | Type besluit                                             | Ja      | Keuze uit: Wob-verzoek en Woo-verzoek                                                                                                                                      |
 | Onderwerp                                                | Nee     | Het onderwerp waar het Woo-besluit aan gekoppeld wordt. Keuze uit een dropdownmenu.                                                                                        |
-| Prefix                                                   | Ja      | Keuze uit een dropdownmenu. Maakt samen met het referentienummer het ID van de publicatie uniek in.                                                                        |
+| Prefix                                                   | Ja      | Vaste waarde van de organisatie. Vormt met het referentienummer een uniek ID binnen de organisatie.                                                                        |
 | Interne referentie                                       | Nee     | Vrij invulveld. Bijvoorbeeld een verwijzing naar de interne vindplaats of verantwoordelijke van de brondocumentatie van deze publicatie. Wordt niet getoond op de website. |
 | Referentienummer                                         | Ja      | Vrij invulveld, 3-50 karakters. Gebruik letters, cijfers en/of verbindingstekens. Uniek binnen de organisatie. Maakt samen met de prefix het ID van de publicatie uniek.   |
 
@@ -66,15 +66,20 @@ moeten toevoegen in dezelfde structuur als de uploadstraten van de andere inform
 
 Het productierapport bestaat **ten minste** uit de volgende kolommen:
 
-| kolomnaam         | Vereist | Toelichting                                                                                                                                                                                                           |
-| ----------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ID                | Ja      | Een nummer dat het document identificeert. Het ID moet uniek zijn binnen een matter.                                                                                                                                  |
-| Matter            | Ja      | Een nummer dat een verzameling van documenten identificeert. Binnen de matter moet een ID uniek zijn. Een matter bestaat uit minimaal 2 karakters.                                                                    |
-| Document          | Ja      | De bestandsnaam van het document                                                                                                                                                                                      |
-| Datum             | Ja      | De datum van het document. Voor e-mails is dit de datum waarop de email is verzonden. Voor andere bestandstype is dit de ‘laatst gewijzigd’-datum.                                                                    |
-| Beoordeling       | Ja      | Beoordeling van het document. Keuze uit: *reeds openbaar, openbaar, deelsopenbaar* en *niet openbaar*                                                                                                                 |
-| Beoordelingsgrond | Nee     | De beoordelingsgrond (ook wel: weigeringsgrond) die is gebruikt in het document om gegevens te lakken. Beoordelingsgronden kunnen zowel wetsartikelen uit de woo (nieuwe besluiten) als de wob (oude besluiten) zijn. |
-| Publieke Link     | Nee     | Indien de beoordeling van het document ‘Reeds openbaar is’ kan in deze kolom de URL worden opgenomen waar het document te vinden.                                                                                     |
+| kolomnaam | Vereist | Toelichting |
+| --- | --- | --- |
+| ID | Ja | Een nummer dat het document identificeert. Het ID moet uniek zijn binnen de publicatiecontext. |
+| Publicatiecontext | Ja* | De context waarbinnen het document wordt gepubliceerd. De waarde mag 1 tot en met 255 tekens bevatten en alleen letters, cijfers, `-`, `.`, `_` en `~` bevatten. |
+| Document | Ja | De bestandsnaam van het document |
+| Datum | Ja | De datum van het document. Voor e-mails is dit de datum waarop de email is verzonden. Voor andere bestandstype is dit de ‘laatst gewijzigd’-datum. |
+| Beoordeling | Ja | Beoordeling van het document. Keuze uit: *reeds openbaar, openbaar, deelsopenbaar* en *niet openbaar* |
+| Beoordelingsgrond | Nee | De beoordelingsgrond (ook wel: weigeringsgrond) die is gebruikt in het document om gegevens te lakken. Beoordelingsgronden kunnen zowel wetsartikelen uit de woo (nieuwe besluiten) als de wob (oude besluiten) zijn. |
+| Publieke Link | Nee | Indien de beoordeling van het document ‘Reeds openbaar is’ kan in deze kolom de URL worden opgenomen waar dit document te vinden. |
+
+Het documentnummer wordt samengesteld als `{publicatiecontext}-{id}`. Tot en met **31 december 2026** kan een productierapport
+zonder `Publicatiecontext` terugvallen op `Matter`; de vaste organisatieprefix en de `Matter`-waarde vormen dan samen de
+publicatiecontext. Een rapport mag niet tegelijk de kolommen `Publicatiecontext` en `Matter` bevatten. Vanaf **1 januari 2027**
+is `Publicatiecontext` verplicht.
 
 Na het uploaden van het productierapport kunnen de documenten geüpload worden. De bestandsnaam dient gelijk te zijn aan het
 ID uit het productierapport en enkel het bestandstype .pdf kan op dit moment geüpload worden. Ons advies is om grotere aantallen

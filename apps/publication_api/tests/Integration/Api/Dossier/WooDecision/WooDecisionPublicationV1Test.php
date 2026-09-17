@@ -40,7 +40,6 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\OrganisationFactory;
-use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
@@ -52,6 +51,7 @@ use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\OrganisationPrefix;
 use Shared\ValueObject\PlainDate;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\Request;
@@ -297,7 +297,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'inquiryNumbers' => [],
                     'documentDate' => $wooDecisionDocument1->getDocumentDate()?->format('Y-m-d'),
                     'documentId' => $wooDecisionDocument1->getDocumentId()->toString(),
-                    'documentNumber' => $wooDecisionDocument1->getDocumentNumber(),
+                    'documentNumber' => $wooDecisionDocument1->getDocumentNumber()->toString(),
                     'externalId' => $wooDecisionDocument1->getExternalId()?->toString(),
                     'familyId' => $wooDecisionDocument1->getFamilyId(),
                     'fileName' => $wooDecisionDocument1->getFileInfo()->getName(),
@@ -341,7 +341,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     'inquiryNumbers' => [],
                     'documentDate' => $wooDecisionDocument2->getDocumentDate()?->format('Y-m-d'),
                     'documentId' => $wooDecisionDocument2->getDocumentId()->toString(),
-                    'documentNumber' => $wooDecisionDocument2->getDocumentNumber(),
+                    'documentNumber' => $wooDecisionDocument2->getDocumentNumber()->toString(),
                     'externalId' => $wooDecisionDocument2->getExternalId()?->toString(),
                     'familyId' => $wooDecisionDocument2->getFamilyId(),
                     'fileName' => $wooDecisionDocument2->getFileInfo()->getName(),
@@ -484,7 +484,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(WooDecision::class, 0);
 
@@ -498,8 +497,9 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
     public function testCreateWooDecisionWithPrefixShouldIgnorePostData(): void
     {
-        $organisation = OrganisationFactory::createOne();
-        $documentPrefix = DocumentPrefixFactory::createOne(['organisation' => $organisation]);
+        $organisation = OrganisationFactory::createOne([
+            'prefix' => OrganisationPrefix::create('API-A'),
+        ]);
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
 
@@ -514,7 +514,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         self::assertDatabaseCount(WooDecision::class, 1);
         self::assertDatabaseHas(WooDecision::class, [
-            'documentPrefix' => $documentPrefix->getPrefix(),
+            'documentPrefix' => 'API-A',
         ]);
     }
 
@@ -523,7 +523,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $putData = $this->createValidWooDecisionDataPayload($department, $subject, 0, 0);
 
@@ -566,7 +565,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $data = $this->createValidWooDecisionDataPayload($department, $subject);
         $externalId = $this->getFaker()->externalId();
@@ -586,7 +584,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         self::assertDatabaseCount(WooDecision::class, 0);
 
         $data = $this->createValidWooDecisionDataPayload($department);
@@ -625,7 +622,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         self::assertDatabaseCount(WooDecision::class, 0);
 
         $data = $this->createValidWooDecisionDataPayload($department, $subject);
@@ -637,17 +633,18 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
     public function testCreateWooDecisionWithNonUniqueDossierNumberAndDocumentPrefix(): void
     {
-        $organisation = OrganisationFactory::createOne();
+        $organisation = OrganisationFactory::createOne([
+            'prefix' => OrganisationPrefix::create('API-A'),
+        ]);
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        $documentPrefix = DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         $wooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
                 'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'previewDate' => $this->getFaker()->plainDate(),
-                'documentPrefix' => $documentPrefix->getPrefix(),
+                'documentPrefix' => $organisation->getPrefix()->toString(),
             ],
         );
 
@@ -680,7 +677,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         self::assertDatabaseCount(WooDecision::class, 0);
 
         $data = array_merge($this->createValidWooDecisionDataPayload($department, $subject, 1, 1), $dataOverrides);
@@ -1386,7 +1382,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         self::assertDatabaseCount(WooDecision::class, 0);
 
         $data = $this->createValidWooDecisionDataPayload($department, $subject, 0, 0);
@@ -1407,7 +1402,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $existingWooDecision = WooDecisionFactory::createOne(['departments' => [$department], 'organisation' => $organisation]);
         $existingExternalId = $this->getFaker()->externalId();
@@ -1429,7 +1423,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $documentId = $this->getFaker()->documentId();
         $publicationContext = $this->getFaker()->publicationContext();
@@ -1460,7 +1453,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $existingWooDecision = WooDecisionFactory::createOne(['departments' => [$department], 'organisation' => $organisation]);
         DocumentFactory::createOne(['dossiers' => [$existingWooDecision], 'externalId' => $existingDocumentExternalId]);
@@ -1486,9 +1478,10 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
     public function testUpdateWooDecisionWithDocumentNumberAlreadyExistsInAnotherDossier(): void
     {
-        $organisation = OrganisationFactory::createOne();
+        $organisation = OrganisationFactory::createOne([
+            'prefix' => OrganisationPrefix::create('API-A'),
+        ]);
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        $documentPrefix = DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $documentId = 'testdocid';
 
@@ -1501,7 +1494,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         $wooDecisionToUpdate = WooDecisionFactory::createOne([
             'departments' => [$department],
-            'documentPrefix' => $documentPrefix->getPrefix(),
+            'documentPrefix' => $organisation->getPrefix()->toString(),
             'externalId' => ExternalId::create($this->getFaker()->slug(1)),
             'organisation' => $organisation,
             'status' => DossierStatus::CONCEPT,
@@ -1708,17 +1701,18 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
     public function testUpdateWooDecisionWithNonUniqueDossierNumberAndDocumentPrefix(): void
     {
-        $organisation = OrganisationFactory::createOne();
+        $organisation = OrganisationFactory::createOne([
+            'prefix' => OrganisationPrefix::create('API-A'),
+        ]);
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        $documentPrefix = DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         $existingWooDecision = WooDecisionFactory::createOne(
             [
                 'departments' => [$department],
                 'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'previewDate' => $this->getFaker()->plainDate(),
-                'documentPrefix' => $documentPrefix->getPrefix(),
+                'documentPrefix' => $organisation->getPrefix()->toString(),
             ],
         );
 
@@ -1728,7 +1722,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'externalId' => $this->getFaker()->externalId(),
                 'organisation' => $organisation,
                 'previewDate' => $this->getFaker()->plainDate(),
-                'documentPrefix' => $documentPrefix->getPrefix(),
+                'documentPrefix' => $organisation->getPrefix()->toString(),
             ],
         );
 
@@ -1758,7 +1752,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         $wooDecision = WooDecisionFactory::createOne([
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
@@ -1934,7 +1927,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         $wooDecision = WooDecisionFactory::createOne([
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),
@@ -2128,7 +2120,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $wooDecision = WooDecisionFactory::createOne([
             'departments' => [$department],
@@ -2225,7 +2216,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]);
     }
 
-    public function testUpdateWooDecisionDocumentForcesReUpload(): void
+    public function testUpdateWooDecisionDocumentMetadataKeepsTheUploadedFile(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -2271,10 +2262,10 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
 
         // assert upload-status
         self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation));
-        self::assertJsonContains(['items' => [['documents' => [0 => ['uploadStatus' => UploadStatus::UPLOAD_REQUIRED->value]]]]]);
+        self::assertJsonContains(['items' => [['documents' => [0 => ['uploadStatus' => UploadStatus::PROCESSED->value]]]]]);
     }
 
-    public function testUpdateWooDecisionWithDifferentDocumentDataSetsUploadedToFalse(): void
+    public function testUpdateWooDecisionWithDifferentDocumentDataKeepsTheUploadedFile(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
@@ -2328,6 +2319,56 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'id' => $wooDecisionDocument->getId(),
             'documentId' => $newDocumentId,
             'externalId' => $wooDecisionDocument->getExternalId(),
+            'fileInfo.uploaded' => true,
+        ]);
+    }
+
+    public function testUpdateWooDecisionDocumentToNotPublicRemovesTheUploadedFile(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
+        $wooDecisionDocument = DocumentFactory::createOne([
+            'dossiers' => [$wooDecision],
+            'externalId' => $this->getFaker()->externalId(),
+            'judgement' => Judgement::PUBLIC, // force isUploaded = true
+            'publicationContext' => $this->getFaker()->publicationContext(),
+        ]);
+
+        $putData = $this->createValidWooDecisionDataPayload($department, null, 0, 0);
+        $putData['documents'] = [
+            [
+                'inquiryNumbers' => [],
+                'documentDate' => $wooDecisionDocument->getDocumentDate()?->format('Y-m-d'),
+                'documentId' => $wooDecisionDocument->getDocumentId()->toString(),
+                'externalId' => $wooDecisionDocument->getExternalId()?->toString(),
+                'familyId' => $wooDecisionDocument->getFamilyId(),
+                'fileName' => $wooDecisionDocument->getFileInfo()->getName(),
+                'grounds' => $wooDecisionDocument->getGrounds(),
+                'isSuspended' => $wooDecisionDocument->isSuspended(),
+                'judgement' => Judgement::NOT_PUBLIC->value,
+                'links' => $wooDecisionDocument->getLinks(),
+                'publicationContext' => $wooDecisionDocument->getPublicationContext()?->toString(),
+                'refersTo' => $wooDecisionDocument->getRefersTo()->toArray(),
+                'remark' => $wooDecisionDocument->getRemark(),
+                'sourceType' => $wooDecisionDocument->getFileInfo()->getSourceType(),
+                'threadId' => $wooDecisionDocument->getThreadId(),
+            ],
+        ];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecision), ['json' => $putData]);
+        self::assertResponseIsSuccessful();
+
+        self::assertDatabaseHas(Document::class, [
+            'id' => $wooDecisionDocument->getId(),
+            'externalId' => $wooDecisionDocument->getExternalId(),
+            'judgement' => Judgement::NOT_PUBLIC,
             'fileInfo.uploaded' => false,
         ]);
     }
@@ -2709,7 +2750,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $data = array_merge($this->createValidWooDecisionDataPayload($department, $subject, 1, 1), $dataOverrides);
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
@@ -2866,7 +2906,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $putData = $this->createValidWooDecisionDataPayload($department, $subject, 0, 0);
 
@@ -2907,7 +2946,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'uploadStatus' => UploadStatus::NO_UPLOAD_REQUIRED->value,
             'isUploaded' => false,
             'isWithdrawn' => false,
-            'documentNumber' => $documentEntity->getDocumentNumber(),
+            'documentNumber' => $documentEntity->getDocumentNumber()->toString(),
             'fileName' => $documentData['fileName'],
             'sourceType' => $documentEntity->getFileInfo()?->getSourceType()?->value,
             '_links' => [],
@@ -2933,7 +2972,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
         $wooDecision = WooDecisionFactory::createOne([
             'departments' => [$department],
             'externalId' => $this->getFaker()->externalId(),

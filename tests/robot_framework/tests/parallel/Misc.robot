@@ -4,6 +4,7 @@ Resource            ../../resources/Covenant.resource
 Resource            ../../resources/Departments.resource
 Resource            ../../resources/Organisations.resource
 Resource            ../../resources/Setup.resource
+Resource            ../../resources/TestData.resource
 Resource            ../../resources/WooDecision.resource
 Suite Setup         Suite Setup
 Suite Teardown      Suite Teardown
@@ -55,13 +56,14 @@ Remove An Attachment
 
 Verify Document Relations
   [Tags]  relations
-  ${new_prefix} =  Add A Random Organisation Prefix
+  ${prod_report}  ${docs}  ${_} =  Randomize Production Report
+  ...  files/woodecision/relations.xlsx
+  ...  files/woodecision/relations.zip
   Click Publications
   Publish Test WooDecision
-  ...  production_report=files/woodecision/relations.xlsx
-  ...  documents=files/woodecision/relations.zip
+  ...  production_report=${prod_report}
+  ...  documents=${docs}
   ...  number_of_documents=10
-  ...  prefix=${new_prefix}
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Public URL
   # Check decision of 10

@@ -4,6 +4,7 @@
 {% set page_title = document.entity.fileInfo.name %}
 
 {% block body %}
+{% set documentNumber = document.entity.documentNumber.toString() %}
 <div class="woo-container woo-container--sm">
     <h1 class="woo-h1 sm:flex">
         <span class="block">
@@ -26,7 +27,7 @@
         </div>
         <div>
             <dt class="inline">{{ 'global.document_number' | trans }}:</dt>
-            <dd class="inline">{{ document.entity.documentNumber }}</dd>
+            <dd class="inline">{{ documentNumber }}</dd>
         </div>
     </dl>
 

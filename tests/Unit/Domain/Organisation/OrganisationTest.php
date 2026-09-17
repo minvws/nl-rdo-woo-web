@@ -8,9 +8,9 @@ use Doctrine\Common\Collections\Collection;
 use Mockery;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Service\Security\User;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\OrganisationPrefix;
 
 class OrganisationTest extends UnitTestCase
 {
@@ -20,6 +20,14 @@ class OrganisationTest extends UnitTestCase
         $organisation->setName($name = 'Foo Bar');
 
         self::assertEquals($name, $organisation->getName());
+    }
+
+    public function testSetAndGetPrefix(): void
+    {
+        $organisation = new Organisation();
+        $organisation->setPrefix(OrganisationPrefix::create('abc-12'));
+
+        self::assertSame('ABC-12', $organisation->getPrefix()->toString());
     }
 
     public function testAddAndRemoveDepartment(): void
@@ -52,40 +60,6 @@ class OrganisationTest extends UnitTestCase
         $organisation->removeUser($user);
 
         self::assertEquals([], $organisation->getUsers()->toArray());
-    }
-
-    public function testGetDocumentPrefixesSkipsArchived(): void
-    {
-        $organisation = new Organisation();
-
-        $activePrefix = Mockery::mock(DocumentPrefix::class);
-        $activePrefix->expects('setOrganisation')->with($organisation);
-        $activePrefix->expects('isArchived')->times(2)->andReturn(false);
-        $activePrefix->expects('getPrefix')->andReturn('foo');
-
-        $archivedPrefix = Mockery::mock(DocumentPrefix::class);
-        $archivedPrefix->expects('setOrganisation')->with($organisation);
-        $archivedPrefix->expects('isArchived')->times(2)->andReturn(true);
-
-        $organisation->addDocumentPrefix($activePrefix);
-        $organisation->addDocumentPrefix($archivedPrefix);
-
-        self::assertEquals([$activePrefix], $organisation->getDocumentPrefixes()->toArray());
-        self::assertEquals(['foo'], $organisation->getDocumentPrefixesAsArray());
-    }
-
-    public function testRemoveDocumentPrefix(): void
-    {
-        $organisation = new Organisation();
-
-        $prefix = Mockery::mock(DocumentPrefix::class);
-        $prefix->expects('setOrganisation')->with($organisation);
-
-        $organisation->addDocumentPrefix($prefix);
-
-        $prefix->expects('archive');
-
-        $organisation->removeDocumentPrefix($prefix);
     }
 
     public function testSetAndGetInquiries(): void

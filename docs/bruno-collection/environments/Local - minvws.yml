@@ -1,0 +1,39 @@
+variables:
+  - name: baseUrl
+    value: https://localhost:8443/api/publication/v1
+  - name: organisationId
+    value: ""
+  - name: departmentId
+    value: ""
+  - name: subjectId
+    value: ""
+  - name: dossierExternalId
+    value: ""
+  - name: attachmentExternalId
+    value: ""
+  - name: documentExternalId
+    value: ""
+  - name: otherPublicationDossierExternalId
+    value: ""
+  - name: otherPublicationAttachmentExternalId
+    value: ""
+  - name: adviceDossierExternalId
+    value: ""
+  - name: adviceAttachmentExternalId
+    value: ""
+  - name: annualReportDossierExternalId
+    value: ""
+  - name: annualReportAttachmentExternalId
+    value: ""
+  - name: complaintJudgementDossierExternalId
+    value: ""
+  - name: covenantDossierExternalId
+    value: ""
+  - name: covenantAttachmentExternalId
+    value: ""
+  - name: wooDecisionDossierExternalId
+    value: ""
+  - name: wooDecisionAttachmentExternalId
+    value: ""
+  - name: wooDecisionDocumentExternalId
+    value: ""

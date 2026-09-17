@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ContentTree from '@admin-fe/component/content-tree/ContentTree.vue';
+import ContentTreePreview from '@admin-fe/component/content-tree/ContentTreePreview.vue';
 import DepartmentLogoManager from '@admin-fe/component/department/DepartmentLogoManager.vue';
 import LinkDossiers from '@admin-fe/component/publication/LinkDossiers.vue';
 import MarkdownEditor from '@admin-fe/component/form/markdown/MarkdownEditor.vue';
@@ -13,6 +15,8 @@ import WooDecisionAddDocuments from '@admin-fe/component/publication/woo-decisio
 import WooDecisionUploadDocuments from '@admin-fe/component/publication/woo-decision/UploadDocuments.vue';
 
 const components = {
+  ContentTree,
+  ContentTreePreview,
   DepartmentLogoManager,
   LinkDossiers,
   MarkdownEditor,

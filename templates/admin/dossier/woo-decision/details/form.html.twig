@@ -9,13 +9,9 @@
 
     {%  include 'admin/dossier/shared/snippets/reference-number.html.twig' with {'form': form, 'dossier': dossier} %}
 
-    {% if form.documentPrefix is defined %}
-        {{ form_row(form.documentPrefix) }}
-    {% else %}
-        <div class="bhr-form-row">
-            <h2 class="bhr-label">{{ 'publication.dossier.documents_prefix' | trans }}</h2>
-            <p class="bhr-form-help">{{ 'publication.dossier.can_not_edit_after_creation' | trans | raw }}</p>
-            <p class="bhr-readonly-text">{{ dossier.documentPrefix }}-</p>
-        </div>
-    {% endif %}
+    <div class="bhr-form-row">
+        <h2 class="bhr-label">{{ 'publication.dossier.documents_prefix' | trans }}</h2>
+        <p class="bhr-form-help">{{ 'publication.dossier.can_not_edit_after_creation' | trans | raw }}</p>
+        <p class="bhr-readonly-text">{{ dossier.documentPrefix }}-</p>
+    </div>
 {{ form_end(form) }}

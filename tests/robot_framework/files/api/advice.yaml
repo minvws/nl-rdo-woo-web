@@ -80,11 +80,6 @@ testcases:
   steps:
     - name: Create dossier
       request: {}
-    - name: Sync locked dates before resend
-      keyword:
-        name: Sync Locked Dates From Server
-        args:
-          - advice
     - name: Change title before resend
       keyword:
         name: Update Previous Request Body

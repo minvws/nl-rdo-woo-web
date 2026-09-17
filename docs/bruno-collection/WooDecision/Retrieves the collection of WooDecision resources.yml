@@ -1,0 +1,297 @@
+info:
+  name: Retrieves the collection of WooDecision resources.
+  type: http
+  seq: 1
+  tags:
+    - WooDecision
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision"
+  params:
+    - name: cursor
+      value: ""
+      type: query
+      disabled: true
+    - name: organisationId
+      value: "{{organisationId}}"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: 200 Response
+    description: WooDecision collection
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision"
+      method: GET
+      params:
+        - name: cursor
+          value: ""
+          type: query
+          disabled: true
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "id": "",
+              "externalId": "",
+              "organisation": {
+                "id": "",
+                "name": ""
+              },
+              "dossierNumber": "",
+              "title": "",
+              "summary": "",
+              "subject": "",
+              "department": {
+                "id": "",
+                "name": ""
+              },
+              "publicationDate": "2025-12-21",
+              "status": "new",
+              "mainDocument": {
+                "id": "",
+                "type": "c_d506b718",
+                "language": "NLD",
+                "formalDate": "",
+                "grounds": [],
+                "fileName": "",
+                "uploadStatus": "no_upload_required"
+              },
+              "attachments": [
+                {
+                  "id": "",
+                  "type": "c_d506b718",
+                  "language": "NLD",
+                  "formalDate": "",
+                  "grounds": [],
+                  "fileName": "",
+                  "externalId": "",
+                  "uploadStatus": "no_upload_required"
+                }
+              ],
+              "dateFrom": "",
+              "dateTo": "",
+              "decision": "already_public",
+              "reason": "wob_request",
+              "previewDate": "2025-12-21",
+              "documents": [
+                {
+                  "inquiryNumbers": [],
+                  "documentDate": "",
+                  "documentId": "",
+                  "documentNumber": "",
+                  "externalId": "",
+                  "familyId": "",
+                  "grounds": [],
+                  "isSuspended": false,
+                  "isUploaded": false,
+                  "isWithdrawn": false,
+                  "judgement": "public",
+                  "links": [],
+                  "refersTo": [
+                    {
+                      "documentId": "",
+                      "externalId": ""
+                    }
+                  ],
+                  "remark": "",
+                  "threadId": "",
+                  "uploadStatus": "no_upload_required"
+                }
+              ]
+            }
+          ]
+  - name: 400 Response
+    description: Bad Request
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision"
+      method: GET
+      params:
+        - name: cursor
+          value: ""
+          type: query
+          disabled: true
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 401 Response
+    description: Unauthorized
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision"
+      method: GET
+      params:
+        - name: cursor
+          value: ""
+          type: query
+          disabled: true
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+    response:
+      status: 401
+      statusText: Unauthorized
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision"
+      method: GET
+      params:
+        - name: cursor
+          value: ""
+          type: query
+          disabled: true
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+    response:
+      status: 403
+      statusText: Forbidden
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 404 Response
+    description: Not Found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision"
+      method: GET
+      params:
+        - name: cursor
+          value: ""
+          type: query
+          disabled: true
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 405 Response
+    description: Method Not Allowed
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision"
+      method: GET
+      params:
+        - name: cursor
+          value: ""
+          type: query
+          disabled: true
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+    response:
+      status: 405
+      statusText: Method Not Allowed
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 500 Response
+    description: Internal Server Error
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision"
+      method: GET
+      params:
+        - name: cursor
+          value: ""
+          type: query
+          disabled: true
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+    response:
+      status: 500
+      statusText: Internal Server Error
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+
+docs: Retrieves the collection of WooDecision resources.

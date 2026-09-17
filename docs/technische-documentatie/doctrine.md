@@ -17,7 +17,7 @@
 
 - IDs are `Symfony\Component\Uid\Uuid` values generated in PHP, **not** by the database. Two strategies are in use:
   - most entities assign `Uuid::v6()` in their constructor;
-  - `User`, `LoginActivity`, `Department`, `Organisation`, `DocumentPrefix`, `Inquiry`, `InquiryInventory`,
+  - `User`, `LoginActivity`, `Department`, `Organisation`, `Inquiry`, `InquiryInventory`,
     `ProductionReportProcessRun` and `History` use `#[ORM\CustomIdGenerator(class: UuidGenerator::class)]`, which
     yields UUIDv7 because `config/packages/uid.yaml` sets `default_uuid_version: 7`.
 - Most entities carry `createdAt` / `updatedAt` through `Shared\Doctrine\TimestampableTrait`, which refreshes
@@ -75,7 +75,7 @@ subclasses, so a `Covenant` has no documents while a `WooDecision` does.
 | `dateFrom`          | `PlainDate`        | Start of the period this dossier covers. Nullable                            |
 | `dateTo`            | `PlainDate`        | End of the period this dossier covers. Nullable                              |
 | `summary`           | text               | Summary shown on the public detail page                                      |
-| `documentPrefix`    | string             | Prefix that scopes `dossierNumber` and document numbers                      |
+| `documentPrefix`    | string             | Prefix for `dossierNumber`; document numbers use `publicationContext`        |
 | `publicationDate`   | `PlainDate`        | Date of publication. Nullable                                                |
 | `completed`         | bool               | Whether the wizard has been completed at least once                          |
 | `internalReference` | string             | Free-text reference for internal use, not shown publicly                     |
@@ -118,16 +118,20 @@ documents.
 
 ## Organisation, department and subject
 
-`Organisation` is the tenancy boundary within a tenant: users, dossiers, inquiries, subjects and document prefixes all
-belong to one. Most authorization filters are expressed as "same organisation only" (see
+`Organisation` is the tenancy boundary within a tenant: users, dossiers, inquiries and subjects all belong to one. Its
+single `Organisation.prefix` value is captured by new dossiers. Most authorization filters are expressed as "same
+organisation only" (see
 [access-roles.md](access-roles.md)).
+
+The legacy `document_prefix` table remains represented by `Shared\Domain\Publication\Dossier\DocumentPrefix` as a
+schema-only Doctrine entity. It intentionally has no repository or inverse organisation relation; keep this mapping until
+the table is explicitly retired.
 
 | Entity           | Key fields                                                                                                                          |
 |------------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| `Organisation`   | `name`; owns `users`, `dossiers`, `inquiries`, `subjects`, `documentPrefixes`; m:n `departments`                                    |
+| `Organisation`   | `name`, `prefix`; owns `users`, `dossiers`, `inquiries`, `subjects`; m:n `departments`                                              |
 | `Department`     | `name`, `shortTag`, `slug`, `public`, plus landing-page content (`landingPageTitle`, `feedbackContent`, `responsibilityContent`, …) |
 | `Subject`        | `name`, `organisation`, `dossiers`                                                                                                  |
-| `DocumentPrefix` | The prefix used in dossier and document numbers, scoped to an organisation                                                          |
 
 ## User
 

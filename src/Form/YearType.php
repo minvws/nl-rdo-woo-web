@@ -43,9 +43,7 @@ class YearType extends ChoiceType
      */
     public function getChoices(int $minYears, int $plusYears, bool $reverse, ?PlainDate $plainDate = null): array
     {
-        if ($plainDate === null) {
-            $plainDate = PlainDate::today();
-        }
+        $plainDate ??= PlainDate::today();
 
         $options = [];
 

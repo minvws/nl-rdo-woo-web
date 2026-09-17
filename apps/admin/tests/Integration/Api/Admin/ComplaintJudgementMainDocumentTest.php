@@ -87,7 +87,7 @@ final class ComplaintJudgementMainDocumentTest extends AdminApiTestCase
             'internalReference' => 'foo bar',
             'type' => AttachmentType::COMPLAINT_JUDGEMENT->value,
             'language' => AttachmentLanguage::NLD->value,
-            'grounds' => ['foo', 'bar'],
+            'grounds' => ['bar', 'foo'],
             'uploadUuid' => $upload->getUploadId(),
         ];
         self::createAdminApiClient($user)
@@ -215,7 +215,7 @@ final class ComplaintJudgementMainDocumentTest extends AdminApiTestCase
             'internalReference' => 'foo bar',
             'type' => AttachmentType::PROGRESS_REPORT->value,
             'language' => AttachmentLanguage::NLD->value,
-            'grounds' => ['foo', 'bar'],
+            'grounds' => ['bar', 'foo'],
             'uploadUuid' => Uuid::v6(),
         ];
 

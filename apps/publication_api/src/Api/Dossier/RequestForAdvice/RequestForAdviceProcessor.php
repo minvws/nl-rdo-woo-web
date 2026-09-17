@@ -19,10 +19,10 @@ use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicMapper;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicService;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use PublicationApi\Domain\Dossier\MetadataSnapshot;
 use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
@@ -49,7 +49,6 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
         private DossierRepository $dossierRepository,
         private DossierValidator $dossierValidator,
         private RequestForAdviceMapper $requestForAdviceMapper,
-        private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
         private OrganisationResolver $organisationResolver,
         private NoticeNotPublicService $noticeNotPublicService,
@@ -83,7 +82,7 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
         }
 
         if ($dossier === null) {
-            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $documentPrefix = $organisation->getPrefix()->toString();
             $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
             $dossier = $this->create($organisation, $department, $subject, $data, $requestForAdviceExternalId, $documentPrefix);
 
@@ -136,6 +135,7 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
         $this->dossierValidator->validateDossier($requestForAdvice);
         $this->dossierSupportService->autoPublish($requestForAdvice);
         $this->dossierSupportService->validateCompletionAndPersist($requestForAdvice);
+        $this->dossierSupportService->dispatchDossierCreatedEvent($requestForAdvice);
         $this->dossierSupportService->synchronizeArtifacts($requestForAdvice);
 
         return $requestForAdvice;
@@ -149,6 +149,8 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
         RequestForAdviceRequestDto $requestForAdviceRequestDto,
     ): void {
         $requestForAdvice = RequestForAdviceMapper::update($requestForAdvice, $requestForAdviceRequestDto, $organisation, $department, $subject);
+
+        $mainDocumentSnapshot = MetadataSnapshot::ofNullable($requestForAdvice->getMainDocument());
 
         if ($requestForAdviceRequestDto->mainDocument !== null) {
             if ($requestForAdvice->getNoticeNotPublic() !== null) {
@@ -178,11 +180,12 @@ final readonly class RequestForAdviceProcessor implements ProcessorInterface
         $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($requestForAdvice, $requestForAdviceRequestDto->attachments);
         $attachments = $this->getAttachments($requestForAdvice, $requestForAdviceRequestDto->attachments);
         $this->dossierAttachmentValidator->validate($attachments, $requestForAdvice->getStatus());
-        $this->attachmentSynchronizer->sync($requestForAdvice, $requestForAdviceRequestDto->attachments);
+        $attachmentEvents = $this->attachmentSynchronizer->sync($requestForAdvice, $requestForAdviceRequestDto->attachments);
 
         $this->dossierValidator->validateDossier($requestForAdvice);
         $this->dossierSupportService->autoPublish($requestForAdvice);
         $this->dossierSupportService->validateCompletionAndPersist($requestForAdvice);
+        $this->dossierSupportService->dispatchPublicationEvents($requestForAdvice, $mainDocumentSnapshot, $attachmentEvents);
         $this->dossierSupportService->synchronizeArtifacts($requestForAdvice);
     }
 

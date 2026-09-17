@@ -6,14 +6,11 @@ namespace Shared\Form\Inquiry;
 
 use Shared\Domain\Upload\FileType\FileType as FileTypeEnum;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Required;
 
 /**
  * @template-extends AbstractType<InquiryLinkDocumentsFormType>
@@ -37,21 +34,6 @@ class InquiryLinkDocumentsFormType extends AbstractType
                     'typeName' => FileTypeEnum::XLS->getTypeName(),
                 ],
             ])
-            ->add('prefix', ChoiceType::class, [
-                'label' => 'admin.dossiers.decision_prefix', // @codingStandardsIgnoreStart
-                'attr' => [
-                    'class' => 'w-9/12',
-                ],
-                // @codingStandardsIgnoreStart
-                'help' => 'admin.dossiers.decision_prefix_help', // @codingStandardsIgnoreEnds
-                'choice_loader' => $options['choice_loader'],
-                'placeholder' => 'admin.global.dossiers.prefix_placeholder',
-                'required' => true,
-                'constraints' => [
-                    new NotBlank(),
-                    new Required(),
-                ],
-            ])
             ->add('link', SubmitType::class, [
                 'label' => 'global.attach',
                 'attr' => [
@@ -65,12 +47,5 @@ class InquiryLinkDocumentsFormType extends AbstractType
                     'data-last-button' => true,
                 ],
             ]);
-    }
-
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setRequired('choice_loader');
-
-        $resolver->setDefaults([]);
     }
 }

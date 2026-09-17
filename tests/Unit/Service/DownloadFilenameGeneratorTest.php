@@ -9,13 +9,14 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAtt
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Service\DownloadFilenameGenerator;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentNumber;
 
 class DownloadFilenameGeneratorTest extends UnitTestCase
 {
     public function testGetFileNameForDocument(): void
     {
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentNumber')->andReturn('123');
+        $document->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('123'));
         $document->expects('getFileInfo->getType')->andReturn('csv');
 
         $generator = new DownloadFilenameGenerator();

@@ -33,14 +33,14 @@ describe('The "MarkdownEditor" component', () => {
 
   const getDialogComponent = (wrapper: VueWrapper) =>
     wrapper.findComponent({ name: 'Dialog' });
-  const toggleHelp = (wrapper: VueWrapper) =>
-    wrapper.find('[aria-haspopup="dialog"]').trigger('click');
+  const toggleHelp = (wrapper: VueWrapper) => toggleToolbarButtonAt(wrapper, 6);
 
   const getTextareaElement = (wrapper: VueWrapper) => wrapper.find('textarea');
   const getTextareaValue = (wrapper: VueWrapper) =>
     getTextareaElement(wrapper).element.value;
+  const getPreviewElement = (wrapper: VueWrapper) => wrapper.find('.preview');
   const getPreviewHtml = (wrapper: VueWrapper) =>
-    wrapper.find('.preview').element.innerHTML;
+    getPreviewElement(wrapper).element.innerHTML;
 
   const getToolbarButtonAt = (wrapper: VueWrapper, index: number) =>
     wrapper
@@ -54,6 +54,10 @@ describe('The "MarkdownEditor" component', () => {
     toggleToolbarButtonAt(wrapper, 3);
   const toggleNumberedList = (wrapper: VueWrapper) =>
     toggleToolbarButtonAt(wrapper, 4);
+  const togglePreview = (wrapper: VueWrapper) =>
+    toggleToolbarButtonAt(wrapper, 5);
+  const getPreviewToggleButton = (wrapper: VueWrapper) =>
+    getToolbarButtonAt(wrapper, 5);
   const toggleToolbarButtonAt = async (wrapper: VueWrapper, index: number) => {
     getToolbarButtonAt(wrapper, index).trigger('click');
     await nextTick();
@@ -95,13 +99,52 @@ describe('The "MarkdownEditor" component', () => {
     });
   });
 
-  test('should have a preview element containing the html rendered from the markdown', async () => {
-    const component = createComponent();
-    expect(getPreviewHtml(component)).toBe(md.render(mockedMarkdown));
+  describe('the preview', () => {
+    test('should be hidden by default', () => {
+      const component = createComponent();
+      expect(getPreviewElement(component).exists()).toBe(false);
+      expect(
+        getPreviewToggleButton(component).attributes('aria-expanded'),
+      ).toBe('false');
+    });
 
-    const updatedMarkdown = '**This is updated bold text**';
-    await updateValue(component, updatedMarkdown);
-    expect(getPreviewHtml(component)).toBe(md.render(updatedMarkdown));
+    test('should become visible when the preview toggle button is clicked and hide again when clicked once more', async () => {
+      const component = createComponent();
+
+      await togglePreview(component);
+      expect(getPreviewElement(component).exists()).toBe(true);
+      expect(
+        getPreviewToggleButton(component).attributes('aria-expanded'),
+      ).toBe('true');
+
+      await togglePreview(component);
+      expect(getPreviewElement(component).exists()).toBe(false);
+      expect(
+        getPreviewToggleButton(component).attributes('aria-expanded'),
+      ).toBe('false');
+    });
+
+    test('should have an id that matches the aria-controls attribute of the toggle button', async () => {
+      const component = createComponent();
+
+      await togglePreview(component);
+      expect(getPreviewElement(component).attributes('id')).toBe(
+        'mocked-id-preview',
+      );
+      expect(
+        getPreviewToggleButton(component).attributes('aria-controls'),
+      ).toBe('mocked-id-preview');
+    });
+
+    test('should contain the html rendered from the markdown', async () => {
+      const component = createComponent();
+      await togglePreview(component);
+      expect(getPreviewHtml(component)).toBe(md.render(mockedMarkdown));
+
+      const updatedMarkdown = '**This is updated bold text**';
+      await updateValue(component, updatedMarkdown);
+      expect(getPreviewHtml(component)).toBe(md.render(updatedMarkdown));
+    });
   });
 
   describe('toggling the bold style', () => {

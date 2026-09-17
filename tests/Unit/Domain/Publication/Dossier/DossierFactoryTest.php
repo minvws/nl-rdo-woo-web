@@ -14,6 +14,7 @@ use Shared\Domain\Publication\Dossier\Type\DossierTypeConfigInterface;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
 use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\OrganisationPrefix;
 
 class DossierFactoryTest extends UnitTestCase
 {
@@ -37,6 +38,7 @@ class DossierFactoryTest extends UnitTestCase
     public function testCreate(): void
     {
         $organisation = Mockery::mock(Organisation::class);
+        $organisation->expects('getPrefix')->andReturn(OrganisationPrefix::create('TEST-A'));
         $this->authorizationMatrix->expects('getActiveOrganisation')->andReturn($organisation);
 
         $type = DossierType::DISPOSITION;
@@ -50,5 +52,6 @@ class DossierFactoryTest extends UnitTestCase
 
         self::assertInstanceOf(Disposition::class, $dossier);
         self::assertSame($organisation, $dossier->getOrganisation());
+        self::assertSame('TEST-A', $dossier->getDocumentPrefix());
     }
 }

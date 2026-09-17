@@ -13,6 +13,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
+use Shared\Domain\Search\Query\Facet\FacetDefinitions;
 use Shared\Service\DownloadResponseHelper;
 use Shared\Service\Inquiry\InquirySessionService;
 use Shared\Service\Search\Model\FacetKey;
@@ -26,6 +27,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class InquiryController extends AbstractController
 {
+    public const string ROUTE_NAME_INQUIRY_DETAIL = 'app_inquiry_detail';
+
     private const int MAX_DOCUMENTS_PER_PAGE = 10;
     private const int MAX_DOSSIERS_PER_PAGE = 10;
 
@@ -35,10 +38,11 @@ class InquiryController extends AbstractController
         private readonly InquiryRepository $inquiryRepository,
         private readonly DownloadResponseHelper $downloadHelper,
         private readonly OnDemandZipGenerator $onDemandZipGenerator,
+        private readonly FacetDefinitions $facetDefinitions,
     ) {
     }
 
-    #[Route('/zaak/{token}', name: 'app_inquiry_detail', methods: ['GET'])]
+    #[Route('/zaak/{token}', name: self::ROUTE_NAME_INQUIRY_DETAIL, methods: ['GET'])]
     public function detail(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
     ): Response {
@@ -48,7 +52,7 @@ class InquiryController extends AbstractController
         $searchUrl = $this->generateUrl(
             'app_search',
             [
-                FacetKey::INQUIRY_DOCUMENTS->getParamName() => [$inquiry->getId()],
+                $this->facetDefinitions->get(FacetKey::INQUIRY_DOCUMENTS)->getRequestParameter() => [$inquiry->getId()],
             ],
         );
 
@@ -105,7 +109,7 @@ class InquiryController extends AbstractController
         $searchUrl = $this->generateUrl(
             'app_search',
             [
-                FacetKey::INQUIRY_DOCUMENTS->getParamName() => [$inquiry->getId()],
+                $this->facetDefinitions->get(FacetKey::INQUIRY_DOCUMENTS)->getRequestParameter() => [$inquiry->getId()],
             ],
         );
 
@@ -152,11 +156,14 @@ class InquiryController extends AbstractController
             ],
         );
 
+        $inquiryDocumentsParam = $this->facetDefinitions->get(FacetKey::INQUIRY_DOCUMENTS)->getRequestParameter();
+        $dossierNumberParam = $this->facetDefinitions->get(FacetKey::PREFIXED_DOSSIER_NUMBER)->getRequestParameter();
+
         $searchUrl = $this->generateUrl(
             'app_search',
             [
-                FacetKey::INQUIRY_DOCUMENTS->getParamName() => [$inquiry->getId()],
-                FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($wooDecision)],
+                $inquiryDocumentsParam => [$inquiry->getId()],
+                $dossierNumberParam => [PrefixedDossierNumber::forDossier($wooDecision)],
             ],
         );
 

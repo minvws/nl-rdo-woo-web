@@ -16,10 +16,11 @@ use Shared\Domain\Publication\SourceType;
 use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inventory\DocumentComparator;
 use Shared\Service\Inventory\DocumentMetadata;
-use Shared\Service\Inventory\DocumentNumber;
+use Shared\Service\Inventory\LegacyDocumentNumberFactory;
 use Shared\Service\Inventory\MetadataField;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentNumber;
 
 class DocumentComparatorTest extends UnitTestCase
 {
@@ -31,7 +32,10 @@ class DocumentComparatorTest extends UnitTestCase
     {
         $this->dossier = Mockery::mock(WooDecision::class);
         $this->repository = Mockery::mock(DocumentRepository::class);
-        $this->documentComparator = new DocumentComparator($this->repository);
+        $this->documentComparator = new DocumentComparator(
+            $this->repository,
+            new LegacyDocumentNumberFactory(),
+        );
 
         parent::setUp();
     }
@@ -138,18 +142,18 @@ class DocumentComparatorTest extends UnitTestCase
 
     public function testHasRefersToUpdateReturnsTrueWhenAReferralIsAdded(): void
     {
-        $this->dossier->expects('getDocumentPrefix')->times(3)->andReturn('prefix');
+        $this->dossier->expects('getDocumentPrefix')->andReturn('prefix');
 
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
-        $document->expects('getDocumentNumber')->andReturn('bar-123');
-        $document->expects('getDocumentId')->times(2)->andReturn(DocumentId::create('123'));
+        $document->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('bar-123'));
+        $document->expects('getDocumentId')->andReturn(DocumentId::create('123'));
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123']);
 
         $referredDocument = Mockery::mock(Document::class);
-        $referredDocument->expects('getDocumentNumber')->andReturn('foo-123');
+        $referredDocument->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('foo-123'));
 
         $this->repository->expects('findByDocumentNumber')->andReturn($referredDocument);
 
@@ -160,18 +164,20 @@ class DocumentComparatorTest extends UnitTestCase
 
     public function testHasRefersToUpdateIgnoresInvalidReferral(): void
     {
-        $this->dossier->expects('getDocumentPrefix')->times(6)->andReturn('prefix');
+        $this->dossier->expects('getDocumentPrefix')->twice()->andReturn('prefix');
 
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
-        $document->expects('getDocumentNumber')->times(2)->andReturn('bar-123');
-        $document->expects('getDocumentId')->times(4)->andReturn(DocumentId::create('123'));
+        $document->expects('getDocumentNumber')
+            ->times(2)
+            ->andReturn(DocumentNumber::fromString('bar-123'));
+        $document->expects('getDocumentId')->twice()->andReturn(DocumentId::create('123'));
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123', 'invalid-456']);
 
         $referredDocument = Mockery::mock(Document::class);
-        $referredDocument->expects('getDocumentNumber')->andReturn('foo-123');
+        $referredDocument->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('foo-123'));
 
         $this->repository->expects('findByDocumentNumber')->andReturn($referredDocument);
         $this->repository->expects('findByDocumentNumber')->andReturnNull();

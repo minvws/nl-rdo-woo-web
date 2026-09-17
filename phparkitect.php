@@ -13,6 +13,7 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Shared\Tests\Integration\IntegrationTestTrait;
 use Shared\Tests\Integration\Service\Search\Query\Definition\QueryDefinitionTestTrait;
+use Shared\Tests\Snapshots\MatchesSnapshots as SnapshotsMatchesSnapshots;
 use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
@@ -68,9 +69,15 @@ return static function (Config $config): void {
         ->because('test classes should extend the base classes that already includes MockeryPHPUnitIntegration trait');
 
     $rules[] = Rule::allClasses()
-        ->except(IntegrationTestTrait::class, UnitTestCase::class, QueryDefinitionTestTrait::class)
+        ->except(SnapshotsMatchesSnapshots::class)
         ->that(new ResideInOneOfTheseNamespaces(...$testNamespaces))
         ->should(new NotHaveTrait(MatchesSnapshots::class))
+        ->because('test classes should use the Shared\Tests\Snapshots\MatchesSnapshots trait instead, which wraps the Spatie one');
+
+    $rules[] = Rule::allClasses()
+        ->except(IntegrationTestTrait::class, UnitTestCase::class, QueryDefinitionTestTrait::class)
+        ->that(new ResideInOneOfTheseNamespaces(...$testNamespaces))
+        ->should(new NotHaveTrait(SnapshotsMatchesSnapshots::class))
         ->because('test classes should extend the base classes that already includes MatchesSnapshots trait');
 
     $config

@@ -16,21 +16,16 @@ Organisation Selector Should Not Be Available
 Click Manage Organisations
   Click  //*[@data-e2e-name="manage-organisations"]
 
-Add A New Organisation Prefix
-  [Arguments]  ${prefix}
-  Click  //button[@data-e2e-name="add-prefix-button"]
-  Fill Text  (//input[@data-e2e-name="add-prefix-input"])[last()]  ${prefix}
-
 Click Save Organisation
-  Click  //*[@id="organisation_form_submit"]
+  Click  //*[@data-e2e-name="organisation-form-submit"]
   ${csfr_error_visible} =  Get Element Count  //*[contains(.,'CSRF')]
   IF  ${csfr_error_visible} > 0
     # Retry on CSRF error, temp workaround for https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
     Log  message=CSRF error found, retrying the click.  level=WARN
     Select Responsible Department  E2E Test Department 1
-    Click  //*[@id="organisation_form_submit"]
+    Click  //*[@data-e2e-name="organisation-form-submit"]
     Get Element States
-    ...  //div[@id="organisation_form-error"]
+    ...  //*[@data-e2e-name="input-errors-organisation_form"]
     ...  not contains
     ...  attached
     ...  message=Error shown, even after retry
@@ -65,8 +60,8 @@ Create New Organisation
       VAR  ${organisation_name} =  A Random Organisation ${random}
       VAR  ${prefix} =  ${random}
     END
-    Fill Text  id=organisation_form_name  ${organisation_name}
-    Fill Text  //input[@data-e2e-name="add-prefix-input"]  ${prefix}
+    Fill Text  //input[@data-e2e-name="organisation-name-input"]  ${organisation_name}
+    Fill Text  //input[@data-e2e-name="organisation-prefix-input"]  ${prefix}
     IF  '${responsible_department_name}' == 'EMPTY'
       Select Options By  //select[@name="organisation_form[departments][0]"]  index  1
     ELSE
@@ -85,10 +80,10 @@ Update Organisation
   Click  //table[@data-e2e-name="organisations-table"]//a[contains(.,'${prefix}')]
   IF  '${updated_organisation_name}' == 'EMPTY'
     ${random} =  Generate Random String  1  [NUMBERS]
-    ${updated_organisation_name} =  Get Text  id=organisation_form_name
+    ${updated_organisation_name} =  Get Text  //input[@data-e2e-name="organisation-name-input"]
     ${updated_organisation_name} =  Catenate  ${updated_organisation_name}${random}
   END
-  Fill Text  id=organisation_form_name  ${updated_organisation_name}
+  Fill Text  //input[@data-e2e-name="organisation-name-input"]  ${updated_organisation_name}
   IF  '${updated_responsible_department_name}' == 'EMPTY'
     Select Random Department
   ELSE
@@ -105,45 +100,3 @@ Select Random Department
   ${random_number} =  Evaluate  random.randint(1, ${nr_of_subjects})  random
   ${random_index} =  Evaluate  ${random_number} - 1
   Select Options By  //select[@name="organisation_form[departments][0]"]  index  ${random_index}
-
-Open Organisation Details
-  [Arguments]  ${organisation}=E2E Test Organisation
-  Click  //table[@data-e2e-name="organisations-table"]//td[contains(.,'${organisation}')]/..//a
-
-Click Save Prefixes
-  Click  //*[@id="organisation_form_submit"]
-  ${csfr_error_visible} =  Get Element Count  //*[contains(.,'CSRF')]
-  IF  ${csfr_error_visible} > 0
-    # Retry on CSRF error, another instance of https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
-    Log  message=CSRF error found, retrying the click.  level=WARN
-    Select Responsible Department  E2E Test Department 1
-    Click  //*[@id="organisation_form_submit"]
-    Get Element States
-    ...  //*[contains(.,'CSRF')]
-    ...  not contains
-    ...  attached
-    ...  message=Error shown, even after retry
-  END
-  # The following check has been added to check if the save went succesful in parallel execution. If the check fails, the upper keyword will retry it.
-  ${prefix_save_error} =  Get Element Count
-  ...  //*[contains(.,'The prefix can only be set on creation, never updated')]
-  IF  ${prefix_save_error} > 0
-    Log  message=Saving prefixes failed due to parallel execution  level=WARN
-  END
-  Should Not Be Equal As Integers  ${prefix_save_error}  1
-
-Add A Random Organisation Prefix
-  [Documentation]  Adds a random organisation prefix and returns it. Assumes there are already more then 1 prefixes.
-  ${prefix} =  Wait Until Keyword Succeeds  3x  1s  Inner Keyword Add A Random Organisation Prefix
-  RETURN  ${prefix}
-
-Inner Keyword Add A Random Organisation Prefix
-  Click Organisation Selector
-  Click Manage Organisations
-  Open Organisation Details  E2E Test Organisation
-  Select Responsible Department  E2E Test Department 1
-  ${random} =  FakerLibrary.Ean 13
-  ${prefix} =  Catenate  E2E-RAND-${random}
-  Add A New Organisation Prefix  ${prefix}
-  Click Save Prefixes
-  RETURN  ${prefix}

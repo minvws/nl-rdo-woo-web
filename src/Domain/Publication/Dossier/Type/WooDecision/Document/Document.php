@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Override;
+use Shared\Doctrine\DocumentNumberType;
 use Shared\Doctrine\PlainDateType;
 use Shared\Doctrine\PublicationContextType;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
@@ -20,6 +21,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Shared\AbstractPublicatio
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Validator\Immutable;
 use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
 use Shared\ValueObject\PublicationContext;
@@ -46,8 +48,8 @@ class Document extends AbstractPublicationItem
     )]
     private Collection $dossiers;
 
-    #[ORM\Column(length: 255, nullable: false, index: true)]
-    private string $documentNumber;
+    #[ORM\Column(type: DocumentNumberType::NAME, index: true)]
+    private DocumentNumber $documentNumber;
 
     #[ORM\Column(type: PublicationContextType::NAME, length: 255, nullable: true)]
     #[Immutable(groups: [DossierValidationGroup::PUBLICATION_LOCKED->value])]
@@ -140,12 +142,12 @@ class Document extends AbstractPublicationItem
         return $this;
     }
 
-    public function getDocumentNumber(): string
+    public function getDocumentNumber(): DocumentNumber
     {
         return $this->documentNumber;
     }
 
-    public function setDocumentNumber(string $documentNumber): self
+    public function setDocumentNumber(DocumentNumber $documentNumber): self
     {
         $this->documentNumber = $documentNumber;
 
@@ -393,7 +395,7 @@ class Document extends AbstractPublicationItem
     #[Override]
     public function getFileCacheKey(): string
     {
-        return $this->documentNumber;
+        return $this->documentNumber->toString();
     }
 
     public function getWithdrawReason(): ?DocumentWithdrawReason

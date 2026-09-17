@@ -11,7 +11,6 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use Shared\Service\Inventory\DocumentNumber;
 use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\InquiryFactory;
@@ -20,6 +19,7 @@ use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory
 use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Story\WooIndexWooDecisionStory;
 use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
 use Shared\ValueObject\PublicationContext;
@@ -45,7 +45,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
     public function testSaveAndRemove(): void
     {
         $document = new Document();
-        $document->setDocumentNumber('abc123');
+        $document->setDocumentNumber(DocumentNumber::fromString('abc123'));
         $document->setDocumentId(DocumentId::create('abc123'));
 
         $this->documentRepository->save($document, true);
@@ -92,14 +92,14 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             123,
         );
         self::assertCount(1, $result);
-        self::assertEquals($documentNumberA, $result[0]->getdocumentNumber());
+        self::assertSame($documentNumberA, $result[0]->getdocumentNumber()->toString());
 
         $result = $this->documentRepository->findByFamilyId(
             $dossierA,
             456,
         );
         self::assertCount(1, $result);
-        self::assertEquals($documentNumberB, $result[0]->getdocumentNumber());
+        self::assertSame($documentNumberB, $result[0]->getdocumentNumber()->toString());
 
         $result = $this->documentRepository->findByFamilyId(
             $dossierC,
@@ -142,14 +142,14 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             123,
         );
         self::assertCount(1, $result);
-        self::assertEquals($documentNumberA, $result[0]->getdocumentNumber());
+        self::assertSame($documentNumberA, $result[0]->getdocumentNumber()->toString());
 
         $result = $this->documentRepository->findByThreadId(
             $dossierA,
             456,
         );
         self::assertCount(1, $result);
-        self::assertEquals($documentNumberB, $result[0]->getdocumentNumber());
+        self::assertSame($documentNumberB, $result[0]->getdocumentNumber()->toString());
 
         $result = $this->documentRepository->findByThreadId(
             $dossierC,
@@ -218,7 +218,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $result = $queryBuilder->getQuery()->getResult();
 
         self::assertCount(1, $result);
-        self::assertEquals($documentNumberB, $result[0]->getdocumentNumber());
+        self::assertSame($documentNumberB, $result[0]->getdocumentNumber()->toString());
     }
 
     public function testGetRelatedDocumentsByFamily(): void
@@ -263,7 +263,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $result = $queryBuilder->getQuery()->getResult();
 
         self::assertCount(1, $result);
-        self::assertEquals($documentNumberB, $result[0]->getdocumentNumber());
+        self::assertSame($documentNumberB, $result[0]->getdocumentNumber()->toString());
     }
 
     public function testGetRevokedDocumentsInPublicDossiers(): void
@@ -306,8 +306,8 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $result = $this->documentRepository->getRevokedDocumentsInPublicDossiers();
 
         self::assertCount(2, $result);
-        self::assertEquals($documentNumberA, $result[0]->getdocumentNumber());
-        self::assertEquals($documentNumberB, $result[1]->getdocumentNumber());
+        self::assertSame($documentNumberA, $result[0]->getdocumentNumber()->toString());
+        self::assertSame($documentNumberB, $result[1]->getdocumentNumber()->toString());
     }
 
     public function testGetDocumentSearchEntry(): void
@@ -315,20 +315,25 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $organisation = OrganisationFactory::createOne();
 
         $dossier = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
+        $documentNumber = DocumentNumber::fromString('FOO-123');
         DocumentFactory::createOne([
-            'documentNumber' => $documentNumber = 'FOO-123',
+            'documentNumber' => $documentNumber,
             'dossiers' => [$dossier],
+            'fileInfo' => FileInfoFactory::createOne([
+                'uploaded' => true,
+            ]),
         ]);
 
         $result = $this->documentRepository->getDocumentSearchEntry($documentNumber);
 
         self::assertNotNull($result);
-        self::assertEquals($documentNumber, $result->documentNumber);
+        self::assertInstanceOf(DocumentNumber::class, $result->documentNumber);
+        self::assertSame($documentNumber->toString(), $result->documentNumber->toString());
     }
 
     public function testFindByDocumentNumber(): void
     {
-        $documentNumber = DocumentNumber::fromPrefixMatterAndInput('FOO', null, '123');
+        $documentNumber = DocumentNumber::fromString('FOO-123');
 
         DocumentFactory::createOne([
             'documentNumber' => $documentNumber,
@@ -358,7 +363,14 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         $result = $this->documentRepository->getAllDocumentNumbersForDossier($dossier);
 
-        self::assertEqualsCanonicalizing([$documentNumberA, $documentNumberB], $result);
+        self::assertContainsOnlyInstancesOf(DocumentNumber::class, $result);
+        self::assertEqualsCanonicalizing(
+            [$documentNumberA, $documentNumberB],
+            array_map(
+                static fn (DocumentNumber $documentNumber): string => $documentNumber->toString(),
+                $result,
+            ),
+        );
     }
 
     public function testGetDossierDocumentsQueryBuilder(): void
@@ -379,7 +391,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $result = $this->documentRepository->getAllDossierDocumentsWithDossiers($dossier);
 
         self::assertCount(1, $result);
-        self::assertEquals($documentNumber, $result[0]->getdocumentNumber());
+        self::assertSame($documentNumber, $result[0]->getdocumentNumber()->toString());
     }
 
     public function testFindOneByDossierAndDocumentId(): void
@@ -400,21 +412,6 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         self::assertEquals($documentId, $result->getDocumentId());
     }
 
-    public function testFindOneByDossierAndId(): void
-    {
-        $organisation = OrganisationFactory::createOne();
-        $dossier = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
-
-        $document = DocumentFactory::createOne([
-            'documentId' => DocumentId::create('FOO.123'),
-            'dossiers' => [$dossier],
-        ]);
-
-        $result = $this->documentRepository->findOneByDossierAndId($dossier, $document->getId());
-
-        self::assertSame($document, $result);
-    }
-
     public function testFindOneByDossierNumberAndDocumentNumber(): void
     {
         $organisation = OrganisationFactory::createOne();
@@ -431,6 +428,21 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             $dossier->getDossierNumber(),
             $documentNumber,
         );
+
+        self::assertSame($document, $result);
+    }
+
+    public function testFindOneByDossierAndId(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $dossier = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
+
+        $document = DocumentFactory::createOne([
+            'documentId' => DocumentId::create('FOO.123'),
+            'dossiers' => [$dossier],
+        ]);
+
+        $result = $this->documentRepository->findOneByDossierAndId($dossier, $document->getId());
 
         self::assertSame($document, $result);
     }
@@ -462,8 +474,8 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $result = $this->documentRepository->getDossierDocumentsForPaginationQuery($dossier)->getResult();
 
         self::assertCount(2, $result);
-        self::assertEquals($documentNumberA, $result[0]->getdocumentNumber());
-        self::assertEquals($documentNumberB, $result[1]->getdocumentNumber());
+        self::assertSame($documentNumberA, $result[0]->getdocumentNumber()->toString());
+        self::assertSame($documentNumberB, $result[1]->getdocumentNumber()->toString());
     }
 
     #[WithStory(WooIndexWooDecisionStory::class)]
@@ -511,10 +523,12 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'documentNumber' => $documentNumber = 'FOO-xx-123',
         ]);
 
-        $result = $this->documentRepository->findOneByDocumentNumberCaseInsensitive(strtoupper($documentNumber));
+        $result = $this->documentRepository->findOneByDocumentNumberCaseInsensitive(
+            DocumentNumber::fromString(strtoupper($documentNumber)),
+        );
 
         self::assertNotNull($result);
-        self::assertEquals($documentNumber, $result->getdocumentNumber());
+        self::assertSame($documentNumber, $result->getdocumentNumber()->toString());
     }
 
     public function testGetDocumentInquiryNumbers(): void
@@ -528,7 +542,9 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             'documents' => [$document],
         ]);
 
-        $documentInquiryNumbers = $this->documentRepository->getDocumentInquiryNumbers(strtoupper($documentNumber));
+        $documentInquiryNumbers = $this->documentRepository->getDocumentInquiryNumbers(
+            DocumentNumber::fromString(strtoupper($documentNumber)),
+        );
 
         self::assertFalse($documentInquiryNumbers->isDocumentNotFound());
         self::assertEquals($document->getId(), $documentInquiryNumbers->documentId);
@@ -663,7 +679,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         // Create document manually since setJudgement requires non-null but property is nullable
         $document = new Document();
-        $document->setDocumentNumber('DOC-001');
+        $document->setDocumentNumber(DocumentNumber::fromString('DOC-001'));
         $document->setDocumentId(DocumentId::create('001'));
         $document->setFileInfo(FileInfoFactory::createOne(['uploaded' => true]));
         $document->addDossier($dossier);
@@ -883,7 +899,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         // Create referred document manually with null judgement
         $referredDocument = new Document();
-        $referredDocument->setDocumentNumber('DOC-REFERRED');
+        $referredDocument->setDocumentNumber(DocumentNumber::fromString('DOC-REFERRED'));
         $referredDocument->setDocumentId(DocumentId::create('referred'));
         $referredDocument->setFileInfo(FileInfoFactory::createOne(['uploaded' => true]));
         $referredDocument->addDossier($dossier);
@@ -1028,7 +1044,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         self::assertCount(1, $rows);
         self::assertNull($rows[0]->getPublicationContext());
-        self::assertSame('FOO-abc', $rows[0]->getDocumentNumber());
+        self::assertSame('FOO-abc', $rows[0]->getDocumentNumber()->toString());
     }
 
     public function testDocumentNumberThatDoesNotMatchItsPublicationContextAndIdIsReportedAsDrifted(): void
@@ -1045,7 +1061,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $rows = $this->documentRepository->getDocumentsWithDriftedDocumentNumber(100);
 
         self::assertCount(1, $rows);
-        self::assertSame('BAR-abc', $rows[0]->getDocumentNumber());
+        self::assertSame('BAR-abc', $rows[0]->getDocumentNumber()->toString());
         self::assertSame('FOO', (string) $rows[0]->getPublicationContext());
         self::assertSame('abc', (string) $rows[0]->getDocumentId());
     }
@@ -1104,7 +1120,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         self::assertCount(2, $rows);
         self::assertSame(
             ['BAR-abc', 'BAR-def'],
-            array_map(static fn (Document $document): string => $document->getDocumentNumber(), $rows),
+            array_map(static fn (Document $document): string => $document->getDocumentNumber()->toString(), $rows),
         );
     }
 }

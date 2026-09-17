@@ -13,10 +13,10 @@ Resource            ../resources/TestData.resource
 *** Variables ***
 ${ORGANISATION_ID}          ${EMPTY}
 ${CURRENT_DATE}             ${EMPTY}
-${RESPONSE}                 ${EMPTY}
 ${EXTERNAL_ID}              ${EMPTY}
 ${API_ALIAS}                publication_api
 ${PREVIOUS_REQUEST_BODY}    ${EMPTY}
+${GENERATED_ATTACHMENT}     ${EMPTY}
 
 
 *** Keywords ***
@@ -218,21 +218,6 @@ Upload Generated Attachment
   ...  ${EXTERNAL_ID}
   ...  ${GENERATED_ATTACHMENT}[externalId]
 
-Sync Locked Dates From Server
-  [Documentation]    This is not unused, it's referenced from yaml files.
-  ...    Temporary workaround for https://github.com/minvws/nl-rdo-woo-web-private/issues/7492 is fixed.
-  [Arguments]  ${dossier_type}
-  Log
-  ...  TODO: remove Sync Locked Dates From Server once https://github.com/minvws/nl-rdo-woo-web-private/issues/7492 is fixed
-  ...  level=WARN
-  ${response} =  GET On Session
-  ...  alias=${API_ALIAS}
-  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/${dossier_type}/external/${EXTERNAL_ID}
-  Set To Dictionary  ${PREVIOUS_REQUEST_BODY}  publicationDate  ${response.json()}[publicationDate]
-  IF  '${dossier_type}' == 'woo-decision'
-    Set To Dictionary  ${PREVIOUS_REQUEST_BODY}  previewDate  ${response.json()}[previewDate]
-  END
-
 Generate Main Document
   [Arguments]  ${file_location}=${TEST_DATA_ROOT}/dummy.txt  ${type}=${EMPTY}
   ${filename} =  Fetch From Right  ${file_location}  /
@@ -362,6 +347,7 @@ Verify HAL Links Are Reachable For Dossier
   VAR  ${body} =  ${response.json()}
   Verify HAL Link  publication_api  ${body}[_links][self][href]
   Verify HAL Link  public  ${body}[_links][public][href]
+  Verify Inquiry HAL Links  ${body}[_links]
   ${has_main_document} =  Run Keyword And Return Status  Dictionary Should Contain Key  ${body}  mainDocument
   IF  ${has_main_document} and $body['mainDocument'] is not None
     Verify HAL Link  public  ${body}[mainDocument][_links][public][href]
@@ -383,7 +369,21 @@ Verify HAL Links Are Reachable For Dossier
         Verify HAL Link  public  ${document}[_links][public][href]
         Verify HAL Link  public  ${document}[_links][file][href]
         Verify HAL Link  public  ${document}[_links][upload][href]
+        Verify Inquiry HAL Links  ${document}[_links]
       END
+    END
+  END
+
+Verify Inquiry HAL Links
+  [Documentation]    Verifies that, when present, each inquiries link has an href and name and is reachable.
+  ...    Does not require inquiries to be present, since not every dossier/document has them.
+  [Arguments]  ${links}
+  ${has_inquiries} =  Run Keyword And Return Status  Dictionary Should Contain Key  ${links}  inquiries
+  IF  ${has_inquiries}
+    FOR  ${inquiry_link}  IN  @{links}[inquiries]
+      Dictionary Should Contain Key  ${inquiry_link}  href
+      Dictionary Should Contain Key  ${inquiry_link}  name
+      Verify HAL Link  public  ${inquiry_link}[href]
     END
   END
 

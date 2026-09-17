@@ -14,6 +14,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Service\Elastic\ElasticService;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -51,6 +52,8 @@ class PageCheckTest extends UnitTestCase
         $document->expects('getFileInfo->getPageCount')
             ->times(2)
             ->andReturn(1);
+        $document->expects('getDocumentNumber')
+            ->andReturn(DocumentNumber::fromString('document-123'));
 
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getDocuments')

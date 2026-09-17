@@ -40,10 +40,6 @@ Na het opslaan van deze stap kun je het referentienummer niet meer aanpassen, du
 
 ## Prefix
 
-Kies uit het dropdown-menu een prefix. Is er slechts één keuze, dan is deze optie voor je geselecteerd. De combinatie van prefix
-en referentienummer moet uniek zijn binnen de organisatie.
-
-:::{admonition} Let op!
-:class: warning
-Het is niet mogelijk om de prefix te wijzigen, nadat je deze hebt opgeslagen.
-:::
+De vaste prefix van je organisatie wordt automatisch gebruikt. Je hoeft geen prefix
+te selecteren of in te vullen. De combinatie van de prefix en het referentienummer
+moet uniek zijn binnen de organisatie.

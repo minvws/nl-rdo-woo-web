@@ -23,6 +23,7 @@ global.document.withdraw.reason.unreadable_document: "Document is unreadable"
 global.document.withdraw.reason.incorrect_attachment: "The attachment does not belong to the document"
 
 global.decision_date: "Decision date"
+global.prefix: "Prefix"
 global.publication_date: "Publication date"
 global._score: "Relevance"
 global.sort.asc: "Oldest first"

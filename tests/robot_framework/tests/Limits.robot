@@ -17,10 +17,9 @@ ${TEST_DATA_ROOT_LIMITS}    files/limits
 
 *** Test Cases ***
 Publish A WooDecision With More Than Max Number Of Documents
-  ${new_prefix} =  Add A Random Organisation Prefix
   Click Publications
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=${new_prefix}  type=woo-decision
+  Fill Out Basic Details  type=woo-decision
   Fill Out WooDecision Details  Openbaarmaking
   Set Browser Timeout  5min
   Upload Production Report  ${TEST_DATA_ROOT_LIMITS}/production_report_50001.xlsx  expect_error=${TRUE}
@@ -32,10 +31,9 @@ Publish A WooDecision With Max Individual Archive Size Of 5GB
   ${archive} =  Generate A WooDecision Archive Based On Size  5000  ${test_data_location}
   ${production_report} =  Create Test Production Report  ${test_data_location}
   ${number_of_documents} =  Count Files In Directory  ${test_data_location}  pattern=*.txt
-  ${new_prefix} =  Add A Random Organisation Prefix
   Click Publications
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=${new_prefix}  type=woo-decision
+  Fill Out Basic Details  type=woo-decision
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  ${production_report}
   Verify Document Upload Remaining  Nog te uploaden: ${number_of_documents} van ${number_of_documents} document
@@ -64,7 +62,6 @@ Publish A Covenant With More Than Max Nr Of Attachments
 
 Individual Files Of Max 1GB
   [Documentation]  Not allowed because of ClamAV limit of 1GB. Upload a zip with both a <1GB file and >1GB file, where only the smaller should be processed.
-  ${new_prefix} =  Add A Random Organisation Prefix
   ${test_data_location} =  Create Unique TestData Location
   Generate File By Size  900  ${test_data_location}/900.txt
   Generate File By Size  1100  ${test_data_location}/1100.txt
@@ -72,7 +69,7 @@ Individual Files Of Max 1GB
   ${production_report} =  Create Test Production Report  ${test_data_location}
   Click Publications
   Create New Dossier  woo-decision
-  Fill Out Basic Details  prefix=${new_prefix}  type=woo-decision
+  Fill Out Basic Details  type=woo-decision
   Fill Out WooDecision Details  Openbaarmaking
   Upload Production Report  ${production_report}
   Verify Document Upload Remaining  Nog te uploaden: 2 van 2 documenten

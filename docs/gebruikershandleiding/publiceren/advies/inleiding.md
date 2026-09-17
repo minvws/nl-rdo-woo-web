@@ -30,7 +30,7 @@ De basisgegevens (metadata) van de publicatie vul je in stap 1 van de uploadstra
 | Onderwerp                       | Nee     | Kies het onderwerp waaronder dit advies valt.                                                                                                                              |
 | Interne referentie              | Nee     | Vrij invulveld. Bijvoorbeeld een verwijzing naar de interne vindplaats of verantwoordelijke van de brondocumentatie van deze publicatie. Wordt niet getoond op de website. |
 | Referentienummer                | Ja      | Vrij invulveld, 3-50 karakters. Gebruik letters, cijfers en/of verbindingstekens. Uniek binnen de organisatie. Maakt samen met de prefix het ID van de publicatie uniek.   |
-| Prefix                          | Ja      | Keuze uit een dropdownmenu. Maakt samen met het referentienummer het ID van de publicatie uniek in de database.                                                            |
+| Prefix                          | Ja      | Vaste waarde van de organisatie. Vormt met het referentienummer het unieke publicatie-ID binnen de organisatie.                                                            |
 
 ### Details
 

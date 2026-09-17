@@ -6,12 +6,12 @@ namespace Shared\Service\Inquiry;
 
 use Exception;
 use Generator;
-use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Exception\FileReaderException;
 use Shared\Service\FileReader\ColumnMapping;
 use Shared\Service\FileReader\ExcelReaderFactory;
 use Shared\Service\FileReader\FileReaderInterface;
 use Shared\Service\Inventory\InventoryDataHelper;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use function intval;
@@ -31,7 +31,7 @@ class InquiryLinkImportParser
     /**
      * @return Generator<string, array<array-key, string>>
      */
-    public function parse(UploadedFile $uploadedFile, DocumentPrefix $prefix): Generator
+    public function parse(UploadedFile $uploadedFile, string $prefix): Generator
     {
         $reader = $this->getReader($uploadedFile);
         foreach ($reader as $rowIdx => $row) {
@@ -45,9 +45,9 @@ class InquiryLinkImportParser
                 [',', ';'],
             );
 
-            $documentNumber = sprintf('%s-%s-%s', $prefix->getPrefix(), $matter, $documentId);
+            $documentNumber = DocumentNumber::fromString(sprintf('%s-%s-%s', $prefix, $matter, $documentId));
 
-            yield $documentNumber => $inquiryNumbers;
+            yield $documentNumber->toString() => $inquiryNumbers;
         }
     }
 

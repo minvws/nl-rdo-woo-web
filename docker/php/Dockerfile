@@ -1,8 +1,8 @@
-FROM minio/mc:RELEASE.2025-08-13T08-35-41Z AS mc
+FROM ghcr.io/minvws/nl-rdo-woo-web-private/minio/mc:RELEASE.2025-08-13T08-35-41Z AS mc
 
-FROM composer/composer:2.10.2-bin AS composer
+FROM composer/composer:2.10.3-bin AS composer
 
-FROM php:8.4.24-apache-trixie
+FROM php:8.4.25-apache-trixie
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 

@@ -17,6 +17,7 @@ use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Uid\Uuid;
 
 use function array_map;
@@ -71,6 +72,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
         $result = $this->wooDecisionRepository->getDossierReferencesForDocument($doc->getDocumentNumber());
         $dossierReference = reset($result);
 
+        self::assertInstanceOf(DocumentNumber::class, $doc->getDocumentNumber());
         self::assertInstanceOf(DossierReference::class, $dossierReference);
         self::assertEquals($wooDecision->getType(), $dossierReference->getType());
         self::assertEquals($wooDecision->getDossierNumber(), $dossierReference->getDossierNumber());

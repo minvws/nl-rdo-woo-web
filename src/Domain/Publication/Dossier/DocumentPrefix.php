@@ -8,13 +8,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 
 use function strtoupper;
 
-#[ORM\Entity(repositoryClass: DocumentPrefixRepository::class)]
-#[UniqueEntity('prefix')]
+/**
+ * Keeps the legacy document_prefix table represented in the Doctrine schema.
+ */
+#[ORM\Entity]
+#[ORM\Table(name: 'document_prefix')]
 class DocumentPrefix implements HasId
 {
     #[ORM\Id]
@@ -26,8 +28,8 @@ class DocumentPrefix implements HasId
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $prefix;
 
-    #[ORM\ManyToOne(inversedBy: 'documentPrefixes')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: 'organisation_id', referencedColumnName: 'id', nullable: false)]
     private Organisation $organisation;
 
     #[ORM\Column(options: ['default' => false])]

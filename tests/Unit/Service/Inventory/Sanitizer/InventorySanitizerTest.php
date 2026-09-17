@@ -56,7 +56,22 @@ class InventorySanitizerTest extends UnitTestCase
             ->andReturn($documentData = ['foo', 'bar']);
 
         $this->writer->expects('open');
-        $this->writer->expects('addHeaders');
+        $this->writer
+            ->expects('addHeaders')
+            ->with(
+                'Document ID',
+                'Documentnummer',
+                'Bestandsnaam',
+                'Beoordeling',
+                'Beoordelingsgrond',
+                'Toelichting',
+                'Publieke link',
+                'Locatie document',
+                'Opgeschort',
+                'Gerelateerd document',
+                'Locatie gerelateerd document',
+                'Besluitnaam',
+            );
         $this->writer->expects('addRow')->with(...$documentData);
         $this->writer->expects('close');
         $this->writer->expects('getFileExtension')->times(2)->andReturn('csv');

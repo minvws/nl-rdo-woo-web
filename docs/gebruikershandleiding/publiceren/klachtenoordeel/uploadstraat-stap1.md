@@ -37,9 +37,8 @@ is cruciaal voor de indexering van de publicatie.
 Na het opslaan van deze stap kun je het referentienummer niet meer aanpassen, dus voer het zorgvuldig in. Dit veld is verplicht om in te vullen.
 :::
 
-## Prefix voor publicatie
+## Prefix
 
-Kies een prefix uit het dropdown-menu, bestaande uit minimaal 5 karakters, die samen met het referentienummer zorgt voor een
-unieke identificatie van de publicatie binnen de organisatie. De prefixes worden aangemaakt door de organisatiebeheerder van je organisatie.
-Deze combinatie van prefix en referentienummer garandeert een uniek ID in de database. Als er slechts één optie beschikbaar is,
-wordt deze automatisch geselecteerd. Dit veld is verplicht om in te vullen.
+De vaste prefix van je organisatie wordt automatisch gebruikt. Je hoeft geen prefix
+te selecteren of in te vullen. De combinatie van de prefix en het referentienummer
+moet uniek zijn binnen de organisatie.

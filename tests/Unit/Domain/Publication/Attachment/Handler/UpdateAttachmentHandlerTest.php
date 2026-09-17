@@ -102,6 +102,44 @@ class UpdateAttachmentHandlerTest extends UnitTestCase
         $this->handler->__invoke($command);
     }
 
+    public function testInvokeDispatchesCreatedEventOnInitialUpload(): void
+    {
+        $uploadRef = 'foo-123';
+
+        $command = new UpdateAttachmentCommand(
+            $dossierUuid = Uuid::v6(),
+            $attachmentUuid = Uuid::v6(),
+            uploadFileReference: $uploadRef,
+            initialUpload: true,
+        );
+
+        $attachment = Mockery::mock(AnnualReportAttachment::class);
+        $attachment->expects('getMetadataSnapshot')->twice()->andReturn(['unchanged']);
+
+        $this->entityLoader
+            ->expects('loadAndValidateAttachment')
+            ->with($dossierUuid, $attachmentUuid, DossierStatusTransition::UPDATE_ATTACHMENT)
+            ->andReturn($attachment);
+
+        $violations = Mockery::mock(ConstraintViolationListInterface::class);
+        $violations->expects('count')->andReturn(0);
+
+        $this->validator->expects('validate')->with($attachment)->andReturn($violations);
+
+        $this->attachmentRepository->expects('save')->with($attachment, true);
+
+        $this->dispatcher->expects('dispatchAttachmentCreatedEvent')->with($attachment);
+        $this->dispatcher->expects('dispatchAttachmentMetadataAndFileUpdatedEvent')->never();
+        $this->dispatcher->expects('dispatchAttachmentFileUpdatedEvent')->never();
+        $this->dispatcher->expects('dispatchAttachmentMetadataUpdatedEvent')->never();
+
+        $this->uploadStorer
+            ->expects('storeUploadForEntityWithSourceTypeAndName')
+            ->with($attachment, $uploadRef);
+
+        $this->handler->__invoke($command);
+    }
+
     public function testInvokeDispatchesNoEventWhenNothingChanged(): void
     {
         $command = new UpdateAttachmentCommand(

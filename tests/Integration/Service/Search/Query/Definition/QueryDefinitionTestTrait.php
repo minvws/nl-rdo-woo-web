@@ -16,7 +16,7 @@ use Shared\Service\Search\Result\Result;
 use Shared\Service\Search\Result\ResultTransformer;
 use Shared\Service\Search\SearchService;
 use Shared\Tests\ElasticConfigFactory;
-use Spatie\Snapshots\MatchesSnapshots;
+use Shared\Tests\Snapshots\MatchesSnapshots;
 use Webmozart\Assert\Assert;
 
 trait QueryDefinitionTestTrait

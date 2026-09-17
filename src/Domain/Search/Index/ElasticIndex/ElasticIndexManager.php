@@ -11,7 +11,9 @@ use Shared\Domain\Search\Index\Rollover\MappingService;
 use Shared\Service\Elastic\ElasticClientInterface;
 
 use function array_keys;
+use function is_array;
 use function is_null;
+use function is_scalar;
 use function strval;
 use function usort;
 
@@ -99,7 +101,7 @@ readonly class ElasticIndexManager
     }
 
     /**
-     * @return array<int, array<string, array<string, mixed>>>
+     * @return array<array-key, mixed>
      */
     public function listAlias(): array
     {
@@ -164,19 +166,65 @@ readonly class ElasticIndexManager
 
         $indices = [];
         foreach ($asArray as $index) {
-            $indexAliases = array_keys($aliases[$index['index']]['aliases'] ?? []);
-
             $indices[] = new ElasticIndexDetails(
                 name: $index['index'],
                 health: $index['health'],
                 status: $index['status'],
                 docsCount: $index['docs.count'] ?? '??',
                 storeSize: $index['store.size'] ?? '??',
-                mappingVersion: strval($mappingData[$index['index']]['mappings']['_meta']['version'] ?? 'unknown'),
-                aliases: $indexAliases,
+                mappingVersion: $this->getMappingVersion($mappingData, $index['index']),
+                aliases: $this->getAliasNames($aliases, $index['index']),
             );
         }
 
         return $indices;
+    }
+
+    /**
+     * @param array<array-key, mixed> $aliases
+     *
+     * @return array<array-key, int|string>
+     */
+    private function getAliasNames(array $aliases, string $indexName): array
+    {
+        $index = $aliases[$indexName] ?? null;
+        if (! is_array($index)) {
+            return [];
+        }
+
+        $namedAliases = $index['aliases'] ?? null;
+        if (! is_array($namedAliases)) {
+            return [];
+        }
+
+        return array_keys($namedAliases);
+    }
+
+    /**
+     * @param array<array-key, mixed> $mappingData
+     */
+    private function getMappingVersion(array $mappingData, string $indexName): string
+    {
+        $index = $mappingData[$indexName] ?? null;
+        if (! is_array($index)) {
+            return 'unknown';
+        }
+
+        $mappings = $index['mappings'] ?? null;
+        if (! is_array($mappings)) {
+            return 'unknown';
+        }
+
+        $meta = $mappings['_meta'] ?? null;
+        if (! is_array($meta)) {
+            return 'unknown';
+        }
+
+        $version = $meta['version'] ?? null;
+        if (! is_scalar($version)) {
+            return 'unknown';
+        }
+
+        return strval($version);
     }
 }

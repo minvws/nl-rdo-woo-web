@@ -11,18 +11,18 @@ use Shared\Domain\Ingest\IngestDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ObsoleteFileRemover;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Publication\SourceType;
 use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inventory\DocumentMetadata;
-use Shared\Service\Inventory\DocumentNumber;
 use Shared\Service\Inventory\DocumentUpdater;
-use Shared\Service\Storage\EntityStorageService;
-use Shared\Service\Storage\ThumbnailStorageService;
+use Shared\Service\Inventory\LegacyDocumentNumberFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\PlainDate;
 use Shared\ValueObject\PublicationContext;
 use Symfony\Component\Uid\Uuid;
@@ -31,8 +31,7 @@ use function str_repeat;
 
 class DocumentUpdaterTest extends UnitTestCase
 {
-    private MockInterface&EntityStorageService $entityStorageService;
-    private MockInterface&ThumbnailStorageService $thumbnailStorageService;
+    private MockInterface&ObsoleteFileRemover $obsoleteFileRemover;
     private DocumentUpdater $documentUpdater;
     private DocumentDispatcher&MockInterface $documentDispatcher;
     private IngestDispatcher&MockInterface $ingestDispatcher;
@@ -42,16 +41,15 @@ class DocumentUpdaterTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->repository = Mockery::mock(DocumentRepository::class);
-        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
-        $this->thumbnailStorageService = Mockery::mock(ThumbnailStorageService::class);
+        $this->obsoleteFileRemover = Mockery::mock(ObsoleteFileRemover::class);
         $this->documentDispatcher = Mockery::mock(DocumentDispatcher::class);
         $this->ingestDispatcher = Mockery::mock(IngestDispatcher::class);
         $this->dossier = Mockery::mock(WooDecision::class);
 
         $this->documentUpdater = new DocumentUpdater(
-            $this->entityStorageService,
-            $this->thumbnailStorageService,
+            $this->obsoleteFileRemover,
             $this->repository,
+            new LegacyDocumentNumberFactory(),
             $this->documentDispatcher,
             $this->ingestDispatcher,
         );
@@ -59,48 +57,12 @@ class DocumentUpdaterTest extends UnitTestCase
         parent::setUp();
     }
 
-    public function testProcessRemovesObsoleteUpload(): void
-    {
-        $fileInfo = Mockery::mock(FileInfo::class);
-
-        $documentMetadata = $this->getDocumentMetadata(Judgement::PUBLIC);
-
-        $existingDocument = Mockery::mock(Document::class);
-        $existingDocument->expects('getDocumentNumber')->andReturn('tst-123');
-        $existingDocument->expects('setJudgement')->with($documentMetadata->getJudgement());
-        $existingDocument->expects('setDocumentDate')->with($documentMetadata->getDate());
-        $existingDocument->expects('setFamilyId')->with($documentMetadata->getFamilyId());
-        $existingDocument->expects('setDocumentId')->with($documentMetadata->getId());
-        $existingDocument->expects('setThreadId')->with($documentMetadata->getThreadId());
-        $existingDocument->expects('setGrounds')->with($documentMetadata->getGrounds());
-        $existingDocument->expects('setPeriod')->with($documentMetadata->getPeriod());
-        $existingDocument->expects('setSuspended')->with($documentMetadata->isSuspended());
-        $existingDocument->expects('setLinks')->with($documentMetadata->getLinks());
-        $existingDocument->expects('setRemark')->with($documentMetadata->getRemark());
-        $existingDocument->expects('setPublicationContext')->with($documentMetadata->getPublicationContext());
-        $existingDocument->expects('getFileInfo')->times(2)->andReturn($fileInfo);
-        $existingDocument->expects('shouldBeUploaded')->andReturnFalse();
-        $existingDocument->expects('addDossier')->with($this->dossier);
-
-        $fileInfo->expects('setSourceType')->with($documentMetadata->getSourceType());
-        $fileInfo->expects('setName')->with('file.doc');
-
-        $this->repository->expects('save')->with($existingDocument);
-
-        $this->thumbnailStorageService->expects('deleteAllThumbsForEntity')->with($existingDocument);
-
-        $this->entityStorageService->expects('deleteAllFilesForEntity')->with($existingDocument);
-        $fileInfo->expects('removeFileProperties');
-
-        $this->documentUpdater->databaseUpdate($documentMetadata, $this->dossier, $existingDocument);
-    }
-
     public function testProcess(): void
     {
         $documentMetadata = $this->getDocumentMetadata(Judgement::PUBLIC);
 
         $existingDocument = Mockery::mock(Document::class);
-        $existingDocument->expects('getDocumentNumber')->andReturn('tst-123');
+        $existingDocument->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('tst-123'));
         $existingDocument->expects('setJudgement')->with($documentMetadata->getJudgement());
         $existingDocument->expects('setDocumentDate')->with($documentMetadata->getDate());
         $existingDocument->expects('setFamilyId')->with($documentMetadata->getFamilyId());
@@ -113,8 +75,9 @@ class DocumentUpdaterTest extends UnitTestCase
         $existingDocument->expects('setRemark')->with($documentMetadata->getRemark());
         $existingDocument->expects('setPublicationContext')->with($documentMetadata->getPublicationContext());
         $existingDocument->expects('getFileInfo')->andReturn(new FileInfo());
-        $existingDocument->expects('shouldBeUploaded')->andReturnTrue();
         $existingDocument->expects('addDossier')->with($this->dossier);
+
+        $this->obsoleteFileRemover->expects('removeIfObsolete')->with($existingDocument);
 
         $this->repository->expects('save')->with($existingDocument);
 
@@ -126,13 +89,13 @@ class DocumentUpdaterTest extends UnitTestCase
         $newReferredDoc = Mockery::mock(Document::class);
 
         $oldReferredDoc = Mockery::mock(Document::class);
-        $oldReferredDoc->expects('getDocumentNumber')->andReturn('PREFIX-matter-456');
+        $oldReferredDoc->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('PREFIX-matter-456'));
         $oldReferredDoc->expects('getDocumentId')->times(2)->andReturn(DocumentId::create('456'));
 
         $existingDocument = Mockery::mock(Document::class);
         $existingDocument->expects('getRefersTo')->andReturn(new ArrayCollection([$oldReferredDoc]));
-        $existingDocument->expects('getDocumentNumber')->andReturn('PREFIX-matter-1');
-        $existingDocument->expects('getDocumentId')->times(2)->andReturn(DocumentId::create('1'));
+        $existingDocument->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('PREFIX-matter-1'));
+        $existingDocument->expects('getDocumentId')->andReturn(DocumentId::create('1'));
 
         // Old referred document is no longer in metadata so should be removed
         $existingDocument->expects('removeRefersTo')->with($oldReferredDoc);
@@ -140,7 +103,7 @@ class DocumentUpdaterTest extends UnitTestCase
         // And a new referral should be added
         $existingDocument->expects('addRefersTo')->with($newReferredDoc);
 
-        $this->dossier->expects('getDocumentPrefix')->times(5)->andReturn('PREFIX');
+        $this->dossier->expects('getDocumentPrefix')->twice()->andReturn('PREFIX');
 
         $this->repository
             ->expects('findByDocumentNumber')
@@ -229,7 +192,7 @@ class DocumentUpdaterTest extends UnitTestCase
         $fileInfo->expects('setName')->with($expectedName);
 
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentNumber')->andReturn('tst-123');
+        $document->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('tst-123'));
         $document->expects('setJudgement')->with($documentMetadata->getJudgement());
         $document->expects('setDocumentDate')->with($documentMetadata->getDate());
         $document->expects('setFamilyId')->with($documentMetadata->getFamilyId());
@@ -242,8 +205,9 @@ class DocumentUpdaterTest extends UnitTestCase
         $document->expects('setRemark')->with($documentMetadata->getRemark());
         $document->expects('setPublicationContext')->with($documentMetadata->getPublicationContext());
         $document->expects('getFileInfo')->andReturn($fileInfo);
-        $document->expects('shouldBeUploaded')->andReturnTrue();
         $document->expects('addDossier')->with($this->dossier);
+
+        $this->obsoleteFileRemover->expects('removeIfObsolete')->with($document);
 
         $this->repository->expects('save')->with($document);
 

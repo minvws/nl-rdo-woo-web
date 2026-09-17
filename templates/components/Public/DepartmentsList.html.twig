@@ -1,4 +1,5 @@
 {% if departments | length > 0 %}
+<div class="{{ spacingClass | default('') }}">
     <h2 class="{{ titleClass | default('woo-h2 woo-h2-spacing') }}">{{ 'categories.category.department' | trans }}</h2>
 
     <ul class="{{ listClass | default('sm:columns-2 sm:gap-x-12') }}">
@@ -13,4 +14,5 @@
         </li>
         {% endfor %}
     </ul>
+</div>
 {% endif %}

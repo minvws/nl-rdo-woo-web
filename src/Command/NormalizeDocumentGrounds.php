@@ -102,10 +102,11 @@ class NormalizeDocumentGrounds extends Command
         if ($normalizedGrounds !== $currentGrounds) {
             $document->setGrounds($normalizedGrounds);
             $this->entityManager->persist($document);
+            $documentNumber = $document->getDocumentNumber()->toString();
 
             $output->writeln(sprintf(
                 '<info>%s: updated [%s] to [%s]</info>',
-                $document->getDocumentNumber(),
+                $documentNumber,
                 implode(';', $currentGrounds),
                 implode(';', $normalizedGrounds),
             ));

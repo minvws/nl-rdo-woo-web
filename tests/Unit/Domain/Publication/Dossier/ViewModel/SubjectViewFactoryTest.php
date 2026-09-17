@@ -12,6 +12,8 @@ use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Publication\Subject\SubjectContentNode;
+use Shared\Domain\Publication\Subject\SubjectContentTree;
 use Shared\Domain\Search\Query\Facet\Definition\SubjectFacet;
 use Shared\Domain\Search\Query\Facet\FacetDefinitions;
 use Shared\Tests\Unit\UnitTestCase;
@@ -68,7 +70,12 @@ final class SubjectViewFactoryTest extends UnitTestCase
         $subject->expects('getLandingPageSlug')->twice()->andReturn(LandingPageSlug::create('foo'));
         $subject->expects('getLandingPageTitle')->andReturn(LandingPageTitle::create('Foo titel'));
         $subject->expects('getLandingPageDescription')->andReturn('Foo omschrijving');
-        $subject->expects('getLandingPageContentTree')->andReturn($contentTree = [['type' => 'paragraph']]);
+        $subject->expects('getLandingPageContentTree')->andReturn($contentTree = new SubjectContentTree(
+            children: [new SubjectContentNode('Titel', 'Body')],
+            title: 'Titel',
+            intro: 'Intro',
+            outro: 'Outro',
+        ));
         $subject->expects('hasVisibleLandingPageContentTree')->andReturnTrue();
 
         $this->publicUrlGenerator

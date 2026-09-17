@@ -9,7 +9,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Dossier\DocumentPrefix;
+use Shared\ValueObject\OrganisationPrefix;
 
 /**
  * This is a set of fixtures for the Organisation entity. It is not meant to be used in production.
@@ -20,13 +20,9 @@ class OrganisationFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
-        $documentPrefix1 = new DocumentPrefix('PREFIX1');
-        $documentPrefix2 = new DocumentPrefix('PREFIX2');
-
         $entity = new Organisation();
         $entity->setName('Voorbeeld organisatie');
-        $entity->addDocumentPrefix($documentPrefix1);
-        $entity->addDocumentPrefix($documentPrefix2);
+        $entity->setPrefix(OrganisationPrefix::create('PREFIX1'));
         $entity->addDepartment(
             $this->getReference(DepartmentFixtures::REFERENCE_1, Department::class),
         );

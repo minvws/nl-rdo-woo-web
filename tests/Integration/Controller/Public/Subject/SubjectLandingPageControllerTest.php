@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\SubjectContentNode;
+use Shared\Domain\Publication\Subject\SubjectContentTree;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
@@ -30,7 +31,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
             LandingPageTitle::create('Onderwerp landing page'),
             "Eerste regel\nTweede regel",
             SubjectLandingPageStatus::PUBLISHED,
-            [
+            new SubjectContentTree(title: '', intro: '', outro: '', children: [
                 new SubjectContentNode(
                     'Eerste niveau',
                     '**Veilige body** <script>alert(1)</script> [Onveilige link](javascript:alert(2))',
@@ -63,7 +64,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
                     ],
                 ),
                 new SubjectContentNode('Tweede root', 'Tweede root body'),
-            ],
+            ]),
         );
         $subject->setHasVisibleLandingPageContentTree(true);
         self::fromContainer(EntityManagerInterface::class)->flush();
@@ -105,7 +106,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
             LandingPageTitle::create('Concept landing page'),
             'Concept description',
             SubjectLandingPageStatus::CONCEPT,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
         self::fromContainer(EntityManagerInterface::class)->flush();
 
@@ -126,7 +127,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
             LandingPageTitle::create('Lege landing page'),
             'Description zonder secties',
             SubjectLandingPageStatus::PUBLISHED,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
         self::fromContainer(EntityManagerInterface::class)->flush();
 
@@ -149,7 +150,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
             LandingPageTitle::create('Verborgen verhaallijn'),
             'Description met verborgen secties',
             SubjectLandingPageStatus::PUBLISHED,
-            [new SubjectContentNode('Verborgen sectie', 'Verborgen body')],
+            new SubjectContentTree(title: '', intro: '', children: [new SubjectContentNode('Verborgen sectie', 'Verborgen body')], outro: ''),
         );
         self::fromContainer(EntityManagerInterface::class)->flush();
 
@@ -175,7 +176,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
             LandingPageTitle::create('Preview landing page'),
             'Preview description',
             SubjectLandingPageStatus::CONCEPT,
-            [new SubjectContentNode('Preview section', 'Preview body')],
+            new SubjectContentTree(title: '', intro: '', children: [new SubjectContentNode('Preview section', 'Preview body')], outro: ''),
         );
         self::fromContainer(EntityManagerInterface::class)->flush();
 
@@ -207,7 +208,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
             LandingPageTitle::create('Preview landing page'),
             'Preview description',
             SubjectLandingPageStatus::CONCEPT,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
         self::fromContainer(EntityManagerInterface::class)->flush();
 

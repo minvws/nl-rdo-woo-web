@@ -1,0 +1,1061 @@
+info:
+  name: Replaces the WooDecision resource.
+  type: http
+  seq: 3
+  tags:
+    - WooDecision
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+  params:
+    - name: organisationId
+      value: "{{organisationId}}"
+      type: path
+    - name: dossierExternalId
+      value: "{{wooDecisionDossierExternalId}}"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "departmentId": "{{departmentId}}",
+        "mainDocument": {
+          "fileName": "main-document.pdf",
+          "formalDate": "2026-02-01",
+          "language": "NLD",
+          "type": "c_4f50ca9c",
+          "grounds": []
+        },
+        "subjectId": "{{subjectId}}",
+        "summary": "Summary of the Woo decision",
+        "title": "Bruno - Woo decision",
+        "attachments": [
+          {
+            "fileName": "attachment.pdf",
+            "formalDate": "2026-02-01",
+            "language": "NLD",
+            "type": "c_d506b718",
+            "externalId": "{{wooDecisionAttachmentExternalId}}",
+            "grounds": []
+          }
+        ],
+        "dateFrom": "2025-01-01",
+        "dateTo": "2025-06-01",
+        "dossierNumber": "bruno-{{sessionTimestamp}}",
+        "publicationDate": "2026-07-27",
+        "decision": "already_public",
+        "reason": "woo_request",
+        "previewDate": "2025-12-21",
+        "documents": [
+          {
+            "inquiryNumbers": [],
+            "documentDate": "2025-01-01",
+            "documentId": "{{sessionTimestamp}}",
+            "externalId": "{{wooDecisionDocumentExternalId}}",
+            "familyId": 333,
+            "fileName": "document.pdf",
+            "grounds": [],
+            "isSuspended": false,
+            "judgement": "public",
+            "links": [],
+            "publicationContext": "2025-01",
+            "refersTo": [],
+            "remark": "None",
+            "sourceType": "pdf",
+            "threadId": 12345
+          }
+        ]
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        if (bru.isSafeMode()) {
+          throw new Error("Enable develop mode to support the scripts");
+        }
+
+        const crypto = require('crypto');
+
+        if (!bru.getVar("wooDecisionDossierExternalId")) {
+          bru.setVar("wooDecisionDossierExternalId", crypto.randomUUID());
+        }
+        if (!bru.getVar("wooDecisionAttachmentExternalId")) {
+          bru.setVar("wooDecisionAttachmentExternalId", crypto.randomUUID());
+        }
+        if (!bru.getVar("wooDecisionDocumentExternalId")) {
+          bru.setVar("wooDecisionDocumentExternalId", crypto.randomUUID());
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: 200 Response
+    description: WooDecision resource updated
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_d506b718",
+                "externalId": "",
+                "grounds": []
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "dossierNumber": "",
+            "publicationDate": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "externalId": "",
+                "familyId": "",
+                "fileName": "",
+                "grounds": [],
+                "isSuspended": false,
+                "judgement": "public",
+                "links": [],
+                "publicationContext": "",
+                "refersTo": [],
+                "remark": "",
+                "sourceType": "pdf",
+                "threadId": ""
+              }
+            ]
+          }
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "id": "",
+            "externalId": "",
+            "organisation": {
+              "id": "",
+              "name": ""
+            },
+            "dossierNumber": "",
+            "title": "",
+            "summary": "",
+            "subject": "",
+            "department": {
+              "id": "",
+              "name": ""
+            },
+            "publicationDate": "2025-12-21",
+            "status": "new",
+            "mainDocument": {
+              "id": "",
+              "type": "c_d506b718",
+              "language": "NLD",
+              "formalDate": "",
+              "grounds": [],
+              "fileName": "",
+              "uploadStatus": "no_upload_required"
+            },
+            "attachments": [
+              {
+                "id": "",
+                "type": "c_d506b718",
+                "language": "NLD",
+                "formalDate": "",
+                "grounds": [],
+                "fileName": "",
+                "externalId": "",
+                "uploadStatus": "no_upload_required"
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "documentNumber": "",
+                "externalId": "",
+                "familyId": "",
+                "grounds": [],
+                "isSuspended": false,
+                "isUploaded": false,
+                "isWithdrawn": false,
+                "judgement": "public",
+                "links": [],
+                "refersTo": [
+                  {
+                    "documentId": "",
+                    "externalId": ""
+                  }
+                ],
+                "remark": "",
+                "threadId": "",
+                "uploadStatus": "no_upload_required"
+              }
+            ]
+          }
+  - name: 400 Response
+    description: Invalid input
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_d506b718",
+                "externalId": "",
+                "grounds": []
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "dossierNumber": "",
+            "publicationDate": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "externalId": "",
+                "familyId": "",
+                "fileName": "",
+                "grounds": [],
+                "isSuspended": false,
+                "judgement": "public",
+                "links": [],
+                "publicationContext": "",
+                "refersTo": [],
+                "remark": "",
+                "sourceType": "pdf",
+                "threadId": ""
+              }
+            ]
+          }
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 400 Response
+    description: Invalid input
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_d506b718",
+                "externalId": "",
+                "grounds": []
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "dossierNumber": "",
+            "publicationDate": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "externalId": "",
+                "familyId": "",
+                "fileName": "",
+                "grounds": [],
+                "isSuspended": false,
+                "judgement": "public",
+                "links": [],
+                "publicationContext": "",
+                "refersTo": [],
+                "remark": "",
+                "sourceType": "pdf",
+                "threadId": ""
+              }
+            ]
+          }
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 401 Response
+    description: Unauthorized
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_d506b718",
+                "externalId": "",
+                "grounds": []
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "dossierNumber": "",
+            "publicationDate": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "externalId": "",
+                "familyId": "",
+                "fileName": "",
+                "grounds": [],
+                "isSuspended": false,
+                "judgement": "public",
+                "links": [],
+                "publicationContext": "",
+                "refersTo": [],
+                "remark": "",
+                "sourceType": "pdf",
+                "threadId": ""
+              }
+            ]
+          }
+    response:
+      status: 401
+      statusText: Unauthorized
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_d506b718",
+                "externalId": "",
+                "grounds": []
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "dossierNumber": "",
+            "publicationDate": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "externalId": "",
+                "familyId": "",
+                "fileName": "",
+                "grounds": [],
+                "isSuspended": false,
+                "judgement": "public",
+                "links": [],
+                "publicationContext": "",
+                "refersTo": [],
+                "remark": "",
+                "sourceType": "pdf",
+                "threadId": ""
+              }
+            ]
+          }
+    response:
+      status: 403
+      statusText: Forbidden
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_d506b718",
+                "externalId": "",
+                "grounds": []
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "dossierNumber": "",
+            "publicationDate": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "externalId": "",
+                "familyId": "",
+                "fileName": "",
+                "grounds": [],
+                "isSuspended": false,
+                "judgement": "public",
+                "links": [],
+                "publicationContext": "",
+                "refersTo": [],
+                "remark": "",
+                "sourceType": "pdf",
+                "threadId": ""
+              }
+            ]
+          }
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_d506b718",
+                "externalId": "",
+                "grounds": []
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "dossierNumber": "",
+            "publicationDate": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "externalId": "",
+                "familyId": "",
+                "fileName": "",
+                "grounds": [],
+                "isSuspended": false,
+                "judgement": "public",
+                "links": [],
+                "publicationContext": "",
+                "refersTo": [],
+                "remark": "",
+                "sourceType": "pdf",
+                "threadId": ""
+              }
+            ]
+          }
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 405 Response
+    description: Method Not Allowed
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_d506b718",
+                "externalId": "",
+                "grounds": []
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "dossierNumber": "",
+            "publicationDate": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "externalId": "",
+                "familyId": "",
+                "fileName": "",
+                "grounds": [],
+                "isSuspended": false,
+                "judgement": "public",
+                "links": [],
+                "publicationContext": "",
+                "refersTo": [],
+                "remark": "",
+                "sourceType": "pdf",
+                "threadId": ""
+              }
+            ]
+          }
+    response:
+      status: 405
+      statusText: Method Not Allowed
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 422 Response
+    description: An error occurred
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_d506b718",
+                "externalId": "",
+                "grounds": []
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "dossierNumber": "",
+            "publicationDate": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "externalId": "",
+                "familyId": "",
+                "fileName": "",
+                "grounds": [],
+                "isSuspended": false,
+                "judgement": "public",
+                "links": [],
+                "publicationContext": "",
+                "refersTo": [],
+                "remark": "",
+                "sourceType": "pdf",
+                "threadId": ""
+              }
+            ]
+          }
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "violations": [
+              {
+                "propertyPath": "",
+                "message": "",
+                "code": "",
+                "hint": "",
+                "payload": {}
+              }
+            ],
+            "detail": "",
+            "type": "",
+            "title": "",
+            "instance": ""
+          }
+  - name: 422 Response
+    description: An error occurred
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_d506b718",
+                "externalId": "",
+                "grounds": []
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "dossierNumber": "",
+            "publicationDate": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "externalId": "",
+                "familyId": "",
+                "fileName": "",
+                "grounds": [],
+                "isSuspended": false,
+                "judgement": "public",
+                "links": [],
+                "publicationContext": "",
+                "refersTo": [],
+                "remark": "",
+                "sourceType": "pdf",
+                "threadId": ""
+              }
+            ]
+          }
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "violations": [
+              {
+                "propertyPath": "",
+                "message": "",
+                "code": "",
+                "hint": "",
+                "payload": {}
+              }
+            ],
+            "detail": "",
+            "type": "",
+            "title": "",
+            "instance": ""
+          }
+  - name: 500 Response
+    description: Internal Server Error
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/woo-decision/external/:dossierExternalId"
+      method: PUT
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+      body:
+        type: json
+        data: |-
+          {
+            "departmentId": "",
+            "mainDocument": {
+              "fileName": "",
+              "formalDate": "",
+              "language": "NLD",
+              "type": "c_d506b718",
+              "grounds": []
+            },
+            "subjectId": "",
+            "summary": "",
+            "title": "",
+            "attachments": [
+              {
+                "fileName": "",
+                "formalDate": "",
+                "language": "NLD",
+                "type": "c_d506b718",
+                "externalId": "",
+                "grounds": []
+              }
+            ],
+            "dateFrom": "",
+            "dateTo": "",
+            "dossierNumber": "",
+            "publicationDate": "",
+            "decision": "already_public",
+            "reason": "wob_request",
+            "previewDate": "2025-12-21",
+            "documents": [
+              {
+                "inquiryNumbers": [],
+                "date": "",
+                "documentId": "",
+                "externalId": "",
+                "familyId": "",
+                "fileName": "",
+                "grounds": [],
+                "isSuspended": false,
+                "judgement": "public",
+                "links": [],
+                "publicationContext": "",
+                "refersTo": [],
+                "remark": "",
+                "sourceType": "pdf",
+                "threadId": ""
+              }
+            ]
+          }
+    response:
+      status: 500
+      statusText: Internal Server Error
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+
+docs: Replaces the WooDecision resource.

@@ -51,14 +51,15 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
         )->toArray();
 
         $referredDocumentNumbers = $entity->getReferredBy()->map(
-            static fn (Document $document) => $document->getDocumentNumber(),
+            static fn (Document $document): string => $document->getDocumentNumber()->toString(),
         )->toArray();
 
         $file = $entity->getFileInfo();
 
         $fields = [
             ElasticField::TYPE->value => ElasticDocumentType::WOO_DECISION_DOCUMENT->value,
-            ElasticField::DOCUMENT_NUMBER->value => $entity->getDocumentNumber(),
+            ElasticField::DOCUMENT_NUMBER->value => $entity->getDocumentNumber()->toString(),
+            ElasticField::PUBLICATION_CONTEXT->value => $entity->getPublicationContext()?->toString(),
             ElasticField::MIME_TYPE->value => $file->getMimeType(),
             ElasticField::FILE_SIZE->value => $file->getSize(),
             ElasticField::FILE_TYPE->value => $file->getType(),
@@ -76,6 +77,7 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
             ElasticField::INQUIRY_IDS->value => $inquiryIds,
             ElasticField::PREFIXED_DOSSIER_NUMBER->value => $prefixedDossierNumbers,
             ElasticField::ORGANISATION_IDS->value => $organisationIds,
+            ElasticField::REFERRED_DOCUMENT_NRS->value => $referredDocumentNumbers,
             ElasticField::REFERRED_DOCUMENT_NUMBERS->value => $referredDocumentNumbers,
         ];
 

@@ -81,6 +81,11 @@ class SubjectLandingPageType extends AbstractType
                 'required' => false,
                 'property_path' => 'hasVisibleLandingPageContentTree',
             ])
+            ->add('landing_page_content_tree', ContentTreeType::class, [
+                'label' => 'admin.subject.landing_page.content_tree',
+                'required' => false,
+                'property_path' => 'landingPageContentTree',
+            ])
             ->add('submit', SubmitType::class, [
                 'label' => 'global.save',
             ]);

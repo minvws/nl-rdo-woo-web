@@ -8,13 +8,17 @@ import { ref, useTemplateRef, nextTick } from 'vue';
 interface Props {
   id: string;
   name: string;
-  value: string;
 }
 
 const props = defineProps<Props>();
-const markdown = ref(props.value?.replace(/\r/g, '') ?? '');
+const markdown = defineModel<string>('value', {
+  required: true,
+  get: (value) => value?.replace(/\r/g, '') ?? '',
+});
 const textarea = useTemplateRef<HTMLTextAreaElement>('textarea');
 const isDialogOpen = ref(false);
+const isPreviewVisible = ref(false);
+const previewId = `${props.id}-preview`;
 
 const NUMBERED_LIST_PATTERN = /^\d+\.\s/;
 const BULLET_LIST_PATTERN = /^[-*]\s/;
@@ -453,14 +457,28 @@ const onBulletList = () => {
       </button>
     </div>
 
-    <button
-      @click="isDialogOpen = true"
-      aria-haspopup="dialog"
-      class="bhr-btn-ghost-primary"
-      type="button"
-    >
-      Wat is Markdown en hoe werkt het?
-    </button>
+    <div class="flex">
+      <button
+        :aria-controls="previewId"
+        :aria-expanded="isPreviewVisible"
+        @click="isPreviewVisible = !isPreviewVisible"
+        class="toolbar-button"
+        type="button"
+      >
+        <Icon name="eye" color="fill-current" :size="24" />
+        <span class="sr-only">Preview tonen/verbergen</span>
+      </button>
+
+      <button
+        @click="isDialogOpen = true"
+        aria-haspopup="dialog"
+        class="toolbar-button"
+        type="button"
+      >
+        <Icon name="info" color="fill-current" :size="24" />
+        <span class="sr-only">Wat is Markdown en hoe werkt het?</span>
+      </button>
+    </div>
   </div>
 
   <textarea
@@ -472,8 +490,14 @@ const onBulletList = () => {
     v-model="markdown"
   />
 
-  <h2 class="bhr-label mt-4">Preview</h2>
-  <div class="preview bhr-content" v-html="md.render(markdown)" />
+  <template v-if="isPreviewVisible">
+    <h2 class="bhr-label mt-4">Preview</h2>
+    <div
+      :id="previewId"
+      class="preview bhr-content"
+      v-html="md.render(markdown)"
+    />
+  </template>
 
   <Dialog v-model="isDialogOpen" title="Wat is markdown en hoe werkt het?">
     <p>

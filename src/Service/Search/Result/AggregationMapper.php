@@ -13,6 +13,7 @@ use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Model\Aggregation;
 use Shared\Service\Search\Model\AggregationBucketEntry;
 use Shared\Service\Search\Model\FacetKey;
+use Webmozart\Assert\Assert;
 
 readonly class AggregationMapper
 {
@@ -99,6 +100,8 @@ readonly class AggregationMapper
             }
 
             foreach ($bucket->getIterable('[' . ElasticField::SUBLEVEL_TYPE->value . '][buckets]') as $subBucketKey => $subBucket) {
+                Assert::isInstanceOf($subBucket, TypeArray::class);
+
                 $subKey = $subBucket->getString(self::KEY);
                 $combinedKey = $key . '.' . $subKey;
                 $subEntries[] = new AggregationBucketEntry(

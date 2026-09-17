@@ -9,6 +9,7 @@ use PublicationApi\Api\Subject\SubjectLandingPageOutputDto;
 use PublicationApi\Api\Subject\SubjectResponse;
 use PublicationApi\FeatureFlag\SubjectLandingPageGuard;
 use PublicationApi\Serializer\SubjectLandingPageFeatureNormalizer;
+use Shared\Domain\Publication\Subject\SubjectContentTree;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -45,7 +46,8 @@ final class SubjectLandingPageFeatureNormalizerTest extends UnitTestCase
                 'landing-page',
                 'Title',
                 'Description',
-                [],
+                false,
+                new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
                 null,
             ),
         );

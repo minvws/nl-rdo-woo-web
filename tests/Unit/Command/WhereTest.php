@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentReposito
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Routing\Exception\NoConfigurationException;
@@ -47,13 +48,13 @@ class WhereTest extends UnitTestCase
     {
         $documentId = Uuid::v6();
         $dossierNumber = 'tst-123';
-        $documentNumber = 'PREF-matter-123';
+        $documentNumber = DocumentNumber::fromString('PREF-matter-123');
 
         $matcher = Mockery::mock(UrlMatcherInterface::class);
         $matcher->expects('match')->andReturn([
             '_route' => 'app_document_detail',
             'dossierNumber' => $dossierNumber,
-            'documentNumber' => $documentNumber,
+            'documentNumber' => $documentNumber->toString(),
         ]);
 
         $wooDecisionRepository = Mockery::mock(WooDecisionRepository::class);
@@ -75,7 +76,7 @@ class WhereTest extends UnitTestCase
 
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'url' => sprintf('https://example.com/dossier/PREF/%s/document/%s', $dossierNumber, $documentNumber),
+            'url' => sprintf('https://example.com/dossier/PREF/%s/document/%s', $dossierNumber, $documentNumber->toString()),
         ]);
 
         self::assertEquals(Command::SUCCESS, $commandTester->getStatusCode());

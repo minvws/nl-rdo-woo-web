@@ -301,5 +301,5 @@ tasks:
       TENANT: '{{.TENANT | default "minvws"}}'
     cmds:
       - task: dc:exec:admin
-        vars: { SUB_CMD: 'bin/console --tenant={{ .TENANT }} woopie:dev:clean-sheet --index {{ .TENANT }}-initial --force --keep-prefixes {{ .CLI_ARGS }}' }
+        vars: { SUB_CMD: 'bin/console --tenant={{ .TENANT }} woopie:dev:clean-sheet --index {{ .TENANT }}-initial --force {{ .CLI_ARGS }}' }
       - task: minio:clear-buckets

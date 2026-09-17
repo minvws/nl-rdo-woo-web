@@ -14,8 +14,7 @@ use Shared\Domain\Search\Result\HighlightMapperTrait;
 use Shared\Domain\Search\Result\ResultEntryInterface;
 use Shared\Domain\Search\Result\SearchResultMapperInterface;
 use Shared\Domain\Search\Result\SubType\SubTypeSearchResultEntry;
-
-use function is_null;
+use Shared\ValueObject\DocumentNumber;
 
 readonly class DocumentSearchResultMapper implements SearchResultMapperInterface
 {
@@ -34,11 +33,12 @@ readonly class DocumentSearchResultMapper implements SearchResultMapperInterface
 
     public function map(TypeArray $hit, ApplicationId $applicationId = ApplicationId::PUBLIC): ?ResultEntryInterface
     {
-        $documentNumber = $hit->getStringOrNull('[fields][document_number][0]');
-        if (is_null($documentNumber)) {
+        $documentNumberString = $hit->getStringOrNull('[fields][document_number][0]');
+        if ($documentNumberString === null) {
             return null;
         }
 
+        $documentNumber = DocumentNumber::fromString($documentNumberString);
         $document = $this->documentRepository->getDocumentSearchEntry($documentNumber);
         if (! $document) {
             return null;

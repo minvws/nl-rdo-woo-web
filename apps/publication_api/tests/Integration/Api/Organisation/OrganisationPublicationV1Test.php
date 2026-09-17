@@ -8,7 +8,6 @@ use PublicationApi\Api\Organisation\OrganisationResource;
 use PublicationApi\Tests\Integration\Api\ApiPublicationV1TestCase;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
-use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,9 +40,6 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
             'name' => 'subjectB',
         ]);
 
-        $prefixA = DocumentPrefixFactory::createOne(['organisation' => $organisation]);
-        $prefixB = DocumentPrefixFactory::createOne(['organisation' => $organisation]);
-
         $response = self::createPublicationApiClient()
             ->request(
                 Request::METHOD_GET,
@@ -55,6 +51,7 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
         $expectedResponse = [
             'id' => (string) $organisation->getId(),
             'name' => $organisation->getName(),
+            'prefix' => $organisation->getPrefix()->toString(),
             'departments' => [
                 [
                     'id' => (string) $departmentA->getId(),
@@ -75,16 +72,6 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
                     'id' => (string) $subjectB->getId(),
                     'name' => $subjectB->getName(),
                     'landingPage' => null,
-                ],
-            ],
-            'prefixes' => [
-                [
-                    'id' => (string) $prefixA->getId(),
-                    'prefix' => $prefixA->getPrefix(),
-                ],
-                [
-                    'id' => (string) $prefixB->getId(),
-                    'prefix' => $prefixB->getPrefix(),
                 ],
             ],
         ];
@@ -164,6 +151,10 @@ final class OrganisationPublicationV1Test extends ApiPublicationV1TestCase
         /** @var array<array-key, mixed> $items */
         $items = $data['items'];
         self::assertCount($organisationCount, $items);
+        foreach ($items as $item) {
+            self::assertIsArray($item);
+            self::assertArrayHasKey('prefix', $item);
+        }
         // Note: Schema validation skipped due to CursorPage envelope wrapping collection
     }
 

@@ -11,11 +11,11 @@ use ReflectionClass;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
-use Shared\Service\Inventory\DocumentNumber;
 use Shared\Service\Storage\StorageRootPathGenerator;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\ValueObject\DocumentId;
-use Shared\ValueObject\DocumentMatter;
+use Shared\ValueObject\DocumentNumber;
+use Shared\ValueObject\PublicationContext;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 use function array_filter;
@@ -84,10 +84,11 @@ final class DocumentFactory extends PersistentObjectFactory
                 }
 
                 if (! array_key_exists('documentNumber', $attributes) && $attributes['documentId'] instanceof DocumentId) {
-                    $attributes['documentNumber'] = DocumentNumber::fromPrefixMatterAndInput(
-                        WooDecisionFactory::DEFAULT_PREFIX,
-                        DocumentMatter::create(DocumentFactory::DEFAULT_MATTER),
-                        (string) $attributes['documentId'],
+                    $attributes['documentNumber'] = DocumentNumber::fromPublicationContextAndDocumentId(
+                        PublicationContext::fromString(
+                            WooDecisionFactory::DEFAULT_PREFIX . '-' . DocumentFactory::DEFAULT_MATTER,
+                        ),
+                        $attributes['documentId'],
                     )->toString();
                 }
 
@@ -98,6 +99,10 @@ final class DocumentFactory extends PersistentObjectFactory
                         'type' => 'pdf',
                         'uploaded' => in_array($attributes['judgement'], [Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC], true),
                     ])->create();
+                }
+
+                if (array_key_exists('documentNumber', $attributes) && is_scalar($attributes['documentNumber'])) {
+                    $attributes['documentNumber'] = DocumentNumber::fromString((string) $attributes['documentNumber']);
                 }
 
                 return $attributes;

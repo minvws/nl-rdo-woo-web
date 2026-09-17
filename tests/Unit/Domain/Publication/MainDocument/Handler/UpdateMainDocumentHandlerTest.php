@@ -17,6 +17,7 @@ use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Publication\MainDocument\Command\UpdateMainDocumentCommand;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent;
 use Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
 use Shared\Domain\Publication\MainDocument\Handler\UpdateMainDocumentHandler;
 use Shared\Domain\Publication\MainDocument\MainDocumentNotFoundException;
@@ -197,6 +198,53 @@ class UpdateMainDocumentHandlerTest extends UnitTestCase
                 $language,
                 $grounds,
                 null,
+            ),
+        );
+    }
+
+    public function testInitialUploadDispatchesCreatedEvent(): void
+    {
+        $uploadFileReference = 'foo-bar-123';
+
+        $dossierUuid = Uuid::v6();
+        $dossier = Mockery::mock(AnnualReport::class)->makePartial();
+        $dossier->expects('getId')->times(2)->andReturn($dossierUuid);
+        $dossier->expects('getMainDocumentEntityClass')->andReturn(AnnualReportMainDocument::class);
+
+        $this->entityManager
+            ->expects('getRepository')
+            ->with(AnnualReportMainDocument::class)
+            ->andReturn($this->annualReportDocumentRepository);
+
+        $annualReportDocument = Mockery::mock(AnnualReportMainDocument::class);
+        $annualReportDocument->expects('getId')->andReturn(Uuid::v6());
+        $annualReportDocument->expects('getDossier')->andReturn($dossier);
+        $annualReportDocument->expects('getFileInfo')->andReturn(new FileInfo());
+        $annualReportDocument->expects('getMetadataSnapshot')->twice()->andReturn(['unchanged']);
+
+        $this->dossierRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($dossier);
+
+        $this->dossierWorkflowManager->expects('applyTransition')->with($dossier, DossierStatusTransition::UPDATE_MAIN_DOCUMENT);
+
+        $this->annualReportDocumentRepository->expects('findOneByDossierId')->with($dossierUuid)->andReturn($annualReportDocument);
+        $this->annualReportDocumentRepository->expects('save')->with($annualReportDocument, true);
+
+        $this->messageBus
+            ->expects('dispatch')
+            ->with(Mockery::type(MainDocumentCreatedEvent::class))
+            ->andReturns(new Envelope(new stdClass()));
+
+        $validatorList = Mockery::mock(ConstraintViolationListInterface::class);
+        $validatorList->expects('count')->andReturn(0);
+        $this->validator->expects('validate')->andReturn($validatorList);
+
+        $this->uploadStorer->expects('storeUploadForEntityWithSourceTypeAndName')->with($annualReportDocument, $uploadFileReference);
+
+        $this->handler->__invoke(
+            new UpdateMainDocumentCommand(
+                dossierId: $dossierUuid,
+                uploadFileReference: $uploadFileReference,
+                initialUpload: true,
             ),
         );
     }

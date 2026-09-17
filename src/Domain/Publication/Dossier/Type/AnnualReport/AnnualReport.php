@@ -95,9 +95,7 @@ class AnnualReport extends AbstractDossier implements EntityWithAttachments, Ent
     #[Override]
     public function setDateFrom(?PlainDate $dateFrom): static
     {
-        if ($dateFrom === null) {
-            $dateFrom = PlainDate::today();
-        }
+        $dateFrom ??= PlainDate::today();
 
         $this->dateFrom = $dateFrom->firstOfYear();
         $this->dateTo = $dateFrom->lastOfYear();

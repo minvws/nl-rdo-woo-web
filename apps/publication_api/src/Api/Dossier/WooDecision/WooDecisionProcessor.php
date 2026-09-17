@@ -23,14 +23,15 @@ use PublicationApi\Api\Dossier\WooDecision\Document\WooDecisionDocumentValidator
 use PublicationApi\Api\ExternalIdFactory;
 use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use PublicationApi\Domain\Dossier\MetadataSnapshot;
 use PublicationApi\Domain\Inquiry\InquiryService;
 use PublicationApi\FeatureFlag\DossierUpdateGuard;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Document\DocumentPrefixDeterminer;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ObsoleteFileRemover;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Domain\Publication\Subject\Subject;
@@ -64,13 +65,12 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
         private WooDecisionRepository $wooDecisionRepository,
         private InquiryService $inquiryService,
         private WooDecisionMapper $wooDecisionMapper,
-        private DocumentPrefixDeterminer $documentPrefixDeterminer,
         private AttachmentSynchronizer $attachmentSynchronizer,
         private DossierAttachmentValidator $dossierAttachmentValidator,
         private DossierDocumentValidator $dossierDocumentValidator,
         private DossierMainDocumentValidator $dossierMainDocumentValidator,
+        private ObsoleteFileRemover $obsoleteFileRemover,
         private OrganisationResolver $organisationResolver,
-        private WooDecisionDocumentMapper $wooDecisionDocumentMapper,
         private WooDecisionDocumentValidator $wooDecisionDocumentValidator,
     ) {
     }
@@ -103,7 +103,7 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
         $this->wooDecisionDocumentValidator->validate($data->documents);
 
         if ($dossier === null) {
-            $documentPrefix = $this->documentPrefixDeterminer->forOrganisation($organisation);
+            $documentPrefix = $organisation->getPrefix()->toString();
             $this->dossierNumberValidator->validate($data->dossierNumber, $documentPrefix);
             $dossier = $this->create($organisation, $department, $subject, $data, $dossierExternalId, $documentPrefix);
 
@@ -144,6 +144,8 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
 
         $this->wooDecisionRepository->save($wooDecision, true);
 
+        $this->dossierSupportService->dispatchDossierCreatedEvent($wooDecision);
+
         $this->handleInquiries($wooDecision, $wooDecisionRequestDto->documents);
 
         $this->updateDocumentRefersTo($wooDecisionRequestDto->documents);
@@ -161,6 +163,7 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
         WooDecisionRequestDto $wooDecisionRequestDto,
     ): void {
         $wooDecision = WooDecisionMapper::update($wooDecision, $wooDecisionRequestDto, $organisation, $department, $subject);
+        $mainDocumentSnapshot = MetadataSnapshot::ofNullable($wooDecision->getMainDocument());
 
         $mainDocument = WooDecisionMainDocumentRequestMapper::update($wooDecision, $wooDecisionRequestDto->mainDocument);
         $this->dossierMainDocumentValidator->validate($mainDocument);
@@ -168,7 +171,7 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
 
         $this->dossierAttachmentValidator->assertUniqueExternalIds($wooDecisionRequestDto->attachments);
         $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($wooDecision, $wooDecisionRequestDto->attachments);
-        $this->attachmentSynchronizer->sync($wooDecision, $wooDecisionRequestDto->attachments);
+        $attachmentEvents = $this->attachmentSynchronizer->sync($wooDecision, $wooDecisionRequestDto->attachments);
         $this->dossierAttachmentValidator->validate($wooDecision->getAttachments()->getValues(), $wooDecision->getStatus());
 
         $previousDocumentInquiryNumbers = $this->getDocumentInquiryNumbers($wooDecision);
@@ -182,6 +185,8 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
         $this->dossierValidator->validateDossier($wooDecision);
 
         $this->wooDecisionRepository->save($wooDecision, true);
+
+        $this->dossierSupportService->dispatchPublicationEvents($wooDecision, $mainDocumentSnapshot, $attachmentEvents);
 
         $this->handleInquiries(
             $wooDecision,
@@ -201,13 +206,15 @@ final readonly class WooDecisionProcessor implements ProcessorInterface
     private function getDocuments(WooDecision $wooDecision, array $wooDecisionDocumentRequestDtos): array
     {
         return array_values(array_map(function (WooDecisionDocumentRequestDto $wooDecisionDocumentRequestDto) use ($wooDecision): Document {
-            $document = $this->documentRepository->findByDossierAndExternalId($wooDecision, $wooDecisionDocumentRequestDto->externalId);
+            $existingDocument = $this->documentRepository->findByDossierAndExternalId($wooDecision, $wooDecisionDocumentRequestDto->externalId);
 
-            if ($document instanceof Document) {
-                return $this->wooDecisionDocumentMapper->update($document, $wooDecisionDocumentRequestDto);
-            }
+            $document = $existingDocument instanceof Document
+                ? WooDecisionDocumentMapper::update($existingDocument, $wooDecisionDocumentRequestDto)
+                : WooDecisionDocumentMapper::create($wooDecisionDocumentRequestDto);
 
-            return $this->wooDecisionDocumentMapper->create($wooDecisionDocumentRequestDto);
+            $this->obsoleteFileRemover->removeIfObsolete($document);
+
+            return $document;
         }, $wooDecisionDocumentRequestDtos));
     }
 

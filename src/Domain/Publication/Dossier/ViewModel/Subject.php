@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\ViewModel;
 
+use Shared\Domain\Publication\Subject\SubjectContentTree;
 use Symfony\Component\Uid\Uuid;
 
 readonly class Subject
 {
-    /**
-     * @param list<array<string, mixed>>|null $landingPageContentTree
-     */
     public function __construct(
         public Uuid $id,
         public string $name,
@@ -20,7 +18,7 @@ readonly class Subject
         public bool $hasPublishedLandingPage,
         public ?string $landingPageTitle,
         public ?string $landingPageDescription,
-        public ?array $landingPageContentTree,
+        public ?SubjectContentTree $landingPageContentTree,
         public bool $hasVisibleLandingPageContentTree,
     ) {
     }

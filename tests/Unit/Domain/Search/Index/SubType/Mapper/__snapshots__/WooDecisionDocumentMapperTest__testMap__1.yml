@@ -2,6 +2,7 @@ id: doc-456
 fields:
     type: document
     document_number: doc-123
+    publication_context: PUBCON
     mime_type: application/pdf
     file_size: 1234
     file_type: pdf
@@ -20,11 +21,13 @@ fields:
     prefixed_dossier_number: [PREFIX|dos-123]
     organisation_ids: [{}]
     referred_document_nrs: [doc-456, doc-789]
+    referred_document_numbers: [doc-456, doc-789]
     metadata: [foo]
     pages: { 1: bar }
 documentValues:
     type: { name: WOO_DECISION_DOCUMENT, value: document }
     document_number: doc-123
+    publication_context: PUBCON
     mime_type: application/pdf
     file_size: 1234
     file_type: pdf
@@ -43,6 +46,7 @@ documentValues:
     prefixed_dossier_number: [PREFIX|dos-123]
     organisation_ids: [{}]
     referred_document_nrs: [doc-456, doc-789]
+    referred_document_numbers: [doc-456, doc-789]
     metadata: [foo]
     pages: { 1: bar }
     toplevel_type: { name: WOO_DECISION, value: dossier }

@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentReposito
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Validator\UniqueDocumentNumber;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Validator\UniqueDocumentNumberValidator;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -44,11 +45,12 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
 
     public function testNoViolationWhenNoConflictingDocumentExists(): void
     {
+        $documentNumber = DocumentNumber::fromString('PREFIX-sint-doc1');
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentNumber')->andReturn('PREFIX-sint-doc1');
+        $document->expects('getDocumentNumber')->andReturn($documentNumber);
 
         $repository = Mockery::mock(DocumentRepository::class);
-        $repository->expects('findOneByDocumentNumberCaseInsensitive')->with('PREFIX-sint-doc1')->andReturnNull();
+        $repository->expects('findOneByDocumentNumberCaseInsensitive')->with($documentNumber)->andReturnNull();
 
         $context = Mockery::mock(ExecutionContextInterface::class);
         $context->expects('buildViolation')->never();
@@ -62,16 +64,17 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
     public function testNoViolationWhenConflictingDocumentIsSameDocument(): void
     {
         $id = Uuid::v6();
+        $documentNumber = DocumentNumber::fromString('PREFIX-sint-doc1');
 
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentNumber')->andReturn('PREFIX-sint-doc1');
+        $document->expects('getDocumentNumber')->andReturn($documentNumber);
         $document->expects('getId')->andReturn($id);
 
         $conflicting = Mockery::mock(Document::class);
         $conflicting->expects('getId')->andReturn($id);
 
         $repository = Mockery::mock(DocumentRepository::class);
-        $repository->expects('findOneByDocumentNumberCaseInsensitive')->with('PREFIX-sint-doc1')->andReturn($conflicting);
+        $repository->expects('findOneByDocumentNumberCaseInsensitive')->with($documentNumber)->andReturn($conflicting);
 
         $context = Mockery::mock(ExecutionContextInterface::class);
         $context->expects('buildViolation')->never();
@@ -84,15 +87,16 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
 
     public function testAddsViolationWhenConflictingDocumentHasNoDossier(): void
     {
+        $documentNumber = DocumentNumber::fromString('PREFIX-sint-doc1');
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentNumber')->twice()->andReturn('PREFIX-sint-doc1');
+        $document->expects('getDocumentNumber')->twice()->andReturn($documentNumber);
         $document->expects('getId')->andReturn(Uuid::v6());
 
         $conflicting = Mockery::mock(Document::class);
         $conflicting->expects('getId')->andReturn(Uuid::v6());
 
         $repository = Mockery::mock(DocumentRepository::class);
-        $repository->expects('findOneByDocumentNumberCaseInsensitive')->with('PREFIX-sint-doc1')->andReturn($conflicting);
+        $repository->expects('findOneByDocumentNumberCaseInsensitive')->with($documentNumber)->andReturn($conflicting);
 
         $builder = Mockery::mock(ConstraintViolationBuilderInterface::class);
         $builder->expects('atPath')->with('documentNumber')->andReturn($builder);
@@ -111,15 +115,16 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
 
     public function testAddsViolationWithDecomposedPartsWhenDocumentNumberExistsInAnotherDocument(): void
     {
+        $documentNumber = DocumentNumber::fromString('PREFIX-sint-doc1');
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentNumber')->twice()->andReturn('PREFIX-sint-doc1');
+        $document->expects('getDocumentNumber')->twice()->andReturn($documentNumber);
         $document->expects('getId')->andReturn(Uuid::v6());
 
         $conflicting = Mockery::mock(Document::class);
         $conflicting->expects('getId')->andReturn(Uuid::v6());
 
         $repository = Mockery::mock(DocumentRepository::class);
-        $repository->expects('findOneByDocumentNumberCaseInsensitive')->with('PREFIX-sint-doc1')->andReturn($conflicting);
+        $repository->expects('findOneByDocumentNumberCaseInsensitive')->with($documentNumber)->andReturn($conflicting);
 
         $builder = Mockery::mock(ConstraintViolationBuilderInterface::class);
         $builder->expects('atPath')->with('documentNumber')->andReturn($builder);

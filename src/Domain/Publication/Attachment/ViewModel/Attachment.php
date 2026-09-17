@@ -30,6 +30,7 @@ readonly class Attachment implements SubTypeViewModelInterface
         public string $downloadUrl,
         public string $detailsUrl,
         public int $pageCount,
+        public bool $isDownloadable,
         public bool $withdrawn,
         public ?AttachmentWithdrawReason $withdrawReason,
         public ?DateTimeImmutable $withdrawDate,

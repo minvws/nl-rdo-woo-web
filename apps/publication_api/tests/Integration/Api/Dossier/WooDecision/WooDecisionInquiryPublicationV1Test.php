@@ -6,6 +6,7 @@ namespace PublicationApi\Tests\Integration\Api\Dossier\WooDecision;
 
 use PublicationApi\Api\Dossier\WooDecision\WooDecisionResource;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
+use Shared\Controller\Public\Dossier\WooDecision\InquiryController;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Dossier\DossierStatus;
@@ -17,6 +18,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
@@ -24,7 +26,6 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\InquiryFactory;
 use Shared\Tests\Factory\OrganisationFactory;
-use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
@@ -32,7 +33,9 @@ use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\ValueObject\ExternalId;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Webmozart\Assert\Assert;
 
+use function array_column;
 use function array_filter;
 use function array_map;
 use function array_shift;
@@ -52,7 +55,6 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(WooDecision::class, 0);
 
@@ -481,7 +483,6 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(WooDecision::class, 0);
 
@@ -539,6 +540,159 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
 
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->externalId()), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testGetWooDecisionReturnsInquiryLinksForTheDossierAndItsDocuments(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
+
+        $externalIdWithInquiries = 'document-with-inquiries';
+        $externalIdWithoutInquiries = 'document-without-inquiries';
+
+        $documentWithInquiries = DocumentFactory::new()
+            ->withPublicJudgement()
+            ->create([
+                'dossiers' => [$wooDecision],
+                'externalId' => ExternalId::create($externalIdWithInquiries),
+            ]);
+
+        DocumentFactory::new()
+            ->withPublicJudgement()
+            ->create([
+                'dossiers' => [$wooDecision],
+                'externalId' => ExternalId::create($externalIdWithoutInquiries),
+            ]);
+
+        $inquiryC1 = InquiryFactory::createOne([
+            'documents' => [$documentWithInquiries],
+            'dossiers' => [$wooDecision],
+            'inquiryNumber' => 'C-1',
+            'organisation' => $organisation,
+        ]);
+        $inquiryC2 = InquiryFactory::createOne([
+            'documents' => [$documentWithInquiries],
+            'dossiers' => [$wooDecision],
+            'inquiryNumber' => 'C-2',
+            'organisation' => $organisation,
+        ]);
+
+        $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation, $wooDecision));
+        self::assertResponseIsSuccessful();
+        self::assertMatchesResourceItemJsonSchema(WooDecisionResource::class);
+
+        $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
+        $expectedInquiryLinks = [
+            [
+                'href' => $publicUrlGenerator
+                    ->buildUrlFromRoute(InquiryController::ROUTE_NAME_INQUIRY_DETAIL, ['token' => $inquiryC1->getToken()])
+                    ->toString(),
+                'name' => 'C-1',
+            ],
+            [
+                'href' => $publicUrlGenerator
+                    ->buildUrlFromRoute(InquiryController::ROUTE_NAME_INQUIRY_DETAIL, ['token' => $inquiryC2->getToken()])
+                    ->toString(),
+                'name' => 'C-2',
+            ],
+        ];
+
+        $response = $result->toArray();
+
+        $links = $response['_links'];
+        Assert::isArray($links);
+
+        self::assertSame(['href' => $this->buildApiUrl($organisation, $wooDecision)], $links['self']);
+        self::assertEqualsCanonicalizing($expectedInquiryLinks, $links['inquiries']);
+
+        $documents = $response['documents'];
+        Assert::isArray($documents);
+        $linksByExternalId = array_column($documents, '_links', 'externalId');
+
+        $linksWithInquiries = $linksByExternalId[$externalIdWithInquiries];
+        Assert::isArray($linksWithInquiries);
+        self::assertEqualsCanonicalizing($expectedInquiryLinks, $linksWithInquiries['inquiries']);
+
+        $linksWithoutInquiries = $linksByExternalId[$externalIdWithoutInquiries];
+        Assert::isArray($linksWithoutInquiries);
+        self::assertArrayNotHasKey('inquiries', $linksWithoutInquiries);
+    }
+
+    public function testGetWooDecisionWithoutInquiriesReturnsNoInquiryLinks(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
+
+        $externalId = 'document-without-inquiries';
+
+        DocumentFactory::new()
+            ->withAlreadyPublicJudgement()
+            ->create([
+                'dossiers' => [$wooDecision],
+                'externalId' => ExternalId::create($externalId),
+            ]);
+
+        self::assertDatabaseCount(Inquiry::class, 0);
+
+        $result = self::createPublicationApiRequest(Request::METHOD_GET, $this->buildUrl($organisation, $wooDecision));
+        self::assertResponseIsSuccessful();
+
+        $response = $result->toArray();
+
+        self::assertSame([
+            'self' => ['href' => $this->buildApiUrl($organisation, $wooDecision)],
+        ], $response['_links']);
+
+        $documents = $response['documents'];
+        Assert::isArray($documents);
+
+        $documentLinks = array_column($documents, '_links', 'externalId')[$externalId];
+        Assert::isArray($documentLinks);
+        self::assertArrayNotHasKey('inquiries', $documentLinks);
+
+        self::assertStringContainsString('"_links":{}', $result->getContent());
+    }
+
+    public function testInquiryLinksOfAnotherOrganisationAreNotVisible(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::new()->published()->create([
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+        ]);
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
+
+        $inquiry = InquiryFactory::createOne([
+            'documents' => [],
+            'dossiers' => [$wooDecision],
+            'inquiryNumber' => 'C-1',
+            'organisation' => $organisation,
+        ]);
+
+        $otherOrganisation = OrganisationFactory::createOne();
+
+        $result = self::createPublicationApiRequest(
+            Request::METHOD_GET,
+            $this->buildUrl($otherOrganisation, $wooDecision),
+        );
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        self::assertStringNotContainsString($inquiry->getToken(), $result->getContent(false));
     }
 
     /**

@@ -19,7 +19,7 @@ networks:
 services:
 
   public:
-    image: &PHP_IMAGE "ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.18.0}"
+    image: &PHP_IMAGE "ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.20.0}"
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -227,7 +227,7 @@ services:
       - woopie
 
   minio:
-    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/minio:RELEASE.2025-09-07T16-13-09Z
     labels:
       com.symfony.server.service-ignore: true
     environment:

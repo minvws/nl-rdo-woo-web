@@ -77,7 +77,7 @@ global.optional: "optioneel"
 global.part_of: "onderdeel van"
 global.pagination: "Paginering"
 global.period: "Periode"
-global.prefixes: "Prefixes"
+global.prefix: "Prefix"
 global.publication_date: "Publicatiedatum"
 global.created_at: "Aanmaakdatum"
 global.query: "Query"
@@ -271,7 +271,6 @@ admin.global.user: "Gebruiker"
 admin.global.roles: "Rollen"
 admin.global.input_delete: "Invoer verwijderen"
 admin.global.no_choices: "Nog niets gekozen"
-admin.global.dossiers.prefix_placeholder: "Kies een prefix"
 admin.global.statistics: "Statistieken"
 admin.global.yes: "Ja"
 admin.global.no: "Nee"
@@ -322,6 +321,10 @@ admin.subject.landing_page.title: 'Titel'
 admin.subject.landing_page.title_help: 'Verplicht veld, maximaal 200 tekens.'
 admin.subject.landing_page.description: 'Omschrijving'
 admin.subject.landing_page.visible_content_tree: 'Verhaallijn tonen'
+admin.subject.landing_page.content_tree_info: 'Verhaallijnen bieden de mogelijkheid om informatie over een onderwerp of dossier samenhangend te publiceren. Ontwikkelingen kunnen chronologisch of thematisch worden weergegeven, met directe verwijzingen naar de onderliggende publicaties. Zo wordt informatie beter vindbaar en transparanter.'
+admin.subject.landing_page.content_tree_manage: 'Een verhaallijn bestaat uit een titel, achtergrond en conclusie. Daartussen bouw je de inhoud op met onderwerpen. Binnen elk onderwerp kunnen één of meer onderdelen toegevoegd worden voor de onderliggende content.'
+admin.subject.landing_page.content_tree: 'Verhaallijn'
+admin.subject.landing_page.content_tree.section: 'Verhaallijn'
 admin.subject.landing_page.status: 'Status'
 admin.subject.landing_page.status_help: "Een concept is alleen zichtbaar via de previewlink, gepubliceerd is zichtbaar op de website"
 admin.subject.landing_page.status.concept: 'Concept'
@@ -441,12 +444,13 @@ admin.department.update_landing_page: "Wijzig landingspagina"
 admin.organisation.create: "Organisatie toevoegen"
 admin.organisation.edit: "Organisatie wijzigen"
 admin.organisation.manage: "Organisaties beheren"
-admin.organisation.add_prefix: "Nog een prefix toevoegen"
 admin.organisation.add_department: "Nog een bestuursorganisatie toevoegen"
 admin.organisation.department_new: "Nieuw bestuursorgaan aanmaken"
 admin.organisation.department_edit: "Wijzig bestuursorgaan {name}"
 admin.organisation.name: "Naam organisatie"
 admin.organisation.name_help: "Bijvoorbeeld Ministerie van VWS - Directie Wetgeving en Juridische Zaken"
+admin.organisation.prefix: "Prefix"
+admin.organisation.prefix_help: "Minimaal 5 en maximaal 30 tekens. Gebruik alleen letters, cijfers en streepjes."
 admin.login.2fa.invalid_code: "Ongeldige authenticatiecode"
 admin.login.2fa.enter_code: "Voer authenticatiecode in"
 admin.login.2fa.instructions: "Open de authenticator app en voer de éénmalige code in om in te loggen."
@@ -512,8 +516,6 @@ admin.dossiers.link_documents: "Koppel aan Woo-documenten"
 admin.dossiers.link_inquiry: "Zaaknummer koppelen"
 admin.dossiers.link_inquiries_help: "Kies aan waar je de zaaknummers wilt koppelen en zie vervolgens in een nieuw scherm hoe je deze kunt koppelen."
 admin.dossiers.published_decisions: "Gepubliceerde besluiten"
-admin.dossiers.decision_prefix: "Selecteer de prefix van het besluit"
-admin.dossiers.decision_prefix_help: "Je kunt de prefix van het besluit vinden door het besluit op te zoeken en naar de basisinformatiepagina te gaan."
 admin.dossiers.inquiries: "Zaaknummer(s)"
 admin.dossiers.inquiries.are_linked: "De zaaknummers worden gekoppeld"
 admin.dossiers.inquiries.help: "Scheid meerdere zaaknummers met komma's, bijvoorbeeld 100-2465, 102-2384"
@@ -552,8 +554,6 @@ admin.dossiers.covenant.form.details.description: "Houd het kort en wees concree
 admin.dossiers.covenant.form.details.date_legend: "Periode waarover het convenant gaat"
 admin.dossiers.covenant.form.details.ref_nr: "Referentienummer convenant"
 admin.dossiers.covenant.form.details.ref_int: "Interne referentie"
-admin.dossiers.covenant.form.details.prefix: "Prefix voor publicatie"
-admin.dossiers.covenant.form.details.prefix_help: "<strong>Let op</strong>: je kan deze na het opslaan van de basisgegevens niet meer aanpassen."
 admin.dossiers.covenant.form.content.previous_version_link_label: 'Opvolger van vorig convenant'
 admin.dossiers.covenant.form.content.previous_version_link_description: 'Voeg de link van de publicatie toe waar dit convenant een relatie mee heeft.'
 admin.dossiers.covenant.form.content.document_label: 'Convenant'
@@ -588,8 +588,6 @@ admin.dossiers.annual-report.form.details.title: "Omschrijving van het jaarplan 
 admin.dossiers.annual-report.form.details.description: 'Houd het kort en wees concreet. Gebruik dus geen onnodige voorzetsels, lidwoorden en vanzelfsprekende inhoudelijke woorden zoals jaarplan, jaarverslag, aangaande, etc. <ul class="my-4"><li class="bhr-form-help__dont text-sm">Niet: Jaarverslag over de voortgang van het implementatieprogramma e-health toepassingen in de ouderenzorg gedurende het jaar 2024</li><li class="bhr-form-help__do text-sm">Wel: Voortgangsrapportage e-health toepassingen</li></ul>'
 admin.dossiers.annual-report.form.details.date_legend: "Het jaar waarover het jaarplan of jaarverslag gaat"
 admin.dossiers.annual-report.form.details.ref_int: "Interne referentie"
-admin.dossiers.annual-report.form.details.prefix: "Prefix voor publicatie"
-admin.dossiers.annual-report.form.details.prefix_help: "<strong>Let op</strong>: je kan deze na het opslaan van de basisgegevens niet meer aanpassen."
 admin.dossiers.annual-report.form.content.document_label: 'Jaarplan of jaarverslag'
 admin.dossiers.annual-report.form.content.document_help: 'Upload minimaal het jaarplan of jaarverslag'
 admin.dossiers.annual-report.form.content.attachments_help: 'Voeg hier alleen bijlagen toe die te maken hebben met de totstandkoming van het jaarplan of jaarverslag.'
@@ -828,6 +826,8 @@ public.search.only_first_set_displayed: "De eerste <span class='font-bold'>{disp
 public.search.refine_results: "Verfijn uw zoekopdracht door middel van specifieke zoektermen en de beschikbare filteropties."
 
 public.subject.search: "Zoek op onderwerp \"{ subject }\""
+public.subject.subject_pages_title: "Onderwerppagina's"
+public.subject.to_all_subject_pages: "Naar alle onderwerppagina's"
 
 public.intro.label.oga: "WooPlatform"
 public.intro.description.oga: "Openbaar gemaakte informatie"
@@ -1094,7 +1094,6 @@ publication.dossier.error.generating_inventory: "Er is een technische fout opget
 publication.dossier.error.missing_inventory_header: "Het productierapport mist de kolom {headername}"
 publication.dossier.error.processing_inventory_row: "De verwerking van rij {rowIndex} veroorzaakt een fout"
 publication.dossier.error.opening_inventory_file: "Er is een fout opgetreden bij het openen van het productierapport, controleer de structuur"
-publication.dossier.error.organisation_mismatch: "Er is een fout opgetreden bij het openen van het productierapport, controleer de gebruikte prefix"
 publication.dossier.error.reading_cell: "Er is een fout opgetreden bij het lezen van het productierapport, controleer de structuur"
 publication.dossier.error.missing_document_number: "Rij {rownumber} heeft geen documentnummer"
 publication.dossier.error.invalid_document_number: "Rij {rownumber} heeft een ongeldig documentnummer"
@@ -1187,8 +1186,6 @@ admin.dossiers.investigation-report.form.details.date_legend: 'Periode waarover 
 admin.dossiers.investigation-report.form.details.ref_nr: 'Referentienummer onderzoeksrapport'
 admin.dossiers.investigation-report.form.details.ref_int: 'Interne referentie'
 admin.dossiers.investigation-report.form.details.ref_number: 'Referentienummer onderzoeksrapport'
-admin.dossiers.investigation-report.form.details.prefix: 'Prefix voor publicatie'
-admin.dossiers.investigation-report.form.details.prefix_help: '<strong>Let op</strong>: je kan deze na het opslaan van de basisgegevens niet meer aanpassen.'
 admin.dossiers.investigation-report.form.content.document_label: 'Onderzoeksrapport'
 admin.dossiers.investigation-report.form.content.document_help: 'Upload minimaal het onderzoeksrapport'
 admin.dossiers.investigation-report.form.content.attachments_help: 'Voeg hier alleen bijlagen toe die te maken hebben met de totstandkoming van het onderzoeksrapport.'

@@ -41,23 +41,23 @@ class AttachmentDispatcherTest extends UnitTestCase
     }
 
     /**
-     * @return array<string, array{method: string, fileUpdated: bool, metadataUpdated: bool}>
+     * @return array<string, array{dispatchMethod: string, fileUpdated: bool, metadataUpdated: bool}>
      */
     public static function updatedEventDataProvider(): array
     {
         return [
             'metadata only' => [
-                'method' => 'dispatchAttachmentMetadataUpdatedEvent',
+                'dispatchMethod' => 'dispatchAttachmentMetadataUpdatedEvent',
                 'fileUpdated' => false,
                 'metadataUpdated' => true,
             ],
             'file only' => [
-                'method' => 'dispatchAttachmentFileUpdatedEvent',
+                'dispatchMethod' => 'dispatchAttachmentFileUpdatedEvent',
                 'fileUpdated' => true,
                 'metadataUpdated' => false,
             ],
             'metadata and file' => [
-                'method' => 'dispatchAttachmentMetadataAndFileUpdatedEvent',
+                'dispatchMethod' => 'dispatchAttachmentMetadataAndFileUpdatedEvent',
                 'fileUpdated' => true,
                 'metadataUpdated' => true,
             ],
@@ -65,7 +65,7 @@ class AttachmentDispatcherTest extends UnitTestCase
     }
 
     #[DataProvider('updatedEventDataProvider')]
-    public function testDispatchAttachmentUpdatedEvent(string $method, bool $fileUpdated, bool $metadataUpdated): void
+    public function testDispatchAttachmentUpdatedEvent(string $dispatchMethod, bool $fileUpdated, bool $metadataUpdated): void
     {
         $dossier = Mockery::mock(Covenant::class);
         $dossier->expects('getId')->andReturn($dossierId = Uuid::v6());
@@ -105,7 +105,7 @@ class AttachmentDispatcherTest extends UnitTestCase
             },
         ))->andReturns(new Envelope(new stdClass()));
 
-        $this->dispatcher->{$method}($attachment);
+        $this->dispatcher->{$dispatchMethod}($attachment);
     }
 
     public function testDispatchAttachmentCreatedEvent(): void

@@ -309,6 +309,36 @@ describe('The <GenericController /> component', () => {
     });
   });
 
+  test('should render the <ContentTree /> component when the property "componentName" equals "ContentTree"', () => {
+    const component = createComponent({
+      componentName: 'ContentTree',
+
+      id: 'mocked-id',
+      name: 'mocked-name',
+      value: 'mocked-value',
+    });
+
+    expect(findComponent('ContentTree', component).props()).toMatchObject({
+      id: 'mocked-id',
+      name: 'mocked-name',
+      value: 'mocked-value',
+    });
+  });
+
+  test('should render the <ContentTreePreview /> component when the property "componentName" equals "ContentTreePreview"', () => {
+    const component = createComponent({
+      componentName: 'ContentTreePreview',
+
+      treeId: 'mocked-tree-id',
+    });
+
+    expect(
+      findComponent('ContentTreePreview', component).props(),
+    ).toMatchObject({
+      treeId: 'mocked-tree-id',
+    });
+  });
+
   test('should render the <MarkdownEditor /> component when the property "componentName" equals "MarkdownEditor"', () => {
     const component = createComponent({
       componentName: 'MarkdownEditor',

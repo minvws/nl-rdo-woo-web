@@ -1,0 +1,288 @@
+info:
+  name: Retrieves a RequestForAdvice resource.
+  type: http
+  seq: 2
+  tags:
+    - RequestForAdvice
+
+http:
+  method: GET
+  url: "{{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId"
+  params:
+    - name: organisationId
+      value: "{{organisationId}}"
+      type: path
+    - name: dossierExternalId
+      value: "{{requestForAdviceDossierExternalId}}"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+examples:
+  - name: 200 Response
+    description: RequestForAdvice resource
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "id": "",
+            "externalId": "",
+            "organisation": {
+              "id": "",
+              "name": ""
+            },
+            "dossierNumber": "",
+            "title": "",
+            "summary": "",
+            "subject": "",
+            "department": {
+              "id": "",
+              "name": ""
+            },
+            "publicationDate": "2025-12-21",
+            "status": "new",
+            "mainDocument": {
+              "id": "",
+              "type": "c_d506b718",
+              "language": "NLD",
+              "formalDate": "",
+              "grounds": [],
+              "fileName": "",
+              "uploadStatus": "no_upload_required"
+            },
+            "attachments": [
+              {
+                "id": "",
+                "type": "c_d506b718",
+                "language": "NLD",
+                "formalDate": "",
+                "grounds": [],
+                "fileName": "",
+                "externalId": "",
+                "uploadStatus": "no_upload_required"
+              }
+            ],
+            "dossierDate": "",
+            "link": "",
+            "advisoryBodies": []
+          }
+  - name: 400 Response
+    description: Bad Request
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+    response:
+      status: 400
+      statusText: Bad Request
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 401 Response
+    description: Unauthorized
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+    response:
+      status: 401
+      statusText: Unauthorized
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+    response:
+      status: 403
+      statusText: Forbidden
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "title": "",
+            "detail": "",
+            "status": "",
+            "instance": "",
+            "type": ""
+          }
+  - name: 405 Response
+    description: Method Not Allowed
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+    response:
+      status: 405
+      statusText: Method Not Allowed
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+  - name: 500 Response
+    description: Internal Server Error
+    request:
+      url: "{{baseUrl}}/organisation/:organisationId/dossiers/request-for-advice/external/:dossierExternalId"
+      method: GET
+      params:
+        - name: organisationId
+          value: "{{organisationId}}"
+          type: path
+        - name: dossierExternalId
+          value: "{{dossierExternalId}}"
+          type: path
+    response:
+      status: 500
+      statusText: Internal Server Error
+      headers:
+        - name: Content-Type
+          value: application/problem+json
+      body:
+        type: json
+        data: |-
+          {
+            "type": "",
+            "title": "",
+            "status": 0,
+            "detail": "",
+            "instance": ""
+          }
+
+docs: Retrieves a RequestForAdvice resource.

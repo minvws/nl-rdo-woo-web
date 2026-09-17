@@ -40,20 +40,11 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
         $dossier->expects('getPublicationDate')->andReturn(PlainDate::today());
         $dossier->expects('getPreviewDate')->andReturn(PlainDate::today());
 
-        $preUpdateArgs->expects('hasChangedField')->with('decisionDate')->andReturnTrue();
-        $preUpdateArgs->expects('getOldValue')->times(2)->with('decisionDate')->andReturn('foo');
-
-        $preUpdateArgs->expects('hasChangedField')->with('title')->andReturnTrue();
-        $preUpdateArgs->expects('getOldValue')->times(2)->with('title')->andReturn('foo');
-
-        $preUpdateArgs->expects('hasChangedField')->with('summary')->andReturnTrue();
-        $preUpdateArgs->expects('getOldValue')->times(2)->with('summary')->andReturn('foo');
-
-        $preUpdateArgs->expects('hasChangedField')->with('publicationDate')->andReturnTrue();
-        $preUpdateArgs->expects('getOldValue')->times(2)->with('publicationDate')->andReturn('foo');
-
-        $preUpdateArgs->expects('hasChangedField')->with('previewDate')->andReturnTrue();
-        $preUpdateArgs->expects('getOldValue')->times(2)->with('previewDate')->andReturn('foo');
+        foreach (['decisionDate', 'title', 'summary', 'publicationDate', 'previewDate'] as $fieldName) {
+            $preUpdateArgs->expects('hasChangedField')->with($fieldName)->andReturnTrue();
+            $preUpdateArgs->expects('getOldValue')->with($fieldName)->andReturn('foo');
+            $preUpdateArgs->expects('getNewValue')->with($fieldName)->andReturn('bar');
+        }
 
         $this->listener->preUpdate($dossier, $preUpdateArgs);
 
@@ -85,16 +76,41 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
         $preUpdateArgs->expects('getOldValue')->with('decisionDate')->andReturnNull();
 
         $preUpdateArgs->expects('hasChangedField')->with('title')->andReturnTrue();
-        $preUpdateArgs->expects('getOldValue')->times(2)->with('title')->andReturn('');
+        $preUpdateArgs->expects('getOldValue')->with('title')->andReturn('');
 
         $preUpdateArgs->expects('hasChangedField')->with('summary')->andReturnTrue();
-        $preUpdateArgs->expects('getOldValue')->times(2)->with('summary')->andReturn('');
+        $preUpdateArgs->expects('getOldValue')->with('summary')->andReturn('');
 
         $preUpdateArgs->expects('hasChangedField')->with('publicationDate')->andReturnTrue();
         $preUpdateArgs->expects('getOldValue')->with('publicationDate')->andReturnNull();
 
         $preUpdateArgs->expects('hasChangedField')->with('previewDate')->andReturnTrue();
         $preUpdateArgs->expects('getOldValue')->with('previewDate')->andReturnNull();
+
+        $this->listener->preUpdate($dossier, $preUpdateArgs);
+
+        $postUpdateArgs = Mockery::mock(PostUpdateEventArgs::class);
+
+        $this->entityManager->shouldNotHaveReceived('persist');
+        $this->entityManager->shouldNotHaveReceived('flush');
+
+        $this->listener->postUpdate($dossier, $postUpdateArgs);
+    }
+
+    public function testHistoryLoggingSkipsValueObjectsThatDidNotChange(): void
+    {
+        $preUpdateArgs = Mockery::mock(PreUpdateEventArgs::class);
+        $dossier = Mockery::mock(WooDecision::class);
+
+        foreach (['decisionDate', 'publicationDate', 'previewDate'] as $fieldName) {
+            $preUpdateArgs->expects('hasChangedField')->with($fieldName)->andReturnTrue();
+            $preUpdateArgs->expects('getOldValue')->with($fieldName)->andReturn(PlainDate::create('2025-12-21'));
+            $preUpdateArgs->expects('getNewValue')->with($fieldName)->andReturn(PlainDate::create('2025-12-21'));
+        }
+
+        foreach (['title', 'summary'] as $fieldName) {
+            $preUpdateArgs->expects('hasChangedField')->with($fieldName)->andReturnFalse();
+        }
 
         $this->listener->preUpdate($dossier, $preUpdateArgs);
 

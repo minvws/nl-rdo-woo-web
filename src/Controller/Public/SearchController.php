@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Shared\Controller\Public;
 
 use Shared\Domain\Department\DepartmentService;
+use Shared\Domain\Publication\Dossier\ViewModel\SubjectViewFactory;
+use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Domain\Search\Query\SearchParametersFactory;
 use Shared\Service\Search\Query\Definition\BrowseAllAggregationsQueryDefinition;
 use Shared\Service\Search\Query\Definition\SearchAllQueryDefinition;
@@ -17,6 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 
+use function array_map;
 use function array_merge;
 use function json_encode;
 use function strval;
@@ -29,6 +32,8 @@ class SearchController extends AbstractController
         private readonly BrowseAllAggregationsQueryDefinition $aggregationsQueryDefinition,
         private readonly SearchAllQueryDefinition $searchAllQueryDefinition,
         private readonly DepartmentService $departmentService,
+        private readonly SubjectRepository $subjectRepository,
+        private readonly SubjectViewFactory $subjectViewFactory,
     ) {
     }
 
@@ -119,6 +124,10 @@ class SearchController extends AbstractController
         return $this->render('public/search/browse-facets.html.twig', [
             'result' => $result,
             'departments' => $this->departmentService->getPublicDepartments(),
+            'subjectsWithPublishedLandingPage' => array_map(
+                $this->subjectViewFactory->make(...),
+                $this->subjectRepository->findWithPublishedLandingPage(),
+            ),
         ]);
     }
 }

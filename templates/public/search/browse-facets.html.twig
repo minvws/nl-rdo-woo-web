@@ -21,6 +21,8 @@
         {{ macro.facet_links('categories.category.grounds' | trans(), constant('Shared\\Service\\Search\\Model\\FacetKey::GROUNDS'), result) }}
     </div>
 
+    <twig:Public:SubjectLandingPagesList subjects="{{ subjectsWithPublishedLandingPage }}" />
+
     <twig:Public:DepartmentsList departments="{{ departments }}" titleClass="woo-h2 woo-h2-spacing" />
 </div>
 {% endblock %}

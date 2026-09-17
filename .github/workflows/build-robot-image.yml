@@ -28,13 +28,15 @@ jobs:
   build:
     needs: setup
     name: Build image
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -42,20 +44,16 @@ jobs:
         uses: actions/cache@v6
         with:
           path: /tmp/.buildx-cache
-          key: ubuntu-24.04-buildx-${{ matrix.platform }}-${{ github.ref_name }}-${{ github.sha }}
+          key: ${{ matrix.runner }}-buildx-${{ matrix.platform }}-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
-            ubuntu-24.04-buildx-${{ matrix.platform }}-${{ github.ref_name }}-
-            ubuntu-24.04-buildx-${{ matrix.platform }}-
+            ${{ matrix.runner }}-buildx-${{ matrix.platform }}-${{ github.ref_name }}-
+            ${{ matrix.runner }}-buildx-${{ matrix.platform }}-
       - name: Log in to the Container registry
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
-        with:
-          platforms: ${{ matrix.platform }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
       - name: Image name

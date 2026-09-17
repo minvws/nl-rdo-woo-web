@@ -2,6 +2,14 @@
     {{ form_start(organisationForm) }}
 
     {{ form_row(organisationForm.name) }}
+    {% if organisationForm.children.prefix is defined %}
+        {{ form_row(organisationForm.prefix) }}
+    {% elseif organisationForm.vars.data.prefix is not null %}
+        <div class="bhr-form-row">
+            <h2 class="bhr-label">{{ 'admin.organisation.prefix' | trans }}</h2>
+            <p class="bhr-readonly-text">{{ organisationForm.vars.data.prefix }}</p>
+        </div>
+    {% endif %}
 
     <div {{ vue_component('GenericController', {
         componentName: 'MultiSelect',
@@ -24,24 +32,6 @@
         {{ form_errors(organisationForm) }}
     </div>
 
-     <div {{ vue_component('GenericController', {
-        componentName: 'MultiText',
-
-        buttonText: 'Voeg een prefix toe',
-        buttonTextMultiple: 'Voeg nog een prefix toe',
-        e2eName: 'add-prefix',
-        immutableValues: prefixValues,
-        label: 'Prefix',
-        legend: 'Prefix',
-        minChars: 5,
-        minLength: 1,
-        name: 'organisation_form[documentPrefixes][0][prefix]',
-        submitErrors: prefixErrors,
-    }) }}>
-        <div class="min-h-14"></div>
-    </div>
-
-    {% do organisationForm.documentPrefixes.setRendered %}
     {{ form_row(organisationForm.submit) }}
 
     {{ form_end(organisationForm) }}

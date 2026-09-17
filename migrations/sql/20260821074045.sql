@@ -1,5 +1,5 @@
 -- Migration Version20260821074045
--- Generated on 2026-08-21 07:49:05 by bin/console woopie:sql:dump
+-- Generated on 2026-08-22 11:56:12 by bin/console woopie:sql:dump
 --
 
 ALTER TABLE organisation ADD prefix VARCHAR(30) DEFAULT NULL;

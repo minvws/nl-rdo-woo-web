@@ -21,7 +21,9 @@ readonly class DossierFactory
         $config = $this->dossierTypeManager->getConfigWithAccessCheck($dossierType);
 
         $dossier = new ($config->getEntityClass());
-        $dossier->setOrganisation($this->authorizationMatrix->getActiveOrganisation());
+        $organisation = $this->authorizationMatrix->getActiveOrganisation();
+        $dossier->setOrganisation($organisation);
+        $dossier->setDocumentPrefix($organisation->getPrefix()->toString());
 
         return $dossier;
     }

@@ -21,6 +21,13 @@ final class OrganisationPrefixTest extends UnitTestCase
         self::assertSame('ABC-12', (string) $prefix);
     }
 
+    public function testCreateTrimsSurroundingWhitespaceBeforeValidation(): void
+    {
+        $prefix = OrganisationPrefix::create(' abc-12 ');
+
+        self::assertSame('ABC-12', $prefix->toString());
+    }
+
     public function testPrefixesAreEqualWhenTheirNormalizedValuesMatch(): void
     {
         self::assertTrue(
@@ -54,6 +61,7 @@ final class OrganisationPrefixTest extends UnitTestCase
         return [
             'empty' => ['', 'organisation.prefix_too_short'],
             'too short' => ['ABCD', 'organisation.prefix_too_short'],
+            'too short after trimming' => [' ABCD ', 'organisation.prefix_too_short'],
             'too long' => [
                 str_repeat('A', OrganisationPrefix::MAX_LENGTH + 1),
                 'organisation.prefix_too_long',

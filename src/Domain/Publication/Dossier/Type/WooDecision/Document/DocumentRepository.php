@@ -19,12 +19,13 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Search\Result\SubType\WooDecisionDocument\DocumentViewModel;
 use Shared\Service\Inquiry\DocumentInquiryNumbers;
-use Shared\Service\Inventory\DocumentNumber;
 use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\ExternalId;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
+use function array_map;
 use function intval;
 use function sprintf;
 
@@ -177,12 +178,14 @@ class DocumentRepository extends ServiceEntityRepository
             ->where('d.documentNumber = :documentNumber')
             ->andWhere('ds.dossierNumber = :dossierNumber')
             ->andWhere('ds.documentPrefix = :documentPrefix')
-            ->setParameter('documentNumber', $documentNumber)
+            ->setParameter('documentNumber', DocumentNumber::fromString($documentNumber))
             ->setParameter('dossierNumber', $dossierNumber)
             ->setParameter('documentPrefix', $documentPrefix);
 
-        /** @var ?Document */
-        return $qb->getQuery()->getOneOrNullResult();
+        $document = $qb->getQuery()->getOneOrNullResult();
+        Assert::nullOrIsInstanceOf($document, Document::class);
+
+        return $document;
     }
 
     public function getDossierDocumentsQueryBuilder(WooDecision $dossier): QueryBuilder
@@ -255,22 +258,27 @@ class DocumentRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array<array-key, string>
+     * @return list<DocumentNumber>
      */
     public function getAllDocumentNumbersForDossier(WooDecision $dossier): array
     {
-        /** @var array<array-key, string> $docNumbers */
-        $docNumbers = $this->getDossierDocumentsQueryBuilder($dossier)
-            ->select('doc.documentNumber')
+        /**
+         * @var list<array{documentNumber: DocumentNumber}> $rows
+         */
+        $rows = $this->getDossierDocumentsQueryBuilder($dossier)
+            ->select('doc.documentNumber AS documentNumber')
             ->getQuery()
-            ->getSingleColumnResult();
+            ->getArrayResult();
 
-        return $docNumbers;
+        return array_map(
+            static fn (array $row): DocumentNumber => $row['documentNumber'],
+            $rows,
+        );
     }
 
     public function findByDocumentNumber(DocumentNumber $documentNumber): ?Document
     {
-        return $this->findOneBy(['documentNumber' => $documentNumber->toString()]);
+        return $this->findOneBy(['documentNumber' => $documentNumber]);
     }
 
     /**
@@ -305,7 +313,7 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->toIterable();
     }
 
-    public function getDocumentSearchEntry(string $documentNumber): ?DocumentViewModel
+    public function getDocumentSearchEntry(DocumentNumber $documentNumber): ?DocumentViewModel
     {
         $qb = $this->createQueryBuilder('doc')
             ->select(sprintf(
@@ -347,7 +355,7 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findOneByDocumentNumberCaseInsensitive(string $documentNumber): ?Document
+    public function findOneByDocumentNumberCaseInsensitive(DocumentNumber $documentNumber): ?Document
     {
         $qb = $this->createQueryBuilder('d')
             ->where('LOWER(d.documentNumber) = LOWER(:documentNumber)')
@@ -357,7 +365,7 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function getDocumentInquiryNumbers(string $documentNumber): DocumentInquiryNumbers
+    public function getDocumentInquiryNumbers(DocumentNumber $documentNumber): DocumentInquiryNumbers
     {
         /**
          * @var array<array-key, array{id:Uuid, inquiryNumber:string}> $result

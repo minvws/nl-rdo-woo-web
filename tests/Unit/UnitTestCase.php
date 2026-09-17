@@ -9,7 +9,7 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Shared\Tests\CarbonHelpers;
 use Shared\Tests\Faker\FakerFactory;
-use Spatie\Snapshots\MatchesSnapshots;
+use Shared\Tests\Snapshots\MatchesSnapshots;
 
 abstract class UnitTestCase extends BaseTestCase
 {
@@ -26,9 +26,7 @@ abstract class UnitTestCase extends BaseTestCase
 
     public function getFaker(): Generator
     {
-        if ($this->faker === null) {
-            $this->faker = $this->createFaker();
-        }
+        $this->faker ??= $this->createFaker();
 
         return $this->faker;
     }

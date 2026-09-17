@@ -10,14 +10,13 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\LandingPageSlugType;
 use Shared\Doctrine\LandingPageTitleType;
+use Shared\Doctrine\SubjectContentTreeType;
 use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
-
-use function array_map;
 
 #[ORM\Entity(repositoryClass: SubjectRepository::class)]
 #[UniqueEntity(fields: ['name', 'organisation'], message: 'subject_already_exists')]
@@ -64,9 +63,9 @@ class Subject implements HasId
     #[ORM\Column(type: 'uuid', unique: true, nullable: true)]
     private ?Uuid $landingPagePreviewToken = null;
 
-    /** @var list<array<string, mixed>>|null */
-    #[ORM\Column(type: Types::JSON, nullable: true, options: ['jsonb' => true])]
-    private ?array $landingPageContentTree = null;
+    #[ORM\Column(type: SubjectContentTreeType::NAME, nullable: true, options: ['jsonb' => true])]
+    #[Assert\Valid]
+    private ?SubjectContentTree $landingPageContentTree = null;
 
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
     private bool $hasVisibleLandingPageContentTree = false;
@@ -122,23 +121,17 @@ class Subject implements HasId
         $this->dossiers = $dossiers;
     }
 
-    /**
-     * @param list<SubjectContentNode> $contentTree
-     */
     public function setLandingPage(
         LandingPageSlug $slug,
         LandingPageTitle $title,
         string $description,
         SubjectLandingPageStatus $status,
-        array $contentTree,
+        SubjectContentTree $contentTree,
     ): self {
         $this->landingPageSlug = $slug;
         $this->landingPageTitle = $title;
         $this->landingPageDescription = $description;
-        $this->landingPageContentTree = array_map(
-            static fn (SubjectContentNode $node): array => $node->toArray(),
-            $contentTree,
-        );
+        $this->landingPageContentTree = $contentTree;
 
         $this->setLandingPageStatus($status);
 
@@ -209,12 +202,16 @@ class Subject implements HasId
         return $this->landingPagePreviewToken;
     }
 
-    /**
-     * @return list<array<string, mixed>>|null
-     */
-    public function getLandingPageContentTree(): ?array
+    public function getLandingPageContentTree(): ?SubjectContentTree
     {
         return $this->landingPageContentTree;
+    }
+
+    public function setLandingPageContentTree(?SubjectContentTree $contentTree): self
+    {
+        $this->landingPageContentTree = $contentTree;
+
+        return $this;
     }
 
     public function hasVisibleLandingPageContentTree(): bool

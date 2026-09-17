@@ -7,6 +7,7 @@ namespace Shared\Tests\Factory;
 use DateTimeImmutable;
 use Override;
 use Shared\Domain\Organisation\Organisation;
+use Shared\ValueObject\OrganisationPrefix;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
@@ -25,6 +26,9 @@ final class OrganisationFactory extends PersistentObjectFactory
             'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'departments' => [DepartmentFactory::new()],
             'name' => self::faker()->text(255),
+            'prefix' => OrganisationPrefix::create(
+                'TEST-' . self::faker()->unique()->numerify('#####'),
+            ),
             'updatedAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
     }

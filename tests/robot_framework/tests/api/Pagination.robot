@@ -38,7 +38,7 @@ Pagination Cursor Traversal Reaches All Created Subjects And Ends Cleanly
   ...              verifies the final page has no _links.next, and confirms every subject
   ...              created in Suite Setup appears across all pages. No exact total count is
   ...              asserted, making this stable when run in parallel with other suites.
-  VAR  @{all_ids} =
+  VAR  @{all_ids} =  @{EMPTY}
   FOR  ${item}  IN  @{PAGINATION_FIRST_PAGE}[items]
     Append To List  ${all_ids}  ${item}[id]
   END
@@ -88,10 +88,10 @@ Suite Setup
 Create Subjects For Pagination
   [Documentation]  Creates 110 subjects so the total exceeds the 100-item page size.
   ...              Stores all created IDs in suite-scoped PAGINATION_CREATED_IDS for cleanup and assertions.
-  VAR  @{ids} =
+  VAR  @{ids} =  @{EMPTY}
   FOR  ${i}  IN RANGE  110
     ${rand} =  FakerLibrary.Numerify  ######
-    VAR  ${name} =  Pg-${i}-${rand}
+    VAR  ${name} =  PG-${i}-${rand}
     VAR  &{body} =  name=${name}
     ${post_response} =  POST On Session
     ...  alias=publication_api

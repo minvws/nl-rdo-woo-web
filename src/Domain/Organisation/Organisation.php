@@ -13,7 +13,6 @@ use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Department\Department;
 use Shared\Domain\HasId;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
-use Shared\Domain\Publication\Dossier\DocumentPrefix;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Subject\Subject;
@@ -24,11 +23,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-use function array_map;
-
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['name'], message: 'This organisation already exists.')]
+#[UniqueEntity(fields: ['prefix'], message: 'organisation.prefix_already_exists')]
 class Organisation implements HasId
 {
     use TimestampableTrait;
@@ -42,8 +40,8 @@ class Organisation implements HasId
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $name;
 
-    #[ORM\Column(type: OrganisationPrefixType::NAME, length: OrganisationPrefix::MAX_LENGTH, unique: true, nullable: true)]
-    private ?OrganisationPrefix $prefix = null;
+    #[ORM\Column(type: OrganisationPrefixType::NAME, length: OrganisationPrefix::MAX_LENGTH, unique: true, nullable: false)]
+    private OrganisationPrefix $prefix;
 
     /** @var Collection<array-key,Department> */
     #[ORM\ManyToMany(targetEntity: Department::class, inversedBy: 'organisations')]
@@ -55,12 +53,6 @@ class Organisation implements HasId
     /** @var Collection<array-key,User> */
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: User::class)]
     private Collection $users;
-
-    /** @var Collection<array-key,DocumentPrefix> */
-    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: DocumentPrefix::class, cascade: ['persist'])]
-    #[Assert\Valid]
-    #[Assert\Count(min: 1, minMessage: 'at_least_one_prefix_required')]
-    private Collection $documentPrefixes;
 
     /** @var Collection<array-key,Inquiry> */
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Inquiry::class)]
@@ -81,7 +73,6 @@ class Organisation implements HasId
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->users = new ArrayCollection();
-        $this->documentPrefixes = new ArrayCollection();
         $this->departments = new ArrayCollection();
         $this->inquiries = new ArrayCollection();
         $this->dossiers = new ArrayCollection();
@@ -105,7 +96,7 @@ class Organisation implements HasId
         return $this;
     }
 
-    public function getPrefix(): ?OrganisationPrefix
+    public function getPrefix(): OrganisationPrefix
     {
         return $this->prefix;
     }
@@ -160,49 +151,6 @@ class Organisation implements HasId
     public function removeUser(User $user): static
     {
         $this->users->removeElement($user);
-
-        return $this;
-    }
-
-    /**
-     * @return ArrayCollection<array-key,DocumentPrefix>
-     */
-    public function getDocumentPrefixes(): ArrayCollection
-    {
-        $values = $this->documentPrefixes
-            ->filter(static fn (DocumentPrefix $prefix): bool => ! $prefix->isArchived())
-            ->getValues();
-
-        // Create a new instance to reset keys, this is important for use in the CollectionType form field
-        /** @var ArrayCollection<DocumentPrefix> */
-        return new ArrayCollection($values);
-    }
-
-    /**
-     * @return array<array-key, string>
-     */
-    public function getDocumentPrefixesAsArray(): array
-    {
-        return array_map(
-            static fn (DocumentPrefix $prefix): string => $prefix->getPrefix(),
-            $this->getDocumentPrefixes()->toArray(),
-        );
-    }
-
-    public function addDocumentPrefix(DocumentPrefix $documentPrefix): static
-    {
-        if (! $this->documentPrefixes->contains($documentPrefix)) {
-            $this->documentPrefixes->add($documentPrefix);
-            $documentPrefix->setOrganisation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDocumentPrefix(DocumentPrefix $documentPrefix): static
-    {
-        // Archive (soft-delete) instead of actual removal, this prevents the prefix from being re-used
-        $documentPrefix->archive();
 
         return $this;
     }

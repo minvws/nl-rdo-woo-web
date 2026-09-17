@@ -1,0 +1,21 @@
+{% if subjects | length > 0 %}
+<div class="pb-16" id="onderwerppaginas">
+    <h2 class="{{ titleClass | default('woo-h2 woo-h2-spacing') }}">{{ 'public.subject.subject_pages_title' | trans }}</h2>
+
+    <ul class="{{ listClass | default('sm:columns-2 sm:gap-x-12') }}">
+        {% for subject in subjects %}
+        <li>
+            <twig:Public:ArrowedLink to="{{ subject.landingPageUrl }}">
+                {{ subject.name }}
+            </twig:Public:ArrowedLink>
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if hasMore ?? false %}
+        <p class="text-right">
+            <twig:Public:ArrowedBoldLink to="{{ path('app_browse') }}#onderwerppaginas">{{ 'public.subject.to_all_subject_pages' | trans }}</twig:Public:ArrowedBoldLink>
+        </p>
+    {% endif %}
+</div>
+{% endif %}

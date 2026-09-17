@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Publication\Subject\SubjectContentNode;
+use Shared\Domain\Publication\Subject\SubjectContentTree;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Form\SubjectLandingPageType;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
@@ -82,7 +84,7 @@ final class SubjectLandingPageTypeTest extends TestCase
             LandingPageTitle::create('Some title'),
             'Some description',
             SubjectLandingPageStatus::PUBLISHED,
-            [],
+            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
         );
 
         $form = $this->createForm($subject);
@@ -208,6 +210,81 @@ final class SubjectLandingPageTypeTest extends TestCase
         ]);
 
         self::assertFalse($form->get('landing_page_slug')->isSynchronized());
+    }
+
+    public function testSubmittingAValidContentTreeFillsTheProperty(): void
+    {
+        $subject = new Subject();
+        $form = $this->createForm($subject);
+
+        $form->submit([
+            'landing_page_status' => SubjectLandingPageStatus::CONCEPT->value,
+            'landing_page_slug' => 'some-slug',
+            'landing_page_title' => 'Some title',
+            'landing_page_description' => 'Some description',
+            'landing_page_content_tree' => '{"title":"","intro":"","outro":"","children":[{"title":"Node","body":"Body","children":[]}]}',
+        ]);
+
+        self::assertTrue($form->isValid());
+        self::assertEquals(
+            new SubjectContentTree(title: '', intro: '', children: [new SubjectContentNode('Node', 'Body')], outro: ''),
+            $subject->getLandingPageContentTree(),
+        );
+    }
+
+    public function testSubmittingAnEmptyContentTreeResultsInNull(): void
+    {
+        $subject = new Subject();
+        $form = $this->createForm($subject);
+
+        $form->submit([
+            'landing_page_status' => SubjectLandingPageStatus::CONCEPT->value,
+            'landing_page_slug' => 'some-slug',
+            'landing_page_title' => 'Some title',
+            'landing_page_description' => 'Some description',
+            'landing_page_content_tree' => '',
+        ]);
+
+        self::assertTrue($form->isValid());
+        self::assertNull($subject->getLandingPageContentTree());
+    }
+
+    public function testSubmittingInvalidJsonForTheContentTreeResultsInAFieldError(): void
+    {
+        $subject = new Subject();
+        $form = $this->createForm($subject);
+
+        $form->submit([
+            'landing_page_status' => SubjectLandingPageStatus::CONCEPT->value,
+            'landing_page_slug' => 'some-slug',
+            'landing_page_title' => 'Some title',
+            'landing_page_description' => 'Some description',
+            'landing_page_content_tree' => '{ not json',
+        ]);
+
+        self::assertFalse($form->get('landing_page_content_tree')->isSynchronized());
+        self::assertNull($subject->getLandingPageContentTree());
+    }
+
+    public function testAnExistingContentTreeIsShownAsJson(): void
+    {
+        $subject = new Subject();
+        $subject->setLandingPageContentTree(new SubjectContentTree(
+            title: '',
+            intro: '',
+            children: [new SubjectContentNode('Node', 'Body')],
+            outro: '',
+        ));
+
+        $form = $this->createForm($subject);
+
+        $viewData = $form->get('landing_page_content_tree')->getViewData();
+
+        self::assertIsString($viewData);
+        self::assertJsonStringEqualsJsonString(
+            '{"title":"","intro":"","outro":"","children":[{"title":"Node","body":"Body","children":[]}]}',
+            $viewData,
+        );
     }
 
     private function createForm(Subject $subject): FormInterface

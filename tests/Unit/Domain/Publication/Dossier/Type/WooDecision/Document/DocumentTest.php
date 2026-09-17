@@ -14,7 +14,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 
 final class DocumentTest extends UnitTestCase
 {
@@ -34,8 +36,18 @@ final class DocumentTest extends UnitTestCase
     {
         $document = new Document();
 
-        $document->setDocumentNumber($nr = 'foo');
-        self::assertEquals($nr, $document->getDocumentNumber());
+        $document->setDocumentNumber($number = DocumentNumber::fromString('foo'));
+        self::assertSame($number, $document->getDocumentNumber());
+    }
+
+    public function testItAllowsChangingAnInitializedDocumentNumber(): void
+    {
+        $document = new Document();
+        $document->setDocumentNumber(DocumentNumber::fromString('prefix-doc-01'));
+
+        $document->setDocumentNumber(DocumentNumber::fromString('prefix-doc-02'));
+
+        self::assertSame('prefix-doc-02', $document->getDocumentNumber()->toString());
     }
 
     public function testSetAndGetDocumentDate(): void
@@ -61,6 +73,36 @@ final class DocumentTest extends UnitTestCase
 
         $document->setDocumentId($documentId);
         self::assertEquals($documentId, $document->getDocumentId());
+    }
+
+    public function testItAllowsChangingAnInitializedDocumentId(): void
+    {
+        $document = new Document();
+        $document->setDocumentId(DocumentId::create('doc-01'));
+
+        $document->setDocumentId(DocumentId::create('doc-02'));
+
+        self::assertSame('doc-02', $document->getDocumentId()->toString());
+    }
+
+    public function testItAllowsChangingAnInitializedPublicationContext(): void
+    {
+        $document = new Document();
+        $document->setPublicationContext(PublicationContext::fromString('prefix'));
+
+        $document->setPublicationContext(PublicationContext::fromString('other-prefix'));
+
+        self::assertSame('other-prefix', $document->getPublicationContext()?->toString());
+    }
+
+    public function testItAllowsClearingAnInitializedPublicationContext(): void
+    {
+        $document = new Document();
+        $document->setPublicationContext(PublicationContext::fromString('prefix'));
+
+        $document->setPublicationContext(null);
+
+        self::assertNull($document->getPublicationContext());
     }
 
     public function testSetAndGetThreadId(): void

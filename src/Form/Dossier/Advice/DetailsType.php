@@ -30,7 +30,6 @@ class DetailsType extends AbstractDossierStepType
         $dossierForm->addDepartmentsField();
         $dossierForm->addSubjectField('admin.dossiers.advice.form.details.subject_help');
         $dossierForm->addDossierNumberField();
-        $dossierForm->addDocumentPrefixField();
         $dossierForm->addSubmits();
     }
 }

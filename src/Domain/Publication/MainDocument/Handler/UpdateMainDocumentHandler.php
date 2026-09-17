@@ -13,6 +13,7 @@ use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\Command\UpdateMainDocumentCommand;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
+use Shared\Domain\Publication\MainDocument\Event\MainDocumentCreatedEvent;
 use Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
 use Shared\Domain\Publication\MainDocument\MainDocumentNotFoundException;
 use Shared\Domain\Publication\MainDocument\MainDocumentRepositoryInterface;
@@ -68,7 +69,12 @@ readonly class UpdateMainDocumentHandler
         $mainDocumentRepository->save($mainDocument, true);
 
         $fileUpdated = $command->uploadFileReference !== null;
-        if ($fileUpdated || $metadataUpdated) {
+
+        if ($command->initialUpload) {
+            $this->messageBus->dispatch(
+                MainDocumentCreatedEvent::forDocument($mainDocument),
+            );
+        } elseif ($fileUpdated || $metadataUpdated) {
             $this->messageBus->dispatch(
                 MainDocumentUpdatedEvent::forDocument($mainDocument, $fileUpdated, $metadataUpdated),
             );

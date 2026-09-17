@@ -24,9 +24,10 @@ Het is ook mogelijk om een zaaknummer te koppelen aan een Woo-document of Woo-be
 ### Koppel aan Woo-documenten
 
 In het geval je een nieuw zaaknummer wil koppelen aan eerder gepubliceerde documenten klik je op ‘Koppel aan Woo-documenten’ en
-moet je een Excel bestand uploaden met daarin het document ID, de matter en het zaaknummer dat je wil toevoegen. Daarna moet je de prefix
-van het besluit selecteren dat bij dit besluit hoort. Je kunt de prefix van het besluit vinden door het besluit op te zoeken en
-naar de basisinformatiepagina te gaan.
+moet je een Excel bestand uploaden met daarin het document ID, de matter en het zaaknummer dat je wil toevoegen.
+
+De vaste prefix van de actieve organisatie wordt automatisch gebruikt bij het
+importeren van de zaaknummers. Je hoeft de prefix van het besluit niet te selecteren.
 
 ### Koppel aan Woo-besluiten
 

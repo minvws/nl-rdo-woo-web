@@ -26,6 +26,7 @@ use Shared\Service\Inquiry\InquiryService;
 use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Shared\Service\Inventory\Reader\InventoryReadItem;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -115,7 +116,7 @@ readonly class InventoryUpdater
             return null;
         }
 
-        $documentNumber = DocumentNumber::fromPublicationContextAndDossierId(
+        $documentNumber = DocumentNumber::fromPublicationContextAndDocumentId(
             $documentMetadata->getPublicationContext(),
             $documentMetadata->getId(),
         );
@@ -124,10 +125,10 @@ readonly class InventoryUpdater
             return null;
         }
 
-        $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber->toString());
+        $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber);
         if ($documentChangeStatus === InventoryChangeset::ADDED && $document === null) {
             $document = new Document();
-            $document->setDocumentNumber($documentNumber->toString());
+            $document->setDocumentNumber($documentNumber);
 
             $this->applyDocumentUpdate($documentMetadata, $dossier, $document, $inquiryChangeset);
 
@@ -146,7 +147,7 @@ readonly class InventoryUpdater
             $this->applyDocumentUpdate($documentMetadata, $dossier, $document, $inquiryChangeset);
 
             if ($this->documentComparator->hasRefersToUpdate($dossier, $document, $documentMetadata)) {
-                $docReferralUpdates[$document->getDocumentNumber()] = $documentMetadata->getRefersTo();
+                $docReferralUpdates[$document->getDocumentNumber()->toString()] = $documentMetadata->getRefersTo();
             }
 
             return $document;
@@ -226,7 +227,7 @@ readonly class InventoryUpdater
                 continue;
             }
 
-            $document = $this->getDocument($documentNumber);
+            $document = $this->getDocument(DocumentNumber::fromString($documentNumber));
             if (! $document instanceof Document) {
                 throw ProductionReportUpdaterException::forStateMismatch();
             }
@@ -251,7 +252,7 @@ readonly class InventoryUpdater
         }
     }
 
-    private function getDocument(string $documentNumber): ?Document
+    private function getDocument(DocumentNumber $documentNumber): ?Document
     {
         return $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber);
     }
@@ -263,7 +264,7 @@ readonly class InventoryUpdater
     {
         $documentsToUpdate = [];
         foreach ($docReferralUpdates as $documentNumber => $refersTo) {
-            $document = $this->getDocument($documentNumber);
+            $document = $this->getDocument(DocumentNumber::fromString($documentNumber));
             if (! $document instanceof Document) {
                 throw new RuntimeException('State mismatch between database and document referral updates');
             }

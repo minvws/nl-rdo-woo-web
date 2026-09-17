@@ -16,6 +16,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionView
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
+use Shared\Domain\Search\Query\Facet\FacetDefinitions;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Security\DossierVoter;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -37,6 +38,7 @@ class DocumentController extends AbstractController
         private readonly DocumentViewFactory $documentViewFactory,
         private readonly DossierFileViewFactory $dossierFileViewFactory,
         private readonly TranslatorInterface $translator,
+        private readonly FacetDefinitions $facetDefinitions,
     ) {
     }
 
@@ -49,6 +51,7 @@ class DocumentController extends AbstractController
         Request $request,
     ): Response {
         $this->denyAccessUnlessGranted(DossierVoter::VIEW, $document);
+        $documentNumber = $document->getDocumentNumber()->toString();
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem($this->getPublicationReason($wooDecision), 'app_woodecision_detail', [
@@ -81,6 +84,11 @@ class DocumentController extends AbstractController
             ],
         );
 
+        $dossierNumberParam = $this->facetDefinitions->get(FacetKey::PREFIXED_DOSSIER_NUMBER)->getRequestParameter();
+        $familyParam = $this->facetDefinitions->get(FacetKey::FAMILY)->getRequestParameter();
+        $threadParam = $this->facetDefinitions->get(FacetKey::THREAD)->getRequestParameter();
+        $referredDocumentParam = $this->facetDefinitions->get(FacetKey::REFERRED_DOCUMENT_NUMBER)->getRequestParameter();
+
         return $this->render('public/dossier/woo-decision/document/details.html.twig', [
             'dossier' => $this->wooDecisionViewFactory->make($wooDecision),
             'document' => $this->documentViewFactory->make($document),
@@ -94,22 +102,22 @@ class DocumentController extends AbstractController
             'family_search_url' => $this->generateUrl(
                 'app_search',
                 [
-                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($wooDecision)],
-                    FacetKey::FAMILY->getParamName() => [$document->getFamilyId()],
+                    $dossierNumberParam => [PrefixedDossierNumber::forDossier($wooDecision)],
+                    $familyParam => [$document->getFamilyId()],
                 ],
             ),
             'thread_search_url' => $this->generateUrl(
                 'app_search',
                 [
-                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($wooDecision)],
-                    FacetKey::THREAD->getParamName() => [$document->getThreadId()],
+                    $dossierNumberParam => [PrefixedDossierNumber::forDossier($wooDecision)],
+                    $threadParam => [$document->getThreadId()],
                 ],
             ),
             'referred_search_url' => $this->generateUrl(
                 'app_search',
                 [
-                    FacetKey::PREFIXED_DOSSIER_NUMBER->getParamName() => [PrefixedDossierNumber::forDossier($wooDecision)],
-                    FacetKey::REFERRED_DOCUMENT_NUMBER->getParamName() => [$document->getDocumentNumber()],
+                    $dossierNumberParam => [PrefixedDossierNumber::forDossier($wooDecision)],
+                    $referredDocumentParam => [$documentNumber],
                 ],
             ),
         ]);

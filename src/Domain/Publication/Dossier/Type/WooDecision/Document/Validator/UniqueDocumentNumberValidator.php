@@ -39,7 +39,7 @@ class UniqueDocumentNumberValidator extends ConstraintValidator
         $this->context
             ->buildViolation($constraint->message)
             ->atPath('documentNumber')
-            ->setParameter('{{ documentNumber }}', $value->getDocumentNumber())
+            ->setParameter('{{ documentNumber }}', $value->getDocumentNumber()->toString())
             ->setCode(UniqueDocumentNumber::NOT_UNIQUE_ERROR)
             ->addViolation();
     }

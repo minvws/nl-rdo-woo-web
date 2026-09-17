@@ -41,6 +41,8 @@ class DocumentActionController extends AbstractController
         #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
         #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(documentPrefix, dossierNumber, documentNumber)')] Document $document,
     ): Response {
+        $documentNumber = $document->getDocumentNumber()->toString();
+
         $breadcrumbs->addRouteItem(
             $dossier->getDossierNumber(),
             'app_admin_dossier',
@@ -51,10 +53,10 @@ class DocumentActionController extends AbstractController
             'app_admin_dossier_woodecision_documents_edit',
             ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
-        $breadcrumbs->addRouteItem($document->getDocumentNumber(), 'app_admin_dossier_woodecision_document', [
+        $breadcrumbs->addRouteItem($documentNumber, 'app_admin_dossier_woodecision_document', [
             'documentPrefix' => $dossier->getDocumentPrefix(),
             'dossierNumber' => $dossier->getDossierNumber(),
-            'documentNumber' => $document->getDocumentNumber(),
+            'documentNumber' => $documentNumber,
         ]);
         $breadcrumbs->addItem('admin.dossiers.woo-decision.step.withdraw_document');
 
@@ -69,7 +71,7 @@ class DocumentActionController extends AbstractController
             return $this->redirectToRoute('app_admin_dossier_woodecision_document', [
                 'documentPrefix' => $dossier->getDocumentPrefix(),
                 'dossierNumber' => $dossier->getDossierNumber(),
-                'documentNumber' => $document->getDocumentNumber(),
+                'documentNumber' => $documentNumber,
             ]);
         }
 
@@ -92,7 +94,7 @@ class DocumentActionController extends AbstractController
                 [
                     'documentPrefix' => $dossier->getDocumentPrefix(),
                     'dossierNumber' => $dossier->getDossierNumber(),
-                    'documentNumber' => $document->getDocumentNumber(),
+                    'documentNumber' => $documentNumber,
                 ],
             );
         }

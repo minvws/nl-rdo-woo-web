@@ -19,8 +19,6 @@ use Shared\ValueObject\PlainDate;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-use function array_values;
-
 /**
  * This trait contains shared properties and methods for main document entities and attachment entities.
  * They are mostly identical so to prevent duplications these are placed in a trait, to avoid inheritance between
@@ -137,7 +135,7 @@ trait AttachmentAndMainDocumentEntityTrait
      */
     public function setGrounds(array $grounds): static
     {
-        $this->grounds = array_values($grounds);
+        $this->grounds = Citation::sortWooCitations($grounds);
 
         return $this;
     }
@@ -150,7 +148,6 @@ trait AttachmentAndMainDocumentEntityTrait
         return [
             'formalDate' => $this->formalDate->toString(),
             'type' => $this->type->value,
-            'internalReference' => $this->internalReference,
             'language' => $this->language->value,
             'grounds' => $this->grounds,
         ];

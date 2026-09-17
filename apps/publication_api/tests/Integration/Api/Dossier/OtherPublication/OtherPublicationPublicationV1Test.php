@@ -31,7 +31,6 @@ use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
 use Shared\Tests\Factory\OrganisationFactory;
-use Shared\Tests\Factory\Publication\Dossier\DocumentPrefixFactory;
 use Shared\Tests\Factory\Publication\Dossier\NoticeNotPublic\NoticeNotPublicFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\OtherPublication\OtherPublicationAttachmentFactory;
@@ -252,7 +251,6 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(OtherPublication::class, 0);
 
@@ -268,7 +266,6 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(OtherPublication::class, 0);
 
@@ -285,7 +282,6 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(OtherPublication::class, 0);
 
@@ -303,7 +299,6 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(OtherPublication::class, 0);
 
@@ -332,7 +327,6 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         $data = $this->createValidOtherPublicationDataPayload($department, $subject, 1);
         $externalId = $this->getFaker()->externalId();
@@ -358,7 +352,6 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(OtherPublication::class, 0);
 
@@ -866,7 +859,6 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(OtherPublication::class, 0);
 
@@ -889,7 +881,6 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(OtherPublication::class, 0);
 
@@ -913,7 +904,6 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(OtherPublication::class, 0);
 
@@ -934,7 +924,6 @@ final class OtherPublicationPublicationV1Test extends ApiPublicationV1DossierTes
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
-        DocumentPrefixFactory::createOne(['organisation' => $organisation]);
 
         self::assertDatabaseCount(OtherPublication::class, 0);
 

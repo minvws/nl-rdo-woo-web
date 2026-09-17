@@ -36,6 +36,7 @@ enum ElasticField: string
     case GROUNDS = 'grounds';
     case METADATA = 'metadata';
     case DOCUMENT_NUMBER = 'document_number';
+    case PUBLICATION_CONTEXT = 'publication_context';
     case FAMILY_ID = 'family_id';
     case DOCUMENT_ID = 'document_id';
     case THREAD_ID = 'thread_id';
@@ -47,5 +48,6 @@ enum ElasticField: string
     case DEPARTMENT_NAMES = 'department_names';
     case DATE_FILTER = 'date_filter';
     case ORGANISATION_IDS = 'organisation_ids';
-    case REFERRED_DOCUMENT_NUMBERS = 'referred_document_nrs';
+    case REFERRED_DOCUMENT_NRS = 'referred_document_nrs';
+    case REFERRED_DOCUMENT_NUMBERS = 'referred_document_numbers';
 }

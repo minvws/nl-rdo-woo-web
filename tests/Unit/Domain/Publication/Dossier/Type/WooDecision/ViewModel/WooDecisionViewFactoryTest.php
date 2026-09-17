@@ -23,6 +23,9 @@ use Shared\Domain\Publication\Dossier\ViewModel\DepartmentViewFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\Subject as SubjectViewModel;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use Shared\Domain\Search\Query\Facet\Definition\PrefixedDossierNumberFacet;
+use Shared\Domain\Search\Query\Facet\FacetDefinitions;
+use Shared\Service\Search\Model\FacetKey;
 use Shared\Tests\Story\DepartmentEnum;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DossierTitle;
@@ -36,6 +39,7 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
     private MainDocumentViewFactory&MockInterface $mainDocumentViewFactory;
     private CommonDossierPropertiesViewFactory&MockInterface $commonDossierPropertiesViewFactory;
     private RouterInterface&MockInterface $router;
+    private FacetDefinitions&MockInterface $facetDefinitions;
     private WooDecisionViewFactory $factory;
 
     protected function setUp(): void
@@ -50,12 +54,19 @@ final class WooDecisionViewFactoryTest extends UnitTestCase
         $this->commonDossierPropertiesViewFactory = Mockery::mock(CommonDossierPropertiesViewFactory::class);
         $this->router = Mockery::mock(RouterInterface::class);
 
+        $this->facetDefinitions = Mockery::mock(FacetDefinitions::class);
+        $this->facetDefinitions
+            ->expects('get')
+            ->with(FacetKey::PREFIXED_DOSSIER_NUMBER)
+            ->andReturn(new PrefixedDossierNumberFacet());
+
         $this->factory = new WooDecisionViewFactory(
             $this->dossierRepository,
             $this->departmentViewFactory,
             $this->commonDossierPropertiesViewFactory,
             $this->mainDocumentViewFactory,
             $this->router,
+            $this->facetDefinitions,
         );
     }
 

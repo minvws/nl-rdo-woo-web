@@ -9,6 +9,7 @@ use PublicationApi\Domain\Upload\UploadStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\SourceType;
 use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Serializer\Attribute\SerializedName;
@@ -25,7 +26,7 @@ final readonly class WooDecisionDocumentResponseDto
         public array $inquiryNumbers,
         public ?PlainDate $documentDate,
         public DocumentId $documentId,
-        public string $documentNumber,
+        public DocumentNumber $documentNumber,
         public ?ExternalId $externalId,
         public ?int $familyId,
         public ?string $fileName,

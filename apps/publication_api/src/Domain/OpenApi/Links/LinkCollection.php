@@ -7,21 +7,29 @@ namespace PublicationApi\Domain\OpenApi\Links;
 use ArrayObject;
 use JsonSerializable;
 
+use function array_merge;
+
 class LinkCollection implements JsonSerializable
 {
     public const string FILE = 'file';
+    public const string INQUIRIES = 'inquiries';
     public const string PUBLIC = 'public';
     public const string SELF = 'self';
     public const string UPLOAD = 'upload';
 
     /**
-     * @var ArrayObject<string, Link>
+     * @var array<string, Link>
      */
-    private ArrayObject $links;
+    private array $links = [];
 
-    public function __construct()
+    /**
+     * @var array<string, list<Link>>
+     */
+    private array $linkLists = [];
+
+    public function add(string $key, Link $link): void
     {
-        $this->links = new ArrayObject();
+        $this->linkLists[$key][] = $link;
     }
 
     public function set(string $key, Link $link): void
@@ -30,10 +38,10 @@ class LinkCollection implements JsonSerializable
     }
 
     /**
-     * @return ArrayObject<string, Link>
+     * @return ArrayObject<string, Link|list<Link>>
      */
     public function jsonSerialize(): ArrayObject
     {
-        return $this->links;
+        return new ArrayObject(array_merge($this->links, $this->linkLists));
     }
 }

@@ -49,11 +49,15 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         array $expectedDownloadParameterKeys,
         string $expectedDetailsRouteName,
         array $expectedDetailsParameterKeys,
+        bool $fileInfoUploaded = true,
+        int $fileInfoSize = 101,
+        bool $expectedIsDownloadable = true,
     ): void {
         $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->expects('getName')->andReturn($expectedFileName = 'file name');
         $fileInfo->expects('getMimetype')->andReturn($expectedMimeType = 'file mime type');
-        $fileInfo->expects('getSize')->andReturn($expectedSize = 101);
+        $fileInfo->expects('isUploaded')->andReturn($fileInfoUploaded);
+        $fileInfo->expects('getSize')->andReturn($expectedSize = $fileInfoSize);
         $fileInfo->expects('getSourceType')->andReturn($expectedSourceType = SourceType::PDF);
         $fileInfo->expects('getPageCount')->andReturn($expectedPageCount = 2);
 
@@ -87,7 +91,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
 
         $attachment->expects('getId')->times(3)->andReturn($uuid);
         $attachment->expects('getFormalDate')->andReturn(PlainDate::create($expectedFormalDate = '2021-05-10'));
-        $attachment->expects('getFileInfo')->times(5)->andReturn($fileInfo);
+        $attachment->expects('getFileInfo')->andReturn($fileInfo);
         $attachment->expects('getType')->andReturn(AttachmentType::ADVICE);
         $attachment->expects('getLanguage')->andReturn(AttachmentLanguage::NLD);
         $attachment->expects('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
@@ -119,6 +123,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedDownloadUrl, $result[0]->downloadUrl);
         $this->assertSame($expectedDetailsUrl, $result[0]->detailsUrl);
         $this->assertSame($expectedPageCount, $result[0]->pageCount);
+        $this->assertSame($expectedIsDownloadable, $result[0]->isDownloadable);
     }
 
     /**
@@ -129,6 +134,9 @@ final class AttachmentViewFactoryTest extends UnitTestCase
      *     expectedDownloadParameterKeys: list<string>,
      *     expectedDetailsRouteName: string,
      *     expectedDetailsParameterKeys: list<string>,
+     *     fileInfoUploaded?: bool,
+     *     fileInfoSize?: int,
+     *     expectedIsDownloadable?: bool,
      * }>
      */
     public static function getMakeCollectiondata(): array
@@ -227,6 +235,30 @@ final class AttachmentViewFactoryTest extends UnitTestCase
                 'expectedDownloadParameterKeys' => ['documentPrefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_disposition_attachment_detail',
                 'expectedDetailsParameterKeys' => ['documentPrefix', 'dossierNumber', 'attachmentId'],
+            ],
+            'DecisionAttachment without uploaded file' => [
+                'dossierType' => DossierType::WOO_DECISION,
+                'attachmentClass' => WooDecisionAttachment::class,
+                'applicationId' => ApplicationId::PUBLIC,
+                'expectedDownloadRouteName' => 'app_dossier_file_download',
+                'expectedDownloadParameterKeys' => ['documentPrefix', 'dossierNumber', 'type', 'id'],
+                'expectedDetailsRouteName' => 'app_woodecision_attachment_detail',
+                'expectedDetailsParameterKeys' => ['documentPrefix', 'dossierNumber', 'attachmentId'],
+                'fileInfoUploaded' => false,
+                'fileInfoSize' => 1337,
+                'expectedIsDownloadable' => false,
+            ],
+            'DecisionAttachment with zero-size file' => [
+                'dossierType' => DossierType::WOO_DECISION,
+                'attachmentClass' => WooDecisionAttachment::class,
+                'applicationId' => ApplicationId::PUBLIC,
+                'expectedDownloadRouteName' => 'app_dossier_file_download',
+                'expectedDownloadParameterKeys' => ['documentPrefix', 'dossierNumber', 'type', 'id'],
+                'expectedDetailsRouteName' => 'app_woodecision_attachment_detail',
+                'expectedDetailsParameterKeys' => ['documentPrefix', 'dossierNumber', 'attachmentId'],
+                'fileInfoUploaded' => true,
+                'fileInfoSize' => 0,
+                'expectedIsDownloadable' => false,
             ],
         ];
     }

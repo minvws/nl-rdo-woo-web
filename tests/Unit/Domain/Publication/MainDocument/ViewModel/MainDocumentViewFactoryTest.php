@@ -47,11 +47,15 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
         array $expectedDownloadParameterKeys,
         string $expectedDetailsRouteName,
         array $expectedDetailsParameterKeys,
+        bool $fileInfoUploaded = true,
+        int $fileInfoSize = 101,
+        bool $expectedIsDownloadable = true,
     ): void {
         $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->expects('getName')->andReturn($expectedFileName = 'file name');
         $fileInfo->expects('getMimetype')->andReturn($expectedMimeType = 'file mime type');
-        $fileInfo->expects('getSize')->andReturn($expectedSize = 101);
+        $fileInfo->expects('isUploaded')->andReturn($fileInfoUploaded);
+        $fileInfo->expects('getSize')->andReturn($expectedSize = $fileInfoSize);
         $fileInfo->expects('getSourceType')->andReturn($expectedSourceType = SourceType::PDF);
         $fileInfo->expects('getPageCount')->andReturn($expectedPageCount = 12);
 
@@ -83,7 +87,7 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
 
         $mainDocument->expects('getId')->times(2)->andReturn($uuid);
         $mainDocument->expects('getFormalDate')->andReturn(PlainDate::create($expectedFormalDate = '2021-05-10'));
-        $mainDocument->expects('getFileInfo')->times(5)->andReturn($fileInfo);
+        $mainDocument->expects('getFileInfo')->andReturn($fileInfo);
         $mainDocument->expects('getType')->andReturn(AttachmentType::ADVICE);
         $mainDocument->expects('getLanguage')->andReturn(AttachmentLanguage::NLD);
         $mainDocument->expects('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
@@ -110,6 +114,7 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
         $this->assertSame($expectedDownloadUrl, $result->downloadUrl);
         $this->assertSame($expectedDetailsUrl, $result->detailsUrl);
         $this->assertSame($expectedPageCount, $result->pageCount);
+        $this->assertSame($expectedIsDownloadable, $result->isDownloadable);
     }
 
     /**
@@ -120,6 +125,9 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
      *     expectedDownloadParameterKeys: list<string>,
      *     expectedDetailsRouteName: string,
      *     expectedDetailsParameterKeys: list<string>,
+     *     fileInfoUploaded?: bool,
+     *     fileInfoSize?: int,
+     *     expectedIsDownloadable?: bool,
      * }>
      */
     public static function getMakeScenarios(): array
@@ -218,6 +226,30 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
                 'expectedDownloadParameterKeys' => ['documentPrefix', 'dossierNumber', 'type', 'id'],
                 'expectedDetailsRouteName' => 'app_complaintjudgement_document_detail',
                 'expectedDetailsParameterKeys' => ['documentPrefix', 'dossierNumber'],
+            ],
+            'CovenantDocument without uploaded file' => [
+                'dossierType' => DossierType::COVENANT,
+                'mainDocumentClass' => CovenantMainDocument::class,
+                'applicationId' => ApplicationId::PUBLIC,
+                'expectedDownloadRouteName' => 'app_dossier_file_download',
+                'expectedDownloadParameterKeys' => ['documentPrefix', 'dossierNumber', 'type', 'id'],
+                'expectedDetailsRouteName' => 'app_covenant_document_detail',
+                'expectedDetailsParameterKeys' => ['documentPrefix', 'dossierNumber'],
+                'fileInfoUploaded' => false,
+                'fileInfoSize' => 1337,
+                'expectedIsDownloadable' => false,
+            ],
+            'CovenantDocument with zero-size file' => [
+                'dossierType' => DossierType::COVENANT,
+                'mainDocumentClass' => CovenantMainDocument::class,
+                'applicationId' => ApplicationId::PUBLIC,
+                'expectedDownloadRouteName' => 'app_dossier_file_download',
+                'expectedDownloadParameterKeys' => ['documentPrefix', 'dossierNumber', 'type', 'id'],
+                'expectedDetailsRouteName' => 'app_covenant_document_detail',
+                'expectedDetailsParameterKeys' => ['documentPrefix', 'dossierNumber'],
+                'fileInfoUploaded' => true,
+                'fileInfoSize' => 0,
+                'expectedIsDownloadable' => false,
             ],
         ];
     }
