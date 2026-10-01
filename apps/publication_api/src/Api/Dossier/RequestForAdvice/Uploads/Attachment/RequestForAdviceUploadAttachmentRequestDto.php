@@ -7,12 +7,13 @@ namespace PublicationApi\Api\Dossier\RequestForAdvice\Uploads\Attachment;
 use Psr\Http\Message\StreamInterface;
 use PublicationApi\Api\Uploads\Attachment\UploadAttachmentRequestInterface;
 use Shared\ValueObject\ExternalId;
+use Symfony\Component\Uid\Uuid;
 
 final readonly class RequestForAdviceUploadAttachmentRequestDto implements UploadAttachmentRequestInterface
 {
     public function __construct(
         public StreamInterface $content,
-        public string $organisationId,
+        public Uuid $organisationId,
         public ExternalId $dossierExternalId,
         public ExternalId $attachmentExternalId,
     ) {
@@ -33,7 +34,7 @@ final readonly class RequestForAdviceUploadAttachmentRequestDto implements Uploa
         return $this->dossierExternalId;
     }
 
-    public function getOrganisationId(): string
+    public function getOrganisationId(): Uuid
     {
         return $this->organisationId;
     }

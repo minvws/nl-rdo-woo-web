@@ -48,6 +48,5 @@ enum ElasticField: string
     case DEPARTMENT_NAMES = 'department_names';
     case DATE_FILTER = 'date_filter';
     case ORGANISATION_IDS = 'organisation_ids';
-    case REFERRED_DOCUMENT_NRS = 'referred_document_nrs';
     case REFERRED_DOCUMENT_NUMBERS = 'referred_document_numbers';
 }

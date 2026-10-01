@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Subject;
 
 use Shared\Domain\Publication\Subject\Constraint\ValidContentTreeDepth;
+use Shared\Domain\Publication\Subject\Constraint\ValidContentTreeNodeCount;
 use Symfony\Component\Validator\Constraints as SymfonyAssert;
 use Webmozart\Assert\Assert;
 
@@ -24,6 +25,7 @@ final readonly class SubjectContentTree
         #[SymfonyAssert\All([new SymfonyAssert\Type(SubjectContentNode::class)])]
         #[SymfonyAssert\Valid]
         #[ValidContentTreeDepth(max: 3)]
+        #[ValidContentTreeNodeCount(max: 100)]
         public array $children,
         #[SymfonyAssert\Length(max: 10000)]
         public string $outro,

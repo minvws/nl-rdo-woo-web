@@ -1,0 +1,25 @@
+{% set documentNumber = document.entity.documentNumber.toString() %}
+<h1 class="woo-h1 sm:flex">
+    <span class="block">
+        <twig:Public:FileIcon type="{{ document.entity.fileInfo.sourceType.value }}" class="mr-4 -mt-0.5" size="32" />
+        <span class="sr-only">{{ document.entity.fileInfo.sourceType | trans }}</span>
+    </span>
+    <span>{{ document.entity.fileInfo.name }}</span>
+</h1>
+
+<dl class="woo-muted">
+    <div>
+        <dt class="sr-only">{{ 'global.published_on' | trans }}: </dt>
+        <dd>
+        {% if document.entity.documentDate is not null %}
+            <time datetime="{{ document.entity.documentDate | date('Y-m-d') }}">{{ document.entity.documentDate | format_date('long') }}</time>
+        {% else %}
+            {{ 'global.date_not_available' | trans }}
+        {% endif %}
+        </dd>
+    </div>
+    <div>
+        <dt class="inline">{{ 'global.document_number' | trans }}:</dt>
+        <dd class="inline">{{ documentNumber }}</dd>
+    </div>
+</dl>

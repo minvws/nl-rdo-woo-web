@@ -9,6 +9,7 @@ use Shared\Domain\Publication\Dossier\NoticeNotPublic\Command\CreateNoticeNotPub
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\Command\DeleteNoticeNotPublicCommand;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\Command\UpdateNoticeNotPublicCommand;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
+use Shared\Service\EnumHelper;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Webmozart\Assert\Assert;
@@ -31,7 +32,7 @@ class NoticeNotPublicService
             dossierId: $dossier->getId(),
             documentName: $dto->documentName,
             formalDate: $dto->formalDate,
-            grounds: $dto->grounds,
+            grounds: EnumHelper::getStringValues($dto->grounds),
             explanation: $dto->explanation,
         ));
         Assert::isInstanceOf($result, NoticeNotPublic::class);
@@ -47,7 +48,7 @@ class NoticeNotPublicService
             dossierId: $dossier->getId(),
             documentName: $dto->documentName,
             formalDate: $dto->formalDate,
-            grounds: $dto->grounds,
+            grounds: EnumHelper::getStringValues($dto->grounds),
             explanation: $dto->explanation,
         ));
         Assert::isInstanceOf($result, NoticeNotPublic::class);

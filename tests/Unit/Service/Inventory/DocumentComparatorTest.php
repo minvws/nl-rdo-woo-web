@@ -16,10 +16,8 @@ use Shared\Domain\Publication\SourceType;
 use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inventory\DocumentComparator;
 use Shared\Service\Inventory\DocumentMetadata;
-use Shared\Service\Inventory\LegacyDocumentNumberFactory;
 use Shared\Service\Inventory\MetadataField;
 use Shared\Tests\Unit\UnitTestCase;
-use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\DocumentNumber;
 
 class DocumentComparatorTest extends UnitTestCase
@@ -34,7 +32,6 @@ class DocumentComparatorTest extends UnitTestCase
         $this->repository = Mockery::mock(DocumentRepository::class);
         $this->documentComparator = new DocumentComparator(
             $this->repository,
-            new LegacyDocumentNumberFactory(),
         );
 
         parent::setUp();
@@ -136,18 +133,14 @@ class DocumentComparatorTest extends UnitTestCase
         $metadata->expects('getRefersTo')->andReturn([]);
 
         self::assertFalse(
-            $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata),
+            $this->documentComparator->hasRefersToUpdate($document, $metadata),
         );
     }
 
     public function testHasRefersToUpdateReturnsTrueWhenAReferralIsAdded(): void
     {
-        $this->dossier->expects('getDocumentPrefix')->andReturn('prefix');
-
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
-        $document->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('bar-123'));
-        $document->expects('getDocumentId')->andReturn(DocumentId::create('123'));
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123']);
@@ -158,20 +151,14 @@ class DocumentComparatorTest extends UnitTestCase
         $this->repository->expects('findByDocumentNumber')->andReturn($referredDocument);
 
         self::assertTrue(
-            $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata),
+            $this->documentComparator->hasRefersToUpdate($document, $metadata),
         );
     }
 
     public function testHasRefersToUpdateIgnoresInvalidReferral(): void
     {
-        $this->dossier->expects('getDocumentPrefix')->twice()->andReturn('prefix');
-
         $document = Mockery::mock(Document::class);
         $document->expects('getRefersTo')->andReturn(new ArrayCollection());
-        $document->expects('getDocumentNumber')
-            ->times(2)
-            ->andReturn(DocumentNumber::fromString('bar-123'));
-        $document->expects('getDocumentId')->twice()->andReturn(DocumentId::create('123'));
 
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getRefersTo')->andReturn(['foo-123', 'invalid-456']);
@@ -183,7 +170,7 @@ class DocumentComparatorTest extends UnitTestCase
         $this->repository->expects('findByDocumentNumber')->andReturnNull();
 
         self::assertTrue(
-            $this->documentComparator->hasRefersToUpdate($this->dossier, $document, $metadata),
+            $this->documentComparator->hasRefersToUpdate($document, $metadata),
         );
     }
 }

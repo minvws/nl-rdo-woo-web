@@ -7,11 +7,14 @@ namespace Shared\Domain\FileStorage\Checker;
 use Generator;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\StorageAttributes;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 readonly class FileStorageLister
 {
     public function __construct(
+        #[Target('documentStorage')]
         private FilesystemOperator $documentStorage,
+        #[Target('batchStorage')]
         private FilesystemOperator $batchStorage,
     ) {
     }

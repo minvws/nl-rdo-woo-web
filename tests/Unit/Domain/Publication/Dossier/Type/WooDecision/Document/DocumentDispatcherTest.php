@@ -89,12 +89,14 @@ class DocumentDispatcherTest extends UnitTestCase
 
     public function testDispatchDocumentWithdrawnEvent(): void
     {
+        $wooDecision = Mockery::mock(WooDecision::class);
         $document = Mockery::mock(Document::class);
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'oops';
 
         $this->messageBus->expects('dispatch')->with(Mockery::on(
-            static function (DocumentWithDrawnEvent $event) use ($document, $reason, $explanation) {
+            static function (DocumentWithDrawnEvent $event) use ($wooDecision, $document, $reason, $explanation) {
+                self::assertEquals($wooDecision, $event->wooDecision);
                 self::assertEquals($document, $event->document);
                 self::assertEquals($reason, $event->reason);
                 self::assertEquals($explanation, $event->explanation);
@@ -105,6 +107,7 @@ class DocumentDispatcherTest extends UnitTestCase
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchDocumentWithdrawnEvent(
+            $wooDecision,
             $document,
             $reason,
             $explanation,

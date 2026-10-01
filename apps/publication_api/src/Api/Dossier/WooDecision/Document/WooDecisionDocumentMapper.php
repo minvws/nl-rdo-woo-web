@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier\WooDecision\Document;
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Service\EnumHelper;
 use Shared\ValueObject\DocumentNumber;
 
 class WooDecisionDocumentMapper
@@ -38,7 +39,7 @@ class WooDecisionDocumentMapper
         $document->setDocumentId($wooDecisionDocumentRequestDto->documentId);
         $document->setDocumentNumber($documentNumber);
         $document->setFamilyId($wooDecisionDocumentRequestDto->familyId);
-        $document->setGrounds($wooDecisionDocumentRequestDto->grounds);
+        $document->setGrounds(EnumHelper::getStringValues($wooDecisionDocumentRequestDto->grounds));
         $document->setJudgement($wooDecisionDocumentRequestDto->judgement);
         $document->setLinks($wooDecisionDocumentRequestDto->links);
         $document->setPublicationContext($wooDecisionDocumentRequestDto->publicationContext);

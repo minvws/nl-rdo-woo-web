@@ -28,7 +28,11 @@ class NoIncompleteAttachmentsValidatorTest extends UnitTestCase
         $validator = new NoIncompleteAttachmentsValidator($repository);
 
         $this->expectException(UnexpectedTypeException::class);
-        $validator->validate('foo', new NotNull());
+        $validator->validateInContext(
+            'foo',
+            new NotNull(),
+            Mockery::mock(ExecutionContextInterface::class),
+        );
     }
 
     public function testValidateThrowsExceptionForInvalidValue(): void
@@ -40,10 +44,9 @@ class NoIncompleteAttachmentsValidatorTest extends UnitTestCase
         $context = Mockery::mock(ExecutionContextInterface::class);
 
         $validator = new NoIncompleteAttachmentsValidator($repository);
-        $validator->initialize($context);
 
         $this->expectException(UnexpectedValueException::class);
-        $validator->validate(new stdClass(), new NoIncompleteAttachments());
+        $validator->validateInContext(new stdClass(), new NoIncompleteAttachments(), $context);
     }
 
     public function testValidateAddsViolationWhenIncompleteAttachmentsExist(): void
@@ -63,9 +66,8 @@ class NoIncompleteAttachmentsValidatorTest extends UnitTestCase
         $context->expects('buildViolation->addViolation');
 
         $validator = new NoIncompleteAttachmentsValidator($repository);
-        $validator->initialize($context);
 
-        $validator->validate($dossier, new NoIncompleteAttachments());
+        $validator->validateInContext($dossier, new NoIncompleteAttachments(), $context);
     }
 
     public function testValidateAddsNoViolationWhenNoIncompleteAttachmentsExist(): void
@@ -85,8 +87,7 @@ class NoIncompleteAttachmentsValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->never();
 
         $validator = new NoIncompleteAttachmentsValidator($repository);
-        $validator->initialize($context);
 
-        $validator->validate($dossier, new NoIncompleteAttachments());
+        $validator->validateInContext($dossier, new NoIncompleteAttachments(), $context);
     }
 }

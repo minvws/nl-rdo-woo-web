@@ -7,10 +7,10 @@ namespace PublicationApi\Tests\Unit\Api\Subject;
 use Mockery;
 use Mockery\MockInterface;
 use PublicationApi\Api\Subject\SubjectCreateDto;
-use PublicationApi\Api\Subject\SubjectDetailResponse;
+use PublicationApi\Api\Subject\SubjectDetailResponseDto;
 use PublicationApi\Api\Subject\SubjectLandingPageInputDto;
 use PublicationApi\Api\Subject\SubjectMapper;
-use PublicationApi\Api\Subject\SubjectResponse;
+use PublicationApi\Api\Subject\SubjectResponseDto;
 use PublicationApi\Api\Subject\SubjectUpdateDto;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Subject\LandingPageSlug;
@@ -18,6 +18,7 @@ use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectContentNode;
 use Shared\Domain\Publication\Subject\SubjectContentTree;
+use Shared\Domain\Publication\Subject\SubjectContentTreeStatus;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Tests\Unit\UnitTestCase;
@@ -44,48 +45,48 @@ class SubjectMapperTest extends UnitTestCase
         parent::setUp();
     }
 
-    public function testFromEntityReturnsNullLandingPageForLegacySubject(): void
+    public function testFromEntityMapsIdAndName(): void
     {
-        $this->subject->expects('getLandingPageStatus')->andReturn(null);
-
         $result = SubjectMapper::fromEntity($this->subject);
 
-        self::assertInstanceOf(SubjectResponse::class, $result);
-        self::assertNull($result->landingPage);
+        self::assertInstanceOf(SubjectResponseDto::class, $result);
+        self::assertSame($this->subject->getId(), $result->id);
+        self::assertSame($this->subject->getName(), $result->name);
     }
 
     public function testFromEntityWithDetailReturnsNullLandingPageForLegacySubject(): void
     {
-        $this->subject->expects('getLandingPageStatus')->andReturn(null);
+        $this->subject->expects('hasLandingPageContent')->andReturnFalse();
 
         $result = SubjectMapper::fromEntityWithDetail($this->subject);
 
-        self::assertInstanceOf(SubjectDetailResponse::class, $result);
+        self::assertInstanceOf(SubjectDetailResponseDto::class, $result);
         self::assertNull($result->landingPage);
     }
 
-    public function testFromEntityMapsConceptLandingPageWithPreviewUrl(): void
+    public function testFromEntityWithDetailMapsConceptLandingPageWithPreviewUrl(): void
     {
         $previewToken = Uuid::v4();
 
+        $this->subject->expects('hasLandingPageContent')->andReturnTrue();
         $this->subject->expects('getLandingPageStatus')->twice()->andReturn(SubjectLandingPageStatus::CONCEPT);
         $this->subject->expects('getLandingPageSlug')->andReturn(LandingPageSlug::create('my-landing-page'));
         $this->subject->expects('getLandingPageTitle')->andReturn(LandingPageTitle::create('My Title'));
         $this->subject->expects('getLandingPageDescription')->andReturn('My description');
         $this->subject->expects('getLandingPageContentTree')->andReturn(null);
-        $this->subject->expects('hasVisibleLandingPageContentTree')->andReturn(false);
+        $this->subject->expects('getLandingPageContentTreeStatus')->andReturn(SubjectContentTreeStatus::CONCEPT);
         $this->subject->expects('getLandingPagePreviewToken')->andReturn($previewToken);
 
         $generator = new SubjectPreviewUrlGenerator('https://example.com');
 
-        $result = SubjectMapper::fromEntity($this->subject, $generator);
+        $result = SubjectMapper::fromEntityWithDetail($this->subject, $generator);
 
         self::assertNotNull($result->landingPage);
         self::assertSame(SubjectLandingPageStatus::CONCEPT, $result->landingPage->status);
         self::assertSame('my-landing-page', $result->landingPage->slug);
         self::assertSame('My Title', $result->landingPage->title);
         self::assertSame('My description', $result->landingPage->description);
-        self::assertFalse($result->landingPage->hasVisibleContentTree);
+        self::assertSame(SubjectContentTreeStatus::CONCEPT, $result->landingPage->contentTreeStatus);
         self::assertEquals(new SubjectContentTree(title: '', intro: '', children: [], outro: ''), $result->landingPage->contentTree);
         self::assertSame(
             sprintf(
@@ -97,18 +98,19 @@ class SubjectMapperTest extends UnitTestCase
         );
     }
 
-    public function testFromEntityMapsPublishedLandingPageWithNullPreviewUrl(): void
+    public function testFromEntityWithDetailMapsPublishedLandingPageWithNullPreviewUrl(): void
     {
+        $this->subject->expects('hasLandingPageContent')->andReturnTrue();
         $this->subject->expects('getLandingPageStatus')->twice()->andReturn(SubjectLandingPageStatus::PUBLISHED);
         $this->subject->expects('getLandingPageSlug')->andReturn(LandingPageSlug::create('published-landing-page'));
         $this->subject->expects('getLandingPageTitle')->andReturn(LandingPageTitle::create('Published Title'));
         $this->subject->expects('getLandingPageDescription')->andReturn('Published description');
         $this->subject->expects('getLandingPageContentTree')->andReturn(null);
-        $this->subject->expects('hasVisibleLandingPageContentTree')->andReturn(false);
+        $this->subject->expects('getLandingPageContentTreeStatus')->andReturn(SubjectContentTreeStatus::CONCEPT);
 
         $generator = new SubjectPreviewUrlGenerator('https://example.com');
 
-        $result = SubjectMapper::fromEntity($this->subject, $generator);
+        $result = SubjectMapper::fromEntityWithDetail($this->subject, $generator);
 
         self::assertNotNull($result->landingPage);
         self::assertSame(SubjectLandingPageStatus::PUBLISHED, $result->landingPage->status);
@@ -116,7 +118,7 @@ class SubjectMapperTest extends UnitTestCase
         self::assertNull($result->landingPage->previewUrl);
     }
 
-    public function testFromEntityMapsNormalizedNestedContentTree(): void
+    public function testFromEntityWithDetailMapsNormalizedNestedContentTree(): void
     {
         $contentTree = new SubjectContentTree(
             children: [
@@ -129,19 +131,20 @@ class SubjectMapperTest extends UnitTestCase
             outro: 'Tree outro',
         );
 
+        $this->subject->expects('hasLandingPageContent')->andReturnTrue();
         $this->subject->expects('getLandingPageStatus')->twice()->andReturn(SubjectLandingPageStatus::PUBLISHED);
         $this->subject->expects('getLandingPageSlug')->andReturn(LandingPageSlug::create('nested-tree'));
         $this->subject->expects('getLandingPageTitle')->andReturn(LandingPageTitle::create('Title'));
         $this->subject->expects('getLandingPageDescription')->andReturn('Description');
         $this->subject->expects('getLandingPageContentTree')->andReturn($contentTree);
-        $this->subject->expects('hasVisibleLandingPageContentTree')->andReturn(true);
+        $this->subject->expects('getLandingPageContentTreeStatus')->andReturn(SubjectContentTreeStatus::PUBLISHED);
 
         $generator = new SubjectPreviewUrlGenerator('https://example.com');
 
-        $result = SubjectMapper::fromEntity($this->subject, $generator);
+        $result = SubjectMapper::fromEntityWithDetail($this->subject, $generator);
 
         self::assertNotNull($result->landingPage);
-        self::assertTrue($result->landingPage->hasVisibleContentTree);
+        self::assertSame(SubjectContentTreeStatus::PUBLISHED, $result->landingPage->contentTreeStatus);
         self::assertSame($contentTree, $result->landingPage->contentTree);
     }
 
@@ -156,7 +159,7 @@ class SubjectMapperTest extends UnitTestCase
             'Landing page description',
             SubjectLandingPageStatus::CONCEPT,
             new SubjectContentTree(children: $nodes, title: 'Tree title', intro: 'Tree intro', outro: 'Tree outro'),
-            true,
+            SubjectContentTreeStatus::PUBLISHED,
         );
 
         $dto = new SubjectCreateDto('New subject');
@@ -170,7 +173,7 @@ class SubjectMapperTest extends UnitTestCase
         self::assertSame($slug, $subject->getLandingPageSlug());
         self::assertSame($title, $subject->getLandingPageTitle());
         self::assertSame('Landing page description', $subject->getLandingPageDescription());
-        self::assertTrue($subject->hasVisibleLandingPageContentTree());
+        self::assertSame(SubjectContentTreeStatus::PUBLISHED, $subject->getLandingPageContentTreeStatus());
         self::assertSame($landingPage->contentTree, $subject->getLandingPageContentTree());
     }
 
@@ -198,7 +201,7 @@ class SubjectMapperTest extends UnitTestCase
             'Description',
             SubjectLandingPageStatus::CONCEPT,
             $contentTree,
-            true,
+            SubjectContentTreeStatus::PUBLISHED,
         );
 
         $this->subject->expects('setName')->with('New Name')->andReturnSelf();
@@ -209,13 +212,14 @@ class SubjectMapperTest extends UnitTestCase
                 string $description,
                 SubjectLandingPageStatus $status,
                 SubjectContentTree $actualContentTree,
+                SubjectContentTreeStatus $contentTreeStatus,
             ): bool => $slug === $landingPage->slug
                 && $title === $landingPage->title
                 && $description === 'Description'
                 && $status === SubjectLandingPageStatus::CONCEPT
-                && $actualContentTree === $contentTree)
+                && $actualContentTree === $contentTree
+                && $contentTreeStatus === SubjectContentTreeStatus::PUBLISHED)
             ->andReturnSelf();
-        $this->subject->expects('setHasVisibleLandingPageContentTree')->with(true)->andReturnSelf();
 
         $dto = new SubjectUpdateDto('New Name');
         $dto->landingPage = $landingPage;

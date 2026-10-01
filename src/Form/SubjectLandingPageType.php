@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Shared\Form;
 
 use Shared\Domain\Publication\Subject\Subject;
+use Shared\Domain\Publication\Subject\SubjectContentTreeStatus;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Form\Transformer\StringToLandingPageSlugTransformer;
 use Shared\Form\Transformer\StringToLandingPageTitleTransformer;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -45,7 +45,7 @@ class SubjectLandingPageType extends AbstractType
                 'choice_label' => static fn (SubjectLandingPageStatus $status): string => 'admin.subject.landing_page.status.' . $status->value,
                 'required' => true,
                 'property_path' => 'landingPageStatus',
-                'data' => $subject->getLandingPageStatus() ?? SubjectLandingPageStatus::CONCEPT,
+                'data' => $subject->getLandingPageStatus(),
             ])
             ->add('landing_page_slug', TextType::class, [
                 'label' => 'admin.subject.landing_page.slug',
@@ -76,18 +76,32 @@ class SubjectLandingPageType extends AbstractType
                     'data-is-markdown' => 'true',
                 ],
             ])
-            ->add('has_visible_landing_page_content_tree', CheckboxType::class, [
+            ->add('landing_page_content_tree_status', EnumType::class, [
                 'label' => 'admin.subject.landing_page.visible_content_tree',
-                'required' => false,
-                'property_path' => 'hasVisibleLandingPageContentTree',
+                'class' => SubjectContentTreeStatus::class,
+                'choice_label' => static fn (SubjectContentTreeStatus $status): string => 'admin.subject.landing_page.status.' . $status->value,
+                'required' => true,
+                'empty_data' => SubjectContentTreeStatus::CONCEPT->value,
+                'property_path' => 'landingPageContentTreeStatus',
+                'data' => $subject->getLandingPageContentTreeStatus(),
             ])
             ->add('landing_page_content_tree', ContentTreeType::class, [
                 'label' => 'admin.subject.landing_page.content_tree',
+                'label_attr' => ['class' => 'hidden'],
                 'required' => false,
                 'property_path' => 'landingPageContentTree',
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'global.save',
+                'attr' => [
+                    'data-e2e-name' => 'submit-basic-details',
+                ],
+            ])
+            ->add('submit_content_tree', SubmitType::class, [
+                'label' => 'global.save',
+                'attr' => [
+                    'data-e2e-name' => 'submit-content-tree',
+                ],
             ]);
 
         $builder->get('landing_page_slug')->addModelTransformer(new StringToLandingPageSlugTransformer());

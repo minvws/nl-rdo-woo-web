@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
+use Shared\Domain\Publication\Ground;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\FileName;
@@ -28,13 +29,13 @@ final class AttachmentMapperTest extends UnitTestCase
             language: AttachmentLanguage::ENG,
             type: AttachmentType::POLICY_NOTE,
             externalId: ExternalId::create('ext-123'),
-            grounds: ['5.1.1a'],
+            grounds: [Ground::WOO_511A],
         ));
 
         self::assertEquals(PlainDate::create('2025-02-02'), $attachment->getFormalDate());
         self::assertSame(AttachmentLanguage::ENG, $attachment->getLanguage());
         self::assertSame(AttachmentType::POLICY_NOTE, $attachment->getType());
-        self::assertSame(['5.1.1a'], $attachment->getGrounds());
+        self::assertSame([Ground::WOO_511A->value], $attachment->getGrounds());
         self::assertSame('renamed.pdf', $attachment->getFileInfo()->getName());
     }
 

@@ -16,7 +16,7 @@
         "@scalar/api-reference": "^1.58.0",
         "@symfony/stimulus-bridge": "^4.0.1",
         "@symfony/ux-vue": "file:assets/vendor/ux-vue",
-        "@vueuse/core": "^14.3.0",
+        "@vueuse/core": "^15.0.0",
         "date-fns": "^4.4.0",
         "markdown-it": "^15.0.0",
         "moment": "^2.30.1",
@@ -26,32 +26,33 @@
         "@eslint/js": "^10.0.1",
         "@hotwired/stimulus": "^3.2.2",
         "@tailwindcss/postcss": "^4.3.1",
-        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/dom": "^10.4.1",
+        "@testing-library/jest-dom": "^7.0.1",
         "@testing-library/vue": "^8.1.0",
         "@types/markdown-it": "^14.1.2",
         "@vitejs/plugin-vue": "^6.0.7",
-        "@vitest/coverage-istanbul": "^4.1.9",
-        "eslint": "^10.5.0",
+        "@vitest/coverage-istanbul": "^5.0.0",
+        "eslint": "^10.11.0",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.6",
         "eslint-plugin-vue": "^10.9.2",
         "globals": "^17.7.0",
-        "jsdom": "^29.1.1",
+        "jsdom": "^30.0.1",
         "prettier": "^3.8.3",
         "tailwindcss": "^4.3.0",
         "typescript": "^6.0.3",
         "typescript-eslint": "^8.62.0",
         "vite": "^8.1.0",
         "vite-plugin-symfony": "^8.2.4",
-        "vitest": "^4.1.8",
+        "vitest": "^5.0.0",
         "zod": "^4.4.3"
     },
     "overrides": {
-        "js-beautify": "^2.0.3"
+        "@ai-sdk/provider-utils": "4.0.33"
     },
     "engines": {
-        "node": ">=20.0.0",
+        "node": "^24.15.0 || >=26.0.0",
         "npm": ">=11.0.0"
     },
-    "packageManager": "npm@11.19.1+sha512.cedb312b1b7f92421a02cfb68b4194e88f8346651dacd6acc5364a25ef5309d4a32b19616a1ff8aff865e7280c0fa5c0835a99f5cd93368991e2a80ec9da75d2"
+    "packageManager": "npm@11.20.0+sha512.745dc40c5c1b60df8de51522a7e6580ded0d79444ae4182a28e72f4f588db546214cc4e5d05c16841b97ad2ecab57c9dbaac93312e5a6906ab7a09c70c0c4d83"
 }

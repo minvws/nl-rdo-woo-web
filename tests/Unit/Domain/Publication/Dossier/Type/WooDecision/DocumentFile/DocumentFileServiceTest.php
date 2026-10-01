@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\DocumentFile;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\LinkedWooDecisionUpdater;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileService;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\DocumentFileSetException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileSetRepository;
@@ -33,6 +37,7 @@ class DocumentFileServiceTest extends UnitTestCase
     private WooDecision&MockInterface $wooDecision;
     private EntityStorageService&MockInterface $entityStorageService;
     private TotalDocumentFileSizeValidator&MockInterface $totalDocumentFileSizeValidator;
+    private LinkedWooDecisionUpdater&MockInterface $linkedWooDecisionUpdater;
     private DocumentFileService $service;
 
     protected function setUp(): void
@@ -43,6 +48,7 @@ class DocumentFileServiceTest extends UnitTestCase
         $this->documentFileUploadRepository = Mockery::mock(DocumentFileUploadRepository::class);
         $this->entityStorageService = Mockery::mock(EntityStorageService::class);
         $this->totalDocumentFileSizeValidator = Mockery::mock(TotalDocumentFileSizeValidator::class);
+        $this->linkedWooDecisionUpdater = Mockery::mock(LinkedWooDecisionUpdater::class);
 
         $this->service = new DocumentFileService(
             $this->dispatcher,
@@ -50,6 +56,7 @@ class DocumentFileServiceTest extends UnitTestCase
             $this->documentFileUploadRepository,
             $this->entityStorageService,
             $this->totalDocumentFileSizeValidator,
+            $this->linkedWooDecisionUpdater,
         );
     }
 
@@ -608,7 +615,16 @@ class DocumentFileServiceTest extends UnitTestCase
 
     public function testCheckProcessingUpdatesCompletionSetsStatusToCompleted(): void
     {
+        $documentId = Uuid::v6();
+        $document = Mockery::mock(Document::class);
+        $document->expects('getId')->andReturn($documentId);
+
+        $update = Mockery::mock(DocumentFileUpdate::class);
+        $update->expects('getDocument')->andReturn($document);
+
         $documentFileSet = Mockery::mock(DocumentFileSet::class);
+        $documentFileSet->expects('getDossier')->andReturn($this->wooDecision);
+        $documentFileSet->expects('getUpdates')->andReturn(new ArrayCollection([$update]));
 
         $this->documentFileSetRepository
             ->expects('countUpdatesToProcess')
@@ -618,6 +634,10 @@ class DocumentFileServiceTest extends UnitTestCase
         $this->documentFileSetRepository
             ->expects('updateStatusTransactionally')
             ->with($documentFileSet, DocumentFileSetStatus::COMPLETED);
+
+        $this->linkedWooDecisionUpdater
+            ->expects('updateOtherLinkedTo')
+            ->with($this->wooDecision, [$documentId]);
 
         $this->dispatcher->expects('dispatchDocumentFileSetProcessedEvent')->with($documentFileSet);
 

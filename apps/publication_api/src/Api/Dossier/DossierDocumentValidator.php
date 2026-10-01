@@ -20,8 +20,9 @@ use Webmozart\Assert\Assert;
 
 use function array_diff;
 use function in_array;
+use function sprintf;
 
-final readonly class DossierDocumentValidator
+readonly class DossierDocumentValidator
 {
     public function __construct(
         private ValidatorInterface $validator,
@@ -62,31 +63,43 @@ final readonly class DossierDocumentValidator
      */
     public function validate(array $documents, DossierStatus $dossierStatus): void
     {
-        $validationGroups = EnumHelper::getStringValues(
-            DossierValidationGroup::getForStatus($dossierStatus),
-        );
-        $validationGroups[] = Constraint::DEFAULT_GROUP;
+        $violations = ConstraintViolationBuilder::createList();
 
-        try {
-            $this->validateDocuments($documents, $validationGroups);
-        } catch (ValidationFailedException $validationFailedException) {
-            throw new ValidationException(
-                ConstraintViolationBuilder::prefixPropertyPaths($validationFailedException->getViolations(), 'documents.'),
-                previous: $validationFailedException,
+        foreach ($documents as $index => $document) {
+            $documentViolations = $this->validator->validate(
+                $document,
+                groups: $this->getValidationGroups($document, $dossierStatus),
             );
+
+            if ($documentViolations->count() === 0) {
+                continue;
+            }
+
+            $violations->addAll(
+                ConstraintViolationBuilder::prefixPropertyPaths($documentViolations, sprintf('documents.[%d].', $index)),
+            );
+        }
+
+        if ($violations->count() > 0) {
+            throw new ValidationException($violations, previous: new ValidationFailedException($documents, $violations));
         }
     }
 
     /**
-     * @param list<Document> $documents
-     * @param array<array-key, string>|null $validationGroups
+     * @return array<array-key, string>
      */
-    private function validateDocuments(array $documents, ?array $validationGroups = null): void
+    private function getValidationGroups(Document $document, DossierStatus $dossierStatus): array
     {
-        $errors = $this->validator->validate($documents, groups: $validationGroups);
-
-        if ($errors->count() > 0) {
-            throw new ValidationFailedException($documents, $errors);
+        $dossierStatuses = [$dossierStatus];
+        foreach ($document->getDossiers() as $dossier) {
+            $dossierStatuses[] = $dossier->getStatus();
         }
+
+        $validationGroups = EnumHelper::getStringValues(
+            DossierValidationGroup::getForLinkedDossierStatuses($dossierStatuses),
+        );
+        $validationGroups[] = Constraint::DEFAULT_GROUP;
+
+        return $validationGroups;
     }
 }

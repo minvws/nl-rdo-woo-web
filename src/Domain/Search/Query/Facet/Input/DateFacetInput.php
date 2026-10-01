@@ -134,4 +134,9 @@ final readonly class DateFacetInput extends FacetInput implements DateFacetInput
     {
         return $this->facet->getKey();
     }
+
+    public function getRequestParameter(): string
+    {
+        return $this->facet->getRequestParameter();
+    }
 }

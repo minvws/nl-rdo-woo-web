@@ -19,9 +19,16 @@ final class AttachmentFakerProvider extends Base
         return $attachmentLanguage;
     }
 
-    public function attachmentType(): AttachmentType
+    /**
+     * @param list<AttachmentType> $attachmentTypes
+     */
+    public function attachmentType(array $attachmentTypes = []): AttachmentType
     {
-        $attachmentType = static::randomElement(AttachmentType::cases());
+        if ($attachmentTypes === []) {
+            $attachmentTypes = AttachmentType::cases();
+        }
+
+        $attachmentType = static::randomElement($attachmentTypes);
         Assert::isInstanceOf($attachmentType, AttachmentType::class);
 
         return $attachmentType;

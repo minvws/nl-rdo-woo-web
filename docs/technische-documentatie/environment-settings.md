@@ -30,8 +30,10 @@ Many settings exist once per tenant, prefixed with the tenant ID in upper case. 
 | `MINVWS`   | `minvws`  | yes                              |
 | `MINFIN`   | `minfin`  | yes                              |
 | `MINBUZA`  | `minbuza` | no — built and tested in CI only |
+| `MINOCW`   | `minocw`  | no — built and tested in CI only |
 
-`minbuza` is part of `ALL_TENANTS` but not `LOCAL_TENANTS` in `Taskfile.dist.yml`, so `task up` does not start it.
+`minbuza` and `minocw` are part of `ALL_TENANTS` but not `LOCAL_TENANTS` in `Taskfile.dist.yml`, so `task up` does not
+start them.
 
 Separately, one instance runs as exactly one **application**, selected with `APP_ID` (or `--id` on the command line, see
 [commands.md](commands.md)). Valid values are `admin`, `public`, `publication_api`, `worker` and `shared`. This replaced
@@ -168,7 +170,6 @@ settings can cause.
 | Variable                                               | Description                                                            | Default value |
 |--------------------------------------------------------|------------------------------------------------------------------------|---------------|
 | `HAS_FEATURE_PUBLICATION_V1_API`                       | Enables the Publication API (`apps/publication_api`).                  | `false`       |
-| `HAS_FEATURE_DRAFT_DECISION`                           | Enables the DraftDecision publication type.                            | `false`       |
 | `HAS_FEATURE_WOO_GPT`                                  | Enables the `/woo-gpt` pages on the public site.                       | `false`       |
 | `ENABLE_UPDATE_PUBLISHED_DOSSIER_VIA_API`              | Allows the Publication API to update already-published dossiers.       | `false`       |
 | `ENABLE_UPLOAD_DOCUMENT_FOR_PUBLISHED_DOSSIER_VIA_API` | Allows the Publication API to upload documents for published dossiers. | `false`       |

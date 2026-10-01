@@ -10,6 +10,7 @@ use org\bovigo\vfs\vfsStreamDirectory;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Tests\Factory\DocumentFactory;
 use Shared\Tests\Factory\FileInfoFactory;
@@ -17,7 +18,6 @@ use Shared\Tests\Factory\InventoryFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
-use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Integration\VfsStreamHelpers;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -87,6 +87,64 @@ final class DossierFileControllerTest extends SharedWebTestCase
         );
     }
 
+    public function testDownloadingDocumentViaThePublishedWooDecision(): void
+    {
+        $publishedWooDecision = WooDecisionFactory::new()
+            ->published()
+            ->create();
+        $conceptWooDecision = WooDecisionFactory::new()
+            ->concept()
+            ->create();
+
+        $document = DocumentFactory::createOne([
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::new([
+                'uploaded' => true,
+                'type' => 'pdf',
+            ]),
+            'dossiers' => [$publishedWooDecision, $conceptWooDecision],
+        ]);
+
+        $this->assertDownloadEndpoint(
+            $publishedWooDecision,
+            $document,
+            DossierFileType::DOCUMENT,
+            sprintf('%s.pdf', $document->getDocumentNumber()->toString()),
+        );
+    }
+
+    public function testDownloadingDocumentViaTheConceptWooDecisionIsNotFound(): void
+    {
+        $publishedWooDecision = WooDecisionFactory::new()
+            ->published()
+            ->create();
+        $conceptWooDecision = WooDecisionFactory::new()
+            ->concept()
+            ->create();
+
+        $document = DocumentFactory::createOne([
+            'judgement' => Judgement::PUBLIC,
+            'fileInfo' => FileInfoFactory::new([
+                'uploaded' => true,
+                'type' => 'pdf',
+            ]),
+            'dossiers' => [$publishedWooDecision, $conceptWooDecision],
+        ]);
+
+        $this->client->request(
+            'GET',
+            sprintf(
+                '/dossier/%s/%s/file/download/%s/%s',
+                $conceptWooDecision->getDocumentPrefix(),
+                $conceptWooDecision->getDossierNumber(),
+                DossierFileType::DOCUMENT->value,
+                $document->getId(),
+            ),
+        );
+
+        self::assertResponseStatusCodeSame(404);
+    }
+
     public function testDownloadingCovenantAttachment(): void
     {
         $dossier = CovenantFactory::createOne();
@@ -99,10 +157,10 @@ final class DossierFileControllerTest extends SharedWebTestCase
 
     public function testDownloadingWooDecisionMainDocument(): void
     {
-        $dossier = WooDecisionFactory::createOne();
-        $mainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $dossier]);
+        $dossier = WooDecisionFactory::new()->withMainDocument()->create();
 
-        $dossier->setMainDocument($mainDocument);
+        $mainDocument = $dossier->getMainDocument();
+        self::assertInstanceOf(WooDecisionMainDocument::class, $mainDocument);
 
         $this->assertDownloadEndpoint($dossier, $mainDocument, DossierFileType::MAIN_DOCUMENT);
     }

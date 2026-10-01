@@ -1,5 +1,8 @@
-<li>
-    <details class="woo-accordion">
+{% set e2eName = e2eName|default('') %}
+{% set childrenE2eName = childrenE2eName|default('') %}
+
+<li{% if e2eName is not empty %} data-e2e-name="{{ e2eName }}"{% endif %}>
+    <details class="woo-accordion"{% if isOpen ?? false %} open{% endif %}>
         <summary>
             {% block title %}{% endblock %}
         </summary>
@@ -13,7 +16,7 @@
 
             {% if block('accordion') is not empty %}
                 <div class="py-2">
-                    <ul class="woo-accordion-list">
+                    <ul class="woo-accordion-list"{% if childrenE2eName is not empty %} data-e2e-name="{{ childrenE2eName }}"{% endif %}>
                         {% block accordion %}{% endblock %}
                     </ul>
                 </div>

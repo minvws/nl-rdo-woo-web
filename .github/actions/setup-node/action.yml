@@ -4,7 +4,7 @@ description: Compose action that sets up node
 inputs:
   node-version:
     description: The node version
-    default: "22"
+    default: "24"
   github-token:
     description: Add a Github Token which will be used for fetching node and npm packages
   run-npm-build:

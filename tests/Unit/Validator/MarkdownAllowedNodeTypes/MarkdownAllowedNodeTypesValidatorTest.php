@@ -19,6 +19,7 @@ use Shared\Validator\MarkdownAllowedNodeTypes\MarkdownAllowedNodeTypes;
 use Shared\Validator\MarkdownAllowedNodeTypes\MarkdownAllowedNodeTypesValidator;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
@@ -36,17 +37,23 @@ final class MarkdownAllowedNodeTypesValidatorTest extends UnitTestCase
         Link::class,
     ];
 
+    public function testThrowsWhenNoAllowedNodeTypesAreConfigured(): void
+    {
+        $this->expectException(ConstraintDefinitionException::class);
+
+        new MarkdownAllowedNodeTypes([]);
+    }
+
     public function testNoViolationForNullOrEmptyValue(): void
     {
         $context = Mockery::mock(ExecutionContextInterface::class);
         $context->expects('buildViolation')->never();
 
         $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
-        $validator->initialize($context);
         $constraint = new MarkdownAllowedNodeTypes(self::ALLOWED_NODE_TYPES);
 
-        $validator->validate(null, $constraint);
-        $validator->validate('', $constraint);
+        $validator->validateInContext(null, $constraint, $context);
+        $validator->validateInContext('', $constraint, $context);
     }
 
     public function testNoViolationForAllowedNodeTypes(): void
@@ -55,14 +62,14 @@ final class MarkdownAllowedNodeTypesValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->never();
 
         $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
-        $validator->initialize($context);
 
-        $validator->validate(
+        $validator->validateInContext(
             <<<'MARKDOWN'
 This is *emphasis*, **strong**, and [a link](https://example.org).  
 This is a new line.
 MARKDOWN,
             new MarkdownAllowedNodeTypes(self::ALLOWED_NODE_TYPES),
+            $context,
         );
     }
 
@@ -85,9 +92,8 @@ MARKDOWN,
             ->andReturn($builder);
 
         $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
-        $validator->initialize($context);
 
-        $validator->validate($markdown, new MarkdownAllowedNodeTypes(self::ALLOWED_NODE_TYPES));
+        $validator->validateInContext($markdown, new MarkdownAllowedNodeTypes(self::ALLOWED_NODE_TYPES), $context);
     }
 
     public function testCustomMessageIsUsedForViolation(): void
@@ -106,32 +112,38 @@ MARKDOWN,
             ->andReturn($builder);
 
         $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
-        $validator->initialize($context);
 
-        $validator->validate(
+        $validator->validateInContext(
             '# Heading',
             new MarkdownAllowedNodeTypes(self::ALLOWED_NODE_TYPES, 'Markdown node is not allowed: {{ type }}.'),
+            $context,
         );
     }
 
     public function testThrowsUnexpectedTypeExceptionForWrongConstraint(): void
     {
         $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
-        $validator->initialize(Mockery::mock(ExecutionContextInterface::class));
 
         $this->expectException(UnexpectedTypeException::class);
 
-        $validator->validate('Markdown', Mockery::mock(Constraint::class));
+        $validator->validateInContext(
+            'Markdown',
+            Mockery::mock(Constraint::class),
+            Mockery::mock(ExecutionContextInterface::class),
+        );
     }
 
     public function testThrowsUnexpectedValueExceptionForNonStringValue(): void
     {
         $validator = new MarkdownAllowedNodeTypesValidator(new MarkdownConverter());
-        $validator->initialize(Mockery::mock(ExecutionContextInterface::class));
 
         $this->expectException(UnexpectedValueException::class);
 
-        $validator->validate(123, new MarkdownAllowedNodeTypes(self::ALLOWED_NODE_TYPES));
+        $validator->validateInContext(
+            123,
+            new MarkdownAllowedNodeTypes(self::ALLOWED_NODE_TYPES),
+            Mockery::mock(ExecutionContextInterface::class),
+        );
     }
 
     /**

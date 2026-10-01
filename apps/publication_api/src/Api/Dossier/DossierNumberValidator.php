@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use function count;
 
-final readonly class DossierNumberValidator
+readonly class DossierNumberValidator
 {
     public function __construct(
         private ValidatorInterface $validator,

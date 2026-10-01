@@ -12,7 +12,7 @@ use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Api\Pagination\CursorPage;
 use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
-use Shared\Domain\HasId;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportRepository;
 use Shared\Service\ApiPlatformService;
@@ -23,7 +23,7 @@ final readonly class InvestigationReportProvider implements ProviderInterface
     public function __construct(
         private OrganisationResolver $organisationResolver,
         private InvestigationReportRepository $investigationReportRepository,
-        private InvestigationReportMapper $investigationReportMapper,
+        private InvestigationReportResponseMapper $investigationReportResponseMapper,
         private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
@@ -31,6 +31,8 @@ final readonly class InvestigationReportProvider implements ProviderInterface
 
     /**
      * @param array<array-key, string> $uriVariables
+     *
+     * @throws ValidationException
      */
     public function provide(
         Operation $operation,
@@ -62,9 +64,8 @@ final readonly class InvestigationReportProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        $mappedDtos = $this->investigationReportMapper->fromEntities($investigationReports);
+        $mappedDtos = $this->investigationReportResponseMapper->fromEntities($investigationReports);
 
-        /** @var list<HasId> $investigationReports */
         return $this->cursorPageFactory->create(
             $investigationReports,
             $mappedDtos,
@@ -81,6 +82,6 @@ final readonly class InvestigationReportProvider implements ProviderInterface
             throw EntityNotFoundException::for('InvestigationReport', $dossierExternalId);
         }
 
-        return $this->investigationReportMapper->fromEntity($investigationReport);
+        return $this->investigationReportResponseMapper->fromEntity($investigationReport);
     }
 }

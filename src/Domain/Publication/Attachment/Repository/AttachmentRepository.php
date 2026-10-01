@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\ValueObject\ExternalId;
+use SortDirection;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -73,7 +74,7 @@ class AttachmentRepository extends ServiceEntityRepository
             ->join('a.dossier', 'd')
             ->where('d.status = :status')
             ->andWhere('a.fileInfo.uploaded = true')
-            ->orderBy('a.createdAt', 'ASC')
+            ->orderBy('a.createdAt', SortDirection::Ascending)
             ->setParameter('status', DossierStatus::PUBLISHED);
 
         return $qb->getQuery()->toIterable();

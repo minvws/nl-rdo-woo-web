@@ -10,9 +10,11 @@ use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderInterface;
 use Shared\Service\Inventory\Sanitizer\InventoryDocumentMapper;
+use Shared\Service\Inventory\Sanitizer\InventoryDocumentUrlStrategyInterface;
 use Shared\Service\Inventory\Sanitizer\InventorySanitizer;
 use Shared\Service\Inventory\Sanitizer\InventoryWriterInterface;
 use Shared\Service\Storage\EntityStorageService;
@@ -24,6 +26,7 @@ class InventorySanitizerTest extends UnitTestCase
     private EntityStorageService&MockInterface $entityStorageService;
     private InventoryWriterInterface&MockInterface $writer;
     private InventoryDocumentMapper&MockInterface $documentMapper;
+    private InventoryDocumentUrlStrategyInterface&MockInterface $urlStrategy;
     private InventorySanitizer $sanitizer;
     private InventoryDataProviderInterface&MockInterface $dataProvider;
 
@@ -36,6 +39,7 @@ class InventorySanitizerTest extends UnitTestCase
         $this->dataProvider = Mockery::mock(InventoryDataProviderInterface::class);
 
         $this->documentMapper = Mockery::mock(InventoryDocumentMapper::class);
+        $this->urlStrategy = Mockery::mock(InventoryDocumentUrlStrategyInterface::class);
 
         $this->sanitizer = new InventorySanitizer(
             $this->entityManager,
@@ -50,9 +54,10 @@ class InventorySanitizerTest extends UnitTestCase
     public function testFileIsWrittenAndInventoryPersisted(): void
     {
         $document = Mockery::mock(Document::class);
+        $dossier = Mockery::mock(WooDecision::class);
         $this->documentMapper
             ->expects('map')
-            ->with($document)
+            ->with($document, $dossier, $this->urlStrategy)
             ->andReturn($documentData = ['foo', 'bar']);
 
         $this->writer->expects('open');
@@ -86,6 +91,8 @@ class InventorySanitizerTest extends UnitTestCase
         ));
 
         $this->dataProvider->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
+        $this->dataProvider->expects('getDossierForDocument')->with($document)->andReturn($dossier);
+        $this->dataProvider->expects('getDocumentUrlStrategy')->andReturn($this->urlStrategy);
         $this->dataProvider->expects('getInventoryEntity')->andReturn($inventory);
         $this->dataProvider->expects('getFilename')->andReturn('foo-bar');
         $this->entityManager->expects('persist')->with($inventory);

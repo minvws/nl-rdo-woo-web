@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel;
 
 use DateTimeImmutable;
 use DateTimeZone;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 
 readonly class ProductionReportStatus
@@ -86,6 +87,16 @@ readonly class ProductionReportStatus
         }
 
         return $this->dossier->getProcessRun()?->hasErrors() ?? false;
+    }
+
+    public function hasMatter(): bool
+    {
+        $productionReportProcessRun = $this->dossier->getProcessRun();
+        if (! $productionReportProcessRun instanceof ProductionReportProcessRun) {
+            return false;
+        }
+
+        return $productionReportProcessRun->hasMatter();
     }
 
     public function getRunDate(): ?DateTimeImmutable

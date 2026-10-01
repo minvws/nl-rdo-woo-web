@@ -17,6 +17,7 @@ use Shared\Domain\Search\Query\Facet\FacetDefinitions;
 use Shared\Service\DownloadResponseHelper;
 use Shared\Service\Inquiry\InquirySessionService;
 use Shared\Service\Search\Model\FacetKey;
+use SortDirection;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -57,7 +58,7 @@ class InquiryController extends AbstractController
         );
 
         $query = $this->inquiryRepository->getDossiersForInquiryQueryBuilder($inquiry);
-        $query->orderBy('dos.decisionDate', 'DESC')->setMaxResults(self::MAX_DOSSIERS_PER_PAGE);
+        $query->orderBy('dos.decisionDate', SortDirection::Descending)->setMaxResults(self::MAX_DOSSIERS_PER_PAGE);
         $dossiers = $this->paginator->paginate($query);
 
         return $this->render('public/dossier/woo-decision/inquiry/detail.html.twig', [

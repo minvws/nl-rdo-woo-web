@@ -7,6 +7,7 @@ namespace Shared\Domain\Ingest\Content;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 use function sprintf;
 
@@ -14,6 +15,7 @@ readonly class ContentExtractCache
 {
     public function __construct(
         private ContentExtractService $contentExtractService,
+        #[Target('contentExtractCache')]
         private CacheItemPoolInterface $contentExtractCache,
     ) {
     }

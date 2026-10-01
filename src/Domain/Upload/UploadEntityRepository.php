@@ -9,6 +9,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Shared\Service\Security\User;
 use Shared\Service\Uploader\UploadGroupId;
+use SortDirection;
 use Symfony\Component\HttpFoundation\InputBag;
 use Webmozart\Assert\Assert;
 
@@ -72,7 +73,7 @@ class UploadEntityRepository extends ServiceEntityRepository
             ->where('json_extract_path_text(uploadEntity.context, :key) = :value')
             ->setParameter('key', $key)
             ->setParameter('value', $value)
-            ->orderBy('uploadEntity.createdAt', 'desc')
+            ->orderBy('uploadEntity.createdAt', SortDirection::Descending)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();

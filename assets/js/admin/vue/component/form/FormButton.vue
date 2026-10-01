@@ -17,6 +17,7 @@ const buttonType = props.isSecondary ? 'button' : 'submit';
       'bhr-btn-bordered-primary': props.isSecondary,
       'ml-2': props.isSecondary,
     }"
+    :data-e2e-name="props.isSecondary ? 'cancel' : 'submit'"
     :type="buttonType"
   >
     <slot />

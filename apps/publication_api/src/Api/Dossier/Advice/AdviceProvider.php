@@ -12,7 +12,7 @@ use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Api\Pagination\CursorPage;
 use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
-use Shared\Domain\HasId;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceRepository;
 use Shared\Service\ApiPlatformService;
@@ -23,7 +23,7 @@ final readonly class AdviceProvider implements ProviderInterface
     public function __construct(
         private OrganisationResolver $organisationResolver,
         private AdviceRepository $adviceRepository,
-        private AdviceMapper $adviceMapper,
+        private AdviceResponseMapper $adviceResponseMapper,
         private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
@@ -31,6 +31,8 @@ final readonly class AdviceProvider implements ProviderInterface
 
     /**
      * @param array<array-key, string> $uriVariables
+     *
+     * @throws ValidationException
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|AdviceResponseDto
     {
@@ -59,9 +61,8 @@ final readonly class AdviceProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        $mappedDtos = $this->adviceMapper->fromEntities($advices);
+        $mappedDtos = $this->adviceResponseMapper->fromEntities($advices);
 
-        /** @var list<HasId> $advices */
         return $this->cursorPageFactory->create(
             $advices,
             $mappedDtos,
@@ -78,6 +79,6 @@ final readonly class AdviceProvider implements ProviderInterface
             throw EntityNotFoundException::for('Advice', $dossierExternalId);
         }
 
-        return $this->adviceMapper->fromEntity($advice);
+        return $this->adviceResponseMapper->fromEntity($advice);
     }
 }

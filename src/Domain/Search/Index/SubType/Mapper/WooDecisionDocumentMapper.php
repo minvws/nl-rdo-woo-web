@@ -77,7 +77,6 @@ readonly class WooDecisionDocumentMapper implements ElasticSubTypeMapperInterfac
             ElasticField::INQUIRY_IDS->value => $inquiryIds,
             ElasticField::PREFIXED_DOSSIER_NUMBER->value => $prefixedDossierNumbers,
             ElasticField::ORGANISATION_IDS->value => $organisationIds,
-            ElasticField::REFERRED_DOCUMENT_NRS->value => $referredDocumentNumbers,
             ElasticField::REFERRED_DOCUMENT_NUMBERS->value => $referredDocumentNumbers,
         ];
 

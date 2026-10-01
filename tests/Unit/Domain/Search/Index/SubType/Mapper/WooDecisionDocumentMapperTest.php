@@ -72,19 +72,6 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
         self::assertNull($fields[ElasticField::PUBLICATION_CONTEXT->value]);
     }
 
-    public function testMapWritesTheSameReferredDocumentNumbersToBothFields(): void
-    {
-        $document = $this->createDocumentMock(PublicationContext::fromString('PUBCON'));
-
-        $fields = $this->mapper->map($document, ['foo'], [1 => 'bar'])->getDocumentValues();
-
-        self::assertNotEmpty($fields[ElasticField::REFERRED_DOCUMENT_NRS->value]);
-        self::assertSame(
-            $fields[ElasticField::REFERRED_DOCUMENT_NRS->value],
-            $fields[ElasticField::REFERRED_DOCUMENT_NUMBERS->value],
-        );
-    }
-
     private function createDocumentMock(?PublicationContext $publicationContext): Document&MockInterface
     {
         $dossier = Mockery::mock(WooDecision::class);

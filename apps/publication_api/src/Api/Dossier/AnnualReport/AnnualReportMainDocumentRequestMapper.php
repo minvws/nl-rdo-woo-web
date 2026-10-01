@@ -1,0 +1,46 @@
+<?php
+
+declare(strict_types=1);
+
+namespace PublicationApi\Api\Dossier\AnnualReport;
+
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
+use Shared\Service\EnumHelper;
+use Webmozart\Assert\Assert;
+
+class AnnualReportMainDocumentRequestMapper
+{
+    public static function create(
+        AnnualReport $annualReport,
+        AnnualReportMainDocumentRequestDto $mainDocumentRequestDto,
+    ): AnnualReportMainDocument {
+        $mainDocument = new AnnualReportMainDocument(
+            $annualReport,
+            $mainDocumentRequestDto->formalDate,
+            $mainDocumentRequestDto->type,
+            $mainDocumentRequestDto->language,
+        );
+
+        $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());
+        $mainDocument->setGrounds(EnumHelper::getStringValues($mainDocumentRequestDto->grounds));
+
+        return $mainDocument;
+    }
+
+    public static function update(
+        AnnualReport $annualReport,
+        AnnualReportMainDocumentRequestDto $mainDocumentRequestDto,
+    ): AnnualReportMainDocument {
+        $mainDocument = $annualReport->getMainDocument();
+        Assert::notNull($mainDocument);
+
+        $mainDocument->getFileInfo()->setName($mainDocumentRequestDto->fileName->toString());
+        $mainDocument->setFormalDate($mainDocumentRequestDto->formalDate);
+        $mainDocument->setGrounds(EnumHelper::getStringValues($mainDocumentRequestDto->grounds));
+        $mainDocument->setLanguage($mainDocumentRequestDto->language);
+        $mainDocument->setType($mainDocumentRequestDto->type);
+
+        return $mainDocument;
+    }
+}

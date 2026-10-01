@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Security;
 
-use Deprecated;
 use Mockery;
 use Shared\Service\Security\User;
 use Shared\Service\Security\UserChecker;
@@ -31,11 +30,6 @@ class UserCheckerTest extends UnitTestCase
             public function getRoles(): array
             {
                 return [];
-            }
-
-            #[Deprecated]
-            public function eraseCredentials(): void
-            {
             }
 
             public function getUserIdentifier(): string
@@ -78,11 +72,6 @@ class UserCheckerTest extends UnitTestCase
             public function getRoles(): array
             {
                 return [];
-            }
-
-            #[Deprecated]
-            public function eraseCredentials(): void
-            {
             }
 
             public function getUserIdentifier(): string

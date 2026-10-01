@@ -19,7 +19,7 @@
     history: a list of history to display
     titleTranslationKey: the translation key of the title
 #}
-{% macro history_section(history, titleTranslationKey) %}
+{% macro history_section(history, titleTranslationKey, showDecision = false) %}
     {% set entries = history | filter(entry => history_trans(entry, "public") is not empty) %}
     {% set firstSetItemCount = 5 %}
     {% set setOne = entries[:firstSetItemCount] %}
@@ -28,12 +28,12 @@
         <div class="mt-16">
             <h2 class="woo-h2 woo-h2-spacing">{{ titleTranslationKey | trans }}</h2>
 
-            {{ _self.history_table(setOne, titleTranslationKey, 1) }}
+            {{ _self.history_table(setOne, titleTranslationKey, 1, showDecision) }}
 
             {% if setTwo | length > 0 %}
                 {% set id = 'history-table-' ~ random() %}
                 <div class="js:hidden" id="{{ id }}">
-                    {{ _self.history_table(setTwo, titleTranslationKey, firstSetItemCount + 1) }}
+                    {{ _self.history_table(setTwo, titleTranslationKey, firstSetItemCount + 1, showDecision) }}
                 </div>
 
                 <button class="js-collapsible-toggle font-bold py-4 text-woo-dark-blue-600 w-full text-center no-js:hidden border-b border-woo-gray-300" aria-controls="{{ id }}" aria-expanded="false" data-e2e-name="show-full-history">
@@ -45,7 +45,8 @@
     {% endif %}
 {% endmacro %}
 
-{% macro history_table(entries, titleTranslationKey, rowStartNumber) %}
+{% macro history_table(entries, titleTranslationKey, rowStartNumber, showDecision = false) %}
+    {% set origins = showDecision ? history_woo_decision_origins(entries) : {} %}
     <div class="woo-responsive-table" data-e2e-name="{{ rowStartNumber is same as(1) ? 'document-history' : 'document-history-follow-up' }}">
         <table class="woo-table">
             <caption class="sr-only">{{ titleTranslationKey | trans }} ({{ 'global.row' | trans | lower }} {{ rowStartNumber }} - {{ rowStartNumber + (entries | length) - 1}})</caption>
@@ -53,6 +54,9 @@
                 <tr>
                     <th scope="col">{{ 'global.date' | trans() }}</th>
                     <th class="text-right!" scope="col">{{ "global.action" | trans() }}</th>
+                    {% if showDecision %}
+                        <th class="text-right!" scope="col">{{ 'global.decision' | trans() }}</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -62,6 +66,19 @@
                     <td class="min-w-64 text-right" data-e2e-name="document-history-action">
                         {{ history_trans(entry, "public") }}
                     </td>
+                    {% if showDecision %}
+                        {% set origin = origins[entry.id.toString()] %}
+                        <td class="min-w-64 text-right" data-e2e-name="document-history-decision">
+                            {% if origin is not null %}
+                                {% set originTitle = origin.dossierReference.title.toString() %}
+                                {% if origin.isPubliclyAvailable %}
+                                    <a class="woo-a" href="{{ dossier_details_path(origin.dossierReference) }}" title="{{ originTitle }}">{{ originTitle | u.truncate(60, '…', true) }}</a>
+                                {% else %}
+                                    <span title="{{ originTitle }}">{{ originTitle | u.truncate(60, '…', true) }}</span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
             </tbody>

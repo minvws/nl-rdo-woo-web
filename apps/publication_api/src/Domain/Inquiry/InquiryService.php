@@ -15,7 +15,7 @@ use Symfony\Component\Uid\Uuid;
  * Note: This is extending from the shared InquiryService in the Shared module. Ideally we should get an better
  * understanding of what we want to do in regards to removing Documents from inquiries for the UI. See issue #2868.
  */
-final readonly class InquiryService extends SharedInquiryService
+readonly class InquiryService extends SharedInquiryService
 {
     #[Override]
     protected function handleDocumentDelete(

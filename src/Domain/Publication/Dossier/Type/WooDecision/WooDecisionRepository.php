@@ -17,8 +17,11 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\DossierCounts;
 use Shared\Domain\Search\Result\Dossier\ProvidesDossierTypeSearchResultInterface;
 use Shared\Domain\Search\Result\Dossier\WooDecision\WooDecisionSearchResult;
 use Shared\ValueObject\DocumentNumber;
+use SortDirection;
 use Symfony\Component\Uid\Uuid;
 
+use function array_chunk;
+use function array_values;
 use function sprintf;
 
 /**
@@ -26,6 +29,8 @@ use function sprintf;
  */
 class WooDecisionRepository extends AbstractDossierRepository implements ProvidesDossierTypeSearchResultInterface
 {
+    private const int LINKED_DOCUMENTS_CHUNK_SIZE = 1_000;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, WooDecision::class);
@@ -69,6 +74,45 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
             ->setParameter('statuses', DossierStatus::publiclyAvailableCases());
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Checks whether a document is published in a different WooDecision.
+     */
+    public function hasPublishedDossierForDocumentExcept(
+        DocumentNumber $documentNumber,
+        WooDecision $excludedDossier,
+    ): bool {
+        $result = $this->createQueryBuilder('dos')
+            ->select('dos.id')
+            ->innerJoin('dos.documents', 'doc')
+            ->where('doc.documentNumber = :documentNumber')
+            ->andWhere('dos != :excludedDossier')
+            ->andWhere('dos.status = :status')
+            ->setParameter('documentNumber', $documentNumber)
+            ->setParameter('excludedDossier', $excludedDossier)
+            ->setParameter('status', DossierStatus::PUBLISHED)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $result !== null;
+    }
+
+    public function hasPubliclyAvailableDossierForDocument(DocumentNumber $documentNumber): bool
+    {
+        $result = $this->createQueryBuilder('dos')
+            ->select('dos.id')
+            ->innerJoin('dos.documents', 'doc')
+            ->where('doc.documentNumber = :documentNumber')
+            ->andWhere('dos.status IN (:statuses)')
+            ->setParameter('documentNumber', $documentNumber)
+            ->setParameter('statuses', DossierStatus::publiclyAvailableCases())
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $result !== null;
     }
 
     public function getSearchResultViewModel(
@@ -151,10 +195,33 @@ class WooDecisionRepository extends AbstractDossierRepository implements Provide
     {
         $qb = $this->createQueryBuilder('d')
             ->where('d.status IN (:statuses)')
-            ->orderBy('d.publicationDate', 'ASC')
+            ->orderBy('d.publicationDate', SortDirection::Ascending)
             ->setParameter('statuses', DossierStatus::publiclyAvailableCases());
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param list<Uuid> $documentIds
+     *
+     * @return list<WooDecision>
+     */
+    public function findAllLinkedToDocuments(array $documentIds): array
+    {
+        $wooDecisions = [];
+        foreach (array_chunk($documentIds, self::LINKED_DOCUMENTS_CHUNK_SIZE) as $chunk) {
+            $qb = $this->createQueryBuilder('d', 'd.id')
+                ->distinct()
+                ->innerJoin('d.documents', 'doc')
+                ->where('doc.id IN (:documentIds)')
+                ->setParameter('documentIds', $chunk);
+
+            /** @var array<string, WooDecision> $result */
+            $result = $qb->getQuery()->getResult();
+            $wooDecisions += $result;
+        }
+
+        return array_values($wooDecisions);
     }
 
     /**

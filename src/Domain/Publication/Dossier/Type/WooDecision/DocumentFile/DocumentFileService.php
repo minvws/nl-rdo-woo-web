@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile;
 
 use Exception;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\LinkedWooDecisionUpdater;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileSet;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpdate;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\DocumentFileUpload;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUploadStatus;
@@ -14,6 +16,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\D
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\EntityStorageService;
+use Symfony\Component\Uid\Uuid;
 
 readonly class DocumentFileService
 {
@@ -23,6 +26,7 @@ readonly class DocumentFileService
         private DocumentFileUploadRepository $documentFileUploadRepository,
         private EntityStorageService $entityStorageService,
         private TotalDocumentFileSizeValidator $totalDocumentFileSizeValidator,
+        private LinkedWooDecisionUpdater $linkedWooDecisionUpdater,
     ) {
     }
 
@@ -177,6 +181,14 @@ readonly class DocumentFileService
         }
 
         $this->updateStatus($documentFileSet, DocumentFileSetStatus::COMPLETED);
+
+        // This decision is refreshed through the event below, the others are not.
+        $this->linkedWooDecisionUpdater->updateOtherLinkedTo(
+            $documentFileSet->getDossier(),
+            $documentFileSet->getUpdates()->map(
+                static fn (DocumentFileUpdate $update): Uuid => $update->getDocument()->getId(),
+            )->getValues(),
+        );
 
         $this->dispatcher->dispatchDocumentFileSetProcessedEvent($documentFileSet);
     }

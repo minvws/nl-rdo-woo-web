@@ -33,7 +33,7 @@ final readonly class SubjectProvider implements ProviderInterface
     /**
      * @param array<array-key, string> $uriVariables
      */
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|SubjectDetailResponse
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|SubjectDetailResponseDto
     {
         $organisation = $this->organisationResolver->resolve($uriVariables);
 
@@ -78,7 +78,7 @@ final readonly class SubjectProvider implements ProviderInterface
         );
     }
 
-    private function provideSingle(Organisation $organisation, Uuid $subjectId): SubjectDetailResponse
+    private function provideSingle(Organisation $organisation, Uuid $subjectId): SubjectDetailResponseDto
     {
         $subject = $this->subjectRepository->findByOrganisationAndId($organisation, $subjectId);
         if ($subject === null) {

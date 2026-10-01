@@ -20,7 +20,6 @@ fields:
     inquiry_ids: [{}]
     prefixed_dossier_number: [PREFIX|dos-123]
     organisation_ids: [{}]
-    referred_document_nrs: [doc-456, doc-789]
     referred_document_numbers: [doc-456, doc-789]
     metadata: [foo]
     pages: { 1: bar }
@@ -45,7 +44,6 @@ documentValues:
     inquiry_ids: [{}]
     prefixed_dossier_number: [PREFIX|dos-123]
     organisation_ids: [{}]
-    referred_document_nrs: [doc-456, doc-789]
     referred_document_numbers: [doc-456, doc-789]
     metadata: [foo]
     pages: { 1: bar }

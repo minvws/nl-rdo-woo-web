@@ -50,8 +50,6 @@ readonly class MainDocumentResponseDtoFactory
     }
 
     /**
-     * For dossier types whose documents may not be redacted, so their response DTO has no grounds property.
-     *
      * @template T of MainDocumentResponseDtoInterface
      *
      * @param class-string<T> $responseDtoClass
@@ -87,7 +85,10 @@ readonly class MainDocumentResponseDtoFactory
         );
 
         if ($dossier->getStatus()->isPublished()) {
-            $linkCollection->set(LinkCollection::PUBLIC, new Link(Url::create($this->dossierPathHelper->getAbsoluteDetailsPath($dossier))));
+            $linkCollection->set(
+                LinkCollection::PUBLIC,
+                new Link(Url::create($this->dossierPathHelper->getAbsoluteMainDocumentDetailsPath($dossier))),
+            );
             $linkCollection->set(
                 LinkCollection::FILE,
                 new Link($this->publicUrlGenerator->buildUrlFromRoute(DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, [

@@ -3,33 +3,13 @@
 
 {% set page_title = document.entity.fileInfo.name %}
 
-{% block body %}
-{% set documentNumber = document.entity.documentNumber.toString() %}
-<div class="woo-container woo-container--sm">
-    <h1 class="woo-h1 sm:flex">
-        <span class="block">
-            <twig:Public:FileIcon type="{{ document.entity.fileInfo.sourceType.value }}" class="mr-4 -mt-0.5" size="32" />
-            <span class="sr-only">{{ document.entity.fileInfo.sourceType | trans }}</span>
-        </span>
-        <span>{{ document.entity.fileInfo.name }}</span>
-    </h1>
+{% block meta %}
+    <link rel="canonical" href="{{ canonical_url }}">
+{% endblock %}
 
-    <dl class="woo-muted">
-        <div>
-            <dt class="sr-only">{{ 'global.published_on' | trans }}: </dt>
-            <dd>
-            {% if document.entity.documentDate is not null %}
-                <time datetime="{{ document.entity.documentDate | date('Y-m-d') }}">{{ document.entity.documentDate | format_date('long') }}</time>
-            {% else %}
-                {{ 'global.date_not_available' | trans }}
-            {% endif %}
-            </dd>
-        </div>
-        <div>
-            <dt class="inline">{{ 'global.document_number' | trans }}:</dt>
-            <dd class="inline">{{ documentNumber }}</dd>
-        </div>
-    </dl>
+{% block body %}
+<div class="woo-container woo-container--sm">
+    {% include 'public/dossier/woo-decision/document/snippets/summary.html.twig' %}
 
     {% if dossier.responsibilityContent is not null %}
     <div class="pt-10">
@@ -82,7 +62,6 @@
 
     {% include 'public/dossier/woo-decision/document/snippets/background.html.twig' %}
 
-    {{ macro.history_section(get_frontend_history('document', document.entity.id), 'public.documents.document_history') }}
-    </div>
-</section>
+    {{ macro.history_section(get_frontend_history('document', document.entity.id), 'public.documents.document_history', true) }}
+</div>
 {% endblock %}

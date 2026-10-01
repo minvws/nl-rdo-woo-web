@@ -13,7 +13,7 @@ class ValidContentTreeDepth extends Constraint
     public string $message = 'subject.content_tree.max_depth_exceeded';
 
     public function __construct(
-        public int $max = 3,
+        public int $max,
         ?array $groups = null,
         mixed $payload = null,
     ) {

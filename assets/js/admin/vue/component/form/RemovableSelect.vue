@@ -127,6 +127,7 @@ onMounted(() => {
       <select
         @change="onChange"
         :aria-describedby="ariaDescribedBy"
+        :data-e2e-name="`${props.name}-select`"
         :id="inputId"
         :name="name"
         class="bhr-select__select w-full pr-12"

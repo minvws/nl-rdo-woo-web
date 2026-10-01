@@ -101,9 +101,9 @@ class Document extends AbstractPublicationItem
     #[ORM\ManyToMany(targetEntity: Inquiry::class, mappedBy: 'documents')]
     private Collection $inquiries;
 
-    /** @var array<array-key, string> */
+    /** @var array<array-key, string>|null */
     #[ORM\Column(type: Types::JSON, nullable: true)]
-    private array $links = [];
+    private ?array $links = [];
 
     #[ORM\Column(type: Types::STRING, length: 1000, nullable: true)]
     private ?string $remark = null;
@@ -286,17 +286,6 @@ class Document extends AbstractPublicationItem
         return $this;
     }
 
-    public function hasPubliclyAvailableDossier(): bool
-    {
-        foreach ($this->dossiers as $dossier) {
-            if ($dossier->getStatus()->isPubliclyAvailable()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function isSuspended(): bool
     {
         return $this->suspended;
@@ -345,7 +334,7 @@ class Document extends AbstractPublicationItem
      */
     public function getLinks(): array
     {
-        return array_values($this->links);
+        return array_values($this->links ?? []);
     }
 
     /**

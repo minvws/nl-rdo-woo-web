@@ -69,13 +69,16 @@ Link Inquiry To Decision
   Click  //button[@id="inquiry_link_dossier_form_link"]
 
 Link Inquiry To Documents
-  [Arguments]  ${linking_excel}  ${prefix}=E2E-A
+  [Arguments]  ${linking_excel}  ${prefix}=E2E-A  ${expect_matter_notice}=${FALSE}
   Upload File By Selector  id=inquiry_link_documents_form_upload  ${linking_excel}
   ${filename} =  Fetch From Right  ${linking_excel}  /
-  Wait For Condition  Text  //div[@class="bhr-upload-area__files-area"]  contains  ${filename}
+  Wait For Condition  Text  //*[@data-e2e-name="upload-files-area"]  contains  ${filename}
   Select Prefix When Linking Inquiries  ${prefix}
   Click  id=inquiry_link_documents_form_link
   Success Alert Is Visible  zaaknummers gekoppeld
+  IF  ${expect_matter_notice}
+    Wait For Elements State  //*[@data-e2e-name="link-documents-matter-deprecated"]  visible
+  END
   Click  id=inquiry_link_documents_form_cancel
 
 Select Prefix When Linking Inquiries

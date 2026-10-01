@@ -18,6 +18,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\ValueObject\PlainDate;
+use SortDirection;
 use Symfony\Component\Uid\Uuid;
 
 use function sprintf;
@@ -61,8 +62,8 @@ final readonly class UrlRepository
             ->from(WooDecision::class, 'd')
             ->join('d.document', 'md')
             ->where('d.status = :dossier_status')
-            ->orderBy('d.updatedAt', 'ASC')
-            ->addOrderBy('d.id', 'ASC')
+            ->orderBy('d.updatedAt', SortDirection::Ascending)
+            ->addOrderBy('d.id', SortDirection::Ascending)
             ->setParameter('dossier_status', DossierStatus::PUBLISHED->value)
             ->setParameter('dossier_file_type', DossierFileType::MAIN_DOCUMENT->value)
             ->getQuery()
@@ -100,8 +101,8 @@ final readonly class UrlRepository
             ->join('md.dossier', 'dos')
             ->where('dos.status = :dossier_status')
             ->andWhere('md.fileInfo.uploaded = true')
-            ->orderBy('md.updatedAt', 'ASC')
-            ->addOrderBy('md.id', 'ASC')
+            ->orderBy('md.updatedAt', SortDirection::Ascending)
+            ->addOrderBy('md.id', SortDirection::Ascending)
             ->setParameter('dossier_file_type', DossierFileType::MAIN_DOCUMENT->value)
             ->setParameter('dossier_status', DossierStatus::PUBLISHED->value)
             ->getQuery()
@@ -149,8 +150,8 @@ final readonly class UrlRepository
             ->from(new $dossierClass()->getAttachmentEntityClass(), 'a')
             ->where('a.dossier = :dossierId')
             ->andWhere('a.fileInfo.uploaded = true')
-            ->orderBy('a.updatedAt', 'ASC')
-            ->addOrderBy('a.id', 'ASC')
+            ->orderBy('a.updatedAt', SortDirection::Ascending)
+            ->addOrderBy('a.id', SortDirection::Ascending)
             ->setParameter('dossierId', $mainDocument->dossierId)
             ->setParameter('dossier_file_type', DossierFileType::ATTACHMENT->value)
             ->getQuery()
@@ -186,8 +187,8 @@ final readonly class UrlRepository
             ->where(':dossierId MEMBER OF doc.dossiers')
             ->andWhere('doc.judgement in (:judgements)')
             ->andWhere('doc.fileInfo.uploaded = true')
-            ->orderBy('doc.updatedAt', 'ASC')
-            ->addOrderBy('doc.id', 'ASC')
+            ->orderBy('doc.updatedAt', SortDirection::Ascending)
+            ->addOrderBy('doc.id', SortDirection::Ascending)
             ->setParameter('dossier_file_type', DossierFileType::DOCUMENT->value)
             ->setParameter('dossierId', $mainDocument->dossierId)
             ->setParameter('judgements', [Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC])
@@ -226,8 +227,8 @@ final readonly class UrlRepository
             ->join('a.dossier', 'dos')
             ->where('dos.status = :dossier_status')
             ->andWhere('a.fileInfo.uploaded = true')
-            ->orderBy('a.updatedAt', 'ASC')
-            ->addOrderBy('a.id', 'ASC')
+            ->orderBy('a.updatedAt', SortDirection::Ascending)
+            ->addOrderBy('a.id', SortDirection::Ascending)
             ->setParameter('dossier_file_type', DossierFileType::ATTACHMENT->value)
             ->setParameter('dossier_status', DossierStatus::PUBLISHED->value)
             ->getQuery()
@@ -283,8 +284,8 @@ final readonly class UrlRepository
             ->where(':dossierId MEMBER OF doc.dossiers')
             ->andWhere('doc.judgement in (:judgements)')
             ->andWhere('doc.fileInfo.uploaded = true')
-            ->orderBy('doc.updatedAt', 'ASC')
-            ->addOrderBy('doc.id', 'ASC')
+            ->orderBy('doc.updatedAt', SortDirection::Ascending)
+            ->addOrderBy('doc.id', SortDirection::Ascending)
             ->setParameter('dossierId', $dto->id)
             ->setParameter('judgements', [Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC])
             ->getQuery()

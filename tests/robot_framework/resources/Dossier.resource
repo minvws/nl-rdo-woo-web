@@ -260,7 +260,7 @@ Fill Out Summary
   Fill Text  id=content_form_summary  ${random_summary}
 
 Assert No Input Errors
-  Get Element Count  //*[contains(@class,"js-input-errors")]  should be  0
+  Get Element Count  //*[starts-with(@data-e2e-name,"input-errors")]  should be  0
 
 Click Public URL
   Click  //*[@data-e2e-name="public-url"]

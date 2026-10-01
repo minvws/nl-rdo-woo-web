@@ -109,7 +109,10 @@ class S3UploadHelperTest extends UnitTestCase
 
         $id = 'test-123';
 
-        $parts = ['a', 'b'];
+        $parts = [
+            ['PartNumber' => 1, 'ETag' => 'a'],
+            ['PartNumber' => 2, 'ETag' => 'b'],
+        ];
         $result = new Result(['Parts' => $parts]);
         $this->s3Client->expects('listParts')->with([
             'Bucket' => $this->bucket,

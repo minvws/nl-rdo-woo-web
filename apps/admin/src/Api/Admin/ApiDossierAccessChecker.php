@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Admin\Api\Admin;
 
-use ApiPlatform\Symfony\Security\Exception\AccessDeniedException;
+use ApiPlatform\Metadata\Exception\AccessDeniedException;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Uid\Uuid;
@@ -22,7 +22,7 @@ readonly class ApiDossierAccessChecker
         $dossier = $this->dossierRepository->findOneByDossierId($dossierId);
 
         if (! $this->authorizationChecker->isGranted('AuthMatrix.dossier.update', $dossier)) {
-            throw new AccessDeniedException();
+            throw new AccessDeniedException('Access Denied.');
         }
     }
 }

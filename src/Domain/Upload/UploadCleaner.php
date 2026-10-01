@@ -8,6 +8,7 @@ use Carbon\CarbonImmutable;
 use Exception;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\StorageAttributes;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 readonly class UploadCleaner
 {
@@ -15,7 +16,9 @@ readonly class UploadCleaner
 
     public function __construct(
         private UploadEntityRepository $repository,
+        #[Target('workingCopyStorage')]
         private FilesystemOperator $workingCopyStorage,
+        #[Target('uploadStorage')]
         private FilesystemOperator $uploadStorage,
         private UploadService $uploadService,
     ) {

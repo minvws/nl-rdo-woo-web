@@ -12,7 +12,7 @@ use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Api\Pagination\CursorPage;
 use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
-use Shared\Domain\HasId;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublicationRepository;
 use Shared\Service\ApiPlatformService;
@@ -23,7 +23,7 @@ final readonly class OtherPublicationProvider implements ProviderInterface
     public function __construct(
         private OrganisationResolver $organisationResolver,
         private OtherPublicationRepository $otherPublicationRepository,
-        private OtherPublicationMapper $otherPublicationMapper,
+        private OtherPublicationResponseMapper $otherPublicationResponseMapper,
         private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
@@ -31,6 +31,8 @@ final readonly class OtherPublicationProvider implements ProviderInterface
 
     /**
      * @param array<array-key, string> $uriVariables
+     *
+     * @throws ValidationException
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|OtherPublicationResponseDto
     {
@@ -59,9 +61,8 @@ final readonly class OtherPublicationProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        $mappedDtos = $this->otherPublicationMapper->fromEntities($otherPublications);
+        $mappedDtos = $this->otherPublicationResponseMapper->fromEntities($otherPublications);
 
-        /** @var list<HasId> $otherPublications */
         return $this->cursorPageFactory->create(
             $otherPublications,
             $mappedDtos,
@@ -78,6 +79,6 @@ final readonly class OtherPublicationProvider implements ProviderInterface
             throw EntityNotFoundException::for('OtherPublication', $otherPublicationExternalId);
         }
 
-        return $this->otherPublicationMapper->fromEntity($otherPublication);
+        return $this->otherPublicationResponseMapper->fromEntity($otherPublication);
     }
 }

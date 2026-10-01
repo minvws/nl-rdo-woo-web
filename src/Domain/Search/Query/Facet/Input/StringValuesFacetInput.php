@@ -77,4 +77,9 @@ readonly class StringValuesFacetInput extends FacetInput implements StringValues
     {
         return $this->facet->getKey();
     }
+
+    public function getRequestParameter(): string
+    {
+        return $this->facet->getRequestParameter();
+    }
 }

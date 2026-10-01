@@ -10,7 +10,7 @@ the code is English and the interface is Dutch.
   <dd>the admin interface, served by the <code>admin</code> application and mounted at <code>/balie</code>.</dd>
 
   <dt>tenant</dt>
-  <dd>an organisation the platform is hosted for, each with its own database, search index, styling and translations. One of <code>minvws</code>, <code>minfin</code> or <code>minbuza</code>. Not to be confused with an organisation.</dd>
+  <dd>an organisation the platform is hosted for, each with its own database, search index, styling and translations. One of <code>minvws</code>, <code>minfin</code>, <code>minbuza</code> or <code>minocw</code>. Not to be confused with an organisation.</dd>
 
   <dt>application id</dt>
   <dd>which of the applications an instance runs as: <code>admin</code>, <code>public</code>, <code>publication_api</code>, <code>worker</code> or <code>shared</code>. Replaced the older <code>APP_MODE</code>.</dd>

@@ -21,12 +21,13 @@ use Shared\Domain\Publication\Dossier\Type\DossierRepositoryWithExternalId;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\ExternalId;
+use Symfony\Component\Uid\Uuid;
 
 class UploadMainDocumentProcessorTest extends UnitTestCase
 {
     public function testProcessDelegatesToHandler(): void
     {
-        $organisationId = $this->getFaker()->uuid();
+        $organisationId = Uuid::v6();
         $dossierExternalId = Mockery::mock(ExternalId::class);
         $content = Mockery::mock(StreamInterface::class);
 
@@ -72,7 +73,7 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
 
     public function testProcessThrowsWhenDossierHasNoMainDocument(): void
     {
-        $organisationId = $this->getFaker()->uuid();
+        $organisationId = Uuid::v6();
         $dossierExternalId = Mockery::mock(ExternalId::class);
 
         $request = Mockery::mock(UploadMainDocumentRequestInterface::class);
@@ -113,7 +114,7 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
 
     public function testProcessThrowsWhenMainDocumentNotFound(): void
     {
-        $organisationId = $this->getFaker()->uuid();
+        $organisationId = Uuid::v6();
         $dossierExternalId = Mockery::mock(ExternalId::class);
 
         $request = Mockery::mock(UploadMainDocumentRequestInterface::class);
@@ -156,7 +157,7 @@ class UploadMainDocumentProcessorTest extends UnitTestCase
 
     public function testProcessThrowsWhenMainDocumentIsWrongType(): void
     {
-        $organisationId = $this->getFaker()->uuid();
+        $organisationId = Uuid::v6();
         $dossierExternalId = Mockery::mock(ExternalId::class);
 
         $request = Mockery::mock(UploadMainDocumentRequestInterface::class);

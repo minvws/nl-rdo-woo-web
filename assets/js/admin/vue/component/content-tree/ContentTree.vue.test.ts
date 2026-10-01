@@ -1,5 +1,5 @@
 import AddButton from '@admin-fe/component/button/AddButton.vue';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { describe, expect, test } from 'vitest';
 import ContentTree from './ContentTree.vue';
 import ContentTreeNode from './ContentTreeNode.vue';
@@ -74,14 +74,23 @@ describe('The "ContentTree" component', () => {
       .filter((textarea) => textarea.element.closest('[data-level]') === null);
 
   // MarkdownEditor renders its own "Preview" heading inside each node, so
-  // headings are filtered down to the node's own "Onderwerp ..." heading.
+  // headings are filtered down to the node's own "Onderwerp/Onderdeel ..."
+  // heading.
   const findHeadings = (component: ReturnType<typeof createComponent>) =>
     component
       .findAll('h2, h3, h4, h5, h6')
-      .filter((heading) => heading.text().startsWith('Onderwerp'));
+      .filter(
+        (heading) =>
+          heading.text().startsWith('Onderwerp') ||
+          heading.text().startsWith('Onderdeel'),
+      );
 
   const getHeadings = (component: ReturnType<typeof createComponent>) =>
     findHeadings(component).map((heading) => heading.text());
+
+  // Headings are suffixed with the node's title, e.g. "Onderwerp 1  (Node)".
+  const heading = (label: string, title = '') =>
+    `${label}  (${title || 'zonder titel'})`;
 
   const getHeadingTags = (component: ReturnType<typeof createComponent>) =>
     findHeadings(component).map((heading) => heading.element.tagName);
@@ -108,9 +117,17 @@ describe('The "ContentTree" component', () => {
     getOwnAddButton(node, node.element);
 
   const getNodeRemoveButton = (node: ReturnType<typeof getNodes>[number]) =>
-    getOwnButtons(node, node.element).filter(
-      (button) => button.element !== getNodeAddButton(node).element,
-    )[0];
+    getOwnButtons(node, node.element).find((button) =>
+      button.classes().includes('bhr-btn-ghost-danger'),
+    );
+
+  const getNodeMoveButton = (
+    node: ReturnType<typeof getNodes>[number],
+    direction: 'up' | 'down',
+  ) =>
+    getOwnButtons(node, node.element).find((button) =>
+      button.text().includes(direction === 'down' ? 'omlaag' : 'omhoog'),
+    );
 
   const getTreeAddButton = (component: ReturnType<typeof createComponent>) =>
     getOwnAddButton(component);
@@ -248,7 +265,7 @@ describe('The "ContentTree" component', () => {
   test('should label the add and remove buttons of every node', () => {
     const node = getNodes(createComponent())[0];
 
-    expect(getNodeAddButton(node).text()).toBe('Onderwerp 1.3 toevoegen');
+    expect(getNodeAddButton(node).text()).toBe('Onderdeel 1.3 toevoegen');
     expect(getNodeRemoveButton(node).text()).toBe('Onderwerp 1 verwijderen');
   });
 
@@ -278,12 +295,12 @@ describe('The "ContentTree" component', () => {
     );
 
     expect(getHeadings(component)).toEqual([
-      'Onderwerp 1',
-      'Onderwerp 1.1',
-      'Onderwerp 1.2',
-      'Onderwerp 1.2.1',
-      'Onderwerp 1.3',
-      'Onderwerp 2',
+      heading('Onderwerp 1', 'First'),
+      heading('Onderdeel 1.1', 'First child'),
+      heading('Onderdeel 1.2', 'Second child'),
+      heading('Onderdeel 1.2.1', 'Grandchild'),
+      heading('Onderdeel 1.3', 'Third child'),
+      heading('Onderwerp 2', 'Second'),
     ]);
   });
 
@@ -291,14 +308,17 @@ describe('The "ContentTree" component', () => {
     const component = createComponent();
 
     expect(getHeadings(component)).toEqual([
-      'Onderwerp 1',
-      'Onderwerp 1.1',
-      'Onderwerp 1.2',
+      heading('Onderwerp 1', 'Node'),
+      heading('Onderdeel 1.1', 'Child'),
+      heading('Onderdeel 1.2', 'Second child'),
     ]);
 
     await getNodeRemoveButton(getNodes(component)[1]).trigger('click');
 
-    expect(getHeadings(component)).toEqual(['Onderwerp 1', 'Onderwerp 1.1']);
+    expect(getHeadings(component)).toEqual([
+      heading('Onderwerp 1', 'Node'),
+      heading('Onderdeel 1.1', 'Second child'),
+    ]);
   });
 
   test('should add an empty node when the add button of the tree is used', async () => {
@@ -308,7 +328,7 @@ describe('The "ContentTree" component', () => {
 
     await getTreeAddButton(component).trigger('click');
 
-    expect(getHeadings(component)).toEqual(['Onderwerp 1']);
+    expect(getHeadings(component)).toEqual([heading('Onderwerp 1')]);
   });
 
   test('should add an empty child node when the add button of a node is used', async () => {
@@ -317,10 +337,10 @@ describe('The "ContentTree" component', () => {
     await getNodeAddButton(getNodes(component)[0]).trigger('click');
 
     expect(getHeadings(component)).toEqual([
-      'Onderwerp 1',
-      'Onderwerp 1.1',
-      'Onderwerp 1.2',
-      'Onderwerp 1.3',
+      heading('Onderwerp 1', 'Node'),
+      heading('Onderdeel 1.1', 'Child'),
+      heading('Onderdeel 1.2', 'Second child'),
+      heading('Onderdeel 1.3'),
     ]);
   });
 
@@ -330,10 +350,10 @@ describe('The "ContentTree" component', () => {
     await getNodeAddButton(getNodes(component)[2]).trigger('click');
 
     expect(getHeadings(component)).toEqual([
-      'Onderwerp 1',
-      'Onderwerp 1.1',
-      'Onderwerp 1.2',
-      'Onderwerp 1.2.1',
+      heading('Onderwerp 1', 'Node'),
+      heading('Onderdeel 1.1', 'Child'),
+      heading('Onderdeel 1.2', 'Second child'),
+      heading('Onderdeel 1.2.1'),
     ]);
   });
 
@@ -355,6 +375,124 @@ describe('The "ContentTree" component', () => {
     expect(JSON.parse(getFormTextarea(component).element.value)).toEqual(
       emptyContentTree,
     );
+  });
+
+  describe('focus after removing a node', () => {
+    const mountAttached = () => {
+      const component = mount(ContentTree, {
+        attachTo: document.body,
+        props: { id: 'mocked-id', name: 'mocked-name', value: mockedValue },
+      });
+      return component;
+    };
+
+    test('should move focus to the remove button of the node that takes its place', async () => {
+      const component = mountAttached();
+      const removeButton = getNodeRemoveButton(getNodes(component)[1]);
+      removeButton.element.focus();
+
+      await removeButton.trigger('click');
+      await flushPromises();
+
+      expect(document.activeElement).toBe(
+        getNodeRemoveButton(getNodes(component)[1]).element,
+      );
+      expect(document.activeElement?.textContent).toContain(
+        'Onderdeel 1.1 verwijderen',
+      );
+      component.unmount();
+    });
+
+    test('should move focus to the add button when no nodes are left', async () => {
+      const component = mountAttached();
+      const removeButton = getNodeRemoveButton(getNodes(component)[0]);
+      removeButton.element.focus();
+
+      await removeButton.trigger('click');
+      await flushPromises();
+
+      expect(document.activeElement).toBe(getTreeAddButton(component).element);
+      component.unmount();
+    });
+  });
+
+  test('should not render move buttons for a node without siblings', () => {
+    const rootNode = getNodes(createComponent())[0];
+
+    expect(getNodeMoveButton(rootNode, 'down')).toBeUndefined();
+    expect(getNodeMoveButton(rootNode, 'up')).toBeUndefined();
+  });
+
+  test('should render move buttons for a node that has siblings', () => {
+    const childNode = getNodes(createComponent())[1];
+
+    expect(getNodeMoveButton(childNode, 'down').text()).toBe(
+      'Onderdeel 1.1 omlaag verplaatsen',
+    );
+    expect(getNodeMoveButton(childNode, 'up').text()).toBe(
+      'Onderdeel 1.1 omhoog verplaatsen',
+    );
+  });
+
+  test('should move a node down when its move-down button is used', async () => {
+    const component = createComponent();
+
+    await getNodeMoveButton(getNodes(component)[1], 'down').trigger('click');
+
+    expect(getHeadings(component)).toEqual([
+      heading('Onderwerp 1', 'Node'),
+      heading('Onderdeel 1.1', 'Second child'),
+      heading('Onderdeel 1.2', 'Child'),
+    ]);
+  });
+
+  test('should wrap the last node to the top when its move-down button is used', async () => {
+    const component = createComponent();
+
+    await getNodeMoveButton(getNodes(component)[2], 'down').trigger('click');
+
+    expect(getHeadings(component)).toEqual([
+      heading('Onderwerp 1', 'Node'),
+      heading('Onderdeel 1.1', 'Second child'),
+      heading('Onderdeel 1.2', 'Child'),
+    ]);
+  });
+
+  test('should move a node up when its move-up button is used', async () => {
+    const component = createComponent();
+
+    await getNodeMoveButton(getNodes(component)[2], 'up').trigger('click');
+
+    expect(getHeadings(component)).toEqual([
+      heading('Onderwerp 1', 'Node'),
+      heading('Onderdeel 1.1', 'Second child'),
+      heading('Onderdeel 1.2', 'Child'),
+    ]);
+  });
+
+  test('should wrap the first node to the bottom when its move-up button is used', async () => {
+    const component = createComponent();
+
+    await getNodeMoveButton(getNodes(component)[1], 'up').trigger('click');
+
+    expect(getHeadings(component)).toEqual([
+      heading('Onderwerp 1', 'Node'),
+      heading('Onderdeel 1.1', 'Second child'),
+      heading('Onderdeel 1.2', 'Child'),
+    ]);
+  });
+
+  test('should update the underlying json when a node is moved', async () => {
+    const component = createComponent();
+
+    await getNodeMoveButton(getNodes(component)[1], 'down').trigger('click');
+
+    expect(
+      JSON.parse(getFormTextarea(component).element.value).children[0].children,
+    ).toEqual([
+      { title: 'Second child', body: 'Second child body' },
+      { title: 'Child', body: 'Child body', children: [] },
+    ]);
   });
 
   test('should use a heading level matching the depth of a node', () => {
@@ -435,19 +573,19 @@ describe('The "ContentTree" component', () => {
 
     expect(getAddButtonTexts()).toEqual([
       'Onderwerp 2 toevoegen',
-      'Onderwerp 1.3 toevoegen',
-      'Onderwerp 1.1.1 toevoegen',
-      'Onderwerp 1.2.1 toevoegen',
+      'Onderdeel 1.3 toevoegen',
+      'Onderdeel 1.1.1 toevoegen',
+      'Onderdeel 1.2.1 toevoegen',
     ]);
 
     await getNodeAddButton(getNodes(component)[0]).trigger('click');
 
     expect(getAddButtonTexts()).toEqual([
       'Onderwerp 2 toevoegen',
-      'Onderwerp 1.4 toevoegen',
-      'Onderwerp 1.1.1 toevoegen',
-      'Onderwerp 1.2.1 toevoegen',
-      'Onderwerp 1.3.1 toevoegen',
+      'Onderdeel 1.4 toevoegen',
+      'Onderdeel 1.1.1 toevoegen',
+      'Onderdeel 1.2.1 toevoegen',
+      'Onderdeel 1.3.1 toevoegen',
     ]);
   });
 });

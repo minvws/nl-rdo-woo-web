@@ -31,6 +31,7 @@ use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\HasMainDocument;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\ValueObject\PlainDate;
+use SortDirection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use function in_array;
@@ -76,7 +77,7 @@ class WooDecision extends AbstractDossier implements DossierTypeWithPreview, Ent
 
     /** @var Collection<array-key, Document> */
     #[ORM\ManyToMany(targetEntity: Document::class, mappedBy: 'dossiers', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
-    #[ORM\OrderBy(['documentNumber' => 'ASC'])]
+    #[ORM\OrderBy(['documentNumber' => SortDirection::Ascending])]
     protected Collection $documents;
 
     #[ORM\Column(length: 255, nullable: true, enumType: PublicationReason::class)]

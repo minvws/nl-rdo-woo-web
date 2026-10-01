@@ -11,8 +11,6 @@ use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\TypeInfo\Type\NullableType;
 use Symfony\Component\TypeInfo\Type\ObjectType;
 
-use function trim;
-
 #[AsDecorator(decorates: 'api_platform.metadata.property.metadata_factory')]
 final readonly class ExternalIdPropertyMetadataFactory implements PropertyMetadataFactoryInterface
 {
@@ -37,13 +35,7 @@ final readonly class ExternalIdPropertyMetadataFactory implements PropertyMetada
             return $propertyMetadata;
         }
 
-        $schema = [
-            'type' => 'string',
-            'format' => 'external-id',
-            'minLength' => ExternalId::MIN_LENGTH,
-            'maxLength' => ExternalId::MAX_LENGTH,
-            'pattern' => trim(ExternalId::PATTERN, '/'),
-        ];
+        $schema = ExternalIdOpenApiSchema::SCHEMA;
 
         if ($nullable) {
             $schema = ['anyOf' => [$schema, ['type' => 'null']]];

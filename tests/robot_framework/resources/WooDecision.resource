@@ -59,10 +59,12 @@ Fill Out WooDecision Details
 Upload Besluitbrief
   [Arguments]  ${besluitbrief_location}
   ${_}  ${besluitbrief_filename} =  Split Path  ${besluitbrief_location}
-  Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${besluitbrief_location}
-  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${besluitbrief_filename}
-  Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
-  Click  //dialog[@open]//button[@type="submit"]
+  Upload File By Selector  //dialog[@open]//*[@data-e2e-name="uploadUuid-input"]  ${besluitbrief_location}
+  Wait For Condition
+  ...  Text  //dialog[@open]//*[@data-e2e-name="uploaded-file"]  contains  ${besluitbrief_filename}
+  ...  timeout=120s
+  Type Text  //dialog[@open]//*[@data-e2e-name="formalDate-input"]  01012022
+  Click  //dialog[@open]//*[@data-e2e-name="submit"]
   Success Alert Is Visible  Besluitbrief '${besluitbrief_filename}' is
 
 Upload Documents Step
@@ -77,7 +79,7 @@ Upload Production Report
   Upload File By Selector  id=inventory_inventory  ${production_report_location}
   Click Save And Continue Production Report
   Wait For Elements State
-  ...  //*[@id="js-inventory-status"]//*[contains(.,"Bezig met het toepassen van het productierapport")]
+  ...  //*[@id="js-inventory-status"]//*[@data-e2e-name="inventory-updating"]
   ...  detached
   IF  not ${expect_error}
     Wait For Elements State
@@ -85,6 +87,10 @@ Upload Production Report
     ...  visible
     ...  message=Error(s) while uploading production report
   END
+
+Verify Production Report Matter Notice
+  [Arguments]  ${state}=visible
+  Wait For Elements State  //*[@data-e2e-name="production-report-matter-deprecated"]  ${state}
 
 Verify Production Report Error
   [Arguments]  ${expected_result}
@@ -96,16 +102,13 @@ Verify Document Upload Remaining
 
 Upload And Process Documents
   [Arguments]  @{file_locations}
-  # This has been wrapped with a retry mechanism, since sometimes the Click Process Documents fails for unclear reasons
-  Wait Until Keyword Succeeds  3x  20s  Inner Keyword Upload And Process Documents  @{file_locations}
-
-Inner Keyword Upload And Process Documents
-  [Arguments]  @{file_locations}
   Sleep  30ms  # sometimes the upload doesn't seem to select anything, so let's try a tiny wait here before we click
   Scroll To Element  //button[@data-e2e-name="process-documents"]
   Upload File By Selector  id=upload-area-dossier-files  @{file_locations}
-  Wait For Elements State  //*[@data-e2e-name="uploaded-files"]  visible
-  Click Process Documents
+  # Upload validation runs on the messenger worker, which can be slow under parallel load, so wait once instead of re-uploading
+  Wait For Elements State  //*[@data-e2e-name="uploaded-files"]  visible  timeout=180s
+  # This has been wrapped with a retry mechanism, since sometimes the Click Process Documents fails for unclear reasons
+  Wait Until Keyword Succeeds  3x  20s  Click Process Documents
   Wait For Elements State  //*[@data-e2e-name="checking"]  detached
   Wait For Elements State  //*[@data-e2e-name="upload-busy"]  detached
 

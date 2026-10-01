@@ -12,7 +12,7 @@ use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Api\Pagination\CursorPage;
 use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
-use Shared\Domain\HasId;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantRepository;
 use Shared\Service\ApiPlatformService;
@@ -23,7 +23,7 @@ final readonly class CovenantProvider implements ProviderInterface
     public function __construct(
         private OrganisationResolver $organisationResolver,
         private CovenantRepository $covenantRepository,
-        private CovenantMapper $covenantMapper,
+        private CovenantResponseMapper $covenantResponseMapper,
         private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
@@ -31,6 +31,8 @@ final readonly class CovenantProvider implements ProviderInterface
 
     /**
      * @param array<array-key, string> $uriVariables
+     *
+     * @throws ValidationException
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|CovenantResponseDto
     {
@@ -59,9 +61,8 @@ final readonly class CovenantProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        $mappedDtos = $this->covenantMapper->fromEntities($covenants);
+        $mappedDtos = $this->covenantResponseMapper->fromEntities($covenants);
 
-        /** @var list<HasId> $covenants */
         return $this->cursorPageFactory->create(
             $covenants,
             $mappedDtos,
@@ -78,6 +79,6 @@ final readonly class CovenantProvider implements ProviderInterface
             throw EntityNotFoundException::for('Covenant', $covenantExternalId);
         }
 
-        return $this->covenantMapper->fromEntity($covenant);
+        return $this->covenantResponseMapper->fromEntity($covenant);
     }
 }

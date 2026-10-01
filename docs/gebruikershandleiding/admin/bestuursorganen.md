@@ -66,4 +66,4 @@ Onderaan het tekstveld is het mogelijk om een voorbeeld te zien van hoe de tekst
 #### Logo
 
 Optioneel kan er ook een logo getoond worden op de landingspagina. Deze kan toegevoegd worden door op het tabblad Logo te klikken.
-Hier kan dan een .svg bestand geupload worden, de maximale toegestane bestandsgrootte is 10mb.
+Hier kan dan een .svg bestand geüpload worden, de maximale toegestane bestandsgrootte is 10mb.

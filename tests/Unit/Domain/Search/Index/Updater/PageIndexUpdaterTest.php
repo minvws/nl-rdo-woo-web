@@ -11,6 +11,7 @@ use Shared\Domain\Search\Index\Updater\PageIndexUpdater;
 use Shared\Service\Elastic\ElasticClientInterface;
 use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
+use Webmozart\Assert\Assert;
 
 class PageIndexUpdaterTest extends UnitTestCase
 {
@@ -40,12 +41,21 @@ class PageIndexUpdaterTest extends UnitTestCase
 
         $this->logger->expects('debug');
 
-        $this->elasticClient->expects('update')->with(Mockery::on(
-            static fn (array $input) => $input['id'] === $id
-                && $input['body']['script']['params']['page']['page_nr'] === $pageNr
-                && $input['body']['script']['params']['page']['content'] === $content,
-        ));
+        $this->elasticClient->expects('update')->with(Mockery::capture($input));
 
         $this->indexUpdater->update($id, $pageNr, $content);
+
+        Assert::isArray($input);
+        self::assertSame($id, $input['id']);
+
+        $body = $input['body'];
+        Assert::isArray($body);
+        $script = $body['script'];
+        Assert::isArray($script);
+
+        self::assertSame(
+            ['page' => ['page_nr' => $pageNr, 'content' => $content]],
+            $script['params'],
+        );
     }
 }

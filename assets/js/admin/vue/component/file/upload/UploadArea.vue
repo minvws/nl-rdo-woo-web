@@ -367,6 +367,7 @@ watch(isUploading, (value) => emit('isUploading', value));
       <input
         @change="onFilesSelected"
         :accept="hasAllowedMimeTypes ? allowedMimeTypes.join(',') : undefined"
+        :data-e2e-name="`${props.name}-input`"
         :id="id"
         :multiple="props.allowMultiple ? 'multiple' : undefined"
         :name="props.name"

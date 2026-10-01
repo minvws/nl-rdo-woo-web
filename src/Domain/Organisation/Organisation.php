@@ -18,6 +18,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Security\User;
 use Shared\ValueObject\OrganisationPrefix;
+use SortDirection;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
@@ -46,7 +47,7 @@ class Organisation implements HasId
     /** @var Collection<array-key,Department> */
     #[ORM\ManyToMany(targetEntity: Department::class, inversedBy: 'organisations')]
     #[ORM\JoinTable(name: 'organisation_department')]
-    #[ORM\OrderBy(['name' => 'ASC'])]
+    #[ORM\OrderBy(['name' => SortDirection::Ascending])]
     #[Assert\Count(min: 1, minMessage: 'at_least_one_department_required')]
     private Collection $departments;
 
@@ -64,7 +65,7 @@ class Organisation implements HasId
 
     /** @var Collection<array-key,Subject> */
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Subject::class, cascade: ['persist'], orphanRemoval: true)]
-    #[ORM\OrderBy(['name' => 'ASC'])]
+    #[ORM\OrderBy(['name' => SortDirection::Ascending])]
     private Collection $subjects;
 
     public function __construct()

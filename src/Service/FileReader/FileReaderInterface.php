@@ -16,6 +16,9 @@ use IteratorAggregate;
  */
 interface FileReaderInterface extends IteratorAggregate
 {
+    // Tells whether the file contains a column for the given mapping name.
+    public function hasColumn(string $columnName): bool;
+
     // Retrieves a string from the given cell coordinate, will cause an error if missing
     public function getString(int $rowIndex, string $columnName): string;
 

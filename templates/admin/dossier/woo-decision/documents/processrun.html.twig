@@ -1,3 +1,11 @@
+{% if inventoryStatus.hasMatter %}
+    <div class="mb-4" data-e2e-name="production-report-matter-deprecated">
+        <twig:Admin:Alert type="warning">
+            {{ 'admin.inventory.matter_deprecated' | trans }}
+        </twig:Admin:Alert>
+    </div>
+{% endif %}
+
 {% if inventoryStatus.isQueued %}
     <div class="text-center">
         <span class="inline-block animate-spin"><twig:Admin:Icon color="fill-bhr-blue-800" size="48" name="loader" /></span>
@@ -14,7 +22,7 @@
     {% endif %}
 
     {% if inventoryStatus.isUpdating %}
-        <div class="text-lg">
+        <div class="text-lg" data-e2e-name="inventory-updating">
             <h2 class="font-bold pb-2">Bezig met het toepassen van het productierapport</h2>
             <p class="bhr-text-muted">Dit duurt meestal maximaal een paar minuten. Als je wilt kan je deze pagina verlaten en later terugkomen.</p>
         </div>

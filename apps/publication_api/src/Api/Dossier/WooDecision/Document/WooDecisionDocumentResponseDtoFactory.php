@@ -12,13 +12,12 @@ use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use PublicationApi\Domain\Upload\DocumentUploadStatusService;
 use Shared\Controller\Public\Dossier\DossierFileController;
+use Shared\Controller\Public\Dossier\WooDecision\DocumentController;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
-use Shared\ValueObject\Url;
 
 use function array_map;
 use function array_values;
@@ -27,7 +26,6 @@ readonly class WooDecisionDocumentResponseDtoFactory
 {
     public function __construct(
         private ApiUrlGenerator $apiUrlGenerator,
-        private DossierPathHelper $dossierPathHelper,
         private DocumentUploadStatusService $documentUploadStatusService,
         private InquiryLinkFactory $inquiryLinkFactory,
         private PublicUrlGenerator $publicUrlGenerator,
@@ -104,7 +102,14 @@ readonly class WooDecisionDocumentResponseDtoFactory
         }
 
         if ($wooDecision->getStatus()->isPublished()) {
-            $linkCollection->set(LinkCollection::PUBLIC, new Link(Url::create($this->dossierPathHelper->getAbsoluteDetailsPath($wooDecision))));
+            $linkCollection->set(
+                LinkCollection::PUBLIC,
+                new Link($this->publicUrlGenerator->buildUrlFromRoute(DocumentController::ROUTE_NAME_DOCUMENT_DETAIL, [
+                    'documentPrefix' => $wooDecision->getDocumentPrefix(),
+                    'dossierNumber' => $wooDecision->getDossierNumber(),
+                    'documentNumber' => $document->getDocumentNumber()->toString(),
+                ])),
+            );
             $linkCollection->set(
                 LinkCollection::FILE,
                 new Link($this->publicUrlGenerator->buildUrlFromRoute(DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, [

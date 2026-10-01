@@ -55,7 +55,7 @@ Create Public Session
   ELSE IF  '${ENVIRONMENT}' == 'test' or '${ENVIRONMENT}' == 'acc'
     # The public site on test/acc is behind htaccess basic auth; send the same credentials
     # the browser context uses, otherwise every public request is rejected with a 401.
-    ${auth} =  Create List  ${HTACCESS_USERNAME}  ${HTACCESS_PASSWORD}
+    VAR  @{auth} =  ${HTACCESS_USERNAME}  ${HTACCESS_PASSWORD}
     RequestsLibrary.Create Session  alias=${alias}  url=${URL_PUBLIC}  verify=True  auth=${auth}
   ELSE
     Fatal Error  Env var ENVIRONMENT returned unsupported value '${ENVIRONMENT}'.
@@ -86,9 +86,9 @@ Get Random Department ID
 Get Random Department IDs
   [Arguments]  ${count}=1
   ${response} =  GET On Session  alias=${API_ALIAS}  url=${URL_API}/api/publication/v1/department
-  ${departments} =  Set Variable  ${response.json()}[items]
+  VAR  ${departments} =  ${response.json()}[items]
   @{random_departments} =  FakerLibrary.Random Elements  ${departments}  ${count}  unique=True
-  @{department_ids} =  Create List
+  VAR  @{department_ids} =  @{EMPTY}
   FOR  ${department}  IN  @{random_departments}
     Append To List  ${department_ids}  ${department}[id]
   END
@@ -317,7 +317,7 @@ Upload Document
 
 Publication Status Should Be
   [Arguments]  ${dossier_type}  ${expected_status}
-  Wait Until Keyword Succeeds  20 times  3s  Publication Status Check  ${dossier_type}  ${expected_status}
+  Wait Until Keyword Succeeds  40 times  3s  Publication Status Check  ${dossier_type}  ${expected_status}
 
 Publication Status Check
   [Arguments]  ${dossier_type}  ${expected_status}

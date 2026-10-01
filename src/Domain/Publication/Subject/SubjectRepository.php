@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Organisation\Organisation;
+use SortDirection;
 use Symfony\Component\Uid\Uuid;
 
 use function array_key_exists;
@@ -48,7 +49,7 @@ class SubjectRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('subject')
             ->where('subject.organisation = :organisation')
             ->setParameter('organisation', $organisation)
-            ->orderBy('subject.name', 'ASC')
+            ->orderBy('subject.name', SortDirection::Ascending)
             ->getQuery();
     }
 
@@ -85,7 +86,7 @@ class SubjectRepository extends ServiceEntityRepository
             ->where('subject.landingPageStatus = :status')
             ->andWhere('subject.landingPageSlug IS NOT NULL')
             ->setParameter('status', SubjectLandingPageStatus::PUBLISHED)
-            ->orderBy('subject.name', 'ASC');
+            ->orderBy('subject.name', SortDirection::Ascending);
 
         if ($maxResults !== null) {
             $queryBuilder->setMaxResults($maxResults);
@@ -141,7 +142,7 @@ class SubjectRepository extends ServiceEntityRepository
         }
 
         return $queryBuilder
-            ->orderBy('subject.id', 'ASC')
+            ->orderBy('subject.id', SortDirection::Ascending)
             ->setMaxResults($itemsPerPage + 1)
             ->getQuery()
             ->getResult();

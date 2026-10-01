@@ -11,7 +11,7 @@ use Shared\Domain\Organisation\OrganisationRepository;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
-final readonly class OrganisationResolver implements OrganisationResolverInterface
+readonly class OrganisationResolver implements OrganisationResolverInterface
 {
     public function __construct(
         private OrganisationRepository $organisationRepository,

@@ -7,6 +7,7 @@ namespace Shared\Service\Inventory\Sanitizer\DataProvider;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\Inventory\Sanitizer\InventoryDocumentUrlStrategyInterface;
 
 readonly class WooDecisionInventoryDataProvider implements InventoryDataProviderInterface
 {
@@ -14,6 +15,7 @@ readonly class WooDecisionInventoryDataProvider implements InventoryDataProvider
         private WooDecision $dossier,
         /** @var array<array-key, Document> $documents */
         private array $documents,
+        private InventoryDocumentUrlStrategyInterface $documentUrlStrategy,
     ) {
     }
 
@@ -23,6 +25,16 @@ readonly class WooDecisionInventoryDataProvider implements InventoryDataProvider
     public function getDocuments(): array
     {
         return $this->documents;
+    }
+
+    public function getDossierForDocument(Document $document): WooDecision
+    {
+        return $this->dossier;
+    }
+
+    public function getDocumentUrlStrategy(): InventoryDocumentUrlStrategyInterface
+    {
+        return $this->documentUrlStrategy;
     }
 
     public function getInventoryEntity(): Inventory

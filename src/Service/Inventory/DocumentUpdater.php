@@ -27,30 +27,26 @@ readonly class DocumentUpdater
     public function __construct(
         private ObsoleteFileRemover $obsoleteFileRemover,
         private DocumentRepository $documentRepository,
-        private LegacyDocumentNumberFactory $documentNumberFactory,
         private DocumentDispatcher $documentDispatcher,
         private IngestDispatcher $ingestDispatcher,
     ) {
     }
 
+    public function linkDocument(Document $document, WooDecision $dossier): void
+    {
+        $document->addDossier($dossier);
+
+        $this->documentRepository->save($document);
+    }
+
     /**
-     * Process DocumentMetadata, maps it to the document.
-     *
-     * NOTE: this method does not flush the changes to the database.
-     *
      * @throws Exception
      */
-    public function databaseUpdate(DocumentMetadata $documentMetadata, WooDecision $dossier, Document $document): Document
+    public function updateMetadata(DocumentMetadata $documentMetadata, Document $document): void
     {
         $this->mapMetadataToDocument($documentMetadata, $document, $document->getDocumentNumber());
 
-        $document->addDossier($dossier);
-
         $this->obsoleteFileRemover->removeIfObsolete($document);
-
-        $this->documentRepository->save($document);
-
-        return $document;
     }
 
     /*
@@ -121,19 +117,19 @@ readonly class DocumentUpdater
     /**
      * @param array<array-key, string> $refersTo
      */
-    public function updateDocumentReferralsByDocumentNumber(WooDecision $dossier, Document $document, array $refersTo): void
+    public function updateDocumentReferralsByDocumentNumber(Document $document, array $refersTo): void
     {
         /** @var array<string, DocumentNumber> $newReferrals */
         $newReferrals = [];
         foreach ($refersTo as $referral) {
-            $documentNumber = $this->documentNumberFactory->fromReferral($dossier, $document, $referral);
+            $documentNumber = DocumentNumber::fromString($referral);
             $newReferrals[$documentNumber->toString()] = $documentNumber;
         }
 
         /** @var array<string, DocumentNumber> $currentReferrals */
         $currentReferrals = [];
         foreach ($document->getRefersTo() as $referredDocument) {
-            $documentNumber = $this->documentNumberFactory->fromDossierAndDocument($dossier, $referredDocument);
+            $documentNumber = $referredDocument->getDocumentNumber();
             $currentReferrals[$documentNumber->toString()] = $documentNumber;
         }
 

@@ -7,6 +7,7 @@ namespace Shared\Service\Inquiry;
 use Exception;
 use Generator;
 use Shared\Exception\FileReaderException;
+use Shared\Exception\InquiryLinkImportException;
 use Shared\Service\FileReader\ColumnMapping;
 use Shared\Service\FileReader\ExcelReaderFactory;
 use Shared\Service\FileReader\FileReaderInterface;
@@ -21,6 +22,7 @@ class InquiryLinkImportParser
 {
     private const string COLUMN_INQUIRY_NUMBER = 'inquiryNumber';
     private const string COLUMN_MATTER = 'matter';
+    private const string COLUMN_PUBLICATION_CONTEXT = 'publicationContext';
     private const string COLUMN_DOCUMENT_ID = 'documentId';
 
     public function __construct(
@@ -34,21 +36,44 @@ class InquiryLinkImportParser
     public function parse(UploadedFile $uploadedFile, string $prefix): Generator
     {
         $reader = $this->getReader($uploadedFile);
+
+        $hasMatter = $reader->hasColumn(self::COLUMN_MATTER);
+        $hasPublicationContext = $reader->hasColumn(self::COLUMN_PUBLICATION_CONTEXT);
+
+        if ($hasMatter && $hasPublicationContext) {
+            throw InquiryLinkImportException::forMatterAndPublicationContextCombination();
+        }
+
+        if (! $hasMatter && ! $hasPublicationContext) {
+            throw FileReaderException::forMissingHeaders(['Publicatiecontext']);
+        }
+
         foreach ($reader as $rowIdx => $row) {
             /** @var int|string $rowIdx */
             unset($row);
             $rowIdx = intval($rowIdx);
             $documentId = $reader->getString($rowIdx, self::COLUMN_DOCUMENT_ID);
-            $matter = $reader->getString($rowIdx, self::COLUMN_MATTER);
             $inquiryNumbers = InventoryDataHelper::separateValues(
                 $reader->getString($rowIdx, self::COLUMN_INQUIRY_NUMBER),
                 [',', ';'],
             );
 
-            $documentNumber = DocumentNumber::fromString(sprintf('%s-%s-%s', $prefix, $matter, $documentId));
+            $matter = $reader->getOptionalString($rowIdx, self::COLUMN_MATTER);
+            $publicationContext = $reader->getOptionalString($rowIdx, self::COLUMN_PUBLICATION_CONTEXT);
+
+            if ($hasMatter) {
+                $publicationContext = sprintf('%s-%s', $prefix, $matter);
+            }
+
+            $documentNumber = DocumentNumber::fromString(sprintf('%s-%s', $publicationContext, $documentId));
 
             yield $documentNumber->toString() => $inquiryNumbers;
         }
+    }
+
+    public function hasMatterColumn(UploadedFile $uploadedFile): bool
+    {
+        return $this->getReader($uploadedFile)->hasColumn(self::COLUMN_MATTER);
     }
 
     private function getReader(UploadedFile $uploadedFile): FileReaderInterface
@@ -58,8 +83,13 @@ class InquiryLinkImportParser
                 $uploadedFile->getRealPath(),
                 new ColumnMapping(
                     name: self::COLUMN_MATTER,
-                    required: true,
+                    required: false,
                     columnNames: ['matter', 'matter id', 'matterid'],
+                ),
+                new ColumnMapping(
+                    name: self::COLUMN_PUBLICATION_CONTEXT,
+                    required: false,
+                    columnNames: ['publicatiecontext', 'publicatie context', 'publicationcontext', 'publication context', 'publication_context'],
                 ),
                 new ColumnMapping(
                     name: self::COLUMN_DOCUMENT_ID,

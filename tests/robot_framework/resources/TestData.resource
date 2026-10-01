@@ -175,3 +175,7 @@ Generate Random Filename
   ${file_name} =  FakerLibrary.Uuid 4
   ${file_name} =  Remove String  ${file_name}  -
   RETURN  ${file_name}
+
+Generate Publication Context
+  ${suffix} =  Generate Random String  8  [UPPER][NUMBERS]
+  RETURN  E2E-${suffix}

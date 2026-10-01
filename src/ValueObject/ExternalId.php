@@ -14,7 +14,8 @@ final readonly class ExternalId implements Stringable
 {
     public const int MAX_LENGTH = 128;
     public const int MIN_LENGTH = 1;
-    public const string PATTERN = '/^[A-Za-z0-9\-._~]*$/';
+    public const string OPENAPI_PATTERN = '^[A-Za-z0-9\-._~]*$';
+    public const string PATTERN = '/' . self::OPENAPI_PATTERN . '/';
 
     private function __construct(
         private string $id,

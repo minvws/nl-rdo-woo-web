@@ -15,11 +15,13 @@ readonly class Subject
         public string $searchUrl,
         public ?string $landingPageUrl,
         public string $landingPageUrlOrSearchUrl,
+        public ?string $landingPagePreviewUrl,
         public bool $hasPublishedLandingPage,
         public ?string $landingPageTitle,
         public ?string $landingPageDescription,
         public ?SubjectContentTree $landingPageContentTree,
-        public bool $hasVisibleLandingPageContentTree,
+        public bool $hasPublishedContentTree,
+        public bool $hasLandingPageContent,
     ) {
     }
 }

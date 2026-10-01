@@ -6,6 +6,7 @@
 #}
 {% macro history_section(history, titleTranslationKey) %}
     {% if history | length > 0 %}
+        {% set origins = history_woo_decision_origins(history) %}
         <div class="bhr-card mt-10">
             <h2 class="bhr-title mb-6">{{ titleTranslationKey | trans }}</h2>
 
@@ -15,18 +16,33 @@
                     <tr>
                         <th class="w-52" scope="col">{{ 'global.date' | trans() }}</th>
                         <th scope="col">{{ 'global.action' | trans() }}</th>
+                        <th scope="col">{{ 'global.decision' | trans() }}</th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for entry in history %}
                     {% set tr = history_trans(entry, "public") %}
                     {% if tr is not empty %}
+                        {% set origin = origins[entry.id.toString()] %}
                         <tr>
                             <td>
                                 <time datetime="{{ entry.createdDt | date("Y-m-d G:i") }}">{{ entry.createdDt | format_datetime(pattern="d LLLL y H:mm") }}</time>
                             </td>
                             <td>
                                 {{ tr }}
+                            </td>
+                            <td data-e2e-name="document-history-decision">
+                                {% if origin is not null %}
+                                    {% set originTitle = origin.dossierReference.title.toString() %}
+                                    <a
+                                        class="bhr-a"
+                                        href="{{ path('app_admin_dossier', {
+                                            documentPrefix: origin.dossierReference.documentPrefix,
+                                            dossierNumber: origin.dossierReference.dossierNumber,
+                                        }) }}"
+                                        title="{{ originTitle }}"
+                                    >{{ originTitle | u.truncate(60, '…', true) }}</a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endif %}

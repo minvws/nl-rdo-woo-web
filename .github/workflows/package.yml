@@ -35,7 +35,7 @@ jobs:
       - name: Build the docs
         env:
           GH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }}
-        run: task docs:build:ci:all
+        run: task docs:build:all
       - name: Clean build
         run: |
           rm -r node_modules .git var/cache var/log || true

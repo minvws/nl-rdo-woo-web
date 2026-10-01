@@ -1,4 +1,9 @@
-{
---suite E2E Tests.Sequential
-}
+--suite E2E Tests.Sequential.TestDossiersWooDecision
+--suite E2E Tests.Sequential.TestDossiersCovenantDisposition
+--suite E2E Tests.Sequential.TestDossiersAnnualInvestigation
+--suite E2E Tests.Sequential.TestDossiersComplaintOther
+--suite E2E Tests.Sequential.TestDossiersAdvice
+--suite E2E Tests.Sequential.TestDossiersDraftDecision
+#WAIT
+--suite E2E Tests.Sequential.Public
 #WAIT

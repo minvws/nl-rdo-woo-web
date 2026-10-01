@@ -12,6 +12,7 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Department\DepartmentRepository;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
+use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Service\OrganisationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -34,6 +35,7 @@ class OrganisationController extends AbstractController
         private readonly DepartmentRepository $departmentRepository,
         private readonly OrganisationFormMapper $organisationFormMapper,
         private readonly OrganisationService $organisationService,
+        private readonly DossierRepository $dossierRepository,
     ) {
     }
 
@@ -81,7 +83,7 @@ class OrganisationController extends AbstractController
         $organisationForm = $this->createForm(
             OrganisationFormType::class,
             $data,
-            ['prefix_editable' => false],
+            ['prefix_editable' => ! $this->dossierRepository->hasDossiers($organisation)],
         );
         $organisationForm->handleRequest($request);
         if ($organisationForm->isSubmitted() && $organisationForm->isValid()) {

@@ -2,6 +2,22 @@
 
 # Release notes
 
+## v3.6.0
+
+### API specificatie updates
+
+Attributen, parameters en endpoints in de API specificatie zijn voorzien van toelichtingen. Hierdoor is de betekenis en het gebruik ervan direct vanuit de API documentatie beter te begrijpen.
+
+Kijk **[hier](https://open.minvws.nl/api/#publication-v1)** om de API specificatie te bekijken.
+
+### Overige verbeteringen
+
+- **publicationContext vervangt matter in de Publicatie API:** De Publicatie API gebruikt voortaan publicationContext voor het identificeren van documenten. Het veld matter wordt niet meer geaccepteerd.
+Gebruik bij het aanleveren van documenten publicationContext in combinatie met documentId.
+Requests waarin matter wordt meegestuurd, worden afgewezen met een validatiefout. Controleer bestaande API-integraties en vervang matter waar nodig door publicationContext.
+- **Volgorde tonen van documenten:** De volgorde van documenten in een openbaar inzagedossier kon afhankelijk zijn van de databasevolgorde. Documenten worden nu standaard oplopend op documentnummer weergegeven.
+- **API responses bevatten geen landingspagina's meer:** De volledige landingPage van een onderwerp wordt niet meer opgenomen in de response van een metadata-PUT. Hierdoor bevat de response alleen de relevante onderwerpgegevens.
+
 ## v3.5.0
 
 ### Publieke website

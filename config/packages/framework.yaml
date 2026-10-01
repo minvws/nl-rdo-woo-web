@@ -4,7 +4,6 @@ parameters:
 
 framework:
     secret: '%app_secret%'
-    annotations: false
     http_method_override: false
     handle_all_throwables: true
     trusted_hosts: '%trusted_hosts%'

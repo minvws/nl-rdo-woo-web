@@ -39,7 +39,7 @@
 
 | Option           | Required | Values                                                   | Falls back to             |
 |------------------|----------|----------------------------------------------------------|---------------------------|
-| `--tenant`, `-T` | yes      | `minvws`, `minfin`, `minbuza`                            | nothing — it is mandatory |
+| `--tenant`, `-T` | yes      | `minvws`, `minfin`, `minbuza`, `minocw`                  | nothing — it is mandatory |
 | `--id`, `-i`     | no       | `admin`, `public`, `publication_api`, `worker`, `shared` | `APP_ID`, then `shared`   |
 
 `--tenant` is mandatory; the command exits with an error if it is missing.

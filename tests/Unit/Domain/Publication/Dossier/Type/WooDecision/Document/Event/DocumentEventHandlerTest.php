@@ -44,7 +44,7 @@ class DocumentEventHandlerTest extends UnitTestCase
         $this->dossierService->expects('validateCompletion')->with($dossierA);
         $this->dossierService->expects('validateCompletion')->with($dossierB);
 
-        $event = new DocumentWithDrawnEvent($document, DocumentWithdrawReason::DATA_IN_DOCUMENT, 'foo', false);
+        $event = new DocumentWithDrawnEvent(Mockery::mock(WooDecision::class), $document, DocumentWithdrawReason::DATA_IN_DOCUMENT, 'foo', false);
 
         $this->handler->handleDocumentWithdrawn($event);
     }
@@ -53,7 +53,7 @@ class DocumentEventHandlerTest extends UnitTestCase
     {
         $document = Mockery::mock(Document::class);
 
-        $event = new DocumentWithDrawnEvent($document, DocumentWithdrawReason::DATA_IN_DOCUMENT, 'foo', true);
+        $event = new DocumentWithDrawnEvent(Mockery::mock(WooDecision::class), $document, DocumentWithdrawReason::DATA_IN_DOCUMENT, 'foo', true);
 
         $this->dossierService->shouldNotHaveBeenCalled();
 

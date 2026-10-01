@@ -58,6 +58,23 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         );
     }
 
+    public function testFindByDocumentNumbersCaseInsensitive(): void
+    {
+        $dossier = WooDecisionFactory::createOne();
+        $document = DocumentFactory::createOne([
+            'dossiers' => [$dossier],
+            'documentNumber' => 'FOO-123',
+        ]);
+
+        $documents = $this->documentRepository->findByDocumentNumbersCaseInsensitive([
+            DocumentNumber::fromString('foo-123'),
+        ]);
+
+        self::assertCount(1, $documents);
+        self::assertSame($document->getId(), $documents[0]->getId());
+        self::assertSame('FOO-123', $documents[0]->getDocumentNumber()->toString());
+    }
+
     public function testFindByFamilyId(): void
     {
         $organisation = OrganisationFactory::createOne();
@@ -162,13 +179,13 @@ final class DocumentRepositoryTest extends SharedWebTestCase
     {
         DocumentFactory::createOne([
             'documentNumber' => 'FOO-123',
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'pageCount' => 100,
             ]),
         ]);
         DocumentFactory::createOne([
             'documentNumber' => 'FOO-456',
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'pageCount' => 100,
             ]),
         ]);

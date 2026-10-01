@@ -8,6 +8,7 @@ use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Process\IngestProcessOptions;
 use Shared\Domain\Ingest\Process\SubType\SubTypeIngester;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\History\History;
 use Shared\Domain\Upload\Process\FileStorer;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\HistoryService;
@@ -67,6 +68,7 @@ readonly class DocumentFileProcessor
             $document,
             $wasUploaded ? 'document_replaced' : 'document_uploaded',
             [
+                History::CONTEXT_ORIGIN_WOO_DECISION_ID => $dossier->getId()->toString(),
                 'filetype' => $document->getFileInfo()->getType(),
                 'filesize' => Utils::getFileSize($document),
             ],

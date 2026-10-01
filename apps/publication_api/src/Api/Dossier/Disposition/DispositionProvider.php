@@ -12,7 +12,7 @@ use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Api\Pagination\CursorPage;
 use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
-use Shared\Domain\HasId;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionRepository;
 use Shared\Service\ApiPlatformService;
@@ -23,7 +23,7 @@ final readonly class DispositionProvider implements ProviderInterface
     public function __construct(
         private OrganisationResolver $organisationResolver,
         private DispositionRepository $dispositionRepository,
-        private DispositionMapper $dispositionMapper,
+        private DispositionResponseMapper $dispositionResponseMapper,
         private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
@@ -31,6 +31,8 @@ final readonly class DispositionProvider implements ProviderInterface
 
     /**
      * @param array<array-key, string> $uriVariables
+     *
+     * @throws ValidationException
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|DispositionResponseDto
     {
@@ -59,9 +61,8 @@ final readonly class DispositionProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        $mappedDtos = $this->dispositionMapper->fromEntities($dispositions);
+        $mappedDtos = $this->dispositionResponseMapper->fromEntities($dispositions);
 
-        /** @var list<HasId> $dispositions */
         return $this->cursorPageFactory->create(
             $dispositions,
             $mappedDtos,
@@ -78,6 +79,6 @@ final readonly class DispositionProvider implements ProviderInterface
             throw EntityNotFoundException::for('Disposition', $dispositionExternalId);
         }
 
-        return $this->dispositionMapper->fromEntity($disposition);
+        return $this->dispositionResponseMapper->fromEntity($disposition);
     }
 }

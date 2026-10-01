@@ -20,19 +20,25 @@ class ExactlyOneOfValidatorTest extends UnitTestCase
     public function testThrowsUnexpectedTypeExceptionForWrongConstraint(): void
     {
         $validator = new ExactlyOneOfValidator();
-        $validator->initialize(Mockery::mock(ExecutionContextInterface::class));
 
         $this->expectException(UnexpectedTypeException::class);
-        $validator->validate(new stdClass(), Mockery::mock(Constraint::class));
+        $validator->validateInContext(
+            new stdClass(),
+            Mockery::mock(Constraint::class),
+            Mockery::mock(ExecutionContextInterface::class),
+        );
     }
 
     public function testThrowsUnexpectedValueExceptionForNonObject(): void
     {
         $validator = new ExactlyOneOfValidator();
-        $validator->initialize(Mockery::mock(ExecutionContextInterface::class));
 
         $this->expectException(UnexpectedValueException::class);
-        $validator->validate('not an object', new ExactlyOneOf(['foo', 'bar']));
+        $validator->validateInContext(
+            'not an object',
+            new ExactlyOneOf(['foo', 'bar']),
+            Mockery::mock(ExecutionContextInterface::class),
+        );
     }
 
     public function testNoViolationWhenExactlyOnePropertyIsNotNull(): void
@@ -45,8 +51,7 @@ class ExactlyOneOfValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->never();
 
         $validator = new ExactlyOneOfValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new ExactlyOneOf(['foo', 'bar']));
+        $validator->validateInContext($object, new ExactlyOneOf(['foo', 'bar']), $context);
     }
 
     public function testViolationWhenNoPropertiesAreNotNull(): void
@@ -66,8 +71,7 @@ class ExactlyOneOfValidatorTest extends UnitTestCase
             ->andReturn($builder);
 
         $validator = new ExactlyOneOfValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new ExactlyOneOf(['foo', 'bar']));
+        $validator->validateInContext($object, new ExactlyOneOf(['foo', 'bar']), $context);
     }
 
     public function testViolationWhenMultiplePropertiesAreNotNull(): void
@@ -87,8 +91,7 @@ class ExactlyOneOfValidatorTest extends UnitTestCase
             ->andReturn($builder);
 
         $validator = new ExactlyOneOfValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new ExactlyOneOf(['foo', 'bar']));
+        $validator->validateInContext($object, new ExactlyOneOf(['foo', 'bar']), $context);
     }
 
     public function testViolationIsAddedToEachErrorPathWhenNoPropertiesAreNotNull(): void
@@ -116,8 +119,11 @@ class ExactlyOneOfValidatorTest extends UnitTestCase
             ->andReturn($builder);
 
         $validator = new ExactlyOneOfValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new ExactlyOneOf(['foo', 'bar'], errorPaths: ['foo', 'bar']));
+        $validator->validateInContext(
+            $object,
+            new ExactlyOneOf(['foo', 'bar'], errorPaths: ['foo', 'bar']),
+            $context,
+        );
     }
 
     public function testViolationIsAddedToEachErrorPathWhenMultiplePropertiesAreNotNull(): void
@@ -145,8 +151,11 @@ class ExactlyOneOfValidatorTest extends UnitTestCase
             ->andReturn($builder);
 
         $validator = new ExactlyOneOfValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new ExactlyOneOf(['foo', 'bar'], errorPaths: ['foo', 'bar']));
+        $validator->validateInContext(
+            $object,
+            new ExactlyOneOf(['foo', 'bar'], errorPaths: ['foo', 'bar']),
+            $context,
+        );
     }
 
     public function testCustomMessages(): void
@@ -166,8 +175,11 @@ class ExactlyOneOfValidatorTest extends UnitTestCase
             ->andReturn($builder);
 
         $validator = new ExactlyOneOfValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new ExactlyOneOf(['foo', 'bar'], noneMessage: 'custom.none.message'));
+        $validator->validateInContext(
+            $object,
+            new ExactlyOneOf(['foo', 'bar'], noneMessage: 'custom.none.message'),
+            $context,
+        );
     }
 
     public function testCustomMultipleMessage(): void
@@ -187,7 +199,10 @@ class ExactlyOneOfValidatorTest extends UnitTestCase
             ->andReturn($builder);
 
         $validator = new ExactlyOneOfValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new ExactlyOneOf(['foo', 'bar'], multipleMessage: 'custom.multiple.message'));
+        $validator->validateInContext(
+            $object,
+            new ExactlyOneOf(['foo', 'bar'], multipleMessage: 'custom.multiple.message'),
+            $context,
+        );
     }
 }

@@ -13,6 +13,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUp
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\History\History;
 use Shared\Domain\Publication\History\WooDecision\DocumentHistoryHandler;
 use Shared\Service\HistoryService;
 use Shared\Service\Inventory\DocumentComparator;
@@ -44,7 +45,8 @@ class DocumentHistoryHandlerTest extends UnitTestCase
     public function testHandleAllDocumentsWithdrawn(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getId')->times(2)->andReturn(Uuid::v6());
+        $dossier->expects('getId')
+            ->times(2)->andReturn(Uuid::v6());
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
 
@@ -64,16 +66,22 @@ class DocumentHistoryHandlerTest extends UnitTestCase
 
     public function testHandleDocumentWithdrawn(): void
     {
+        $dossierId = Uuid::v6();
+
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getId')->andReturn($dossierId);
+
         $document = Mockery::mock(Document::class);
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
 
-        $event = new DocumentWithDrawnEvent($document, $reason, $explanation, false);
+        $event = new DocumentWithDrawnEvent($dossier, $document, $reason, $explanation, false);
 
         $this->historyService->expects('addDocumentEntry')->with(
             $document,
             'document_withdraw',
             [
+                History::CONTEXT_ORIGIN_WOO_DECISION_ID => $dossierId->toString(),
                 'explanation' => '%global.document.withdraw.reason.data_in_document%',
                 'explanation_details' => $explanation,
             ],
@@ -84,9 +92,14 @@ class DocumentHistoryHandlerTest extends UnitTestCase
 
     public function testHandleDocumentUpdated(): void
     {
+        $dossierId = Uuid::v6();
+
         $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getId')->times(2)->andReturn($dossierId);
+
         $document = Mockery::mock(Document::class);
         $document->expects('getJudgement')->andReturn(Judgement::NOT_PUBLIC);
+
         $metadata = Mockery::mock(DocumentMetadata::class);
         $metadata->expects('getJudgement')->times(2)->andReturn(Judgement::ALREADY_PUBLIC);
         $metadata->expects('isSuspended')->andReturnTrue();
@@ -102,6 +115,7 @@ class DocumentHistoryHandlerTest extends UnitTestCase
             $document,
             'document_judgement_already_public',
             [
+                History::CONTEXT_ORIGIN_WOO_DECISION_ID => $dossierId->toString(),
                 'old' => '%not_public%',
                 'new' => '%already_public%',
             ],
@@ -113,7 +127,7 @@ class DocumentHistoryHandlerTest extends UnitTestCase
         $this->historyService->expects('addDocumentEntry')->with(
             $document,
             'document_suspended',
-            [],
+            [History::CONTEXT_ORIGIN_WOO_DECISION_ID => $dossierId->toString()],
             HistoryService::MODE_BOTH,
             false,
         );

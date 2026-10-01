@@ -62,6 +62,11 @@ class CsvReader implements FileReaderInterface
         }
     }
 
+    public function hasColumn(string $columnName): bool
+    {
+        return $this->mapping->has($columnName);
+    }
+
     public function getCell(int $rowIndex, string $columnName): mixed
     {
         if (! $this->mapping->has($columnName)) {

@@ -2,9 +2,11 @@
 import AddButton from '@admin-fe/component/button/AddButton.vue';
 import MarkdownEditor from '@admin-fe/component/form/markdown/MarkdownEditor.vue';
 import { uniqueId } from '@js/utils';
-import { computed, ref, useTemplateRef, watch } from 'vue';
+import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
 import {
   createContentTreeNode,
+  focusAfterRemoval,
+  moveItem,
   parseContentTree,
   pruneEmptyContentTreeChildren,
 } from './content-tree';
@@ -50,8 +52,24 @@ const addNode = () => {
   json.value.children = [...children.value, createContentTreeNode()];
 };
 
-const removeNode = (index: number) => {
+const root = useTemplateRef<HTMLElement>('root');
+const addNodeButton =
+  useTemplateRef<InstanceType<typeof AddButton>>('addNodeButton');
+
+const removeNode = async (index: number) => {
   json.value.children = children.value.filter((_, i) => i !== index);
+  await nextTick();
+  focusAfterRemoval(
+    root.value,
+    '',
+    index,
+    children.value.length,
+    addNodeButton.value?.$el ?? null,
+  );
+};
+
+const moveNode = (index: number, direction: 'up' | 'down') => {
+  json.value.children = moveItem(children.value, index, direction);
 };
 
 const titleId = uniqueId('content-tree-title');
@@ -60,60 +78,69 @@ const outroId = uniqueId('content-tree-outro');
 </script>
 
 <template>
-  <div class="bhr-form-row">
-    <label class="bhr-label" :for="titleId">Titel</label>
-    <p class="bhr-form-help">
-      Deze wordt boven de gepubliceerde verhaallijn getoond.
-    </p>
-    <input
-      class="bhr-input-text"
-      :id="titleId"
-      type="text"
-      v-model="json.title"
+  <div data-e2e-name="content-tree" ref="root">
+    <div class="bhr-form-row">
+      <label class="bhr-label" :for="titleId">Titel</label>
+      <p class="bhr-form-help">
+        Deze wordt boven de gepubliceerde verhaallijn getoond.
+      </p>
+      <input
+        class="bhr-input-text"
+        data-e2e-name="content-tree-title"
+        :id="titleId"
+        type="text"
+        v-model="json.title"
+      />
+    </div>
+
+    <div class="bhr-form-row mb-4" data-e2e-name="content-tree-intro">
+      <label class="bhr-label" :for="introId">Achtergrond</label>
+      <p class="bhr-form-help">
+        Introductie of context voor bezoekers die het dossier nog niet kennen.
+      </p>
+      <MarkdownEditor :id="introId" name="" v-model:value="json.intro" />
+    </div>
+
+    <p class="bhr-label mb-2">Onderwerpen</p>
+
+    <ContentTreeNode
+      :canSort="children.length > 1"
+      :key="index"
+      :modelValue="node"
+      :number="String(index + 1)"
+      @remove="removeNode(index)"
+      @move="moveNode(index, $event)"
+      @update:modelValue="
+        (value: ContentTreeChildren) => updateNode(index, value)
+      "
+      v-for="(node, index) in children"
+    />
+
+    <div class="pt-2 mb-4">
+      <AddButton
+        data-e2e-name="content-tree-add-node"
+        ref="addNodeButton"
+        @click="addNode"
+        >Onderwerp {{ nextNodeNumber }} toevoegen</AddButton
+      >
+    </div>
+
+    <div class="bhr-form-row" data-e2e-name="content-tree-outro">
+      <label class="bhr-label" :for="outroId">Conclusie</label>
+      <p class="bhr-form-help">
+        Afsluitende samenvatting die onderaan de gepubliceerde verhaallijn
+        staat.
+      </p>
+      <MarkdownEditor :id="outroId" name="" v-model:value="json.outro" />
+    </div>
+
+    <textarea
+      :id="props.id"
+      :name="props.name"
+      :value="serializedJson"
+      hidden
+      readonly
+      ref="textarea"
     />
   </div>
-
-  <div class="bhr-form-row mb-4">
-    <label class="bhr-label" :for="introId">Achtergrond</label>
-    <p class="bhr-form-help">
-      Introductie of context voor bezoekers die het dossier nog niet kennen.
-    </p>
-    <MarkdownEditor :id="introId" name="" v-model:value="json.intro" />
-  </div>
-
-  <p class="bhr-label mb-2">Onderwerpen</p>
-
-  <ContentTreeNode
-    :key="index"
-    :modelValue="node"
-    :number="String(index + 1)"
-    @remove="removeNode(index)"
-    @update:modelValue="
-      (value: ContentTreeChildren) => updateNode(index, value)
-    "
-    v-for="(node, index) in children"
-  />
-
-  <div class="pt-2 mb-4">
-    <AddButton @click="addNode"
-      >Onderwerp {{ nextNodeNumber }} toevoegen</AddButton
-    >
-  </div>
-
-  <div class="bhr-form-row">
-    <label class="bhr-label" :for="outroId">Conclusie</label>
-    <p class="bhr-form-help">
-      Afsluitende samenvatting die onderaan de gepubliceerde verhaallijn staat.
-    </p>
-    <MarkdownEditor :id="outroId" name="" v-model:value="json.outro" />
-  </div>
-
-  <textarea
-    :id="props.id"
-    :name="props.name"
-    :value="serializedJson"
-    hidden
-    readonly
-    ref="textarea"
-  />
 </template>

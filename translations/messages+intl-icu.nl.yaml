@@ -298,6 +298,7 @@ admin.inventory.explanation: "Dit heeft de volgende gevolgen"
 admin.inventory.optional_explanation.1: 'Indien er geen sprake is van een productierapport, druk dan op "{button_name}".'
 admin.inventory.optional_explanation.2: 'Het productierapport kan dan, na publicatie, niet meer alsnog worden toegevoegd.'
 admin.inventory.submit_label: "Upload productierapport"
+admin.inventory.matter_deprecated: 'We zien dat het geüploade productierapport nog Matter-waarden bevat. Deze worden automatisch vervangen door publicatiecontext. Vanaf 1 januari 2027 wordt Matter niet meer ondersteund en wordt alleen publicatiecontext gebruikt.'
 
 admin.organisations.manage: "Organisaties beheren"
 admin.organisation.select: "Kies een organisatie"
@@ -320,7 +321,7 @@ admin.subject.landing_page.slug_help: "Dit komt direct achter \"{ publicBaseUrl 
 admin.subject.landing_page.title: 'Titel'
 admin.subject.landing_page.title_help: 'Verplicht veld, maximaal 200 tekens.'
 admin.subject.landing_page.description: 'Omschrijving'
-admin.subject.landing_page.visible_content_tree: 'Verhaallijn tonen'
+admin.subject.landing_page.visible_content_tree: 'Status van verhaallijn'
 admin.subject.landing_page.content_tree_info: 'Verhaallijnen bieden de mogelijkheid om informatie over een onderwerp of dossier samenhangend te publiceren. Ontwikkelingen kunnen chronologisch of thematisch worden weergegeven, met directe verwijzingen naar de onderliggende publicaties. Zo wordt informatie beter vindbaar en transparanter.'
 admin.subject.landing_page.content_tree_manage: 'Een verhaallijn bestaat uit een titel, achtergrond en conclusie. Daartussen bouw je de inhoud op met onderwerpen. Binnen elk onderwerp kunnen één of meer onderdelen toegevoegd worden voor de onderliggende content.'
 admin.subject.landing_page.content_tree: 'Verhaallijn'
@@ -339,6 +340,7 @@ admin.inquiries.back_to_overview: "Terug naar het overzicht"
 admin.inquiries.generic_errors_title: "De volgende algemene fouten zijn opgetreden"
 admin.inquiries.row_errors_title: "Niet alle zaaknummers zijn gekoppeld om de volgende redenen"
 admin.inquiries.row: "Rij"
+admin.inquiries.matter_deprecated: 'We zien dat het geüploade bestand nog Matter-waarden bevat. Deze worden automatisch vervangen door publicatiecontext. Vanaf 1 januari 2027 wordt Matter niet meer ondersteund en wordt alleen publicatiecontext gebruikt.'
 admin.decisions.manage: "Publicatiebeheer"
 admin.decisions.manage_details: "Publicatiebeheer: details"
 admin.decisions.manage_help: "Deze link biedt toegang tot beheerdersacties voor publicaties."
@@ -1110,6 +1112,7 @@ publication.dossier.error.file_name_too_long: "Rij {rownumber} heeft een te lang
 publication.dossier.error.inquiry_numbers_invalid: "Rij {rownumber} bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
 publication.dossier.error.invalid_link: "Rij {rownumber} heeft een ongeldige URL"
 publication.inquiry.error.inquiry_numbers_invalid: "Bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
+publication.inquiry.error.matter_and_publication_context_combination: "Een bestand met een kolom \"Publicatiecontext\" kan geen kolom voor \"Matter\" bevatten"
 publication.dossier.error.generic_document_row_exception: "Er is een technische fout opgetreden tijdens de verwerking van het productierapport"
 publication.dossier.error.processing_inventory: "Er is een technische fout opgetreden tijdens de verwerking van het productierapport"
 publication.dossier.error.no_inventory_changes: "Het nieuwe productierapport is gelijk aan het huidige rapport"

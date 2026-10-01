@@ -9,7 +9,6 @@ use Override;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceMainDocument;
 use Shared\Tests\Factory\FileInfoFactory;
-use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 /**
@@ -26,7 +25,7 @@ final class AdviceMainDocumentFactory extends PersistentObjectFactory
     {
         return [
             'createdAt' => DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'dossier' => CovenantFactory::new(),
+            'dossier' => AdviceFactory::new(),
             'fileInfo' => FileInfoFactory::new(),
             'formalDate' => self::faker()->plainDate(),
             'grounds' => self::faker()->optional(default: [])->words(),

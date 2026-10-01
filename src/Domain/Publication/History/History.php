@@ -13,6 +13,8 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Index(columns: ['type', 'identifier'])]
 class History
 {
+    public const string CONTEXT_ORIGIN_WOO_DECISION_ID = 'originWooDecisionId';
+
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]

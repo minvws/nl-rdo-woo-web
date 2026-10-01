@@ -28,9 +28,8 @@ class CommonListValidatorTest extends UnitTestCase
         }
 
         $validator = new CommonListValidator();
-        $validator->initialize($context);
 
-        $validator->validate($input, new CommonList());
+        $validator->validateInContext($input, new CommonList(), $context);
     }
 
     /**

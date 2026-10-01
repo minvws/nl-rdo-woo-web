@@ -206,10 +206,11 @@ tasks:
     vars:
       tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
+      - task: :d:create-cache-volumes
       - task: :dc
         vars:
           SUB_CMD: >
-            run -e ENVIRONMENT=test -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            run --no-deps -e ENVIRONMENT=test -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run robot --include '{{.tag | default "testdossiers"}}' --exclude skip-test-acc {{.ROBOT_PARAMS}}"
 
   test:run:api:
@@ -217,10 +218,11 @@ tasks:
     vars:
       tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
+      - task: :d:create-cache-volumes
       - task: :dc
         vars:
           SUB_CMD: >
-            run -e ENVIRONMENT=test -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            run --no-deps -e ENVIRONMENT=test -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --exclude failing --exclude skip-test-acc {{.ROBOT_PARAMS}}"
 
   acc:run:
@@ -228,10 +230,11 @@ tasks:
     vars:
       tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
+      - task: :d:create-cache-volumes
       - task: :dc
         vars:
           SUB_CMD: >
-            run -e ENVIRONMENT=acc -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            run --no-deps -e ENVIRONMENT=acc -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run robot --include '{{.tag | default "testdossiers"}}' --exclude skip-test-acc {{.ROBOT_PARAMS}}"
 
   acc:run:api:
@@ -239,10 +242,11 @@ tasks:
     vars:
       tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
+      - task: :d:create-cache-volumes
       - task: :dc
         vars:
           SUB_CMD: >
-            run -e ENVIRONMENT=acc -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            run --no-deps -e ENVIRONMENT=acc -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run pabot --processes 8 --artifactsinsubfolders --outputdir results --include api --exclude failing --exclude skip-test-acc {{.ROBOT_PARAMS}}"
 
   prod:run:sanity:
@@ -250,10 +254,11 @@ tasks:
     vars:
       tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
+      - task: :d:create-cache-volumes
       - task: :dc
         vars:
           SUB_CMD: >
-            run -e ENVIRONMENT=prod -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
+            run --no-deps -e ENVIRONMENT=prod -e TENANT={{.tenant}} -e HEADLESS=true --rm robot
             /bin/bash -c "uv run robot --include sanity --exclude sanity-admin {{.ROBOT_PARAMS}}"
 
   lint:

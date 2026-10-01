@@ -39,7 +39,7 @@ Om met de Test en Acceptatie te communiceren, doe dan het volgende:
    Neem voor de waardes contact op met het team.
 2. Plaats in `/certs/test` en/of `/certs/acc` de `.pem` en `.key` files van een instantie (bijvoorbeeld VWS of MinFin) van de omgeving. Neem voor deze files ook contact op met het team.
 3. In Bruno, kies rechtsboven voor **Test - minvws** of **Acc - minvws** als environment.
-4. In Bruno, voer het volgende request uit: Organisation > **Retrieves the collection of OrganisationDto resources**
+4. In Bruno, voer het volgende request uit: Organisation > **Retrieve organisations**
 
    Dit zal de `organisationId` variabele vullen met de waarde van *E2E Test Organisation* van de betreffende omgeving.
 

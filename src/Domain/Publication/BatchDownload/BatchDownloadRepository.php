@@ -10,6 +10,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use SortDirection;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
@@ -83,8 +84,8 @@ class BatchDownloadRepository extends ServiceEntityRepository
             ->setParameter('pending', BatchDownloadStatus::PENDING)
             ->setParameter('failed', BatchDownloadStatus::FAILED)
             ->setParameter('now', new DateTimeImmutable())
-            ->orderBy('priority', 'DESC')
-            ->addOrderBy('b.expiration', 'DESC')
+            ->orderBy('priority', SortDirection::Descending)
+            ->addOrderBy('b.expiration', SortDirection::Descending)
             ->setMaxResults(1);
 
         /** @var ?BatchDownload */

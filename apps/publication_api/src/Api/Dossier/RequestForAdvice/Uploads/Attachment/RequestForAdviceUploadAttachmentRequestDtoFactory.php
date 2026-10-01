@@ -6,6 +6,7 @@ namespace PublicationApi\Api\Dossier\RequestForAdvice\Uploads\Attachment;
 
 use GuzzleHttp\Psr7\Utils;
 use PublicationApi\Api\ExternalIdFactory;
+use PublicationApi\Api\UuidFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
@@ -20,7 +21,7 @@ final class RequestForAdviceUploadAttachmentRequestDtoFactory
     ): RequestForAdviceUploadAttachmentRequestDto {
         return new RequestForAdviceUploadAttachmentRequestDto(
             Utils::streamFor($request->getContent(asResource: true)),
-            $organisationId,
+            UuidFactory::create($organisationId),
             ExternalIdFactory::create($dossierExternalId),
             ExternalIdFactory::create($attachmentExternalId),
         );

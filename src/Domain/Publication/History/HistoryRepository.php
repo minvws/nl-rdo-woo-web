@@ -10,6 +10,8 @@ use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\HistoryService;
+use Shared\ValueObject\PlainDate;
+use SortDirection;
 
 /**
  * @extends ServiceEntityRepository<History>
@@ -31,9 +33,9 @@ class HistoryRepository extends ServiceEntityRepository
             ->andWhere('h.identifier = :identifier')
             ->setParameter('type', $type)
             ->setParameter('identifier', $identifier)
-            ->orderBy('h.createdDt', 'DESC')
+            ->orderBy('h.createdDt', SortDirection::Descending)
             // createdDt is a TIMESTAMP(0), so entries from one request tie; ids are time-ordered.
-            ->addOrderBy('h.id', 'DESC');
+            ->addOrderBy('h.id', SortDirection::Descending);
 
         if ($mode === HistoryService::MODE_PUBLIC) {
             if ($type == HistoryService::TYPE_DOSSIER) {
@@ -43,16 +45,12 @@ class HistoryRepository extends ServiceEntityRepository
             }
 
             if ($type == HistoryService::TYPE_DOCUMENT) {
-                $document = $this->getEntityManager()->getRepository(Document::class)->find($identifier);
-                if ($document) {
-                    /** @var WooDecision|null $dossier */
-                    $dossier = $document->getDossiers()[0] ?? null;
-                    if ($dossier) {
-                        // If we show frontend dossiers, we only have to show entries since publication date of the dossier
-                        $qb->andWhere('h.createdDt >= :pubdate')
-                            ->setParameter('pubdate', $dossier->getPublicationDate() ?? '1970-01-01');
-                    }
+                $cutOffDate = $this->getPublicHistoryCutOffDate($identifier);
+                if ($cutOffDate === null) {
+                    return [];
                 }
+
+                $qb->andWhere('h.createdDt >= :pubdate')->setParameter('pubdate', $cutOffDate);
             }
         }
 
@@ -63,5 +61,29 @@ class HistoryRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    private function getPublicHistoryCutOffDate(string $identifier): ?PlainDate
+    {
+        $document = $this->getEntityManager()->getRepository(Document::class)->find($identifier);
+        if ($document === null) {
+            return null;
+        }
+
+        $cutOffDate = null;
+
+        /** @var WooDecision $dossier */
+        foreach ($document->getDossiers() as $dossier) {
+            $publicationDate = $dossier->getPublicationDate();
+            if ($publicationDate === null || ! $dossier->getStatus()->isPubliclyAvailable()) {
+                continue;
+            }
+
+            if ($cutOffDate === null || $publicationDate->isBefore($cutOffDate)) {
+                $cutOffDate = $publicationDate;
+            }
+        }
+
+        return $cutOffDate;
     }
 }

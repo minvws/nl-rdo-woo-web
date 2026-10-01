@@ -7,7 +7,7 @@ rules:
   # Guards against the #6961 regression: API Platform emitting an empty response schema
   # (just `{ type: object }` with no properties), which renders as an empty body in the docs.
   woo:success-response-body-required:
-    severity: warn
+    severity: error
     message: "{{property}} success response should define a non-empty body: 'content' with at least one media type whose 'schema' is not an empty object."
     given: >-
       $..[responses][?(@property && @property.match(/^[23]\d\d$/) && @property !== '204')]
@@ -35,3 +35,21 @@ rules:
                           const: object
                       required: ["type"]
                       additionalProperties: false
+
+  # Fires when a response exempted in `overrides` grows a body and the exemption goes stale.
+  # Address each response by path + method + status, exactly like the exemption below it:
+  woo:no-body-exception-is-stale:
+    severity: error
+    message: "{{path}} now defines a body: drop its exemption from the 'overrides' block so woo:success-response-body-required checks it again."
+    given:
+      - $.paths['/organisation/{organisationId}/dossiers/woo-decision/external/{dossierExternalId}/uploads/document/external/{documentExternalId}/withdraw'].put.responses.202
+    then:
+      field: content
+      function: undefined
+
+overrides:
+  # woo_decision_document_withdraw: the withdrawal is queued, so 202 has nothing to return.
+  - files:
+      - "**/openapi.json#/paths/~1organisation~1%7BorganisationId%7D~1dossiers~1woo-decision~1external~1%7BdossierExternalId%7D~1uploads~1document~1external~1%7BdocumentExternalId%7D~1withdraw/put/responses/202"
+    rules:
+      woo:success-response-body-required: "off"

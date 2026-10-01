@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use SortDirection;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -52,7 +53,7 @@ class MainDocumentRepository extends ServiceEntityRepository
             ->join('md.dossier', 'd')
             ->where('d.status = :status')
             ->andWhere('md.fileInfo.uploaded = true')
-            ->orderBy('md.createdAt', 'ASC')
+            ->orderBy('md.createdAt', SortDirection::Ascending)
             ->setParameter('status', DossierStatus::PUBLISHED);
 
         return $qb->getQuery()->toIterable();

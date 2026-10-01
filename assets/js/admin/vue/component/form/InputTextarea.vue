@@ -94,6 +94,7 @@ const ariaDescribedBy = computed(() =>
       :aria-describedby="ariaDescribedBy"
       :aria-invalid="inputStore.hasVisibleErrors"
       :class="inputClass"
+      :data-e2e-name="`${props.name}-textarea`"
       :id="inputId"
       :name="props.name"
       :required="props.required"

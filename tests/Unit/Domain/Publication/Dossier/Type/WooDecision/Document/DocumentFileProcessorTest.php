@@ -15,6 +15,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentFileProc
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\History\History;
 use Shared\Domain\Upload\Process\FileStorer;
 use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\HistoryService;
@@ -108,12 +109,17 @@ final class DocumentFileProcessorTest extends UnitTestCase
             ->expects('getSize')
             ->andReturn(1024);
 
+        $this->dossier
+            ->expects('getId')
+            ->andReturn($dossierId = Uuid::v6());
+
         $this->historyService
             ->expects('addDocumentEntry')
             ->with(
                 $this->document,
                 'document_uploaded',
                 [
+                    History::CONTEXT_ORIGIN_WOO_DECISION_ID => $dossierId->toString(),
                     'filetype' => $fileInfoType,
                     'filesize' => '1 KB',
                 ],
@@ -176,12 +182,17 @@ final class DocumentFileProcessorTest extends UnitTestCase
             ->expects('getSize')
             ->andReturn(1024);
 
+        $this->dossier
+            ->expects('getId')
+            ->andReturn($dossierId = Uuid::v6());
+
         $this->historyService
             ->expects('addDocumentEntry')
             ->with(
                 $this->document,
                 'document_uploaded',
                 [
+                    History::CONTEXT_ORIGIN_WOO_DECISION_ID => $dossierId->toString(),
                     'filetype' => $fileInfoType,
                     'filesize' => '1 KB',
                 ],
@@ -232,12 +243,17 @@ final class DocumentFileProcessorTest extends UnitTestCase
                 Mockery::on(static fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
             );
 
+        $this->dossier
+            ->expects('getId')
+            ->andReturn($dossierId = Uuid::v6());
+
         $this->historyService
             ->expects('addDocumentEntry')
             ->with(
                 $this->document,
                 'document_uploaded',
                 [
+                    History::CONTEXT_ORIGIN_WOO_DECISION_ID => $dossierId->toString(),
                     'filetype' => 'pdf',
                     'filesize' => '1 KB',
                 ],
@@ -284,12 +300,17 @@ final class DocumentFileProcessorTest extends UnitTestCase
                 Mockery::on(static fn (IngestProcessOptions $options): bool => $options->forceRefresh()),
             );
 
+        $this->dossier
+            ->expects('getId')
+            ->andReturn($dossierId = Uuid::v6());
+
         $this->historyService
             ->expects('addDocumentEntry')
             ->with(
                 $this->document,
                 'document_replaced',
                 [
+                    History::CONTEXT_ORIGIN_WOO_DECISION_ID => $dossierId->toString(),
                     'filetype' => 'pdf',
                     'filesize' => '1 KB',
                 ],
@@ -347,12 +368,17 @@ final class DocumentFileProcessorTest extends UnitTestCase
             ->expects('getType')
             ->andReturn($fileType);
 
+        $this->dossier
+            ->expects('getId')
+            ->andReturn($dossierId = Uuid::v6());
+
         $this->historyService
             ->expects('addDocumentEntry')
             ->with(
                 $this->document,
                 'document_uploaded',
                 [
+                    History::CONTEXT_ORIGIN_WOO_DECISION_ID => $dossierId->toString(),
                     'filetype' => $fileType,
                     'filesize' => '1 KB',
                 ],

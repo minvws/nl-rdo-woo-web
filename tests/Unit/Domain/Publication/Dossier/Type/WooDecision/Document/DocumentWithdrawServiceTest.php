@@ -52,6 +52,7 @@ class DocumentWithdrawServiceTest extends UnitTestCase
     {
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
+        $dossier = Mockery::mock(WooDecision::class);
         $document = Mockery::mock(Document::class);
 
         $this->entityStorageService->expects('deleteAllFilesForEntity')->with($document);
@@ -66,24 +67,25 @@ class DocumentWithdrawServiceTest extends UnitTestCase
 
         $this->documentDispatcher
             ->expects('dispatchDocumentWithdrawnEvent')
-            ->with($document, $reason, $explanation, false);
+            ->with($dossier, $document, $reason, $explanation, false);
 
         $this->documentRepository->expects('save')->with($document, true);
 
-        $this->service->withdraw($document, $reason, $explanation);
+        $this->service->withdraw($dossier, $document, $reason, $explanation);
     }
 
     public function testWithdrawThrowsExceptionWhenDocumentDoesNotSupportWithdraw(): void
     {
         $reason = DocumentWithdrawReason::DATA_IN_DOCUMENT;
         $explanation = 'foo bar';
+        $dossier = Mockery::mock(WooDecision::class);
         $document = Mockery::mock(Document::class);
 
         $document->expects('shouldBeUploaded')->andReturnFalse();
 
         $this->expectException(DocumentWorkflowException::class);
 
-        $this->service->withdraw($document, $reason, $explanation);
+        $this->service->withdraw($dossier, $document, $reason, $explanation);
     }
 
     public function testWithdrawAllDocuments(): void
@@ -104,7 +106,7 @@ class DocumentWithdrawServiceTest extends UnitTestCase
 
         $this->documentDispatcher
             ->expects('dispatchDocumentWithdrawnEvent')
-            ->with($documentA, $reason, $explanation, true);
+            ->with($dossier, $documentA, $reason, $explanation, true);
 
         $this->documentRepository->expects('save')->with($documentA, true);
 
@@ -119,7 +121,7 @@ class DocumentWithdrawServiceTest extends UnitTestCase
 
         $this->documentDispatcher
             ->expects('dispatchDocumentWithdrawnEvent')
-            ->with($documentB, $reason, $explanation, true);
+            ->with($dossier, $documentB, $reason, $explanation, true);
 
         $this->documentRepository->expects('save')->with($documentB, true);
 

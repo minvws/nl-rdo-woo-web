@@ -55,15 +55,18 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     #[ORM\Column(type: Types::JSON, nullable: false)]
     private array $rowErrors = [];
 
-    /** @var array<string, string> */
+    /** @var array<string, string>|null */
     #[ORM\Column(type: Types::JSON, nullable: true)]
-    private array $changeset;
+    private ?array $changeset = null;
 
     #[ORM\Column(length: 255)]
     private string $status;
 
     #[ORM\Column(type: 'smallint', nullable: false)]
     private int $progress;
+
+    #[ORM\Column(nullable: false, options: ['default' => false])]
+    private bool $hasMatter = false;
 
     #[Embedded(class: FileInfo::class, columnPrefix: 'file_')]
     private FileInfo $file;
@@ -209,6 +212,18 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     public function getProgress(): int
     {
         return $this->progress;
+    }
+
+    public function hasMatter(): bool
+    {
+        return $this->hasMatter;
+    }
+
+    public function setHasMatter(bool $hasMatter): self
+    {
+        $this->hasMatter = $hasMatter;
+
+        return $this;
     }
 
     public function isPending(): bool

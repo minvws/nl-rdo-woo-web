@@ -19,17 +19,22 @@ use Shared\Service\Inventory\InventoryDataHelper;
 use Shared\Service\Inventory\MetadataField;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\DocumentMatter;
+use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\PlainDate;
 use Shared\ValueObject\PublicationContext;
 use Webmozart\Assert\Assert;
 
+use function array_map;
 use function count;
 use function filter_var;
 use function intval;
 use function is_string;
 use function mb_strlen;
+use function preg_match;
+use function sprintf;
 use function str_starts_with;
 use function strlen;
+use function substr;
 use function trim;
 
 use const FILTER_VALIDATE_URL;
@@ -126,13 +131,18 @@ class InventoryReader implements InventoryReaderInterface
             links: $links,
             remark: $remark,
             publicationContext: $this->getPublicationContext($rowIdx, $documentPrefix),
-            refersTo: InventoryDataHelper::separateValues($this->reader->getOptionalString($rowIdx, MetadataField::REFERS_TO->value)),
+            refersTo: $this->getRefersTo($rowIdx, $documentPrefix),
         );
     }
 
     public function getCount(): int
     {
         return $this->reader->getCount();
+    }
+
+    public function hasMatterColumn(): bool
+    {
+        return $this->reader->hasColumn(MetadataField::MATTER->value);
     }
 
     /**
@@ -252,6 +262,52 @@ class InventoryReader implements InventoryReaderInterface
         }
 
         throw InventoryReaderException::forInvalidPublicationContextInRow($rowIdx);
+    }
+
+    /**
+     * @return array<array-key, string>
+     */
+    private function getRefersTo(int $rowIdx, string $documentPrefix): array
+    {
+        $referrals = InventoryDataHelper::separateValues(
+            $this->reader->getOptionalString($rowIdx, MetadataField::REFERS_TO->value),
+        );
+
+        $matter = $this->getMatter($rowIdx);
+        if ($matter === null) {
+            return $referrals;
+        }
+
+        return array_map(
+            function (string $referral) use ($documentPrefix, $matter): string {
+                return $this->getLegacyReferral($documentPrefix, $matter, $referral)->toString();
+            },
+            $referrals,
+        );
+    }
+
+    private function getLegacyReferral(
+        string $documentPrefix,
+        DocumentMatter $defaultMatter,
+        string $referral,
+    ): DocumentNumber {
+        if ($documentPrefix !== '' && str_starts_with($referral, $documentPrefix)) {
+            $referral = substr($referral, strlen($documentPrefix) + 1);
+        }
+
+        preg_match('/(.*)([-_])(.*)$/', $referral, $matches);
+        if (count($matches) === 4) {
+            $matter = DocumentMatter::create($matches[1]);
+            $documentId = DocumentId::create($matches[3]);
+        } else {
+            $matter = $defaultMatter;
+            $documentId = DocumentId::create($referral);
+        }
+
+        return DocumentNumber::fromPublicationContextAndDocumentId(
+            PublicationContext::fromString(sprintf('%s-%s', $documentPrefix, $matter->toString())),
+            $documentId,
+        );
     }
 
     private function assertMatterAndPublicationContextCombinationIsValid(int $rowIdx): void

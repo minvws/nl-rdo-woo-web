@@ -12,6 +12,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierNotifications;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\History\History;
+use Shared\Domain\Publication\History\HistoryWooDecisionOrigin;
+use Shared\Domain\Publication\History\HistoryWooDecisionOriginResolver;
 use Shared\Service\HistoryService;
 use Shared\Service\Security\OrganisationSwitcher;
 use Shared\Tests\Unit\UnitTestCase;
@@ -26,12 +29,14 @@ class WooExtensionRuntimeTest extends UnitTestCase
     private RequestStack&MockInterface $requestStack;
     private WooExtensionRuntime $runtime;
     private DossierNotificationsFactory&MockInterface $dossierNotificationsFactory;
+    private HistoryWooDecisionOriginResolver&MockInterface $historyWooDecisionOriginResolver;
 
     #[Override]
     protected function setUp(): void
     {
         $this->requestStack = Mockery::mock(RequestStack::class);
         $this->dossierNotificationsFactory = Mockery::mock(DossierNotificationsFactory::class);
+        $this->historyWooDecisionOriginResolver = Mockery::mock(HistoryWooDecisionOriginResolver::class);
 
         $this->runtime = new WooExtensionRuntime(
             $this->requestStack,
@@ -39,6 +44,7 @@ class WooExtensionRuntimeTest extends UnitTestCase
             Mockery::mock(HistoryService::class),
             Mockery::mock(DossierPathHelper::class),
             $this->dossierNotificationsFactory,
+            $this->historyWooDecisionOriginResolver,
         );
     }
 
@@ -104,5 +110,18 @@ class WooExtensionRuntimeTest extends UnitTestCase
             $notifications,
             $this->runtime->getDossierNotifications($dossier),
         );
+    }
+
+    public function testHistoryWooDecisionOrigins(): void
+    {
+        $entries = [Mockery::mock(History::class)];
+        $origins = [$this->getFaker()->uuid() => Mockery::mock(HistoryWooDecisionOrigin::class)];
+
+        $this->historyWooDecisionOriginResolver
+            ->expects('resolve')
+            ->with($entries)
+            ->andReturn($origins);
+
+        $this->assertSame($origins, $this->runtime->historyWooDecisionOrigins($entries));
     }
 }

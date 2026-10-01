@@ -46,7 +46,8 @@ Login Admin
     ${otp} =  Get Otp  ${otp_secret}
     Fill Text  id=auth-code  ${otp}
     Click  //*[@data-e2e-name="check"]
-    ${password_change_required} =  Get Element Count  //h2[contains(.,'Werk je wachtwoord bij')]
+    Parse Potential Otp Error
+    ${password_change_required} =  Get Element Count  //*[@data-e2e-name="update-password-required"]
     IF  ${password_change_required} > 0
       Fill Text  id=change_password_current_password  ${password}
       Fill Text  id=change_password_plainPassword_first  ${new_password}
@@ -72,6 +73,12 @@ Parse Potential Login Error
     END
   END
 
+Parse Potential Otp Error
+  ${otp_error_visible} =  Get Element Count  //*[@id="auth-code-error"]
+  IF  ${otp_error_visible}
+    Fatal Error  Login failed: OTP code was rejected (auth-code-error is visible)
+  END
+
 Click Log Out
   Click  //*[@data-e2e-name="logout-link"]
 
@@ -81,11 +88,11 @@ No-Click Logout
 Upload Attachment
   [Arguments]  ${type}  ${date}=01012022
   Click  //*[@data-e2e-name="attachments"]//*[@data-e2e-name="add-file"]
-  Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${ATTACHMENT_LOCATION}
-  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${ATTACHMENT_FILENAME}
-  Select Options By  //dialog[@open]//select[@name="type"]  text  ${type}
-  Type Text  //dialog[@open]//input[@name="formalDate"]  ${date}
-  Click  //dialog[@open]//button[@type="submit"]
+  Upload File By Selector  //dialog[@open]//*[@data-e2e-name="uploadUuid-input"]  ${ATTACHMENT_LOCATION}
+  Wait For Condition  Text  //dialog[@open]//*[@data-e2e-name="uploaded-file"]  contains  ${ATTACHMENT_FILENAME}
+  Select Options By  //dialog[@open]//*[@data-e2e-name="type-select"]  text  ${type}
+  Type Text  //dialog[@open]//*[@data-e2e-name="formalDate-input"]  ${date}
+  Click  //dialog[@open]//*[@data-e2e-name="submit"]
   Wait For Condition  Text  //*[@id="inhoud"]  contains  Bijlage '${ATTACHMENT_FILENAME}' is toegevoegd.
 
 Wait For Queue To Empty

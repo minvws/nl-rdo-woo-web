@@ -10,6 +10,7 @@ use Shared\Domain\WooIndex\Builder\SitemapIndexBuilder;
 use Shared\Domain\WooIndex\Builder\SitemapUrlBuilder;
 use Shared\Domain\WooIndex\Producer\ProducerSignal;
 use Shared\Domain\WooIndex\Producer\UrlProducer;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use function fclose;
@@ -23,6 +24,7 @@ readonly class WooIndex
     public const MAX_SITEMAP_SIZE = 49 * 1024 * 1024;
 
     public function __construct(
+        #[Target('wooIndexStorage')]
         private FilesystemOperator $wooIndexStorage,
         private UrlProducer $urlProducer,
         private SitemapIndexBuilder $sitemapIndexBuilder,

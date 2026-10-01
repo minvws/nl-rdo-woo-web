@@ -16,6 +16,7 @@ use Shared\Domain\Publication\BatchDownload\BatchDownloadScope;
 use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\LinkedWooDecisionUpdater;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
@@ -58,6 +59,7 @@ class InventoryUpdaterTest extends UnitTestCase
     private ProductionReportDispatcher&MockInterface $productionReportDispatcher;
     private BatchDownloadService&MockInterface $batchDownloadService;
     private WooDecisionDispatcher&MockInterface $wooDecisionDispatcher;
+    private LinkedWooDecisionUpdater&MockInterface $linkedWooDecisionUpdater;
     private InventoryUpdater $inventoryUpdater;
 
     protected function setUp(): void
@@ -72,6 +74,7 @@ class InventoryUpdaterTest extends UnitTestCase
         $this->productionReportDispatcher = Mockery::mock(ProductionReportDispatcher::class);
         $this->batchDownloadService = Mockery::mock(BatchDownloadService::class);
         $this->wooDecisionDispatcher = Mockery::mock(WooDecisionDispatcher::class);
+        $this->linkedWooDecisionUpdater = Mockery::mock(LinkedWooDecisionUpdater::class);
 
         $this->inventoryUpdater = new InventoryUpdater(
             $this->entityManager,
@@ -84,6 +87,7 @@ class InventoryUpdaterTest extends UnitTestCase
             $this->productionReportDispatcher,
             $this->batchDownloadService,
             $this->wooDecisionDispatcher,
+            $this->linkedWooDecisionUpdater,
         );
 
         parent::setUp();
@@ -95,7 +99,7 @@ class InventoryUpdaterTest extends UnitTestCase
         $inquiryOneId = Uuid::v6();
         $inquiryTwoId = Uuid::v6();
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getId')->twice()->andReturn($dossierId);
+        $dossier->allows('getId')->andReturn($dossierId);
 
         $inquiryOne = Mockery::mock(Inquiry::class);
         $inquiryOne->expects('getId')->andReturn($inquiryOneId);
@@ -105,7 +109,9 @@ class InventoryUpdaterTest extends UnitTestCase
 
         $dossier->expects('getInquiries')->andReturn(new ArrayCollection([$inquiryOne, $inquiryTwo]));
 
+        $updatedDocumentId = Uuid::v6();
         $updatedDocument = Mockery::mock(Document::class);
+        $updatedDocument->expects('getId')->andReturn($updatedDocumentId);
         $deletedDocument = Mockery::mock(Document::class);
 
         $changeset = new InventoryChangeset([
@@ -144,6 +150,54 @@ class InventoryUpdaterTest extends UnitTestCase
 
         $this->entityManager->expects('detach')->with($updatedDocument);
         $this->entityManager->expects('detach')->with($deletedDocument);
+
+        $this->linkedWooDecisionUpdater->expects('updateOtherLinkedTo')->with($dossier, [$updatedDocumentId]);
+
+        $this->inventoryUpdater->sendMessagesForChangeset($changeset, $dossier, $runProgress);
+    }
+
+    public function testSendMessagesForChangesetOnlyPassesTheUpdatedDocuments(): void
+    {
+        $dossierId = Uuid::v6();
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->allows('getId')->andReturn($dossierId);
+        $dossier->expects('getInquiries')->andReturn(new ArrayCollection());
+
+        $updatedDocumentId = Uuid::v6();
+        $updatedDocument = Mockery::mock(Document::class);
+        $updatedDocument->expects('getId')->andReturn($updatedDocumentId);
+
+        $addedDocument = Mockery::mock(Document::class);
+
+        $changeset = new InventoryChangeset([
+            'pfx-matter-1' => InventoryChangeset::UPDATED,
+            'pfx-matter-2' => InventoryChangeset::ADDED,
+        ]);
+
+        $runProgress = Mockery::mock(RunProgress::class);
+        $runProgress->expects('tick')->times(2);
+
+        $this->productionReportDispatcher->expects('dispatchGenerateInventoryCommand')->with($dossierId);
+        $this->batchDownloadService->expects('refresh');
+        $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($dossierId);
+
+        $this->documentRepository
+            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->with(Mockery::on($this->documentNumberMatcher('pfx-matter-1')))
+            ->andReturn($updatedDocument);
+
+        $this->documentRepository
+            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->with(Mockery::on($this->documentNumberMatcher('pfx-matter-2')))
+            ->andReturn($addedDocument);
+
+        $this->documentUpdater->expects('asyncUpdate')->with($updatedDocument);
+        $this->documentUpdater->expects('asyncUpdate')->with($addedDocument);
+
+        $this->entityManager->expects('detach')->with($updatedDocument);
+        $this->entityManager->expects('detach')->with($addedDocument);
+
+        $this->linkedWooDecisionUpdater->expects('updateOtherLinkedTo')->with($dossier, [$updatedDocumentId]);
 
         $this->inventoryUpdater->sendMessagesForChangeset($changeset, $dossier, $runProgress);
     }
@@ -204,7 +258,7 @@ class InventoryUpdaterTest extends UnitTestCase
             links: [],
             remark: null,
             publicationContext: PublicationContext::fromString('PFX-MAT'),
-            refersTo: ['matter-77'],
+            refersTo: ['PFX-MAT-77'],
         );
 
         $reader = Mockery::mock(InventoryReaderInterface::class);
@@ -231,12 +285,16 @@ class InventoryUpdaterTest extends UnitTestCase
             ->andReturn($createdDocument);
 
         $this->documentUpdater
-            ->expects('databaseUpdate')
-            ->with($metadata, $dossier, Mockery::type(Document::class));
+            ->expects('linkDocument')
+            ->with(Mockery::type(Document::class), $dossier);
+
+        $this->documentUpdater
+            ->expects('updateMetadata')
+            ->with($metadata, Mockery::type(Document::class));
 
         $this->documentUpdater
             ->expects('updateDocumentReferralsByDocumentNumber')
-            ->with($dossier, $createdDocument, ['matter-77']);
+            ->with($createdDocument, ['PFX-MAT-77']);
 
         $this->inquiryService
             ->expects('applyChangesetAsync')
@@ -297,8 +355,12 @@ class InventoryUpdaterTest extends UnitTestCase
             ->andReturn(null);
 
         $this->documentUpdater
-            ->expects('databaseUpdate')
-            ->with($metadata, $dossier, Mockery::type(Document::class))
+            ->expects('linkDocument')
+            ->with(Mockery::type(Document::class), $dossier);
+
+        $this->documentUpdater
+            ->expects('updateMetadata')
+            ->with($metadata, Mockery::type(Document::class))
             ->andThrows(new RuntimeException('some runtime exception'));
 
         $run = Mockery::mock(ProductionReportProcessRun::class);
@@ -357,8 +419,12 @@ class InventoryUpdaterTest extends UnitTestCase
 
         $thrown = ProcessInventoryException::forGenericRowException(new RuntimeException('some runtime exception'));
         $this->documentUpdater
-            ->expects('databaseUpdate')
-            ->with($metadata, $dossier, Mockery::type(Document::class))
+            ->expects('linkDocument')
+            ->with(Mockery::type(Document::class), $dossier);
+
+        $this->documentUpdater
+            ->expects('updateMetadata')
+            ->with($metadata, Mockery::type(Document::class))
             ->andThrows($thrown);
 
         $run = Mockery::mock(ProductionReportProcessRun::class);
@@ -519,8 +585,12 @@ class InventoryUpdaterTest extends UnitTestCase
             ->andReturnNull();
 
         $this->documentUpdater
-            ->expects('databaseUpdate')
-            ->with($metadata, $dossier, Mockery::type(Document::class));
+            ->expects('linkDocument')
+            ->with(Mockery::type(Document::class), $dossier);
+
+        $this->documentUpdater
+            ->expects('updateMetadata')
+            ->with($metadata, Mockery::type(Document::class));
 
         $this->entityManager->expects('flush');
         $this->entityManager->allows('detach');

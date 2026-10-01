@@ -34,7 +34,7 @@ class DraftDecisionAttachment extends AbstractAttachment
     }
 
     /**
-     * @return array<array-key, AttachmentType>
+     * @return list<AttachmentType>
      */
     #[Override]
     public static function getAllowedTypes(): array

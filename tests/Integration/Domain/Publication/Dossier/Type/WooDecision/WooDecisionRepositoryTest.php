@@ -21,6 +21,7 @@ use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Uid\Uuid;
 
 use function array_map;
+use function range;
 use function reset;
 use function Zenstruck\Foundry\Persistence\save;
 
@@ -39,17 +40,17 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
     {
         $wooDecision = WooDecisionFactory::createOne();
 
-        DocumentFactory::createone([
+        DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
         ]);
 
-        DocumentFactory::createone([
+        DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
         ]);
 
-        DocumentFactory::createone([
+        DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::NOT_PUBLIC,
         ]);
@@ -65,7 +66,7 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
     {
         $wooDecision = WooDecisionFactory::createOne();
 
-        $doc = DocumentFactory::createone([
+        $doc = DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
         ]);
 
@@ -80,32 +81,95 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
         self::assertEquals($wooDecision->getDocumentPrefix(), $dossierReference->getDocumentPrefix());
     }
 
+    public function testHasPublishedDossierForDocumentExcept(): void
+    {
+        $exportDossier = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED]);
+        $publishedDossier = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED]);
+        $previewDossier = WooDecisionFactory::createOne(['status' => DossierStatus::PREVIEW]);
+
+        $documentWithPublishedDossier = DocumentFactory::createOne([
+            'dossiers' => [$exportDossier, $publishedDossier],
+        ]);
+        $documentWithPreviewDossier = DocumentFactory::createOne([
+            'dossiers' => [$exportDossier, $previewDossier],
+        ]);
+        $documentWithoutOtherDossier = DocumentFactory::createOne([
+            'dossiers' => [$exportDossier],
+        ]);
+
+        self::assertTrue($this->wooDecisionRepository->hasPublishedDossierForDocumentExcept(
+            $documentWithPublishedDossier->getDocumentNumber(),
+            $exportDossier,
+        ));
+        self::assertFalse($this->wooDecisionRepository->hasPublishedDossierForDocumentExcept(
+            $documentWithPreviewDossier->getDocumentNumber(),
+            $exportDossier,
+        ));
+        self::assertFalse($this->wooDecisionRepository->hasPublishedDossierForDocumentExcept(
+            $documentWithoutOtherDossier->getDocumentNumber(),
+            $exportDossier,
+        ));
+    }
+
+    public function testHasPubliclyAvailableDossierForDocument(): void
+    {
+        $publishedDossier = WooDecisionFactory::createOne([
+            'status' => DossierStatus::PUBLISHED,
+        ]);
+        $previewDossier = WooDecisionFactory::createOne([
+            'status' => DossierStatus::PREVIEW,
+        ]);
+        $conceptDossier = WooDecisionFactory::createOne([
+            'status' => DossierStatus::CONCEPT,
+        ]);
+
+        $publishedDocument = DocumentFactory::createOne([
+            'dossiers' => [$publishedDossier],
+        ]);
+        $previewDocument = DocumentFactory::createOne([
+            'dossiers' => [$previewDossier],
+        ]);
+        $conceptDocument = DocumentFactory::createOne([
+            'dossiers' => [$conceptDossier],
+        ]);
+
+        self::assertTrue($this->wooDecisionRepository->hasPubliclyAvailableDossierForDocument(
+            $publishedDocument->getDocumentNumber(),
+        ));
+        self::assertTrue($this->wooDecisionRepository->hasPubliclyAvailableDossierForDocument(
+            $previewDocument->getDocumentNumber(),
+        ));
+        self::assertFalse($this->wooDecisionRepository->hasPubliclyAvailableDossierForDocument(
+            $conceptDocument->getDocumentNumber(),
+        ));
+    }
+
     public function testSearchResultViewModel(): void
     {
         $wooDecision = WooDecisionFactory::createOne();
 
-        DocumentFactory::createone([
+        DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => true,
                 'pageCount' => 5,
             ]),
         ]);
 
-        DocumentFactory::createone([
+        DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => true,
                 'pageCount' => 2,
             ]),
         ]);
 
-        DocumentFactory::createone([
+        DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => true,
                 'pageCount' => 7,
             ]),
@@ -176,34 +240,34 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
         $wooDecision = WooDecisionFactory::createOne();
 
         // Not uploaded, so should not be included
-        DocumentFactory::createone([
+        DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => false,
             ]),
         ]);
 
-        $document = DocumentFactory::createone([
+        $document = DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => true,
             ]),
         ]);
 
         // Suspended, so should not be included
-        DocumentFactory::createone([
+        DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
             'suspended' => true,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => true,
             ]),
         ]);
 
         // Not public, so should not be included
-        DocumentFactory::createone([
+        DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::NOT_PUBLIC,
         ]);
@@ -244,19 +308,19 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
     {
         $wooDecision = WooDecisionFactory::createOne();
 
-        DocumentFactory::createone([
+        DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => false,
             ]),
             'suspended' => false,
         ]);
 
-        $docB = DocumentFactory::createone([
+        $docB = DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => true,
             ]),
             'suspended' => true,
@@ -264,10 +328,10 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
         $docB->withdraw(DocumentWithdrawReason::DATA_IN_DOCUMENT, '');
         save($docB);
 
-        DocumentFactory::createone([
+        DocumentFactory::createOne([
             'dossiers' => [$wooDecision],
             'judgement' => Judgement::PUBLIC,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => true,
             ]),
             'suspended' => true,
@@ -278,5 +342,53 @@ final class WooDecisionRepositoryTest extends SharedWebTestCase
         $this->assertEquals(1, $result['missing_uploads']);
         $this->assertEquals(1, $result['withdrawn']);
         $this->assertEquals(2, $result['suspended']);
+    }
+
+    public function testFindAllLinkedToDocuments(): void
+    {
+        $decisionA = WooDecisionFactory::createOne();
+        $decisionB = WooDecisionFactory::createOne();
+        $unlinkedDecision = WooDecisionFactory::createOne();
+
+        $sharedDocument = DocumentFactory::createOne(['dossiers' => [$decisionA, $decisionB]]);
+        $ownDocument = DocumentFactory::createOne(['dossiers' => [$decisionB]]);
+        DocumentFactory::createOne(['dossiers' => [$unlinkedDecision]]);
+
+        $result = $this->wooDecisionRepository->findAllLinkedToDocuments([
+            $sharedDocument->getId(),
+            $ownDocument->getId(),
+        ]);
+
+        self::assertEqualsCanonicalizing(
+            [$decisionA->getId()->toRfc4122(), $decisionB->getId()->toRfc4122()],
+            array_map(static fn (WooDecision $wooDecision): string => $wooDecision->getId()->toRfc4122(), $result),
+        );
+    }
+
+    public function testFindAllLinkedToDocumentsDeduplicatesAcrossChunks(): void
+    {
+        $decisionA = WooDecisionFactory::createOne();
+        $decisionB = WooDecisionFactory::createOne();
+
+        $sharedDocument = DocumentFactory::createOne(['dossiers' => [$decisionA, $decisionB]]);
+        $ownDocument = DocumentFactory::createOne(['dossiers' => [$decisionB]]);
+
+        $result = $this->wooDecisionRepository->findAllLinkedToDocuments([
+            $sharedDocument->getId(),
+            ...array_map(Uuid::v6(...), range(1, 999)),
+            $ownDocument->getId(),
+        ]);
+
+        self::assertEqualsCanonicalizing(
+            [$decisionA->getId()->toRfc4122(), $decisionB->getId()->toRfc4122()],
+            array_map(static fn (WooDecision $wooDecision): string => $wooDecision->getId()->toRfc4122(), $result),
+        );
+    }
+
+    public function testFindAllLinkedToDocumentsWithoutAnyDocuments(): void
+    {
+        WooDecisionFactory::createOne();
+
+        self::assertSame([], $this->wooDecisionRepository->findAllLinkedToDocuments([]));
     }
 }

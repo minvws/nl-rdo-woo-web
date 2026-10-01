@@ -91,14 +91,26 @@ Click With Reload Retry
   Click  ${selector}
 
 Click With CSRF Retry
-  [Arguments]  ${selector}
-  Click  ${selector}
-  ${csfr_error_visible} =  Get Element Count  //*[contains(.,'CSRF')]
-  IF  ${csfr_error_visible} > 0
-    # Retry on CSRF error, another instance of https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
-    Log  message=CSRF error found, retrying the click.  level=WARN
+  [Documentation]  Temporary workaround for a known, still-open bug where a CSRF error is intermittently
+  ...  shown after clicking a form submit button: https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
+  ...  Remove this keyword (and use a plain Click at its call sites) once that issue is closed.
+  [Arguments]  ${selector}  ${retries}=2
+  ${retries} =  Convert To Integer  ${retries}
+  FOR  ${attempt}  IN RANGE  0  ${retries + 1}
     Click  ${selector}
+    Sleep  200ms
+    ${csrf_error_visible} =  Get Element Count  //*[contains(.,'CSRF')]
+    IF  ${csrf_error_visible} == 0  BREAK
+    Log
+    ...  message=CSRF error found after click ${attempt + 1} of ${retries + 1}. See https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
+    ...  level=WARN
   END
+  IF  ${csrf_error_visible} > 0
+    Fail  CSRF error still present after ${retries} retries clicking ${selector}. See https://github.com/minvws/nl-rdo-woo-web-private/issues/3500
+  END
+
+Input Errors Should Be Present
+  Get Element Count  //*[contains(@class,"js-input-errors")]  greater than  0
 
 Success Alert Is Visible
   [Arguments]
@@ -112,3 +124,11 @@ Success Alert Is Visible
 Verify Image
   [Arguments]  ${selector}
   Wait For Elements State  ${selector}  visible  2min
+
+Upload And Submit
+  [Arguments]  ${file_name}  ${advice_location}
+  Upload File By Selector  //dialog[@open]//*[@data-e2e-name="uploadUuid-input"]  ${advice_location}
+  Wait For Condition  Text  //dialog[@open]//*[@data-e2e-name="uploaded-file"]  contains  ${file_name}
+  Type Text  //dialog[@open]//*[@data-e2e-name="formalDate-input"]  01012022
+  Click  //dialog[@open]//*[@data-e2e-name="submit"]
+  Get Element Count  //dialog[@open]//*[@data-e2e-name="save-failed"]  should be  0

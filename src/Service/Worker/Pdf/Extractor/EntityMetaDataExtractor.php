@@ -11,6 +11,7 @@ use Shared\Domain\Ingest\Content\Extractor\Tika\TikaService;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Shared\Service\Storage\EntityStorageService;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Contracts\Cache\CacheInterface;
 
 use function sprintf;
@@ -25,6 +26,7 @@ readonly class EntityMetaDataExtractor implements EntityExtractorInterface
         private EntityStorageService $entityStorageService,
         private SubTypeIndexer $subTypeIndexer,
         private TikaService $tika,
+        #[Target('metadataExtractCache')]
         private CacheInterface $metadataExtractCache,
     ) {
     }

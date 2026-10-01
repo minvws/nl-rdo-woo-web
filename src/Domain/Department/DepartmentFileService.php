@@ -9,11 +9,13 @@ use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use Shared\Domain\Department\Exception\DepartmentAssetNotFound;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Webmozart\Assert\Assert;
 
 final readonly class DepartmentFileService
 {
     public function __construct(
+        #[Target('assetsStorage')]
         private FilesystemOperator $assetsStorage,
         private EntityManagerInterface $doctrine,
     ) {

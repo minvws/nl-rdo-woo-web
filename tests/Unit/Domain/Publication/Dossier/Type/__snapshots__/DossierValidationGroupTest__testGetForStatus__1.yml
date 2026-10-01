@@ -1,0 +1,39 @@
+new:
+    - { name: DETAILS, value: details }
+    - { name: DECISION, value: decision }
+    - { name: DOCUMENTS, value: documents }
+    - { name: PUBLICATION, value: publication }
+    - { name: CONTENT, value: content }
+concept:
+    - { name: DETAILS, value: details }
+    - { name: DECISION, value: decision }
+    - { name: DOCUMENTS, value: documents }
+    - { name: PUBLICATION, value: publication }
+    - { name: CONTENT, value: content }
+scheduled:
+    - { name: DETAILS, value: details }
+    - { name: DECISION, value: decision }
+    - { name: DOCUMENTS, value: documents }
+    - { name: PUBLICATION, value: publication }
+    - { name: CONTENT, value: content }
+    - { name: PUBLICATION_LOCKED, value: publication_locked }
+preview:
+    - { name: DETAILS, value: details }
+    - { name: DECISION, value: decision }
+    - { name: DOCUMENTS, value: documents }
+    - { name: PUBLICATION, value: publication }
+    - { name: CONTENT, value: content }
+    - { name: PUBLICATION_LOCKED, value: publication_locked }
+published:
+    - { name: DETAILS, value: details }
+    - { name: DECISION, value: decision }
+    - { name: DOCUMENTS, value: documents }
+    - { name: PUBLICATION, value: publication }
+    - { name: CONTENT, value: content }
+    - { name: PUBLICATION_LOCKED, value: publication_locked }
+deleted:
+    - { name: DETAILS, value: details }
+    - { name: DECISION, value: decision }
+    - { name: DOCUMENTS, value: documents }
+    - { name: PUBLICATION, value: publication }
+    - { name: CONTENT, value: content }

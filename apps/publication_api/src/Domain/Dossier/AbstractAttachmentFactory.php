@@ -8,7 +8,7 @@ use PublicationApi\Api\Attachment\AttachmentRequestDto;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
-use Shared\Domain\Publication\FileInfo;
+use Shared\Service\EnumHelper;
 
 class AbstractAttachmentFactory
 {
@@ -18,20 +18,17 @@ class AbstractAttachmentFactory
     ): AbstractAttachment {
         $class = $dossier->getAttachmentEntityClass();
 
-        $annualReportAttachment = new $class(
+        $attachment = new $class(
             $dossier,
             $attachmentRequestDto->formalDate,
             $attachmentRequestDto->type,
             $attachmentRequestDto->language,
         );
 
-        $fileInfo = new FileInfo();
-        $fileInfo->setName($attachmentRequestDto->fileName->toString());
+        $attachment->getFileInfo()->setName($attachmentRequestDto->fileName->toString());
+        $attachment->setGrounds(EnumHelper::getStringValues($attachmentRequestDto->grounds));
+        $attachment->setExternalId($attachmentRequestDto->externalId);
 
-        $annualReportAttachment->setFileInfo($fileInfo);
-        $annualReportAttachment->setGrounds($attachmentRequestDto->grounds);
-        $annualReportAttachment->setExternalId($attachmentRequestDto->externalId);
-
-        return $annualReportAttachment;
+        return $attachment;
     }
 }

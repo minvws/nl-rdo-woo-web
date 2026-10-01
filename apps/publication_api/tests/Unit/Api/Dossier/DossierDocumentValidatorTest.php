@@ -35,11 +35,11 @@ class DossierDocumentValidatorTest extends UnitTestCase
         $validator = Mockery::mock(ValidatorInterface::class);
         $dossierDocumentValidator = new DossierDocumentValidator($validator);
 
-        $documents = [Mockery::mock(Document::class)];
+        $document = $this->createDocumentLinkedTo(DossierStatus::CONCEPT);
 
         $validator->expects('validate')
             ->with(
-                $documents,
+                $document,
                 null,
                 [
                     DossierValidationGroup::DETAILS->value,
@@ -52,7 +52,51 @@ class DossierDocumentValidatorTest extends UnitTestCase
             )
             ->andReturn(new ConstraintViolationList());
 
-        $dossierDocumentValidator->validate($documents, DossierStatus::CONCEPT);
+        $dossierDocumentValidator->validate([$document], DossierStatus::CONCEPT);
+    }
+
+    public function testValidateLocksDocumentLinkedToANonConceptDossierWhileWritingThroughAConceptDossier(): void
+    {
+        $validator = Mockery::mock(ValidatorInterface::class);
+        $dossierDocumentValidator = new DossierDocumentValidator($validator);
+
+        $document = $this->createDocumentLinkedTo(DossierStatus::CONCEPT, DossierStatus::PUBLISHED);
+
+        $validator->expects('validate')
+            ->with(
+                $document,
+                null,
+                [
+                    DossierValidationGroup::DETAILS->value,
+                    DossierValidationGroup::DECISION->value,
+                    DossierValidationGroup::DOCUMENTS->value,
+                    DossierValidationGroup::PUBLICATION->value,
+                    DossierValidationGroup::CONTENT->value,
+                    DossierValidationGroup::PUBLICATION_LOCKED->value,
+                    Constraint::DEFAULT_GROUP,
+                ],
+            )
+            ->andReturn(new ConstraintViolationList());
+
+        $dossierDocumentValidator->validate([$document], DossierStatus::CONCEPT);
+    }
+
+    public function testValidateAppliesLockingPerDocument(): void
+    {
+        $validator = Mockery::mock(ValidatorInterface::class);
+        $dossierDocumentValidator = new DossierDocumentValidator($validator);
+
+        $unlockedDocument = $this->createDocumentLinkedTo(DossierStatus::CONCEPT);
+        $lockedDocument = $this->createDocumentLinkedTo(DossierStatus::CONCEPT, DossierStatus::PREVIEW);
+
+        $validator->expects('validate')
+            ->with($unlockedDocument, null, Mockery::not(Mockery::hasValue(DossierValidationGroup::PUBLICATION_LOCKED->value)))
+            ->andReturn(new ConstraintViolationList());
+        $validator->expects('validate')
+            ->with($lockedDocument, null, Mockery::hasValue(DossierValidationGroup::PUBLICATION_LOCKED->value))
+            ->andReturn(new ConstraintViolationList());
+
+        $dossierDocumentValidator->validate([$unlockedDocument, $lockedDocument], DossierStatus::CONCEPT);
     }
 
     public function testValidateRethrowsOnValidationFailure(): void
@@ -61,14 +105,14 @@ class DossierDocumentValidatorTest extends UnitTestCase
         $dossierDocumentValidator = new DossierDocumentValidator($validator);
 
         $message = self::getFaker()->sentence();
-        $documents = [Mockery::mock(Document::class)];
+        $document = $this->createDocumentLinkedTo(DossierStatus::CONCEPT);
         $violations = new ConstraintViolationList([
             new ConstraintViolation(
                 $message,
                 null,
                 [],
                 null,
-                '[0].documentNumber',
+                'documentNumber',
                 null,
                 null,
                 null,
@@ -80,6 +124,30 @@ class DossierDocumentValidatorTest extends UnitTestCase
 
         self::expectException(ValidationException::class);
         self::expectExceptionMessageIs(sprintf('documents.[0].documentNumber: %s', $message));
+
+        $dossierDocumentValidator->validate([$document], DossierStatus::CONCEPT);
+    }
+
+    public function testValidateCollectsViolationsOfEveryDocument(): void
+    {
+        $validator = Mockery::mock(ValidatorInterface::class);
+        $dossierDocumentValidator = new DossierDocumentValidator($validator);
+
+        $documents = [
+            $this->createDocumentLinkedTo(DossierStatus::CONCEPT),
+            $this->createDocumentLinkedTo(DossierStatus::CONCEPT),
+        ];
+
+        $validator->expects('validate')
+            ->twice()
+            ->andReturn(new ConstraintViolationList([
+                new ConstraintViolation('first', null, [], null, 'documentId', null, null, null),
+            ]), new ConstraintViolationList([
+                new ConstraintViolation('second', null, [], null, 'publicationContext', null, null, null),
+            ]));
+
+        self::expectException(ValidationException::class);
+        self::expectExceptionMessageIs("documents.[0].documentId: first\ndocuments.[1].publicationContext: second");
 
         $dossierDocumentValidator->validate($documents, DossierStatus::CONCEPT);
     }
@@ -161,6 +229,22 @@ class DossierDocumentValidatorTest extends UnitTestCase
         ]);
 
         $this->addToAssertionCount(1);
+    }
+
+    private function createDocumentLinkedTo(DossierStatus ...$dossierStatuses): Document
+    {
+        $dossiers = [];
+        foreach ($dossierStatuses as $dossierStatus) {
+            $wooDecision = Mockery::mock(WooDecision::class);
+            $wooDecision->allows('getStatus')->andReturn($dossierStatus);
+
+            $dossiers[] = $wooDecision;
+        }
+
+        $document = Mockery::mock(Document::class);
+        $document->allows('getDossiers')->andReturn(new ArrayCollection($dossiers));
+
+        return $document;
     }
 
     private function createDocumentRequestDto(ExternalId $externalId): WooDecisionDocumentRequestDto

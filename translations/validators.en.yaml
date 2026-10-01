@@ -27,6 +27,8 @@ dossier.main_document.no_document: 'A dossier without a main document cannot be 
 dossier.main_document.not_uploaded: 'A dossier without an uploaded main document cannot be published'
 dossier.incomplete_documents: 'A dossier with incomplete documents cannot be published'
 dossier.incomplete_attachments: 'A dossier with incomplete attachments cannot be published'
+subject.content_tree.max_depth_exceeded: 'The maximum depth of the content tree has been exceeded'
+subject.content_tree.too_many_nodes: 'The content tree contains too many items'
 subject_already_exists: 'This subject already exists'
 subject_landing_page_content_tree_invalid_json: 'The content tree does not contain valid JSON'
 subject_landing_page_content_tree_invalid_structure: 'The content tree has an invalid structure'

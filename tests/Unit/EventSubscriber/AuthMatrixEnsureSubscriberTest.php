@@ -10,6 +10,7 @@ use Shared\EventSubscriber\AuthMatrixEnsureSubscriber;
 use Shared\Service\Security\Authorization\AuthorizationEntryRequestStore;
 use Shared\Service\Security\Authorization\Entry;
 use Shared\Tests\Unit\UnitTestCase;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ControllerArgumentsEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -26,6 +27,7 @@ class AuthMatrixEnsureSubscriberTest extends UnitTestCase
     {
         $this->store = Mockery::mock(AuthorizationEntryRequestStore::class);
         $this->request = Mockery::mock(Request::class);
+        $this->request->attributes = new ParameterBag();
         $this->subscriber = new AuthMatrixEnsureSubscriber($this->store);
     }
 

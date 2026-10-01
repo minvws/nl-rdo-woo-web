@@ -6,6 +6,7 @@ namespace PublicationApi\Api\Uploads\Document;
 
 use Psr\Http\Message\StreamInterface;
 use Shared\ValueObject\ExternalId;
+use Symfony\Component\Uid\Uuid;
 
 interface UploadDocumentRequestInterface
 {
@@ -15,5 +16,5 @@ interface UploadDocumentRequestInterface
 
     public function getDossierExternalId(): ExternalId;
 
-    public function getOrganisationId(): string;
+    public function getOrganisationId(): Uuid;
 }

@@ -14,8 +14,12 @@ Het documentnummer wordt samengesteld uit de publicatiecontext en het document-I
 
 `{publicatiecontext}-{id}`
 
-Gebruik in een nieuw productierapport de kolom `Publicatiecontext`. De waarde moet 1 tot en met 255 tekens bevatten en mag
-alleen letters, cijfers, `-`, `.`, `_` en `~` bevatten. Spaties zijn niet toegestaan.
+### Publicatiecontext
+
+De publicatiecontext wordt gebruikt als generieke aanduiding voor de context waarbinnen een document wordt gepubliceerd.
+Samen met het document-ID vormt deze het unieke documentnummer.
+
+Gebruik in een nieuw productierapport de kolom `Publicatiecontext`. De waarde moet 1 tot en met 255 tekens bevatten en mag alleen letters, cijfers, `-`, `.`, `_` en `~` bevatten. Spaties zijn niet toegestaan.
 
 Tot en met **31 december 2026** kan een bestaand productierapport zonder `Publicatiecontext` terugvallen op de kolom `Matter`.
 Het platform combineert dan de vaste organisatieprefix met de waarde uit `Matter` tot de publicatiecontext. Vanaf **1 januari 2027**

@@ -19,6 +19,14 @@ class InquiryLinkImportException extends TranslatableException
         );
     }
 
+    public static function forMatterAndPublicationContextCombination(): self
+    {
+        return new self(
+            'A spreadsheet with a "Publicatiecontext" column cannot contain a "Matter" column',
+            'publication.inquiry.error.matter_and_publication_context_combination',
+        );
+    }
+
     /**
      * @param array<array-key, string> $inquiryNumberValues
      */

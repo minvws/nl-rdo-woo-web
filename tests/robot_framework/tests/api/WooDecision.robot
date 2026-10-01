@@ -17,6 +17,7 @@ Test Tags           api  api-woodecision
 ${EXTERNAL_ID}                  ${EMPTY}
 ${STORED_DOCUMENT_EXTERNAL_ID}  ${EMPTY}
 ${STORED_DOCUMENT_ID}           ${EMPTY}
+${PUBLICATION_CONTEXT}          ${EMPTY}
 
 
 *** Test Cases ***
@@ -121,7 +122,14 @@ Parse Dates
 Generate Unique Document IDs
   [Arguments]  ${body}
   IF  ${body}[documents]
+    IF  not $PUBLICATION_CONTEXT
+      ${publication_context} =  Generate Publication Context
+      VAR  ${PUBLICATION_CONTEXT} =  ${publication_context}  scope=test
+    END
     FOR  ${document}  IN  @{body}[documents]
+      IF  '${document}[publicationContext]' == '<ROBOT RANDOM CONTEXT>'
+        Set To Dictionary  ${document}  publicationContext  ${PUBLICATION_CONTEXT}
+      END
       ${document_id} =  FakerLibrary.Random Int  min=100000  max=999999
       ${document_id} =  Convert To String  ${document_id}
       IF  '${document}[documentId]' == '<ROBOT RANDOM INT>'

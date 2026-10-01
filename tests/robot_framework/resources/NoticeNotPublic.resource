@@ -27,12 +27,12 @@ Fill Notice Form
   ...    grounds_value should be the option value string (e.g. 5.1.1a).
   [Arguments]  ${formal_date}  ${grounds_value}  ${document_name}=${EMPTY}  ${explanation}=${EMPTY}
   IF  '${document_name}' != '${EMPTY}'
-    Fill Text  ${NOTICE_DIALOG}//input[@name="documentName"]  ${document_name}
+    Fill Text  ${NOTICE_DIALOG}//*[@data-e2e-name="documentName-input"]  ${document_name}
   END
-  Type Text  ${NOTICE_DIALOG}//input[@name="formalDate"]  ${formal_date}
-  Select Options By  ${NOTICE_DIALOG}//select[@name="grounds[0]"]  value  ${grounds_value}
+  Type Text  ${NOTICE_DIALOG}//*[@data-e2e-name="formalDate-input"]  ${formal_date}
+  Select Options By  ${NOTICE_DIALOG}//*[@data-e2e-name="grounds[0]-select"]  value  ${grounds_value}
   IF  '${explanation}' != '${EMPTY}'
-    Fill Text  ${NOTICE_DIALOG}//textarea[@name="explanation"]  ${explanation}
+    Fill Text  ${NOTICE_DIALOG}//*[@data-e2e-name="explanation-textarea"]  ${explanation}
   END
 
 Add Notice Not Public Via Admin UI
@@ -41,7 +41,7 @@ Add Notice Not Public Via Admin UI
   [Arguments]  ${formal_date}=01012022  ${grounds_value}=5.1.1a  ${document_name}=${EMPTY}  ${explanation}=${EMPTY}
   Open Add Notice Dialog
   Fill Notice Form  ${formal_date}  ${grounds_value}  ${document_name}  ${explanation}
-  Click  ${NOTICE_DIALOG}//button[contains(., 'Opslaan en mededeling toevoegen')]
+  Click  ${NOTICE_DIALOG}//*[@data-e2e-name="submit"]
   Wait For Elements State  //*[@data-e2e-name="alerts"]  visible
 
 Edit Notice Not Public Via Admin UI
@@ -49,12 +49,12 @@ Edit Notice Not Public Via Admin UI
   [Arguments]  ${formal_date}=${EMPTY}  ${explanation}=${EMPTY}
   Open Edit Notice Dialog
   IF  '${formal_date}' != '${EMPTY}'
-    Type Text  ${NOTICE_DIALOG}//input[@name="formalDate"]  ${formal_date}
+    Type Text  ${NOTICE_DIALOG}//*[@data-e2e-name="formalDate-input"]  ${formal_date}
   END
   IF  '${explanation}' != '${EMPTY}'
-    Fill Text  ${NOTICE_DIALOG}//textarea[@name="explanation"]  ${explanation}
+    Fill Text  ${NOTICE_DIALOG}//*[@data-e2e-name="explanation-textarea"]  ${explanation}
   END
-  Click  ${NOTICE_DIALOG}//button[contains(., 'Opslaan en mededeling bijwerken')]
+  Click  ${NOTICE_DIALOG}//*[@data-e2e-name="submit"]
   Wait For Elements State  //*[@data-e2e-name="alerts"]  visible
 
 Delete Notice Not Public Via Admin UI

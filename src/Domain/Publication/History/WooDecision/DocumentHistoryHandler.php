@@ -7,6 +7,7 @@ namespace Shared\Domain\Publication\History\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\AllDocumentsWithDrawnEvent;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUpdateEvent;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentWithDrawnEvent;
+use Shared\Domain\Publication\History\History;
 use Shared\Service\HistoryService;
 use Shared\Service\Inventory\DocumentComparator;
 use Shared\Service\Inventory\MetadataField;
@@ -27,6 +28,7 @@ readonly class DocumentHistoryHandler
             document: $event->document,
             key: 'document_withdraw',
             context: [
+                History::CONTEXT_ORIGIN_WOO_DECISION_ID => $event->wooDecision->getId()->toString(),
                 'explanation' => '%' . $event->reason->getTranslationKey() . '%',
                 'explanation_details' => $event->explanation,
             ],
@@ -56,6 +58,7 @@ readonly class DocumentHistoryHandler
                 document: $event->document,
                 key: 'document_judgement_' . $event->update->getJudgement()->value,
                 context: [
+                    History::CONTEXT_ORIGIN_WOO_DECISION_ID => $event->dossier->getId()->toString(),
                     'old' => '%' . ($event->document->getJudgement()->value ?? '') . '%',
                     'new' => '%' . $event->update->getJudgement()->value . '%',
                 ],
@@ -67,7 +70,7 @@ readonly class DocumentHistoryHandler
             $this->historyService->addDocumentEntry(
                 document: $event->document,
                 key: $event->update->isSuspended() ? 'document_suspended' : 'document_unsuspended',
-                context: [],
+                context: [History::CONTEXT_ORIGIN_WOO_DECISION_ID => $event->dossier->getId()->toString()],
                 flush: false,
             );
         }

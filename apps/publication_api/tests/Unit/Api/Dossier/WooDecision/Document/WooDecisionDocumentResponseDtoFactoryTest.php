@@ -14,13 +14,14 @@ use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use PublicationApi\Domain\Upload\DocumentUploadStatusService;
 use PublicationApi\Domain\Upload\UploadStatus;
+use Shared\Controller\Public\Dossier\DossierFileController;
+use Shared\Controller\Public\Dossier\WooDecision\DocumentController;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
@@ -31,7 +32,6 @@ use Shared\ValueObject\Url;
 final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
 {
     private ApiUrlGenerator&MockInterface $apiUrlGenerator;
-    private DossierPathHelper&MockInterface $dossierPathHelper;
     private DocumentUploadStatusService&MockInterface $documentUploadStatusService;
     private InquiryLinkFactory&MockInterface $inquiryLinkFactory;
     private PublicUrlGenerator&MockInterface $publicUrlGenerator;
@@ -43,7 +43,6 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         parent::setUp();
 
         $this->apiUrlGenerator = Mockery::mock(ApiUrlGenerator::class);
-        $this->dossierPathHelper = Mockery::mock(DossierPathHelper::class);
         $this->documentUploadStatusService = Mockery::mock(DocumentUploadStatusService::class);
         $this->inquiryLinkFactory = Mockery::mock(InquiryLinkFactory::class);
         $this->publicUrlGenerator = Mockery::mock(PublicUrlGenerator::class);
@@ -51,7 +50,6 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
 
         $this->factory = new WooDecisionDocumentResponseDtoFactory(
             $this->apiUrlGenerator,
-            $this->dossierPathHelper,
             $this->documentUploadStatusService,
             $this->inquiryLinkFactory,
             $this->publicUrlGenerator,
@@ -75,10 +73,6 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
 
         $this->publicUrlGenerator
             ->expects('buildUrlFromRoute')
-            ->never();
-
-        $this->dossierPathHelper
-            ->expects('getAbsoluteDetailsPath')
             ->never();
 
         $this->documentUploadStatusService
@@ -114,6 +108,9 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         $document->setDocumentId(DocumentId::create('1'));
         $wooDecision->addDocument($document);
 
+        $publicUrl = Url::create('https://example.com/document');
+        $fileUrl = Url::create('https://example.com/file');
+
         $this->apiUrlGenerator
             ->expects('buildUrlFromRoute')
             ->once()
@@ -122,12 +119,18 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         $this->publicUrlGenerator
             ->expects('buildUrlFromRoute')
             ->once()
-            ->andReturn(Url::create('https://example.com/file'));
+            ->with(DocumentController::ROUTE_NAME_DOCUMENT_DETAIL, [
+                'documentPrefix' => $wooDecision->getDocumentPrefix(),
+                'dossierNumber' => $wooDecision->getDossierNumber(),
+                'documentNumber' => $documentNumber->toString(),
+            ])
+            ->andReturn($publicUrl);
 
-        $this->dossierPathHelper
-            ->expects('getAbsoluteDetailsPath')
+        $this->publicUrlGenerator
+            ->expects('buildUrlFromRoute')
             ->once()
-            ->andReturn('https://example.com/dossier');
+            ->with(DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, Mockery::type('array'))
+            ->andReturn($fileUrl);
 
         $this->documentUploadStatusService
             ->expects('getUploadStatus')
@@ -150,6 +153,8 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         $this->assertTrue($links->offsetExists(LinkCollection::UPLOAD));
         $this->assertTrue($links->offsetExists(LinkCollection::PUBLIC));
         $this->assertTrue($links->offsetExists(LinkCollection::FILE));
+        self::assertEquals(new Link($publicUrl), $links->offsetGet(LinkCollection::PUBLIC));
+        self::assertEquals(new Link($fileUrl), $links->offsetGet(LinkCollection::FILE));
     }
 
     public function testInquiryLinksAreAddedWhenTheDocumentHasInquiries(): void

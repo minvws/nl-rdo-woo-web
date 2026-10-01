@@ -58,7 +58,7 @@ const onSelectFiles = () => {
 </script>
 
 <template>
-  <div class="bhr-upload-area__files-area">
+  <div class="bhr-upload-area__files-area" data-e2e-name="upload-files-area">
     <template v-if="hasFiles">
       <SkipLink
         class="focus:mt-2"

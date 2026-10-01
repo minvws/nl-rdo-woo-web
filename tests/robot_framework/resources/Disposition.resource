@@ -23,11 +23,11 @@ Upload Disposition
   [Arguments]  ${disposition_location}
   ${_}  ${file_name} =  Split Path  ${disposition_location}
   Click  " Beschikking toevoegen... "
-  Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${FILE_LOCATION}
-  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}
-  Select Options By  //dialog[@open]//select[@name="type"]  text  concessie
-  Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
-  Click  //dialog[@open]//button[@type="submit"]
+  Upload File By Selector  //dialog[@open]//*[@data-e2e-name="uploadUuid-input"]  ${FILE_LOCATION}
+  Wait For Condition  Text  //*[@data-e2e-name="uploaded-file"]  contains  ${file_name}
+  Select Options By  //dialog[@open]//*[@data-e2e-name="type-select"]  text  concessie
+  Type Text  //dialog[@open]//*[@data-e2e-name="formalDate-input"]  01012022
+  Click  //dialog[@open]//*[@data-e2e-name="submit"]
   Wait For Condition  Text  //*[@id="inhoud"]  contains  Beschikking '${file_name}' is toegevoegd.
 
 Get Disposition Attachment Types

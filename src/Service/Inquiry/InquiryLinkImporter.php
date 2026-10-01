@@ -28,7 +28,9 @@ readonly class InquiryLinkImporter
         UploadedFile $uploadedFile,
     ): InquiryLinkImportResult {
         $inquiryChangeset = new InquiryChangeset($activeOrganisation);
+
         $result = new InquiryLinkImportResult($inquiryChangeset);
+        $result->setHasMatter($this->parser->hasMatterColumn($uploadedFile));
 
         try {
             $this->processUploadedFile(

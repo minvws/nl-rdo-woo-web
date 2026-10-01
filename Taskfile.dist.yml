@@ -31,10 +31,10 @@ vars:
   LOCAL_TENANTS:
     - minvws
     - minfin
+  ALL_TENANTS_JSON:
+    sh: cat tenants/tenants.json
   ALL_TENANTS:
-    - minvws
-    - minfin
-    - minbuza
+    ref: "fromJson .ALL_TENANTS_JSON"
   APPLICATION_IDS:
     - admin
     - public
@@ -137,7 +137,7 @@ tasks:
         for: { var: LOCAL_TENANTS }
       - task: npm:install
       - task: npm:script:build
-      - task: docs:build:all
+      - task: docs:build:local:all
 
   setup:if-not-exist:
     vars:
@@ -257,7 +257,7 @@ tasks:
         for: { var: LOCAL_TENANTS }
       - task: npm:install
       - task: npm:script:build
-      - task: docs:build:all
+      - task: docs:build:local:all
       - task: minio:create-buckets
       - task: postdeploy
         vars: { APPLICATION_ID: "{{ .ITEM }}" }

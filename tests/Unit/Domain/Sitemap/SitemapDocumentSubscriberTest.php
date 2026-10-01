@@ -17,25 +17,31 @@ use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Sitemap\SitemapDocumentSubscriber;
+use Shared\Service\DocumentCanonicalUrlGenerator;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class SitemapDocumentSubscriberTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private DossierRepository&MockInterface $dossierRepository;
+    private RouterInterface&MockInterface $router;
     private SitemapDocumentSubscriber $subscriber;
 
     protected function setUp(): void
     {
         $this->entityManager = Mockery::mock(EntityManagerInterface::class);
         $this->dossierRepository = Mockery::mock(DossierRepository::class);
+        $this->router = Mockery::mock(RouterInterface::class);
 
         $this->subscriber = new SitemapDocumentSubscriber(
             $this->entityManager,
             $this->dossierRepository,
+            new DocumentCanonicalUrlGenerator(new PublicUrlGenerator('https://example.test', $this->router)),
         );
     }
 
@@ -43,16 +49,18 @@ class SitemapDocumentSubscriberTest extends UnitTestCase
     {
         $document = Mockery::mock(Document::class);
         $document->expects('getUpdatedAt')->andReturn($documentUpdatedAt = new DateTimeImmutable());
-        $document->expects('getDocumentNumber')->andReturn($documentNumber = DocumentNumber::fromString('doc-123'));
+        $document->expects('getDocumentNumber')->twice()->andReturn($documentNumber = DocumentNumber::fromString('doc-123'));
 
-        $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
-        $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'foo');
-        $dossier->expects('getDossierNumber')->andReturn($dossierNumber = 'bar');
+        $dossierA = Mockery::mock(WooDecision::class);
+        $dossierA->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
+
+        $dossierB = Mockery::mock(WooDecision::class);
+        $dossierB->expects('getDocuments')->andReturn(new ArrayCollection([$document]));
 
         $query = Mockery::mock(Query::class);
         $query->expects('toIterable')->andReturn([
-            $dossier,
+            $dossierA,
+            $dossierB,
         ]);
 
         $urlContainer = Mockery::mock(UrlContainerInterface::class);
@@ -69,31 +77,29 @@ class SitemapDocumentSubscriberTest extends UnitTestCase
             ->expects('createQueryBuilder')
             ->andReturn($queryBuilder);
 
+        $this->router->expects('generate')
+            ->with('app_document_canonical', ['documentNumber' => 'doc-123'])
+            ->andReturn('/document/doc-123');
+
         $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
-        $urlGenerator->expects('generate')->with(
-            'app_document_detail',
-            [
-                'documentPrefix' => $prefix,
-                'dossierNumber' => $dossierNumber,
-                'documentNumber' => $documentNumber->toString(),
-            ],
-            0,
-        )->andReturn($docUrl = '/foo/bar/doc-123');
 
-        $urlContainer->expects('addUrl')->with(
-            Mockery::on(
-                static function (UrlConcrete $urlConcrete) use ($docUrl, $documentUpdatedAt): bool {
-                    self::assertEquals($docUrl, $urlConcrete->getLoc());
-                    self::assertEquals($documentUpdatedAt, $urlConcrete->getLastmod());
+        $urlContainer->expects('addUrl')
+            ->once()
+            ->with(
+                Mockery::on(
+                    static function (UrlConcrete $urlConcrete) use ($documentUpdatedAt): bool {
+                        self::assertSame('https://example.test/document/doc-123', $urlConcrete->getLoc());
+                        self::assertEquals($documentUpdatedAt, $urlConcrete->getLastmod());
 
-                    return true;
-                },
-            ),
-            'documents',
-        );
+                        return true;
+                    },
+                ),
+                'documents',
+            );
 
-        $this->entityManager->expects('detach')->with($document);
-        $this->entityManager->expects('detach')->with($dossier);
+        $this->entityManager->expects('detach')->twice()->with($document);
+        $this->entityManager->expects('detach')->with($dossierA);
+        $this->entityManager->expects('detach')->with($dossierB);
 
         $event = new SitemapPopulateEvent(
             $urlContainer,

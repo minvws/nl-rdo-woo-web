@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\DraftDecision;
 
+use ApiPlatform\Metadata\ApiProperty;
 use PublicationApi\Api\MainDocument\MainDocumentRequestDtoInterface;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -18,10 +19,14 @@ class DraftDecisionMainDocumentRequestDto implements MainDocumentRequestDtoInter
 {
     public function __construct(
         #[AllowedFileExtension(UploadGroupId::MAIN_DOCUMENTS)]
+        #[ApiProperty(description: 'The file name of the main document, including extension.')]
         public FileName $fileName,
+        #[ApiProperty(description: 'The formal date of the main document, for example the date it was adopted or signed (format YYYY-MM-DD).')]
         public PlainDate $formalDate,
+        #[ApiProperty(description: 'The language of the main document.')]
         public AttachmentLanguage $language,
         #[Assert\Choice(callback: [self::class, 'getAllowedTypes'])]
+        #[ApiProperty(description: 'The document type of the main document, limited to the types allowed for a draft decision.')]
         public AttachmentType $type,
     ) {
     }

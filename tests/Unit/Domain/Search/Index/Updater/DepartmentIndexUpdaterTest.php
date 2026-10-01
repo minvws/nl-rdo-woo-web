@@ -12,6 +12,7 @@ use Shared\Service\Elastic\ElasticClientInterface;
 use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
+use Webmozart\Assert\Assert;
 
 class DepartmentIndexUpdaterTest extends UnitTestCase
 {
@@ -38,11 +39,32 @@ class DepartmentIndexUpdaterTest extends UnitTestCase
         $department->expects('getName')->andReturn('Foo Bar');
         $department->expects('getShortTag')->andReturn('FB');
 
-        $this->elasticClient->expects('updateByQuery')->with(Mockery::on(
-            static fn (array $input) => $input['body']['query']['bool']['should'][0]['match']['departments.id'] === $departmentId
-                && $input['body']['script']['params']['department']['name'] === 'FB|Foo Bar',
-        ));
+        $this->elasticClient->expects('updateByQuery')->with(Mockery::capture($input));
 
         $this->indexUpdater->update($department);
+
+        Assert::isArray($input);
+        $body = $input['body'];
+        Assert::isArray($body);
+        $query = $body['query'];
+        Assert::isArray($query);
+        $script = $body['script'];
+        Assert::isArray($script);
+
+        self::assertEquals([
+            'should' => [
+                ['match' => ['departments.id' => $departmentId]],
+                ['nested' => [
+                    'path' => 'dossiers',
+                    'query' => ['term' => ['dossiers.departments.id' => $departmentId]],
+                ]],
+            ],
+            'minimum_should_match' => 1,
+        ], $query['bool']);
+
+        self::assertEquals(
+            ['department' => ['name' => 'FB|Foo Bar', 'id' => $departmentId]],
+            $script['params'],
+        );
     }
 }

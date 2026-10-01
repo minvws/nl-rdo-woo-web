@@ -57,19 +57,19 @@ Upload DraftDecision Required Attachment
 
 Upload And Submit DraftDecision Document
   [Arguments]  ${file_name}  ${document_location}
-  Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${document_location}
-  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${file_name}
-  Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
-  Click  //dialog[@open]//button[@type="submit"]
+  Upload File By Selector  //dialog[@open]//*[@data-e2e-name="uploadUuid-input"]  ${document_location}
+  Wait For Condition  Text  //dialog[@open]//*[@data-e2e-name="uploaded-file"]  contains  ${file_name}
+  Type Text  //dialog[@open]//*[@data-e2e-name="formalDate-input"]  01012022
+  Click  //dialog[@open]//*[@data-e2e-name="submit"]
   Get Element Count  //dialog[@open]//*[@data-e2e-name="save-failed"]  should be  0
 
 Upload And Submit DraftDecision Attachment
   [Arguments]  ${file_name}  ${attachment_location}  ${type}=adviesaanvraag
-  Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${attachment_location}
-  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${file_name}
-  Select Options By  //dialog[@open]//select[@name="type"]  text  ${type}
-  Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
-  Click  //dialog[@open]//button[@type="submit"]
+  Upload File By Selector  //dialog[@open]//*[@data-e2e-name="uploadUuid-input"]  ${attachment_location}
+  Wait For Condition  Text  //dialog[@open]//*[@data-e2e-name="uploaded-file"]  contains  ${file_name}
+  Select Options By  //dialog[@open]//*[@data-e2e-name="type-select"]  text  ${type}
+  Type Text  //dialog[@open]//*[@data-e2e-name="formalDate-input"]  01012022
+  Click  //dialog[@open]//*[@data-e2e-name="submit"]
   Get Element Count  //dialog[@open]//*[@data-e2e-name="save-failed"]  should be  0
 
 Get DraftDecision Attachment Types

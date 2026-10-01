@@ -8,9 +8,8 @@ use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawDocumentCommand;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\LinkedWooDecisionUpdater;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -20,15 +19,15 @@ readonly class WithDrawDocumentHandler
         private WooDecisionRepository $wooDecisionRepository,
         private DocumentRepository $documentRepository,
         private LoggerInterface $logger,
-        private DossierWorkflowManager $dossierWorkflowManager,
+        private LinkedWooDecisionUpdater $linkedWooDecisionUpdater,
         private DocumentWithdrawService $documentWithdrawService,
     ) {
     }
 
     public function __invoke(WithDrawDocumentCommand $command): void
     {
-        $dossier = $this->wooDecisionRepository->find($command->dossierId);
-        if ($dossier === null) {
+        $wooDecision = $this->wooDecisionRepository->find($command->dossierId);
+        if ($wooDecision === null) {
             $this->logger->warning('No WooDecision found for this message', [
                 'uuid' => $command->dossierId,
             ]);
@@ -36,7 +35,7 @@ readonly class WithDrawDocumentHandler
             return;
         }
 
-        $document = $this->documentRepository->findOneByDossierAndId($dossier, $command->documentId);
+        $document = $this->documentRepository->findOneByDossierAndId($wooDecision, $command->documentId);
         if ($document === null) {
             $this->logger->warning('No document found for this message', [
                 'dossierId' => $command->dossierId,
@@ -46,9 +45,10 @@ readonly class WithDrawDocumentHandler
             return;
         }
 
-        $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::UPDATE_DOCUMENTS);
+        $this->linkedWooDecisionUpdater->updateLinkedTo($wooDecision, [$document->getId()]);
 
         $this->documentWithdrawService->withdraw(
+            $wooDecision,
             $document,
             $command->reason,
             $command->explanation,

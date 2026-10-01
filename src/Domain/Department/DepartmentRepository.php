@@ -10,6 +10,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Repository\PaginationQueryBuilder;
+use SortDirection;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
@@ -49,7 +50,7 @@ class DepartmentRepository extends ServiceEntityRepository
     public function findAllSortedByName(): array
     {
         return $this->createQueryBuilder('d')
-            ->orderBy('d.name', 'ASC')
+            ->orderBy('d.name', SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }
@@ -98,7 +99,7 @@ class DepartmentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('d')
             ->where('d.public = true')
-            ->orderBy('d.shortTag', 'ASC');
+            ->orderBy('d.shortTag', SortDirection::Ascending);
 
         /** @var array<array-key,Department> */
         return $qb->getQuery()->getResult();
@@ -122,7 +123,7 @@ class DepartmentRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.organisations', 'o')
             ->where('o.id = :organisationId')
-            ->orderBy('d.name', 'asc')
+            ->orderBy('d.name', SortDirection::Ascending)
             ->setParameter('organisationId', $organisation->getId());
 
         return $qb->getQuery()->getResult();

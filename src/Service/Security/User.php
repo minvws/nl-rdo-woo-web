@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shared\Service\Security;
 
 use Carbon\CarbonImmutable;
-use Deprecated;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -153,16 +152,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->password = $password;
 
         return $this;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    #[Deprecated]
-    public function eraseCredentials(): void
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
     }
 
     public function getName(): string

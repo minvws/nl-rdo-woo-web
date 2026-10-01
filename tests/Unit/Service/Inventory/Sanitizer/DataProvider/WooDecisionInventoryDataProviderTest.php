@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inventory\Sanitizer\DataProvider\WooDecisionInventoryDataProvider;
+use Shared\Service\Inventory\Sanitizer\InventoryDocumentUrlStrategyInterface;
 use Shared\Tests\Unit\UnitTestCase;
 
 class WooDecisionInventoryDataProviderTest extends UnitTestCase
@@ -17,6 +18,7 @@ class WooDecisionInventoryDataProviderTest extends UnitTestCase
     private WooDecision&MockInterface $wooDecision;
     private Document&MockInterface $docA;
     private Document&MockInterface $docB;
+    private InventoryDocumentUrlStrategyInterface&MockInterface $urlStrategy;
     private WooDecisionInventoryDataProvider $dataProvider;
 
     protected function setUp(): void
@@ -24,10 +26,12 @@ class WooDecisionInventoryDataProviderTest extends UnitTestCase
         $this->wooDecision = Mockery::mock(WooDecision::class);
         $this->docA = Mockery::mock(Document::class);
         $this->docB = Mockery::mock(Document::class);
+        $this->urlStrategy = Mockery::mock(InventoryDocumentUrlStrategyInterface::class);
 
         $this->dataProvider = new WooDecisionInventoryDataProvider(
             $this->wooDecision,
             [$this->docA, $this->docB],
+            $this->urlStrategy,
         );
 
         parent::setUp();
@@ -39,6 +43,19 @@ class WooDecisionInventoryDataProviderTest extends UnitTestCase
             [$this->docA, $this->docB],
             $this->dataProvider->getDocuments(),
         );
+    }
+
+    public function testGetDossierForDocument(): void
+    {
+        self::assertSame(
+            $this->wooDecision,
+            $this->dataProvider->getDossierForDocument($this->docA),
+        );
+    }
+
+    public function testGetDocumentUrlStrategy(): void
+    {
+        self::assertSame($this->urlStrategy, $this->dataProvider->getDocumentUrlStrategy());
     }
 
     public function testGetInventoryUsesExistingInventory(): void

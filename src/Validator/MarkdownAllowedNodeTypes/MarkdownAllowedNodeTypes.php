@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Shared\Validator\MarkdownAllowedNodeTypes;
 
 use Attribute;
-use Override;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 
 use function is_string;
 
@@ -22,7 +22,7 @@ class MarkdownAllowedNodeTypes extends Constraint
      * @param class-string|list<class-string> $allowedNodeTypes
      */
     public function __construct(
-        string|array $allowedNodeTypes = [],
+        string|array $allowedNodeTypes,
         ?string $message = null,
         ?array $groups = null,
         mixed $payload = null,
@@ -31,33 +31,22 @@ class MarkdownAllowedNodeTypes extends Constraint
             $allowedNodeTypes = [$allowedNodeTypes];
         }
 
+        if ($allowedNodeTypes === []) {
+            throw new ConstraintDefinitionException('Option "allowedNodeTypes" is required and cannot be empty');
+        }
+
         parent::__construct(
-            options: ['allowedNodeTypes' => $allowedNodeTypes],
             groups: $groups,
             payload: $payload,
         );
+
+        $this->allowedNodeTypes = $allowedNodeTypes;
 
         if ($message !== null) {
             $this->message = $message;
         }
     }
 
-    #[Override]
-    public function getDefaultOption(): string
-    {
-        return 'allowedNodeTypes';
-    }
-
-    /**
-     * @return list<string>
-     */
-    #[Override]
-    public function getRequiredOptions(): array
-    {
-        return ['allowedNodeTypes'];
-    }
-
-    #[Override]
     public function validatedBy(): string
     {
         return MarkdownAllowedNodeTypesValidator::class;

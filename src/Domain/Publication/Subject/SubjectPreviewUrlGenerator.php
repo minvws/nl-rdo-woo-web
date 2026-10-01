@@ -9,7 +9,7 @@ use LogicException;
 use function rtrim;
 use function sprintf;
 
-final readonly class SubjectPreviewUrlGenerator
+readonly class SubjectPreviewUrlGenerator
 {
     private string $baseUrl;
 

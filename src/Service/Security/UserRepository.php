@@ -10,6 +10,7 @@ use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Shared\Domain\Organisation\Organisation;
+use SortDirection;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -70,7 +71,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 Roles::ROLE_ORGANISATION_ADMIN,
             ]))
             ->setParameter('val', $organisation->getId())
-            ->orderBy('u.id', 'ASC');
+            ->orderBy('u.id', SortDirection::Ascending);
 
         return $qb->getQuery();
     }
@@ -87,7 +88,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 Roles::ROLE_ORGANISATION_ADMIN,
             ]))
             ->setParameter('val', $organisation->getId())
-            ->orderBy('u.id', 'ASC');
+            ->orderBy('u.id', SortDirection::Ascending);
 
         return $qb->getQuery();
     }
@@ -100,7 +101,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->andWhere($this->oneOfGivenRolesExpression($qb, [
                 Roles::ROLE_SUPER_ADMIN,
             ]))
-            ->orderBy('u.id', 'ASC');
+            ->orderBy('u.id', SortDirection::Ascending);
 
         return $qb->getQuery();
     }
@@ -113,7 +114,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->andWhere($this->oneOfGivenRolesExpression($qb, [
                 Roles::ROLE_SUPER_ADMIN,
             ]))
-            ->orderBy('u.id', 'ASC');
+            ->orderBy('u.id', SortDirection::Ascending);
 
         return $qb->getQuery();
     }

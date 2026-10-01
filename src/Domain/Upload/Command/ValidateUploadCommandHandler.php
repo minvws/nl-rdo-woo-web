@@ -16,6 +16,7 @@ use Shared\Domain\Upload\Preprocessor\Strategy\SevenZipFileStrategy;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Domain\Upload\UploadService;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
@@ -30,6 +31,7 @@ readonly class ValidateUploadCommandHandler
     public function __construct(
         private UploadEntityRepository $repository,
         private UploadService $uploadService,
+        #[Target('workingCopyStorage')]
         private FilesystemOperator $workingCopyStorage,
         private ClamAvFileScanner $clamAvFileScanner,
         private MimeTypeHelper $mimeTypeHelper,

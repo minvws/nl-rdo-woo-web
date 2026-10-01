@@ -10,6 +10,7 @@ use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectContentNode;
 use Shared\Domain\Publication\Subject\SubjectContentTree;
+use Shared\Domain\Publication\Subject\SubjectContentTreeStatus;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Form\SubjectLandingPageType;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
@@ -85,6 +86,7 @@ final class SubjectLandingPageTypeTest extends TestCase
             'Some description',
             SubjectLandingPageStatus::PUBLISHED,
             new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
+            SubjectContentTreeStatus::CONCEPT,
         );
 
         $form = $this->createForm($subject);
@@ -121,33 +123,36 @@ final class SubjectLandingPageTypeTest extends TestCase
         self::assertEquals(LandingPageTitle::create('Some title'), $subject->getLandingPageTitle());
         self::assertSame('Some description', $subject->getLandingPageDescription());
         self::assertSame(SubjectLandingPageStatus::PUBLISHED, $subject->getLandingPageStatus());
-        self::assertNull($subject->getLandingPagePreviewToken());
-    }
-
-    public function testSubmittingConceptStatusGeneratesAPreviewToken(): void
-    {
-        $subject = new Subject();
-        $form = $this->createForm($subject);
-
-        $form->submit([
-            'landing_page_status' => SubjectLandingPageStatus::CONCEPT->value,
-            'landing_page_slug' => 'some-slug',
-            'landing_page_title' => 'Some title',
-            'landing_page_description' => 'Some description',
-        ]);
-
-        self::assertTrue($form->isSynchronized());
         self::assertNotNull($subject->getLandingPagePreviewToken());
     }
 
-    public function testVisibleContentTreeIsUncheckedByDefault(): void
+    public function testSubmittingConceptStatusPreservesThePreviewToken(): void
+    {
+        $subject = new Subject();
+        $constructionToken = $subject->getLandingPagePreviewToken();
+        self::assertNotNull($constructionToken);
+
+        $form = $this->createForm($subject);
+
+        $form->submit([
+            'landing_page_status' => SubjectLandingPageStatus::CONCEPT->value,
+            'landing_page_slug' => 'some-slug',
+            'landing_page_title' => 'Some title',
+            'landing_page_description' => 'Some description',
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertSame($constructionToken->toRfc4122(), $subject->getLandingPagePreviewToken()?->toRfc4122());
+    }
+
+    public function testContentTreeStatusIsConceptByDefault(): void
     {
         $form = $this->createForm(new Subject());
 
-        self::assertFalse($form->get('has_visible_landing_page_content_tree')->getData());
+        self::assertSame(SubjectContentTreeStatus::CONCEPT, $form->get('landing_page_content_tree_status')->getData());
     }
 
-    public function testSubmittingTheVisibleContentTreeCheckboxWritesItToTheSubject(): void
+    public function testSubmittingTheContentTreeStatusWritesItToTheSubject(): void
     {
         $subject = new Subject();
         $form = $this->createForm($subject);
@@ -157,17 +162,17 @@ final class SubjectLandingPageTypeTest extends TestCase
             'landing_page_slug' => 'some-slug',
             'landing_page_title' => 'Some title',
             'landing_page_description' => 'Some description',
-            'has_visible_landing_page_content_tree' => '1',
+            'landing_page_content_tree_status' => SubjectContentTreeStatus::PUBLISHED->value,
         ]);
 
         self::assertTrue($form->isSynchronized());
-        self::assertTrue($subject->hasVisibleLandingPageContentTree());
+        self::assertSame(SubjectContentTreeStatus::PUBLISHED, $subject->getLandingPageContentTreeStatus());
     }
 
-    public function testNotSubmittingTheVisibleContentTreeCheckboxLeavesItDisabled(): void
+    public function testSubmittingConceptContentTreeStatusOverwritesPublished(): void
     {
         $subject = new Subject();
-        $subject->setHasVisibleLandingPageContentTree(true);
+        $subject->setLandingPageContentTreeStatus(SubjectContentTreeStatus::PUBLISHED);
         $form = $this->createForm($subject);
 
         $form->submit([
@@ -175,10 +180,11 @@ final class SubjectLandingPageTypeTest extends TestCase
             'landing_page_slug' => 'some-slug',
             'landing_page_title' => 'Some title',
             'landing_page_description' => 'Some description',
+            'landing_page_content_tree_status' => SubjectContentTreeStatus::CONCEPT->value,
         ]);
 
         self::assertTrue($form->isSynchronized());
-        self::assertFalse($subject->hasVisibleLandingPageContentTree());
+        self::assertSame(SubjectContentTreeStatus::CONCEPT, $subject->getLandingPageContentTreeStatus());
     }
 
     public function testSubmittingAnInvalidSlugResultsInAFieldError(): void

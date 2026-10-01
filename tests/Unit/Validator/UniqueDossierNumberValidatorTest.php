@@ -22,11 +22,10 @@ class UniqueDossierNumberValidatorTest extends UnitTestCase
         $context = Mockery::mock(ExecutionContextInterface::class);
 
         $validator = new UniqueDossierNumberValidator($repository);
-        $validator->initialize($context);
 
         $context->shouldNotHaveReceived('buildViolation');
 
-        $validator->validate('', new UniqueDossierNumber(documentPrefix: 'pfx'));
+        $validator->validateInContext('', new UniqueDossierNumber(documentPrefix: 'pfx'), $context);
     }
 
     public function testNoViolationWhenNoDossierFound(): void
@@ -39,11 +38,10 @@ class UniqueDossierNumberValidatorTest extends UnitTestCase
             ->andReturnNull();
 
         $validator = new UniqueDossierNumberValidator($repository);
-        $validator->initialize($context);
 
         $context->shouldNotHaveReceived('buildViolation');
 
-        $validator->validate('ref-001', new UniqueDossierNumber(documentPrefix: 'pfx'));
+        $validator->validateInContext('ref-001', new UniqueDossierNumber(documentPrefix: 'pfx'), $context);
     }
 
     public function testNoViolationWhenMatchIsExcludedId(): void
@@ -61,11 +59,14 @@ class UniqueDossierNumberValidatorTest extends UnitTestCase
             ->andReturn($existing);
 
         $validator = new UniqueDossierNumberValidator($repository);
-        $validator->initialize($context);
 
         $context->shouldNotHaveReceived('buildViolation');
 
-        $validator->validate('ref-001', new UniqueDossierNumber(documentPrefix: 'pfx', excludeId: $excludeId));
+        $validator->validateInContext(
+            'ref-001',
+            new UniqueDossierNumber(documentPrefix: 'pfx', excludeId: $excludeId),
+            $context,
+        );
     }
 
     public function testViolationWhenDossierNumberAlreadyTaken(): void
@@ -85,8 +86,11 @@ class UniqueDossierNumberValidatorTest extends UnitTestCase
         $builder->expects('addViolation');
 
         $validator = new UniqueDossierNumberValidator($repository);
-        $validator->initialize($context);
 
-        $validator->validate('ref-001', new UniqueDossierNumber(documentPrefix: 'pfx', excludeId: Uuid::v6()));
+        $validator->validateInContext(
+            'ref-001',
+            new UniqueDossierNumber(documentPrefix: 'pfx', excludeId: Uuid::v6()),
+            $context,
+        );
     }
 }

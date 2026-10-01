@@ -49,8 +49,12 @@ readonly class InventorySanitizer
             'Besluitnaam',
         );
 
+        $urlStrategy = $dataProvider->getDocumentUrlStrategy();
         foreach ($dataProvider->getDocuments() as $document) {
-            $this->writer->addRow(...$this->documentMapper->map($document));
+            $dossier = $dataProvider->getDossierForDocument($document);
+            $documentData = $this->documentMapper->map($document, $dossier, $urlStrategy);
+
+            $this->writer->addRow(...$documentData);
         }
 
         $this->writer->close();

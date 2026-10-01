@@ -55,6 +55,8 @@ class InquiryLinkImporterTest extends UnitTestCase
         $documentNumberA = 'foo-xx-123';
         $documentNumberB = 'foo-xx-456';
 
+        $this->parser->expects('hasMatterColumn')->with($upload)->andReturnFalse();
+
         $this->parser
             ->expects('parse')
             ->with($upload, 'FOO-1')
@@ -105,6 +107,8 @@ class InquiryLinkImporterTest extends UnitTestCase
         $documentNumberA = 'foo-xx-123';
         $documentNumberB = 'foo-xx-456';
 
+        $this->parser->expects('hasMatterColumn')->with($upload)->andReturnFalse();
+
         $this->parser
             ->expects('parse')
             ->with($upload, 'FOO-1')
@@ -150,5 +154,27 @@ class InquiryLinkImporterTest extends UnitTestCase
             ],
             $result->rowExceptions,
         );
+    }
+
+    public function testImportWithMatterColumn(): void
+    {
+        $organisationPrefix = 'FOO-1';
+
+        $upload = Mockery::mock(UploadedFile::class);
+        $organisation = Mockery::mock(Organisation::class);
+        $organisation->expects('getPrefix')->andReturn(OrganisationPrefix::create($organisationPrefix));
+
+        $this->parser->expects('hasMatterColumn')->with($upload)->andReturnTrue();
+
+        $this->parser
+            ->expects('parse')
+            ->with($upload, $organisationPrefix)
+            ->andReturn($this->iterableToGenerator([]));
+
+        $this->inquiryService->expects('applyChangesetAsync');
+
+        $result = $this->importer->import($organisation, $upload);
+
+        self::assertTrue($result->hasMatter());
     }
 }

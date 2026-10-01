@@ -10,12 +10,13 @@ use PublicationApi\Domain\Exception\EntityNotFoundException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
 use Shared\Tests\Unit\UnitTestCase;
+use Symfony\Component\Uid\Uuid;
 
 class OrganisationLookupTest extends UnitTestCase
 {
     public function testFindReturnsOrganisationWhenFound(): void
     {
-        $organisationId = 'org-123';
+        $organisationId = Uuid::v6();
         $organisation = Mockery::mock(Organisation::class);
 
         $repository = Mockery::mock(OrganisationRepository::class);
@@ -30,7 +31,7 @@ class OrganisationLookupTest extends UnitTestCase
 
     public function testFindThrowsWhenOrganisationNotFound(): void
     {
-        $organisationId = 'org-not-exist';
+        $organisationId = Uuid::v6();
 
         $repository = Mockery::mock(OrganisationRepository::class);
         $repository->expects('find')

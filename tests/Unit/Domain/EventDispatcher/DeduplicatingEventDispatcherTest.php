@@ -31,8 +31,11 @@ final class DeduplicatingEventDispatcherTest extends UnitTestCase
 
         $this->inner->expects('dispatch')->with($event, null)->twice()->andReturn($event);
 
-        self::assertSame($event, $this->dispatcher->dispatch($event));
-        self::assertSame($event, $this->dispatcher->dispatch($event));
+        $first = $this->dispatcher->dispatch($event);
+        $second = $this->dispatcher->dispatch($event);
+
+        self::assertSame($event, $first);
+        self::assertSame($event, $second);
     }
 
     public function testEventNameIsForwardedToTheInnerDispatcher(): void
@@ -71,9 +74,13 @@ final class DeduplicatingEventDispatcherTest extends UnitTestCase
 
         $this->inner->expects('dispatch')->with($event, null)->once()->andReturn($event);
 
-        self::assertSame($event, $this->dispatcher->dispatch($event));
-        self::assertSame($event, $this->dispatcher->dispatch($event));
-        self::assertSame($event, $this->dispatcher->dispatch($event));
+        $first = $this->dispatcher->dispatch($event);
+        $second = $this->dispatcher->dispatch($event);
+        $third = $this->dispatcher->dispatch($event);
+
+        self::assertSame($event, $first);
+        self::assertSame($event, $second);
+        self::assertSame($event, $third);
     }
 
     public function testDeduplicatableEventsWithDifferentKeysAreAllDispatched(): void

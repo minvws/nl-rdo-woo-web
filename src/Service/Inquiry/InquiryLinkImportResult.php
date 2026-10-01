@@ -22,9 +22,21 @@ class InquiryLinkImportResult
      */
     public array $rowExceptions = [];
 
+    private bool $hasMatter = false;
+
     public function __construct(
         private readonly InquiryChangeset $changeset,
     ) {
+    }
+
+    public function hasMatter(): bool
+    {
+        return $this->hasMatter;
+    }
+
+    public function setHasMatter(bool $hasMatter): void
+    {
+        $this->hasMatter = $hasMatter;
     }
 
     public function addGenericException(TranslatableException $exception): void

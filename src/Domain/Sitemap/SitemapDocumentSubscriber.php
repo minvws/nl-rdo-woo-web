@@ -10,9 +10,11 @@ use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Service\DocumentCanonicalUrlGenerator;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
+
+use function array_key_exists;
 
 #[AsEventListener]
 readonly class SitemapDocumentSubscriber
@@ -20,6 +22,7 @@ readonly class SitemapDocumentSubscriber
     public function __construct(
         private EntityManagerInterface $doctrine,
         private DossierRepository $dossierRepository,
+        private DocumentCanonicalUrlGenerator $documentCanonicalUrlGenerator,
     ) {
     }
 
@@ -33,19 +36,28 @@ readonly class SitemapDocumentSubscriber
             ->setParameter('type', DossierType::WOO_DECISION)
             ->getQuery();
 
+        /** @var array<string, true> $processedDocumentNumbers */
+        $processedDocumentNumbers = [];
+
         foreach ($dossierQuery->toIterable() as $dossier) {
             Assert::isInstanceOf($dossier, WooDecision::class);
 
             foreach ($dossier->getDocuments() as $document) {
-                $documentNumber = $document->getDocumentNumber()->toString();
+                $documentNumber = $document->getDocumentNumber();
+                $documentNumberString = $documentNumber->toString();
+
+                if (array_key_exists($documentNumberString, $processedDocumentNumbers)) {
+                    $this->doctrine->detach($document);
+
+                    continue;
+                }
+
+                $processedDocumentNumbers[$documentNumberString] = true;
+                $canonicalDocumentUrl = $this->documentCanonicalUrlGenerator->canonical($documentNumber);
 
                 $event->getUrlContainer()->addUrl(
                     new UrlConcrete(
-                        $event->getUrlGenerator()->generate('app_document_detail', [
-                            'documentPrefix' => $dossier->getDocumentPrefix(),
-                            'dossierNumber' => $dossier->getDossierNumber(),
-                            'documentNumber' => $documentNumber,
-                        ], UrlGeneratorInterface::ABSOLUTE_URL),
+                        $canonicalDocumentUrl,
                         $document->getUpdatedAt(),
                         UrlConcrete::CHANGEFREQ_MONTHLY,
                         0.8,

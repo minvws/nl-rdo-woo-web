@@ -16,7 +16,6 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
-use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
@@ -111,7 +110,6 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
             'subject' => [
                 'id' => $subject->getId()->toString(),
                 'name' => $subject->getName(),
-                'landingPage' => null,
             ],
             'department' => [
                 'id' => (string) $department->getId(),
@@ -137,7 +135,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($complaintJudgement)],
+                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($complaintJudgement)],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -498,7 +496,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $data = $this->createValidComplaintJudgementDataPayload($department, $subject);
         $data['noticeNotPublic'] = [
             'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
-            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'grounds' => [$this->getFaker()->ground()],
         ];
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -522,7 +520,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $data['noticeNotPublic'] = [
             'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
             'documentName' => $this->getFaker()->sentence(),
-            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'grounds' => [$this->getFaker()->ground()],
             'explanation' => $this->getFaker()->sentence(),
         ];
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
@@ -563,7 +561,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $data = $this->createValidComplaintJudgementDataPayload($department, $subject);
         unset($data['mainDocument']);
         $data['noticeNotPublic'] = [
-            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'grounds' => [$this->getFaker()->ground()],
         ];
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -595,7 +593,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $data['noticeNotPublic'] = [
             'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
             'documentName' => $this->getFaker()->sentence(),
-            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'grounds' => [$this->getFaker()->ground()],
             'explanation' => $this->getFaker()->sentence(),
         ];
 

@@ -12,7 +12,7 @@ use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Api\Pagination\CursorPage;
 use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
-use Shared\Domain\HasId;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Service\ApiPlatformService;
@@ -23,7 +23,7 @@ final readonly class WooDecisionProvider implements ProviderInterface
     public function __construct(
         private OrganisationResolver $organisationResolver,
         private WooDecisionRepository $wooDecisionRepository,
-        private WooDecisionMapper $wooDecisionMapper,
+        private WooDecisionResponseMapper $wooDecisionResponseMapper,
         private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
@@ -31,6 +31,8 @@ final readonly class WooDecisionProvider implements ProviderInterface
 
     /**
      * @param array<array-key, string> $uriVariables
+     *
+     * @throws ValidationException
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|WooDecisionResponseDto
     {
@@ -59,9 +61,8 @@ final readonly class WooDecisionProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        $mappedDtos = $this->wooDecisionMapper->fromEntities($wooDecisions);
+        $mappedDtos = $this->wooDecisionResponseMapper->fromEntities($wooDecisions);
 
-        /** @var list<HasId> $wooDecisions */
         return $this->cursorPageFactory->create(
             $wooDecisions,
             $mappedDtos,
@@ -78,6 +79,6 @@ final readonly class WooDecisionProvider implements ProviderInterface
             throw EntityNotFoundException::for('WooDecision', $dossierExternalId);
         }
 
-        return $this->wooDecisionMapper->fromEntity($wooDecision);
+        return $this->wooDecisionResponseMapper->fromEntity($wooDecision);
     }
 }

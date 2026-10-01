@@ -20,6 +20,7 @@ class SchemasComponentOpenApiFactoryDecoratorTest extends UnitTestCase
     public function testContextIsPassedToDecoratedFactory(): void
     {
         $context = ['foo' => 'bar'];
+        /** @var ArrayObject<string, mixed> $captured */
         $captured = new ArrayObject();
 
         $openApi = $this->createOpenApi();

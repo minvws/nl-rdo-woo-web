@@ -6,10 +6,8 @@ namespace Shared\Service\Security;
 
 use Override;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
-use Webmozart\Assert\Assert;
 
 use function in_array;
 
@@ -18,9 +16,7 @@ class DocumentVoter extends WooDecisionVoter
     #[Override]
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return $attribute === DossierVoter::VIEW
-            && $subject instanceof Document
-            && $subject->getDossiers()->count() === 1;
+        return $attribute === DossierVoter::VIEW && $subject instanceof Document;
     }
 
     #[Override]
@@ -31,11 +27,15 @@ class DocumentVoter extends WooDecisionVoter
             return false;
         }
 
-        $dossier = $document->getDossiers()->first();
-        Assert::isInstanceOf($dossier, WooDecision::class);
+        $wooDecisions = $document->getDossiers();
+        if ($wooDecisions->isEmpty()) {
+            return false;
+        }
 
-        if (parent::voteOnAttribute($attribute, $dossier, $token) === true) {
-            return true;
+        foreach ($wooDecisions as $wooDecision) {
+            if (parent::voteOnAttribute($attribute, $wooDecision, $token) === true) {
+                return true;
+            }
         }
 
         return $this->checkForDocumentInquiryIdInSession($document);

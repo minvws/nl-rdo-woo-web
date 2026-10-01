@@ -105,6 +105,7 @@ const ariaDescribedBy = computed(() =>
         :aria-describedby="ariaDescribedBy"
         :aria-invalid="inputStore.hasVisibleErrors"
         :class="inputClass"
+        :data-e2e-name="`${props.name}-select`"
         :id="inputId"
         :name="props.name"
         v-model="value"

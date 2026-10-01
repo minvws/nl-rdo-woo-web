@@ -7,6 +7,7 @@ namespace Shared\Service\Storage;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 use function fclose;
 use function is_resource;
@@ -15,6 +16,7 @@ readonly class RemoteFilesystem
 {
     public function __construct(
         protected LoggerInterface $logger,
+        #[Target('documentStorage')]
         protected FilesystemOperator $documentStorage,
     ) {
     }

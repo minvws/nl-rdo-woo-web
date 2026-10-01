@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Document;
 
 use Mockery;
-use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
@@ -173,22 +172,6 @@ final class DocumentTest extends UnitTestCase
         self::assertNull($document->getWithdrawReason());
         self::assertEquals('', $document->getWithdrawExplanation());
         self::assertNull($document->getWithdrawDate());
-    }
-
-    public function testHasPubliclyAvailableDossier(): void
-    {
-        $wooDecision = Mockery::mock(WooDecision::class);
-        $wooDecision->expects('getStatus')->times(2)->andReturn(DossierStatus::CONCEPT);
-
-        $document = new Document();
-        $document->addDossier($wooDecision);
-        self::assertFalse($document->hasPubliclyAvailableDossier());
-
-        $wooDecisionB = Mockery::mock(WooDecision::class);
-        $wooDecisionB->expects('getStatus')->andReturn(DossierStatus::PUBLISHED);
-
-        $document->addDossier($wooDecisionB);
-        self::assertTrue($document->hasPubliclyAvailableDossier());
     }
 
     public function testAddAndRemoveInquiry(): void

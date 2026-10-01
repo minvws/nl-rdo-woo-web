@@ -21,4 +21,6 @@ interface InventoryReaderInterface
     public function getDocumentMetadataGenerator(WooDecision $dossier): Generator;
 
     public function getCount(): int;
+
+    public function hasMatterColumn(): bool;
 }

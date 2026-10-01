@@ -14,12 +14,12 @@ use PublicationApi\Domain\OpenApi\Links\ApiUrlGenerator;
 use PublicationApi\Domain\Upload\UploadStatus;
 use PublicationApi\Tests\Integration\Api\Dossier\ApiPublicationV1DossierTestCase;
 use Shared\Controller\Public\Dossier\DossierFileController;
+use Shared\Controller\Public\Dossier\WooDecision\DocumentController;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
-use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
@@ -32,6 +32,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Validator\Immutable;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\Ground;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Publication\Subject\Subject;
@@ -53,10 +54,10 @@ use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\OrganisationPrefix;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\PublicationContext;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Constraints\Unique;
@@ -211,7 +212,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'subject' => [
                 'id' => $subject->getId()->toString(),
                 'name' => $subject->getName(),
-                'landingPage' => null,
             ],
             'department' => [
                 'id' => (string) $department->getId(),
@@ -237,7 +237,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
+                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($wooDecision)],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -272,7 +272,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                                 ],
                             )->toString(),
                         ],
-                        'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
+                        'public' => ['href' => $dossierPathHelper->getAbsoluteAttachmentDetailsPath($wooDecision, $wooDecisionAttachment->getId())],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -323,7 +323,16 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                                 ],
                             )->toString(),
                         ],
-                        'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
+                        'public' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                DocumentController::ROUTE_NAME_DOCUMENT_DETAIL,
+                                [
+                                    'documentPrefix' => $wooDecision->getDocumentPrefix(),
+                                    'dossierNumber' => $wooDecision->getDossierNumber(),
+                                    'documentNumber' => $wooDecisionDocument1->getDocumentNumber()->toString(),
+                                ],
+                            )->toString(),
+                        ],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -372,7 +381,16 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                                 ],
                             )->toString(),
                         ],
-                        'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
+                        'public' => [
+                            'href' => $publicUrlGenerator->buildUrlFromRoute(
+                                DocumentController::ROUTE_NAME_DOCUMENT_DETAIL,
+                                [
+                                    'documentPrefix' => $wooDecision->getDocumentPrefix(),
+                                    'dossierNumber' => $wooDecision->getDossierNumber(),
+                                    'documentNumber' => $wooDecisionDocument2->getDocumentNumber()->toString(),
+                                ],
+                            )->toString(),
+                        ],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -408,7 +426,6 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 'organisation' => $organisation,
             ],
         );
-        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
         WooDecisionAttachmentFactory::createOne([
             'dossier' => $wooDecision,
             'externalId' => $this->getFaker()->externalId(),
@@ -885,7 +902,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     ],
                 ],
                 [
-                    'code' => Choice::NO_SUCH_CHOICE_ERROR,
+                    'code' => Type::INVALID_TYPE_ERROR,
                     'propertyPath' => 'documents[0].grounds[0]',
                 ],
             ],
@@ -899,7 +916,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                             'externalId' => 'd3147b92-f6a3-3c78-91bc-627f252fc07e',
                             'familyId' => 838,
                             'fileName' => 'document.pdf',
-                            'grounds' => [Citation::GROUND_WOO_511A, Citation::GROUND_WOB_102B, 'invalid'],
+                            'grounds' => [Ground::WOO_511A->value, Ground::WOB_102B->value, 'invalid'],
                             'isSuspended' => true,
                             'judgement' => Judgement::PUBLIC->value,
                             'links' => [],
@@ -912,7 +929,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                     ],
                 ],
                 [
-                    'code' => Choice::NO_SUCH_CHOICE_ERROR,
+                    'code' => Type::INVALID_TYPE_ERROR,
                     'propertyPath' => 'documents[0].grounds[2]',
                 ],
             ],
@@ -979,11 +996,11 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                         'formalDate' => '2024-11-04',
                         'type' => AttachmentType::JUDGEMENT_ON_WOB_WOO_REQUEST->value,
                         'language' => AttachmentLanguage::NLD->value,
-                        'grounds' => [Citation::GROUND_WOO_511A, Citation::GROUND_WOB_102B, 'invalid'],
+                        'grounds' => [Ground::WOO_511A->value, Ground::WOB_102B->value, 'invalid'],
                     ],
                 ],
                 [
-                    'code' => Choice::NO_SUCH_CHOICE_ERROR,
+                    'code' => Type::INVALID_TYPE_ERROR,
                     'propertyPath' => 'mainDocument.grounds[2]',
                 ],
             ],
@@ -1037,12 +1054,12 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                             'formalDate' => '2024-11-04',
                             'type' => AttachmentType::AGENDA->value,
                             'language' => AttachmentLanguage::NLD->value,
-                            'grounds' => [Citation::GROUND_WOO_511A, Citation::GROUND_WOB_102B, 'invalid'],
+                            'grounds' => [Ground::WOO_511A->value, Ground::WOB_102B->value, 'invalid'],
                         ],
                     ],
                 ],
                 [
-                    'code' => Choice::NO_SUCH_CHOICE_ERROR,
+                    'code' => Type::INVALID_TYPE_ERROR,
                     'propertyPath' => 'attachments[0].grounds[2]',
                 ],
             ],
@@ -1418,33 +1435,241 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]]]);
     }
 
-    public function testCreateWooDecisionWithDocumentNumberAlreadyExistsInAnotherDossier(): void
+    public function testCreateWooDecisionRejectsDocumentLinkedToAnotherDossierWithoutMutation(): void
     {
         $organisation = OrganisationFactory::createOne();
         $subject = SubjectFactory::new(['organisation' => $organisation])->create();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
 
-        $documentId = $this->getFaker()->documentId();
-        $publicationContext = $this->getFaker()->publicationContext();
-
         $existingWooDecision = WooDecisionFactory::createOne(['departments' => [$department], 'organisation' => $organisation]);
-        DocumentFactory::createOne([
+        $documentId = DocumentId::create('document-already-linked');
+        $publicationContext = PublicationContext::fromString('source-context');
+        $documentNumber = sprintf('%s-%s', $publicationContext, $documentId);
+        $existingDocument = DocumentFactory::createOne([
             'dossiers' => [$existingWooDecision],
-            'documentNumber' => sprintf('%s-%s', $publicationContext, $documentId),
+            'documentDate' => PlainDate::create('2024-01-01'),
+            'documentId' => $documentId,
+            'documentNumber' => $documentNumber,
+            'externalId' => ExternalId::create('existing-document-external-id'),
+            'fileInfo' => FileInfoFactory::createOne([
+                'name' => 'existing-document.pdf',
+                'uploaded' => true,
+            ]),
+            'publicationContext' => $publicationContext,
+            'judgement' => Judgement::PUBLIC,
         ]);
+        $originalFilePath = $existingDocument->getFileInfo()->getPath();
 
         $data = $this->createValidWooDecisionDataPayload($department, $subject, 0, 0);
         $data['documents'] = [array_merge($this->createDocumentDataPayload(), [
+            'documentDate' => '2025-02-02',
             'documentId' => $documentId->toString(),
+            'externalId' => 'new-document-external-id',
+            'fileName' => 'new-document.pdf',
+            'judgement' => Judgement::NOT_PUBLIC->value,
             'publicationContext' => $publicationContext->toString(),
+            'remark' => 'This must not be persisted.',
         ])];
 
-        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
+        self::createPublicationApiRequest(
+            Request::METHOD_PUT,
+            $this->buildUrl($organisation, $this->getFaker()->slug(1)),
+            ['json' => $data],
+        );
+
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => [[
-            'code' => UniqueDocumentNumber::NOT_UNIQUE_ERROR,
-            'propertyPath' => 'documents.[0].documentNumber',
+            'propertyPath' => 'documents[0]',
+            'message' => sprintf(
+                'Document "%s" cannot be linked to another dossier through the Publication API yet.',
+                $documentNumber,
+            ),
         ]]]);
+
+        self::assertDatabaseCount(WooDecision::class, 1);
+        self::assertDatabaseCount(Document::class, 1);
+        self::assertSame(1, $existingDocument->getDossiers()->count());
+        self::assertSame('existing-document.pdf', $existingDocument->getFileInfo()->getName());
+        self::assertSame($originalFilePath, $existingDocument->getFileInfo()->getPath());
+        self::assertTrue($existingDocument->getFileInfo()->isUploaded());
+        self::assertSame(Judgement::PUBLIC, $existingDocument->getJudgement());
+        self::assertSame('2024-01-01', $existingDocument->getDocumentDate()?->format('Y-m-d'));
+    }
+
+    public function testUpdateWooDecisionRejectsDocumentLinkedToMultipleDossiersWithoutMutation(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        $otherWooDecision = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'organisation' => $organisation,
+        ]);
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
+
+        $documentId = DocumentId::create('shared-document');
+        $publicationContext = PublicationContext::fromString('shared-context');
+        $documentNumber = sprintf('%s-%s', $publicationContext, $documentId);
+        $sharedDocument = DocumentFactory::createOne([
+            'dossiers' => [$wooDecision, $otherWooDecision],
+            'documentDate' => PlainDate::create('2024-01-01'),
+            'documentId' => $documentId,
+            'documentNumber' => $documentNumber,
+            'externalId' => ExternalId::create('shared-document-external-id'),
+            'fileInfo' => FileInfoFactory::createOne([
+                'name' => 'shared-document.pdf',
+                'uploaded' => true,
+            ]),
+            'publicationContext' => $publicationContext,
+            'judgement' => Judgement::PUBLIC,
+            'remark' => 'Original remark',
+        ]);
+        $originalFilePath = $sharedDocument->getFileInfo()->getPath();
+        $originalTitle = $wooDecision->getTitle()->toString();
+
+        $data = $this->createValidWooDecisionDataPayload($department, null, 0, 0);
+        $data['documents'] = [array_merge($this->createDocumentDataPayload(), [
+            'documentDate' => '2025-02-02',
+            'documentId' => $documentId->toString(),
+            'externalId' => 'shared-document-external-id',
+            'fileName' => 'changed-document.pdf',
+            'judgement' => Judgement::NOT_PUBLIC->value,
+            'publicationContext' => $publicationContext->toString(),
+            'remark' => 'Changed remark',
+        ])];
+
+        self::createPublicationApiRequest(
+            Request::METHOD_PUT,
+            $this->buildUrl($organisation, $wooDecision),
+            ['json' => $data],
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'propertyPath' => 'documents[0]',
+            'message' => sprintf(
+                'Document "%s" cannot be modified through the Publication API because it is linked to multiple dossiers.',
+                $documentNumber,
+            ),
+        ]]]);
+
+        self::assertDatabaseHas(WooDecision::class, [
+            'id' => $wooDecision->getId(),
+            'title' => $originalTitle,
+        ]);
+        self::assertSame(2, $sharedDocument->getDossiers()->count());
+        self::assertSame('shared-document.pdf', $sharedDocument->getFileInfo()->getName());
+        self::assertSame($originalFilePath, $sharedDocument->getFileInfo()->getPath());
+        self::assertTrue($sharedDocument->getFileInfo()->isUploaded());
+        self::assertSame(Judgement::PUBLIC, $sharedDocument->getJudgement());
+        self::assertSame('Original remark', $sharedDocument->getRemark());
+        self::assertSame('2024-01-01', $sharedDocument->getDocumentDate()?->format('Y-m-d'));
+    }
+
+    public function testUpdateWooDecisionValidatesAllDocumentsBeforeMutatingAnyDocument(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $wooDecision = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        $otherWooDecision = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'organisation' => $organisation,
+        ]);
+        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
+
+        $safeDocumentId = DocumentId::create('safe-document');
+        $safePublicationContext = PublicationContext::fromString('safe-context');
+        $safeDocument = DocumentFactory::createOne([
+            'dossiers' => [$wooDecision],
+            'documentId' => $safeDocumentId,
+            'documentNumber' => sprintf('%s-%s', $safePublicationContext, $safeDocumentId),
+            'externalId' => ExternalId::create('safe-document-external-id'),
+            'fileInfo' => FileInfoFactory::createOne([
+                'name' => 'safe-document.pdf',
+                'uploaded' => true,
+            ]),
+            'publicationContext' => $safePublicationContext,
+            'judgement' => Judgement::PUBLIC,
+        ]);
+        $originalSafeFilePath = $safeDocument->getFileInfo()->getPath();
+
+        $sharedDocumentId = DocumentId::create('shared-document');
+        $sharedPublicationContext = PublicationContext::fromString('shared-context');
+        $sharedDocumentNumber = sprintf('%s-%s', $sharedPublicationContext, $sharedDocumentId);
+        $sharedDocument = DocumentFactory::createOne([
+            'dossiers' => [$wooDecision, $otherWooDecision],
+            'documentId' => $sharedDocumentId,
+            'documentNumber' => $sharedDocumentNumber,
+            'externalId' => ExternalId::create('shared-document-external-id'),
+            'fileInfo' => FileInfoFactory::createOne([
+                'name' => 'shared-document.pdf',
+                'uploaded' => true,
+            ]),
+            'publicationContext' => $sharedPublicationContext,
+            'judgement' => Judgement::PUBLIC,
+        ]);
+        $originalSharedFilePath = $sharedDocument->getFileInfo()->getPath();
+        $originalTitle = $wooDecision->getTitle()->toString();
+
+        $data = $this->createValidWooDecisionDataPayload($department, null, 0, 0);
+        $data['documents'] = [
+            array_merge($this->createDocumentDataPayload(), [
+                'documentDate' => '2025-02-02',
+                'documentId' => $safeDocumentId->toString(),
+                'externalId' => 'safe-document-external-id',
+                'fileName' => 'changed-safe-document.pdf',
+                'judgement' => Judgement::NOT_PUBLIC->value,
+                'publicationContext' => $safePublicationContext->toString(),
+            ]),
+            array_merge($this->createDocumentDataPayload(), [
+                'documentDate' => '2025-02-02',
+                'documentId' => $sharedDocumentId->toString(),
+                'externalId' => 'shared-document-external-id',
+                'fileName' => 'changed-shared-document.pdf',
+                'judgement' => Judgement::NOT_PUBLIC->value,
+                'publicationContext' => $sharedPublicationContext->toString(),
+            ]),
+        ];
+
+        self::createPublicationApiRequest(
+            Request::METHOD_PUT,
+            $this->buildUrl($organisation, $wooDecision),
+            ['json' => $data],
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'propertyPath' => 'documents[1]',
+            'message' => sprintf(
+                'Document "%s" cannot be modified through the Publication API because it is linked to multiple dossiers.',
+                $sharedDocumentNumber,
+            ),
+        ]]]);
+
+        self::assertDatabaseHas(WooDecision::class, [
+            'id' => $wooDecision->getId(),
+            'title' => $originalTitle,
+        ]);
+        self::assertSame(1, $safeDocument->getDossiers()->count());
+        self::assertSame('safe-document.pdf', $safeDocument->getFileInfo()->getName());
+        self::assertSame($originalSafeFilePath, $safeDocument->getFileInfo()->getPath());
+        self::assertTrue($safeDocument->getFileInfo()->isUploaded());
+        self::assertSame(Judgement::PUBLIC, $safeDocument->getJudgement());
+        self::assertSame(2, $sharedDocument->getDossiers()->count());
+        self::assertSame('shared-document.pdf', $sharedDocument->getFileInfo()->getName());
+        self::assertSame($originalSharedFilePath, $sharedDocument->getFileInfo()->getPath());
+        self::assertTrue($sharedDocument->getFileInfo()->isUploaded());
+        self::assertSame(Judgement::PUBLIC, $sharedDocument->getJudgement());
     }
 
     public function testUpdateWooDecisionWithDocumentExternalIdAlreadyExistsInAnotherDossier(): void
@@ -1510,8 +1735,8 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $wooDecisionToUpdate), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertJsonContains(['violations' => [[
-            'code' => UniqueDocumentNumber::NOT_UNIQUE_ERROR,
-            'propertyPath' => 'documents.[0].documentNumber',
+            'propertyPath' => 'documents[0]',
+            'message' => 'Document "prefix-matter-testdocid" cannot be linked to another dossier through the Publication API yet.',
         ]]]);
     }
 
@@ -1920,6 +2145,114 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                 ],
             ],
         ];
+    }
+
+    #[DataProvider('documentFieldLockingStrictestWinsDataProvider')]
+    public function testUpdateWooDecisionLocksDocumentIdentityWhenAnyLinkedDossierIsBeyondConcept(
+        DossierStatus $otherDossierStatus,
+        int $expectedStatusCode,
+    ): void {
+        $organisation = OrganisationFactory::createOne();
+        $subject = SubjectFactory::new(['organisation' => $organisation])->create();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+
+        $conceptWooDecision = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'decision' => DecisionType::PUBLIC,
+            'previewDate' => $this->getFaker()->plainDateBetween('1 week', '2 weeks'),
+            'publicationDate' => $this->getFaker()->plainDateBetween('2 weeks', '3 weeks'),
+            'status' => DossierStatus::CONCEPT,
+        ]);
+        $mainDocument = WooDecisionMainDocumentFactory::createOne([
+            'dossier' => $conceptWooDecision,
+            'grounds' => $this->getFaker()->groundsBetween(0, 3),
+            'language' => AttachmentLanguage::NLD,
+        ]);
+
+        $otherWooDecision = WooDecisionFactory::createOne([
+            'departments' => [$department],
+            'externalId' => $this->getFaker()->externalId(),
+            'organisation' => $organisation,
+            'decision' => DecisionType::PUBLIC,
+            'previewDate' => PlainDate::create('2025-01-01'),
+            'publicationDate' => PlainDate::create('2025-01-01'),
+            'status' => $otherDossierStatus,
+        ]);
+
+        $documentId = $this->getFaker()->documentId();
+        $publicationContext = $this->getFaker()->publicationContext();
+        $document = DocumentFactory::createOne([
+            'dossiers' => [$conceptWooDecision, $otherWooDecision],
+            'externalId' => $this->getFaker()->externalId(),
+            'documentId' => $documentId,
+            'documentNumber' => sprintf('%s-%s', $publicationContext, $documentId),
+            'publicationContext' => $publicationContext,
+            'judgement' => Judgement::PUBLIC,
+        ]);
+
+        $payload = [
+            'title' => $conceptWooDecision->getTitle()->toString(),
+            'dossierNumber' => $conceptWooDecision->getDossierNumber(),
+            'dateFrom' => $conceptWooDecision->getDateFrom()?->format('Y-m-d'),
+            'dateTo' => $conceptWooDecision->getDateTo()?->format('Y-m-d'),
+            'decision' => $conceptWooDecision->getDecision(),
+            'reason' => $conceptWooDecision->getPublicationReason(),
+            'previewDate' => $conceptWooDecision->getPreviewDate()?->format('Y-m-d'),
+            'publicationDate' => $conceptWooDecision->getPublicationDate()?->format('Y-m-d'),
+            'summary' => $conceptWooDecision->getSummary(),
+            'departmentId' => $department->getId(),
+            'subjectId' => $subject->getId(),
+            'mainDocument' => [
+                'fileName' => $mainDocument->getFileInfo()->getName(),
+                'formalDate' => $mainDocument->getFormalDate()->format('Y-m-d'),
+                'type' => $mainDocument->getType(),
+                'language' => $mainDocument->getLanguage(),
+                'grounds' => $mainDocument->getGrounds(),
+            ],
+            'attachments' => [],
+            'documents' => [
+                [
+                    'inquiryNumbers' => [],
+                    'documentDate' => $this->getFaker()->date(),
+                    'documentId' => 'new-document-id',
+                    'externalId' => $document->getExternalId()?->toString(),
+                    'familyId' => $this->getFaker()->numberBetween(1, 1000),
+                    'fileName' => $document->getFileInfo()->getName(),
+                    'grounds' => $this->getFaker()->groundsBetween(0, 3),
+                    'isSuspended' => false,
+                    'judgement' => Judgement::PUBLIC,
+                    'links' => [],
+                    'publicationContext' => $document->getPublicationContext()?->toString(),
+                    'refersTo' => [],
+                    'remark' => $this->getFaker()->sentence(),
+                    'sourceType' => $this->getFaker()->randomElement(SourceType::cases()),
+                    'threadId' => $this->getFaker()->numberBetween(1, 1000),
+                ],
+            ],
+        ];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $conceptWooDecision), ['json' => $payload]);
+        self::assertResponseStatusCodeSame($expectedStatusCode);
+
+        if ($expectedStatusCode === Response::HTTP_UNPROCESSABLE_ENTITY) {
+            self::assertJsonContains(['violations' => [[
+                'code' => Immutable::ERROR_CODE,
+                'propertyPath' => 'documents.[0].documentId',
+            ]]]);
+        }
+    }
+
+    /**
+     * @return iterable<string,array{DossierStatus,int}>
+     */
+    public static function documentFieldLockingStrictestWinsDataProvider(): iterable
+    {
+        yield 'other decision is concept' => [DossierStatus::CONCEPT, Response::HTTP_OK];
+        yield 'other decision is scheduled' => [DossierStatus::SCHEDULED, Response::HTTP_UNPROCESSABLE_ENTITY];
+        yield 'other decision is preview' => [DossierStatus::PREVIEW, Response::HTTP_UNPROCESSABLE_ENTITY];
+        yield 'other decision is published' => [DossierStatus::PUBLISHED, Response::HTTP_UNPROCESSABLE_ENTITY];
     }
 
     public function testUpdateWooDecisionWithNonConceptStateContainsEmptyDocuments(): void

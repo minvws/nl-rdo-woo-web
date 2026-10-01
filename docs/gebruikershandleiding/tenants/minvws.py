@@ -5,7 +5,7 @@ myst_substitutions = {
     "portal_name": f"{_portal_name}",
     "portal_url": f"https://{_portal_name}",
     "portal_link": f"[{_portal_name}](https://{_portal_name})",
-    "balie_url": f"http://{_balie_name}/balie",
+    "balie_url": f"https://{_balie_name}/balie",
     "balie_link": f"[{_balie_name}/balie](https://{_balie_name}/balie)",
 }
 

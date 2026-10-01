@@ -17,8 +17,10 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
 use Shared\Domain\Search\Query\Facet\FacetDefinitions;
+use Shared\Service\DocumentCanonicalUrlGenerator;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Security\DossierVoter;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +33,8 @@ use Webmozart\Assert\Assert;
 
 class DocumentController extends AbstractController
 {
+    public const string ROUTE_NAME_DOCUMENT_DETAIL = 'app_document_detail';
+
     public function __construct(
         private readonly DocumentRepository $documentRepository,
         private readonly PaginatorInterface $paginator,
@@ -39,11 +43,12 @@ class DocumentController extends AbstractController
         private readonly DossierFileViewFactory $dossierFileViewFactory,
         private readonly TranslatorInterface $translator,
         private readonly FacetDefinitions $facetDefinitions,
+        private readonly DocumentCanonicalUrlGenerator $documentCanonicalUrlGenerator,
     ) {
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/dossier/{documentPrefix}/{dossierNumber}/document/{documentNumber}', name: 'app_document_detail', methods: ['GET'])]
+    #[Route('/dossier/{documentPrefix}/{dossierNumber}/document/{documentNumber}', name: self::ROUTE_NAME_DOCUMENT_DETAIL, methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $wooDecision,
         #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(documentPrefix, dossierNumber, documentNumber)')] Document $document,
@@ -51,7 +56,6 @@ class DocumentController extends AbstractController
         Request $request,
     ): Response {
         $this->denyAccessUnlessGranted(DossierVoter::VIEW, $document);
-        $documentNumber = $document->getDocumentNumber()->toString();
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem($this->getPublicationReason($wooDecision), 'app_woodecision_detail', [
@@ -92,6 +96,7 @@ class DocumentController extends AbstractController
         return $this->render('public/dossier/woo-decision/document/details.html.twig', [
             'dossier' => $this->wooDecisionViewFactory->make($wooDecision),
             'document' => $this->documentViewFactory->make($document),
+            'canonical_url' => $this->documentCanonicalUrlGenerator->canonical($document->getDocumentNumber()),
             'thread' => $threadDocPaginator,
             'family' => $familyDocPaginator,
             'file' => $this->dossierFileViewFactory->make(
@@ -117,9 +122,31 @@ class DocumentController extends AbstractController
                 'app_search',
                 [
                     $dossierNumberParam => [PrefixedDossierNumber::forDossier($wooDecision)],
-                    $referredDocumentParam => [$documentNumber],
+                    $referredDocumentParam => [$document->getDocumentNumber()],
                 ],
             ),
+        ]);
+    }
+
+    #[Cache(maxage: 600, public: true, mustRevalidate: true)]
+    #[Route('/document/{documentNumber}', name: 'app_document_canonical', methods: ['GET'])]
+    public function canonical(string $documentNumber): Response
+    {
+        $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive(
+            DocumentNumber::fromString($documentNumber),
+        );
+
+        if ($document === null) {
+            throw $this->createNotFoundException();
+        }
+
+        if (! $this->isGranted(DossierVoter::VIEW, $document)) {
+            throw $this->createNotFoundException();
+        }
+
+        return $this->render('public/dossier/woo-decision/document/canonical.html.twig', [
+            'document' => $this->documentViewFactory->make($document),
+            'canonical_url' => $this->documentCanonicalUrlGenerator->canonical($document->getDocumentNumber()),
         ]);
     }
 

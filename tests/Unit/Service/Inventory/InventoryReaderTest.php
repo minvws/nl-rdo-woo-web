@@ -17,6 +17,7 @@ use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\PlainDate;
 
 use function iterator_to_array;
+use function sprintf;
 
 class InventoryReaderTest extends UnitTestCase
 {
@@ -273,9 +274,51 @@ class InventoryReaderTest extends UnitTestCase
         );
     }
 
+    public function testInventoryReaderExpandsRelatedIdsWhenTheRowHasAMatter(): void
+    {
+        $factory = new InventoryReaderFactory([
+            new CsvReaderFactory(),
+        ]);
+        $reader = $factory->create('text/csv');
+
+        $reader->open(sprintf('%s/inventory-matter-with-related-id.csv', __DIR__));
+
+        $dossier = new WooDecision();
+        $dossier->setDocumentPrefix('PREF');
+
+        $result = $reader->getDocumentMetadataGenerator($dossier)->current();
+        self::assertInstanceOf(InventoryReadItem::class, $result);
+        self::assertNull($result->getException());
+        self::assertSame(
+            ['PREF-XX-1004', 'PREF-YY-1005', 'PREF-ZZ-1006'],
+            $result->getDocumentMetadata()?->getRefersTo(),
+        );
+    }
+
+    public function testInventoryReaderKeepsRelatedIdsWhenTheRowHasAPublicationContext(): void
+    {
+        $factory = new InventoryReaderFactory([
+            new CsvReaderFactory(),
+        ]);
+        $reader = $factory->create('text/csv');
+
+        $reader->open(sprintf('%s/inventory-publicationcontext-with-related-id.csv', __DIR__));
+
+        $dossier = new WooDecision();
+        $dossier->setDocumentPrefix('PREF');
+
+        $result = $reader->getDocumentMetadataGenerator($dossier)->current();
+        self::assertInstanceOf(InventoryReadItem::class, $result);
+        self::assertNull($result->getException());
+        self::assertSame(
+            ['SOME-OTHER-CONTEXT-1008'],
+            $result->getDocumentMetadata()?->getRefersTo(),
+        );
+    }
+
     public function testInventoryReaderAcceptsAlternativeColumnNamesForDateAndGround(): void
     {
-        $this->reader->open(__DIR__ . '/inventory-alternative-date-and-ground.xlsx');
+        $this->reader->open(sprintf('%s/inventory-alternative-date-and-ground.xlsx', __DIR__));
 
         $iterator = $this->reader->getDocumentMetadataGenerator(new WooDecision());
 
@@ -284,5 +327,29 @@ class InventoryReaderTest extends UnitTestCase
 
         self::assertEquals(PlainDate::create('2022-10-09'), $documentMetadata->getDate());
         self::assertEquals(['5.1.2e'], $documentMetadata->getGrounds());
+    }
+
+    public function testHasMatterWhenColumnExists(): void
+    {
+        $factory = new InventoryReaderFactory([
+            new CsvReaderFactory(),
+        ]);
+        $reader = $factory->create('text/csv');
+
+        $reader->open(__DIR__ . '/inventory-matter-with-related-id.csv');
+
+        self::assertTrue($reader->hasMatterColumn());
+    }
+
+    public function testHasMatterWhenColumnDoesntExist(): void
+    {
+        $factory = new InventoryReaderFactory([
+            new CsvReaderFactory(),
+        ]);
+        $reader = $factory->create('text/csv');
+
+        $reader->open(__DIR__ . '/inventory-publicationcontext.csv');
+
+        self::assertFalse($reader->hasMatterColumn());
     }
 }

@@ -19,6 +19,7 @@
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
 
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=0" force="true" />
         <env name="STORAGE_DOCUMENT_ADAPTER" value="phpunit" force="true" />
         <env name="STORAGE_ASSETS_ADAPTER" value="phpunit" force="true" />
     </php>
@@ -65,6 +66,10 @@
     </source>
 
     <extensions>
+        <bootstrap class="Symfony\Bridge\PhpUnit\SymfonyExtension">
+            <parameter name="clock-mock-namespaces" value="Shared,Admin,PublicationApi,Worker,WooMinVWS" />
+            <parameter name="dns-mock-namespaces" value="Shared,Admin,PublicationApi,Worker,WooMinVWS" />
+        </bootstrap>
         <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
         <bootstrap class="Zenstruck\Foundry\PHPUnit\FoundryExtension" />
         <bootstrap class="DG\BypassFinals\PHPUnitExtension" />

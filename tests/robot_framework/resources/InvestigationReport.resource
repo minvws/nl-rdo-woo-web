@@ -23,11 +23,11 @@ Upload Investigation Report
   [Arguments]  ${investigation_report_location}
   ${_}  ${file_name} =  Split Path  ${investigation_report_location}
   Click  " Onderzoeksrapport toevoegen... "
-  Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${investigation_report_location}
-  Wait For Condition  Text  //div[@class="bhr-file"]  contains  ${file_name}
-  Select Options By  //dialog[@open]//select[@name="type"]  text  onderzoeksrapport
-  Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
-  Click  //dialog[@open]//button[@type="submit"]
+  Upload File By Selector  //dialog[@open]//*[@data-e2e-name="uploadUuid-input"]  ${investigation_report_location}
+  Wait For Condition  Text  //*[@data-e2e-name="uploaded-file"]  contains  ${file_name}
+  Select Options By  //dialog[@open]//*[@data-e2e-name="type-select"]  text  onderzoeksrapport
+  Type Text  //dialog[@open]//*[@data-e2e-name="formalDate-input"]  01012022
+  Click  //dialog[@open]//*[@data-e2e-name="submit"]
   Wait For Condition
   ...  Text
   ...  //*[@id="inhoud"]

@@ -26,7 +26,11 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
 
         self::expectException(UnexpectedTypeException::class);
 
-        $validator->validate(Mockery::mock(Document::class), Mockery::mock(Constraint::class));
+        $validator->validateInContext(
+            Mockery::mock(Document::class),
+            Mockery::mock(Constraint::class),
+            Mockery::mock(ExecutionContextInterface::class),
+        );
     }
 
     public function testNoViolationWhenValueIsNotADocument(): void
@@ -38,9 +42,8 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->never();
 
         $validator = new UniqueDocumentNumberValidator($repository);
-        $validator->initialize($context);
 
-        $validator->validate('not-a-document', new UniqueDocumentNumber());
+        $validator->validateInContext('not-a-document', new UniqueDocumentNumber(), $context);
     }
 
     public function testNoViolationWhenNoConflictingDocumentExists(): void
@@ -56,9 +59,8 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->never();
 
         $validator = new UniqueDocumentNumberValidator($repository);
-        $validator->initialize($context);
 
-        $validator->validate($document, new UniqueDocumentNumber());
+        $validator->validateInContext($document, new UniqueDocumentNumber(), $context);
     }
 
     public function testNoViolationWhenConflictingDocumentIsSameDocument(): void
@@ -80,9 +82,8 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->never();
 
         $validator = new UniqueDocumentNumberValidator($repository);
-        $validator->initialize($context);
 
-        $validator->validate($document, new UniqueDocumentNumber());
+        $validator->validateInContext($document, new UniqueDocumentNumber(), $context);
     }
 
     public function testAddsViolationWhenConflictingDocumentHasNoDossier(): void
@@ -108,9 +109,8 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->with('document.document_number_not_unique')->andReturn($builder);
 
         $validator = new UniqueDocumentNumberValidator($repository);
-        $validator->initialize($context);
 
-        $validator->validate($document, new UniqueDocumentNumber());
+        $validator->validateInContext($document, new UniqueDocumentNumber(), $context);
     }
 
     public function testAddsViolationWithDecomposedPartsWhenDocumentNumberExistsInAnotherDocument(): void
@@ -136,8 +136,7 @@ class UniqueDocumentNumberValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->with('document.document_number_not_unique')->andReturn($builder);
 
         $validator = new UniqueDocumentNumberValidator($repository);
-        $validator->initialize($context);
 
-        $validator->validate($document, new UniqueDocumentNumber());
+        $validator->validateInContext($document, new UniqueDocumentNumber(), $context);
     }
 }

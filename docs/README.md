@@ -15,7 +15,7 @@ De documentatie is publiekelijk beschikbaar op [open.minvws.nl/documentatie/](ht
 Om deze lokaal te genereren, gebruik je het volgende commando:
 
 ```bash
-task docs:build:all
+task docs:build:local:all
 ```
 
 ## Technische documentatie
@@ -34,6 +34,7 @@ Deze map bevat technische documentatie om de broncode beter mee te kunnen begrij
 - [logging.md](technische-documentatie/logging.md)
 - [robots.md](technische-documentatie/robots.md)
 - [technical.md](technische-documentatie/technical.md)
+- [tenants.md](technische-documentatie/tenants.md)
 - [terminology.md](technische-documentatie/terminology.md)
 - [test.md](technische-documentatie/test.md)
 - [translations.md](technische-documentatie/translations.md)

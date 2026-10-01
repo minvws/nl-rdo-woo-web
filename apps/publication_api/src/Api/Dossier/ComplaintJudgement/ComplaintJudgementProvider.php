@@ -12,7 +12,7 @@ use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Api\Pagination\CursorPage;
 use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
-use Shared\Domain\HasId;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementRepository;
 use Shared\Service\ApiPlatformService;
@@ -23,7 +23,7 @@ final readonly class ComplaintJudgementProvider implements ProviderInterface
     public function __construct(
         private OrganisationResolver $organisationResolver,
         private ComplaintJudgementRepository $complaintJudgementRepository,
-        private ComplaintJudgementMapper $complaintJudgementMapper,
+        private ComplaintJudgementResponseMapper $complaintJudgementResponseMapper,
         private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
@@ -31,6 +31,8 @@ final readonly class ComplaintJudgementProvider implements ProviderInterface
 
     /**
      * @param array<array-key, string> $uriVariables
+     *
+     * @throws ValidationException
      */
     public function provide(
         Operation $operation,
@@ -62,9 +64,8 @@ final readonly class ComplaintJudgementProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        $mappedDtos = $this->complaintJudgementMapper->fromEntities($complaintJudgements);
+        $mappedDtos = $this->complaintJudgementResponseMapper->fromEntities($complaintJudgements);
 
-        /** @var list<HasId> $complaintJudgements */
         return $this->cursorPageFactory->create(
             $complaintJudgements,
             $mappedDtos,
@@ -81,6 +82,6 @@ final readonly class ComplaintJudgementProvider implements ProviderInterface
             throw EntityNotFoundException::for('ComplaintJudgement', $dossierExternalId);
         }
 
-        return $this->complaintJudgementMapper->fromEntity($complaintJudgement);
+        return $this->complaintJudgementResponseMapper->fromEntity($complaintJudgement);
     }
 }

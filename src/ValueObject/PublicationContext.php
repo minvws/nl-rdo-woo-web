@@ -16,6 +16,7 @@ use function preg_match;
 final readonly class PublicationContext implements Equatable, Stringable
 {
     public const string PATTERN = '/^[A-Za-z0-9\-._~]*$/';
+    public const string OPENAPI_PATTERN = '^[A-Za-z0-9\-._~]*$';
     public const int MIN_LENGTH = 1;
     public const int MAX_LENGTH = 255;
 

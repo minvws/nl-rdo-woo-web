@@ -1,3 +1,11 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+# See also https://symfony.com/doc/current/service_container/import.html
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     configPageLimit: '%env(int:DOCUMENT_PAGE_LIMIT)%'
     env(DOCUMENT_PAGE_LIMIT): '0'
@@ -148,10 +156,6 @@ services:
     Shared\Service\Inventory\Sanitizer\InventorySanitizer:
         arguments:
             $writer: '@Shared\Service\Inventory\Sanitizer\ExcelWriter'
-
-    Shared\Service\Inventory\Sanitizer\InventoryDocumentMapper:
-        arguments:
-            $publicBaseUrl: '%public_base_url%'
 
     Shared\Service\HistoryService:
         arguments:

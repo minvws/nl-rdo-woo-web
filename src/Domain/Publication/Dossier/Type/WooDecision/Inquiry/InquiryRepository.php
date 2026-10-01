@@ -14,6 +14,7 @@ use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use SortDirection;
 use Webmozart\Assert\Assert;
 
 use function intval;
@@ -89,7 +90,7 @@ class InquiryRepository extends ServiceEntityRepository
             ->addSelect($dossierCountDQL)
             ->leftJoin('inq.inventory', 'inv')
             ->where('inq.organisation = :organisation')
-            ->orderBy('inq.updatedAt', 'DESC')
+            ->orderBy('inq.updatedAt', SortDirection::Descending)
             ->setParameter('organisation', $organisation)
             ->getQuery();
     }
@@ -102,6 +103,8 @@ class InquiryRepository extends ServiceEntityRepository
             ->innerJoin('doc.inquiries', 'inq', Join::WITH, 'inq.id = :inquiryId')
             ->innerJoin('doc.dossiers', 'dos', Join::WITH, 'dos.id = :dossierId')
             ->where('dos.status IN (:statuses)')
+            ->orderBy('doc.documentNumber', SortDirection::Ascending)
+            ->addOrderBy('doc.id', SortDirection::Ascending)
             ->setParameter('inquiryId', $inquiry->getId())
             ->setParameter('dossierId', $dossier->getId())
             ->setParameter('statuses', [

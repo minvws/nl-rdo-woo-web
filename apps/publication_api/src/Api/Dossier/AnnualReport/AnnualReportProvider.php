@@ -12,7 +12,7 @@ use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Api\Pagination\CursorPage;
 use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
-use Shared\Domain\HasId;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportRepository;
 use Shared\Service\ApiPlatformService;
@@ -23,7 +23,7 @@ final readonly class AnnualReportProvider implements ProviderInterface
     public function __construct(
         private OrganisationResolver $organisationResolver,
         private AnnualReportRepository $annualReportRepository,
-        private AnnualReportMapper $annualReportMapper,
+        private AnnualReportResponseMapper $annualReportResponseMapper,
         private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
@@ -31,6 +31,8 @@ final readonly class AnnualReportProvider implements ProviderInterface
 
     /**
      * @param array<array-key, string> $uriVariables
+     *
+     * @throws ValidationException
      */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): CursorPage|AnnualReportResponseDto
     {
@@ -59,9 +61,8 @@ final readonly class AnnualReportProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        $mappedDtos = $this->annualReportMapper->fromEntities($annualReports);
+        $mappedDtos = $this->annualReportResponseMapper->fromEntities($annualReports);
 
-        /** @var list<HasId> $annualReports */
         return $this->cursorPageFactory->create(
             $annualReports,
             $mappedDtos,
@@ -78,6 +79,6 @@ final readonly class AnnualReportProvider implements ProviderInterface
             throw EntityNotFoundException::for('AnnualReport', $dossierExternalId);
         }
 
-        return $this->annualReportMapper->fromEntity($annualReport);
+        return $this->annualReportResponseMapper->fromEntity($annualReport);
     }
 }

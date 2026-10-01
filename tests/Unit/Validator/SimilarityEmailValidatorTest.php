@@ -22,11 +22,10 @@ class SimilarityEmailValidatorTest extends UnitTestCase
         $tokenStorage = Mockery::mock(TokenStorageInterface::class);
 
         $validator = new SimilarityEmailValidator($tokenStorage);
-        $validator->initialize($context);
 
         $context->shouldNotHaveReceived('buildViolation');
 
-        $validator->validate('', new SimilarityEmail());
+        $validator->validateInContext('', new SimilarityEmail(), $context);
     }
 
     public function testValidatorAddsNoViolationWhenTokenIsMissing(): void
@@ -36,11 +35,10 @@ class SimilarityEmailValidatorTest extends UnitTestCase
         $tokenStorage->expects('getToken')->andReturnNull();
 
         $validator = new SimilarityEmailValidator($tokenStorage);
-        $validator->initialize($context);
 
         $context->shouldNotHaveReceived('buildViolation');
 
-        $validator->validate('foo@bar.test', new SimilarityEmail());
+        $validator->validateInContext('foo@bar.test', new SimilarityEmail(), $context);
     }
 
     public function testValidatorAddsNoViolationWhenUserIsMissing(): void
@@ -52,11 +50,10 @@ class SimilarityEmailValidatorTest extends UnitTestCase
         $tokenStorage->expects('getToken')->times(2)->andReturn($token);
 
         $validator = new SimilarityEmailValidator($tokenStorage);
-        $validator->initialize($context);
 
         $context->shouldNotHaveReceived('buildViolation');
 
-        $validator->validate('foo@bar.test', new SimilarityEmail());
+        $validator->validateInContext('foo@bar.test', new SimilarityEmail(), $context);
     }
 
     public function testValidatorAddsViolationForPasswordSimilarToEmail(): void
@@ -72,14 +69,13 @@ class SimilarityEmailValidatorTest extends UnitTestCase
         $input = 'foo@bar.test';
 
         $validator = new SimilarityEmailValidator($tokenStorage);
-        $validator->initialize($context);
 
         $builder = Mockery::mock(ConstraintViolationBuilderInterface::class);
         $context->expects('buildViolation')->andReturn($builder);
         $builder->expects('setParameter');
         $builder->expects('addViolation');
 
-        $validator->validate($input, new SimilarityEmail());
+        $validator->validateInContext($input, new SimilarityEmail(), $context);
     }
 
     public function testValidatorAddsNoViolationForPasswordNotSimilarToEmail(): void
@@ -95,10 +91,9 @@ class SimilarityEmailValidatorTest extends UnitTestCase
         $input = 'foo@bar.test';
 
         $validator = new SimilarityEmailValidator($tokenStorage);
-        $validator->initialize($context);
 
         $context->shouldNotHaveReceived('buildViolation');
 
-        $validator->validate($input, new SimilarityEmail());
+        $validator->validateInContext($input, new SimilarityEmail(), $context);
     }
 }

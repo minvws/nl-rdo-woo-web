@@ -6,11 +6,12 @@ namespace Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Handler;
 
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawService;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\LinkedWooDecisionUpdater;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
-use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
-use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Uid\Uuid;
 
 #[AsMessageHandler]
 readonly class WithDrawAllDocumentsHandler
@@ -18,7 +19,7 @@ readonly class WithDrawAllDocumentsHandler
     public function __construct(
         private WooDecisionRepository $repository,
         private LoggerInterface $logger,
-        private DossierWorkflowManager $dossierWorkflowManager,
+        private LinkedWooDecisionUpdater $linkedWooDecisionUpdater,
         private DocumentWithdrawService $documentWithdrawService,
     ) {
     }
@@ -34,7 +35,10 @@ readonly class WithDrawAllDocumentsHandler
             return;
         }
 
-        $this->dossierWorkflowManager->applyTransition($dossier, DossierStatusTransition::UPDATE_DOCUMENTS);
+        $this->linkedWooDecisionUpdater->updateLinkedTo(
+            $dossier,
+            $dossier->getDocuments()->map(static fn (Document $document): Uuid => $document->getId())->getValues(),
+        );
 
         $this->documentWithdrawService->withDrawAllDocuments(
             $dossier,

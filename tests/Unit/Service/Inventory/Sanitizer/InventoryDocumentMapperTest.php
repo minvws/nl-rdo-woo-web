@@ -11,29 +11,26 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inventory\Sanitizer\InventoryDocumentMapper;
+use Shared\Service\Inventory\Sanitizer\InventoryDocumentUrlStrategyInterface;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\DossierTitle;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class InventoryDocumentMapperTest extends UnitTestCase
 {
     private TranslatorInterface&MockInterface $translator;
-    private UrlGeneratorInterface&MockInterface $urlGenerator;
-    private string $baseUrl = 'http://foo.bar/';
+    private InventoryDocumentUrlStrategyInterface&MockInterface $urlStrategy;
     private InventoryDocumentMapper $documentMapper;
 
     protected function setUp(): void
     {
         $this->translator = Mockery::mock(TranslatorInterface::class);
-        $this->urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
+        $this->urlStrategy = Mockery::mock(InventoryDocumentUrlStrategyInterface::class);
 
         $this->documentMapper = new InventoryDocumentMapper(
             $this->translator,
-            $this->urlGenerator,
-            $this->baseUrl,
         );
 
         parent::setUp();
@@ -44,45 +41,30 @@ class InventoryDocumentMapperTest extends UnitTestCase
         $urls = ['http://dummy.url', 'https://x.y.z'];
 
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDossierNumber')->times(3)->andReturn('tst-123');
-        $dossier->expects('getDocumentPrefix')->times(3)->andReturn('PREFIX');
         $dossier->expects('getTitle')->andReturn(DossierTitle::create('Foo Bar'));
 
         $referredDocA = Mockery::mock(Document::class);
         $referredDocA->expects('getDocumentNumber')
-            ->times(2)
-            ->andReturn(DocumentNumber::fromString($refDocIdA = 'PREFIX-matterA-a'));
+            ->once()
+            ->andReturn(DocumentNumber::fromString('PREFIX-matterA-a'));
         $referredDocA->expects('getDocumentId')->never();
-        $referredDocA->expects('getDossiers')->times(1)->andReturn(new ArrayCollection([$dossier]));
 
         $referredDocB = Mockery::mock(Document::class);
         $referredDocB->expects('getDocumentNumber')
-            ->times(2)
-            ->andReturn(DocumentNumber::fromString($refDocIdB = 'PREFIX-matterB-b'));
+            ->once()
+            ->andReturn(DocumentNumber::fromString('PREFIX-matterB-b'));
         $referredDocB->expects('getDocumentId')->never();
-        $referredDocB->expects('getDossiers')->times(1)->andReturn(new ArrayCollection([$dossier]));
-
-        $this->urlGenerator
-            ->expects('generate')
-            ->with('app_document_detail', ['documentPrefix' => 'PREFIX', 'dossierNumber' => 'tst-123', 'documentNumber' => $refDocIdA])
-            ->andReturn('test-url-A');
-
-        $this->urlGenerator
-            ->expects('generate')
-            ->with('app_document_detail', ['documentPrefix' => 'PREFIX', 'dossierNumber' => 'tst-123', 'documentNumber' => $refDocIdB])
-            ->andReturn('test-url-B');
 
         $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentId')->times(1)->andReturn(DocumentId::create('123'));
+        $document->expects('getDocumentId')->andReturn(DocumentId::create('123'));
         $document->expects('getDocumentNumber')
-            ->times(2)
-            ->andReturn(DocumentNumber::fromString($docNr = 'PREFIX-matterA-123'));
+            ->once()
+            ->andReturn(DocumentNumber::fromString('PREFIX-matterA-123'));
         $document->expects('getFileInfo->getName')->andReturn('test-doc-name');
         $document->expects('getJudgement')->times(2)->andReturn(Judgement::PARTIAL_PUBLIC);
         $document->expects('getGrounds')->andReturn(['a', 'b']);
         $document->expects('getRemark')->andReturnNull();
         $document->expects('isSuspended')->andReturnTrue();
-        $document->expects('getDossiers->first')->times(2)->andReturn($dossier);
         $document->expects('getLinks')->andReturn($urls);
         $document->expects('getRefersTo')->times(2)->andReturn(new ArrayCollection([$referredDocA, $referredDocB]));
 
@@ -91,13 +73,21 @@ class InventoryDocumentMapperTest extends UnitTestCase
             ->with('public.documents.judgment.short.' . Judgement::PARTIAL_PUBLIC->value)
             ->andReturn('deels openbaar');
 
-        $this->urlGenerator
-            ->expects('generate')
-            ->with('app_document_detail', ['documentPrefix' => 'PREFIX', 'dossierNumber' => 'tst-123', 'documentNumber' => $docNr])
-            ->andReturn('test-url');
+        $this->urlStrategy
+            ->expects('generateDocumentUrl')
+            ->with($document, $dossier)
+            ->andReturn('http://foo.bar/test-url');
+        $this->urlStrategy
+            ->expects('generateRelatedDocumentUrl')
+            ->with($referredDocA, $dossier)
+            ->andReturn('http://foo.bar/test-url-A');
+        $this->urlStrategy
+            ->expects('generateRelatedDocumentUrl')
+            ->with($referredDocB, $dossier)
+            ->andReturn('http://foo.bar/test-url-B');
 
         $this->assertMatchesSnapshot(
-            $this->documentMapper->map($document),
+            $this->documentMapper->map($document, $dossier, $this->urlStrategy),
         );
     }
 }

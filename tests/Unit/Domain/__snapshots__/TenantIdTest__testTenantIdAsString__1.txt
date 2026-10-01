@@ -1,1 +1,1 @@
-minvws, minfin, minbuza
+minvws, minfin, minbuza, minocw

@@ -10,7 +10,7 @@ use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
 use Shared\Service\DossierService;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
-final readonly class DossierValidator
+readonly class DossierValidator
 {
     public function __construct(
         private DossierService $dossierService,

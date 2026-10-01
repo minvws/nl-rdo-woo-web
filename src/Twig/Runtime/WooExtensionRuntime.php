@@ -12,6 +12,8 @@ use Shared\Domain\Publication\Dossier\ViewModel\DossierNotifications;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\History\History;
+use Shared\Domain\Publication\History\HistoryWooDecisionOrigin;
+use Shared\Domain\Publication\History\HistoryWooDecisionOriginResolver;
 use Shared\Service\DateRangeConverter;
 use Shared\Service\HistoryService;
 use Shared\Service\Search\Query\Component\HighlightComponent;
@@ -38,6 +40,7 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
         private HistoryService $historyService,
         private DossierPathHelper $dossierPathHelper,
         private DossierNotificationsFactory $dossierNotificationsFactory,
+        private HistoryWooDecisionOriginResolver $historyWooDecisionOriginResolver,
     ) {
     }
 
@@ -138,6 +141,16 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     public function historyTranslation(History $entry, string $mode = HistoryService::MODE_PUBLIC): string
     {
         return $this->historyService->translate($entry, $mode);
+    }
+
+    /**
+     * @param array<array-key, History> $entries
+     *
+     * @return array<string, HistoryWooDecisionOrigin|null>
+     */
+    public function historyWooDecisionOrigins(array $entries): array
+    {
+        return $this->historyWooDecisionOriginResolver->resolve($entries);
     }
 
     public function dossierDetailsPath(AbstractDossier|DossierReference $dossier): string

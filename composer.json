@@ -24,7 +24,8 @@
         "endroid/qr-code": "^6.0.5",
         "erichard/elasticsearch-query-builder": "^3.0.3-beta",
         "gemorroj/archive7z": "^5.6",
-        "guzzlehttp/psr7": "^2.7",
+        "guzzlehttp/guzzle": "^8.0",
+        "guzzlehttp/psr7": "^3.0",
         "huluti/breadcrumbs-bundle": "^1.6",
         "indiehd/filename-sanitizer": "^0.1.0",
         "knplabs/knp-paginator-bundle": "^6.2",
@@ -246,7 +247,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.4.*"
+            "require": "8.1.*"
         },
         "aws/aws-sdk-php": [
             "S3"
@@ -280,6 +281,7 @@
         "symfony/css-selector": "^8.1",
         "symfony/debug-bundle": "*",
         "symfony/maker-bundle": "^1.0",
+        "symfony/phpunit-bridge": "^8.1",
         "symfony/web-profiler-bundle": "*",
         "zenstruck/foundry": "^2.0"
     }

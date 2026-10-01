@@ -9,10 +9,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  NODE_VERSION: 20
-  PHP_VERSION: 8.4
-
 jobs:
   test-ci:
     name: "Run weekly test suite in CI"

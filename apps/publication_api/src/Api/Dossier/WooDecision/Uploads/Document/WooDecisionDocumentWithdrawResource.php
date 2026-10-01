@@ -7,6 +7,9 @@ namespace PublicationApi\Api\Dossier\WooDecision\Uploads\Document;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
+use PublicationApi\Domain\OpenApi\PathParameter\DocumentExternalIdLink;
+use PublicationApi\Domain\OpenApi\PathParameter\DossierExternalIdLink;
+use PublicationApi\Domain\OpenApi\PathParameter\OrganisationIdLink;
 use Symfony\Component\HttpFoundation\Response;
 
 #[ApiResource(
@@ -16,6 +19,11 @@ use Symfony\Component\HttpFoundation\Response;
         new Put(
             uriTemplate: '/organisation/{organisationId}/dossiers/woo-decision/external/{dossierExternalId}'
                 . '/uploads/document/external/{documentExternalId}/withdraw',
+            uriVariables: [
+                'organisationId' => new OrganisationIdLink(),
+                'dossierExternalId' => new DossierExternalIdLink(),
+                'documentExternalId' => new DocumentExternalIdLink(),
+            ],
             description: 'Revoke the document from a WooDecision dossier.',
             input: WooDecisionDocumentWithdrawRequestDto::class,
             output: false,
@@ -24,7 +32,7 @@ use Symfony\Component\HttpFoundation\Response;
             name: self::ROUTE_NAME_WITHDRAW,
             processor: WooDecisionDocumentWithdrawProcessor::class,
             openapi: new Operation(
-                summary: 'Revoke the document from a WooDecision dossier.',
+                summary: 'Revoke the document from a WooDecision dossier',
                 description: 'Sends a request to revoke the document of a WooDecision dossier.',
                 tags: ['WooDecision'],
             ),

@@ -12,6 +12,7 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\ValueObject\ExternalId;
+use SortDirection;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -91,7 +92,7 @@ class DossierRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('dos')
             ->where('dos.status = :status')
             ->setParameter('status', DossierStatus::PUBLISHED)
-            ->orderBy('dos.publicationDate', 'DESC')
+            ->orderBy('dos.publicationDate', SortDirection::Descending)
             ->setMaxResults($limit);
 
         if ($department !== null) {
@@ -120,5 +121,16 @@ class DossierRepository extends ServiceEntityRepository
             ->setParameter('externalId', $externalId)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function hasDossiers(Organisation $organisation): bool
+    {
+        return $this->createQueryBuilder('dossier')
+            ->select('dossier.id')
+            ->where('dossier.organisation = :organisation')
+            ->setMaxResults(1)
+            ->setParameter('organisation', $organisation)
+            ->getQuery()
+            ->getOneOrNullResult() !== null;
     }
 }

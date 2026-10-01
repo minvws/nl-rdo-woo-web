@@ -29,6 +29,16 @@ readonly class TikaService
         string $contentType = 'application/pdf',
         ?ContentExtractLogContext $logContext = null,
     ): array {
+        $body = file_get_contents($sourcePath);
+        if ($body === false) {
+            $this->logger->error('Tika failed: could not read source file', [
+                'sourcePath' => $sourcePath,
+                'context' => $logContext,
+            ]);
+
+            return [];
+        }
+
         try {
             $result = $this->client
                 ->put(
@@ -39,7 +49,7 @@ readonly class TikaService
                             'Content-Type' => $contentType,
                             'X-Tika-OCRmaxFileSizeToOcr' => '0',
                         ],
-                        'body' => file_get_contents($sourcePath),
+                        'body' => $body,
                     ],
                 );
         } catch (GuzzleException $e) {

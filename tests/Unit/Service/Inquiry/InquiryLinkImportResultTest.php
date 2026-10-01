@@ -95,4 +95,13 @@ class InquiryLinkImportResultTest extends UnitTestCase
 
         self::assertFalse($this->result->isSuccessful());
     }
+
+    public function testSetHasMatter(): void
+    {
+        $hasMatter = $this->getFaker()->boolean();
+
+        $this->result->setHasMatter($hasMatter);
+
+        self::assertSame($hasMatter, $this->result->hasMatter());
+    }
 }

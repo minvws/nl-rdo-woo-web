@@ -8,19 +8,19 @@
 
 {% block body %}
     <section class="woo-container woo-container--sm">
-        <div class="woo-readable-width" data-e2e-name="subject-landing-page-body">
+        <div data-e2e-name="subject-landing-page-body">
             <h1 class="woo-h1 woo-h1-spacing font-normal">{{ page_title }}</h1>
 
             {% if subject.landingPageDescription is not empty %}
                 <div class="bg-woo-gray-100 p-6 my-10">
-                    <div class="woo-readable-width woo-rich-text">
+                    <div class="woo-rich-text">
                         {{ subject.landingPageDescription | render_markdown }}
                     </div>
                 </div>
             {% endif %}
         </div>
 
-        {% if subject.hasVisibleLandingPageContentTree %}
+        {% if subject.hasPublishedContentTree %}
             {% if subject.landingPageContentTree.title is not empty %}
                 <h2 class="woo-h2 mb-2">{{ subject.landingPageContentTree.title }}</h2>
             {% endif %}

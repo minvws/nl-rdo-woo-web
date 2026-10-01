@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectContentTree;
+use Shared\Domain\Publication\Subject\SubjectContentTreeStatus;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Tests\Unit\UnitTestCase;
@@ -29,6 +30,7 @@ class SubjectPreviewUrlGeneratorTest extends UnitTestCase
             'D',
             SubjectLandingPageStatus::CONCEPT,
             new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
+            SubjectContentTreeStatus::CONCEPT,
         );
 
         $url = $generator->generatePreviewUrl($subject);
@@ -51,19 +53,27 @@ class SubjectPreviewUrlGeneratorTest extends UnitTestCase
             'D',
             SubjectLandingPageStatus::PUBLISHED,
             new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
+            SubjectContentTreeStatus::CONCEPT,
         );
 
         self::assertNull($generator->generatePreviewUrl($subject));
     }
 
-    public function testReturnsNullWhenStatusIsNull(): void
+    public function testGeneratesPreviewUrlForFreshSubjectWithDefaultConceptStatus(): void
     {
         $generator = new SubjectPreviewUrlGenerator('https://example.com');
 
         $subject = new Subject();
-        self::assertNull($subject->getLandingPageStatus());
+        self::assertSame(SubjectLandingPageStatus::CONCEPT, $subject->getLandingPageStatus());
+        self::assertNotNull($subject->getLandingPagePreviewToken());
 
-        self::assertNull($generator->generatePreviewUrl($subject));
+        $url = $generator->generatePreviewUrl($subject);
+
+        self::assertNotNull($url);
+        self::assertStringStartsWith(
+            'https://example.com/onderwerp/' . $subject->getId()->toRfc4122() . '/preview/',
+            $url,
+        );
     }
 
     public function testThrowsLogicExceptionForConceptWithNullToken(): void
@@ -93,6 +103,7 @@ class SubjectPreviewUrlGeneratorTest extends UnitTestCase
             'D',
             SubjectLandingPageStatus::CONCEPT,
             new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
+            SubjectContentTreeStatus::CONCEPT,
         );
 
         $url = $generator->generatePreviewUrl($subject);

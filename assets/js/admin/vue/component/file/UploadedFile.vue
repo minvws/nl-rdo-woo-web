@@ -37,7 +37,7 @@ const defaultFileInfo = computed(() => {
 </script>
 
 <template>
-  <div class="bhr-file">
+  <div class="bhr-file" data-e2e-name="uploaded-file">
     <span class="bhr-file__left">
       <span class="bhr-file__icon-area">
         <MimeTypeIcon :mimeType="props.mimeType" :size="20" />

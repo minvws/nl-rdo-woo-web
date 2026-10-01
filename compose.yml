@@ -16,10 +16,16 @@ networks:
   woopie:
     driver: bridge
 
+x-app-healthcheck: &app-healthcheck
+  interval: 5s
+  timeout: 15s
+  retries: 20
+  start_period: 30s
+
 services:
 
   public:
-    image: &PHP_IMAGE "ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.20.0}"
+    image: &PHP_IMAGE "ghcr.io/minvws/nl-rdo-woo-web-private/php:${PHP_IMAGE_TAG:-0.21.0}"
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     labels:
       com.symfony.server.service-ignore: true
@@ -44,6 +50,15 @@ services:
     ports:
       - ${DOCKER_MINVWS_PUBLIC_PORT:-8000}:80
       - ${DOCKER_MINFIN_PUBLIC_PORT:-8100}:81
+    healthcheck:
+      <<: *app-healthcheck
+      test:
+        - CMD-SHELL
+        - >-
+          for host in public-minvws.local public-minfin.local; do
+          curl -fsS --max-time 5 -H "Host: $$host" http://localhost/health
+          | grep -q '"healthy":true' || exit 1;
+          done
 
   admin:
     image: *PHP_IMAGE
@@ -73,6 +88,15 @@ services:
     ports:
       - ${DOCKER_MINVWS_ADMIN_PORT:-8001}:80
       - ${DOCKER_MINFIN_ADMIN_PORT:-8101}:81
+    healthcheck:
+      <<: *app-healthcheck
+      test:
+        - CMD-SHELL
+        - >-
+          for host in admin-minvws.local admin-minfin.local; do
+          curl -fsS --max-time 5 -H "Host: $$host" http://localhost/health
+          | grep -q '"healthy":true' || exit 1;
+          done
 
   publication_api:
     image: *PHP_IMAGE
@@ -256,7 +280,7 @@ services:
 
   spectral:
     profiles: [api-linting]
-    image: stoplight/spectral:6.15.0
+    image: stoplight/spectral:6.16.3
     labels:
       com.symfony.server.service-ignore: true
     networks:
@@ -283,6 +307,11 @@ services:
   robot:
     profiles: [run-only]
     image: ghcr.io/minvws/nl-rdo-woo-web-private/robot:2026.06.25
+    depends_on:
+      public:
+        condition: service_healthy
+      admin:
+        condition: service_healthy
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     networks:
       - woopie

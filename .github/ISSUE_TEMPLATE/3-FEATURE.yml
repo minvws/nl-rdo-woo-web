@@ -20,32 +20,12 @@ body:
       required: true
   - type: textarea
     attributes:
-      label: Acceptatiecriteria - Balie/admin
-    validations:
-      required: false
-  - type: textarea
-    attributes:
-      label: Acceptatiecriteria - Publieke website
-    validations:
-      required: false
-  - type: textarea
-    attributes:
-      label: Links
+      label: Acceptatiecriteria
     validations:
       required: false
   - type: textarea
     attributes:
       label: Buiten scope
-    validations:
-      required: false
-  - type: textarea
-    attributes:
-      label: Non functional requirements
-    validations:
-      required: false
-  - type: textarea
-    attributes:
-      label: Documentatie
     validations:
       required: false
   - type: textarea

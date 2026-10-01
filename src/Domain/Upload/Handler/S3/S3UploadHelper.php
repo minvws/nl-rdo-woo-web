@@ -38,12 +38,15 @@ readonly class S3UploadHelper
 
     public function uploadPart(UploadRequest $request, string $s3UploadId): void
     {
+        $body = file_get_contents($request->uploadedFile->getRealPath());
+        Assert::string($body);
+
         $this->s3Client->uploadPart([
             'Bucket' => $this->bucket,
             'Key' => $request->uploadId,
             'PartNumber' => $request->chunkIndex + 1,
             'UploadId' => $s3UploadId,
-            'Body' => file_get_contents($request->uploadedFile->getRealPath()),
+            'Body' => $body,
         ]);
     }
 
@@ -55,12 +58,16 @@ readonly class S3UploadHelper
             'UploadId' => $s3UploadId,
         ]);
 
+        $parts = $partsResult['Parts'];
+        Assert::isList($parts);
+        Assert::allIsArray($parts);
+
         $this->s3Client->completeMultipartUpload([
             'Bucket' => $this->bucket,
             'Key' => $request->uploadId,
             'UploadId' => $s3UploadId,
             'MultipartUpload' => [
-                'Parts' => $partsResult['Parts'],
+                'Parts' => $parts,
             ],
         ]);
 
@@ -83,8 +90,11 @@ readonly class S3UploadHelper
         $key = $targetPathParts['key'];
         Assert::string($key);
 
+        $bucket = $targetPathParts['bucket'];
+        Assert::string($bucket);
+
         $this->s3Client->copyObject([
-            'Bucket' => $targetPathParts['bucket'],
+            'Bucket' => $bucket,
             'Key' => urldecode($key),
             'CopySource' => sprintf('%s/%s', $this->bucket, $uploadId),
         ]);

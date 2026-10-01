@@ -17,7 +17,6 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
-use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
@@ -127,7 +126,6 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
             'subject' => [
                 'id' => $subject->getId()->toString(),
                 'name' => $subject->getName(),
-                'landingPage' => null,
             ],
             'department' => [
                 'id' => (string) $department->getId(),
@@ -153,7 +151,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($requestForAdvice)],
+                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($requestForAdvice)],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -189,7 +187,9 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                                 ],
                             )->toString(),
                         ],
-                        'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($requestForAdvice)],
+                        'public' => [
+                            'href' => $dossierPathHelper->getAbsoluteAttachmentDetailsPath($requestForAdvice, $requestForAdviceAttachment->getId()),
+                        ],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -882,7 +882,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $data = $this->createValidRequestForAdviceDataPayload($department, $subject, 0);
         $data['noticeNotPublic'] = [
             'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
-            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'grounds' => [$this->getFaker()->ground()],
         ];
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -906,7 +906,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $data['noticeNotPublic'] = [
             'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
             'documentName' => $this->getFaker()->sentence(),
-            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'grounds' => [$this->getFaker()->ground()],
             'explanation' => $this->getFaker()->sentence(),
         ];
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
@@ -947,7 +947,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $data = $this->createValidRequestForAdviceDataPayload($department, $subject, 0);
         unset($data['mainDocument']);
         $data['noticeNotPublic'] = [
-            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'grounds' => [$this->getFaker()->ground()],
         ];
         self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $this->getFaker()->slug(1)), ['json' => $data]);
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -979,7 +979,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         $data['noticeNotPublic'] = [
             'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
             'documentName' => $this->getFaker()->sentence(),
-            'grounds' => [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)],
+            'grounds' => [$this->getFaker()->ground()],
             'explanation' => $this->getFaker()->sentence(),
         ];
 

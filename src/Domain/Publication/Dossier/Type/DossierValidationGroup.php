@@ -69,6 +69,26 @@ enum DossierValidationGroup: string
     }
 
     /**
+     * @param iterable<array-key, DossierStatus> $dossierStatuses
+     *
+     * @return array<array-key, self>
+     */
+    public static function getForLinkedDossierStatuses(iterable $dossierStatuses): array
+    {
+        $validationGroups = self::allNonWorkflowGroups();
+
+        foreach ($dossierStatuses as $dossierStatus) {
+            if (in_array($dossierStatus, DossierStatus::nonConceptCases(), true)) {
+                $validationGroups[] = self::PUBLICATION_LOCKED;
+
+                break;
+            }
+        }
+
+        return $validationGroups;
+    }
+
+    /**
      * @return list<self::*>
      */
     public static function allNonWorkflowGroups(): array

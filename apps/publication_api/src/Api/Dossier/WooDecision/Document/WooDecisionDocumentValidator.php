@@ -20,7 +20,7 @@ use function in_array;
 use function sprintf;
 use function strval;
 
-final readonly class WooDecisionDocumentValidator
+readonly class WooDecisionDocumentValidator
 {
     public function __construct(
         private DocumentRepository $documentRepository,

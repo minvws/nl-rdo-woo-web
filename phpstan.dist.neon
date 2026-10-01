@@ -1,6 +1,3 @@
-includes:
-    - phpstan-baseline.neon
-
 parameters:
     tmpDir: ./.phpstan.cache
     treatPhpDocTypesAsCertain: false
@@ -22,7 +19,7 @@ parameters:
         - utils/tests/**/data/*
     level: max
     symfony:
-        containerXmlPath: var/cache/minvws/shared/dev/Shared_KernelMinvwsSharedDevDebugContainer.xml
+        containerXmlPath: var/cache/dev/minvws/shared/Shared_KernelDevMinvwsSharedDebugContainer.xml
     faker:
         providerClasses:
             - Shared\Tests\Faker\AttachmentFakerProvider

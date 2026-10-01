@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\WooDecision\Document;
 
+use ApiPlatform\Metadata\ApiProperty;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\ExternalId;
@@ -14,7 +15,9 @@ use function array_values;
 final readonly class WooDecisionRelatedDocumentResponseDto
 {
     public function __construct(
+        #[ApiProperty(description: 'The identifier of the related document.')]
         public DocumentId $documentId,
+        #[ApiProperty(description: 'The external identifier of the related document, if known.')]
         public ?ExternalId $externalId,
     ) {
     }

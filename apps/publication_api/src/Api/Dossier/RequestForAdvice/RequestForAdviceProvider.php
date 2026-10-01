@@ -12,7 +12,7 @@ use PublicationApi\Api\Organisation\OrganisationResolver;
 use PublicationApi\Api\Pagination\CursorPage;
 use PublicationApi\Api\Pagination\CursorPageFactory;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
-use Shared\Domain\HasId;
+use PublicationApi\Domain\OpenApi\Exception\ValidationException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceRepository;
 use Shared\Service\ApiPlatformService;
@@ -23,7 +23,7 @@ final readonly class RequestForAdviceProvider implements ProviderInterface
     public function __construct(
         private OrganisationResolver $organisationResolver,
         private RequestForAdviceRepository $requestForAdviceRepository,
-        private RequestForAdviceMapper $requestForAdviceMapper,
+        private RequestForAdviceResponseMapper $requestForAdviceResponseMapper,
         private CursorPageFactory $cursorPageFactory,
         private int $itemsPerPage,
     ) {
@@ -31,6 +31,8 @@ final readonly class RequestForAdviceProvider implements ProviderInterface
 
     /**
      * @param array<array-key, string> $uriVariables
+     *
+     * @throws ValidationException
      */
     public function provide(
         Operation $operation,
@@ -62,9 +64,8 @@ final readonly class RequestForAdviceProvider implements ProviderInterface
             ApiPlatformService::getCursorFromContext($context),
         );
 
-        $mappedDtos = $this->requestForAdviceMapper->fromEntities($requestForAdvices);
+        $mappedDtos = $this->requestForAdviceResponseMapper->fromEntities($requestForAdvices);
 
-        /** @var list<HasId> $requestForAdvices */
         return $this->cursorPageFactory->create(
             $requestForAdvices,
             $mappedDtos,
@@ -81,6 +82,6 @@ final readonly class RequestForAdviceProvider implements ProviderInterface
             throw EntityNotFoundException::for('RequestForAdvice', $requestForAdviceExternalId);
         }
 
-        return $this->requestForAdviceMapper->fromEntity($requestForAdvice);
+        return $this->requestForAdviceResponseMapper->fromEntity($requestForAdvice);
     }
 }

@@ -53,10 +53,11 @@ Build Request Body For WooDecision
   ${document_id} =  FakerLibrary.Random Int  min=100000  max=999999
   ${document_id} =  Convert To String  ${document_id}
   ${document_external_id} =  FakerLibrary.Uuid 4
+  ${publication_context} =  Generate Publication Context
   ${grounds} =  Get Random Grounds
   VAR  &{document} =
   ...  externalId=${document_external_id}
-  ...  inquiryNumbers=${{ ['E2E-CASE-001'] }}
+  ...  inquiryNumbers=${{ ['E2E-CASE-' + $dossier_reference] }}
   ...  documentDate=2020-06-01
   ...  documentId=${document_id}
   ...  familyId=${333}
@@ -65,7 +66,7 @@ Build Request Body For WooDecision
   ...  isSuspended=${FALSE}
   ...  judgement=public
   ...  links=${{ [] }}
-  ...  publicationContext=2025-01
+  ...  publicationContext=${publication_context}
   ...  refersTo=${{ [] }}
   ...  remark=Niets op aan te merken
   ...  sourceType=doc
@@ -171,8 +172,7 @@ WooDecision Attachment File Should Be Downloadable
 WooDecision Document Detail Page Should Show Withdrawn Notice
   [Arguments]  ${dossier_external_id}  ${document_external_id}
   ${document} =  Get WooDecision Document By External Id  ${dossier_external_id}  ${document_external_id}
-  ${dossier_path} =  Remove String Using Regexp  ${document}[_links][public][href]  ^https?://[^/]+
-  ${path} =  Catenate  SEPARATOR=${EMPTY}  ${dossier_path}  /document/  ${document}[documentNumber]
+  ${path} =  Remove String Using Regexp  ${document}[_links][public][href]  ^https?://[^/]+
   Create Public Session
   ${response} =  GET On Session  alias=public  url=${path}  expected_status=any
   Should Be Equal As Integers

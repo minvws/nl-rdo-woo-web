@@ -62,9 +62,15 @@ final class WooDecisionFactory extends PersistentObjectFactory
     {
         return $this->with([
             'status' => DossierStatus::CONCEPT,
-            'mainDocument' => null,
             'previewDate' => self::faker()->optional()->plainDateBetween('+1 week', '+2 weeks'),
             'publicationDate' => self::faker()->plainDateBetween('+1 week', '+2 weeks'),
+        ]);
+    }
+
+    public function withMainDocument(): self
+    {
+        return $this->with([
+            'document' => WooDecisionMainDocumentFactory::new(),
         ]);
     }
 
@@ -72,7 +78,7 @@ final class WooDecisionFactory extends PersistentObjectFactory
     {
         return $this->with([
             'departments' => [DepartmentFactory::new()],
-            'mainDocument' => WooDecisionMainDocumentFactory::new(),
+            'document' => WooDecisionMainDocumentFactory::new(),
             'status' => DossierStatus::SCHEDULED,
             'previewDate' => self::faker()->optional()->plainDateBetween('+1 week', '+2 weeks'),
             'publicationDate' => self::faker()->plainDateBetween('+1 week', '+2 weeks'),
@@ -83,7 +89,7 @@ final class WooDecisionFactory extends PersistentObjectFactory
     {
         return $this->with([
             'departments' => [DepartmentFactory::new()],
-            'mainDocument' => WooDecisionMainDocumentFactory::new(),
+            'document' => WooDecisionMainDocumentFactory::new(),
             'status' => DossierStatus::PUBLISHED,
             'previewDate' => self::faker()->optional()->plainDateBetween('-2 weeks', '-1 week'),
             'publicationDate' => self::faker()->plainDateBetween('-2 weeks', '-1 week'),

@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\ValueObject\ExternalId;
+use SortDirection;
 use Symfony\Component\Uid\Uuid;
 
 use function array_key_exists;
@@ -83,7 +84,7 @@ abstract class AbstractDossierRepository extends ServiceEntityRepository impleme
 
         /** @var list<TDossier> */
         return $queryBuilder
-            ->orderBy('dossier.id', 'ASC')
+            ->orderBy('dossier.id', SortDirection::Ascending)
             ->setMaxResults($itemsPerPage + 1)
             ->getQuery()
             ->getResult();

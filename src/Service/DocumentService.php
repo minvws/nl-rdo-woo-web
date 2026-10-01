@@ -7,6 +7,7 @@ namespace Shared\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\History\History;
 use Shared\Domain\Search\Index\SubType\SubTypeIndexer;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
@@ -48,7 +49,7 @@ readonly class DocumentService
         $this->historyService->addDocumentEntry(
             document: $document,
             key: 'document_removed',
-            context: [],
+            context: [History::CONTEXT_ORIGIN_WOO_DECISION_ID => $dossier->getId()->toString()],
             flush: false,
         );
 

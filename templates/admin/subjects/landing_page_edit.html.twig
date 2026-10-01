@@ -4,17 +4,20 @@
 
 {% block body %}
 {{ form_start(form) }}
-{% set submit_button %}{{ form_widget(form.submit) }}{% endset %}
-<div class="bhr-container bhr-container--sm">
+<div class="bhr-container">
     <h1 class="bhr-title mb-10">{{ page_title }}</h1>
 
-    <div class="bhr-card">
-        {{ form_row(form.landing_page_status) }}
-        {{ form_row(form.landing_page_slug) }}
-        {{ form_row(form.landing_page_title) }}
-        {{ form_row(form.landing_page_description) }}
+    <div class="grid grid-cols-5 gap-4">
+        <div class="col-span-3">
+            <div class="bhr-card">
+                {{ form_row(form.landing_page_status) }}
+                {{ form_row(form.landing_page_slug) }}
+                {{ form_row(form.landing_page_title) }}
+                {{ form_row(form.landing_page_description) }}
 
-        {{ submit_button }}
+                {{ form_widget(form.submit) }}
+            </div>
+        </div>
     </div>
 </div>
 
@@ -28,10 +31,10 @@
                 <div class="bhr-card">
                     <p class="mb-6">{{ 'admin.subject.landing_page.content_tree_manage' | trans }}</p>
 
-                    {{ form_row(form.has_visible_landing_page_content_tree) }}
+                    {{ form_row(form.landing_page_content_tree_status) }}
                     {{ form_row(form.landing_page_content_tree) }}
 
-                    {{ submit_button }}
+                    {{ form_widget(form.submit_content_tree) }}
                 </div>
             </div>
 

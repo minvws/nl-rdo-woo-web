@@ -28,7 +28,7 @@ use function array_unique;
 use function count;
 use function in_array;
 
-final readonly class DossierAttachmentValidator
+readonly class DossierAttachmentValidator
 {
     public function __construct(
         private AttachmentService $attachmentService,

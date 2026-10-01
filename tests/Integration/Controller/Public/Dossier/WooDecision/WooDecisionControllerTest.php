@@ -33,13 +33,12 @@ final class WooDecisionControllerTest extends SharedWebTestCase
         $newDossierNumber = self::getFaker()->uuid();
 
         $department = DepartmentFactory::new();
-        $mainDocument = WooDecisionMainDocumentFactory::createOne();
         $dossier = WooDecisionFactory::createOne([
             'departments' => [$department],
             'dossierNumber' => $newDossierNumber,
             'status' => DossierStatus::PUBLISHED,
             'publicationDate' => self::getFaker()->plainDateBetween('-2 week', '-1 week'),
-            'mainDocument' => $mainDocument,
+            'document' => WooDecisionMainDocumentFactory::new(),
         ]);
 
         HistoryFactory::createOne([
@@ -70,7 +69,7 @@ final class WooDecisionControllerTest extends SharedWebTestCase
             'dossiers' => [$dossier],
             'judgement' => Judgement::PUBLIC,
             'documentId' => DocumentId::create('doc-low'),
-            'documentNumber' => 'PREF-MAT-100',
+            'documentNumber' => 'PREF-MAT-200',
             'documentDate' => PlainDate::create('2024-02-01'),
             'fileInfo' => FileInfoFactory::new([
                 'name' => 'alpha.pdf',
@@ -82,7 +81,7 @@ final class WooDecisionControllerTest extends SharedWebTestCase
             'dossiers' => [$dossier],
             'judgement' => Judgement::PUBLIC,
             'documentId' => DocumentId::create('doc-high'),
-            'documentNumber' => 'PREF-MAT-200',
+            'documentNumber' => 'PREF-MAT-100',
             'documentDate' => PlainDate::create('2024-01-01'),
             'fileInfo' => FileInfoFactory::new([
                 'name' => 'zeta.pdf',
@@ -161,13 +160,8 @@ final class WooDecisionControllerTest extends SharedWebTestCase
         $dossier = WooDecisionFactory::new()->published()->create([
             'decision' => DecisionType::PUBLIC,
             'decisionDate' => PlainDate::create('2024-01-01'),
-            'mainDocument' => null,
+            'document' => WooDecisionMainDocumentFactory::new(['formalDate' => PlainDate::create('2024-01-01')]),
         ]);
-        $mainDocument = WooDecisionMainDocumentFactory::createOne([
-            'dossier' => $dossier,
-            'formalDate' => PlainDate::create('2024-01-01'),
-        ]);
-        $dossier->setMainDocument($mainDocument);
         $attachment = WooDecisionAttachmentFactory::createOne([
             'dossier' => $dossier,
             'fileInfo' => new FileInfo(),
@@ -206,13 +200,8 @@ final class WooDecisionControllerTest extends SharedWebTestCase
         $dossier = WooDecisionFactory::new()->published()->create([
             'decision' => DecisionType::PUBLIC,
             'decisionDate' => PlainDate::create('2024-01-01'),
-            'mainDocument' => null,
+            'document' => WooDecisionMainDocumentFactory::new(['formalDate' => PlainDate::create('2024-01-01')]),
         ]);
-        $mainDocument = WooDecisionMainDocumentFactory::createOne([
-            'dossier' => $dossier,
-            'formalDate' => PlainDate::create('2024-01-01'),
-        ]);
-        $dossier->setMainDocument($mainDocument);
         $attachment = WooDecisionAttachmentFactory::createOne([
             'dossier' => $dossier,
         ]);

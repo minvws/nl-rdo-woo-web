@@ -12,6 +12,7 @@ use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use SortDirection;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -52,7 +53,7 @@ class Inquiry
         joinColumns: new ORM\JoinColumn(onDelete: 'cascade'),
         inverseJoinColumns: new ORM\JoinColumn(onDelete: 'cascade'),
     )]
-    #[ORM\OrderBy(['decisionDate' => 'DESC'])]
+    #[ORM\OrderBy(['decisionDate' => SortDirection::Descending])]
     private Collection $dossiers;
 
     #[ORM\Column(length: 255)]

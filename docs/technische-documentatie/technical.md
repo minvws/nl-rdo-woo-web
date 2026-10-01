@@ -54,7 +54,7 @@ application.
 
 ## Tenants
 
-The platform is multi-tenant. `Shared\TenantId` enumerates them: `minvws`, `minfin` and `minbuza`.
+The platform is multi-tenant. `Shared\TenantId` enumerates them: `minvws`, `minfin`, `minbuza` and `minocw`.
 
 For web requests, `Shared\TenantResolver` maps the incoming `HTTP_HOST` to a tenant using the
 `HTTP_HOST_TO_TENANT_MAPPING` environment variable. On the command line the tenant comes from the mandatory `--tenant`

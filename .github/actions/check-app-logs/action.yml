@@ -1,0 +1,43 @@
+name: Check application logs
+description: >-
+  Reports critical application log lines, such as messages the worker dropped after their retries. These don't fail
+  any E2E test, since the request that queued the message already succeeded, so they would otherwise go unnoticed.
+
+inputs:
+  output-file:
+    description: File to write the matching log lines to
+    default: tests/robot_framework/results/app-logs/issues.log
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Check application logs
+      shell: bash
+      env:
+        OUTPUT_FILE: ${{ inputs.output-file }}
+      run: |
+        # Monolog CRITICAL and up: dropped messages and 5xx responses (4xx are logged at ERROR).
+        PATTERN='\.(CRITICAL|ALERT|EMERGENCY): |SQLSTATE|[Dd]eadlock'
+
+        mkdir -p "$(dirname "$OUTPUT_FILE")"
+        find var/log -name '*.log' ! -name 'deprecations.log' -exec grep -hE "$PATTERN" {} + > "$OUTPUT_FILE" 2>/dev/null || true
+
+        if [ ! -s "$OUTPUT_FILE" ]; then
+          echo "No critical application log lines found"
+          rm -f "$OUTPUT_FILE"
+          exit 0
+        fi
+
+        COUNT=$(wc -l < "$OUTPUT_FILE" | tr -d ' ')
+        echo "::warning title=Application log::${COUNT} critical application log line(s), see $OUTPUT_FILE in the test results"
+        {
+          echo "### Critical application log lines (${COUNT})"
+          echo
+          echo "Most frequent, full lines in \`$OUTPUT_FILE\` in the test results artifact:"
+          echo
+          echo '```'
+          # Drop the timestamp and context, then group identical messages.
+          sed -E 's/^\[[^]]*\] //; s/ \{.*$//' "$OUTPUT_FILE" | cut -c1-300 | sort | uniq -c | sort -rn | head -10
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"

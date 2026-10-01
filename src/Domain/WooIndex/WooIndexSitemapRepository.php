@@ -7,6 +7,7 @@ namespace Shared\Domain\WooIndex;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 
 /**
  * @extends ServiceEntityRepository<WooIndexSitemap>
@@ -41,7 +42,7 @@ class WooIndexSitemapRepository extends ServiceEntityRepository
         /** @var ?WooIndexSitemap */
         return $this->createQueryBuilder('sm')
             ->where('sm.status = :status')
-            ->orderBy('sm.createdAt', 'desc')
+            ->orderBy('sm.createdAt', SortDirection::Descending)
             ->setMaxResults(1)
             ->setParameter('status', WooIndexSitemapStatus::DONE)
             ->getQuery()
@@ -64,7 +65,7 @@ class WooIndexSitemapRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('sm')
             ->where('sm.status = :status')
-            ->orderBy('sm.createdAt', 'desc')
+            ->orderBy('sm.createdAt', SortDirection::Descending)
             ->setParameter('status', WooIndexSitemapStatus::DONE)
             ->setFirstResult($treshold)
             ->getQuery()
@@ -79,7 +80,7 @@ class WooIndexSitemapRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('sm')
             ->where('sm.status = :status')
             ->andWhere('sm.createdAt < :date')
-            ->orderBy('sm.createdAt', 'desc')
+            ->orderBy('sm.createdAt', SortDirection::Descending)
             ->setParameter('status', WooIndexSitemapStatus::PROCESSING)
             ->setParameter('date', $date)
             ->getQuery()

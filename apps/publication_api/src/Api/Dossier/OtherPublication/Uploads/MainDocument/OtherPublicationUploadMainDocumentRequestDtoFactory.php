@@ -6,6 +6,7 @@ namespace PublicationApi\Api\Dossier\OtherPublication\Uploads\MainDocument;
 
 use GuzzleHttp\Psr7\Utils;
 use PublicationApi\Api\ExternalIdFactory;
+use PublicationApi\Api\UuidFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 
@@ -19,7 +20,7 @@ final class OtherPublicationUploadMainDocumentRequestDtoFactory
     ): OtherPublicationUploadMainDocumentRequestDto {
         return new OtherPublicationUploadMainDocumentRequestDto(
             Utils::streamFor($request->getContent(asResource: true)),
-            $organisationId,
+            UuidFactory::create($organisationId),
             ExternalIdFactory::create($dossierExternalId),
         );
     }

@@ -8,6 +8,7 @@ use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectContentTree;
+use Shared\Domain\Publication\Subject\SubjectContentTreeStatus;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Tests\Factory\OrganisationFactory;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
@@ -39,6 +40,7 @@ final class SubjectFactory extends PersistentObjectFactory
                 self::faker()->sentence(),
                 $status,
                 new SubjectContentTree('', '', [], ''),
+                SubjectContentTreeStatus::CONCEPT,
             );
         });
     }

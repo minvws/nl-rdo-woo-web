@@ -19,7 +19,6 @@ use Shared\Domain\Publication\SourceType;
 use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inventory\DocumentMetadata;
 use Shared\Service\Inventory\DocumentUpdater;
-use Shared\Service\Inventory\LegacyDocumentNumberFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\DocumentNumber;
@@ -49,7 +48,6 @@ class DocumentUpdaterTest extends UnitTestCase
         $this->documentUpdater = new DocumentUpdater(
             $this->obsoleteFileRemover,
             $this->repository,
-            new LegacyDocumentNumberFactory(),
             $this->documentDispatcher,
             $this->ingestDispatcher,
         );
@@ -57,7 +55,19 @@ class DocumentUpdaterTest extends UnitTestCase
         parent::setUp();
     }
 
-    public function testProcess(): void
+    public function testLinkingWithoutMetadataDoesNotRemoveExistingFile(): void
+    {
+        $document = new Document();
+        $document->setDocumentNumber(DocumentNumber::fromString('tst-123'));
+
+        $this->repository->expects('save')->with($document);
+
+        $this->documentUpdater->linkDocument($document, $this->dossier);
+
+        self::assertTrue($document->getDossiers()->contains($this->dossier));
+    }
+
+    public function testUpdatesMetadataAfterLinking(): void
     {
         $documentMetadata = $this->getDocumentMetadata(Judgement::PUBLIC);
 
@@ -81,7 +91,8 @@ class DocumentUpdaterTest extends UnitTestCase
 
         $this->repository->expects('save')->with($existingDocument);
 
-        $this->documentUpdater->databaseUpdate($documentMetadata, $this->dossier, $existingDocument);
+        $this->documentUpdater->linkDocument($existingDocument, $this->dossier);
+        $this->documentUpdater->updateMetadata($documentMetadata, $existingDocument);
     }
 
     public function testUpdateDocumentReferrals(): void
@@ -89,13 +100,10 @@ class DocumentUpdaterTest extends UnitTestCase
         $newReferredDoc = Mockery::mock(Document::class);
 
         $oldReferredDoc = Mockery::mock(Document::class);
-        $oldReferredDoc->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('PREFIX-matter-456'));
-        $oldReferredDoc->expects('getDocumentId')->times(2)->andReturn(DocumentId::create('456'));
+        $oldReferredDoc->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('publication-context-456'));
 
         $existingDocument = Mockery::mock(Document::class);
         $existingDocument->expects('getRefersTo')->andReturn(new ArrayCollection([$oldReferredDoc]));
-        $existingDocument->expects('getDocumentNumber')->andReturn(DocumentNumber::fromString('PREFIX-matter-1'));
-        $existingDocument->expects('getDocumentId')->andReturn(DocumentId::create('1'));
 
         // Old referred document is no longer in metadata so should be removed
         $existingDocument->expects('removeRefersTo')->with($oldReferredDoc);
@@ -103,23 +111,21 @@ class DocumentUpdaterTest extends UnitTestCase
         // And a new referral should be added
         $existingDocument->expects('addRefersTo')->with($newReferredDoc);
 
-        $this->dossier->expects('getDocumentPrefix')->twice()->andReturn('PREFIX');
-
         $this->repository
             ->expects('findByDocumentNumber')
             ->with(Mockery::on(
-                static fn (DocumentNumber $documentNumber): bool => $documentNumber->toString() === 'PREFIX-matter-123',
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->toString() === 'publication-context-123',
             ))
             ->andReturn($newReferredDoc);
 
         $this->repository
             ->expects('findByDocumentNumber')
             ->with(Mockery::on(
-                static fn (DocumentNumber $documentNumber): bool => $documentNumber->toString() === 'PREFIX-matter-456',
+                static fn (DocumentNumber $documentNumber): bool => $documentNumber->toString() === 'publication-context-456',
             ))
             ->andReturn($oldReferredDoc);
 
-        $this->documentUpdater->updateDocumentReferralsByDocumentNumber($this->dossier, $existingDocument, ['PREFIX-matter-123']);
+        $this->documentUpdater->updateDocumentReferralsByDocumentNumber($existingDocument, ['publication-context-123']);
     }
 
     public function testAsyncUpdate(): void
@@ -165,7 +171,7 @@ class DocumentUpdaterTest extends UnitTestCase
             links: ['https://a.dummy.link/here'],
             remark: 'remark',
             publicationContext: PublicationContext::fromString('pr3f1x-matt3r'),
-            refersTo: ['matter-123'],
+            refersTo: ['pr3f1x-matt3r-123'],
         );
     }
 
@@ -179,7 +185,7 @@ class DocumentUpdaterTest extends UnitTestCase
         $this->documentUpdater->databaseRemove($document, $wooDecision);
     }
 
-    public function testDatabaseUpdateTruncatesLongFilenameAtGraphemeBoundary(): void
+    public function testUpdateMetadataTruncatesLongFilenameAtGraphemeBoundary(): void
     {
         // 1023 ASCII chars + 1 multibyte (é) + tail; after truncation at 1024 graphemes the é must stay whole.
         $filename = str_repeat('a', 1023) . 'éxtra';
@@ -211,6 +217,7 @@ class DocumentUpdaterTest extends UnitTestCase
 
         $this->repository->expects('save')->with($document);
 
-        $this->documentUpdater->databaseUpdate($documentMetadata, $this->dossier, $document);
+        $this->documentUpdater->linkDocument($document, $this->dossier);
+        $this->documentUpdater->updateMetadata($documentMetadata, $document);
     }
 }

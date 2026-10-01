@@ -126,6 +126,7 @@ readonly class InventoryRunProcessor
     private function processComparison(ProductionReportProcessRun $run, InventoryReaderInterface $inventoryReader): void
     {
         $run->startComparing();
+        $run->setHasMatter($inventoryReader->hasMatterColumn());
         $this->doctrine->persist($run);
         $this->doctrine->flush();
 

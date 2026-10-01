@@ -26,12 +26,14 @@ final readonly class SubjectContentNode
      * @param list<SubjectContentNode> $children
      */
     public function __construct(
+        #[SymfonyAssert\NotBlank(message: 'subject.content_tree.blank_title')]
         public string $title,
         #[MarkdownAllowedNodeTypes(allowedNodeTypes: [
             Paragraph::class, ListBlock::class, BlockQuote::class, Document::class,
             Text::class, Newline::class, ListBlock::class, ListItem::class,
             Emphasis::class, Strong::class, Link::class,
         ])]
+        #[SymfonyAssert\Length(max: 10000, maxMessage: 'subject.content_tree.body_too_long')]
         public string $body,
         /** @var list<SubjectContentNode> */
         #[SymfonyAssert\Valid]

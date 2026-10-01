@@ -157,9 +157,9 @@ There are also containers behind compose profiles, which only run when a task ne
 
 ## Multiple tenants
 
-The platform is multi-tenant. `minvws` and `minfin` are started locally; `minbuza` exists but is only built and tested
-in CI. Each local tenant gets its own database, Elasticsearch index and worker container, which is why almost every
-console command needs `--tenant` (see [commands.md](commands.md)).
+The platform is multi-tenant. `minvws` and `minfin` are started locally; `minbuza` and `minocw` exist but are only built
+and tested in CI. Each local tenant gets its own database, Elasticsearch index and worker container, which is why
+almost every console command needs `--tenant` (see [commands.md](commands.md)).
 
 ## Step 5: Setup initial user
 

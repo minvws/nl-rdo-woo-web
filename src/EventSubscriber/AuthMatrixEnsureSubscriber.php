@@ -16,7 +16,7 @@ use function str_starts_with;
 /**
  * This listener ensures all admin endpoints check an AuthMatrix permission, except whitelisted urls.
  */
-#[AsEventListener(priority: -10)]
+#[AsEventListener(priority: -10001)]
 readonly class AuthMatrixEnsureSubscriber
 {
     public function __construct(

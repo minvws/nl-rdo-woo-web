@@ -10,6 +10,9 @@ use Shared\ValueObject\ExternalId;
 
 class ExternalIdFactory
 {
+    /**
+     * @throws ValidationException
+     */
     public static function create(string $externalId): ExternalId
     {
         try {

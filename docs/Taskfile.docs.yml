@@ -50,27 +50,27 @@ tasks:
              pur --requirement requirements.txt;
              chown {{ .FIXUID }}:{{ .FIXGID }} requirements.txt'
 
-  build:
-    desc: Build the documentation
+  build:local:
+    desc: Build the documentation for the local env
     vars:
       TENANT: '{{ .TENANT | default "minvws" }}'
     cmds:
-      - task: build:ci
+      - task: build
         vars:
           TENANT: '{{ .TENANT }}'
       - mkdir -p "{{.BASE_PATH}}/public/documentatie/{{ .TENANT }}"
       - cp -r "{{.BASE_PATH}}/docs/_build/{{ .TENANT }}/html/." "{{.BASE_PATH}}/public/documentatie/{{ .TENANT }}"
 
-  build:all:
-    desc: Build the documentation for all tenants
+  build:local:all:
+    desc: Build the documentation for all local tenants
     cmds:
-      - task: build
+      - task: build:local
         vars:
           TENANT: '{{ .ITEM }}'
         for: { var: LOCAL_TENANTS }
 
-  build:ci:
-    desc: Build the documentation in CI
+  build:
+    desc: Build the documentation
     cmds:
       - task: do:build:cleanup
         vars: { TENANT: '{{ .TENANT }}' }
@@ -84,10 +84,10 @@ tasks:
           enum:
             ref: .ALL_TENANTS
 
-  build:ci:all:
-    desc: Build the documentation for all tenants in CI
+  build:all:
+    desc: Build the documentation for all tenants
     cmds:
-      - task: build:ci
+      - task: build
         vars: { TENANT: '{{ .ITEM }}' }
         for: { var: ALL_TENANTS }
 

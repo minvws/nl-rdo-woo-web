@@ -6,6 +6,7 @@ namespace Shared\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use SortDirection;
 
 use function array_key_exists;
 use function base64_decode;
@@ -44,7 +45,7 @@ readonly class PaginationQueryBuilder
         }
 
         return $queryBuilder
-            ->orderBy('entity.id', 'DESC')
+            ->orderBy('entity.id', SortDirection::Descending)
             ->setMaxResults($itemsPerPage + 1);
     }
 }

@@ -22,19 +22,25 @@ class HasOneAttachmentOfTypesValidatorTest extends UnitTestCase
     public function testThrowsExceptionForWrongConstraint(): void
     {
         $validator = new HasOneAttachmentOfTypesValidator();
-        $validator->initialize(Mockery::mock(ExecutionContextInterface::class));
 
         $this->expectException(InvalidArgumentException::class);
-        $validator->validate(new stdClass(), Mockery::mock(Constraint::class));
+        $validator->validateInContext(
+            new stdClass(),
+            Mockery::mock(Constraint::class),
+            Mockery::mock(ExecutionContextInterface::class),
+        );
     }
 
     public function testThrowsExceptionForNonObject(): void
     {
         $validator = new HasOneAttachmentOfTypesValidator();
-        $validator->initialize(Mockery::mock(ExecutionContextInterface::class));
 
         $this->expectException(InvalidArgumentException::class);
-        $validator->validate('not an object', new HasOneAttachmentOfTypes([AttachmentType::REQUEST_FOR_ADVICE]));
+        $validator->validateInContext(
+            'not an object',
+            new HasOneAttachmentOfTypes([AttachmentType::REQUEST_FOR_ADVICE]),
+            Mockery::mock(ExecutionContextInterface::class),
+        );
     }
 
     public function testThrowsExceptionWhenPropertyIsNotACollection(): void
@@ -43,10 +49,13 @@ class HasOneAttachmentOfTypesValidatorTest extends UnitTestCase
         $object->attachments = 'not a collection';
 
         $validator = new HasOneAttachmentOfTypesValidator();
-        $validator->initialize(Mockery::mock(ExecutionContextInterface::class));
 
         $this->expectException(InvalidArgumentException::class);
-        $validator->validate($object, new HasOneAttachmentOfTypes([AttachmentType::REQUEST_FOR_ADVICE]));
+        $validator->validateInContext(
+            $object,
+            new HasOneAttachmentOfTypes([AttachmentType::REQUEST_FOR_ADVICE]),
+            Mockery::mock(ExecutionContextInterface::class),
+        );
     }
 
     public function testNoViolationWhenOneOfTheGivenTypesIsPresent(): void
@@ -61,11 +70,10 @@ class HasOneAttachmentOfTypesValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->never();
 
         $validator = new HasOneAttachmentOfTypesValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new HasOneAttachmentOfTypes([
+        $validator->validateInContext($object, new HasOneAttachmentOfTypes([
             AttachmentType::REQUEST_FOR_ADVICE,
             AttachmentType::POLICY_DOCUMENT,
-        ]));
+        ]), $context);
     }
 
     public function testViolationWhenNoneOfTheGivenTypesArePresent(): void
@@ -85,11 +93,10 @@ class HasOneAttachmentOfTypesValidatorTest extends UnitTestCase
             ->andReturn($builder);
 
         $validator = new HasOneAttachmentOfTypesValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new HasOneAttachmentOfTypes([
+        $validator->validateInContext($object, new HasOneAttachmentOfTypes([
             AttachmentType::REQUEST_FOR_ADVICE,
             AttachmentType::POLICY_DOCUMENT,
-        ]));
+        ]), $context);
     }
 
     public function testViolationWhenCollectionIsEmpty(): void
@@ -106,8 +113,11 @@ class HasOneAttachmentOfTypesValidatorTest extends UnitTestCase
             ->andReturn($builder);
 
         $validator = new HasOneAttachmentOfTypesValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new HasOneAttachmentOfTypes([AttachmentType::REQUEST_FOR_ADVICE]));
+        $validator->validateInContext(
+            $object,
+            new HasOneAttachmentOfTypes([AttachmentType::REQUEST_FOR_ADVICE]),
+            $context,
+        );
     }
 
     public function testViolationIsAddedToEachErrorPath(): void
@@ -125,11 +135,10 @@ class HasOneAttachmentOfTypesValidatorTest extends UnitTestCase
             ->andReturn($builder);
 
         $validator = new HasOneAttachmentOfTypesValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new HasOneAttachmentOfTypes(
+        $validator->validateInContext($object, new HasOneAttachmentOfTypes(
             [AttachmentType::REQUEST_FOR_ADVICE],
             errorPaths: ['attachment'],
-        ));
+        ), $context);
     }
 
     public function testCustomMessage(): void
@@ -146,11 +155,10 @@ class HasOneAttachmentOfTypesValidatorTest extends UnitTestCase
             ->andReturn($builder);
 
         $validator = new HasOneAttachmentOfTypesValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new HasOneAttachmentOfTypes(
+        $validator->validateInContext($object, new HasOneAttachmentOfTypes(
             [AttachmentType::REQUEST_FOR_ADVICE],
             message: 'custom.message',
-        ));
+        ), $context);
     }
 
     public function testCustomProperty(): void
@@ -165,10 +173,9 @@ class HasOneAttachmentOfTypesValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->never();
 
         $validator = new HasOneAttachmentOfTypesValidator();
-        $validator->initialize($context);
-        $validator->validate($object, new HasOneAttachmentOfTypes(
+        $validator->validateInContext($object, new HasOneAttachmentOfTypes(
             [AttachmentType::REQUEST_FOR_ADVICE],
             property: 'customAttachments',
-        ));
+        ), $context);
     }
 }

@@ -13,6 +13,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\InquiryInventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inventory\Sanitizer\DataProvider\InventoryDataProviderFactory;
+use Shared\Service\Inventory\Sanitizer\DossierInventoryDocumentUrlStrategy;
+use Shared\Service\Inventory\Sanitizer\InquiryInventoryDocumentUrlStrategy;
 use Shared\Tests\Unit\UnitTestCase;
 
 class InventoryDataProviderFactoryTest extends UnitTestCase
@@ -20,6 +22,8 @@ class InventoryDataProviderFactoryTest extends UnitTestCase
     private DocumentRepository&MockInterface $documentRepository;
     private Document&MockInterface $docA;
     private Document&MockInterface $docB;
+    private DossierInventoryDocumentUrlStrategy&MockInterface $dossierUrlStrategy;
+    private InquiryInventoryDocumentUrlStrategy&MockInterface $inquiryUrlStrategy;
     private InventoryDataProviderFactory $factory;
 
     protected function setUp(): void
@@ -27,9 +31,13 @@ class InventoryDataProviderFactoryTest extends UnitTestCase
         $this->documentRepository = Mockery::mock(DocumentRepository::class);
         $this->docA = Mockery::mock(Document::class);
         $this->docB = Mockery::mock(Document::class);
+        $this->dossierUrlStrategy = Mockery::mock(DossierInventoryDocumentUrlStrategy::class);
+        $this->inquiryUrlStrategy = Mockery::mock(InquiryInventoryDocumentUrlStrategy::class);
 
         $this->factory = new InventoryDataProviderFactory(
             $this->documentRepository,
+            $this->dossierUrlStrategy,
+            $this->inquiryUrlStrategy,
         );
 
         parent::setUp();
@@ -56,6 +64,7 @@ class InventoryDataProviderFactoryTest extends UnitTestCase
             [$this->docA, $this->docB],
             $dataProvider->getDocuments(),
         );
+        self::assertSame($this->dossierUrlStrategy, $dataProvider->getDocumentUrlStrategy());
     }
 
     public function testForInquiry(): void
@@ -79,5 +88,6 @@ class InventoryDataProviderFactoryTest extends UnitTestCase
             [$this->docA, $this->docB],
             $dataProvider->getDocuments(),
         );
+        self::assertSame($this->inquiryUrlStrategy, $dataProvider->getDocumentUrlStrategy());
     }
 }

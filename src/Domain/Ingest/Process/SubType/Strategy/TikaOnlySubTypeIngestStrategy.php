@@ -9,7 +9,9 @@ use Shared\Domain\Ingest\IngestDispatcher;
 use Shared\Domain\Ingest\Process\IngestProcessOptions;
 use Shared\Domain\Ingest\Process\SubType\SubTypeIngestStrategyInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 
+#[AsTaggedItem(priority: -10)]
 readonly class TikaOnlySubTypeIngestStrategy implements SubTypeIngestStrategyInterface
 {
     public function __construct(
@@ -31,13 +33,5 @@ readonly class TikaOnlySubTypeIngestStrategy implements SubTypeIngestStrategyInt
     public function canHandle(EntityWithFileInfo $entity): bool
     {
         return $entity->getFileInfo()->isUploaded();
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function getDefaultPriority(): int
-    {
-        return -10;
     }
 }

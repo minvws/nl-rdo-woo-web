@@ -676,7 +676,6 @@ final class WooDecisionInquiryPublicationV1Test extends ApiPublicationV1DossierT
             'externalId' => $this->getFaker()->externalId(),
             'organisation' => $organisation,
         ]);
-        WooDecisionMainDocumentFactory::createOne(['dossier' => $wooDecision]);
 
         $inquiry = InquiryFactory::createOne([
             'documents' => [],

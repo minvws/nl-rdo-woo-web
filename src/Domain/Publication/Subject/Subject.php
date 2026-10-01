@@ -6,7 +6,6 @@ namespace Shared\Domain\Publication\Subject;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\LandingPageSlugType;
 use Shared\Doctrine\LandingPageTitleType;
@@ -57,8 +56,8 @@ class Subject implements HasId
     #[ORM\Column(length: 10000, nullable: true)]
     private ?string $landingPageDescription = null;
 
-    #[ORM\Column(type: 'string', length: 255, enumType: SubjectLandingPageStatus::class, nullable: true)]
-    private ?SubjectLandingPageStatus $landingPageStatus = null;
+    #[ORM\Column(type: 'string', length: 255, enumType: SubjectLandingPageStatus::class)]
+    private SubjectLandingPageStatus $landingPageStatus = SubjectLandingPageStatus::CONCEPT;
 
     #[ORM\Column(type: 'uuid', unique: true, nullable: true)]
     private ?Uuid $landingPagePreviewToken = null;
@@ -67,13 +66,14 @@ class Subject implements HasId
     #[Assert\Valid]
     private ?SubjectContentTree $landingPageContentTree = null;
 
-    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
-    private bool $hasVisibleLandingPageContentTree = false;
+    #[ORM\Column(type: 'string', length: 255, enumType: SubjectContentTreeStatus::class)]
+    private SubjectContentTreeStatus $landingPageContentTreeStatus = SubjectContentTreeStatus::CONCEPT;
 
     public function __construct()
     {
         $this->id = Uuid::v6();
         $this->dossiers = new ArrayCollection();
+        $this->landingPagePreviewToken = Uuid::v4();
     }
 
     public function getId(): Uuid
@@ -127,13 +127,14 @@ class Subject implements HasId
         string $description,
         SubjectLandingPageStatus $status,
         SubjectContentTree $contentTree,
+        SubjectContentTreeStatus $contentTreeStatus,
     ): self {
-        $this->landingPageSlug = $slug;
-        $this->landingPageTitle = $title;
-        $this->landingPageDescription = $description;
         $this->landingPageContentTree = $contentTree;
-
-        $this->setLandingPageStatus($status);
+        $this->landingPageContentTreeStatus = $contentTreeStatus;
+        $this->landingPageDescription = $description;
+        $this->landingPageSlug = $slug;
+        $this->landingPageStatus = $status;
+        $this->landingPageTitle = $title;
 
         return $this;
     }
@@ -141,6 +142,11 @@ class Subject implements HasId
     public function hasPublishedLandingPage(): bool
     {
         return $this->landingPageStatus === SubjectLandingPageStatus::PUBLISHED;
+    }
+
+    public function hasPublishedContentTree(): bool
+    {
+        return $this->landingPageContentTreeStatus === SubjectContentTreeStatus::PUBLISHED;
     }
 
     public function getLandingPageSlug(): ?LandingPageSlug
@@ -181,7 +187,7 @@ class Subject implements HasId
         return $this;
     }
 
-    public function getLandingPageStatus(): ?SubjectLandingPageStatus
+    public function getLandingPageStatus(): SubjectLandingPageStatus
     {
         return $this->landingPageStatus;
     }
@@ -189,10 +195,6 @@ class Subject implements HasId
     public function setLandingPageStatus(SubjectLandingPageStatus $status): self
     {
         $this->landingPageStatus = $status;
-
-        if ($status === SubjectLandingPageStatus::CONCEPT && $this->landingPagePreviewToken === null) {
-            $this->landingPagePreviewToken = Uuid::v4();
-        }
 
         return $this;
     }
@@ -214,15 +216,24 @@ class Subject implements HasId
         return $this;
     }
 
-    public function hasVisibleLandingPageContentTree(): bool
+    public function getLandingPageContentTreeStatus(): SubjectContentTreeStatus
     {
-        return $this->hasVisibleLandingPageContentTree;
+        return $this->landingPageContentTreeStatus;
     }
 
-    public function setHasVisibleLandingPageContentTree(bool $hasVisibleLandingPageContentTree): self
+    public function setLandingPageContentTreeStatus(SubjectContentTreeStatus $status): self
     {
-        $this->hasVisibleLandingPageContentTree = $hasVisibleLandingPageContentTree;
+        $this->landingPageContentTreeStatus = $status;
 
         return $this;
+    }
+
+    public function hasLandingPageContent(): bool
+    {
+        return $this->getLandingPageSlug() !== null
+            || $this->getLandingPageTitle() !== null
+            || $this->getLandingPageDescription() !== null
+            || $this->hasPublishedContentTree()
+            || $this->getLandingPageContentTree() !== null;
     }
 }

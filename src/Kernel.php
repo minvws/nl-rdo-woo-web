@@ -16,9 +16,9 @@ use Shared\Service\Encryption\EncryptionServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Kernel\BundleInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use UnitEnum;
@@ -83,7 +83,57 @@ class Kernel extends BaseKernel
         return sprintf('%s/tenants/%s/config', $this->getProjectDir(), $this->getTenantId()->value);
     }
 
+    #[Override]
+    public function getCacheDir(): string
+    {
+        return $this->getTenantDir('var/cache');
+    }
+
+    #[Override]
+    public function getLogDir(): string
+    {
+        return $this->getTenantDir('var/log');
+    }
+
+    /**
+     * @return iterable<BundleInterface>
+     */
     public function registerBundles(): iterable
+    {
+        foreach ($this->resolveBundles() as $class => $envs) {
+            if ($envs[$this->getEnvironment()] ?? $envs['all'] ?? false) {
+                /** @var class-string<BundleInterface> $class */
+                yield new $class();
+            }
+        }
+    }
+
+    /**
+     * @return array<string,array<string,bool>>
+     */
+    public function resolveBundles(): array
+    {
+        $bundles = $this->getAllBundles();
+
+        $resolved = [];
+        foreach ($bundles as $class => $envs) {
+            $this->resolveRequiredBundles($class, $envs, $bundles, $resolved);
+        }
+
+        Assert::isMap($resolved);
+        Assert::allIsMap($resolved);
+
+        foreach ($resolved as $inner) {
+            Assert::allBoolean($inner);
+        }
+
+        return $resolved;
+    }
+
+    /**
+     * @return array<string,array<string,bool>>
+     */
+    private function getAllBundles(): array
     {
         /** @var array<string,array<string,bool>> $sharedBundles */
         $sharedBundles = require $this->getSharedConfigDir() . '/bundles.php';
@@ -98,55 +148,7 @@ class Kernel extends BaseKernel
             ? (require $this->getAppConfigDir() . '/bundles.php')
             : [];
 
-        // load common bundles, such as the FrameworkBundle, as well as
-        // specific bundles required exclusively for the app itself
-        foreach (array_merge($sharedBundles, $tenantBundles, $appBundles) as $class => $envs) {
-            if ($envs[$this->getEnvironment()] ?? $envs['all'] ?? false) {
-                /** @var class-string<BundleInterface> $class */
-                yield new $class();
-            }
-        }
-    }
-
-    #[Override]
-    public function getCacheDir(): string
-    {
-        $appCacheDir = $_SERVER['APP_CACHE_DIR'] ?? null;
-        Assert::nullOrstring($appCacheDir);
-
-        return $this->buildCachePath($appCacheDir);
-    }
-
-    #[Override]
-    public function getBuildDir(): string
-    {
-        $appCacheDir = $_SERVER['APP_BUILD_DIR'] ?? null;
-        Assert::nullOrstring($appCacheDir);
-
-        return $this->buildCachePath($appCacheDir);
-    }
-
-    #[Override]
-    public function getShareDir(): string
-    {
-        $appCacheDir = $_SERVER['APP_SHARE_DIR'] ?? null;
-        Assert::nullOrstring($appCacheDir);
-
-        return $this->buildCachePath($appCacheDir);
-    }
-
-    #[Override]
-    public function getLogDir(): string
-    {
-        $appLogDir = $_SERVER['APP_LOG_DIR'] ?? null;
-        Assert::nullOrString($appLogDir);
-
-        return sprintf(
-            '%s/%s/%s',
-            $appLogDir ?? sprintf('%s/var/log', $this->getProjectDir()),
-            $this->getTenantId()->value,
-            $this->getApplicationId()->value,
-        );
+        return array_merge($sharedBundles, $tenantBundles, $appBundles);
     }
 
     protected function configureContainer(ContainerConfigurator $container): void
@@ -185,9 +187,9 @@ class Kernel extends BaseKernel
             ? get_parent_class($class) . str_replace('.', '_', ContainerBuilder::hash($class))
             : $class;
         $class = str_replace('\\', '_', $class)
+            . ucfirst($this->environment)
             . ucfirst($this->getTenantId()->value)
             . ucfirst($this->getApplicationId()->value)
-            . ucfirst($this->environment)
             . ($this->debug ? 'Debug' : '')
             . 'Container';
 
@@ -213,6 +215,8 @@ class Kernel extends BaseKernel
     {
         $parameters = $this->getKernelParametersTrait();
 
+        $escape = static fn (string $path): string => str_replace('%', '%%', $path);
+
         $parameters['kernel.application_id'] = $this->getApplicationId();
         $parameters['kernel.application_id_value'] = $this->getApplicationId()->value;
 
@@ -222,20 +226,9 @@ class Kernel extends BaseKernel
         // This was introduced to avod issues with the config cache. Every application wrote a different reference to
         // the same file. By setting this private parameter to the build dir, the file is written to a different location
         // for each application, avoiding the issue with the config cache. See issue #6336.
-        $parameters['.kernel.config_dir'] = $this->getBuildDir();
+        $parameters['.kernel.config_dir'] = $escape($this->getBuildDir());
 
         return $parameters;
-    }
-
-    private function buildCachePath(?string $basePath): string
-    {
-        return sprintf(
-            '%s/%s/%s/%s',
-            $basePath ?? sprintf('%s/var/cache', $this->getProjectDir()),
-            $this->getTenantId()->value,
-            $this->getApplicationId()->value,
-            $this->getEnvironment(),
-        );
     }
 
     private function doConfigureContainer(ContainerConfigurator $container, string $configDir): void
@@ -297,5 +290,17 @@ class Kernel extends BaseKernel
         if (! Type::hasType(EncryptedArray::TYPE)) {
             Type::addType(EncryptedArray::TYPE, new EncryptedArray($serviceLocator));
         }
+    }
+
+    private function getTenantDir(string $dir): string
+    {
+        return sprintf(
+            '%s/%s/%s/%s/%s',
+            $this->getProjectDir(),
+            $dir,
+            $this->getEnvironment(),
+            $this->getTenantId()->value,
+            $this->getApplicationId()->value,
+        );
     }
 }

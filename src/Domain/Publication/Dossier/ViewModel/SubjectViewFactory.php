@@ -7,6 +7,7 @@ namespace Shared\Domain\Publication\Dossier\ViewModel;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject as SubjectEntity;
+use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Domain\Search\Query\Facet\FacetDefinitions;
 use Shared\Service\Search\Model\FacetKey;
 
@@ -15,6 +16,7 @@ readonly class SubjectViewFactory
     public function __construct(
         private PublicUrlGenerator $publicUrlGenerator,
         private FacetDefinitions $facetDefinitions,
+        private SubjectPreviewUrlGenerator $subjectPreviewUrlGenerator,
     ) {
     }
 
@@ -29,11 +31,13 @@ readonly class SubjectViewFactory
             searchUrl: $searchUrl,
             landingPageUrl: $landingPageUrl,
             landingPageUrlOrSearchUrl: $landingPageUrl ?? $searchUrl,
+            landingPagePreviewUrl: $this->subjectPreviewUrlGenerator->generatePreviewUrl($subject),
             hasPublishedLandingPage: $subject->hasPublishedLandingPage(),
             landingPageTitle: $subject->getLandingPageTitle()?->toString(),
             landingPageDescription: $subject->getLandingPageDescription(),
             landingPageContentTree: $subject->getLandingPageContentTree(),
-            hasVisibleLandingPageContentTree: $subject->hasVisibleLandingPageContentTree(),
+            hasPublishedContentTree: $subject->hasPublishedContentTree(),
+            hasLandingPageContent: $subject->hasLandingPageContent(),
         );
     }
 

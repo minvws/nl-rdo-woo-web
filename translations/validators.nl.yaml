@@ -164,6 +164,8 @@ dossier.main_document.no_document: 'Een dossier zonder hoofddocument kan niet ge
 dossier.main_document.not_uploaded: 'Een dossier zonder geüpload hoofddocument kan niet gepubliceerd worden'
 dossier.incomplete_documents: 'Een dossier met onvolledige documenten kan niet gepubliceerd worden'
 dossier.incomplete_attachments: 'Een dossier met onvolledige bijlagen kan niet gepubliceerd worden'
+subject.content_tree.max_depth_exceeded: 'De maximale diepte van de verhaallijn is overschreden'
+subject.content_tree.too_many_nodes: 'De verhaallijn bevat te veel onderdelen'
 subject_already_exists: 'Dit onderwerp bestaat al'
 subject_landing_page_content_tree_invalid_json: 'De verhaallijn bevat geen geldige JSON'
 subject_landing_page_content_tree_invalid_structure: 'De verhaallijn heeft een ongeldige structuur'

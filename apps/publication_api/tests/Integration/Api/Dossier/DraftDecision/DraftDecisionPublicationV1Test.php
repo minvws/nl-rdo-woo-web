@@ -17,7 +17,6 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
-use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
@@ -122,7 +121,6 @@ final class DraftDecisionPublicationV1Test extends ApiPublicationV1DossierTestCa
             'subject' => [
                 'id' => $subject->getId()->toString(),
                 'name' => $subject->getName(),
-                'landingPage' => null,
             ],
             'department' => [
                 'id' => (string) $department->getId(),
@@ -147,7 +145,7 @@ final class DraftDecisionPublicationV1Test extends ApiPublicationV1DossierTestCa
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($draftDecision)],
+                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($draftDecision)],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -181,7 +179,9 @@ final class DraftDecisionPublicationV1Test extends ApiPublicationV1DossierTestCa
                                 ],
                             )->toString(),
                         ],
-                        'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($draftDecision)],
+                        'public' => [
+                            'href' => $dossierPathHelper->getAbsoluteAttachmentDetailsPath($draftDecision, $draftDecisionAttachment->getId()),
+                        ],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -319,14 +319,14 @@ final class DraftDecisionPublicationV1Test extends ApiPublicationV1DossierTestCa
 
         $mainDocument = $data['mainDocument'];
         self::assertIsArray($mainDocument);
-        $mainDocument['grounds'] = [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)];
+        $mainDocument['grounds'] = [$this->getFaker()->ground()];
         $data['mainDocument'] = $mainDocument;
 
         $attachments = $data['attachments'];
         self::assertIsArray($attachments);
         $attachment = $attachments[0];
         self::assertIsArray($attachment);
-        $attachment['grounds'] = [$this->getFaker()->randomElement(Citation::ALL_GROUND_KEYS)];
+        $attachment['grounds'] = [$this->getFaker()->ground()];
         $attachments[0] = $attachment;
         $data['attachments'] = $attachments;
 

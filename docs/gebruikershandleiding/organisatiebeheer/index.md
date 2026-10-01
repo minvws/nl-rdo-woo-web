@@ -1,3 +1,4 @@
+
 # Organisatiebeheer
 
 Beheerders met Super Beheerder of Organisatie Admin rechten zijn verantwoordelijk voor het beheren van de inrichting van een specifieke organisatie. De volgende pagina's lichten dit verder toe.
@@ -18,4 +19,6 @@ informatie over het beheren van toegangsrechten en het beheren van onderwerpen.
 
 toegangsbeheer
 onderwerpenbeheer
+verhaallijnenbeheer
+text-editor
 ```

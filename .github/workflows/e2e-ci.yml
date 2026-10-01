@@ -8,14 +8,23 @@ on:
         required: true
         type: string
         default: ci
+      app_runner:
+        description: Github Runner tag for the app E2E job
+        type: string
+      api_runner:
+        description: Github Runner tag for the API E2E job
+        type: string
   workflow_call:
     inputs:
       test_tag:
         description: Robot Framework test tag
         required: true
         type: string
-      runner:
-        description: Github Runner tag
+      app_runner:
+        description: Github Runner tag for the app E2E job
+        type: string
+      api_runner:
+        description: Github Runner tag for the API E2E job
         type: string
 
   schedule:
@@ -30,7 +39,7 @@ env:
 jobs:
   e2e-tests-app:
     name: Run E2E tests on app
-    runs-on: ubuntu-latest-m
+    runs-on: ${{ inputs.app_runner || 'ubuntu-latest-l' }}
     if: ${{ inputs.test_tag != 'api' }}
     timeout-minutes: 60
     steps:
@@ -46,12 +55,24 @@ jobs:
           else
             task rf:docker:run tag=${{ inputs.test_tag || 'ci' }}
           fi
+      - name: Collect application logs
+        if: ${{ failure() }}
+        run: |
+          mkdir -p tests/robot_framework/results/app-logs
+          cp -r var/log/. tests/robot_framework/results/app-logs/ || true
+          docker compose logs --no-color --timestamps > tests/robot_framework/results/app-logs/containers.log 2>&1 || true
+      - name: Check application logs
+        if: ${{ always() }}
+        uses: ./.github/actions/check-app-logs
       - name: Upload test results
         uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
           name: robot-report-app
           path: tests/robot_framework/results
+      - name: Add test result summary header
+        if: ${{ always() }}
+        run: echo "### Robot Framework test results" >> "$GITHUB_STEP_SUMMARY"
       - name: Publish test result summary to GitHub
         uses: minvws/action-robotframework-summary@v1.0.0
         if: ${{ always() }}
@@ -60,7 +81,7 @@ jobs:
 
   e2e-tests-api:
     name: Run E2E tests on API
-    runs-on: ubuntu-latest-m
+    runs-on: ${{ inputs.api_runner || 'ubuntu-latest-m' }}
     if:
       ${{ (github.event_name == 'schedule' && inputs.test_tag != 'limits') || inputs.test_tag == 'ci' ||
       inputs.test_tag == 'api' }}
@@ -74,12 +95,24 @@ jobs:
       - name: Run Robot Framework tests
         run: |
           task rf:docker:run:api
+      - name: Collect application logs
+        if: ${{ failure() }}
+        run: |
+          mkdir -p tests/robot_framework/results/app-logs
+          cp -r var/log/. tests/robot_framework/results/app-logs/ || true
+          docker compose logs --no-color --timestamps > tests/robot_framework/results/app-logs/containers.log 2>&1 || true
+      - name: Check application logs
+        if: ${{ always() }}
+        uses: ./.github/actions/check-app-logs
       - name: Upload test results
         uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
           name: robot-report-api
           path: tests/robot_framework/results
+      - name: Add test result summary header
+        if: ${{ always() }}
+        run: echo "### Robot Framework test results" >> "$GITHUB_STEP_SUMMARY"
       - name: Publish test result summary to GitHub
         uses: minvws/action-robotframework-summary@v1.0.0
         if: ${{ always() }}

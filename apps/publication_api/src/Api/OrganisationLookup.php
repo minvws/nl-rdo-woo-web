@@ -7,6 +7,7 @@ namespace PublicationApi\Api;
 use PublicationApi\Domain\Exception\EntityNotFoundException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Organisation\OrganisationRepository;
+use Symfony\Component\Uid\Uuid;
 
 readonly class OrganisationLookup
 {
@@ -15,7 +16,7 @@ readonly class OrganisationLookup
     ) {
     }
 
-    public function find(string $organisationId): Organisation
+    public function find(Uuid $organisationId): Organisation
     {
         $organisation = $this->organisationRepository->find($organisationId);
         if (! $organisation instanceof Organisation) {

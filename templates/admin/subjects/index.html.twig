@@ -41,8 +41,8 @@
                             </twig:Admin:CopyToClipboardLayout>
                         </td>
                         <td>
-                            {% if subject.hasPublishedLandingPage %}
-                                {{ 'admin.global.yes' | trans }}
+                            {% if subject.hasPublishedLandingPage or subject.hasLandingPageContent %}
+                                {{ subject.hasPublishedLandingPage ? ('admin.global.yes' | trans) : ('admin.subject.landing_page.status.concept' | trans) }}
                                 {% if matrix_has_permission('subject.update') %}
                                     - <a class="bhr-a" href="{{ path('app_admin_subject_landing_page_edit', { id: subject.id }) }}">
                                         {{ 'admin.global.edit' | trans | lower }} <span class="sr-only">({{ subject.name }})</span>
@@ -56,6 +56,10 @@
                             {% if subject.hasPublishedLandingPage %}
                                 <a class="bhr-a" href="{{ subject.landingPageUrl }}" target="_blank" rel="noopener noreferrer">
                                     {{ subject.landingPageUrl }}
+                                </a>
+                            {% elseif subject.hasLandingPageContent %}
+                                <a class="bhr-a" href="{{ subject.landingPagePreviewUrl }}" target="_blank" rel="noopener noreferrer">
+                                    Preview
                                 </a>
                             {% else %}
                                 -

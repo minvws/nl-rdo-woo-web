@@ -20,11 +20,14 @@ class AllowedFileExtensionValidatorTest extends UnitTestCase
         $context = Mockery::mock(ExecutionContextInterface::class);
 
         $validator = new AllowedFileExtensionValidator();
-        $validator->initialize($context);
 
         $context->shouldNotHaveReceived('buildViolation');
 
-        $validator->validate(null, new AllowedFileExtension(UploadGroupId::API_WOO_DECISION_DOCUMENTS));
+        $validator->validateInContext(
+            null,
+            new AllowedFileExtension(UploadGroupId::API_WOO_DECISION_DOCUMENTS),
+            $context,
+        );
     }
 
     public function testNoViolationForAllowedExtension(): void
@@ -32,11 +35,14 @@ class AllowedFileExtensionValidatorTest extends UnitTestCase
         $context = Mockery::mock(ExecutionContextInterface::class);
 
         $validator = new AllowedFileExtensionValidator();
-        $validator->initialize($context);
 
         $context->shouldNotHaveReceived('buildViolation');
 
-        $validator->validate(FileName::create('document.pdf'), new AllowedFileExtension(UploadGroupId::API_WOO_DECISION_DOCUMENTS));
+        $validator->validateInContext(
+            FileName::create('document.pdf'),
+            new AllowedFileExtension(UploadGroupId::API_WOO_DECISION_DOCUMENTS),
+            $context,
+        );
     }
 
     public function testViolationForDisallowedExtension(): void
@@ -59,8 +65,11 @@ class AllowedFileExtensionValidatorTest extends UnitTestCase
         $builder->expects('addViolation');
 
         $validator = new AllowedFileExtensionValidator();
-        $validator->initialize($context);
 
-        $validator->validate(FileName::create('document.exe'), new AllowedFileExtension(UploadGroupId::API_WOO_DECISION_DOCUMENTS));
+        $validator->validateInContext(
+            FileName::create('document.exe'),
+            new AllowedFileExtension(UploadGroupId::API_WOO_DECISION_DOCUMENTS),
+            $context,
+        );
     }
 }

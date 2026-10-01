@@ -44,13 +44,14 @@ readonly class DocumentDispatcher
     }
 
     public function dispatchDocumentWithdrawnEvent(
+        WooDecision $wooDecision,
         Document $document,
         DocumentWithdrawReason $reason,
         string $explanation,
         bool $bulkAction,
     ): void {
         $this->messageBus->dispatch(
-            new DocumentWithDrawnEvent($document, $reason, $explanation, $bulkAction),
+            new DocumentWithDrawnEvent($wooDecision, $document, $reason, $explanation, $bulkAction),
         );
     }
 

@@ -84,6 +84,9 @@ class InventoryRunProcessorTest extends UnitTestCase
 
     public function testProcessReturnsEarlyWithErrorIfThereAreNoChanges(): void
     {
+        $this->reader->expects('hasMatterColumn')->andReturnFalse();
+        $this->run->expects('setHasMatter')->with(false);
+
         $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('hasNoChanges')->andReturnTrue();
         $changeset->expects('getResultingTotalDocumentCount')->andReturn(0);
@@ -107,6 +110,9 @@ class InventoryRunProcessorTest extends UnitTestCase
 
     public function testProcessReturnsCatchesExceptionAndFailsTheRun(): void
     {
+        $this->reader->expects('hasMatterColumn')->andReturnFalse();
+        $this->run->expects('setHasMatter')->with(false);
+
         $this->run->expects('addGenericException');
         $this->run->expects('fail');
         $this->run->expects('isFinal')->andReturnTrue();
@@ -127,6 +133,9 @@ class InventoryRunProcessorTest extends UnitTestCase
 
     public function testProcessFinishesSuccessfully(): void
     {
+        $this->reader->expects('hasMatterColumn')->andReturnFalse();
+        $this->run->expects('setHasMatter')->with(false);
+
         $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('hasNoChanges')->andReturnFalse();
         $changeset->expects('getResultingTotalDocumentCount')->andReturn(234);
@@ -170,6 +179,9 @@ class InventoryRunProcessorTest extends UnitTestCase
 
     public function testProcessAddsExceptionToResultWhenMaxDocumentsIsExceeded(): void
     {
+        $this->reader->expects('hasMatterColumn')->andReturnFalse();
+        $this->run->expects('setHasMatter')->with(false);
+
         $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('hasNoChanges')->andReturnFalse();
         $changeset->expects('getResultingTotalDocumentCount')->andReturn(InventoryRunProcessor::MAX_DOCUMENTS + 1);
@@ -192,6 +204,9 @@ class InventoryRunProcessorTest extends UnitTestCase
 
     public function testProcessFinalizesRunWithFreshManagerWhenEntityManagerIsClosed(): void
     {
+        $this->reader->expects('hasMatterColumn')->andReturnFalse();
+        $this->run->expects('setHasMatter')->with(false);
+
         $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('hasNoChanges')->andReturnFalse();
         $changeset->expects('getResultingTotalDocumentCount')->andReturn(10);
@@ -250,6 +265,9 @@ class InventoryRunProcessorTest extends UnitTestCase
 
     public function testProcessAddsExceptionToResultWhenThereAreNoChanges(): void
     {
+        $this->reader->expects('hasMatterColumn')->andReturnFalse();
+        $this->run->expects('setHasMatter')->with(false);
+
         $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('hasNoChanges')->andReturnTrue();
         $changeset->expects('getResultingTotalDocumentCount')->andReturn(10);
@@ -273,6 +291,9 @@ class InventoryRunProcessorTest extends UnitTestCase
 
     public function testProcessFailsWhenNoChangesetIsAvailableDuringUpdate(): void
     {
+        $this->reader->expects('hasMatterColumn')->andReturnFalse();
+        $this->run->expects('setHasMatter')->with(false);
+
         $changeset = Mockery::mock(InventoryChangeset::class);
         $changeset->expects('hasNoChanges')->andReturnFalse();
         $changeset->expects('getResultingTotalDocumentCount')->andReturn(10);
@@ -304,6 +325,9 @@ class InventoryRunProcessorTest extends UnitTestCase
 
     public function testProcessDoesNotFailWhenRunCannotBeFoundWithFreshManager(): void
     {
+        $this->reader->expects('hasMatterColumn')->andReturnFalse();
+        $this->run->expects('setHasMatter')->with(false);
+
         $this->run->expects('isPending')->andReturnTrue();
         $this->run->expects('addGenericException');
         $this->run->expects('fail');
@@ -329,6 +353,9 @@ class InventoryRunProcessorTest extends UnitTestCase
 
     public function testProcessFinalizesRunWithCaughtExceptionWhenEntityManagerIsClosed(): void
     {
+        $this->reader->expects('hasMatterColumn')->andReturnFalse();
+        $this->run->expects('setHasMatter')->with(false);
+
         $this->run->expects('isPending')
             ->andReturnTrue();
         $this->run->expects('addGenericException');
@@ -363,6 +390,32 @@ class InventoryRunProcessorTest extends UnitTestCase
             ->with(ProductionReportProcessRun::class, Mockery::type(Uuid::class))
             ->andReturn($reloadedRun);
         $freshManager->expects('flush');
+
+        $this->runProcessor->process($this->run);
+    }
+
+    public function testProcessWithMatterColumn(): void
+    {
+        $this->reader->expects('hasMatterColumn')->andReturnTrue();
+        $this->run->expects('setHasMatter')->with(true);
+
+        $changeset = Mockery::mock(InventoryChangeset::class);
+        $changeset->expects('hasNoChanges')->andReturnFalse();
+        $changeset->expects('getResultingTotalDocumentCount')->andReturn(10);
+
+        $this->run->expects('isPending')->andReturnTrue();
+        $this->run->expects('hasErrors')->andReturnFalse();
+        $this->run->expects('setChangeset');
+        $this->run->expects('isConfirmed')->andReturnFalse();
+        $this->run->expects('isFinal')->andReturnTrue();
+
+        $this->entityManager->expects('isOpen')->andReturnTrue();
+        $this->entityManager->expects('persist')->with($this->run)->times(2);
+        $this->entityManager->expects('flush')->times(2);
+
+        $this->progressUpdater->expects('updateProgressForRun');
+
+        $this->inventoryComparator->expects('determineChangeset')->andReturn($changeset);
 
         $this->runProcessor->process($this->run);
     }

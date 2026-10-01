@@ -7,7 +7,6 @@ namespace PublicationApi\Api\Organisation;
 use PublicationApi\Api\Department\DepartmentMapper;
 use PublicationApi\Api\Subject\SubjectMapper;
 use Shared\Domain\Organisation\Organisation;
-use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 
 use function array_map;
 use function array_values;
@@ -37,26 +36,19 @@ class OrganisationMapper
      *
      * @return list<OrganisationDetailResponseDto>
      */
-    public static function fromEntitiesWithDetail(
-        array $organisations,
-        SubjectPreviewUrlGenerator $previewUrlGenerator,
-    ): array {
-        return array_values(array_map(
-            static fn (Organisation $organisation): OrganisationDetailResponseDto => self::fromEntityWithDetail($organisation, $previewUrlGenerator),
-            $organisations,
-        ));
+    public static function fromEntitiesWithDetail(array $organisations): array
+    {
+        return array_values(array_map(self::fromEntityWithDetail(...), $organisations));
     }
 
-    public static function fromEntityWithDetail(
-        Organisation $organisation,
-        SubjectPreviewUrlGenerator $previewUrlGenerator,
-    ): OrganisationDetailResponseDto {
+    public static function fromEntityWithDetail(Organisation $organisation): OrganisationDetailResponseDto
+    {
         return new OrganisationDetailResponseDto(
             $organisation->getId(),
             $organisation->getName(),
             $organisation->getPrefix()->toString(),
             DepartmentMapper::fromEntities($organisation->getDepartments()->toArray()),
-            SubjectMapper::fromEntities($organisation->getSubjects()->toArray(), $previewUrlGenerator),
+            SubjectMapper::fromEntities($organisation->getSubjects()->toArray()),
         );
     }
 }

@@ -6,13 +6,13 @@
 besluitdata
 ```
 
-Bij publicatiebeheer is het mogelijk om alle publicatie van alle organisaties in te zien. Daarnaast is het mogelijk om per
+Bij publicatiebeheer is het mogelijk om alle publicaties van alle organisaties in te zien. Daarnaast is het mogelijk om per
 publicatie de individuele data te zien.
 
 ![In de figuur zie je een lijstje met alle publicaties](../img/admin_2.png)
 
-*Dossier action*
-Wanneer je op een dossier druk krijg het volgende menu te zien waar de status van het dossier terugte vinden is. Daarnaast
+*Dossier acties*
+Wanneer je op een dossier drukt krijg je het volgende menu te zien waar de status van het dossier terug te vinden is. Daarnaast
 zijn er enkele dossier acties die uitgevoerd kunnen worden.
 
 Dossier actie bestaat uit vijf verschillende acties die uitgevoerd kunnen worden. Per besluit is het mogelijk om de volgende acties te doen:

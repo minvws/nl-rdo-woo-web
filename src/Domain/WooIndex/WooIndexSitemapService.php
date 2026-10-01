@@ -8,6 +8,7 @@ use Carbon\CarbonImmutable;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use Shared\Domain\WooIndex\Exception\WooIndexFileNotFoundException;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
 
@@ -16,6 +17,7 @@ use function basename;
 readonly class WooIndexSitemapService
 {
     public function __construct(
+        #[Target('wooIndexStorage')]
         private FilesystemOperator $wooIndexStorage,
         private WooIndexNamer $wooIndexNamer,
         private WooIndexSitemapRepository $wooIndexSitemapRepository,

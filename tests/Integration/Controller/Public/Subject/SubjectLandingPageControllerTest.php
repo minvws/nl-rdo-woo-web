@@ -9,6 +9,7 @@ use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\SubjectContentNode;
 use Shared\Domain\Publication\Subject\SubjectContentTree;
+use Shared\Domain\Publication\Subject\SubjectContentTreeStatus;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
@@ -65,8 +66,9 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
                 ),
                 new SubjectContentNode('Tweede root', 'Tweede root body'),
             ]),
+            SubjectContentTreeStatus::CONCEPT,
         );
-        $subject->setHasVisibleLandingPageContentTree(true);
+        $subject->setLandingPageContentTreeStatus(SubjectContentTreeStatus::PUBLISHED);
         self::fromContainer(EntityManagerInterface::class)->flush();
 
         $client->request('GET', '/onderwerp/vaccinaties-en-medicatie');
@@ -78,7 +80,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
         self::assertStringContainsString('Eerste regel', $content);
         self::assertStringContainsString('Tweede regel', $content);
         self::assertStringContainsString('class="bg-woo-gray-100 p-6 my-10"', $content);
-        self::assertStringContainsString('class="woo-readable-width woo-rich-text"', $content);
+        self::assertStringContainsString('class="woo-rich-text"', $content);
         self::assertStringContainsString('<h2 class="woo-h3">Eerste niveau</h2>', $content);
         self::assertStringContainsString('<h3 class="font-bold">Tweede niveau</h3>', $content);
         self::assertStringContainsString('<h4 class="font-bold">Derde niveau</h4>', $content);
@@ -107,6 +109,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
             'Concept description',
             SubjectLandingPageStatus::CONCEPT,
             new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
+            SubjectContentTreeStatus::CONCEPT,
         );
         self::fromContainer(EntityManagerInterface::class)->flush();
 
@@ -128,6 +131,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
             'Description zonder secties',
             SubjectLandingPageStatus::PUBLISHED,
             new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
+            SubjectContentTreeStatus::CONCEPT,
         );
         self::fromContainer(EntityManagerInterface::class)->flush();
 
@@ -151,6 +155,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
             'Description met verborgen secties',
             SubjectLandingPageStatus::PUBLISHED,
             new SubjectContentTree(title: '', intro: '', children: [new SubjectContentNode('Verborgen sectie', 'Verborgen body')], outro: ''),
+            SubjectContentTreeStatus::CONCEPT,
         );
         self::fromContainer(EntityManagerInterface::class)->flush();
 
@@ -177,6 +182,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
             'Preview description',
             SubjectLandingPageStatus::CONCEPT,
             new SubjectContentTree(title: '', intro: '', children: [new SubjectContentNode('Preview section', 'Preview body')], outro: ''),
+            SubjectContentTreeStatus::CONCEPT,
         );
         self::fromContainer(EntityManagerInterface::class)->flush();
 
@@ -209,6 +215,7 @@ final class SubjectLandingPageControllerTest extends SharedWebTestCase
             'Preview description',
             SubjectLandingPageStatus::CONCEPT,
             new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
+            SubjectContentTreeStatus::CONCEPT,
         );
         self::fromContainer(EntityManagerInterface::class)->flush();
 

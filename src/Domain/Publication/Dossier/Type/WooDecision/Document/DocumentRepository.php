@@ -22,12 +22,14 @@ use Shared\Service\Inquiry\DocumentInquiryNumbers;
 use Shared\ValueObject\DocumentId;
 use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\ExternalId;
+use SortDirection;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 use function intval;
 use function sprintf;
+use function strtolower;
 
 /**
  * @extends ServiceEntityRepository<Document>
@@ -67,7 +69,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->where('d.threadId = :threadId')
             ->andWhere('ds = :dossier')
             ->andWhere('ds.status = :status')
-            ->orderBy('d.documentDate', 'ASC')
+            ->orderBy('d.documentDate', SortDirection::Ascending)
             ->setParameter('threadId', $threadId)
             ->setParameter('dossier', $dossier)
             ->setParameter('status', DossierStatus::PUBLISHED);
@@ -85,7 +87,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->where('d.familyId = :familyId')
             ->andWhere('ds = :dossier')
             ->andWhere('ds.status = :status')
-            ->orderBy('d.documentDate', 'ASC')
+            ->orderBy('d.documentDate', SortDirection::Ascending)
             ->setParameter('familyId', $familyId)
             ->setParameter('dossier', $dossier)
             ->setParameter('status', DossierStatus::PUBLISHED);
@@ -117,7 +119,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->andWhere('dos = :dossier')
             ->andWhere('dos.status = :status')
             ->andWhere('doc != :document')
-            ->orderBy('doc.documentDate', 'ASC')
+            ->orderBy('doc.documentDate', SortDirection::Ascending)
             ->setParameter('threadId', $threadId)
             ->setParameter('dossier', $dossier)
             ->setParameter('document', $document)
@@ -138,7 +140,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->andWhere('dos = :dossier')
             ->andWhere('dos.status = :status')
             ->andWhere('doc != :document')
-            ->orderBy('doc.documentDate', 'ASC')
+            ->orderBy('doc.documentDate', SortDirection::Ascending)
             ->setParameter('familyId', $familyId)
             ->setParameter('dossier', $dossier)
             ->setParameter('document', $document)
@@ -193,6 +195,8 @@ class DocumentRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('doc')
             ->innerJoin('doc.dossiers', 'dos')
             ->where('dos.id = :dossierId')
+            ->orderBy('doc.documentNumber', SortDirection::Ascending)
+            ->addOrderBy('doc.id', SortDirection::Ascending)
             ->setParameter('dossierId', $dossier->getId());
     }
 
@@ -207,7 +211,7 @@ class DocumentRepository extends ServiceEntityRepository
                     ELSE NULLIF(1,1)
                 END) AS HIDDEN hasNotice')
             ->setParameter('publicJudgements', Judgement::atLeastPartialPublicValues())
-            ->orderBy('doc.documentNumber', 'ASC')
+            ->orderBy('doc.documentNumber', SortDirection::Ascending)
             ->getQuery()
             ->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, SortNullsLastWalker::class);
     }
@@ -221,7 +225,7 @@ class DocumentRepository extends ServiceEntityRepository
             ->innerJoin('d.dossiers', 'ds', Join::WITH, 'ds.id = :dossierId')
             ->where('ILIKE(d.fileInfo.name, :searchTerm) = true')
             ->orWhere('ILIKE(d.documentNumber, :searchTerm) = true')
-            ->orderBy('d.updatedAt', 'DESC')
+            ->orderBy('d.updatedAt', SortDirection::Descending)
             ->setMaxResults($limit)
             ->setParameter('searchTerm', '%' . $searchTerm . '%')
             ->setParameter('dossierId', $dossier->getId());
@@ -288,7 +292,7 @@ class DocumentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('d')
             ->where('d.publicationContext IS NULL')
-            ->orderBy('d.id', 'ASC');
+            ->orderBy('d.id', SortDirection::Ascending);
 
         return $qb->getQuery()->toIterable();
     }
@@ -306,7 +310,7 @@ class DocumentRepository extends ServiceEntityRepository
             )')
             ->andWhere('d.judgement IN (:judgements)')
             ->andWhere('d.fileInfo.uploaded = true')
-            ->orderBy('d.createdAt', 'ASC')
+            ->orderBy('d.createdAt', SortDirection::Ascending)
             ->setParameter('status', DossierStatus::PUBLISHED)
             ->setParameter('judgements', [Judgement::PUBLIC, Judgement::PARTIAL_PUBLIC]);
 
@@ -384,6 +388,32 @@ class DocumentRepository extends ServiceEntityRepository
     public function findByExternalId(ExternalId $externalId): ?Document
     {
         return $this->findOneBy(['externalId' => $externalId]);
+    }
+
+    /**
+     * @param array<int, DocumentNumber> $documentNumbers
+     *
+     * @return array<int, Document>
+     */
+    public function findByDocumentNumbersCaseInsensitive(array $documentNumbers): array
+    {
+        if ($documentNumbers === []) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('document')
+            ->innerJoin('document.dossiers', 'dossier')
+            ->addSelect('dossier')
+            ->where('LOWER(document.documentNumber) IN (:documentNumbers)')
+            ->setParameter(
+                'documentNumbers',
+                array_map(
+                    static fn (DocumentNumber $documentNumber): string => strtolower($documentNumber->toString()),
+                    $documentNumbers,
+                ),
+            )
+            ->getQuery()
+            ->getResult();
     }
 
     public function findByDossierAndExternalId(AbstractDossier $dossier, ExternalId $externalId): ?Document

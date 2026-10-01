@@ -12,6 +12,7 @@ use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Event\DocumentUpdateEvent;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\LinkedWooDecisionUpdater;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportDispatcher;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
@@ -29,6 +30,7 @@ use Shared\Service\Inventory\Reader\InventoryReadItem;
 use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Uid\Uuid;
 
 use function count;
 
@@ -45,6 +47,7 @@ readonly class InventoryUpdater
         private ProductionReportDispatcher $dispatcher,
         private BatchDownloadService $batchDownloadService,
         private WooDecisionDispatcher $wooDecisionDispatcher,
+        private LinkedWooDecisionUpdater $linkedWooDecisionUpdater,
     ) {
     }
 
@@ -91,7 +94,7 @@ readonly class InventoryUpdater
         unset($documentsToUpdate);
 
         // These updates must be applied outside the main document process loop, as referred docs might not exist yet.
-        $this->applyDocumentReferralUpdates($dossier, $docReferralUpdates);
+        $this->applyDocumentReferralUpdates($docReferralUpdates);
 
         $this->inquiryService->applyChangesetAsync($inquiryChangeset);
 
@@ -146,7 +149,7 @@ readonly class InventoryUpdater
 
             $this->applyDocumentUpdate($documentMetadata, $dossier, $document, $inquiryChangeset);
 
-            if ($this->documentComparator->hasRefersToUpdate($dossier, $document, $documentMetadata)) {
+            if ($this->documentComparator->hasRefersToUpdate($document, $documentMetadata)) {
                 $docReferralUpdates[$document->getDocumentNumber()->toString()] = $documentMetadata->getRefersTo();
             }
 
@@ -165,7 +168,8 @@ readonly class InventoryUpdater
         Document $document,
         InquiryChangeset $inquiryChangeset,
     ): void {
-        $this->documentUpdater->databaseUpdate($documentMetadata, $dossier, $document);
+        $this->documentUpdater->linkDocument($document, $dossier);
+        $this->documentUpdater->updateMetadata($documentMetadata, $document);
 
         $inquiryChangeset->updateInquiryNumbersForDocument(
             DocumentInquiryNumbers::fromDocumentEntity($document),
@@ -220,6 +224,9 @@ readonly class InventoryUpdater
 
         $this->searchDispatcher->dispatchIndexDossierCommand($dossier->getId());
 
+        /** @var list<Uuid> $updatedDocumentIds */
+        $updatedDocumentIds = [];
+
         foreach ($changeset->getAll() as $documentNumber => $action) {
             $runProgress->tick();
 
@@ -238,9 +245,15 @@ readonly class InventoryUpdater
                 continue;
             }
 
+            if ($action === InventoryChangeset::UPDATED) {
+                $updatedDocumentIds[] = $document->getId();
+            }
+
             $this->documentUpdater->asyncUpdate($document);
             $this->doctrine->detach($document);
         }
+
+        $this->linkedWooDecisionUpdater->updateOtherLinkedTo($dossier, $updatedDocumentIds);
     }
 
     public function updateWooDecisionInventories(WooDecision $dossier): void
@@ -260,7 +273,7 @@ readonly class InventoryUpdater
     /**
      * @param array<string, array<array-key, string>> $docReferralUpdates
      */
-    private function applyDocumentReferralUpdates(WooDecision $dossier, array $docReferralUpdates): void
+    private function applyDocumentReferralUpdates(array $docReferralUpdates): void
     {
         $documentsToUpdate = [];
         foreach ($docReferralUpdates as $documentNumber => $refersTo) {
@@ -269,7 +282,7 @@ readonly class InventoryUpdater
                 throw new RuntimeException('State mismatch between database and document referral updates');
             }
 
-            $this->documentUpdater->updateDocumentReferralsByDocumentNumber($dossier, $document, $refersTo);
+            $this->documentUpdater->updateDocumentReferralsByDocumentNumber($document, $refersTo);
 
             $documentsToUpdate[] = $document;
             if (count($documentsToUpdate) > 1000) {

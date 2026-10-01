@@ -9,6 +9,7 @@ use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Tests\Factory\DepartmentFactory;
+use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\AnnualReport\AnnualReportFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\InvestigationReport\InvestigationReportFactory;
@@ -111,5 +112,17 @@ final class DossierRepositoryTest extends SharedWebTestCase
         );
 
         self::assertEquals([$publishedForDepartment->getId()->toRfc4122()], $ids);
+    }
+
+    public function testHasDossiersOnlyConsidersDossiersOfTheGivenOrganisation(): void
+    {
+        $organisationWithDossiers = OrganisationFactory::createOne();
+        $organisationWithoutDossiers = OrganisationFactory::createOne();
+
+        CovenantFactory::createOne(['organisation' => $organisationWithDossiers]);
+        WooDecisionFactory::createOne(['organisation' => $organisationWithDossiers]);
+
+        self::assertTrue($this->repository->hasDossiers($organisationWithDossiers));
+        self::assertFalse($this->repository->hasDossiers($organisationWithoutDossiers));
     }
 }

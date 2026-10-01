@@ -336,4 +336,13 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
         self::assertFalse($this->productionReportProcessRun->hasNoErrors());
     }
+
+    public function testHasMatter(): void
+    {
+        $hasMatter = $this->getFaker()->boolean();
+
+        $this->productionReportProcessRun->setHasMatter($hasMatter);
+
+        self::assertSame($hasMatter, $this->productionReportProcessRun->hasMatter());
+    }
 }

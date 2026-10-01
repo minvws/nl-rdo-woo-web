@@ -34,10 +34,10 @@ Select Second Party, Option 1
 Upload Covenant
   [Arguments]  ${covenant_location}
   ${_}  ${file_name} =  Split Path  ${covenant_location}
-  Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${covenant_location}
-  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${file_name}
-  Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
-  Click  //dialog[@open]//button[@type="submit"]
+  Upload File By Selector  //dialog[@open]//*[@data-e2e-name="uploadUuid-input"]  ${covenant_location}
+  Wait For Condition  Text  //dialog[@open]//*[@data-e2e-name="uploaded-file"]  contains  ${file_name}
+  Type Text  //dialog[@open]//*[@data-e2e-name="formalDate-input"]  01012022
+  Click  //dialog[@open]//*[@data-e2e-name="submit"]
   Wait For Condition  Text  //*[@id="inhoud"]  contains  Convenant '${file_name}' is
 
 Publish Test Covenant

@@ -1,5 +1,8 @@
 *** Settings ***
 Documentation       Tests for the WooDecision information category.
+...                 Split into WooDecision.robot (lifecycle/metadata/retraction) and
+...                 WooDecisionProductionReport.robot (production report upload/replace scenarios)
+...                 to keep individual pabot suites balanced.
 Resource            ../../resources/Dossier.resource
 Resource            ../../resources/Organisations.resource
 Resource            ../../resources/Setup.resource
@@ -48,154 +51,39 @@ In A Public Dossier With N Public Files, Retract All Documents Via The Danger Zo
   Verify Document Retraction  ${doc_ids}[1002]
   Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet en ingetrokken  Er zijn 2 documenten ingetrokken.
 
-Upload A Production Report With N Public Files And A Zip With N-1 Files
-  ${prod_report}  ${docs}  ${_} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 10 openbaar.xlsx
-  ...  files/woodecision/documenten - 10-1.zip
-  Click Publications
-  Create New Dossier  woo-decision
-  Fill Out Basic Details
-  Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report  ${prod_report}
-  Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Upload And Process Documents  ${docs}
-  Verify Document Upload Remaining  Nog te uploaden: 1 van 10 documenten.
-  Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet  Er moet nog 1 document geüpload worden.
-
-Upload A Production Report With N Public Files And A Zip With N+1 Files
-  ${prod_report}  ${docs}  ${_} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 10 openbaar.xlsx
-  ...  files/woodecision/documenten - 10+1.zip
-  Click Publications
-  Create New Dossier  woo-decision
-  Fill Out Basic Details
-  Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report  ${prod_report}
-  Verify Document Upload Remaining  Nog te uploaden: 10 van 10 documenten.
-  Upload And Process Documents  ${docs}
-  Verify Document Upload Completed
-  Click Continue To Publish
-  Publish Dossier And Return To Admin Home
-  Check Document Existence On Public  This is a non-published document
-
-Upload A Production Report With N Public Files, M Non-public Files, And A Zip With N + M Files
-  ${prod_report}  ${docs}  ${_} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
-  ...  files/woodecision/documenten - 10.zip
-  Click Publications
-  Create New Dossier  woo-decision
-  Fill Out Basic Details
-  Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report  ${prod_report}
-  Verify Document Upload Remaining  Nog te uploaden: 8 van 8 documenten.
-  Upload And Process Documents  ${docs}
-  Verify Document Upload Completed
-  Click Continue To Publish
-  Publish Dossier And Return To Admin Home
-  Check Document Existence On Public  duizendacht
-  Check Document Existence On Public  duizendtien
-
-Upload A Production Report With N Public Files, M Already Public Files, And A Zip With N + M Files
-  ${prod_report_2}  ${docs_2}  ${doc_ids} =  Randomize Production Report
+Rename A WooDecision And Verify The Updated Title Appears In The Document History
+  [Documentation]  The document history shows, per entry, the title of the WooDecision the
+  ...    entry originated from. That title is resolved live from the current WooDecision, so
+  ...    renaming the decision must also update the title shown for its existing history
+  ...    entries -- on both the admin and the public document pages.
+  ${prod_report}  ${docs}  ${doc_ids} =  Randomize Production Report
   ...  files/woodecision/productierapport - 2 openbaar.xlsx
   ...  files/woodecision/documenten - 2.zip
-  ${prod_report_8}  ${_}  ${_} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
-  ...  existing_mapping=${doc_ids}
   Click Publications
   Publish Test WooDecision
-  ...  production_report=${prod_report_2}
-  ...  documents=${docs_2}
+  ...  production_report=${prod_report}
+  ...  documents=${docs}
   ...  number_of_documents=2
-  Create New Dossier  woo-decision
-  Fill Out Basic Details
-  Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report  ${prod_report_8}  ${TRUE}
-  Verify Production Report Error  Regel 1: documentnummer ${doc_ids}[1001] bestaat al in een ander dossier
-  Verify Production Report Error  Regel 2: documentnummer ${doc_ids}[1002] bestaat al in een ander dossier
-
-In A Public Dossier With N Public And M Non-public Documents, Replace The Production Report With One Where 1 Non-public Document Has Been Made Public
-  ${prod_report}  ${docs}  ${doc_ids} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
-  ...  files/woodecision/documenten - 8.zip
-  ${replacement_report}  ${_}  ${doc_ids} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 9 openbaar 1 niet openbaar.xlsx
-  ...  existing_mapping=${doc_ids}
-  ${replacement_doc} =  Rename Document File  files/woodecision/1008.pdf  ${doc_ids}
-  Click Publications
-  Publish Test WooDecision
-  ...  production_report=${prod_report}
-  ...  documents=${docs}
-  ...  number_of_documents=8
+  VAR  ${original_title} =  Robot Admin ${DOSSIER_REFERENCE}
+  VAR  ${new_title} =  Robot Admin Hernoemd ${DOSSIER_REFERENCE}
   Search For A Publication  ${DOSSIER_REFERENCE}
-  Replace Production Report
-  ...  ${replacement_report}
-  ...  1 bestaand document wordt aangepast.
-  Verify Document Upload Remaining  Nog te uploaden: 1 van 9 documenten.
-  Check If Public Page Has Notification  ${doc_ids}[1008]
-  Upload And Process Documents  ${replacement_doc}
-  Wait For Elements State  //div[@data-e2e-name="has-changes"]  attached  timeout=30s
-  Get Text  //div[@data-e2e-name="has-changes"]  contains  1 document toevoegen
-  Get Text  //div[@data-e2e-name="has-changes"]  contains  0 documenten opnieuw publiceren
-  Get Text  //div[@data-e2e-name="has-changes"]  contains  0 documenten vervangen
-  Click  //button[@data-e2e-name="confirm-document-processing"]
-  Wait For Elements State  //button[@data-e2e-name="back-to-uploading"]  visible  timeout=120s
-  Click  //button[@data-e2e-name="back-to-uploading"]
-  Wait For Elements State  //button[@data-e2e-name="back-to-uploading"]  detached
-  Wait For Elements State  //div[@data-e2e-name="upload-busy"]  detached  timeout=30s
-  Click Publications
-  Get Text  //table[@data-e2e-name="dossiers-table"]//tr[contains(.,'${DOSSIER_REFERENCE}')]  not contains  Incompleet
-
-In A Public Dossier With N Public And M Non-public Documents, Replace The Production Report With One Where 1 Public Document Has Been Made Non-public
-  ${prod_report}  ${docs}  ${doc_ids} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 8 openbaar 2 niet openbaar.xlsx
-  ...  files/woodecision/documenten - 8.zip
-  ${replacement_report}  ${_}  ${_} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 7 openbaar 3 niet openbaar.xlsx
-  ...  existing_mapping=${doc_ids}
-  Click Publications
-  Publish Test WooDecision
-  ...  production_report=${prod_report}
-  ...  documents=${docs}
-  ...  number_of_documents=8
-  Search For A Publication  ${DOSSIER_REFERENCE}
-  Replace Production Report
-  ...  ${replacement_report}
-  ...  1 bestaand document wordt aangepast.
-  Open Document In Dossier  ${doc_ids}[1009]
-  Verify Document History  Beoordeling aangepast naar niet openbaar
-  Verify Document Details
-  ...  download_type=niet van toepassing
-  ...  publication_status=Openbaar
+  Click Documents Edit
+  Open Document In Dossier  ${doc_ids}[1001]
+  Verify Document History  ${original_title}
   Click Public URL
-  Verify Notification  besloten dit document niet openbaar te maken.
-
-In A Public Dossier With N Public Files, Replace The Production Report With One Where 1 Public Document Is Suspended
-  ${prod_report}  ${docs}  ${doc_ids} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 10 openbaar.xlsx
-  ...  files/woodecision/documenten - 10.zip
-  ${replacement_report}  ${_}  ${_} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 10 openbaar 1 opgeschort.xlsx
-  ...  existing_mapping=${doc_ids}
-  Click Publications
-  Publish Test WooDecision
-  ...  production_report=${prod_report}
-  ...  documents=${docs}
-  ...  number_of_documents=10
-  Search For A Publication  ${DOSSIER_REFERENCE}
-  Replace Production Report
-  ...  ${replacement_report}
-  ...  1 bestaand document wordt aangepast.
-  Open Document In Dossier  ${doc_ids}[1010]
-  Verify Document Details
-  ...  download_type=niet van toepassing
-  ...  publication_status=Opgeschort
+  Verify Document History  ${original_title}
+  Go Back
+  Click Breadcrumb Element  2
+  Click Edit Details
+  Fill Text  id=details_title  ${new_title}
+  Click  id=details_save
+  Click Documents Edit
+  Open Document In Dossier  ${doc_ids}[1001]
+  Verify Document History  ${new_title}
+  Get Text  //*[@data-e2e-name="document-history"]  not contains  ${original_title}
   Click Public URL
-  Verify Notification
-  ...  Er loopt nog een procedure over dit document met een betrokkene. We kunnen dit document daarom nog niet tonen.
-  Verify Document History  Opgeschort
-  Go To Admin
-  Verify Publication Status  ${DOSSIER_REFERENCE}  Incompleet en opgeschort  Er is 1 document opgeschort.
+  Reload  # Force a fresh fetch.
+  Verify Document History  ${new_title}
 
 Create A Publication That Becomes Public In The Future
   ${prod_report}  ${docs}  ${_} =  Randomize Production Report
@@ -219,42 +107,6 @@ Create A Publication That Becomes Public In The Future
   Verify Publication Confirmation  ${today_localized}  ${next_week_localized}
   Click  //*[@data-e2e-name="dossier-public-dossier-link"]
   Verify Page Error  404
-
-In A Public Dossier With N Public Files, Replace The Production Report With One Row Missing
-  ${prod_report}  ${docs}  ${doc_ids} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 10 openbaar.xlsx
-  ...  files/woodecision/documenten - 10.zip
-  ${replacement_report}  ${_}  ${_} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 9 openbaar.xlsx
-  ...  existing_mapping=${doc_ids}
-  Click Publications
-  Publish Test WooDecision
-  ...  production_report=${prod_report}
-  ...  documents=${docs}
-  ...  number_of_documents=10
-  Search For A Publication  ${DOSSIER_REFERENCE}
-  Click Documents Edit
-  Click Replace Report
-  Upload Production Report  ${replacement_report}  ${TRUE}
-  Verify Production Report Replace  ${doc_ids}[1001] mist in het productierapport
-
-In A Public Dossier With N Public Files, Replace The Production Report With A Copy Where One Document Is Replaced With A New Document
-  ${prod_report}  ${docs}  ${doc_ids} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 10 openbaar.xlsx
-  ...  files/woodecision/documenten - 10.zip
-  ${replacement_report}  ${_}  ${_} =  Randomize Production Report
-  ...  files/woodecision/productierapport - 10 openbaar waarvan 1 verwisseld.xlsx
-  ...  existing_mapping=${doc_ids}
-  Click Publications
-  Publish Test WooDecision
-  ...  production_report=${prod_report}
-  ...  documents=${docs}
-  ...  number_of_documents=10
-  Search For A Publication  ${DOSSIER_REFERENCE}
-  Click Documents Edit
-  Click Replace Report
-  Upload Production Report  ${replacement_report}  ${TRUE}
-  Verify Production Report Replace  ${doc_ids}[1001] mist in het productierapport
 
 The Content Of The Published Pdf Should Not Show Up In The Admin Search
   ${prod_report}  ${docs}  ${_} =  Randomize Production Report
@@ -353,25 +205,19 @@ Publish A WooDecision With Production Report With PublicationContext Column
   ...  files/woodecision/productierapport - 2 openbaar met publicatiecontext.xlsx
   ...  files/woodecision/documenten - 2.zip
   Click Publications
-  Publish Test WooDecision
-  ...  production_report=${prod_report}
-  ...  documents=${docs}
-  ...  number_of_documents=2
+  Create New Dossier  woo-decision
+  Fill Out Basic Details
+  Fill Out WooDecision Details  Openbaarmaking
+  Upload Production Report  ${prod_report}
+  Verify Production Report Matter Notice  detached
+  Upload And Process Documents  ${docs}
+  Verify Document Upload Completed
+  Click Continue To Publish
+  Publish Dossier And Return To Admin Home
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Open Document In Dossier  ${doc_ids}[1001]
   Get Text  //*[@data-e2e-name="document-nr"]  equals  PUBCON-${doc_ids}[1001]
-
-Upload A Production Report With Both Matter And PublicationContext Columns Should Fail
-  Click Publications
-  Create New Dossier  woo-decision
-  Fill Out Basic Details
-  Fill Out WooDecision Details  Openbaarmaking
-  Upload Production Report
-  ...  files/woodecision/productierapport - 2 openbaar met matter en publicatiecontext.xlsx
-  ...  ${TRUE}
-  Verify Production Report Error
-  ...  Productierapport met een kolom "Publicatiecontext" kan geen kolom voor "Matter" bevatten
 
 Verify PDF Preview Thumbnail
   [Documentation]  Depends on the first testcase, since it needs a fully ingested dossier.
@@ -433,17 +279,6 @@ Replace Production Report
   Click Confirm Production Report Replacement
   Verify Production Report Replace  Het productierapport is succesvol vervangen.
   Click Continue To Documents
-
-Check If Public Page Has Notification
-  [Arguments]  ${document_id}
-  ${location} =  Get Url
-  Open Document In Dossier  ${document_id}
-  Click Public URL
-  Get Text
-  ...  //*[@data-e2e-name="main-content"]
-  ...  contains
-  ...  Dit bestand zal spoedig aangeleverd worden: probeert u later nog eens.
-  Go To  ${location}
 
 Update Period And Verify On Public
   [Arguments]  ${date_from}  ${date_to}  ${expected_period}

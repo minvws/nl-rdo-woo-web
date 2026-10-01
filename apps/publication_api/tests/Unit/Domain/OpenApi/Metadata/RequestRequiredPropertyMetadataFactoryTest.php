@@ -8,7 +8,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use Mockery;
 use Mockery\MockInterface;
-use PublicationApi\Api\Dossier\AbstractDossierRequestDto;
+use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Domain\OpenApi\Metadata\RequestRequiredPropertyMetadataFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DossierTitle;
@@ -55,11 +55,13 @@ final class RequestRequiredPropertyMetadataFactoryTest extends UnitTestCase
         return $decorated;
     }
 
-    private function createDummyDossierRequestDto(): AbstractDossierRequestDto
+    private function createDummyDossierRequestDto(): DossierRequestDtoInterface
     {
         $uuid = new UuidV7();
 
-        return new class($uuid, null, 'summary', DossierTitle::create('title')) extends AbstractDossierRequestDto {
+        return new class($uuid, null, 'summary', DossierTitle::create('title')) implements DossierRequestDtoInterface {
+            public string $dossierNumber = 'D-1';
+
             public function __construct(
                 public Uuid $departmentId,
                 public ?Uuid $subjectId,
@@ -67,7 +69,6 @@ final class RequestRequiredPropertyMetadataFactoryTest extends UnitTestCase
                 public DossierTitle $title,
                 public string $optionalWithDefault = 'x',
             ) {
-                parent::__construct($departmentId, 'D-1', $subjectId, $summary, $title);
             }
         };
     }

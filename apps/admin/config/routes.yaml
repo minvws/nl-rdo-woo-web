@@ -1,8 +1,5 @@
-admin_controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: Admin\Controller
-    type: attribute
+# Admin\Controller classes are picked up by the shared "controllers" import in
+# config/routes.yaml, which loads every service carrying a #[Route] attribute.
 
 api_platform:
     resource: .

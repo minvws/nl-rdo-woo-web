@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery;
 use Mockery\MockInterface;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\History\History;
 use Shared\Service\HistoryService;
 use Shared\Tests\Unit\UnitTestCase;
@@ -46,6 +47,32 @@ class HistoryServiceTest extends UnitTestCase
             ->with(HistoryService::TYPE_DOSSIER, $uuid, $key, $context, $mode, true);
 
         $service->addDossierEntry($uuid, $key, $context, $mode);
+    }
+
+    public function testAddDocumentEntry(): void
+    {
+        $documentId = Uuid::v6();
+        $document = Mockery::mock(Document::class);
+        $document->expects('getId')
+            ->andReturn($documentId);
+
+        $context = [History::CONTEXT_ORIGIN_WOO_DECISION_ID => $this->getFaker()->uuid()];
+
+        $this->entityManager
+            ->expects('persist')
+            ->with(Mockery::on(static function (History $history) use ($documentId, $context): bool {
+                self::assertSame(HistoryService::TYPE_DOCUMENT, $history->getType());
+                self::assertSame($documentId, $history->getIdentifier());
+                self::assertSame('document_removed', $history->getContextKey());
+                self::assertSame($context, $history->getContext());
+                self::assertSame(HistoryService::MODE_BOTH, $history->getSite());
+
+                return true;
+            }));
+
+        $service = new HistoryService($this->entityManager, $this->translator);
+
+        $service->addDocumentEntry($document, 'document_removed', $context, flush: false);
     }
 
     public function testHistoryTranslation(): void
@@ -94,5 +121,11 @@ class HistoryServiceTest extends UnitTestCase
         $entity->setContextKey('foo.bar');
         $entity->setContext(['bar' => ['a', 'b', '%c%', 'dee']]);
         self::assertEquals('PRV Hello a,b,see,dee', $service->translate($entity, HistoryService::MODE_PRIVATE));
+
+        $entity = new History();
+        $entity->setContextKey('foo.bar');
+        $bar = $this->getFaker()->word();
+        $entity->setContext(['bar' => $bar, History::CONTEXT_ORIGIN_WOO_DECISION_ID => $this->getFaker()->uuid()]);
+        self::assertEquals('PRV Hello ' . $bar, $service->translate($entity, HistoryService::MODE_PRIVATE));
     }
 }

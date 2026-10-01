@@ -44,7 +44,7 @@ Cannot Publish Without Required Attachment Type
   Fill Out Summary
   Upload DraftDecision Main Document  ${FILE_LOCATION}
   Click Save And Continue
-  Get Element Count  //*[contains(@class,"js-input-errors")]  greater than  0
+  Input Errors Should Be Present
 
 Cannot Publish Without Main Document
   [Documentation]    Without uploading the wetgevingsvoorstel (main document) the dossier

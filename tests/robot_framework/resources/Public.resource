@@ -254,4 +254,4 @@ Click Start A New Search
 
 Click Public Breadcrumb Element
   [Arguments]  ${element_nr}
-  Click  //div[@class="woo-container"]/nav/ol/li[${element_nr}]
+  Click  (//a[@data-e2e-name="breadcrumb"])[${element_nr}]

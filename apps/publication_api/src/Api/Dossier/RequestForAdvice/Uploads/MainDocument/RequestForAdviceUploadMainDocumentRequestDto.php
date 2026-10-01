@@ -7,12 +7,13 @@ namespace PublicationApi\Api\Dossier\RequestForAdvice\Uploads\MainDocument;
 use Psr\Http\Message\StreamInterface;
 use PublicationApi\Api\Uploads\MainDocument\UploadMainDocumentRequestInterface;
 use Shared\ValueObject\ExternalId;
+use Symfony\Component\Uid\Uuid;
 
 final readonly class RequestForAdviceUploadMainDocumentRequestDto implements UploadMainDocumentRequestInterface
 {
     public function __construct(
         public StreamInterface $content,
-        public string $organisationId,
+        public Uuid $organisationId,
         public ExternalId $dossierExternalId,
     ) {
     }
@@ -27,7 +28,7 @@ final readonly class RequestForAdviceUploadMainDocumentRequestDto implements Upl
         return $this->dossierExternalId;
     }
 
-    public function getOrganisationId(): string
+    public function getOrganisationId(): Uuid
     {
         return $this->organisationId;
     }

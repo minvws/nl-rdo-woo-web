@@ -7,7 +7,7 @@ namespace PublicationApi\Tests\Unit\Api\Dossier;
 use ApiPlatform\Validator\Exception\ValidationException;
 use Mockery;
 use Mockery\MockInterface;
-use PublicationApi\Api\Dossier\AbstractDossierRequestDto;
+use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierSupportService;
 use PublicationApi\Domain\Dossier\MetadataSnapshot;
 use Shared\Domain\Department\Department;
@@ -207,18 +207,16 @@ class DossierSupportServiceTest extends UnitTestCase
         return AttachmentUpdatedEvent::forAttachmentWithMetadataUpdated($attachment);
     }
 
-    private function createDossierRequestDto(?Uuid $subjectId): AbstractDossierRequestDto
+    private function createDossierRequestDto(?Uuid $subjectId): DossierRequestDtoInterface
     {
-        return new class($subjectId) extends AbstractDossierRequestDto {
-            public function __construct(?Uuid $subjectId)
-            {
-                parent::__construct(
-                    departmentId: Uuid::v6(),
-                    dossierNumber: 'DOS-001',
-                    subjectId: $subjectId,
-                    summary: 'Summary',
-                    title: DossierTitle::create('Title'),
-                );
+        return new class(Uuid::v6(), 'DOS-001', $subjectId, 'Summary', DossierTitle::create('Title')) implements DossierRequestDtoInterface {
+            public function __construct(
+                public Uuid $departmentId,
+                public string $dossierNumber,
+                public ?Uuid $subjectId,
+                public string $summary,
+                public DossierTitle $title,
+            ) {
             }
         };
     }

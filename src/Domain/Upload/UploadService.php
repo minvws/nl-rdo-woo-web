@@ -15,6 +15,7 @@ use Shared\Domain\Upload\Handler\UploadHandlerInterface;
 use Shared\Domain\Upload\Result\UploadCompletedResult;
 use Shared\Domain\Upload\Result\UploadResultInterface;
 use Shared\Service\Security\User;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 readonly class UploadService
 {
@@ -24,6 +25,7 @@ readonly class UploadService
         private UploadHandlerInterface $uploadHandler,
         private EventDispatcherInterface $eventDispatcher,
         private UploadEntityRepository $uploadEntityRepository,
+        #[Target('workingCopyStorage')]
         private FilesystemOperator $workingCopyStorage,
         private LoggerInterface $logger,
     ) {

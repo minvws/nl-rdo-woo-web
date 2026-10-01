@@ -22,33 +22,33 @@ class PlainDateBeforeValidatorTest extends ConstraintValidatorTestCase
     {
         $this->expectException(UnexpectedValueException::class);
 
-        $this->validator->validate('not-a-plain-date', new PlainDateBefore('2000-01-01'));
+        $this->validate('not-a-plain-date', new PlainDateBefore('2000-01-01'));
     }
 
     public function testThrowsOnInvalidType(): void
     {
         $this->expectException(UnexpectedTypeException::class);
 
-        $this->validator->validate('not-a-plain-date', new PlainDateAfter('2000-01-01'));
+        $this->validate('not-a-plain-date', new PlainDateAfter('2000-01-01'));
     }
 
     public function testNoDateOrPropertyPathIsInvalid(): void
     {
         $this->expectException(ConstraintDefinitionException::class);
 
-        $this->validator->validate(null, new PlainDateBefore());
+        $this->validate(null, new PlainDateBefore());
     }
 
     public function testNullValue(): void
     {
-        $this->validator->validate(null, new PlainDateBefore('date'));
+        $this->validate(null, new PlainDateBefore('date'));
 
         self::assertNoViolation();
     }
 
     public function testValidWhenDateIsBefore(): void
     {
-        $this->validator->validate(
+        $this->validate(
             PlainDate::create('2000-01-01'),
             new PlainDateBefore('2000-01-02'),
         );
@@ -58,7 +58,7 @@ class PlainDateBeforeValidatorTest extends ConstraintValidatorTestCase
 
     public function testViolationWhenDateIsNotBefore(): void
     {
-        $this->validator->validate(
+        $this->validate(
             PlainDate::create('2000-01-02'),
             new PlainDateBefore('2000-01-01'),
         );
@@ -71,7 +71,7 @@ class PlainDateBeforeValidatorTest extends ConstraintValidatorTestCase
 
     public function testViolationWhenDateEqualsBeforeLimit(): void
     {
-        $this->validator->validate(
+        $this->validate(
             PlainDate::create('2000-01-01'),
             new PlainDateBefore('2000-01-01'),
         );
@@ -84,7 +84,7 @@ class PlainDateBeforeValidatorTest extends ConstraintValidatorTestCase
 
     public function testAcceptsRelativeDate(): void
     {
-        $this->validator->validate(
+        $this->validate(
             PlainDate::create('1970-01-01'),
             new PlainDateBefore('today'),
         );
@@ -94,7 +94,7 @@ class PlainDateBeforeValidatorTest extends ConstraintValidatorTestCase
 
     public function testCustomMessage(): void
     {
-        $this->validator->validate(
+        $this->validate(
             PlainDate::create('2000-01-02'),
             new PlainDateBefore('2000-01-01', 'plain_date.before'),
         );
@@ -111,7 +111,7 @@ class PlainDateBeforeValidatorTest extends ConstraintValidatorTestCase
         $object->someField = PlainDate::create('1980-01-01');
         $this->setObject($object);
 
-        $this->validator->validate(
+        $this->validate(
             PlainDate::create('1975-01-01'),
             new PlainDateBefore('+1 year', propertyPath: 'someField'),
         );
@@ -125,7 +125,7 @@ class PlainDateBeforeValidatorTest extends ConstraintValidatorTestCase
         $object->someField = PlainDate::create('1970-01-01');
         $this->setObject($object);
 
-        $this->validator->validate(
+        $this->validate(
             PlainDate::create('1975-01-01'),
             new PlainDateBefore('+1 year', propertyPath: 'someField'),
         );

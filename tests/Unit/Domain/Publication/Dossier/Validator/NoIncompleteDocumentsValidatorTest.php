@@ -31,9 +31,8 @@ class NoIncompleteDocumentsValidatorTest extends UnitTestCase
         $context->expects('buildViolation->addViolation');
 
         $validator = new NoIncompleteDocumentsValidator($repository);
-        $validator->initialize($context);
 
-        $validator->validate($dossier, new NoIncompleteDocuments());
+        $validator->validateInContext($dossier, new NoIncompleteDocuments(), $context);
     }
 
     public function testValidateAddsNoViolationWhenNoIncompleteDocumentsExist(): void
@@ -50,9 +49,8 @@ class NoIncompleteDocumentsValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->never();
 
         $validator = new NoIncompleteDocumentsValidator($repository);
-        $validator->initialize($context);
 
-        $validator->validate($dossier, new NoIncompleteDocuments());
+        $validator->validateInContext($dossier, new NoIncompleteDocuments(), $context);
     }
 
     public function testValidateIfInvalidConstraint(): void
@@ -61,7 +59,11 @@ class NoIncompleteDocumentsValidatorTest extends UnitTestCase
         $noIncompleteDocumentsValidator = new NoIncompleteDocumentsValidator($repository);
 
         self::expectException(UnexpectedTypeException::class);
-        $noIncompleteDocumentsValidator->validate('foo', new NoIncompleteAttachments());
+        $noIncompleteDocumentsValidator->validateInContext(
+            'foo',
+            new NoIncompleteAttachments(),
+            Mockery::mock(ExecutionContextInterface::class),
+        );
     }
 
     public function testValidateIfInvalidValue(): void
@@ -70,6 +72,10 @@ class NoIncompleteDocumentsValidatorTest extends UnitTestCase
         $noIncompleteDocumentsValidator = new NoIncompleteDocumentsValidator($repository);
 
         self::expectException(UnexpectedTypeException::class);
-        $noIncompleteDocumentsValidator->validate('foo', new NoIncompleteDocuments());
+        $noIncompleteDocumentsValidator->validateInContext(
+            'foo',
+            new NoIncompleteDocuments(),
+            Mockery::mock(ExecutionContextInterface::class),
+        );
     }
 }

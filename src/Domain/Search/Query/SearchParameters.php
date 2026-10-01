@@ -109,13 +109,13 @@ readonly class SearchParameters
             $params->set('q', $this->query);
         }
 
-        foreach ($this->facetInputs as $facetKey => $facetInput) {
+        foreach ($this->facetInputs as $facetInput) {
             if ($facetInput->isNotActive()) {
                 continue;
             }
 
             $params->set(
-                FacetKey::from($facetKey)->getParamName(),
+                $facetInput->getRequestParameter(),
                 $facetInput->getRequestParameters(),
             );
         }

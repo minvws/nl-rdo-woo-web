@@ -40,6 +40,8 @@ Adding A Document To A Published Dossier Is Allowed
   Publication Status Should Be  woo-decision  published
   ${dossier} =  Get WooDecision
   Length Should Be  ${dossier}[documents]  2
+  ${new_document} =  Get WooDecision Document By External Id  ${EXTERNAL_ID}  ${extra_document}[externalId]
+  Should Be Equal  ${new_document}[uploadStatus]  upload_required
 
 Removing A Document From A Published Dossier Is Rejected
   Create WooDecision Dossier In Status  published
@@ -57,6 +59,7 @@ Adding An Attachment To A Published Dossier Is Allowed
   Publication Status Should Be  woo-decision  published
   ${dossier} =  Get WooDecision
   Length Should Be  ${dossier}[attachments]  1
+  Should Be Equal  ${dossier}[attachments][0][uploadStatus]  upload_required
 
 Removing An Attachment From A Published Dossier Is Rejected
   Create WooDecision Dossier In Status  published
@@ -146,6 +149,7 @@ Build Additional WooDecision Document
   ${document_id} =  FakerLibrary.Random Int  min=100000  max=999999
   ${document_id} =  Convert To String  ${document_id}
   ${document_external_id} =  FakerLibrary.Uuid 4
+  ${publication_context} =  Generate Publication Context
   ${grounds} =  Get Random Grounds
   VAR  &{document} =
   ...  externalId=${document_external_id}
@@ -158,7 +162,7 @@ Build Additional WooDecision Document
   ...  isSuspended=${FALSE}
   ...  judgement=public
   ...  links=${{ [] }}
-  ...  publicationContext=2025-01
+  ...  publicationContext=${publication_context}
   ...  refersTo=${{ [] }}
   ...  remark=Extra document added after publication
   ...  sourceType=doc

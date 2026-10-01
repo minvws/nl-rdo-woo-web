@@ -485,7 +485,7 @@ const onBulletList = () => {
     :aria-describedby="getHelpId(props.id)"
     :id="props.id"
     :name="props.name"
-    class="bhr-textarea min-h-60"
+    class="bhr-textarea"
     ref="textarea"
     v-model="markdown"
   />

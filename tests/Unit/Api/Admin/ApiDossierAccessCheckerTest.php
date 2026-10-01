@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Admin\Tests\Unit\Api\Admin;
 
 use Admin\Api\Admin\ApiDossierAccessChecker;
-use ApiPlatform\Symfony\Security\Exception\AccessDeniedException;
+use ApiPlatform\Metadata\Exception\AccessDeniedException;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\DossierRepository;

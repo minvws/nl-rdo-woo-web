@@ -6,6 +6,7 @@ namespace PublicationApi\Api\NoticeNotPublic;
 
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
+use Shared\Service\EnumHelper;
 use Symfony\Component\Uid\Uuid;
 
 class NoticeNotPublicMapper
@@ -19,7 +20,7 @@ class NoticeNotPublicMapper
             dossier: $dossier,
             documentName: $dto->documentName,
             formalDate: $dto->formalDate,
-            grounds: $dto->grounds,
+            grounds: EnumHelper::getStringValues($dto->grounds),
             explanation: $dto->explanation,
         );
     }

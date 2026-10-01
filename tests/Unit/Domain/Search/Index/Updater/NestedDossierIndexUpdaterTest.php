@@ -8,10 +8,12 @@ use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\Updater\NestedDossierIndexUpdater;
 use Shared\Service\Elastic\ElasticClientInterface;
 use Shared\Tests\ElasticConfigFactory;
 use Shared\Tests\Unit\UnitTestCase;
+use Webmozart\Assert\Assert;
 
 class NestedDossierIndexUpdaterTest extends UnitTestCase
 {
@@ -40,11 +42,28 @@ class NestedDossierIndexUpdaterTest extends UnitTestCase
 
         $dossierDoc = ['foo' => 'bar'];
 
-        $this->elasticClient->expects('updateByQuery')->with(Mockery::on(
-            static fn (array $input) => $input['body']['query']['bool']['must'][1]['nested']['query']['term']['dossiers.id'] === $dossierId
-                && $input['body']['script']['params']['dossier'] === $dossierDoc,
-        ));
+        $this->elasticClient->expects('updateByQuery')->with(Mockery::capture($input));
 
         $this->indexUpdater->update($dossier, $dossierDoc);
+
+        Assert::isArray($input);
+        $body = $input['body'];
+        Assert::isArray($body);
+        $query = $body['query'];
+        Assert::isArray($query);
+        $script = $body['script'];
+        Assert::isArray($script);
+
+        self::assertEquals([
+            'must' => [
+                ['terms' => ['type' => ElasticDocumentType::getSubTypeValues()]],
+                ['nested' => [
+                    'path' => 'dossiers',
+                    'query' => ['term' => ['dossiers.id' => $dossierId]],
+                ]],
+            ],
+        ], $query['bool']);
+
+        self::assertEquals(['dossier' => $dossierDoc], $script['params']);
     }
 }

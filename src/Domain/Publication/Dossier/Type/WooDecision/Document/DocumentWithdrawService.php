@@ -23,6 +23,7 @@ readonly class DocumentWithdrawService
     }
 
     public function withdraw(
+        WooDecision $wooDecision,
         Document $document,
         DocumentWithdrawReason $reason,
         string $explanation,
@@ -42,14 +43,14 @@ readonly class DocumentWithdrawService
         // Re-ingest the document, this will update all file metadata and overwrite any existing page content with an empty set.
         $this->ingestDispatcher->dispatchIngestMetadataOnlyCommandForEntity($document, true);
 
-        $this->documentDispatcher->dispatchDocumentWithdrawnEvent($document, $reason, $explanation, $bulkAction);
+        $this->documentDispatcher->dispatchDocumentWithdrawnEvent($wooDecision, $document, $reason, $explanation, $bulkAction);
     }
 
     public function withDrawAllDocuments(WooDecision $wooDecision, DocumentWithdrawReason $reason, string $explanation): void
     {
         foreach ($wooDecision->getDocuments() as $document) {
             try {
-                $this->withdraw($document, $reason, $explanation, true);
+                $this->withdraw($wooDecision, $document, $reason, $explanation, true);
             } catch (DocumentWorkflowException) {
                 // If the document status does not allow document withdraw that's ok, continue with the rest
             }

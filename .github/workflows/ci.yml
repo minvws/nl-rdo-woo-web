@@ -378,7 +378,8 @@ jobs:
     secrets: inherit
     with:
       test_tag: ci
-      runner: ubuntu-latest-m
+      app_runner: ubuntu-latest-l
+      api_runner: ubuntu-latest-m
 
   package:
     name: Package

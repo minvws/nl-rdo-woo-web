@@ -1,11 +1,25 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
+import {
+  type CSSProperties,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+} from 'vue';
+
+interface Props {
+  id?: string;
+}
+
+const props = defineProps<Props>();
 
 const element = ref<HTMLDivElement | null>(null);
 const isCollapsed = defineModel({ default: false });
-const style = reactive<{ height: string; overflow: string }>({
+const style = reactive<CSSProperties>({
   height: '',
   overflow: '',
+  visibility: undefined,
 });
 
 const emit = defineEmits<{
@@ -44,6 +58,7 @@ const completeTransition = (id: number) => {
   clearTransitionTimeout();
 
   if (isCollapsed.value) {
+    style.visibility = 'hidden';
     emit('collapsed');
     return;
   }
@@ -60,6 +75,7 @@ const scheduleTransitionCompletion = (id: number) => {
 
 const collapse = () => {
   const id = startTransition();
+  style.visibility = undefined;
   style.height = `${element.value?.scrollHeight}px`;
   style.overflow = 'hidden';
 
@@ -77,6 +93,7 @@ const collapse = () => {
 
 const expand = () => {
   const id = startTransition();
+  style.visibility = undefined;
   style.height = `${element.value?.scrollHeight}px`;
   style.overflow = 'hidden';
 
@@ -130,6 +147,7 @@ watch(isCollapsed, (shouldCollapse) => {
 <template>
   <div
     class="transition-[height] duration-500"
+    :id="props.id"
     ref="element"
     :style="style"
     @transitionend="onTransitionEnd"

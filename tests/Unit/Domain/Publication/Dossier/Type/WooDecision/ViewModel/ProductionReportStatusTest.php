@@ -279,4 +279,22 @@ class ProductionReportStatusTest extends UnitTestCase
 
         self::assertEquals($endDate, $this->status->getRunDate());
     }
+
+    public function testHasMatterReturnsTheValueOfTheProcessRun(): void
+    {
+        $hasMatter = $this->getFaker()->boolean();
+
+        $this->dossier->expects('getProcessRun')->andReturn($this->processRun);
+
+        $this->processRun->expects('hasMatter')->andReturn($hasMatter);
+
+        self::assertSame($hasMatter, $this->status->hasMatter());
+    }
+
+    public function testHasMatterReturnsFalseWhenThereIsNoProcessRun(): void
+    {
+        $this->dossier->expects('getProcessRun')->andReturnNull();
+
+        self::assertFalse($this->status->hasMatter());
+    }
 }

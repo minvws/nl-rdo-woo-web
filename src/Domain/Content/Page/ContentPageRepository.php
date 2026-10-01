@@ -6,6 +6,7 @@ namespace Shared\Domain\Content\Page;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use SortDirection;
 
 /**
  * @extends ServiceEntityRepository<ContentPage>
@@ -23,7 +24,7 @@ class ContentPageRepository extends ServiceEntityRepository
     public function findAllSortedBySlug(): array
     {
         return $this->createQueryBuilder('c')
-            ->orderBy('c.slug', 'ASC')
+            ->orderBy('c.slug', SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }

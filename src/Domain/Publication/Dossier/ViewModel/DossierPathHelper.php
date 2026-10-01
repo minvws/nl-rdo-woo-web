@@ -8,6 +8,9 @@ use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierReference;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Uid\Uuid;
+
+use function sprintf;
 
 readonly class DossierPathHelper
 {
@@ -43,6 +46,29 @@ readonly class DossierPathHelper
 
     public function getAbsoluteDetailsPath(AbstractDossier|DossierReference $dossier): string
     {
-        return $this->publicBaseUrl . $this->getDetailsPath($dossier);
+        return sprintf('%s%s', $this->publicBaseUrl, $this->getDetailsPath($dossier));
+    }
+
+    public function getAbsoluteMainDocumentDetailsPath(AbstractDossier|DossierReference $dossier): string
+    {
+        return sprintf('%s%s', $this->publicBaseUrl, $this->router->generate(
+            sprintf('app_%s_document_detail', $dossier->getType()->getValueForRouteName()),
+            [
+                'documentPrefix' => $dossier->getDocumentPrefix(),
+                'dossierNumber' => $dossier->getDossierNumber(),
+            ],
+        ));
+    }
+
+    public function getAbsoluteAttachmentDetailsPath(AbstractDossier|DossierReference $dossier, Uuid $attachmentId): string
+    {
+        return sprintf('%s%s', $this->publicBaseUrl, $this->router->generate(
+            sprintf('app_%s_attachment_detail', $dossier->getType()->getValueForRouteName()),
+            [
+                'documentPrefix' => $dossier->getDocumentPrefix(),
+                'dossierNumber' => $dossier->getDossierNumber(),
+                'attachmentId' => $attachmentId,
+            ],
+        ));
     }
 }

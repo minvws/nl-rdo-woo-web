@@ -10,6 +10,7 @@ use org\bovigo\vfs\vfsStreamDirectory;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Judgement;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\Security\User;
 use Shared\Tests\Factory\DocumentFactory;
@@ -19,7 +20,6 @@ use Shared\Tests\Factory\ProductionReportFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantAttachmentFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\Covenant\CovenantFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
-use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionMainDocumentFactory;
 use Shared\Tests\Factory\UserFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -121,13 +121,14 @@ final class DossierFileControllerTest extends SharedWebTestCase
     {
         $user = UserFactory::new()->asSuperAdmin()->isEnabled()->create();
 
-        $dossier = WooDecisionFactory::createOne([
-            'organisation' => $user->getOrganisation(),
-        ]);
+        $dossier = WooDecisionFactory::new()
+            ->withMainDocument()
+            ->create([
+                'organisation' => $user->getOrganisation(),
+            ]);
 
-        $mainDocument = WooDecisionMainDocumentFactory::createOne(['dossier' => $dossier]);
-
-        $dossier->setMainDocument($mainDocument);
+        $mainDocument = $dossier->getMainDocument();
+        self::assertInstanceOf(WooDecisionMainDocument::class, $mainDocument);
 
         $this->assertDownloadEndpoint($user, $dossier, $mainDocument, DossierFileType::MAIN_DOCUMENT);
     }

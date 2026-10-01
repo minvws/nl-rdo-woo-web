@@ -12,6 +12,7 @@ use Mockery\MockInterface;
 use Shared\Domain\Department\Department;
 use Shared\Repository\PaginationQueryBuilder;
 use Shared\Tests\Unit\UnitTestCase;
+use SortDirection;
 use Webmozart\Assert\Assert;
 
 use function base64_encode;
@@ -38,7 +39,7 @@ class PaginationQueryBuilderTest extends UnitTestCase
 
         $queryBuilderMock = Mockery::mock(QueryBuilder::class);
         $queryBuilderMock->expects('orderBy')
-            ->with('entity.id', 'DESC')
+            ->with('entity.id', SortDirection::Descending)
             ->andReturnSelf();
         $queryBuilderMock->expects('setMaxResults')
             ->with($itemsPerPage + 1)

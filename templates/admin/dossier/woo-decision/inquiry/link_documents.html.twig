@@ -6,6 +6,13 @@
     <h1 class="bhr-title bhr-title--fixed-width mx-auto mb-10">{{ page_title }}</h1>
     <div class="bhr-container bhr-container--sm">
         {% if result is not null %}
+            {% if result.hasMatter %}
+                <div class="bhr-card" data-e2e-name="link-documents-matter-deprecated">
+                    <twig:Admin:Alert type="warning">
+                        {{ 'admin.inquiries.matter_deprecated' | trans }}
+                    </twig:Admin:Alert>
+                </div>
+            {% endif %}
             <div class="bhr-card" data-e2e-name="alerts">
                 <twig:Admin:Alert type="{{ result.isSuccessful ? 'success' : 'warning' }}">
                     <p class="font-bold">{{ 'admin.inquiries.number_of_inquiries_added' | trans({'count': result.addedRelationsCount}) }}</p>

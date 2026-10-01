@@ -17,6 +17,9 @@ use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DossierTitle;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Uid\Uuid;
+
+use function sprintf;
 
 final class DossierPathHelperTest extends UnitTestCase
 {
@@ -164,6 +167,63 @@ final class DossierPathHelperTest extends UnitTestCase
             'foo-bar',
             $this->pathHelper->getDetailsPath($dossier),
         );
+    }
+
+    public function testGetAbsoluteMainDocumentDetailsPath(): void
+    {
+        $documentPrefix = $this->getFaker()->documentPrefix();
+        $dossierNumber = $this->getFaker()->dossierNumber();
+        $baseUrl = $this->getFaker()->url();
+
+        $reference = new DossierReference(
+            $dossierNumber,
+            $documentPrefix,
+            DossierTitle::create($this->getFaker()->sentence()),
+            DossierType::COVENANT,
+        );
+
+        $router = Mockery::mock(RouterInterface::class);
+        $router->expects('generate')->with(
+            'app_covenant_document_detail',
+            [
+                'documentPrefix' => $documentPrefix,
+                'dossierNumber' => $dossierNumber,
+            ],
+        )->andReturn('/foo-bar');
+
+        $pathHelper = new DossierPathHelper($router, $baseUrl);
+
+        self::assertSame($baseUrl . '/foo-bar', $pathHelper->getAbsoluteMainDocumentDetailsPath($reference));
+    }
+
+    public function testGetAbsoluteAttachmentDetailsPath(): void
+    {
+        $documentPrefix = $this->getFaker()->documentPrefix();
+        $dossierNumber = $this->getFaker()->dossierNumber();
+        $attachmentId = Uuid::v6();
+        $baseUrl = $this->getFaker()->url();
+        $slug = $this->getFaker()->slug();
+
+        $reference = new DossierReference(
+            $dossierNumber,
+            $documentPrefix,
+            DossierTitle::create($this->getFaker()->sentence()),
+            DossierType::COVENANT,
+        );
+
+        $router = Mockery::mock(RouterInterface::class);
+        $router->expects('generate')->with(
+            'app_covenant_attachment_detail',
+            [
+                'documentPrefix' => $documentPrefix,
+                'dossierNumber' => $dossierNumber,
+                'attachmentId' => $attachmentId,
+            ],
+        )->andReturn(sprintf('/%s', $slug));
+
+        $pathHelper = new DossierPathHelper($router, $baseUrl);
+
+        self::assertSame(sprintf('%s/%s', $baseUrl, $slug), $pathHelper->getAbsoluteAttachmentDetailsPath($reference, $attachmentId));
     }
 
     public function testGetDetailsPathWithDraftDecision(): void

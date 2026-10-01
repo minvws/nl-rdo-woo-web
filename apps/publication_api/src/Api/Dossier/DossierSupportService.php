@@ -24,7 +24,7 @@ use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
-final readonly class DossierSupportService
+readonly class DossierSupportService
 {
     public function __construct(
         private DepartmentRepository $departmentRepository,
@@ -35,7 +35,7 @@ final readonly class DossierSupportService
     ) {
     }
 
-    public function getSubject(AbstractDossierRequestDto $data, Organisation $organisation): ?Subject
+    public function getSubject(DossierRequestDtoInterface $data, Organisation $organisation): ?Subject
     {
         if ($data->subjectId === null) {
             return null;

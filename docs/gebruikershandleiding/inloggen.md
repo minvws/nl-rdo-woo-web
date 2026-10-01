@@ -5,7 +5,7 @@ van jouw organisatie kan dit account voor je aanmaken. Aan een account zijn éé
 die bepalen welke informatie je mag inzien en welke acties je mag uitvoeren.
 
 Wanneer de organisatie-beheerder een account heeft aangemaakt, ontvang je een PDF-bestand met ‘Login instructies’.
-Hierin vind je onder andere een tijdelijke wachtwoord, een QR-code waarmee je een authenticator app kan instellen en herstelcodes.
+Hierin vind je onder andere een tijdelijk wachtwoord, een QR-code waarmee je een authenticator app kan instellen en herstelcodes.
 Bewaar de herstelcodes goed, deze kan je gebruiken als de authenticator app niet meer werkt doordat je bijvoorbeeld een nieuw toestel hebt.
 
 ## Instellen authenticator app
@@ -14,7 +14,7 @@ In het PDF-bestand met ‘Login instructies’ vind je een QR-code waarmee je ee
 authenticator app je wilt gebruiken, bijvoorbeeld Google Authenticator, scan de QR-code op de aangegeven plaats in de app
 en volg de instructies op het scherm.
 
-Er wordt steeds een unieke code gegenereerd die je kunt gebruiken om in te loggen, dit noemen wel ook wel tweestapsverificatie.
+Er wordt steeds een unieke code gegenereerd die je kunt gebruiken om in te loggen, dit noemen we ook wel tweestapsverificatie.
 Tweestapsverificatie is een beveiligingsproces waarbij een gebruiker, naast het invoeren van een wachtwoord, ook een tweede vorm
 van verificatie moet doorlopen. Dit gebeurt vaak via een unieke code die naar een geregistreerd apparaat wordt gestuurd, om toegang
 te krijgen tot een account.
@@ -31,7 +31,7 @@ Om in te loggen in het uploadportaal volg je onderstaande stappen:
 
 - Eenmalig opent een scherm om het wachtwoord bij te werken. Je voert het tijdelijke wachtwoord in, tweemaal een nieuw
 wachtwoord en je kiest voor ‘Wachtwoord aanpassen’
-- Je ben nu ingelogd in het uploadportaal.
+- Je bent nu ingelogd in het uploadportaal.
 
 ## Inlogproblemen
 

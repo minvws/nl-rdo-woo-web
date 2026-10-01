@@ -45,14 +45,6 @@ Upload Advice Request
   ...  contains_message=Adviesaanvraag '${file_name}' is toegevoegd.
   ...  selector=//*[@data-e2e-name="attachments"][1]//*[@data-e2e-name="alert"][contains(@class, 'bhr-alert--success')]
 
-Upload And Submit
-  [Arguments]  ${file_name}  ${advice_location}
-  Upload File By Selector  //dialog[@open]//input[@name="uploadUuid"]  ${advice_location}
-  Wait For Condition  Text  //dialog[@open]//div[@class="bhr-file"]  contains  ${file_name}
-  Type Text  //dialog[@open]//input[@name="formalDate"]  01012022
-  Click  //dialog[@open]//button[@type="submit"]
-  Get Element Count  //dialog[@open]//*[@data-e2e-name="save-failed"]  should be  0
-
 Get Advice Attachment Types
   VAR  @{attachment_types} =
   ...  c_002fc258

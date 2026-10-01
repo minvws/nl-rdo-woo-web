@@ -49,6 +49,22 @@ final class WooDecisionUploadAttachmentTest extends ApiPublicationV1UploadTestCa
         );
     }
 
+    public function testUploadWithInvalidOrganisationIdReturnsValidationError(): void
+    {
+        $client = self::createPublicationApiClient();
+        $client->request(
+            Request::METHOD_PUT,
+            '/api/publication/v1/organisation/not-a-uuid/dossiers/woo-decision/external/dossier-id'
+                . '/uploads/attachment/external/attachment-id',
+            [
+                'headers' => ['Content-Type' => 'application/octet-stream'],
+                'body' => '',
+            ],
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
     public function testUploadOnPublishedDossierReturnsValidationError(): void
     {
         $organisation = OrganisationFactory::createOne();

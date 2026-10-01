@@ -113,7 +113,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             'status' => 'concept',
             'title' => 'Page title',
             'description' => 'Introduction text as plain text.',
-            'hasVisibleContentTree' => $payload['hasVisibleContentTree'],
+            'contentTreeStatus' => $payload['contentTreeStatus'],
             'contentTree' => $payload['contentTree'],
             'previewUrl' => $landingPage['previewUrl'],
         ], $response->toArray()['landingPage']);
@@ -168,7 +168,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             'slug' => 'foo-bar',
             'title' => $payload['title'],
             'description' => $payload['description'],
-            'hasVisibleContentTree' => $payload['hasVisibleContentTree'],
+            'contentTreeStatus' => $payload['contentTreeStatus'],
             'contentTree' => $payload['contentTree'],
             'previewUrl' => null,
         ], $publishedResponse->toArray()['landingPage']);
@@ -489,13 +489,13 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
 
         self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
         self::assertMatchesResourceItemJsonSchema(SubjectResource::class);
-        /** @var array{id: string, landingPage: array{slug: string, status: string, title: string, description: string, hasVisibleContentTree: bool, contentTree: array<string, mixed>, previewUrl: string}} $created */
+        /** @var array{id: string, landingPage: array{slug: string, status: string, title: string, description: string, contentTreeStatus: string, contentTree: array<string, mixed>, previewUrl: string}} $created */
         $created = $response->toArray();
         self::assertSame('foo-bar', $created['landingPage']['slug']);
         self::assertSame($payload['status'], $created['landingPage']['status']);
         self::assertSame($payload['title'], $created['landingPage']['title']);
         self::assertSame($payload['description'], $created['landingPage']['description']);
-        self::assertSame($payload['hasVisibleContentTree'], $created['landingPage']['hasVisibleContentTree']);
+        self::assertSame($payload['contentTreeStatus'], $created['landingPage']['contentTreeStatus']);
         self::assertEquals($payload['contentTree'], $created['landingPage']['contentTree']);
         self::assertIsString($created['landingPage']['previewUrl']);
 
@@ -732,7 +732,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
      *     status?: string,
      *     title?: string,
      *     description?: string,
-     *     hasVisibleContentTree?: bool,
+     *     contentTreeStatus?: string,
      *     contentTree?: array{
      *         title?: string,
      *         intro?: string,
@@ -754,7 +754,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
      *     status: string,
      *     title: string,
      *     description: string,
-     *     hasVisibleContentTree: bool,
+     *     contentTreeStatus: string,
      *     contentTree: array{
      *         title: string,
      *         intro: string,
@@ -778,7 +778,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
          *     status: string,
          *     title: string,
          *     description: string,
-         *     hasVisibleContentTree: bool,
+         *     contentTreeStatus: string,
          *     contentTree: array{
          *         title: string,
          *         intro: string,
@@ -799,7 +799,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
             'status' => 'concept',
             'title' => 'Page title',
             'description' => 'Introduction text as plain text.',
-            'hasVisibleContentTree' => true,
+            'contentTreeStatus' => 'published',
             'contentTree' => [
                 'title' => 'Storyline title',
                 'intro' => 'Storyline intro.',
@@ -840,7 +840,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [
                     'title' => 'Storyline title',
                     'intro' => 'Storyline intro.',
@@ -857,7 +857,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [
                     'title' => 'Storyline title',
                     'intro' => 'Storyline intro.',
@@ -874,7 +874,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [
                     'title' => 'Storyline title',
                     'intro' => 'Storyline intro.',
@@ -891,7 +891,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [
                     'title' => 'Storyline title',
                     'intro' => 'Storyline intro.',
@@ -912,7 +912,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [
                     'title' => 'Storyline title',
                     'intro' => 'Storyline intro.',
@@ -929,7 +929,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [
                     'title' => 'Storyline title',
                     'intro' => 'Storyline intro.',
@@ -946,7 +946,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [
                     'title' => 'Storyline title',
                     'intro' => 'Storyline intro.',
@@ -971,7 +971,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 ],
             ],
             'landingPage.contentTree.children[0].children[0].children[0].children',
-            'subject.content_tree.max_depth_exceeded',
+            'The maximum depth of the content tree has been exceeded',
         ];
         yield 'body exceeding maximum length' => [
             [
@@ -979,7 +979,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [
                     'title' => 'Storyline title',
                     'intro' => 'Storyline intro.',
@@ -996,7 +996,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [
                     'title' => 'Storyline title',
                     'intro' => 'Storyline intro.',
@@ -1005,7 +1005,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 ],
             ],
             'landingPage.contentTree.children[100]',
-            'subject.content_tree.too_many_nodes',
+            'The content tree contains too many items',
         ];
         yield 'slug with whitespace' => [
             [
@@ -1013,7 +1013,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [],
             ],
             'landingPage.slug',
@@ -1025,7 +1025,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [],
             ],
             'landingPage.slug',
@@ -1037,7 +1037,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [],
             ],
             'landingPage.slug',
@@ -1049,7 +1049,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => 'Page title',
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [],
             ],
             'landingPage.slug',
@@ -1061,7 +1061,7 @@ final class SubjectPublicationV1Test extends ApiPublicationV1TestCase
                 'status' => 'concept',
                 'title' => str_repeat('a', 201),
                 'description' => 'Description',
-                'hasVisibleContentTree' => true,
+                'contentTreeStatus' => 'published',
                 'contentTree' => [],
             ],
             'landingPage.title',

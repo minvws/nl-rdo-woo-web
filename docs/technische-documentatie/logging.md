@@ -38,8 +38,8 @@ Almost all audit logging is implemented in tenant-specific listeners under `tena
 | `OrganisationAuditLogger` | organisation created, organisation changed                      |
 | `FileScanAuditLogger`     | file upload / virus scan result                                 |
 
-`minfin` and `minbuza` have no `tenants/<tenant>/src/` directory at all, so **they emit none of these events**. Only two
-audit events are tenant-agnostic, because they live outside `tenants/`: `dossier_deleted` (in `src/`) and the
+`minfin`, `minbuza` and `minocw` have no `tenants/<tenant>/src/` directory at all, so **they emit none of these events**.
+Only two audit events are tenant-agnostic, because they live outside `tenants/`: `dossier_deleted` (in `src/`) and the
 Publication API's sign-in events (in `apps/publication_api/`).
 
 ## Events

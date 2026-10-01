@@ -12,7 +12,7 @@
         <div class="bhr-card">
             {% include 'admin/shared/flash-messages.html.twig' %}
 
-            <h2 class="bhr-title mb-8">{{ 'admin.account.update_password' | trans() }}</h1>
+            <h2 class="bhr-title mb-8" data-e2e-name="update-password-required">{{ 'admin.account.update_password' | trans() }}</h1>
 
             <div class="bhr-content text-lg mb-8" id="password-instructions">
                 <p>{{ 'admin.account.password_requirements.explanation' | trans() }}</p>

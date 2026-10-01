@@ -13,7 +13,7 @@ use Shared\Validator\Violation\ConstraintViolationBuilder;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
-final readonly class DossierMainDocumentValidator
+readonly class DossierMainDocumentValidator
 {
     public function __construct(
         private MainDocumentService $mainDocumentService,

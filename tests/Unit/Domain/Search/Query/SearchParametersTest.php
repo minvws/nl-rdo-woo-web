@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain\Search\Query;
 use ArrayIterator;
 use Mockery;
 use Shared\Domain\Search\Query\Facet\Definition\DateFacet;
+use Shared\Domain\Search\Query\Facet\Definition\DepartmentFacet;
 use Shared\Domain\Search\Query\Facet\Definition\InquiryDocumentsFacet;
 use Shared\Domain\Search\Query\Facet\Definition\InquiryDossiersFacet;
 use Shared\Domain\Search\Query\Facet\Input\DateFacetInput;
@@ -61,6 +62,7 @@ class SearchParametersTest extends UnitTestCase
     {
         $enabledFacet = Mockery::mock(StringValuesFacetInput::class);
         $enabledFacet->expects('isNotActive')->andReturnFalse();
+        $enabledFacet->expects('getRequestParameter')->andReturn('dep');
         $enabledFacet->expects('getRequestParameters')->andReturn(['x' => 'y']);
 
         $disabledFacet = Mockery::mock(StringValuesFacetInput::class);
@@ -68,10 +70,12 @@ class SearchParametersTest extends UnitTestCase
 
         $documentInquiryFacet = Mockery::mock(InquiryDocumentsFacet::class);
         $documentInquiryFacet->expects('isNotActive')->andReturnFalse();
+        $documentInquiryFacet->expects('getRequestParameter')->andReturn('dci');
         $documentInquiryFacet->expects('getRequestParameters')->andReturn(['doc1', 'doc2']);
 
         $dossierInquiryFacet = Mockery::mock(InquiryDossiersFacet::class);
         $dossierInquiryFacet->expects('isNotActive')->andReturnFalse();
+        $dossierInquiryFacet->expects('getRequestParameter')->andReturn('dsi');
         $dossierInquiryFacet->expects('getRequestParameters')->andReturn(['doc1', 'doc2']);
 
         $facetInputCollection = Mockery::mock(FacetInputCollection::class);
@@ -92,6 +96,33 @@ class SearchParametersTest extends UnitTestCase
         $this->assertMatchesObjectSnapshot(
             $parameters->getQueryParameters(),
         );
+    }
+
+    public function testGetQueryParametersUsesTheRequestParameterOfTheFacetDefinition(): void
+    {
+        $departmentName = $this->getFaker()->company();
+        $fromDate = $this->getFaker()->plainDate()->toString();
+
+        $departmentFacet = new DepartmentFacet();
+        $dateFacet = new DateFacet(new LocaleSwitcher('nl', []));
+
+        $searchParameters = new SearchParameters(
+            facetInputs: new FacetInputCollection(
+                StringValuesFacetInput::fromParameterBag(
+                    $departmentFacet,
+                    new ParameterBag([$departmentFacet->getRequestParameter() => [$departmentName]]),
+                ),
+                DateFacetInput::fromParameterBag(
+                    $dateFacet,
+                    new ParameterBag([$dateFacet->getRequestParameter() => ['from' => $fromDate]]),
+                ),
+            ),
+        );
+
+        $queryParameters = $searchParameters->getQueryParameters();
+
+        self::assertSame([$departmentName], $queryParameters->all($departmentFacet->getRequestParameter()));
+        self::assertSame(['from' => $fromDate], $queryParameters->all($dateFacet->getRequestParameter()));
     }
 
     public function testWithSort(): void

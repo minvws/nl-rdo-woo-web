@@ -7,19 +7,23 @@ namespace PublicationApi\Api\Dossier\DraftDecision\Uploads\MainDocument;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\OpenApi\Model\Operation;
+use PublicationApi\Domain\OpenApi\PathParameter\DossierExternalIdLink;
+use PublicationApi\Domain\OpenApi\PathParameter\OrganisationIdLink;
 use Symfony\Component\HttpFoundation\Response;
 
 #[ApiResource(
     shortName: 'DraftDecisionUploadMainDocumentRequest',
+    description: 'The drafts of laws and other regulations on which a government organisation has requested advice '
+        . 'from an external party. The request for advice itself also falls under this category.',
     operations: [
         new Put(
             uriTemplate: '/organisation/{organisationId}/dossiers/draft-decision/external/{dossierExternalId}/uploads/main-document',
+            uriVariables: [
+                'organisationId' => new OrganisationIdLink(),
+                'dossierExternalId' => new DossierExternalIdLink(),
+            ],
             inputFormats: ['binary' => ['application/octet-stream']],
             outputFormats: [],
-            requirements: [
-                'organisationId' => '[0-9a-zA-Z-]+',
-                'dossierExternalId' => '[0-9a-zA-Z-]+',
-            ],
             status: Response::HTTP_NO_CONTENT,
             controller: DraftDecisionUploadMainDocumentRequestDtoFactory::class,
             input: false,
@@ -35,6 +39,8 @@ use Symfony\Component\HttpFoundation\Response;
     securityMessage: 'feature is not enabled',
     openapi: new Operation(
         tags: ['DraftDecision'],
+        summary: 'Upload the main document file',
+        description: 'Uploads the file for the dossier\'s main document, which must already be declared via `mainDocument`.',
     ),
 )]
 final readonly class DraftDecisionUploadMainDocumentResource

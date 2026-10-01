@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Organisation;
 
 use PublicationApi\Api\Department\DepartmentResponseDto;
-use PublicationApi\Api\Subject\SubjectResponse;
+use PublicationApi\Api\Subject\SubjectResponseDto;
 use Symfony\Component\Uid\Uuid;
 
 final readonly class OrganisationDetailResponseDto
 {
     /**
      * @param list<DepartmentResponseDto> $departments
-     * @param list<SubjectResponse> $subjects
+     * @param list<SubjectResponseDto> $subjects
      */
     public function __construct(
         public Uuid $id,

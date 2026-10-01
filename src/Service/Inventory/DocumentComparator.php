@@ -8,6 +8,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Service\Inquiry\InquiryNumbers;
+use Shared\ValueObject\DocumentNumber;
 
 use function array_diff;
 use function count;
@@ -16,7 +17,6 @@ readonly class DocumentComparator
 {
     public function __construct(
         private DocumentRepository $documentRepository,
-        private LegacyDocumentNumberFactory $documentNumberFactory,
     ) {
     }
 
@@ -28,8 +28,6 @@ readonly class DocumentComparator
     public function getChangeset(WooDecision $dossier, Document $document, DocumentMetadata $metadata): PropertyChangeset
     {
         $changeset = new PropertyChangeset();
-
-        // No comparison for 'id' and 'matter', these are part of the documentNumber that was used to fetch $document, so they certainly match.
 
         $changeset->compare(MetadataField::JUDGEMENT->value, $document->getJudgement(), $metadata->getJudgement());
         $changeset->compare(MetadataField::FAMILY->value, $document->getFamilyId(), $metadata->getFamilyId());
@@ -59,7 +57,7 @@ readonly class DocumentComparator
             $changeset->add(MetadataField::INQUIRY_NUMBER->value);
         }
 
-        if ($this->hasRefersToUpdate($dossier, $document, $metadata)) {
+        if ($this->hasRefersToUpdate($document, $metadata)) {
             $changeset->add(MetadataField::REFERS_TO->value);
         }
 
@@ -76,7 +74,7 @@ readonly class DocumentComparator
         return $addedInquiryNumbers->isNotEmpty();
     }
 
-    public function hasRefersToUpdate(WooDecision $dossier, Document $document, DocumentMetadata $metadata): bool
+    public function hasRefersToUpdate(Document $document, DocumentMetadata $metadata): bool
     {
         $currentDocNrs = $document->getRefersTo()->map(
             static fn (Document $referredDocument): string => $referredDocument->getDocumentNumber()->toString(),
@@ -84,7 +82,7 @@ readonly class DocumentComparator
 
         $newDocNrs = [];
         foreach ($metadata->getRefersTo() as $referral) {
-            $documentNumber = $this->documentNumberFactory->fromReferral($dossier, $document, $referral);
+            $documentNumber = DocumentNumber::fromString($referral);
             $referredDocument = $this->documentRepository->findByDocumentNumber($documentNumber);
             if (! $referredDocument) {
                 continue;

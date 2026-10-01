@@ -19,5 +19,4 @@ createApiReference('#scalar-api-reference', {
   hideClientButton: true,
   telemetry: false,
   hideTestRequestButton: true,
-  expandAllResponses: true,
 });

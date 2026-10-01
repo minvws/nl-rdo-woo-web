@@ -28,10 +28,10 @@ final class UniqueOrganisationValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->never();
 
         $validator = new UniqueOrganisationValidator($repository);
-        $validator->initialize($context);
-        $validator->validate(
+        $validator->validateInContext(
             new OrganisationFormData(name: 'New organisation', prefix: $prefix),
             new UniqueOrganisation(),
+            $context,
         );
     }
 
@@ -49,14 +49,14 @@ final class UniqueOrganisationValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->never();
 
         $validator = new UniqueOrganisationValidator($repository);
-        $validator->initialize($context);
-        $validator->validate(
+        $validator->validateInContext(
             new OrganisationFormData(
                 name: 'Organisation name',
                 prefix: $prefix,
                 organisationId: $id,
             ),
             new UniqueOrganisation(),
+            $context,
         );
     }
 
@@ -81,10 +81,10 @@ final class UniqueOrganisationValidatorTest extends UnitTestCase
         $context->expects('buildViolation')->with('organisation.prefix_already_exists')->andReturn($prefixBuilder);
 
         $validator = new UniqueOrganisationValidator($repository);
-        $validator->initialize($context);
-        $validator->validate(
+        $validator->validateInContext(
             new OrganisationFormData(name: 'Organisation name', prefix: $prefix),
             new UniqueOrganisation(),
+            $context,
         );
     }
 }

@@ -16,6 +16,7 @@ use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Domain\Upload\UploadService;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Webmozart\Assert\Assert;
 
 use function pathinfo;
@@ -26,7 +27,9 @@ readonly class EntityUploadStorer
 {
     public function __construct(
         private UploadService $uploadService,
+        #[Target('documentStorage')]
         private FilesystemOperator $documentStorage,
+        #[Target('assetsStorage')]
         private FilesystemOperator $assetsStorage,
         private EntityStorageService $entityStorageService,
         private UploadEntityRepository $uploadEntityRepository,

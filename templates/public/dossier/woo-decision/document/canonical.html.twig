@@ -1,0 +1,13 @@
+{% extends 'public/base.html.twig' %}
+
+{% set page_title = document.entity.fileInfo.name %}
+
+{% block meta %}
+    <link rel="canonical" href="{{ canonical_url }}">
+{% endblock %}
+
+{% block body %}
+<div class="woo-container woo-container--sm">
+    {% include 'public/dossier/woo-decision/document/snippets/summary.html.twig' %}
+</div>
+{% endblock %}

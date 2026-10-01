@@ -22,6 +22,7 @@ describe('The "<FormButton />" component', () => {
 
     expect(buttonElement.text()).toBe('Mocked provided content');
     expect(buttonElement.attributes('type')).toBe('submit');
+    expect(buttonElement.attributes('data-e2e-name')).toBe('submit');
     expect(buttonClasses).toContain('bhr-btn-filled-primary');
     expect(buttonClasses).not.toContain('bhr-btn-bordered-primary');
   });
@@ -32,6 +33,7 @@ describe('The "<FormButton />" component', () => {
     const buttonClasses = buttonElement.classes();
 
     expect(buttonElement.attributes('type')).toBe('button');
+    expect(buttonElement.attributes('data-e2e-name')).toBe('cancel');
     expect(buttonClasses).toContain('bhr-btn-bordered-primary');
     expect(buttonClasses).not.toContain('bhr-btn-filled-primary');
   });

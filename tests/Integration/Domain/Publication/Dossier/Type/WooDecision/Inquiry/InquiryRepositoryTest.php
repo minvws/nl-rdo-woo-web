@@ -24,43 +24,43 @@ final class InquiryRepositoryTest extends SharedWebTestCase
         $wooDecisionB = WooDecisionFactory::createOne();
 
         // Not uploaded, so should not be included
-        $docA = DocumentFactory::createone([
+        $docA = DocumentFactory::createOne([
             'dossiers' => [$wooDecisionA],
             'judgement' => Judgement::PUBLIC,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => false,
             ]),
         ]);
 
-        $docB = DocumentFactory::createone([
+        $docB = DocumentFactory::createOne([
             'dossiers' => [$wooDecisionA],
             'judgement' => Judgement::PUBLIC,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => true,
             ]),
         ]);
 
         // Suspended, so should not be included
-        $docC = DocumentFactory::createone([
+        $docC = DocumentFactory::createOne([
             'dossiers' => [$wooDecisionA],
             'judgement' => Judgement::PUBLIC,
             'suspended' => true,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => true,
             ]),
         ]);
 
         // Not public, so should not be included
-        $docD = DocumentFactory::createone([
+        $docD = DocumentFactory::createOne([
             'dossiers' => [$wooDecisionA],
             'judgement' => Judgement::NOT_PUBLIC,
         ]);
 
         // Other dossier, so should not be included
-        $docE = DocumentFactory::createone([
+        $docE = DocumentFactory::createOne([
             'dossiers' => [$wooDecisionB],
             'judgement' => Judgement::PUBLIC,
-            'fileInfo' => FileInfoFactory::createone([
+            'fileInfo' => FileInfoFactory::createOne([
                 'uploaded' => true,
             ]),
         ]);
@@ -254,9 +254,9 @@ final class InquiryRepositoryTest extends SharedWebTestCase
         $previewWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PREVIEW]);
         $publishedWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED]);
 
-        $docInPreviewAndInquiryA = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
-        $docInPreviewAndInquiryB = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
-        $docInPublishedAndInquiry = DocumentFactory::createone(['dossiers' => [$publishedWooDecision]]);
+        $docInPreviewAndInquiryA = DocumentFactory::createOne(['dossiers' => [$previewWooDecision]]);
+        $docInPreviewAndInquiryB = DocumentFactory::createOne(['dossiers' => [$previewWooDecision]]);
+        $docInPublishedAndInquiry = DocumentFactory::createOne(['dossiers' => [$publishedWooDecision]]);
 
         $inquiry = InquiryFactory::createOne([
             'dossiers' => [$conceptWooDecision, $publishedWooDecision, $previewWooDecision],
@@ -292,12 +292,12 @@ final class InquiryRepositoryTest extends SharedWebTestCase
         $publishedWooDecision = WooDecisionFactory::createOne(['status' => DossierStatus::PUBLISHED]);
         $otherWooDecision = WooDecisionFactory::createOne();
 
-        DocumentFactory::createone(['dossiers' => [$conceptWooDecision]]);
-        $docInPreviewAndInquiryA = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
-        $docInPreviewAndInquiryB = DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
-        DocumentFactory::createone(['dossiers' => [$previewWooDecision]]);
-        $docInPublishedAndInquiry = DocumentFactory::createone(['dossiers' => [$publishedWooDecision]]);
-        DocumentFactory::createone(['dossiers' => [$otherWooDecision]]);
+        DocumentFactory::createOne(['dossiers' => [$conceptWooDecision]]);
+        $docInPreviewAndInquiryA = DocumentFactory::createOne(['dossiers' => [$previewWooDecision]]);
+        $docInPreviewAndInquiryB = DocumentFactory::createOne(['dossiers' => [$previewWooDecision]]);
+        DocumentFactory::createOne(['dossiers' => [$previewWooDecision]]);
+        $docInPublishedAndInquiry = DocumentFactory::createOne(['dossiers' => [$publishedWooDecision]]);
+        DocumentFactory::createOne(['dossiers' => [$otherWooDecision]]);
 
         $inquiry = InquiryFactory::createOne([
             'dossiers' => [$conceptWooDecision, $publishedWooDecision, $previewWooDecision],

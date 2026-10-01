@@ -11,10 +11,13 @@ use Mockery\MockInterface;
 use PublicationApi\Domain\OpenApi\Metadata\TranslatableEnumPropertyMetadataFactory;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Ground;
 use Shared\Tests\Unit\UnitTestCase;
+use Symfony\Component\TypeInfo\Type;
 use Symfony\Component\TypeInfo\Type\EnumType;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function array_fill;
 use function count;
 
 final class TranslatableEnumPropertyMetadataFactoryTest extends UnitTestCase
@@ -104,6 +107,39 @@ final class TranslatableEnumPropertyMetadataFactoryTest extends UnitTestCase
         self::assertNotNull($openapiContext);
         self::assertSame('The language of the attachment', $openapiContext['description']);
         self::assertArrayHasKey('x-enum-varnames', $openapiContext);
+    }
+
+    public function testItAddsTranslationsToItemsForEnumCollectionProperty(): void
+    {
+        $resourceClass = $this->getFaker()->word();
+        $property = $this->getFaker()->word();
+        $translation = $this->getFaker()->sentence();
+
+        $schema = [
+            'type' => 'array',
+            'items' => [
+                'type' => 'string',
+                'enum' => ['5.1.1a'],
+            ],
+        ];
+
+        $decorated = Mockery::mock(PropertyMetadataFactoryInterface::class);
+        $decorated->expects('create')
+            ->with($resourceClass, $property, [])
+            ->andReturn(new ApiProperty()->withNativeType(Type::list(Type::enum(Ground::class)))->withSchema($schema));
+
+        $translator = Mockery::mock(TranslatorInterface::class);
+        $translator->expects('trans')
+            ->times(count(Ground::cases()))
+            ->andReturn($translation);
+
+        $factory = new TranslatableEnumPropertyMetadataFactory($decorated, $translator);
+        $result = $factory->create($resourceClass, $property);
+
+        $expectedSchema = $schema;
+        $expectedSchema['items']['x-enum-varnames'] = array_fill(0, count(Ground::cases()), $translation);
+
+        self::assertSame($expectedSchema, $result->getSchema());
     }
 
     private function createMockedPropertyMetadataFactory(

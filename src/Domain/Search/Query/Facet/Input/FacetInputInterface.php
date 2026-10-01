@@ -24,4 +24,6 @@ interface FacetInputInterface
     public function without(int|string $key, string $value): self;
 
     public function getFacetKey(): FacetKey;
+
+    public function getRequestParameter(): string;
 }

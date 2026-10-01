@@ -21,47 +21,39 @@ class SubjectMapper
     /**
      * @param array<array-key,Subject> $subjects
      *
-     * @return list<SubjectResponse>
+     * @return list<SubjectResponseDto>
      */
-    public static function fromEntities(
-        array $subjects,
-        ?SubjectPreviewUrlGenerator $previewUrlGenerator = null,
-    ): array {
-        return array_values(array_map(
-            static fn (Subject $subject): SubjectResponse => self::fromEntity($subject, $previewUrlGenerator),
-            $subjects,
-        ));
+    public static function fromEntities(array $subjects): array
+    {
+        return array_values(array_map(self::fromEntity(...), $subjects));
     }
 
-    public static function fromEntity(
-        Subject $subject,
-        ?SubjectPreviewUrlGenerator $previewUrlGenerator = null,
-    ): SubjectResponse {
-        return new SubjectResponse(
+    public static function fromEntity(Subject $subject): SubjectResponseDto
+    {
+        return new SubjectResponseDto(
             $subject->getId(),
             $subject->getName(),
-            self::mapLandingPage($subject, $previewUrlGenerator),
         );
     }
 
-    public static function fromNullableEntity(
-        ?Subject $subject,
-        ?SubjectPreviewUrlGenerator $previewUrlGenerator = null,
-    ): ?SubjectResponse {
-        return $subject !== null ? self::fromEntity($subject, $previewUrlGenerator) : null;
+    public static function fromNullableEntity(?Subject $subject): ?SubjectResponseDto
+    {
+        return $subject !== null ? self::fromEntity($subject) : null;
     }
 
     /**
      * @param array<array-key,Subject> $subjects
      *
-     * @return list<SubjectDetailResponse>
+     * @return list<SubjectDetailResponseDto>
      */
     public static function fromEntitiesWithDetail(
         array $subjects,
         ?SubjectPreviewUrlGenerator $previewUrlGenerator = null,
     ): array {
         return array_values(array_map(
-            static fn (Subject $subject): SubjectDetailResponse => self::fromEntityWithDetail($subject, $previewUrlGenerator),
+            static function (Subject $subject) use ($previewUrlGenerator): SubjectDetailResponseDto {
+                return self::fromEntityWithDetail($subject, $previewUrlGenerator);
+            },
             $subjects,
         ));
     }
@@ -69,8 +61,8 @@ class SubjectMapper
     public static function fromEntityWithDetail(
         Subject $subject,
         ?SubjectPreviewUrlGenerator $previewUrlGenerator = null,
-    ): SubjectDetailResponse {
-        return new SubjectDetailResponse(
+    ): SubjectDetailResponseDto {
+        return new SubjectDetailResponseDto(
             $subject->getId(),
             OrganisationMapper::fromEntity($subject->getOrganisation()),
             $subject->getName(),
@@ -110,17 +102,15 @@ class SubjectMapper
             $landingPage->description,
             $landingPage->status,
             $landingPage->contentTree,
+            $landingPage->contentTreeStatus,
         );
-
-        $subject->setHasVisibleLandingPageContentTree($landingPage->hasVisibleContentTree);
     }
 
     private static function mapLandingPage(
         Subject $subject,
         ?SubjectPreviewUrlGenerator $previewUrlGenerator,
     ): ?SubjectLandingPageOutputDto {
-        $status = $subject->getLandingPageStatus();
-        if ($status === null) {
+        if (! $subject->hasLandingPageContent()) {
             return null;
         }
 
@@ -139,11 +129,11 @@ class SubjectMapper
         );
 
         return new SubjectLandingPageOutputDto(
-            $status,
+            $subject->getLandingPageStatus(),
             (string) $slug,
             $title->toString(),
             $description,
-            $subject->hasVisibleLandingPageContentTree(),
+            $subject->getLandingPageContentTreeStatus(),
             $contentTree,
             $previewUrlGenerator?->generatePreviewUrl($subject),
         );

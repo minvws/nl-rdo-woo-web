@@ -12,7 +12,6 @@ use ApiPlatform\State\ProcessorInterface;
 use PublicationApi\Api\Organisation\OrganisationResolverInterface;
 use PublicationApi\Domain\Exception\ResourceInUseException;
 use PublicationApi\Domain\Validator\EntityValidator;
-use PublicationApi\FeatureFlag\SubjectLandingPageGuard;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
@@ -22,7 +21,7 @@ use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\Assert;
 
 /**
- * @implements ProcessorInterface<SubjectCreateDto|SubjectUpdateDto,?SubjectDetailResponse>
+ * @implements ProcessorInterface<SubjectCreateDto|SubjectUpdateDto,?SubjectDetailResponseDto>
  */
 final readonly class SubjectProcessor implements ProcessorInterface
 {
@@ -32,11 +31,10 @@ final readonly class SubjectProcessor implements ProcessorInterface
         private SubjectService $subjectService,
         private EntityValidator $validator,
         private SubjectPreviewUrlGenerator $subjectPreviewUrlGenerator,
-        private SubjectLandingPageGuard $subjectLandingPageGuard,
     ) {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?SubjectDetailResponse
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?SubjectDetailResponseDto
     {
         unset($context);
 
@@ -72,10 +70,6 @@ final readonly class SubjectProcessor implements ProcessorInterface
 
     private function create(Organisation $organisation, SubjectCreateDto $subjectCreateDto): Subject
     {
-        if ($subjectCreateDto->landingPage !== null) {
-            $this->subjectLandingPageGuard->assertEnabled();
-        }
-
         $subject = SubjectMapper::fromCreateDto($subjectCreateDto, $organisation);
 
         $this->validator->throwExceptionIfNotValid($subject);
@@ -87,10 +81,6 @@ final readonly class SubjectProcessor implements ProcessorInterface
 
     private function update(Subject $subject, SubjectUpdateDto $subjectUpdateDto): Subject
     {
-        if ($subjectUpdateDto->landingPage !== null) {
-            $this->subjectLandingPageGuard->assertEnabled();
-        }
-
         $subject = SubjectMapper::fromUpdateDto($subject, $subjectUpdateDto);
 
         $this->validator->throwExceptionIfNotValid($subject);

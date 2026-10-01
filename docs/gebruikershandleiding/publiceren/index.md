@@ -1,6 +1,6 @@
 # Publiceren
 
-In het uploadportaal bestaan er acht zogenoemde uploadstraten voor verschillende Woo-informatiecategorieën. De eerste stap
+In het uploadportaal bestaan er tien zogenoemde uploadstraten voor verschillende Woo-informatiecategorieën. De eerste stap
 in het aanmaken van een nieuwe publicatie is het kiezen van de betreffende informatiecategorie waaronder de openbaar te
 maken informatie valt. Zie onderstaande afbeelding.
 
@@ -23,6 +23,7 @@ convenant/index
 jaarplan-en-jaarverslag/index
 klachtenoordeel/index
 onderzoeksrapport/index
+ontwerpbesluit/index
 overig-informatiestuk/index
 woo-besluit/index
 ```

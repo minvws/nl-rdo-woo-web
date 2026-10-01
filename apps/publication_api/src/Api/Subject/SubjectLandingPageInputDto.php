@@ -7,6 +7,7 @@ namespace PublicationApi\Api\Subject;
 use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\SubjectContentTree;
+use Shared\Domain\Publication\Subject\SubjectContentTreeStatus;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -22,7 +23,8 @@ class SubjectLandingPageInputDto
         public SubjectLandingPageStatus $status,
         #[Assert\Valid]
         public SubjectContentTree $contentTree,
-        public bool $hasVisibleContentTree,
+        #[Assert\NotNull]
+        public SubjectContentTreeStatus $contentTreeStatus,
     ) {
     }
 }

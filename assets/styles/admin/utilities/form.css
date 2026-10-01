@@ -62,7 +62,7 @@
 }
 
 @utility bhr-textarea {
-  @apply bhr-input-text leading-tight;
+  @apply bhr-input-text leading-tight field-sizing-content max-h-86 min-h-24;
 }
 
 @utility bhr-textarea--invalid {

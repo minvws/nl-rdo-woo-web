@@ -102,9 +102,9 @@ class ExcelReader implements IteratorAggregate, FileReaderInterface
         }
     }
 
-    private function hasColumn(string $headerName): bool
+    public function hasColumn(string $columnName): bool
     {
-        return $this->headerMapping->has($headerName);
+        return $this->headerMapping->has($columnName);
     }
 
     private function isEmptyRow(Row $row): bool

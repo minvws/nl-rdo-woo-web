@@ -15,6 +15,7 @@ use Shared\Service\HistoryService;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Tests\Unit\UnitTestCase;
+use Symfony\Component\Uid\Uuid;
 
 class DocumentServiceTest extends UnitTestCase
 {
@@ -47,6 +48,7 @@ class DocumentServiceTest extends UnitTestCase
     public function testRemoveDocumentFromDossierDoesRemoveTheDocumentWhenItIsNotInTheCurrentDossierAndNotLinkedToOtherDossiers(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getId')->andReturn(Uuid::v6());
         $document = Mockery::mock(Document::class);
 
         $this->historyService->expects('addDocumentEntry');
@@ -68,6 +70,7 @@ class DocumentServiceTest extends UnitTestCase
     public function testRemoveDocumentFromDossierDoesNotRemoveTheDocumentWhenItIsLinkedToOtherDossiers(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getId')->andReturn(Uuid::v6());
         $document = Mockery::mock(Document::class);
 
         $this->historyService->expects('addDocumentEntry');
@@ -88,6 +91,7 @@ class DocumentServiceTest extends UnitTestCase
     public function testRemoveDocumentFromDossierDoesRemoveTheDocumentWhenItIsNotLinkedToOtherDossiers(): void
     {
         $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getId')->andReturn(Uuid::v6());
         $document = Mockery::mock(Document::class);
 
         $this->historyService->expects('addDocumentEntry');
