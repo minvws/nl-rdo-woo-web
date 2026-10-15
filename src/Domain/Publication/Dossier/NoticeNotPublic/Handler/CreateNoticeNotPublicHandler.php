@@ -13,9 +13,9 @@ use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Shared\Domain\Publication\MainDocument\MainDocumentAlreadyExistsException;
 use Shared\Domain\Search\SearchDispatcher;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Uid\Uuid;
 
 #[AsMessageHandler]
 readonly class CreateNoticeNotPublicHandler
@@ -41,7 +41,7 @@ readonly class CreateNoticeNotPublicHandler
         }
 
         $notice = new NoticeNotPublic(
-            id: Uuid::v6(),
+            id: new WooUuid(),
             dossier: $dossier,
             documentName: $command->documentName,
             formalDate: $command->formalDate,

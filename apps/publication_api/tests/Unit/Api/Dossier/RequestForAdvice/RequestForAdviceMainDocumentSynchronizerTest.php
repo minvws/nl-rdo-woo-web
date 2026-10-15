@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Unit\Api\Dossier\RequestForAdvice;
 
+use ApiPlatform\Validator\Exception\ValidationException;
 use Mockery;
 use PublicationApi\Api\Dossier\DossierMainDocumentValidator;
 use PublicationApi\Api\Dossier\RequestForAdvice\RequestForAdviceMainDocumentRequestDto;
@@ -14,6 +15,7 @@ use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 final class RequestForAdviceMainDocumentSynchronizerTest extends UnitTestCase
 {
@@ -105,6 +107,9 @@ final class RequestForAdviceMainDocumentSynchronizerTest extends UnitTestCase
             ),
         );
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->with($requestForAdvice);
+
         $messageBus = Mockery::mock(MessageBusInterface::class);
         $messageBus->expects('dispatch')
             ->with(Mockery::on(static function (DeleteMainDocumentCommand $deleteMainDocumentCommand) use ($requestForAdvice): bool {
@@ -113,10 +118,39 @@ final class RequestForAdviceMainDocumentSynchronizerTest extends UnitTestCase
             ->andReturn(new Envelope(new DeleteMainDocumentCommand($requestForAdvice->getId())));
 
         $requestForAdviceMainDocumentSynchronizer = new RequestForAdviceMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
+            $dossierMainDocumentValidator,
             $messageBus,
         );
 
+        $requestForAdviceMainDocumentSynchronizer->delete($requestForAdvice);
+    }
+
+    public function testDeleteWhenTransitionIsNotAllowed(): void
+    {
+        $requestForAdvice = new RequestForAdvice();
+        $requestForAdvice->setMainDocument(
+            new RequestForAdviceMainDocument(
+                $requestForAdvice,
+                $this->getFaker()->plainDate(),
+                $this->getFaker()->attachmentType(RequestForAdviceMainDocument::getAllowedTypes()),
+                $this->getFaker()->attachmentLanguage(),
+            ),
+        );
+
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')
+            ->with($requestForAdvice)
+            ->andThrow(new ValidationException(ConstraintViolationList::createFromMessage('Deletion is not allowed')));
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
+        $requestForAdviceMainDocumentSynchronizer = new RequestForAdviceMainDocumentSynchronizer(
+            $dossierMainDocumentValidator,
+            $messageBus,
+        );
+
+        self::expectException(ValidationException::class);
         $requestForAdviceMainDocumentSynchronizer->delete($requestForAdvice);
     }
 
@@ -124,9 +158,15 @@ final class RequestForAdviceMainDocumentSynchronizerTest extends UnitTestCase
     {
         $requestForAdvice = new RequestForAdvice();
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->never();
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
         $requestForAdviceMainDocumentSynchronizer = new RequestForAdviceMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
-            Mockery::mock(MessageBusInterface::class),
+            $dossierMainDocumentValidator,
+            $messageBus,
         );
 
         $requestForAdviceMainDocumentSynchronizer->delete($requestForAdvice);

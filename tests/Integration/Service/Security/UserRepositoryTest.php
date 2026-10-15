@@ -10,6 +10,7 @@ use Shared\Service\Security\UserRepository;
 use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\UserFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
+use Webmozart\Assert\Assert;
 
 final class UserRepositoryTest extends SharedWebTestCase
 {
@@ -61,10 +62,10 @@ final class UserRepositoryTest extends SharedWebTestCase
             ])
             ->create(['organisation' => $organisationTwo]);
 
-        /** @var list<User> $result */
         $result = $this->userRepository
             ->findActiveUsersForOrganisationQuery($organisationOne)
             ->getResult();
+        Assert::allIsInstanceOf($result, User::class);
 
         $this->assertCount(1, $result);
     }
@@ -112,10 +113,10 @@ final class UserRepositoryTest extends SharedWebTestCase
             ])
             ->create(['organisation' => $organisationTwo]);
 
-        /** @var list<User> $result */
         $result = $this->userRepository
             ->findDeactivatedUsersForOrganisationQuery($organisationOne)
             ->getResult();
+        Assert::allIsInstanceOf($result, User::class);
 
         $this->assertCount(2, $result);
     }
@@ -143,10 +144,10 @@ final class UserRepositoryTest extends SharedWebTestCase
             ])
             ->create();
 
-        /** @var list<User> $result */
         $result = $this->userRepository
             ->findActiveAdminsQuery()
             ->getResult();
+        Assert::allIsInstanceOf($result, User::class);
 
         $this->assertCount(1, $result);
     }
@@ -174,10 +175,10 @@ final class UserRepositoryTest extends SharedWebTestCase
             ])
             ->create();
 
-        /** @var list<User> $result */
         $result = $this->userRepository
             ->findDeactivatedAdminsQuery()
             ->getResult();
+        Assert::allIsInstanceOf($result, User::class);
 
         $this->assertCount(1, $result);
     }

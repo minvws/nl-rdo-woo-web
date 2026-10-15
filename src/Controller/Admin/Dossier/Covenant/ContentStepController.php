@@ -12,11 +12,13 @@ use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Form\Dossier\Covenant\ContentFormType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Webmozart\Assert\Assert;
 
 class ContentStepController extends AbstractController
 {
@@ -136,6 +138,7 @@ class ContentStepController extends AbstractController
     {
         $partiesErrors = [];
         foreach ($form->get('parties')->getErrors(true) as $error) {
+            Assert::isInstanceOf($error, FormError::class);
             $partiesErrors[] = $error->getMessage();
         }
 

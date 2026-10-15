@@ -42,7 +42,7 @@ http:
         ],
         "dateFrom": "2025-01-01",
         "dateTo": "2025-06-01",
-        "dossierNumber": "bruno-{{sessionTimestamp}}",
+        "dossierNumber": "{{covenantDossierNumber}}",
         "publicationDate": "2026-02-01",
         "parties": [
           "Party 1",
@@ -64,6 +64,9 @@ runtime:
 
         if (!bru.getVar("covenantDossierExternalId")) {
           bru.setVar("covenantDossierExternalId", crypto.randomUUID());
+        }
+        if (!bru.getVar("covenantDossierNumber")) {
+          bru.setVar("covenantDossierNumber", `bruno-${Date.now()}`);
         }
         if (!bru.getVar("covenantAttachmentExternalId")) {
           bru.setVar("covenantAttachmentExternalId", crypto.randomUUID());

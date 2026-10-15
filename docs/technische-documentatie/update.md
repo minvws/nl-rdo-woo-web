@@ -20,9 +20,9 @@ It is also available as `task update`. It restarts the environment and brings ev
 2. starts the environment again;
 3. installs the Composer dependencies;
 4. runs the database migrations for each local tenant, for both the dev and the test database;
-5. installs the npm dependencies and builds the front-end assets;
+5. installs the pnpm dependencies and builds the front-end assets;
 6. builds the user manual;
-7. creates the MinIO buckets;
+7. creates the S3 buckets;
 8. runs `woopie:post-deploy` for the `worker`, `publication_api` and `admin` applications.
 
 Note that it does **not** touch your `.env.dev.local`; that file is yours to manage. The only automated dotenv handling
@@ -43,6 +43,6 @@ scratch — which means it also re-runs the full `task setup`, so migrations and
 It also deletes `tests/robot_framework/secrets/`, so the Robot Framework credentials are gone afterwards. `task rf:init`
 recreates them; see [test.md](test.md#general-setup).
 
-> `--volumes` removes the `postgres_data`, `es_data` and `minio_data` volumes, so the database, the search index and the
+> `--volumes` removes the `postgres_data`, `es_data` and `rustfs_data` volumes, so the database, the search index and the
 > stored files all go. Any local dossiers you created by hand are lost; only the fixtures come back. The `woo_composer`
 > and `woo_npm` caches are declared `external` and survive.

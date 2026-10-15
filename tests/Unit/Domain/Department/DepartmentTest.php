@@ -9,9 +9,26 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\WooUuid;
+use Symfony\Component\Uid\Uuid;
 
 class DepartmentTest extends UnitTestCase
 {
+    public function testDefaultId(): void
+    {
+        $department = new Department();
+
+        self::assertInstanceOf(WooUuid::class, $department->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $department = new Department($id);
+
+        self::assertSame($id, $department->getId());
+    }
+
     public function testSetAndGetLandingPageTitle(): void
     {
         $department = new Department();

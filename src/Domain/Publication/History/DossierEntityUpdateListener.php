@@ -88,7 +88,10 @@ final class DossierEntityUpdateListener
             return;
         }
 
-        foreach ($this->historyEntries as $entry) {
+        $historyEntries = $this->historyEntries;
+        $this->historyEntries = [];
+
+        foreach ($historyEntries as $entry) {
             $this->entityManager->persist($entry);
         }
 

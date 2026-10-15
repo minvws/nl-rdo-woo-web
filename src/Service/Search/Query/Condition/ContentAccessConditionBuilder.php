@@ -16,6 +16,7 @@ use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Domain\Search\Query\SearchType;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Search\Query\Dsl\Query;
+use Webmozart\Assert\Assert;
 
 use function array_map;
 
@@ -23,11 +24,11 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
 {
     public function applyToQuery(FacetList $facetList, SearchParameters $searchParameters, BoolQuery $query): void
     {
-        /** @var StringValuesFacetInput $inquiryDossierFacetInput */
         $inquiryDossierFacetInput = $searchParameters->facetInputs->getByFacetKey(FacetKey::INQUIRY_DOSSIERS);
+        Assert::isInstanceOf($inquiryDossierFacetInput, StringValuesFacetInput::class);
 
-        /** @var StringValuesFacetInput $inquiryDocumentFacetInput */
         $inquiryDocumentFacetInput = $searchParameters->facetInputs->getByFacetKey(FacetKey::INQUIRY_DOCUMENTS);
+        Assert::isInstanceOf($inquiryDocumentFacetInput, StringValuesFacetInput::class);
 
         if ($inquiryDossierFacetInput->isNotActive() && $inquiryDocumentFacetInput->isActive()) {
             // If a documentInquiries filter is active but no dossierInquiries filter: limit results to documents.
@@ -169,11 +170,11 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
      */
     private function getFiltersForAllTypes(SearchParameters $searchParameters): array
     {
-        /** @var StringValuesFacetInput $inquiryDossierFacetInput */
         $inquiryDossierFacetInput = $searchParameters->facetInputs->getByFacetKey(FacetKey::INQUIRY_DOSSIERS);
+        Assert::isInstanceOf($inquiryDossierFacetInput, StringValuesFacetInput::class);
 
-        /** @var StringValuesFacetInput $inquiryDocumentFacetInput */
         $inquiryDocumentFacetInput = $searchParameters->facetInputs->getByFacetKey(FacetKey::INQUIRY_DOCUMENTS);
+        Assert::isInstanceOf($inquiryDocumentFacetInput, StringValuesFacetInput::class);
 
         return [
             $this->createTypesQuery($inquiryDossierFacetInput, ElasticDocumentType::getMainTypes()),

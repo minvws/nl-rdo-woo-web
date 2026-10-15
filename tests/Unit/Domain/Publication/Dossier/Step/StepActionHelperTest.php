@@ -19,8 +19,8 @@ use Shared\Service\DossierWizard\StepStatus;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DossierTitle;
-use Symfony\Component\Form\Button;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\Routing\RouterInterface;
 
 class StepActionHelperTest extends UnitTestCase
@@ -158,9 +158,12 @@ class StepActionHelperTest extends UnitTestCase
         $nextStep = Mockery::mock(StepStatus::class);
         $nextStep->expects('getRouteName')->andReturn('dummy_route');
 
+        $button = Mockery::mock(SubmitButton::class);
+        $button->expects('isClicked')->andReturnTrue();
+
         $form = Mockery::mock(FormInterface::class);
         $form->expects('has')->with('next')->andReturnTrue();
-        $form->expects('get->isClicked')->andReturnTrue();
+        $form->expects('get')->with('next')->andReturn($button);
 
         $this->dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
 
@@ -192,9 +195,12 @@ class StepActionHelperTest extends UnitTestCase
         $currentStep->expects('getRouteName')->andReturn('dummy_route');
         $currentStep->expects('getStepName')->andReturn(StepName::DETAILS);
 
+        $button = Mockery::mock(SubmitButton::class);
+        $button->expects('isClicked')->andReturnFalse();
+
         $form = Mockery::mock(FormInterface::class);
         $form->expects('has')->with('next')->andReturnTrue();
-        $form->expects('get->isClicked')->andReturnFalse();
+        $form->expects('get')->with('next')->andReturn($button);
 
         $this->dossier->expects('getStatus')->andReturn(DossierStatus::CONCEPT);
 
@@ -312,7 +318,7 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testIsFormCancelledReturnsFalseWhenFormIsSubmittedButCancelButtonNotClicked(): void
     {
-        $button = Mockery::mock(Button::class);
+        $button = Mockery::mock(SubmitButton::class);
         $button->expects('isClicked')->andReturnFalse();
 
         $form = Mockery::mock(FormInterface::class);
@@ -334,7 +340,7 @@ class StepActionHelperTest extends UnitTestCase
 
     public function testIsFormCancelledReturnsTrueWhenFormIsSubmittedAndCancelButtonClicked(): void
     {
-        $button = Mockery::mock(Button::class);
+        $button = Mockery::mock(SubmitButton::class);
         $button->expects('isClicked')->andReturnTrue();
 
         $form = Mockery::mock(FormInterface::class);

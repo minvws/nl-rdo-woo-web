@@ -12,9 +12,36 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\Documen
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateType;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\WooUuid;
+use Symfony\Component\Uid\Uuid;
 
 class DocumentFileUpdateTest extends UnitTestCase
 {
+    public function testDefaultId(): void
+    {
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
+        $document = Mockery::mock(Document::class);
+        $document->expects('isWithdrawn')->andReturnFalse();
+        $document->expects('isUploaded')->andReturnFalse();
+
+        $documentFileUpdate = new DocumentFileUpdate($documentFileSet, $document);
+
+        self::assertInstanceOf(WooUuid::class, $documentFileUpdate->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
+        $document = Mockery::mock(Document::class);
+        $document->expects('isWithdrawn')->andReturnFalse();
+        $document->expects('isUploaded')->andReturnFalse();
+
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $documentFileUpdate = new DocumentFileUpdate($documentFileSet, $document, $id);
+
+        self::assertSame($id, $documentFileUpdate->getId());
+    }
+
     public function testGetters(): void
     {
         $documentFileSet = Mockery::mock(DocumentFileSet::class);

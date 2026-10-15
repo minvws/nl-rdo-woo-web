@@ -341,7 +341,7 @@ bin/console --tenant=minvws woopie:dev:clean-sheet --index <index> [--force] [--
 Resets data from search index, database, file storage and message queue. `--index` names the Elasticsearch index to
 reset. `--force` skips the confirmation prompt, `--users` also resets users, and `--keep-subjects` preserves subjects.
 The retained legacy `document_prefix` table is not cleared by this command. Locally, prefer `task cleansheet`, which
-passes sensible defaults and clears the MinIO buckets too.
+passes sensible defaults and clears the S3 buckets too.
 
 ### Content extraction
 

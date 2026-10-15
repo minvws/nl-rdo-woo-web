@@ -10,9 +10,28 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Entity\Docum
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\WooUuid;
+use Symfony\Component\Uid\Uuid;
 
 class DocumentFileSetTest extends UnitTestCase
 {
+    public function testDefaultId(): void
+    {
+        $dossier = Mockery::mock(WooDecision::class);
+        $documentFileSet = new DocumentFileSet($dossier);
+
+        self::assertInstanceOf(WooUuid::class, $documentFileSet->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $dossier = Mockery::mock(WooDecision::class);
+        $documentFileSet = new DocumentFileSet($dossier, $id);
+
+        self::assertSame($id, $documentFileSet->getId());
+    }
+
     public function testGetters(): void
     {
         $dossier = Mockery::mock(WooDecision::class);

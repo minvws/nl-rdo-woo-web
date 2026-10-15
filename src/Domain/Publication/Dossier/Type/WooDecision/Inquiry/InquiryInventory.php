@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\Embedded;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
@@ -19,12 +19,6 @@ class InquiryInventory implements EntityWithFileInfo
 {
     use TimestampableTrait;
 
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private Uuid $id;
-
     #[ORM\OneToOne(inversedBy: 'inventory', targetEntity: Inquiry::class)]
     #[ORM\JoinColumn(name: 'inquiry_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
     private Inquiry $inquiry;
@@ -32,8 +26,11 @@ class InquiryInventory implements EntityWithFileInfo
     #[Embedded(class: FileInfo::class, columnPrefix: 'file_')]
     private FileInfo $file;
 
-    public function __construct()
-    {
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
+    ) {
         $this->file = new FileInfo();
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();

@@ -35,6 +35,11 @@ The unit and integration tests are written with PHPUnit. They live alongside the
 All but `utils/tests` have `Unit/` and `Integration/` subdirectories, which `phpunit.xml.dist` groups into three test
 suites: `unit`, `integration` and `utils` (the last holding the custom PHPStan rules and Rector rules).
 
+API integration tests use `ApiPlatform\Test\ApiTestCase` and `ApiPlatform\Test\Client` from the
+`api-platform/test` development dependency (API Platform 5). The shared, admin and Publication API base classes
+explicitly set `$alwaysBootKernel = true` to preserve their pre-5.0 behavior. Tests that inject services into an
+already booted kernel override it with `false` so client creation keeps those services.
+
 Run everything the way CI does:
 
 ```shell
@@ -258,7 +263,7 @@ task rf:format
 ### Resetting test data
 
 ```shell
-# Clear dossiers, inquiries, the ES index and the MinIO buckets
+# Clear dossiers, inquiries, the ES index and the S3 buckets
 task rf:cleansheet
 
 # Reload only the E2E fixtures

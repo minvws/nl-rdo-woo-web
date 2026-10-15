@@ -42,7 +42,7 @@ http:
         ],
         "dateFrom": "2025-01-01",
         "dateTo": "2025-06-01",
-        "dossierNumber": "bruno-{{sessionTimestamp}}",
+        "dossierNumber": "{{wooDecisionDossierNumber}}",
         "publicationDate": "2026-07-27",
         "decision": "already_public",
         "reason": "woo_request",
@@ -81,6 +81,9 @@ runtime:
 
         if (!bru.getVar("wooDecisionDossierExternalId")) {
           bru.setVar("wooDecisionDossierExternalId", crypto.randomUUID());
+        }
+        if (!bru.getVar("wooDecisionDossierNumber")) {
+          bru.setVar("wooDecisionDossierNumber", `bruno-${Date.now()}`);
         }
         if (!bru.getVar("wooDecisionAttachmentExternalId")) {
           bru.setVar("wooDecisionAttachmentExternalId", crypto.randomUUID());

@@ -45,6 +45,8 @@ use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\PlainDate\PlainDateAfterOrEqual;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
+use Shared\ValueObject\DossierTitle;
+use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,6 +54,7 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Type;
+use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_merge;
@@ -99,8 +102,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         $data = $result->toArray();
         self::assertArrayHasKey('items', $data);
         self::assertArrayHasKey('hasNextPage', $data);
-        /** @var array<array-key, mixed> $items */
-        $items = $data['items'];
+        $items = Assert::isArray($data['items']);
         self::assertCount(1, $items);
         self::assertJsonContains(['items' => [['externalId' => $covenant->getExternalId()?->toString()]]]);
     }
@@ -1202,16 +1204,23 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertDatabaseCount(Covenant::class, 0);
     }
 
-    public function testUpdateCovenantTransitionsFromMainDocumentToNoticeNotPublic(): void
+    public function testConceptCovenantCanReplaceMainDocumentWithNoticeNotPublic(): void
     {
         $organisation = OrganisationFactory::createOne();
         $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
         $covenant = CovenantFactory::createOne([
-            'dateFrom' => $this->getFaker()->plainDateBetween('-9 years', 'now'),
+            'dateFrom' => PlainDate::create('2026-01-01'),
+            'dateTo' => PlainDate::create('2026-01-31'),
             'departments' => [$department],
-            'externalId' => $this->getFaker()->externalId(),
+            'dossierNumber' => 'COVENANT-7733-CONCEPT',
+            'externalId' => ExternalId::create('covenant-7733-concept'),
             'organisation' => $organisation,
+            'publicationDate' => PlainDate::create('2026-02-01'),
             'status' => DossierStatus::CONCEPT,
+            'summary' => 'Issue 7733 concept conversion',
+            'title' => DossierTitle::create('Concept covenant'),
+            'parties' => ['Party A', 'Party B'],
+            'previousVersionLink' => 'https://example.com/previous-version',
         ]);
         $mainDocument = CovenantMainDocumentFactory::createOne(['dossier' => $covenant]);
         $mainDocumentId = $mainDocument->getId();
@@ -1221,13 +1230,24 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         ]);
         self::assertDatabaseCount(NoticeNotPublic::class, 0);
 
-        $data = $this->createValidCovenantDataPayload($department, null, 0);
-        unset($data['mainDocument']);
-        $data['noticeNotPublic'] = [
-            'formalDate' => $this->getFaker()->plainDate()->format('Y-m-d'),
-            'documentName' => $this->getFaker()->sentence(),
-            'grounds' => [$this->getFaker()->ground()],
-            'explanation' => $this->getFaker()->sentence(),
+        $data = [
+            'title' => 'Concept covenant',
+            'dossierNumber' => 'COVENANT-7733-CONCEPT',
+            'dateFrom' => '2026-01-01',
+            'dateTo' => '2026-01-31',
+            'publicationDate' => '2026-02-01',
+            'summary' => 'Issue 7733 concept conversion',
+            'departmentId' => $department->getId(),
+            'subjectId' => null,
+            'previousVersionLink' => 'https://example.com/previous-version',
+            'parties' => ['Party A', 'Party B'],
+            'attachments' => [],
+            'noticeNotPublic' => [
+                'formalDate' => '2026-02-01',
+                'documentName' => 'Niet openbaar conceptdocument',
+                'grounds' => ['5.1.1a'],
+                'explanation' => 'Allowed concept conversion for issue 7733',
+            ],
         ];
 
         $response = self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $covenant), ['json' => $data]);
@@ -1332,5 +1352,155 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertJsonContains(['publicationDate' => '2025-01-02', 'title' => $newTitle]);
 
         self::assertDatabaseHas(Covenant::class, ['title' => $newTitle]);
+    }
+
+    public function testScheduledCovenantCannotReplaceMainDocumentWithNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $covenant = CovenantFactory::createOne([
+            'dateFrom' => PlainDate::create('2026-01-01'),
+            'dateTo' => PlainDate::create('2026-01-31'),
+            'departments' => [$department],
+            'dossierNumber' => 'COVENANT-7733-SCHEDULED',
+            'externalId' => ExternalId::create('covenant-7733-scheduled'),
+            'organisation' => $organisation,
+            'publicationDate' => PlainDate::create('2026-12-01'),
+            'status' => DossierStatus::SCHEDULED,
+            'summary' => 'Issue 7733 scheduled dossier',
+            'title' => DossierTitle::create('Scheduled covenant'),
+            'parties' => ['Party A', 'Party B'],
+            'previousVersionLink' => 'https://example.com/previous-version',
+        ]);
+        $mainDocument = CovenantMainDocumentFactory::createOne(['dossier' => $covenant]);
+
+        $data = [
+            'title' => 'Scheduled covenant',
+            'dossierNumber' => 'COVENANT-7733-SCHEDULED',
+            'dateFrom' => '2026-01-01',
+            'dateTo' => '2026-01-31',
+            'publicationDate' => '2026-12-01',
+            'summary' => 'Issue 7733 scheduled dossier',
+            'departmentId' => $department->getId(),
+            'subjectId' => null,
+            'previousVersionLink' => 'https://example.com/previous-version',
+            'parties' => ['Party A', 'Party B'],
+            'attachments' => [],
+            'noticeNotPublic' => [
+                'formalDate' => '2026-02-01',
+                'documentName' => 'Niet openbaar document',
+                'grounds' => ['5.1.1a'],
+                'explanation' => 'Scheduled dossiers cannot lose their main document',
+            ],
+        ];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $covenant), ['json' => $data]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'propertyPath' => 'mainDocument',
+            'message' => 'The "mainDocument" cannot be modified',
+            'code' => ConstraintViolationBuilder::MODIFIED_SUB_ENTITY_ERROR,
+        ], ]]);
+        self::assertDatabaseHas(CovenantMainDocument::class, [
+            'id' => $mainDocument->getId(),
+            'dossier' => ['id' => $covenant->getId()],
+        ]);
+        self::assertDatabaseCount(NoticeNotPublic::class, 0);
+    }
+
+    public function testPublishedCovenantCannotReplaceMainDocumentWithNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $originalTitle = 'Published covenant';
+        $originalSummary = 'Issue 7733 reproduction';
+        $originalAttachmentFileName = 'existing-attachment.pdf';
+        $attachmentExternalId = ExternalId::create('covenant-7733-attachment');
+
+        $covenant = CovenantFactory::new([
+            'title' => DossierTitle::create($originalTitle),
+            'summary' => $originalSummary,
+            'organisation' => $organisation,
+            'departments' => [$department],
+            'dossierNumber' => 'DOSSIER-7733-PUBLISHED',
+            'externalId' => ExternalId::create('covenant-7733-published'),
+            'publicationDate' => PlainDate::create('2026-02-01'),
+            'dateFrom' => PlainDate::create('2026-01-01'),
+            'dateTo' => PlainDate::create('2026-01-31'),
+            'status' => DossierStatus::PUBLISHED,
+        ])->create();
+
+        $mainDocument = CovenantMainDocumentFactory::new([
+            'dossier' => $covenant,
+            'fileInfo' => FileInfoFactory::createOne(['name' => 'published-covenant.pdf']),
+            'formalDate' => PlainDate::create('2026-01-01'),
+            'language' => AttachmentLanguage::NLD,
+            'type' => AttachmentType::COVENANT,
+        ])->create();
+        $attachment = CovenantAttachmentFactory::new([
+            'dossier' => $covenant,
+            'externalId' => $attachmentExternalId,
+            'fileInfo' => FileInfoFactory::createOne(['name' => $originalAttachmentFileName]),
+            'formalDate' => PlainDate::create('2026-01-15'),
+            'language' => AttachmentLanguage::NLD,
+            'type' => AttachmentType::COVENANT,
+        ])->create();
+
+        $updatePayload = [
+            'title' => 'Changed title must not be persisted',
+            'dossierNumber' => $covenant->getDossierNumber(),
+            'dateFrom' => $covenant->getDateFrom()?->format('Y-m-d'),
+            'dateTo' => $covenant->getDateTo()?->format('Y-m-d'),
+            'publicationDate' => $covenant->getPublicationDate()?->format('Y-m-d'),
+            'summary' => 'Changed summary must not be persisted',
+            'departmentId' => $department->getId(),
+            'subjectId' => $covenant->getSubject()?->getId(),
+            'previousVersionLink' => 'https://example.com/previous-version',
+            'parties' => ['Party A', 'Party B'],
+            'attachments' => [[
+                'fileName' => 'changed-attachment.pdf',
+                'formalDate' => '2026-01-16',
+                'type' => $attachment->getType()->value,
+                'language' => $attachment->getLanguage()->value,
+                'externalId' => $attachmentExternalId->toString(),
+            ]],
+            'noticeNotPublic' => [
+                'formalDate' => '2026-02-01',
+                'documentName' => 'Niet openbaar document',
+                'grounds' => ['5.1.1a'],
+                'explanation' => 'Reproduction of issue #7733',
+            ],
+        ];
+
+        self::createPublicationApiRequest(
+            Request::METHOD_PUT,
+            $this->buildUrl($organisation, $covenant),
+            ['json' => $updatePayload],
+        );
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'propertyPath' => 'mainDocument',
+            'message' => 'The "mainDocument" cannot be modified',
+            'code' => ConstraintViolationBuilder::MODIFIED_SUB_ENTITY_ERROR,
+        ], ]]);
+        self::assertDatabaseHas(Covenant::class, [
+            'id' => $covenant->getId(),
+            'title' => $originalTitle,
+            'summary' => $originalSummary,
+            'status' => DossierStatus::PUBLISHED->value,
+        ]);
+        self::assertDatabaseHas(CovenantMainDocument::class, [
+            'id' => $mainDocument->getId(),
+            'dossier' => ['id' => $covenant->getId()],
+        ]);
+        self::assertDatabaseHas(CovenantAttachment::class, [
+            'id' => $attachment->getId(),
+            'dossier' => ['id' => $covenant->getId()],
+            'fileInfo.name' => $originalAttachmentFileName,
+        ]);
+        self::assertDatabaseCount(CovenantAttachment::class, 1);
+        self::assertDatabaseCount(NoticeNotPublic::class, 0);
     }
 }

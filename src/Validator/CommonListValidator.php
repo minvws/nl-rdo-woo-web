@@ -6,6 +6,7 @@ namespace Shared\Validator;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use Webmozart\Assert\Assert;
 
 use function file;
 use function in_array;
@@ -28,7 +29,8 @@ class CommonListValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint): void
     {
-        /** @var CommonList $constraint */
+        Assert::isInstanceOf($constraint, CommonList::class);
+
         if ($value === null || $value === '') {
             return;
         }

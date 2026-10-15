@@ -56,8 +56,8 @@ final class LocalFilesystemTest extends SharedWebTestCase
         $this->assertTrue($result, 'The copy operation should return true');
         $this->assertTrue($this->root->hasChild('hello.txt'));
 
-        /** @var vfsStreamFile $child */
         $child = $this->root->getChild('hello.txt');
+        Assert::isInstanceOf($child, vfsStreamFile::class);
 
         $this->assertSame($contents, $child->getContent());
     }

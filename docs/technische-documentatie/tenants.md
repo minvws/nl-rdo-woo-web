@@ -10,7 +10,6 @@
 - [Tenant specific documentation](#tenant-specific-documentation)
 - [Local development](#local-development)
 - [Requesting environments for a new tenant](#requesting-environments-for-a-new-tenant)
-- [Reference pull requests](#reference-pull-requests)
 <!-- TOC -->
 
 ## Existing tenants
@@ -469,18 +468,5 @@ complete:
 ## Requesting environments for a new tenant
 
 The remote environments for a new tenant are not set up from this repository. We request them from
-the operations team by creating a Zammad ticket (their ticketing system) for *each* environment:
-test, acceptance and production.
-
-The [Woo multitenancy wiki](https://github.com/minvws/nl-rdobeheer-ansible/wiki/Woo-multitenancy) of
-the Ansible repository has the complete and up-to-date overview of what we must provide. Pay special
-attention to the
-[Requirements](https://github.com/minvws/nl-rdobeheer-ansible/wiki/Woo-multitenancy#requirements)
-section.
-
-## Reference pull requests
-
-- Adding MinBuZa: [#7263](https://github.com/minvws/nl-rdo-woo-web-private/pull/7263)
-- Adding MinOCW: [#7913](https://github.com/minvws/nl-rdo-woo-web-private/pull/7913)
-- Tenant specific Sphinx documentation: [#7336](https://github.com/minvws/nl-rdo-woo-web-private/pull/7336)
-- MinBuZa custom (hero) header: [#7451](https://github.com/minvws/nl-rdo-woo-web-private/pull/7451)
+the operations team by creating a Zammad ticket (their ticketing system) for *each* environment: test, acceptance and
+production. Check the internal documentation about what needs to be provided in the request (issue).

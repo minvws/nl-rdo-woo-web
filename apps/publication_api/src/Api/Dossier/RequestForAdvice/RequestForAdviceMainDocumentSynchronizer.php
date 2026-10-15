@@ -38,6 +38,7 @@ readonly class RequestForAdviceMainDocumentSynchronizer
             return;
         }
 
+        $this->dossierMainDocumentValidator->validateDelete($requestForAdvice);
         $this->messageBus->dispatch(new DeleteMainDocumentCommand($requestForAdvice->getId()));
     }
 

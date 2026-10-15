@@ -44,7 +44,7 @@ The override sets `dev.orbstack.domains` labels and resets (`ports: !reset []`) 
 | Publication API | <https://localhost:8443>                 | <https://localhost:8444>                 |
 
 Supporting services get `elasticsearch-woo.local`, `redis-woo.local`, `rabbitmq-woo.local` and `postgres-woo.local`.
-The Publication API and MinIO keep their published ports, so they stay on localhost either way.
+The Publication API and RustFS keep their published ports, so they stay on localhost either way.
 
 `.env.dev.local.example` sets the four `*_HOST` variables for those domains, plus `PUBLIC_BASE_URL_PROTOCOL=https`:
 OrbStack terminates TLS on its `.local` domains, so generated links have to be `https://`. The default in `.env.dev` is
@@ -83,7 +83,7 @@ keep a port mapping:
 | Publication API | <https://localhost:8543>                     | <https://localhost:8544>                     |
 
 Supporting services get `elasticsearch-woo-two.local`, `redis-woo-two.local`, `rabbitmq-woo-two.local` and
-`postgres-woo-two.local`. MinIO is shared between tenants and moves to <http://localhost:9100>, with its console on
+`postgres-woo-two.local`. RustFS is shared between tenants and moves to <http://localhost:9100>, with its console on
 `9101`.
 
 ### Why two files are needed
@@ -92,7 +92,7 @@ Both variants come as a pair of files, because they address two different consum
 files:
 
 - The **compose file** is for Docker Compose: it publishes the OrbStack domains, and in the `-two` case `!override`s the
-  ports of the services that would otherwise collide with the first instance (`publication_api`, `minio`).
+  ports of the services that would otherwise collide with the first instance (`publication_api`, `rustfs`).
 - The **env file** is for the application: Symfony needs to know which host names belong to which tenant, which base
   URLs to put in generated links, and where the Publication API lives.
 

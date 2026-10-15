@@ -33,13 +33,10 @@ class InventoryRefreshTest extends UnitTestCase
         $wooDecisionRepository->expects('getPubliclyAvailable')
             ->andReturn([$dossierA, $dossierB]);
 
-        $inquiryA = Mockery::mock(Inquiry::class);
-        $inquiryA->expects('getId')
-            ->andReturn($inquiryIdA = Uuid::v6());
-
-        $inquiryB = Mockery::mock(Inquiry::class);
-        $inquiryB->expects('getId')
-            ->andReturn($inquiryIdB = Uuid::v6());
+        $inquiryIdA = Uuid::v6();
+        $inquiryA = new Inquiry($inquiryIdA);
+        $inquiryIdB = Uuid::v6();
+        $inquiryB = new Inquiry($inquiryIdB);
 
         $inquiryRepository = Mockery::mock(InquiryRepository::class);
         $inquiryRepository->expects('findAll')

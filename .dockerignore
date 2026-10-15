@@ -3,7 +3,6 @@
 docs
 !docs/requirements.txt
 auth.json
-.npmrc.auth
 var
 vendor
 node_modules

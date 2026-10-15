@@ -42,6 +42,7 @@ use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Type;
+use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_merge;
@@ -77,8 +78,7 @@ final class DraftDecisionPublicationV1Test extends ApiPublicationV1DossierTestCa
         $data = $result->toArray();
         self::assertArrayHasKey('items', $data);
         self::assertArrayHasKey('hasNextPage', $data);
-        /** @var array<array-key, mixed> $items */
-        $items = $data['items'];
+        $items = Assert::isArray($data['items']);
         self::assertCount(1, $items);
         self::assertJsonContains(['items' => [['externalId' => $draftDecision->getExternalId()?->toString()]]]);
     }

@@ -81,3 +81,9 @@ Je kan kiezen uit de aangemaakte onderwerpen in het menu Onderwerpen. Er kan max
 Het is optioneel om dit te doen en kan achteraf gewijzigd worden. Om dit te kunnen doen heb je de rechten/de rol 'publicatie-beheer' nodig.
 
 ![Onderwerpen beheren scherm](img/onderwerp_selector.png)
+
+## Onderwerppagina's op de landingpagina
+
+Onderwerpen met een gepubliceerde pagina worden getoond op de landingpagina van de publieke website in het blok *Onderwerppagina's*:
+
+![Onderwerpen op de landingpagina](img/onderwerpen-landinpagina.png)

@@ -97,11 +97,8 @@ class WooDecisionVoterTest extends UnitTestCase
     {
         $token = Mockery::mock(TokenInterface::class);
 
-        $inquiryA = Mockery::mock(Inquiry::class);
-        $inquiryA->expects('getId')->andReturn(Uuid::v6());
-
-        $inquiryB = Mockery::mock(Inquiry::class);
-        $inquiryB->expects('getId')->andReturn(Uuid::v6());
+        $inquiryA = new Inquiry(Uuid::v6());
+        $inquiryB = new Inquiry(Uuid::v6());
 
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getStatus')->times(2)->andReturn(DossierStatus::PREVIEW);
@@ -119,11 +116,10 @@ class WooDecisionVoterTest extends UnitTestCase
     {
         $token = Mockery::mock(TokenInterface::class);
 
-        $inquiryA = Mockery::mock(Inquiry::class);
-        $inquiryA->expects('getId')->andReturn(Uuid::v6());
+        $inquiryIdB = Uuid::v6();
 
-        $inquiryB = Mockery::mock(Inquiry::class);
-        $inquiryB->expects('getId')->andReturn($inquiryIdB = Uuid::v6());
+        $inquiryA = new Inquiry(Uuid::v6());
+        $inquiryB = new Inquiry($inquiryIdB);
 
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getStatus')->times(2)->andReturn(DossierStatus::PREVIEW);

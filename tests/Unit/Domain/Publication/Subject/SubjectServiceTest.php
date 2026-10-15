@@ -63,8 +63,8 @@ class SubjectServiceTest extends UnitTestCase
 
     public function testSave(): void
     {
-        $subject = Mockery::mock(Subject::class);
-        $subject->expects('getId')->andReturn($subjectId = Uuid::v6());
+        $subjectId = Uuid::v6();
+        $subject = new Subject($subjectId);
 
         $this->repository->expects('save')->with($subject, true);
 

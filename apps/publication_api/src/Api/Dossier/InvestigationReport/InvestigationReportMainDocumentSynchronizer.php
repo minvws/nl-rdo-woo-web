@@ -38,6 +38,7 @@ readonly class InvestigationReportMainDocumentSynchronizer
             return;
         }
 
+        $this->dossierMainDocumentValidator->validateDelete($investigationReport);
         $this->messageBus->dispatch(new DeleteMainDocumentCommand($investigationReport->getId()));
     }
 

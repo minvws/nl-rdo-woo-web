@@ -11,9 +11,26 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Service\Security\User;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\OrganisationPrefix;
+use Shared\ValueObject\WooUuid;
+use Symfony\Component\Uid\Uuid;
 
 class OrganisationTest extends UnitTestCase
 {
+    public function testDefaultId(): void
+    {
+        $organisation = new Organisation();
+
+        self::assertInstanceOf(WooUuid::class, $organisation->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $organisation = new Organisation($id);
+
+        self::assertSame($id, $organisation->getId());
+    }
+
     public function testSetAndGetName(): void
     {
         $organisation = new Organisation();

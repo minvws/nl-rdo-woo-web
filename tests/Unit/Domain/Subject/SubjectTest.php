@@ -15,10 +15,26 @@ use Shared\Domain\Publication\Subject\SubjectContentTree;
 use Shared\Domain\Publication\Subject\SubjectContentTreeStatus;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 class SubjectTest extends UnitTestCase
 {
+    public function testDefaultId(): void
+    {
+        $subject = new Subject();
+
+        self::assertInstanceOf(WooUuid::class, $subject->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $subject = new Subject($id);
+
+        self::assertSame($id, $subject->getId());
+    }
+
     public function testGettersAndSetters(): void
     {
         $subject = new Subject();

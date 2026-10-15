@@ -65,4 +65,8 @@
         /* Also don't show it in Safari */
         @apply hidden;
     }
+
+    :focus {
+        @apply outline-dotted outline-2 outline-black;
+    }
 }

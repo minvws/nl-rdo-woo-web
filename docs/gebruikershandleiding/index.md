@@ -15,4 +15,5 @@ organisatiebeheer/index
 admin/index
 publication_api
 releasenotes
+changelog
 ```

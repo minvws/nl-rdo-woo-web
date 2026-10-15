@@ -14,6 +14,7 @@ use Shared\Service\Search\Query\Condition\QueryConditionBuilderInterface;
 use Shared\Service\Search\Query\Sort\SortField;
 use Shared\Service\Search\Query\Sort\SortOrder;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Webmozart\Assert\Assert;
 
 readonly class SearchParameters
 {
@@ -148,8 +149,8 @@ readonly class SearchParameters
 
     public function includeWithoutDate(): self
     {
-        /** @var DateFacetInput $dateFacet */
         $dateFacet = $this->facetInputs->getByFacetKey(FacetKey::DATE);
+        Assert::isInstanceOf($dateFacet, DateFacetInput::class);
 
         return new self(
             facetInputs: $this->facetInputs->withFacetInput(

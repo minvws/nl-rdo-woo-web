@@ -12,7 +12,7 @@ use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Shared\ValueObject\WooUuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,12 +27,6 @@ use function strtolower;
 class Department implements EntityWithFileInfo
 {
     use TimestampableTrait;
-
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private Uuid $id;
 
     #[ORM\Column(length: 100, unique: true)]
     #[Assert\Length(min: 2, max: 100)]
@@ -76,8 +70,11 @@ class Department implements EntityWithFileInfo
     #[Assert\Valid()]
     protected FileInfo $fileInfo;
 
-    public function __construct()
-    {
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
+    ) {
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->organisations = new ArrayCollection();

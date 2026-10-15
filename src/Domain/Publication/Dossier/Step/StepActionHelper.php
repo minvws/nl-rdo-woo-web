@@ -15,6 +15,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
+use Webmozart\Assert\Assert;
 
 readonly class StepActionHelper
 {
@@ -110,8 +111,8 @@ readonly class StepActionHelper
             return false;
         }
 
-        /** @var SubmitButton $button */
         $button = $form->get($name);
+        Assert::isInstanceOf($button, SubmitButton::class);
 
         return $button->isClicked();
     }

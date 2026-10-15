@@ -124,7 +124,12 @@ final class DossierRequestHandlerTest extends UnitTestCase
         $dossierStrategy->expects('validateRequest')->with($dossierRequestDto);
         $dossierStrategy->expects('update')->with($wooDecision, $dossierRequestDto, $organisation, $department, $subject);
 
-        $dossierRequestHandler = new DossierRequestHandler($dossierNumberValidator, $dossierRepository, $dossierSupportService, $dossierUpdateGuard);
+        $dossierRequestHandler = new DossierRequestHandler(
+            $dossierNumberValidator,
+            $dossierRepository,
+            $dossierSupportService,
+            $dossierUpdateGuard,
+        );
 
         self::assertSame($wooDecision, $dossierRequestHandler->handle($dossierRequestDto, $organisation, $dossierExternalId, $dossierStrategy));
     }

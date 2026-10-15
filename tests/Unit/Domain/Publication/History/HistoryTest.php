@@ -7,10 +7,26 @@ namespace Shared\Tests\Unit\Domain\Publication\History;
 use DateTimeImmutable;
 use Shared\Domain\Publication\History\History;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 class HistoryTest extends UnitTestCase
 {
+    public function testDefaultId(): void
+    {
+        $entity = new History();
+
+        self::assertInstanceOf(WooUuid::class, $entity->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $entity = new History($id);
+
+        self::assertSame($id, $entity->getId());
+    }
+
     public function testSetAndGetType(): void
     {
         $entity = new History();

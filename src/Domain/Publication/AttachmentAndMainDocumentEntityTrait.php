@@ -16,6 +16,7 @@ use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,7 +31,7 @@ trait AttachmentAndMainDocumentEntityTrait
     use FileCacheKeyBasedOnClassAndIdTrait;
 
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
+    #[ORM\Column(type: 'uuid')]
     protected Uuid $id;
 
     #[ORM\Embedded(class: FileInfo::class, columnPrefix: 'file_')]
@@ -66,7 +67,7 @@ trait AttachmentAndMainDocumentEntityTrait
 
     public function __construct()
     {
-        $this->id = Uuid::v6();
+        $this->id = new WooUuid();
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->fileInfo = new FileInfo();

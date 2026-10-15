@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\InvestigationReport;
 
+use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
 use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
@@ -24,7 +25,7 @@ readonly class InvestigationReportStrategy implements DossierStrategy
     public function __construct(
         private InvestigationReportPersister $investigationReportPersister,
         private InvestigationReportRequestMapper $investigationReportRequestMapper,
-        private InvestigationReportAttachmentSynchronizer $investigationReportAttachmentSynchronizer,
+        private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
         private InvestigationReportMainDocumentSynchronizer $investigationReportMainDocumentSynchronizer,
         private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
     ) {
@@ -65,7 +66,7 @@ readonly class InvestigationReportStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->create($investigationReport, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->investigationReportAttachmentSynchronizer->create($investigationReport, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->create($investigationReport, $dossierRequestDto->attachments);
 
         $this->investigationReportPersister->persist($investigationReport, null, $attachmentEvents);
 
@@ -94,7 +95,7 @@ readonly class InvestigationReportStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->investigationReportAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
         $this->investigationReportPersister->persist($dossier, $investigationReportSnapshot, $attachmentEvents);
     }

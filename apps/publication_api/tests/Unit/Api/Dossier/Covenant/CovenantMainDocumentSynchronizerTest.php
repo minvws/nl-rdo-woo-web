@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Unit\Api\Dossier\Covenant;
 
+use ApiPlatform\Validator\Exception\ValidationException;
 use Mockery;
 use PublicationApi\Api\Dossier\Covenant\CovenantMainDocumentRequestDto;
 use PublicationApi\Api\Dossier\Covenant\CovenantMainDocumentSynchronizer;
@@ -14,6 +15,7 @@ use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 final class CovenantMainDocumentSynchronizerTest extends UnitTestCase
 {
@@ -96,6 +98,9 @@ final class CovenantMainDocumentSynchronizerTest extends UnitTestCase
             new CovenantMainDocument($covenant, $this->getFaker()->plainDate(), $this->getFaker()->attachmentLanguage()),
         );
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->with($covenant);
+
         $messageBus = Mockery::mock(MessageBusInterface::class);
         $messageBus->expects('dispatch')
             ->with(Mockery::on(static function (DeleteMainDocumentCommand $deleteMainDocumentCommand) use ($covenant): bool {
@@ -104,10 +109,34 @@ final class CovenantMainDocumentSynchronizerTest extends UnitTestCase
             ->andReturn(new Envelope(new DeleteMainDocumentCommand($covenant->getId())));
 
         $covenantMainDocumentSynchronizer = new CovenantMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
+            $dossierMainDocumentValidator,
             $messageBus,
         );
 
+        $covenantMainDocumentSynchronizer->delete($covenant);
+    }
+
+    public function testDeleteWhenTransitionIsNotAllowed(): void
+    {
+        $covenant = new Covenant();
+        $covenant->setMainDocument(
+            new CovenantMainDocument($covenant, $this->getFaker()->plainDate(), $this->getFaker()->attachmentLanguage()),
+        );
+
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')
+            ->with($covenant)
+            ->andThrow(new ValidationException(ConstraintViolationList::createFromMessage('Deletion is not allowed')));
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
+        $covenantMainDocumentSynchronizer = new CovenantMainDocumentSynchronizer(
+            $dossierMainDocumentValidator,
+            $messageBus,
+        );
+
+        self::expectException(ValidationException::class);
         $covenantMainDocumentSynchronizer->delete($covenant);
     }
 
@@ -115,9 +144,15 @@ final class CovenantMainDocumentSynchronizerTest extends UnitTestCase
     {
         $covenant = new Covenant();
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->never();
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
         $covenantMainDocumentSynchronizer = new CovenantMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
-            Mockery::mock(MessageBusInterface::class),
+            $dossierMainDocumentValidator,
+            $messageBus,
         );
 
         $covenantMainDocumentSynchronizer->delete($covenant);

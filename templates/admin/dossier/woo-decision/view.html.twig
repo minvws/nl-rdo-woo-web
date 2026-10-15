@@ -242,33 +242,9 @@
                 </twig:Admin:Definition>
 
                 <twig:Admin:Definition term="{{ 'admin.dossiers.decision.inquiry_link' | trans }}">
-                    {% set case_options = {
-                        'href': '/',
-                        'thClassName': 'w-40'
-                    } %}
                     {% if dossier.inquiries | length %}
                         <div class="text-base text-black">
-                            <table class="bhr-table table-fixed">
-                                <thead>
-                                    {% include 'admin/layout/sort.html.twig' with {'title': 'Zaaknummer', 'sorted': true, direction: 'desc', 'options': case_options, 'sortClassName': 'js-sort-table-toggler'} %}
-                                    <th scope="col">Link voor verzoeker</th>
-                                </thead>
-                                <tbody data-e2e-name="linked-inquiries">
-                                    {% for inquiry in dossier.inquiries|sort((a, b) => a.inquiryNumber <=> b.inquiryNumber) %}
-                                    <tr>
-                                        <td><span class="break-all">{{ inquiry.inquiryNumber }}</span></td>
-                                        <td class="pr-0!">
-                                            {% set url = PUBLIC_BASE_URL ~ path('app_inquiry_detail', {token: inquiry.token}) %}
-                                            <twig:Admin:CopyToClipboardLayout copy="{{ url }}">
-                                                <a class="bhr-a" href="{{ url }}">
-                                                    {{ url }}
-                                                </a>
-                                            </twig:Admin:CopyToClipboardLayout>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                            {% include 'admin/dossier/woo-decision/shared/inquiry-links.html.twig' with { inquiries: dossier.inquiries } %}
                         </div>
                     {% else %}
                         Dit besluit heeft geen zaaknummers

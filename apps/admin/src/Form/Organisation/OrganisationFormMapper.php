@@ -32,8 +32,8 @@ final class OrganisationFormMapper
             ->setName($data->name)
             ->setPrefix($prefix);
 
-        /** @var list<Department> $currentDepartments */
         $currentDepartments = array_values($organisation->getDepartments()->toArray());
+        Assert::allIsInstanceOf($currentDepartments, Department::class);
         foreach ($currentDepartments as $department) {
             if (! in_array($department, $data->departments, true)) {
                 $organisation->removeDepartment($department);

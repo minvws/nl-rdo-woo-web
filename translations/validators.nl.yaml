@@ -185,6 +185,7 @@ document.document_number_not_unique: 'DocumentReferentie {{ documentNumber }} be
 woo_decision.duplicate_document_id: 'De collectie bevat dubbele documenten. Dubbel documentId: {{ value }}.'
 dossier.document_or_notice_required: 'Een dossier moet ten minste een hoofddocument of een mededeling niet-openbaar bevatten'
 dossier.document_and_notice_not_allowed: 'Een dossier kan niet zowel een hoofddocument als een mededeling niet-openbaar bevatten'
+dossier.update_not_allowed_in_current_status: 'Dit dossier kan niet worden aangepast in de huidige status'
 draft_decision.request_for_advice_or_policy_document_required: 'Een ontwerpbesluit moet ten minste een adviesaanvraag of opdrachtformulering bevatten'
 dossier.title_too_short: 'De titel moet minimaal {{ limit }} tekens bevatten.'
 dossier.title_too_long: 'De titel mag maximaal {{ limit }} tekens bevatten.'

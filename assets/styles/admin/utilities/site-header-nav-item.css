@@ -3,7 +3,7 @@
 }
 
 @utility bhr-site-header-nav-item--anchor {
-  @apply hover-focus:bhr-site-header-nav-item--active;
+  @apply hover-focus:bhr-site-header-nav-item--active focus:-outline-offset-2;
 }
 
 @utility bhr-site-header-nav-item--active {
@@ -12,10 +12,6 @@
 
 @utility bhr-site-header-nav-item--divider {
   @apply relative after:content-[''] after:bg-bhr-gray-700 after:absolute after:w-px after:inset-y-0 after:right-0 after:my-2;
-}
-
-@utility bhr-site-header-nav-item--skip-link {
-  @apply sr-only focus:not-sr-only focus:px-4 focus:py-8;
 }
 
 @utility bhr-site-header-sub-nav-item {

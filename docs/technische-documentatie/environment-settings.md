@@ -153,7 +153,8 @@ to create your own storage adapter since internally it will be using flysystem.
 | `<TENANT>_STORAGE_MINIO_UPLOAD_BUCKET`    | Bucket for temporary upload storage                                   | `upload-bucket`    |
 | `<TENANT>_STORAGE_MINIO_ASSETS_BUCKET`    | Bucket for assets storage (like the department logo)                  | `assets-bucket`    |
 
-Note that we are using Minio as a S3 compatible storage system. This means that you can also use AWS S3 as a storage system.
+Any S3-compatible storage system works: locally this is [RustFS](https://github.com/rustfs/rustfs), but AWS S3 or MinIO
+work as well.
 
 ### Publication API settings
 

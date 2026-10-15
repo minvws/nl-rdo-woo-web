@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Unit\Api\Dossier\Disposition;
 
+use ApiPlatform\Validator\Exception\ValidationException;
 use Mockery;
 use PublicationApi\Api\Dossier\Disposition\DispositionMainDocumentRequestDto;
 use PublicationApi\Api\Dossier\Disposition\DispositionMainDocumentSynchronizer;
@@ -14,6 +15,7 @@ use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 final class DispositionMainDocumentSynchronizerTest extends UnitTestCase
 {
@@ -105,6 +107,9 @@ final class DispositionMainDocumentSynchronizerTest extends UnitTestCase
             ),
         );
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->with($disposition);
+
         $messageBus = Mockery::mock(MessageBusInterface::class);
         $messageBus->expects('dispatch')
             ->with(Mockery::on(static function (DeleteMainDocumentCommand $deleteMainDocumentCommand) use ($disposition): bool {
@@ -113,10 +118,39 @@ final class DispositionMainDocumentSynchronizerTest extends UnitTestCase
             ->andReturn(new Envelope(new DeleteMainDocumentCommand($disposition->getId())));
 
         $dispositionMainDocumentSynchronizer = new DispositionMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
+            $dossierMainDocumentValidator,
             $messageBus,
         );
 
+        $dispositionMainDocumentSynchronizer->delete($disposition);
+    }
+
+    public function testDeleteWhenTransitionIsNotAllowed(): void
+    {
+        $disposition = new Disposition();
+        $disposition->setMainDocument(
+            new DispositionMainDocument(
+                $disposition,
+                $this->getFaker()->plainDate(),
+                $this->getFaker()->attachmentType(DispositionMainDocument::getAllowedTypes()),
+                $this->getFaker()->attachmentLanguage(),
+            ),
+        );
+
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')
+            ->with($disposition)
+            ->andThrow(new ValidationException(ConstraintViolationList::createFromMessage('Deletion is not allowed')));
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
+        $dispositionMainDocumentSynchronizer = new DispositionMainDocumentSynchronizer(
+            $dossierMainDocumentValidator,
+            $messageBus,
+        );
+
+        self::expectException(ValidationException::class);
         $dispositionMainDocumentSynchronizer->delete($disposition);
     }
 
@@ -124,9 +158,15 @@ final class DispositionMainDocumentSynchronizerTest extends UnitTestCase
     {
         $disposition = new Disposition();
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->never();
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
         $dispositionMainDocumentSynchronizer = new DispositionMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
-            Mockery::mock(MessageBusInterface::class),
+            $dossierMainDocumentValidator,
+            $messageBus,
         );
 
         $dispositionMainDocumentSynchronizer->delete($disposition);

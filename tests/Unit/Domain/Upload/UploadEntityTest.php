@@ -14,7 +14,9 @@ use Shared\Service\Security\User;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\HttpFoundation\InputBag;
+use Symfony\Component\Uid\Uuid;
 
 class UploadEntityTest extends UnitTestCase
 {
@@ -25,6 +27,27 @@ class UploadEntityTest extends UnitTestCase
     {
         $this->user = Mockery::mock(User::class);
         $this->context = new InputBag(['foo' => 'bar']);
+    }
+
+    public function testDefaultId(): void
+    {
+        $uploadId = $this->getFaker()->uuid();
+        $user = Mockery::mock(User::class);
+
+        $uploadEntity = new UploadEntity($uploadId, UploadGroupId::WOO_DECISION_DOCUMENTS, $user, new InputBag());
+
+        self::assertInstanceOf(WooUuid::class, $uploadEntity->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $uploadId = $this->getFaker()->uuid();
+        $user = Mockery::mock(User::class);
+
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $uploadEntity = new UploadEntity($uploadId, UploadGroupId::WOO_DECISION_DOCUMENTS, $user, new InputBag(), $id);
+
+        self::assertSame($id, $uploadEntity->getId());
     }
 
     public function testFinishUploading(): void

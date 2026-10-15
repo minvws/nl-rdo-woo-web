@@ -72,7 +72,6 @@ abstract class AbstractMainDocumentProcessor implements ProcessorInterface
 
     private function create(AttachmentCreateDto $data, Uuid $dossierId): AbstractMainDocumentDto
     {
-        /** @var AbstractMainDocument $mainDocument */
         $mainDocument = $this->handle(
             new CreateMainDocumentCommand(
                 dossierId: $dossierId,
@@ -84,13 +83,13 @@ abstract class AbstractMainDocumentProcessor implements ProcessorInterface
                 uploadFileReference: $data->uploadUuid,
             ),
         );
+        Assert::isInstanceOf($mainDocument, AbstractMainDocument::class);
 
         return $this->fromEntityToDto($mainDocument);
     }
 
     private function update(AttachmentUpdateDto $data, Uuid $dossierId): AbstractMainDocumentDto
     {
-        /** @var AbstractMainDocument $mainDocument */
         $mainDocument = $this->handle(
             new UpdateMainDocumentCommand(
                 dossierId: $dossierId,
@@ -102,6 +101,7 @@ abstract class AbstractMainDocumentProcessor implements ProcessorInterface
                 uploadFileReference: $data->uploadUuid,
             ),
         );
+        Assert::isInstanceOf($mainDocument, AbstractMainDocument::class);
 
         return $this->fromEntityToDto($mainDocument);
     }

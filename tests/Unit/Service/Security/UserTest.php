@@ -10,11 +10,28 @@ use Shared\Service\Security\LoginActivity\LoginActivity;
 use Shared\Service\Security\Roles;
 use Shared\Service\Security\User;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\WooUuid;
+use Symfony\Component\Uid\Uuid;
 
 use function array_values;
 
 class UserTest extends UnitTestCase
 {
+    public function testDefaultId(): void
+    {
+        $user = new User();
+
+        self::assertInstanceOf(WooUuid::class, $user->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $user = new User($id);
+
+        self::assertSame($id, $user->getId());
+    }
+
     public function testSetAndGetEmail(): void
     {
         $user = new User();

@@ -41,7 +41,7 @@ http:
           }
         ],
         "year": 2025,
-        "dossierNumber": "bruno-{{sessionTimestamp}}",
+        "dossierNumber": "{{annualReportDossierNumber}}",
         "publicationDate": "2026-02-01"
       }
   auth: inherit
@@ -58,6 +58,9 @@ runtime:
 
         if (!bru.getVar("annualReportDossierExternalId")) {
           bru.setVar("annualReportDossierExternalId", crypto.randomUUID());
+        }
+        if (!bru.getVar("annualReportDossierNumber")) {
+          bru.setVar("annualReportDossierNumber", `bruno-${Date.now()}`);
         }
         if (!bru.getVar("annualReportAttachmentExternalId")) {
           bru.setVar("annualReportAttachmentExternalId", crypto.randomUUID());

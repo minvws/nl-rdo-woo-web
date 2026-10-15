@@ -9,6 +9,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use Webmozart\Assert\Assert;
 
 /**
  * This validator validates if the new password isn't the same as the current password of the user.
@@ -30,11 +31,11 @@ class NotTheSamePasswordValidator extends ConstraintValidator
             return;
         }
 
-        /** @var User $user */
         $user = $this->security->getUser();
+        Assert::isInstanceOf($user, User::class);
+        Assert::isInstanceOf($constraint, NotTheSamePassword::class);
 
         if ($this->passwordHasher->isPasswordValid($user, $value)) {
-            /** @var NotTheSamePassword $constraint */
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $value)
                 ->addViolation();

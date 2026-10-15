@@ -26,8 +26,8 @@ trait VfsStreamHelpers
         $newDirectoryPath = sprintf('%s/%s', trim($pathPrefix, '/'), trim(dirname($fileInfoPath), '/'));
         vfsStream::newDirectory($newDirectoryPath)->at($this->root);
 
-        /** @var vfsStreamDirectory $childDir */
         $childDir = $this->root->getChild($newDirectoryPath);
+        Assert::isInstanceOf($childDir, vfsStreamDirectory::class);
 
         $fileInfoName = $entity->getFileInfo()->getName();
         Assert::string($fileInfoName);

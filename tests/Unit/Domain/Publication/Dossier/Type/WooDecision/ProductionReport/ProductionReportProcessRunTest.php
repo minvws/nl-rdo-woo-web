@@ -14,6 +14,8 @@ use Shared\Domain\Publication\FileInfo;
 use Shared\Exception\ProcessInventoryException;
 use Shared\Service\Inventory\InventoryChangeset;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\WooUuid;
+use Symfony\Component\Uid\Uuid;
 
 final class ProductionReportProcessRunTest extends UnitTestCase
 {
@@ -28,6 +30,27 @@ final class ProductionReportProcessRunTest extends UnitTestCase
         $this->productionReportProcessRun = new ProductionReportProcessRun($this->wooDecision);
 
         parent::setUp();
+    }
+
+    public function testDefaultId(): void
+    {
+        $wooDecision = Mockery::mock(WooDecision::class);
+        $wooDecision->expects('setProcessRun');
+
+        $productionReportProcessRun = new ProductionReportProcessRun($wooDecision);
+
+        self::assertInstanceOf(WooUuid::class, $productionReportProcessRun->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $wooDecision = Mockery::mock(WooDecision::class);
+        $wooDecision->expects('setProcessRun');
+
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $productionReportProcessRun = new ProductionReportProcessRun($wooDecision, $id);
+
+        self::assertSame($id, $productionReportProcessRun->getId());
     }
 
     public function testStartComparing(): void

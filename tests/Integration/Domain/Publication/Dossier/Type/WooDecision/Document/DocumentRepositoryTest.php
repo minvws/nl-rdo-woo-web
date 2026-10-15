@@ -564,7 +564,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         );
 
         self::assertFalse($documentInquiryNumbers->isDocumentNotFound());
-        self::assertEquals($document->getId(), $documentInquiryNumbers->documentId);
+        self::assertTrue($document->getId()->equals($documentInquiryNumbers->documentId));
         self::assertEquals($documentInquiryNumbers->inquiryNumbers->values, [$inquiryNumber]);
     }
 

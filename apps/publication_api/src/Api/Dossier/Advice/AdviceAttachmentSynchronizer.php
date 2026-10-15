@@ -6,8 +6,7 @@ namespace PublicationApi\Api\Dossier\Advice;
 
 use ApiPlatform\Validator\Exception\ValidationException;
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Dossier\DossierAttachmentValidator;
-use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Attachment\Event\AbstractAttachmentEvent;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
@@ -21,8 +20,7 @@ use function sprintf;
 readonly class AdviceAttachmentSynchronizer
 {
     public function __construct(
-        private AttachmentSynchronizer $attachmentSynchronizer,
-        private DossierAttachmentValidator $dossierAttachmentValidator,
+        private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
     ) {
     }
 
@@ -33,9 +31,10 @@ readonly class AdviceAttachmentSynchronizer
      */
     public function create(Advice $advice, array $attachmentRequestDtos): array
     {
-        $this->dossierAttachmentValidator->assertUniqueExternalIds($attachmentRequestDtos);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->create($advice, $attachmentRequestDtos);
+        self::assertAtMostOneRequestForAdvice($advice->getAttachments()->getValues());
 
-        return $this->synchronize($advice, $attachmentRequestDtos);
+        return $attachmentEvents;
     }
 
     /**
@@ -45,24 +44,8 @@ readonly class AdviceAttachmentSynchronizer
      */
     public function update(Advice $advice, array $attachmentRequestDtos): array
     {
-        $this->dossierAttachmentValidator->assertUniqueExternalIds($attachmentRequestDtos);
-        $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($advice, $attachmentRequestDtos);
-
-        return $this->synchronize($advice, $attachmentRequestDtos);
-    }
-
-    /**
-     * @param list<AttachmentRequestDto> $attachmentRequestDtos
-     *
-     * @return list<AbstractAttachmentEvent>
-     */
-    private function synchronize(Advice $advice, array $attachmentRequestDtos): array
-    {
-        $attachmentEvents = $this->attachmentSynchronizer->sync($advice, $attachmentRequestDtos);
-
-        $attachments = $advice->getAttachments()->getValues();
-        self::assertAtMostOneRequestForAdvice($attachments);
-        $this->dossierAttachmentValidator->validate($attachments, $advice->getStatus());
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->update($advice, $attachmentRequestDtos);
+        self::assertAtMostOneRequestForAdvice($advice->getAttachments()->getValues());
 
         return $attachmentEvents;
     }

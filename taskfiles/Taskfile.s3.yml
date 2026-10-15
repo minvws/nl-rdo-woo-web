@@ -1,0 +1,36 @@
+# https://taskfile.dev
+version: '3.50.0'
+
+vars:
+  S3_REMOTE: local
+  S3_BUCKETS:
+    - doc-bucket
+    - batch-bucket
+    - woo-index-bucket
+    - upload-bucket
+    - assets-bucket
+
+tasks:
+  create-buckets:
+    desc: Create the default buckets
+    cmds:
+      - task: rclone-each-bucket
+        vars: { RCLONE_CMD: mkdir }
+
+  clear-buckets:
+    desc: Clear the default buckets
+    cmds:
+      - echo 'Clearing S3 buckets...'
+      - task: rclone-each-bucket
+        vars: { RCLONE_CMD: delete }
+      - echo 'Done clearing S3 buckets.'
+
+  rclone-each-bucket:
+    internal: true
+    vars:
+      BUCKETS: '{{ range $tenant := .LOCAL_TENANTS }}{{ range $bucket := $.S3_BUCKETS }}{{ $.S3_REMOTE }}:{{ $tenant }}-{{ $bucket }} {{ end }}{{ end }}'
+    cmds:
+      - task: :dc
+        vars: { SUB_CMD: "run --rm --entrypoint sh rclone -c 'for bucket in {{ .BUCKETS }}; do rclone {{ .RCLONE_CMD }} $bucket || exit 1; done'" }
+    requires:
+      vars: [LOCAL_TENANTS, S3_BUCKETS, RCLONE_CMD]

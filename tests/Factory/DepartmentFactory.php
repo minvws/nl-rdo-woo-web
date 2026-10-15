@@ -7,6 +7,7 @@ namespace Shared\Tests\Factory;
 use DateTimeImmutable;
 use Override;
 use Shared\Domain\Department\Department;
+use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 
 use function sprintf;
@@ -23,8 +24,8 @@ final class DepartmentFactory extends PersistentObjectFactory
      */
     protected function defaults(): array
     {
-        /** @var string $name */
         $name = self::faker()->unique()->words(nb: 6, asText: true);
+        Assert::string($name);
 
         return [
             'name' => sprintf('%s %s', $name, 'Department'),

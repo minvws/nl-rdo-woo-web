@@ -14,6 +14,7 @@ use Shared\Domain\Upload\Exception\UploadValidationException;
 use Shared\Service\Security\User;
 use Shared\Service\Uploader\UploadGroupId;
 use Shared\ValueObject\ExternalId;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\Uid\Uuid;
 
@@ -23,10 +24,6 @@ use Symfony\Component\Uid\Uuid;
 class UploadEntity
 {
     use TimestampableTrait;
-
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
-    private Uuid $id;
 
     #[ORM\Column(length: 50)]
     private string $uploadId;
@@ -65,9 +62,15 @@ class UploadEntity
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $context;
 
-    public function __construct(string $uploadId, UploadGroupId $uploadGroupId, ?User $user, InputBag $context)
-    {
-        $this->id = Uuid::v6();
+    public function __construct(
+        string $uploadId,
+        UploadGroupId $uploadGroupId,
+        ?User $user,
+        InputBag $context,
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
+    ) {
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->uploadId = $uploadId;

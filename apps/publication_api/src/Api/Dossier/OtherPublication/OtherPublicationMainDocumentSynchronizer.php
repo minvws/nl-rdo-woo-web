@@ -38,6 +38,7 @@ readonly class OtherPublicationMainDocumentSynchronizer
             return;
         }
 
+        $this->dossierMainDocumentValidator->validateDelete($otherPublication);
         $this->messageBus->dispatch(new DeleteMainDocumentCommand($otherPublication->getId()));
     }
 

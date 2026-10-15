@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Unit\Api\Dossier\OtherPublication;
 
 use Mockery;
+use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
-use PublicationApi\Api\Dossier\OtherPublication\OtherPublicationAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\OtherPublication\OtherPublicationMainDocumentRequestDto;
 use PublicationApi\Api\Dossier\OtherPublication\OtherPublicationMainDocumentSynchronizer;
 use PublicationApi\Api\Dossier\OtherPublication\OtherPublicationPersister;
@@ -34,7 +34,7 @@ final class OtherPublicationStrategyTest extends UnitTestCase
         $otherPublicationStrategy = new OtherPublicationStrategy(
             Mockery::mock(OtherPublicationPersister::class),
             Mockery::mock(OtherPublicationRequestMapper::class),
-            Mockery::mock(OtherPublicationAttachmentSynchronizer::class),
+            Mockery::mock(DossierAttachmentSynchronizer::class),
             Mockery::mock(OtherPublicationMainDocumentSynchronizer::class),
             Mockery::mock(NoticeNotPublicSynchronizer::class),
         );
@@ -85,8 +85,8 @@ final class OtherPublicationStrategyTest extends UnitTestCase
         $otherPublicationMainDocumentSynchronizer = Mockery::mock(OtherPublicationMainDocumentSynchronizer::class);
         $otherPublicationMainDocumentSynchronizer->expects('create')->with($otherPublication, $mainDocumentRequestDto);
 
-        $otherPublicationAttachmentSynchronizer = Mockery::mock(OtherPublicationAttachmentSynchronizer::class);
-        $otherPublicationAttachmentSynchronizer->expects('create')
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('create')
             ->with($otherPublication, $otherPublicationRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
@@ -96,7 +96,7 @@ final class OtherPublicationStrategyTest extends UnitTestCase
         $otherPublicationStrategy = new OtherPublicationStrategy(
             $otherPublicationPersister,
             $otherPublicationRequestMapper,
-            $otherPublicationAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             $otherPublicationMainDocumentSynchronizer,
             Mockery::mock(NoticeNotPublicSynchronizer::class),
         );
@@ -145,8 +145,8 @@ final class OtherPublicationStrategyTest extends UnitTestCase
         $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
         $noticeNotPublicSynchronizer->expects('create')->with($otherPublication, $noticeNotPublicRequestDto);
 
-        $otherPublicationAttachmentSynchronizer = Mockery::mock(OtherPublicationAttachmentSynchronizer::class);
-        $otherPublicationAttachmentSynchronizer->expects('create')->andReturn($attachmentEvents);
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('create')->andReturn($attachmentEvents);
 
         $otherPublicationPersister = Mockery::mock(OtherPublicationPersister::class);
         $otherPublicationPersister->expects('persist')->with($otherPublication, null, $attachmentEvents);
@@ -154,7 +154,7 @@ final class OtherPublicationStrategyTest extends UnitTestCase
         $otherPublicationStrategy = new OtherPublicationStrategy(
             $otherPublicationPersister,
             $otherPublicationRequestMapper,
-            $otherPublicationAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             Mockery::mock(OtherPublicationMainDocumentSynchronizer::class),
             $noticeNotPublicSynchronizer,
         );
@@ -207,8 +207,8 @@ final class OtherPublicationStrategyTest extends UnitTestCase
         $otherPublicationMainDocumentSynchronizer = Mockery::mock(OtherPublicationMainDocumentSynchronizer::class);
         $otherPublicationMainDocumentSynchronizer->expects('update')->with($otherPublication, $mainDocumentRequestDto);
 
-        $otherPublicationAttachmentSynchronizer = Mockery::mock(OtherPublicationAttachmentSynchronizer::class);
-        $otherPublicationAttachmentSynchronizer->expects('update')
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('update')
             ->with($otherPublication, $otherPublicationRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
@@ -219,7 +219,7 @@ final class OtherPublicationStrategyTest extends UnitTestCase
         $otherPublicationStrategy = new OtherPublicationStrategy(
             $otherPublicationPersister,
             $otherPublicationRequestMapper,
-            $otherPublicationAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             $otherPublicationMainDocumentSynchronizer,
             $noticeNotPublicSynchronizer,
         );
@@ -263,8 +263,8 @@ final class OtherPublicationStrategyTest extends UnitTestCase
         $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
         $noticeNotPublicSynchronizer->expects('update')->with($otherPublication, $noticeNotPublicRequestDto);
 
-        $otherPublicationAttachmentSynchronizer = Mockery::mock(OtherPublicationAttachmentSynchronizer::class);
-        $otherPublicationAttachmentSynchronizer->expects('update')->andReturn($attachmentEvents);
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('update')->andReturn($attachmentEvents);
 
         $otherPublicationPersister = Mockery::mock(OtherPublicationPersister::class);
         $otherPublicationPersister->expects('snapshot')->with($otherPublication)->andReturn($otherPublicationSnapshot);
@@ -273,7 +273,7 @@ final class OtherPublicationStrategyTest extends UnitTestCase
         $otherPublicationStrategy = new OtherPublicationStrategy(
             $otherPublicationPersister,
             $otherPublicationRequestMapper,
-            $otherPublicationAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             $otherPublicationMainDocumentSynchronizer,
             $noticeNotPublicSynchronizer,
         );

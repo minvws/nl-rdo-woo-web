@@ -13,6 +13,7 @@ use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Story\WooIndexAnnualReportStory;
 use Shared\Tests\Story\WooIndexCovenantStory;
 use Shared\Tests\Story\WooIndexWooDecisionStory;
+use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 use function iterator_to_array;
@@ -27,20 +28,20 @@ final class MainDocumentRepositoryTest extends SharedWebTestCase
         $mainDocumentRepository = self::fromContainer(MainDocumentRepository::class);
         $iterable = $mainDocumentRepository->getPublishedMainDocumentsIterable();
 
-        /** @var list<AbstractMainDocument> $allMainDocuments */
         $allMainDocuments = iterator_to_array($iterable, false);
+        Assert::allIsInstanceOf($allMainDocuments, AbstractMainDocument::class);
 
-        /** @var WooDecisionMainDocument $wooIndexMainDocument1 */
         $wooIndexMainDocument1 = WooIndexWooDecisionStory::get('mainDocument-1');
+        Assert::isInstanceOf($wooIndexMainDocument1, WooDecisionMainDocument::class);
 
-        /** @var WooDecisionMainDocument $wooIndexMainDocument2 */
         $wooIndexMainDocument2 = WooIndexWooDecisionStory::get('mainDocument-2');
+        Assert::isInstanceOf($wooIndexMainDocument2, WooDecisionMainDocument::class);
 
-        /** @var AnnualReportMainDocument $annualReportMainDocument */
         $annualReportMainDocument = WooIndexAnnualReportStory::get('mainDocument');
+        Assert::isInstanceOf($annualReportMainDocument, AnnualReportMainDocument::class);
 
-        /** @var CovenantMainDocument $covenantMainDocument */
         $covenantMainDocument = WooIndexCovenantStory::get('mainDocument');
+        Assert::isInstanceOf($covenantMainDocument, CovenantMainDocument::class);
 
         $expectedMainDocumentUuids = [
             $wooIndexMainDocument1->getId()->toRfc4122(),

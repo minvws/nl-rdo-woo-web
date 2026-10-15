@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace PublicationApi\Api\Dossier\AnnualReport;
+namespace PublicationApi\Api\Dossier;
 
 use PublicationApi\Api\Attachment\AttachmentRequestDto;
-use PublicationApi\Api\Dossier\DossierAttachmentValidator;
 use PublicationApi\Domain\Dossier\AttachmentSynchronizer;
+use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Attachment\Event\AbstractAttachmentEvent;
-use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 
-readonly class AnnualReportAttachmentSynchronizer
+readonly class DossierAttachmentSynchronizer
 {
     public function __construct(
         private AttachmentSynchronizer $attachmentSynchronizer,
@@ -23,11 +23,11 @@ readonly class AnnualReportAttachmentSynchronizer
      *
      * @return list<AbstractAttachmentEvent>
      */
-    public function create(AnnualReport $annualReport, array $attachmentRequestDtos): array
+    public function create(AbstractDossier&EntityWithAttachments $dossier, array $attachmentRequestDtos): array
     {
         $this->dossierAttachmentValidator->assertUniqueExternalIds($attachmentRequestDtos);
 
-        return $this->synchronize($annualReport, $attachmentRequestDtos);
+        return $this->synchronize($dossier, $attachmentRequestDtos);
     }
 
     /**
@@ -35,12 +35,12 @@ readonly class AnnualReportAttachmentSynchronizer
      *
      * @return list<AbstractAttachmentEvent>
      */
-    public function update(AnnualReport $annualReport, array $attachmentRequestDtos): array
+    public function update(AbstractDossier&EntityWithAttachments $dossier, array $attachmentRequestDtos): array
     {
         $this->dossierAttachmentValidator->assertUniqueExternalIds($attachmentRequestDtos);
-        $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($annualReport, $attachmentRequestDtos);
+        $this->dossierAttachmentValidator->assertNoAttachmentRemovalInNonConcept($dossier, $attachmentRequestDtos);
 
-        return $this->synchronize($annualReport, $attachmentRequestDtos);
+        return $this->synchronize($dossier, $attachmentRequestDtos);
     }
 
     /**
@@ -48,10 +48,10 @@ readonly class AnnualReportAttachmentSynchronizer
      *
      * @return list<AbstractAttachmentEvent>
      */
-    private function synchronize(AnnualReport $annualReport, array $attachmentRequestDtos): array
+    private function synchronize(AbstractDossier&EntityWithAttachments $dossier, array $attachmentRequestDtos): array
     {
-        $attachmentEvents = $this->attachmentSynchronizer->sync($annualReport, $attachmentRequestDtos);
-        $this->dossierAttachmentValidator->validate($annualReport->getAttachments()->getValues(), $annualReport->getStatus());
+        $attachmentEvents = $this->attachmentSynchronizer->sync($dossier, $attachmentRequestDtos);
+        $this->dossierAttachmentValidator->validate($dossier->getAttachments()->getValues(), $dossier->getStatus());
 
         return $attachmentEvents;
     }

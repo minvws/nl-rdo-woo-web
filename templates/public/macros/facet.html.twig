@@ -63,7 +63,7 @@ Display facet with hyperlinks
     {% endif %}
 {% endmacro %}
 
-{% macro facet_preview(title, facetKey, result, gotoPlural) %}
+{% macro facet_preview(title, facetKey, result, gotoPlural = null) %}
     {% set facet = result.searchParameters.facetInputs.getByFacetKey(facetKey).facet %}
     {% set allEntries = result.aggregation(facet.key).entries %}
     {% set numberOfAllEntries = allEntries | length %}

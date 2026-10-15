@@ -117,8 +117,8 @@ class DocumentVoterTest extends UnitTestCase
     {
         $token = Mockery::mock(TokenInterface::class);
 
-        $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->expects('getId')->andReturn($inquiryId = Uuid::v6());
+        $inquiryId = Uuid::v6();
+        $inquiry = new Inquiry($inquiryId);
 
         $conceptWooDecision = Mockery::mock(WooDecision::class);
         $conceptWooDecision->expects('getStatus')->times(2)->andReturn(DossierStatus::CONCEPT);
@@ -148,8 +148,7 @@ class DocumentVoterTest extends UnitTestCase
     {
         $token = Mockery::mock(TokenInterface::class);
 
-        $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->expects('getId')->andReturn(Uuid::v6());
+        $inquiry = new Inquiry(Uuid::v6());
 
         $conceptWooDecision = Mockery::mock(WooDecision::class);
         $conceptWooDecision->expects('getStatus')->times(2)->andReturn(DossierStatus::CONCEPT);
@@ -195,8 +194,8 @@ class DocumentVoterTest extends UnitTestCase
     {
         $token = Mockery::mock(TokenInterface::class);
 
-        $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->expects('getId')->andReturn($inquiryId = Uuid::v6());
+        $inquiryId = Uuid::v6();
+        $inquiry = new Inquiry($inquiryId);
 
         $wooDecision = Mockery::mock(WooDecision::class);
         $wooDecision->expects('getStatus')->times(2)->andReturn(DossierStatus::CONCEPT);

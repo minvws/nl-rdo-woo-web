@@ -7,24 +7,25 @@ namespace Shared\Service\Security\LoginActivity;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Service\Security\User;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: LoginActivityRepository::class)]
 class LoginActivity
 {
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private Uuid $id;
-
     #[ORM\ManyToOne(inversedBy: 'loginActivities')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'cascade')]
     private User $account;
 
     #[ORM\Column]
     private DateTimeImmutable $loginAt;
+
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
+    ) {
+    }
 
     public function getId(): Uuid
     {

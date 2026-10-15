@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Unit\Api\Dossier\AnnualReport;
 
+use ApiPlatform\Validator\Exception\ValidationException;
 use Mockery;
 use PublicationApi\Api\Dossier\AnnualReport\AnnualReportMainDocumentRequestDto;
 use PublicationApi\Api\Dossier\AnnualReport\AnnualReportMainDocumentSynchronizer;
@@ -15,6 +16,7 @@ use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 final class AnnualReportMainDocumentSynchronizerTest extends UnitTestCase
 {
@@ -106,6 +108,9 @@ final class AnnualReportMainDocumentSynchronizerTest extends UnitTestCase
             ),
         );
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->with($annualReport);
+
         $messageBus = Mockery::mock(MessageBusInterface::class);
         $messageBus->expects('dispatch')
             ->with(Mockery::on(static function (DeleteMainDocumentCommand $deleteMainDocumentCommand) use ($annualReport): bool {
@@ -114,10 +119,39 @@ final class AnnualReportMainDocumentSynchronizerTest extends UnitTestCase
             ->andReturn(new Envelope(new DeleteMainDocumentCommand($annualReport->getId())));
 
         $annualReportMainDocumentSynchronizer = new AnnualReportMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
+            $dossierMainDocumentValidator,
             $messageBus,
         );
 
+        $annualReportMainDocumentSynchronizer->delete($annualReport);
+    }
+
+    public function testDeleteWhenTransitionIsNotAllowed(): void
+    {
+        $annualReport = new AnnualReport();
+        $annualReport->setMainDocument(
+            new AnnualReportMainDocument(
+                $annualReport,
+                $this->getFaker()->plainDate(),
+                AttachmentType::ANNUAL_REPORT,
+                $this->getFaker()->attachmentLanguage(),
+            ),
+        );
+
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')
+            ->with($annualReport)
+            ->andThrow(new ValidationException(ConstraintViolationList::createFromMessage('Deletion is not allowed')));
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
+        $annualReportMainDocumentSynchronizer = new AnnualReportMainDocumentSynchronizer(
+            $dossierMainDocumentValidator,
+            $messageBus,
+        );
+
+        self::expectException(ValidationException::class);
         $annualReportMainDocumentSynchronizer->delete($annualReport);
     }
 
@@ -125,9 +159,15 @@ final class AnnualReportMainDocumentSynchronizerTest extends UnitTestCase
     {
         $annualReport = new AnnualReport();
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->never();
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
         $annualReportMainDocumentSynchronizer = new AnnualReportMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
-            Mockery::mock(MessageBusInterface::class),
+            $dossierMainDocumentValidator,
+            $messageBus,
         );
 
         $annualReportMainDocumentSynchronizer->delete($annualReport);

@@ -12,6 +12,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\Documen
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUpdateType;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
@@ -20,10 +21,6 @@ use Symfony\Component\Uid\Uuid;
 class DocumentFileUpdate implements EntityWithFileInfo
 {
     use TimestampableTrait;
-
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
-    private Uuid $id;
 
     #[ORM\Column(length: 255, nullable: false, enumType: DocumentFileUpdateType::class)]
     private DocumentFileUpdateType $type;
@@ -41,8 +38,10 @@ class DocumentFileUpdate implements EntityWithFileInfo
         #[ORM\ManyToOne(targetEntity: Document::class)]
         #[ORM\JoinColumn(name: 'document_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
         private Document $document,
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
     ) {
-        $this->id = Uuid::v6();
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->type = DocumentFileUpdateType::forDocument($this->document);

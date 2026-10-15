@@ -6,8 +6,8 @@
         "build": "vite build",
         "watch": "vite",
         "eslint": "eslint ./assets/js --config eslint.config.mjs --ignore-pattern '**/*.d.ts'",
-        "eslint:json": "npm run eslint -- --format json --output-file reports/eslint/eslint.json",
-        "eslint:fix": "npm run eslint -- --fix",
+        "eslint:json": "pnpm run eslint --format json --output-file reports/eslint/eslint.json",
+        "eslint:fix": "pnpm run eslint --fix",
         "n": "vite",
         "test": "vitest run --coverage",
         "test:watch": "vitest watch --coverage"
@@ -32,6 +32,7 @@
         "@types/markdown-it": "^14.1.2",
         "@vitejs/plugin-vue": "^6.0.7",
         "@vitest/coverage-istanbul": "^5.0.0",
+        "@vue/test-utils": "^2.5.1",
         "eslint": "^10.11.0",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.6",
@@ -47,12 +48,9 @@
         "vitest": "^5.0.0",
         "zod": "^4.4.3"
     },
-    "overrides": {
-        "@ai-sdk/provider-utils": "4.0.33"
-    },
     "engines": {
         "node": "^24.15.0 || >=26.0.0",
-        "npm": ">=11.0.0"
+        "pnpm": ">=12.0.0"
     },
-    "packageManager": "npm@11.20.0+sha512.745dc40c5c1b60df8de51522a7e6580ded0d79444ae4182a28e72f4f588db546214cc4e5d05c16841b97ad2ecab57c9dbaac93312e5a6906ab7a09c70c0c4d83"
+    "packageManager": "pnpm@12.9.1+sha512.06b055fff5cd20dc12781de173ced3310ce0951bf2ec620211a16045d5444d5c93a663210764ef29a653a610459ba0368f0e74f84d80c54723cf95aae7bc0d6d"
 }

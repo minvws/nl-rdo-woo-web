@@ -101,11 +101,8 @@ class InventoryUpdaterTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->allows('getId')->andReturn($dossierId);
 
-        $inquiryOne = Mockery::mock(Inquiry::class);
-        $inquiryOne->expects('getId')->andReturn($inquiryOneId);
-
-        $inquiryTwo = Mockery::mock(Inquiry::class);
-        $inquiryTwo->expects('getId')->andReturn($inquiryTwoId);
+        $inquiryOne = new Inquiry($inquiryOneId);
+        $inquiryTwo = new Inquiry($inquiryTwoId);
 
         $dossier->expects('getInquiries')->andReturn(new ArrayCollection([$inquiryOne, $inquiryTwo]));
 
@@ -223,11 +220,8 @@ class InventoryUpdaterTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getId')->andReturn($dossierId);
 
-        $inquiryOne = Mockery::mock(Inquiry::class);
-        $inquiryOne->expects('getId')->andReturn($inquiryOneId);
-
-        $inquiryTwo = Mockery::mock(Inquiry::class);
-        $inquiryTwo->expects('getId')->andReturn($inquiryTwoId);
+        $inquiryOne = new Inquiry($inquiryOneId);
+        $inquiryTwo = new Inquiry($inquiryTwoId);
 
         $dossier->expects('getInquiries')->andReturn(new ArrayCollection([$inquiryOne, $inquiryTwo]));
 

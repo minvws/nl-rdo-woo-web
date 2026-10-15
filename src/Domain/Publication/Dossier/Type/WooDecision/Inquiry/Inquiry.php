@@ -12,8 +12,8 @@ use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\ValueObject\WooUuid;
 use SortDirection;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -26,12 +26,6 @@ class Inquiry
     public const int INQUIRY_NUMBER_MIN_LENGTH = 1;
     public const int INQUIRY_NUMBER_MAX_LENGTH = 255;
     public const string INQUIRY_NUMBER_REGEX = '/^[a-z0-9-.;\(\) ]+$/i';
-
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private Uuid $id;
 
     #[Assert\Length(min: self::INQUIRY_NUMBER_MIN_LENGTH, max: self::INQUIRY_NUMBER_MAX_LENGTH)]
     #[Assert\Regex(
@@ -66,8 +60,11 @@ class Inquiry
     #[ORM\JoinColumn(nullable: false)]
     private Organisation $organisation;
 
-    public function __construct()
-    {
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
+    ) {
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->documents = new ArrayCollection();

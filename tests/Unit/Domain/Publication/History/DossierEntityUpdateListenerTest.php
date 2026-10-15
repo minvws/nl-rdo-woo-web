@@ -121,4 +121,35 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
 
         $this->listener->postUpdate($dossier, $postUpdateArgs);
     }
+
+    public function testPostUpdateDoesNotPersistEntriesOfAnEarlierUpdateAgain(): void
+    {
+        $oldTitle = $this->getFaker()->sentence();
+        $newTitle = $this->getFaker()->sentence();
+
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getId')->andReturn(Uuid::v6());
+
+        $preUpdateArgs = Mockery::mock(PreUpdateEventArgs::class);
+        $preUpdateArgs->expects('hasChangedField')->with('title')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->with('title')->andReturn($oldTitle);
+        $preUpdateArgs->expects('getNewValue')->with('title')->andReturn($newTitle);
+        foreach (['decisionDate', 'summary', 'publicationDate', 'previewDate'] as $fieldName) {
+            $preUpdateArgs->expects('hasChangedField')->with($fieldName)->andReturnFalse();
+        }
+
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager->expects('persist')->with(Mockery::on(
+            static fn (History $history): bool => $history->getContextKey() === 'dossier_updated',
+        ));
+        $entityManager->expects('flush');
+
+        $listener = new DossierEntityUpdateListener($entityManager);
+        $listener->preUpdate($dossier, $preUpdateArgs);
+
+        $postUpdateArgs = Mockery::mock(PostUpdateEventArgs::class);
+
+        $listener->postUpdate($dossier, $postUpdateArgs);
+        $listener->postUpdate($dossier, $postUpdateArgs);
+    }
 }

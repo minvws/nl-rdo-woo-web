@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\Disposition;
 
+use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
 use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
@@ -24,7 +25,7 @@ readonly class DispositionStrategy implements DossierStrategy
     public function __construct(
         private DispositionPersister $dispositionPersister,
         private DispositionRequestMapper $dispositionRequestMapper,
-        private DispositionAttachmentSynchronizer $dispositionAttachmentSynchronizer,
+        private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
         private DispositionMainDocumentSynchronizer $dispositionMainDocumentSynchronizer,
         private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
     ) {
@@ -65,7 +66,7 @@ readonly class DispositionStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->create($disposition, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->dispositionAttachmentSynchronizer->create($disposition, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->create($disposition, $dossierRequestDto->attachments);
 
         $this->dispositionPersister->persist($disposition, null, $attachmentEvents);
 
@@ -94,7 +95,7 @@ readonly class DispositionStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->dispositionAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
         $this->dispositionPersister->persist($dossier, $dispositionSnapshot, $attachmentEvents);
     }

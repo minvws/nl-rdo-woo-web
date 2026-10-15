@@ -9,6 +9,7 @@ use Shared\Service\Security\OrganisationSwitcher;
 use Shared\Service\Security\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Webmozart\Assert\Assert;
 
 use function array_any;
 use function array_key_exists;
@@ -109,11 +110,11 @@ class AuthorizationMatrix
 
     public function getActiveOrganisation(): Organisation
     {
-        /** @var User|null $user */
         $user = $this->security->getUser();
         if ($user === null) {
             throw AuthorizationMatrixException::forNoActiveUser();
         }
+        Assert::isInstanceOf($user, User::class);
 
         return $this->organisationSwitcher->getActiveOrganisation($user);
     }

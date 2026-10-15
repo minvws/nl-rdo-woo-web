@@ -31,7 +31,7 @@ http:
         "summary": "Summary of the complaint judgement",
         "title": "Bruno - Complaint judgement",
         "dossierDate": "2025-01-01",
-        "dossierNumber": "bruno-{{sessionTimestamp}}",
+        "dossierNumber": "{{complaintJudgementDossierNumber}}",
         "publicationDate": "2026-02-01"
       }
   auth: inherit
@@ -48,6 +48,9 @@ runtime:
 
         if (!bru.getVar("complaintJudgementDossierExternalId")) {
           bru.setVar("complaintJudgementDossierExternalId", crypto.randomUUID());
+        }
+        if (!bru.getVar("complaintJudgementDossierNumber")) {
+          bru.setVar("complaintJudgementDossierNumber", `bruno-${Date.now()}`);
         }
 
 settings:

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Unit\Api\Dossier\InvestigationReport;
 
+use ApiPlatform\Validator\Exception\ValidationException;
 use Mockery;
 use PublicationApi\Api\Dossier\DossierMainDocumentValidator;
 use PublicationApi\Api\Dossier\InvestigationReport\InvestigationReportMainDocumentRequestDto;
@@ -14,6 +15,7 @@ use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 final class InvestigationReportMainDocumentSynchronizerTest extends UnitTestCase
 {
@@ -105,6 +107,9 @@ final class InvestigationReportMainDocumentSynchronizerTest extends UnitTestCase
             ),
         );
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->with($investigationReport);
+
         $messageBus = Mockery::mock(MessageBusInterface::class);
         $messageBus->expects('dispatch')
             ->with(Mockery::on(static function (DeleteMainDocumentCommand $deleteMainDocumentCommand) use ($investigationReport): bool {
@@ -113,10 +118,39 @@ final class InvestigationReportMainDocumentSynchronizerTest extends UnitTestCase
             ->andReturn(new Envelope(new DeleteMainDocumentCommand($investigationReport->getId())));
 
         $investigationReportMainDocumentSynchronizer = new InvestigationReportMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
+            $dossierMainDocumentValidator,
             $messageBus,
         );
 
+        $investigationReportMainDocumentSynchronizer->delete($investigationReport);
+    }
+
+    public function testDeleteWhenTransitionIsNotAllowed(): void
+    {
+        $investigationReport = new InvestigationReport();
+        $investigationReport->setMainDocument(
+            new InvestigationReportMainDocument(
+                $investigationReport,
+                $this->getFaker()->plainDate(),
+                $this->getFaker()->attachmentType(InvestigationReportMainDocument::getAllowedTypes()),
+                $this->getFaker()->attachmentLanguage(),
+            ),
+        );
+
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')
+            ->with($investigationReport)
+            ->andThrow(new ValidationException(ConstraintViolationList::createFromMessage('Deletion is not allowed')));
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
+        $investigationReportMainDocumentSynchronizer = new InvestigationReportMainDocumentSynchronizer(
+            $dossierMainDocumentValidator,
+            $messageBus,
+        );
+
+        self::expectException(ValidationException::class);
         $investigationReportMainDocumentSynchronizer->delete($investigationReport);
     }
 
@@ -124,9 +158,15 @@ final class InvestigationReportMainDocumentSynchronizerTest extends UnitTestCase
     {
         $investigationReport = new InvestigationReport();
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->never();
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
         $investigationReportMainDocumentSynchronizer = new InvestigationReportMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
-            Mockery::mock(MessageBusInterface::class),
+            $dossierMainDocumentValidator,
+            $messageBus,
         );
 
         $investigationReportMainDocumentSynchronizer->delete($investigationReport);

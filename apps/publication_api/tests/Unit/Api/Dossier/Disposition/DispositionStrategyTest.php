@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Unit\Api\Dossier\Disposition;
 
 use Mockery;
-use PublicationApi\Api\Dossier\Disposition\DispositionAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\Disposition\DispositionMainDocumentRequestDto;
 use PublicationApi\Api\Dossier\Disposition\DispositionMainDocumentSynchronizer;
 use PublicationApi\Api\Dossier\Disposition\DispositionPersister;
@@ -13,6 +12,7 @@ use PublicationApi\Api\Dossier\Disposition\DispositionRequestDto;
 use PublicationApi\Api\Dossier\Disposition\DispositionRequestMapper;
 use PublicationApi\Api\Dossier\Disposition\DispositionSnapshot;
 use PublicationApi\Api\Dossier\Disposition\DispositionStrategy;
+use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
 use PublicationApi\Api\NoticeNotPublic\NoticeNotPublicRequestDto;
 use Shared\Domain\Department\Department;
@@ -34,7 +34,7 @@ final class DispositionStrategyTest extends UnitTestCase
         $dispositionStrategy = new DispositionStrategy(
             Mockery::mock(DispositionPersister::class),
             Mockery::mock(DispositionRequestMapper::class),
-            Mockery::mock(DispositionAttachmentSynchronizer::class),
+            Mockery::mock(DossierAttachmentSynchronizer::class),
             Mockery::mock(DispositionMainDocumentSynchronizer::class),
             Mockery::mock(NoticeNotPublicSynchronizer::class),
         );
@@ -85,8 +85,8 @@ final class DispositionStrategyTest extends UnitTestCase
         $dispositionMainDocumentSynchronizer = Mockery::mock(DispositionMainDocumentSynchronizer::class);
         $dispositionMainDocumentSynchronizer->expects('create')->with($disposition, $mainDocumentRequestDto);
 
-        $dispositionAttachmentSynchronizer = Mockery::mock(DispositionAttachmentSynchronizer::class);
-        $dispositionAttachmentSynchronizer->expects('create')
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('create')
             ->with($disposition, $dispositionRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
@@ -96,7 +96,7 @@ final class DispositionStrategyTest extends UnitTestCase
         $dispositionStrategy = new DispositionStrategy(
             $dispositionPersister,
             $dispositionRequestMapper,
-            $dispositionAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             $dispositionMainDocumentSynchronizer,
             Mockery::mock(NoticeNotPublicSynchronizer::class),
         );
@@ -145,8 +145,8 @@ final class DispositionStrategyTest extends UnitTestCase
         $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
         $noticeNotPublicSynchronizer->expects('create')->with($disposition, $noticeNotPublicRequestDto);
 
-        $dispositionAttachmentSynchronizer = Mockery::mock(DispositionAttachmentSynchronizer::class);
-        $dispositionAttachmentSynchronizer->expects('create')->andReturn($attachmentEvents);
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('create')->andReturn($attachmentEvents);
 
         $dispositionPersister = Mockery::mock(DispositionPersister::class);
         $dispositionPersister->expects('persist')->with($disposition, null, $attachmentEvents);
@@ -154,7 +154,7 @@ final class DispositionStrategyTest extends UnitTestCase
         $dispositionStrategy = new DispositionStrategy(
             $dispositionPersister,
             $dispositionRequestMapper,
-            $dispositionAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             Mockery::mock(DispositionMainDocumentSynchronizer::class),
             $noticeNotPublicSynchronizer,
         );
@@ -207,8 +207,8 @@ final class DispositionStrategyTest extends UnitTestCase
         $dispositionMainDocumentSynchronizer = Mockery::mock(DispositionMainDocumentSynchronizer::class);
         $dispositionMainDocumentSynchronizer->expects('update')->with($disposition, $mainDocumentRequestDto);
 
-        $dispositionAttachmentSynchronizer = Mockery::mock(DispositionAttachmentSynchronizer::class);
-        $dispositionAttachmentSynchronizer->expects('update')
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('update')
             ->with($disposition, $dispositionRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
@@ -219,7 +219,7 @@ final class DispositionStrategyTest extends UnitTestCase
         $dispositionStrategy = new DispositionStrategy(
             $dispositionPersister,
             $dispositionRequestMapper,
-            $dispositionAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             $dispositionMainDocumentSynchronizer,
             $noticeNotPublicSynchronizer,
         );
@@ -263,8 +263,8 @@ final class DispositionStrategyTest extends UnitTestCase
         $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
         $noticeNotPublicSynchronizer->expects('update')->with($disposition, $noticeNotPublicRequestDto);
 
-        $dispositionAttachmentSynchronizer = Mockery::mock(DispositionAttachmentSynchronizer::class);
-        $dispositionAttachmentSynchronizer->expects('update')->andReturn($attachmentEvents);
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('update')->andReturn($attachmentEvents);
 
         $dispositionPersister = Mockery::mock(DispositionPersister::class);
         $dispositionPersister->expects('snapshot')->with($disposition)->andReturn($dispositionSnapshot);
@@ -273,7 +273,7 @@ final class DispositionStrategyTest extends UnitTestCase
         $dispositionStrategy = new DispositionStrategy(
             $dispositionPersister,
             $dispositionRequestMapper,
-            $dispositionAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             $dispositionMainDocumentSynchronizer,
             $noticeNotPublicSynchronizer,
         );

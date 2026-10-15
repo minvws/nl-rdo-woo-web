@@ -68,6 +68,8 @@ final readonly class OrganisationPrefix implements Stringable, Equatable
 
     public function equalTo(Equatable $other): bool
     {
+        Assert::isInstanceOf($other, self::class);
+
         return $this->toString() === $other->toString();
     }
 }

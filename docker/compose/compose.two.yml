@@ -37,7 +37,7 @@ services:
       - 8543:443
       - 8544:444
 
-  minio:
+  rustfs:
     ports: !override
       - 9100:9000
       - 9101:9001

@@ -38,6 +38,7 @@ readonly class CovenantMainDocumentSynchronizer
             return;
         }
 
+        $this->dossierMainDocumentValidator->validateDelete($covenant);
         $this->messageBus->dispatch(new DeleteMainDocumentCommand($covenant->getId()));
     }
 

@@ -20,7 +20,7 @@ class NoticeNotPublic
     use TimestampableTrait;
 
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\Column(type: 'uuid')]
     private Uuid $id;
 
     #[ORM\OneToOne(targetEntity: AbstractDossier::class)]

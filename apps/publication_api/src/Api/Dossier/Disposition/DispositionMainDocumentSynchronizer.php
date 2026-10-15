@@ -38,6 +38,7 @@ readonly class DispositionMainDocumentSynchronizer
             return;
         }
 
+        $this->dossierMainDocumentValidator->validateDelete($disposition);
         $this->messageBus->dispatch(new DeleteMainDocumentCommand($disposition->getId()));
     }
 

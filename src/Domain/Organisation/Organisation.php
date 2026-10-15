@@ -18,8 +18,8 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Security\User;
 use Shared\ValueObject\OrganisationPrefix;
+use Shared\ValueObject\WooUuid;
 use SortDirection;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -31,12 +31,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Organisation implements HasId
 {
     use TimestampableTrait;
-
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private Uuid $id;
 
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $name;
@@ -68,9 +62,11 @@ class Organisation implements HasId
     #[ORM\OrderBy(['name' => SortDirection::Ascending])]
     private Collection $subjects;
 
-    public function __construct()
-    {
-        $this->id = Uuid::v6();
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
+    ) {
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->users = new ArrayCollection();

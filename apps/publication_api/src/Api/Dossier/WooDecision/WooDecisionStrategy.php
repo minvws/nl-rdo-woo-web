@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\WooDecision;
 
+use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
 use PublicationApi\Api\Dossier\WooDecision\Document\WooDecisionDocumentRequestDto;
@@ -26,7 +27,7 @@ readonly class WooDecisionStrategy implements DossierStrategy
     public function __construct(
         private WooDecisionPersister $wooDecisionPersister,
         private WooDecisionRequestMapper $wooDecisionRequestMapper,
-        private WooDecisionAttachmentSynchronizer $wooDecisionAttachmentSynchronizer,
+        private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
         private WooDecisionDocumentSynchronizer $wooDecisionDocumentSynchronizer,
         private WooDecisionDocumentWriteGuard $wooDecisionDocumentWriteGuard,
         private WooDecisionMainDocumentSynchronizer $wooDecisionMainDocumentSynchronizer,
@@ -70,7 +71,7 @@ readonly class WooDecisionStrategy implements DossierStrategy
         );
 
         $this->wooDecisionMainDocumentSynchronizer->create($wooDecision, $dossierRequestDto->mainDocument);
-        $attachmentEvents = $this->wooDecisionAttachmentSynchronizer->create($wooDecision, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->create($wooDecision, $dossierRequestDto->attachments);
         $this->wooDecisionDocumentSynchronizer->create($wooDecision, $dossierRequestDto->documents);
 
         $this->wooDecisionPersister->persist($wooDecision, $dossierRequestDto, null, $attachmentEvents);
@@ -98,7 +99,7 @@ readonly class WooDecisionStrategy implements DossierStrategy
         $wooDecisionSnapshot = $this->wooDecisionPersister->snapshot($dossier);
 
         $this->wooDecisionMainDocumentSynchronizer->update($dossier, $dossierRequestDto->mainDocument);
-        $attachmentEvents = $this->wooDecisionAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
         $this->wooDecisionDocumentSynchronizer->update($dossier, $dossierRequestDto->documents);
 
         $this->wooDecisionPersister->persist($dossier, $dossierRequestDto, $wooDecisionSnapshot, $attachmentEvents);

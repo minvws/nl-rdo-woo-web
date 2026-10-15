@@ -12,9 +12,32 @@ use Shared\Domain\Publication\BatchDownload\BatchDownloadStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\WooUuid;
+use Symfony\Component\Uid\Uuid;
 
 class BatchDownloadTest extends UnitTestCase
 {
+    public function testDefaultId(): void
+    {
+        $scope = BatchDownloadScope::forWooDecision(Mockery::mock(WooDecision::class));
+        $expiration = DateTimeImmutable::createFromMutable($this->getFaker()->dateTime());
+
+        $entity = new BatchDownload($scope, $expiration);
+
+        self::assertInstanceOf(WooUuid::class, $entity->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $scope = BatchDownloadScope::forWooDecision(Mockery::mock(WooDecision::class));
+        $expiration = DateTimeImmutable::createFromMutable($this->getFaker()->dateTime());
+
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $entity = new BatchDownload($scope, $expiration, $id);
+
+        self::assertSame($id, $entity->getId());
+    }
+
     public function testConstructor(): void
     {
         $inquiry = Mockery::mock(Inquiry::class);

@@ -14,6 +14,7 @@ use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
 use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Shared\Service\Security\Authorization\AuthorizationMatrixFilter;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_merge;
@@ -59,8 +60,8 @@ readonly class DossierListingService
         }
 
         if ($filterParameters->departments !== null && ! $filterParameters->departments->isEmpty()) {
-            /** @var array<array-key, Department> $departments */
             $departments = $filterParameters->departments->toArray();
+            Assert::allIsInstanceOf($departments, Department::class);
 
             $this->queryConditions->filterOnDepartments($queryBuilder, ...$departments);
         }

@@ -102,8 +102,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $data = $result->toArray();
         self::assertArrayHasKey('items', $data);
         self::assertArrayHasKey('hasNextPage', $data);
-        /** @var array<array-key, mixed> $items */
-        $items = $data['items'];
+        $items = Assert::isArray($data['items']);
         self::assertCount(1, $items);
         self::assertJsonContains(['items' => [['externalId' => $wooDecision->getExternalId()?->toString()]]]);
     }
@@ -142,8 +141,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         $data = $result->toArray();
         self::assertArrayHasKey('items', $data);
         self::assertArrayHasKey('hasNextPage', $data);
-        /** @var array<array-key, mixed> $items */
-        $items = $data['items'];
+        $items = Assert::isArray($data['items']);
         self::assertCount(1, $items);
         self::assertJsonContains(['items' => [['externalId' => $wooDecision1->getExternalId()?->toString()]]]);
     }

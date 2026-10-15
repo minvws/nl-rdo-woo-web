@@ -133,8 +133,8 @@ final class DepartmentRepositoryTest extends SharedWebTestCase
             'organisations' => [$organisationA],
         ]);
 
-        /** @var iterable<Department> $departments */
         $departments = $this->repository->getDepartmentsQuery($organisationA)->getResult();
+        Assert::allIsInstanceOf($departments, Department::class);
 
         self::assertContains($departmentA, $departments);
         self::assertNotContains($departmentB, $departments);

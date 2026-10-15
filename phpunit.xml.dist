@@ -3,7 +3,7 @@
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="./tests/bootstrap.php"
          cacheDirectory=".phpunit.cache"
-         executionOrder="depends,defects"
+         executionOrder="defects"
          requireCoverageMetadata="false"
          beStrictAboutCoverageMetadata="true"
          beStrictAboutOutputDuringTests="true"
@@ -11,6 +11,7 @@
          failOnWarning="true"
          colors="true"
          displayDetailsOnAllIssues="true"
+         resolveDependencies="true"
     >
     <php>
         <ini name="display_errors" value="1" />

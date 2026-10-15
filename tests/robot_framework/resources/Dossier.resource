@@ -191,7 +191,6 @@ Verify Publication Confirmation
   [Arguments]  ${preview_date}  ${publication_date}
   Get Text  //*[@data-e2e-name="dossier-preview-date"]  contains  ${preview_date}
   Get Text  //*[@data-e2e-name="dossier-publication-date"]  contains  ${publication_date}
-  Get Text  //*[@data-e2e-name="dossier-publication-date-link"]  contains  ${preview_date}
 
 Click Search Through Documents In Dossier
   Click  //*[@data-e2e-name="search-through-documents"]

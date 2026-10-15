@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\RequestForAdvice;
 
+use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
 use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
@@ -24,7 +25,7 @@ readonly class RequestForAdviceStrategy implements DossierStrategy
     public function __construct(
         private RequestForAdvicePersister $requestForAdvicePersister,
         private RequestForAdviceRequestMapper $requestForAdviceRequestMapper,
-        private RequestForAdviceAttachmentSynchronizer $requestForAdviceAttachmentSynchronizer,
+        private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
         private RequestForAdviceMainDocumentSynchronizer $requestForAdviceMainDocumentSynchronizer,
         private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
     ) {
@@ -65,7 +66,7 @@ readonly class RequestForAdviceStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->create($requestForAdvice, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->requestForAdviceAttachmentSynchronizer->create($requestForAdvice, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->create($requestForAdvice, $dossierRequestDto->attachments);
 
         $this->requestForAdvicePersister->persist($requestForAdvice, null, $attachmentEvents);
 
@@ -94,7 +95,7 @@ readonly class RequestForAdviceStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->requestForAdviceAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
         $this->requestForAdvicePersister->persist($dossier, $requestForAdviceSnapshot, $attachmentEvents);
     }

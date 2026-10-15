@@ -10,15 +10,12 @@ use Doctrine\ORM\Mapping as ORM;
 use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: BatchDownloadRepository::class)]
 class BatchDownload
 {
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    private Uuid $id;
-
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
     private ?WooDecision $dossier = null;
@@ -46,8 +43,10 @@ class BatchDownload
         BatchDownloadScope $scope,
         #[ORM\Column]
         private DateTimeImmutable $expiration,
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
     ) {
-        $this->id = Uuid::v6();
         $this->status = BatchDownloadStatus::PENDING;
 
         if ($scope->wooDecision instanceof WooDecision) {

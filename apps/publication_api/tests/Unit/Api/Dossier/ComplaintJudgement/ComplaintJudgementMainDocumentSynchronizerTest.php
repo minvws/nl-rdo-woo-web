@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Unit\Api\Dossier\ComplaintJudgement;
 
+use ApiPlatform\Validator\Exception\ValidationException;
 use Mockery;
 use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementMainDocumentRequestDto;
 use PublicationApi\Api\Dossier\ComplaintJudgement\ComplaintJudgementMainDocumentSynchronizer;
@@ -14,6 +15,7 @@ use Shared\Domain\Publication\MainDocument\Command\DeleteMainDocumentCommand;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 final class ComplaintJudgementMainDocumentSynchronizerTest extends UnitTestCase
 {
@@ -105,6 +107,9 @@ final class ComplaintJudgementMainDocumentSynchronizerTest extends UnitTestCase
             ),
         );
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->with($complaintJudgement);
+
         $messageBus = Mockery::mock(MessageBusInterface::class);
         $messageBus->expects('dispatch')
             ->with(Mockery::on(static function (DeleteMainDocumentCommand $deleteMainDocumentCommand) use ($complaintJudgement): bool {
@@ -113,10 +118,39 @@ final class ComplaintJudgementMainDocumentSynchronizerTest extends UnitTestCase
             ->andReturn(new Envelope(new DeleteMainDocumentCommand($complaintJudgement->getId())));
 
         $complaintJudgementMainDocumentSynchronizer = new ComplaintJudgementMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
+            $dossierMainDocumentValidator,
             $messageBus,
         );
 
+        $complaintJudgementMainDocumentSynchronizer->delete($complaintJudgement);
+    }
+
+    public function testDeleteWhenTransitionIsNotAllowed(): void
+    {
+        $complaintJudgement = new ComplaintJudgement();
+        $complaintJudgement->setMainDocument(
+            new ComplaintJudgementMainDocument(
+                $complaintJudgement,
+                $this->getFaker()->plainDate(),
+                $this->getFaker()->attachmentType(ComplaintJudgementMainDocument::getAllowedTypes()),
+                $this->getFaker()->attachmentLanguage(),
+            ),
+        );
+
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')
+            ->with($complaintJudgement)
+            ->andThrow(new ValidationException(ConstraintViolationList::createFromMessage('Deletion is not allowed')));
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
+        $complaintJudgementMainDocumentSynchronizer = new ComplaintJudgementMainDocumentSynchronizer(
+            $dossierMainDocumentValidator,
+            $messageBus,
+        );
+
+        self::expectException(ValidationException::class);
         $complaintJudgementMainDocumentSynchronizer->delete($complaintJudgement);
     }
 
@@ -124,9 +158,15 @@ final class ComplaintJudgementMainDocumentSynchronizerTest extends UnitTestCase
     {
         $complaintJudgement = new ComplaintJudgement();
 
+        $dossierMainDocumentValidator = Mockery::mock(DossierMainDocumentValidator::class);
+        $dossierMainDocumentValidator->expects('validateDelete')->never();
+
+        $messageBus = Mockery::mock(MessageBusInterface::class);
+        $messageBus->expects('dispatch')->never();
+
         $complaintJudgementMainDocumentSynchronizer = new ComplaintJudgementMainDocumentSynchronizer(
-            Mockery::mock(DossierMainDocumentValidator::class),
-            Mockery::mock(MessageBusInterface::class),
+            $dossierMainDocumentValidator,
+            $messageBus,
         );
 
         $complaintJudgementMainDocumentSynchronizer->delete($complaintJudgement);

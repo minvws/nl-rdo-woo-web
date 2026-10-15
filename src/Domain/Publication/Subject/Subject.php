@@ -13,6 +13,7 @@ use Shared\Doctrine\SubjectContentTreeType;
 use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\ValueObject\WooUuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,10 +23,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['landingPageSlug'], message: 'subject_landing_page_slug_already_exists')]
 class Subject implements HasId
 {
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    private Uuid $id;
-
     #[ORM\Column(length: 50)]
     #[Assert\Length(min: 1, max: 50)]
     private string $name;
@@ -69,9 +66,11 @@ class Subject implements HasId
     #[ORM\Column(type: 'string', length: 255, enumType: SubjectContentTreeStatus::class)]
     private SubjectContentTreeStatus $landingPageContentTreeStatus = SubjectContentTreeStatus::CONCEPT;
 
-    public function __construct()
-    {
-        $this->id = Uuid::v6();
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
+    ) {
         $this->dossiers = new ArrayCollection();
         $this->landingPagePreviewToken = Uuid::v4();
     }

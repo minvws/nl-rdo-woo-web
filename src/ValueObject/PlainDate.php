@@ -7,6 +7,7 @@ namespace Shared\ValueObject;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use Stringable;
+use Webmozart\Assert\Assert;
 
 use function sprintf;
 
@@ -56,11 +57,10 @@ final readonly class PlainDate implements Stringable, Equatable
         return $this->date->format($format);
     }
 
-    /**
-     * @param PlainDate $other
-     */
     public function equalTo(Equatable $other): bool
     {
+        Assert::isInstanceOf($other, self::class);
+
         return $this->format(self::DEFAULT_STRING_FORMAT) === $other->format(self::DEFAULT_STRING_FORMAT);
     }
 

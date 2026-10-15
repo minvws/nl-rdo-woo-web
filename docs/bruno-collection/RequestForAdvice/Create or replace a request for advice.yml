@@ -41,7 +41,7 @@ http:
           }
         ],
         "dossierDate": "2025-01-01",
-        "dossierNumber": "bruno-{{sessionTimestamp}}",
+        "dossierNumber": "{{requestForAdviceDossierNumber}}",
         "publicationDate": "2026-02-01",
         "link": "",
         "advisoryBodies": []
@@ -60,6 +60,9 @@ runtime:
 
         if (!bru.getVar("requestForAdviceDossierExternalId")) {
           bru.setVar("requestForAdviceDossierExternalId", crypto.randomUUID());
+        }
+        if (!bru.getVar("requestForAdviceDossierNumber")) {
+          bru.setVar("requestForAdviceDossierNumber", `bruno-${Date.now()}`);
         }
         if (!bru.getVar("requestForAdviceAttachmentExternalId")) {
           bru.setVar("requestForAdviceAttachmentExternalId", crypto.randomUUID());

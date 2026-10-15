@@ -5,12 +5,12 @@ includes:
   docs:
     taskfile: ./docs/Taskfile.docs.yml
     dir: ./docs
-  minio: ./taskfiles/Taskfile.minio.yml
+  s3: ./taskfiles/Taskfile.s3.yml
   api: ./taskfiles/Taskfile.api.yml
   certs: ./taskfiles/Taskfile.certs.yml
   build: ./taskfiles/Taskfile.build.yml
   composer: ./taskfiles/Taskfile.composer.yml
-  npm: ./taskfiles/Taskfile.npm.yml
+  pnpm: ./taskfiles/Taskfile.pnpm.yml
   ci: ./taskfiles/Taskfile.ci.yml
   db: ./taskfiles/Taskfile.db.yml
   console:
@@ -119,7 +119,7 @@ tasks:
         vars: { SUB_CMD: 'up -d' }
       - task: dc:exec:admin
         vars: { SUB_CMD: 'bash -c "wait-for-it postgres:5432 --timeout=0 --strict -- wait-for-it rabbitmq:5672 --timeout=0 --strict -- wait-for-it elasticsearch:9200 --timeout=0 --strict -- echo \"Done waiting\""' }
-      - task: minio:create-buckets
+      - task: s3:create-buckets
       - task: console:migrate
         vars: { TENANT: '{{ .ITEM }}' }
         for: { var: LOCAL_TENANTS }
@@ -135,8 +135,8 @@ tasks:
           TENANT: '{{ .ITEM }}'
           SUB_CMD: '{{ .ITEM }}-initial latest --read --write'
         for: { var: LOCAL_TENANTS }
-      - task: npm:install
-      - task: npm:script:build
+      - task: pnpm:install
+      - task: pnpm:script:build
       - task: docs:build:local:all
 
   setup:if-not-exist:
@@ -197,7 +197,8 @@ tasks:
     cmds:
       - task: dc
         vars: { SUB_CMD: '--profile "*" down --volumes --remove-orphans' }
-      - task: d:remove-legacy-cache-volumes
+      - task: d:remove-legacy-minio-volume
+      - task: d:remove-legacy-npm-volume
 
   reset:
     desc: Reset the development environment
@@ -255,10 +256,10 @@ tasks:
       - task: console:migrate:test
         vars: { TENANT: '{{ .ITEM }}' }
         for: { var: LOCAL_TENANTS }
-      - task: npm:install
-      - task: npm:script:build
+      - task: pnpm:install
+      - task: pnpm:script:build
       - task: docs:build:local:all
-      - task: minio:create-buckets
+      - task: s3:create-buckets
       - task: postdeploy
         vars: { APPLICATION_ID: "{{ .ITEM }}" }
         for: [worker, publication_api, admin]
@@ -270,18 +271,27 @@ tasks:
         sh: docker compose config --environment | grep '^COMPOSE_PROJECT_NAME=' | cut -d= -f2-
     cmds:
       - docker volume create {{ .PROJECT_NAME }}_woo_composer
-      - docker volume create {{ .PROJECT_NAME }}_woo_npm
+      - docker volume create {{ .PROJECT_NAME }}_woo_pnpm
 
   # TODO: temporary, remove once everyone has run "task down" at least once.
-  # The composer and npm caches used to be shared between checkouts as
-  # "woo_composer" and "woo_npm"; they are now named per compose project. Errors
-  # are ignored: either the volume is already gone, or another checkout that does
-  # not have this change yet still holds it.
-  d:remove-legacy-cache-volumes:
+  # MinIO was replaced by RustFS, and "down --volumes" only removes the volumes
+  # compose.yml still declares. Errors are ignored: the volume is already gone.
+  d:remove-legacy-minio-volume:
     internal: true
+    vars:
+      PROJECT_NAME:
+        sh: docker compose config --environment | grep '^COMPOSE_PROJECT_NAME=' | cut -d= -f2-
     cmds:
-      - for: [woo_composer, woo_npm]
-        cmd: docker volume rm {{ .ITEM }} 2> /dev/null
+      - cmd: docker volume rm {{ .PROJECT_NAME }}_minio_data 2> /dev/null
+        ignore_error: true
+
+  d:remove-legacy-npm-volume:
+    internal: true
+    vars:
+      PROJECT_NAME:
+        sh: docker compose config --environment | grep '^COMPOSE_PROJECT_NAME=' | cut -d= -f2-
+    cmds:
+      - cmd: docker volume rm {{ .PROJECT_NAME }}_woo_npm 2> /dev/null
         ignore_error: true
 
   postdeploy:
@@ -302,4 +312,4 @@ tasks:
     cmds:
       - task: dc:exec:admin
         vars: { SUB_CMD: 'bin/console --tenant={{ .TENANT }} woopie:dev:clean-sheet --index {{ .TENANT }}-initial --force {{ .CLI_ARGS }}' }
-      - task: minio:clear-buckets
+      - task: s3:clear-buckets

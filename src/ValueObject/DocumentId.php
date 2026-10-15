@@ -6,6 +6,7 @@ namespace Shared\ValueObject;
 
 use InvalidArgumentException;
 use Stringable;
+use Webmozart\Assert\Assert;
 
 use function mb_strlen;
 use function preg_match;
@@ -52,11 +53,10 @@ final readonly class DocumentId implements Equatable, Stringable
         return new self($id);
     }
 
-    /**
-     * @param DocumentId $other
-     */
     public function equalTo(Equatable $other): bool
     {
+        Assert::isInstanceOf($other, self::class);
+
         return $this->toString() === $other->toString();
     }
 

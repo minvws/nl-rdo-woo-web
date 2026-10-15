@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\Covenant;
 
+use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
 use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
@@ -24,7 +25,7 @@ readonly class CovenantStrategy implements DossierStrategy
     public function __construct(
         private CovenantPersister $covenantPersister,
         private CovenantRequestMapper $covenantRequestMapper,
-        private CovenantAttachmentSynchronizer $covenantAttachmentSynchronizer,
+        private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
         private CovenantMainDocumentSynchronizer $covenantMainDocumentSynchronizer,
         private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
     ) {
@@ -65,7 +66,7 @@ readonly class CovenantStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->create($covenant, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->covenantAttachmentSynchronizer->create($covenant, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->create($covenant, $dossierRequestDto->attachments);
 
         $this->covenantPersister->persist($covenant, null, $attachmentEvents);
 
@@ -94,7 +95,7 @@ readonly class CovenantStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->covenantAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
         $this->covenantPersister->persist($dossier, $covenantSnapshot, $attachmentEvents);
     }

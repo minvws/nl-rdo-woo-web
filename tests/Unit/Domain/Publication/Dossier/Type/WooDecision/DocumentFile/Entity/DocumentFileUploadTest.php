@@ -11,9 +11,28 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\Documen
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileUploadStatus;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\WooUuid;
+use Symfony\Component\Uid\Uuid;
 
 class DocumentFileUploadTest extends UnitTestCase
 {
+    public function testDefaultId(): void
+    {
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
+        $documentFileUpload = new DocumentFileUpload($documentFileSet);
+
+        self::assertInstanceOf(WooUuid::class, $documentFileUpload->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $documentFileSet = Mockery::mock(DocumentFileSet::class);
+        $documentFileUpload = new DocumentFileUpload($documentFileSet, $id);
+
+        self::assertSame($id, $documentFileUpload->getId());
+    }
+
     public function testGetters(): void
     {
         $documentFileSet = Mockery::mock(DocumentFileSet::class);

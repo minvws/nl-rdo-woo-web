@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace PublicationApi\Api\Dossier;
 
 use ApiPlatform\Validator\Exception\ValidationException;
+use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Type\DossierValidationGroup;
+use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
+use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Service\EnumHelper;
 use Shared\Service\MainDocumentService;
@@ -17,6 +20,7 @@ readonly class DossierMainDocumentValidator
 {
     public function __construct(
         private MainDocumentService $mainDocumentService,
+        private DossierWorkflowManager $dossierWorkflowManager,
     ) {
     }
 
@@ -37,5 +41,16 @@ readonly class DossierMainDocumentValidator
                 previous: $validationFailedException,
             );
         }
+    }
+
+    public function validateDelete(AbstractDossier $dossier): void
+    {
+        if ($this->dossierWorkflowManager->isTransitionAllowed($dossier, DossierStatusTransition::DELETE_MAIN_DOCUMENT)) {
+            return;
+        }
+
+        throw new ValidationException(ConstraintViolationBuilder::createList(
+            ConstraintViolationBuilder::forModifiedSubEntity('mainDocument'),
+        ));
     }
 }

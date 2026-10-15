@@ -7,6 +7,7 @@ namespace Shared\Domain\WooIndex;
 use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\TimestampableTrait;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: WooIndexSitemapRepository::class)]
@@ -15,16 +16,14 @@ class WooIndexSitemap
 {
     use TimestampableTrait;
 
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    private Uuid $id;
-
     #[ORM\Column(length: 255, enumType: WooIndexSitemapStatus::class)]
     private WooIndexSitemapStatus $status = WooIndexSitemapStatus::PROCESSING;
 
-    public function __construct()
-    {
-        $this->id = Uuid::v6();
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
+    ) {
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
     }

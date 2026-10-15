@@ -1,8 +1,6 @@
-FROM ghcr.io/minvws/nl-rdo-woo-web-private/minio/mc:RELEASE.2025-08-13T08-35-41Z AS mc
-
 FROM composer/composer:2.10.3-bin AS composer
 
-FROM php:8.4.25-apache-trixie
+FROM php:8.4.26-apache-trixie
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -124,8 +122,8 @@ RUN apt-get update \
     && apt-get install --assume-yes --no-install-recommends \
         nodejs \
     && npm uninstall --global npm \
-    && corepack install --global npm \
-    && corepack enable npm \
+    && corepack install --global pnpm \
+    && corepack enable pnpm \
     # Cleanup
     && apt-get autoremove --assume-yes \
     && apt-get clean --assume-yes \
@@ -141,17 +139,17 @@ RUN groupadd --gid "$USER_GID" "$USER" \
     && mkdir -p \
         /etc/fixuid \
         "/home/$USER/.composer" \
-        "/home/$USER/.npm" \
         "/home/$USER/.symfony5/log" \
-        "/home/$USER/.mc" \
+        "/home/$USER/.local/share/pnpm/store" \
     && chown -R "$USER_UID":"$USER_GID" \
         "/home/$USER/.composer" \
-        "/home/$USER/.npm" \
         "/home/$USER/.symfony5" \
-        "/home/$USER/.mc" \
         "$COREPACK_HOME" \
+        "/home/$USER/.local" \
     && echo "$USER" ALL=\(root\) NOPASSWD:ALL > "/etc/sudoers.d/$USER" \
     && chmod 0440 "/etc/sudoers.d/$USER"
+
+ENV PNPM_CONFIG_STORE_DIR="/home/$USER/.local/share/pnpm/store"
 
 RUN curl -fsSL https://get.symfony.com/cli/installer | bash -s -- --install-dir=/usr/local/bin \
     && rm -rf /tmp/LICENSE /tmp/README.md
@@ -163,7 +161,18 @@ ENV FIXUID_VERSION=0.6.0
 RUN curl -fsSLo /tmp/fixuid.tar.gz "https://github.com/boxboat/fixuid/releases/download/v$FIXUID_VERSION/fixuid-${FIXUID_VERSION}-linux-${TARGETARCH}.tar.gz" \
     && tar -xf /tmp/fixuid.tar.gz -C /usr/local/bin fixuid \
     && rm /tmp/fixuid.tar.gz \
-    && printf "user: $USER\ngroup: $USER\npaths:\n  - /var/www/html\n  - /home/$USER\n  - /home/$USER/.composer\n  - /home/$USER/.npm\n  - $COREPACK_HOME\n\n" > /etc/fixuid/config.yml
+    && cat <<EOF > /etc/fixuid/config.yml
+user: $USER
+group: $USER
+paths:
+  - /var/www/html
+  - /home/$USER
+  - /home/$USER/.composer
+  - $COREPACK_HOME
+  - /home/$USER/.local
+  - $PNPM_CONFIG_STORE_DIR
+
+EOF
 
 COPY --link ./docker/php/files/ /
 
@@ -171,7 +180,6 @@ RUN a2dissite 000-default \
     && a2enconf server-name \
     && a2enmod ssl headers rewrite
 
-COPY --from=mc /usr/bin/mc /usr/local/bin/mc
 COPY --from=composer /composer /usr/local/bin/composer
 
 USER woopie

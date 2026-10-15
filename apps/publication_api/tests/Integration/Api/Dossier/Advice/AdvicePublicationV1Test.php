@@ -38,11 +38,13 @@ use Shared\Tests\Factory\Publication\Dossier\Type\ComplaintJudgement\ComplaintJu
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\Validator\Violation\ConstraintViolationBuilder;
+use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Type;
+use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_merge;
@@ -78,8 +80,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         $data = $result->toArray();
         self::assertArrayHasKey('items', $data);
         self::assertArrayHasKey('hasNextPage', $data);
-        /** @var array<array-key, mixed> $items */
-        $items = $data['items'];
+        $items = Assert::isArray($data['items']);
         self::assertCount(1, $items);
         self::assertJsonContains(['items' => [['externalId' => $advice->getExternalId()?->toString()]]]);
     }
@@ -1150,5 +1151,51 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertJsonContains(['publicationDate' => '2025-01-02', 'title' => $newTitle]);
 
         self::assertDatabaseHas(Advice::class, ['title' => $newTitle]);
+    }
+
+    public function testPreviewAdviceCannotReplaceMainDocumentWithNoticeNotPublic(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $department = DepartmentFactory::new(['organisations' => [$organisation]])->create();
+        $advice = AdviceFactory::createOne([
+            'dateFrom' => PlainDate::create('2026-01-01'),
+            'departments' => [$department],
+            'externalId' => ExternalId::create('advice-7733-preview'),
+            'organisation' => $organisation,
+            'publicationDate' => PlainDate::create('2026-02-01'),
+            'status' => DossierStatus::PREVIEW,
+        ]);
+        $mainDocument = AdviceMainDocumentFactory::createOne(['dossier' => $advice]);
+
+        $data = [
+            'title' => (string) $advice->getTitle(),
+            'dossierNumber' => $advice->getDossierNumber(),
+            'dossierDate' => $advice->getDateFrom()?->format('Y-m-d'),
+            'publicationDate' => $advice->getPublicationDate()?->format('Y-m-d'),
+            'summary' => $advice->getSummary(),
+            'departmentId' => $department->getId(),
+            'subjectId' => $advice->getSubject()?->getId(),
+            'attachments' => [],
+            'noticeNotPublic' => [
+                'formalDate' => '2026-02-01',
+                'documentName' => 'Niet openbaar advies',
+                'grounds' => ['5.1.1a'],
+                'explanation' => 'Preview dossiers cannot lose their main document',
+            ],
+        ];
+
+        self::createPublicationApiRequest(Request::METHOD_PUT, $this->buildUrl($organisation, $advice), ['json' => $data]);
+
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertJsonContains(['violations' => [[
+            'propertyPath' => 'mainDocument',
+            'message' => 'The "mainDocument" cannot be modified',
+            'code' => ConstraintViolationBuilder::MODIFIED_SUB_ENTITY_ERROR,
+        ], ]]);
+        self::assertDatabaseHas(AdviceMainDocument::class, [
+            'id' => $mainDocument->getId(),
+            'dossier' => ['id' => $advice->getId()],
+        ]);
+        self::assertDatabaseCount(NoticeNotPublic::class, 0);
     }
 }

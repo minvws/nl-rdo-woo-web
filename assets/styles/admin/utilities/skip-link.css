@@ -1,0 +1,7 @@
+@utility bhr-skip-link {
+  @apply block sr-only focus:not-sr-only focus:p-2 text-center text-white text-base;
+}
+
+@utility bhr-skip-link--to-main-content {
+  @apply bg-bhr-blue-800 text-white focus:outline-white focus:-outline-offset-2 text-lg;
+}

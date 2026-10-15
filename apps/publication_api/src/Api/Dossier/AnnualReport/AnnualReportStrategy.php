@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\AnnualReport;
 
+use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
 use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
@@ -24,7 +25,7 @@ readonly class AnnualReportStrategy implements DossierStrategy
     public function __construct(
         private AnnualReportPersister $annualReportPersister,
         private AnnualReportRequestMapper $annualReportRequestMapper,
-        private AnnualReportAttachmentSynchronizer $annualReportAttachmentSynchronizer,
+        private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
         private AnnualReportMainDocumentSynchronizer $annualReportMainDocumentSynchronizer,
         private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
     ) {
@@ -65,7 +66,7 @@ readonly class AnnualReportStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->create($annualReport, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->annualReportAttachmentSynchronizer->create($annualReport, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->create($annualReport, $dossierRequestDto->attachments);
 
         $this->annualReportPersister->persist($annualReport, null, $attachmentEvents);
 
@@ -94,7 +95,7 @@ readonly class AnnualReportStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->annualReportAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
         $this->annualReportPersister->persist($dossier, $annualReportSnapshot, $attachmentEvents);
     }

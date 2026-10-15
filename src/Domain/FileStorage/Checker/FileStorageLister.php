@@ -8,6 +8,7 @@ use Generator;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\StorageAttributes;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Webmozart\Assert\Assert;
 
 readonly class FileStorageLister
 {
@@ -47,8 +48,8 @@ readonly class FileStorageLister
             ->filter(static fn (StorageAttributes $attributes) => $attributes->isFile());
 
         foreach ($files as $file) {
-            /** @var int $size */
             $size = $file[StorageAttributes::ATTRIBUTE_FILE_SIZE];
+            Assert::integer($size);
 
             yield '/' . $file->path() => $size;
         }

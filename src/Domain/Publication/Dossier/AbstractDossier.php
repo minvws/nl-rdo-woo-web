@@ -35,6 +35,7 @@ use Shared\Validator\PlainDate\PlainDateBeforeOrEqual;
 use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
+use Shared\ValueObject\WooUuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -85,7 +86,7 @@ abstract class AbstractDossier implements HasId
     use TimestampableTrait;
 
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\Column(type: 'uuid')]
     protected Uuid $id;
 
     #[ORM\Column(type: ExternalIdType::NAME, length: 128, nullable: true, index: true)]
@@ -225,7 +226,7 @@ abstract class AbstractDossier implements HasId
 
     public function __construct()
     {
-        $this->id = Uuid::v6();
+        $this->id = new WooUuid();
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->status = DossierStatus::NEW;

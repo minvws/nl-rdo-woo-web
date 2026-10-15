@@ -41,8 +41,8 @@ readonly class InquiryBatchDownload implements BatchDownloadTypeInterface
     {
         $query = $this->getDocumentsQuery($scope);
 
-        /** @var int $count */
         $count = $query->select('count(doc)')->getQuery()->getSingleScalarResult();
+        Assert::integer($count);
 
         return $count > 0;
     }

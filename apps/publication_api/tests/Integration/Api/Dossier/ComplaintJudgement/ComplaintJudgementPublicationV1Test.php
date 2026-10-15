@@ -70,8 +70,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         $data = $result->toArray();
         self::assertArrayHasKey('items', $data);
         self::assertArrayHasKey('hasNextPage', $data);
-        /** @var array<array-key, mixed> $items */
-        $items = $data['items'];
+        $items = Assert::isArray($data['items']);
         self::assertCount(1, $items);
         self::assertJsonContains(['items' => [['externalId' => $complaintJudgement->getExternalId()?->toString()]]]);
     }

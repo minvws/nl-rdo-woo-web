@@ -22,14 +22,8 @@
             {% block preview_date %}{% endblock %}
 
             <h2 class="mt-8 font-bold">{{ 'admin.dossiers.public_date' | trans() }}</h2>
-            <p data-e2e-name="dossier-publication-date">{{ dossier.publicationDate | format_date('long') }}</p>
-
-            <h2 class="mt-8 font-bold">{{ 'admin.dossiers.public_link' | trans() }}</h2>
-            <p data-e2e-name="dossier-publication-date-link">{{ 'admin.dossiers.public_link_available' | trans() }} <strong>{% block available_from %}{{ dossier.publicationDate | format_date('long') }}{% endblock %}</strong></p>
-
-            <a class="bhr-a" href="{{ publicDossierUrl }}" data-e2e-name="dossier-public-dossier-link">
-                {{ publicDossierUrl }}
-            </a>
+            <p>Datum: <span data-e2e-name="dossier-publication-date">{{ dossier.publicationDate | format_date('long') }}</span></p>
+            <p>Link: <a class="bhr-a" href="{{ publicDossierUrl }}" data-e2e-name="dossier-public-dossier-link">{{ publicDossierUrl }}</a></p>
         </div>
 
         <a class="bhr-btn-bordered-primary mt-8" href="{{ adminDossierUrl }}">

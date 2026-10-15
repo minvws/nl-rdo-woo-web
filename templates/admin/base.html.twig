@@ -30,7 +30,7 @@
     <body class="antialiased bg-bhr-gray-100 text-bhr-gray-900 flex min-h-screen flex-col text-base">
         {% set isAuthenticated = app.user and is_granted('ROLE_BALIE') %}
 
-        {% macro nav_item(routeName, titleTranslationKey, routePattern, e2eName) %}
+        {% macro nav_item(routeName, titleTranslationKey, routePattern = null, e2eName = null) %}
             {% set isCurrentPage = app.current_route is same as (routeName) %}
             {% set isActivePage = isCurrentPage or (routePattern is not empty and app.current_route matches routePattern) %}
             <li>
@@ -47,6 +47,8 @@
 
         <header class="print:hidden">
             <div class="bg-bhr-gray-900">
+                <a href="#inhoud" class="bhr-skip-link bhr-skip-link--to-main-content">{{ 'global.skip_link' | trans() }}</a>
+
                 <div class="bhr-container">
                     {% if isAuthenticated %}
                     <button class="p-4 lg:hidden js-visibility-toggler" aria-controls="main-nav" aria-expanded="false">
@@ -56,15 +58,13 @@
 
                     <nav class="text-white lg:flex hidden" id="main-nav">
                         <ul class="grow lg:flex items-center">
-                            <li><a href="#inhoud" class="bhr-site-header-nav-item bhr-site-header-nav-item--anchor bhr-site-header-nav-item--skip-link">{{ 'global.skip_link' | trans() }}</a></li>
-
                             {% set organisationSwitcher = get_organisation_switcher() %}
                             {% if organisationSwitcher.isSwitchAllowed(app.user) %}
                                 {% set activeOrganisation = organisationSwitcher.activeOrganisation(app.user) %}
                                 <li>
                                     <details class="js-details" data-e2e-name="organisation-switcher">
                                         <summary
-                                            class="bhr-site-header-nav-item bhr-site-header-nav-item--divider max-h-18 flex items-center"
+                                            class="bhr-site-header-nav-item bhr-site-header-nav-item--divider max-h-18 flex items-center focus:outline-white focus:-outline-offset-2"
                                         >
                                             <span class="grow">
                                                 <span class="block text-sm font-normal">{{ 'global.organisation' | trans() }}</span>

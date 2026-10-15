@@ -7,7 +7,7 @@ namespace Shared\Domain\Publication\Dossier;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Domain\HasId;
 use Shared\Domain\Organisation\Organisation;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 use function strtoupper;
@@ -19,12 +19,6 @@ use function strtoupper;
 #[ORM\Table(name: 'document_prefix')]
 class DocumentPrefix implements HasId
 {
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private Uuid $id;
-
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $prefix;
 
@@ -37,6 +31,9 @@ class DocumentPrefix implements HasId
 
     public function __construct(
         string $prefix,
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
     ) {
         $this->prefix = strtoupper($prefix);
     }

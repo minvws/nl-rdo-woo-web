@@ -86,10 +86,7 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
 
         $this->wooDecisionMapper->expects('map')->with($dossier)->andReturn($dossierDoc);
 
-        $inquiry = Mockery::mock(Inquiry::class);
-        $inquiry->expects('getId')->andReturn(
-            Uuid::fromRfc4122('55ae5de9-55f4-3420-b50b-5cde6e07fc5a'),
-        );
+        $inquiry = new Inquiry(Uuid::fromRfc4122('55ae5de9-55f4-3420-b50b-5cde6e07fc5a'));
 
         $fileInfo = Mockery::mock(FileInfo::class);
         $fileInfo->expects('getMimetype')->andReturn('application/pdf');

@@ -6,7 +6,7 @@ namespace Shared\Domain\Publication\History;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: HistoryRepository::class)]
@@ -14,12 +14,6 @@ use Symfony\Component\Uid\Uuid;
 class History
 {
     public const string CONTEXT_ORIGIN_WOO_DECISION_ID = 'originWooDecisionId';
-
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private Uuid $id;
 
     #[ORM\Column(length: 255)]
     private string $type;
@@ -39,6 +33,13 @@ class History
 
     #[ORM\Column(length: 255, options: ['default' => 'both'])]
     private string $site;
+
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
+    ) {
+    }
 
     public function getId(): Uuid
     {

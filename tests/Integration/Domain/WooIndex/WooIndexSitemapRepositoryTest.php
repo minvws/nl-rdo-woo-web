@@ -9,6 +9,7 @@ use Shared\Domain\WooIndex\WooIndexSitemap;
 use Shared\Domain\WooIndex\WooIndexSitemapRepository;
 use Shared\Tests\Integration\SharedWebTestCase;
 use Shared\Tests\Story\WooIndexSitemapsStory;
+use Webmozart\Assert\Assert;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 use function iterator_to_array;
@@ -29,8 +30,8 @@ final class WooIndexSitemapRepositoryTest extends SharedWebTestCase
     {
         $result = $this->wooIndexSitemapRepository->lastFinished();
 
-        /** @var list<WooIndexSitemap> $finishedSitemaps */
         $finishedSitemaps = WooIndexSitemapsStory::getPool('finishedSitemaps');
+        Assert::allIsInstanceOf($finishedSitemaps, WooIndexSitemap::class);
 
         $this->assertNotNull($result);
         $this->assertSame($finishedSitemaps[0]->getId()->toRfc4122(), $result->getId()->toRfc4122());
@@ -54,8 +55,8 @@ final class WooIndexSitemapRepositoryTest extends SharedWebTestCase
             preserve_keys: false,
         );
 
-        /** @var list<WooIndexSitemap> $finishedSitemaps */
         $finishedSitemaps = WooIndexSitemapsStory::getPool('finishedSitemaps');
+        Assert::allIsInstanceOf($finishedSitemaps, WooIndexSitemap::class);
 
         $this->assertNotContains($finishedSitemaps[0], $result, 'FinishedSitemap #0 is not returned');
         $this->assertNotContains($finishedSitemaps[1], $result, 'FinishedSitemap #1 is not returned');
@@ -68,8 +69,8 @@ final class WooIndexSitemapRepositoryTest extends SharedWebTestCase
         $this->assertContains($finishedSitemaps[8], $result, 'FinishedSitemap #8 is returned');
         $this->assertContains($finishedSitemaps[9], $result, 'FinishedSitemap #9 is returned');
 
-        /** @var list<WooIndexSitemap> $unfinishedSitemaps */
         $unfinishedSitemaps = WooIndexSitemapsStory::getPool('unfinishedSitemaps');
+        Assert::allIsInstanceOf($unfinishedSitemaps, WooIndexSitemap::class);
 
         $this->assertNotContains($unfinishedSitemaps[0], $result, 'UnfinishedSitemap #0 is not returned');
         $this->assertNotContains($unfinishedSitemaps[1], $result, 'UnfinishedSitemap #1 is not returned');

@@ -24,8 +24,8 @@ jobs:
     uses: ./.github/workflows/migration-check.yml
     secrets: inherit
 
-  setup-npm-cache:
-    name: Setup NPM cache
+  setup-pnpm-cache:
+    name: Setup pnpm cache
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -60,10 +60,10 @@ jobs:
       - name: Security Check for composer
         run: composer audit
 
-  audit-npm:
-    name: Dependency Audit NPM
+  audit-pnpm:
+    name: Dependency Audit pnpm
     runs-on: ubuntu-24.04
-    needs: [setup-npm-cache]
+    needs: [setup-pnpm-cache]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -71,8 +71,8 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Audit check for NPM
-        run: npm audit
+      - name: Audit check for pnpm
+        run: pnpm audit
 
   markdown:
     name: Check Markdown files
@@ -95,7 +95,7 @@ jobs:
   fe-linting:
     name: Check front-end linting
     runs-on: ubuntu-24.04
-    needs: [setup-npm-cache]
+    needs: [setup-pnpm-cache]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -104,7 +104,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Linting JavaScript-files
-        run: npm run eslint:json
+        run: pnpm run eslint:json
       - name: Upload ESLint report
         uses: actions/upload-artifact@v7
         with:
@@ -114,7 +114,7 @@ jobs:
   fe-unit-tests:
     name: Check front-end Unit tests
     runs-on: ubuntu-24.04
-    needs: [setup-npm-cache]
+    needs: [setup-pnpm-cache]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -123,7 +123,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Front-end Unit tests using Vitest
-        run: npm run test
+        run: pnpm run test
       - name: Upload Vitest coverage report
         uses: actions/upload-artifact@v7
         with:
@@ -295,7 +295,7 @@ jobs:
   be-unit-tests:
     name: Check back-end Unit tests
     runs-on: ubuntu-24.04
-    needs: [setup-npm-cache, setup-composer-cache]
+    needs: [setup-pnpm-cache, setup-composer-cache]
     env:
       CR_PAT: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }} # For gh cli tool

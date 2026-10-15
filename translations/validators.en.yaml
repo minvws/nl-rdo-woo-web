@@ -46,6 +46,7 @@ dossier.dossier_number_not_unique.display_at_reference_field: 'This reference nu
 document.document_number_not_unique: 'DocumentNumber {{ documentNumber }} is already in use'
 dossier.document_or_notice_required: 'A dossier must contain at least a main document or a notice not public'
 dossier.document_and_notice_not_allowed: 'A dossier cannot have both a main document and a notice not public'
+dossier.update_not_allowed_in_current_status: 'This dossier cannot be updated in its current status'
 draft_decision.request_for_advice_or_policy_document_required: 'A draft decision must contain at least a request for advice or policy document'
 woo_decision.duplicate_document_id: 'The collection contains duplicate documents. Duplicate documentId: {{ value }}.'
 woo_decision.duplicate_document_external_id: 'The collection contains duplicate documents. Duplicate externalId: {{ value }}.'

@@ -19,11 +19,7 @@ readonly class DossierUpdateGuard
 
     public function assertDossierIsEditable(AbstractDossier $dossier): void
     {
-        if ($this->enableUpdatePublishedDossierViaApi) {
-            return;
-        }
-
-        if (! $dossier->getStatus()->isNewOrConcept()) {
+        if (! $this->enableUpdatePublishedDossierViaApi && ! $dossier->getStatus()->isNewOrConcept()) {
             throw new ValidationException(
                 ConstraintViolationList::createFromMessage('dossier update is not allowed in non-concept state'),
             );

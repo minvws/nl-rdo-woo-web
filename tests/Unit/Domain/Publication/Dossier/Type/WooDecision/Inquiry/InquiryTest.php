@@ -5,13 +5,30 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication\Dossier\Type\WooDecision\Inquiry;
 
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Inquiry\Inquiry;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\WooUuid;
+use Symfony\Component\Uid\Uuid;
 
-final class InquiryTest extends TestCase
+final class InquiryTest extends UnitTestCase
 {
+    public function testDefaultId(): void
+    {
+        $inquiry = new Inquiry();
+
+        self::assertInstanceOf(WooUuid::class, $inquiry->getId());
+    }
+
+    public function testGivenId(): void
+    {
+        $id = Uuid::fromString($this->getFaker()->uuid());
+        $inquiry = new Inquiry($id);
+
+        self::assertSame($id, $inquiry->getId());
+    }
+
     public function testAddAndRemoveDossier(): void
     {
         $inquiry = new Inquiry();

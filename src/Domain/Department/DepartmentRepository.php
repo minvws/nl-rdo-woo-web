@@ -72,11 +72,11 @@ class DepartmentRepository extends ServiceEntityRepository
      */
     public function getNames(): array
     {
-        /** @var array<array-key, string> $names */
         $names = $this->createQueryBuilder('d')
             ->select('d.name')
             ->getQuery()
             ->getSingleColumnResult();
+        Assert::allString($names);
 
         return $names;
     }

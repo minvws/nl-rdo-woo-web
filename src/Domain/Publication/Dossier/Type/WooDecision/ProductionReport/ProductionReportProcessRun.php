@@ -14,7 +14,7 @@ use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Exception\TranslatableException;
 use Shared\Service\Inventory\InventoryChangeset;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 use function array_key_exists;
@@ -31,12 +31,6 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     public const STATUS_UPDATING = 'updating';
     public const STATUS_FAILED = 'failed';
     public const STATUS_FINISHED = 'finished';
-
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private Uuid $id;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: false)]
     private DateTimeImmutable $createdAt;
@@ -77,6 +71,9 @@ class ProductionReportProcessRun implements EntityWithFileInfo
         #[ORM\OneToOne(inversedBy: 'processRun', targetEntity: WooDecision::class)]
         #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
         private WooDecision $dossier,
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
     ) {
         $this->createdAt = new DateTimeImmutable();
         $this->status = self::STATUS_PENDING;

@@ -12,6 +12,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\Documen
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileUploadRepository;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: DocumentFileUploadRepository::class)]
@@ -19,10 +20,6 @@ use Symfony\Component\Uid\Uuid;
 class DocumentFileUpload implements EntityWithFileInfo
 {
     use TimestampableTrait;
-
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
-    private Uuid $id;
 
     #[ORM\Embedded(class: FileInfo::class, columnPrefix: 'file_')]
     protected FileInfo $fileInfo;
@@ -37,8 +34,10 @@ class DocumentFileUpload implements EntityWithFileInfo
         #[ORM\ManyToOne(targetEntity: DocumentFileSet::class, inversedBy: 'uploads')]
         #[ORM\JoinColumn(name: 'document_file_set_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
         private DocumentFileSet $documentFileSet,
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
     ) {
-        $this->id = Uuid::v6();
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->status = DocumentFileUploadStatus::PENDING;

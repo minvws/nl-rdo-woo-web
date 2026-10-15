@@ -12,6 +12,7 @@ use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticDocument;
 use Shared\Domain\Search\Index\ElasticDocumentId;
+use Webmozart\Assert\Assert;
 
 /**
  * Service for interacting with Elasticsearch. Together with the SearchService, this should be the only entrypoint to
@@ -44,8 +45,8 @@ class ElasticService
             'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ]);
+        Assert::isInstanceOf($result, Elasticsearch::class);
 
-        /** @var Elasticsearch $result */
         return $result->asBool();
     }
 
@@ -55,8 +56,8 @@ class ElasticService
             'index' => $this->elasticConfig->writeIndex,
             'id' => $id,
         ]);
+        Assert::isInstanceOf($result, Elasticsearch::class);
 
-        /** @var Elasticsearch $result */
         return new TypeArray($result->asArray());
     }
 

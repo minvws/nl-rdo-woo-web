@@ -41,7 +41,6 @@ phpstan.neon
 Taskfile.yml
 .task
 auth.json
-.npmrc.auth
 .phpstan.cache
 .phpcs-cache
 .phpmd.result-cache.php

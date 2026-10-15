@@ -13,13 +13,14 @@
 {% block preview_date %}
     <h2 class="mt-8 font-bold">{{ 'admin.dossiers.decision.preview_date' | trans }}</h2>
     <p data-e2e-name="dossier-preview-date">{{ dossier.previewDate | format_date('long') }}</p>
-{% endblock %}
 
-{% block available_from %}
-    {{ dossier.previewDate | format_date('long') }}
+    {% if dossier.inquiries | length %}
+        <div class="mt-6">
+            {% include 'admin/dossier/woo-decision/shared/inquiry-links.html.twig' with { inquiries: dossier.inquiries } %}
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block edit_link %}
     {{'admin.dossiers.decision.edit_link' | trans }}
 {% endblock %}
-

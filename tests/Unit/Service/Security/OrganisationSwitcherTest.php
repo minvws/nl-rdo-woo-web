@@ -58,8 +58,7 @@ class OrganisationSwitcherTest extends UnitTestCase
 
         $uuid = Uuid::v6();
 
-        $organisationA = Mockery::mock(Organisation::class);
-        $organisationA->expects('getId')->andReturn($uuid);
+        $organisationA = new Organisation($uuid);
         $organisationB = Mockery::mock(Organisation::class);
 
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->times(2)->andReturnTrue();
@@ -187,8 +186,7 @@ class OrganisationSwitcherTest extends UnitTestCase
         $this->requestStack->expects('getSession')->andReturns($this->session);
 
         $uuid = Uuid::v6();
-        $organisation = Mockery::mock(Organisation::class);
-        $organisation->expects('getId')->andReturn($uuid);
+        $organisation = new Organisation($uuid);
 
         $this->user->expects('hasRole')->with(Roles::ROLE_SUPER_ADMIN)->andReturnTrue();
         $this->session->expects('set')->with('organisation', $uuid->toRfc4122());

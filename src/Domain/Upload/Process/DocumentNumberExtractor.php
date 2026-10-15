@@ -25,33 +25,37 @@ readonly class DocumentNumberExtractor
     ) {
     }
 
-    public function extract(string $originalFile, WooDecision $dossier): DocumentId
-    {
-        $originalFileName = pathinfo($originalFile, PATHINFO_FILENAME);
-
-        preg_match('/^([a-zA-Z0-9]+)/', $originalFileName, $matches);
-        $documentIdString = $matches[1] ?? null;
-
-        try {
-            return DocumentId::create($documentIdString ?? '');
-        } catch (InvalidArgumentException) {
-            $this->logger->error('Cannot extract document ID from the filename', [
-                'filename' => $originalFile,
-                'dossierId' => $dossier->getId(),
-            ]);
-
-            throw FileProcessException::forFailingToExtractDocumentId($originalFile, $dossier);
-        }
-    }
-
     public function matchDocumentForFile(UploadedFile $file, WooDecision $wooDecision): ?Document
     {
+        $filename = pathinfo($file->getOriginalFilename(), PATHINFO_FILENAME);
+
+        $document = $this->findDocument($filename, $wooDecision);
+        if ($document !== null) {
+            return $document;
+        }
+
+        return $this->findDocumentForFilenamePrefix($filename, $wooDecision);
+    }
+
+    private function findDocumentForFilenamePrefix(string $filename, WooDecision $wooDecision): ?Document
+    {
+        if (preg_match('/^([a-zA-Z0-9]+)/', $filename, $matches) !== 1) {
+            $this->logger->error('Cannot extract document ID from the filename', [
+                'filename' => $filename,
+                'dossierId' => $wooDecision->getId(),
+            ]);
+
+            return null;
+        }
+
+        return $this->findDocument($matches[1], $wooDecision);
+    }
+
+    private function findDocument(string $documentIdString, WooDecision $wooDecision): ?Document
+    {
         try {
-            $documentId = $this->extract(
-                $file->getOriginalFilename(),
-                $wooDecision,
-            );
-        } catch (FileProcessException) {
+            $documentId = DocumentId::create($documentIdString);
+        } catch (InvalidArgumentException) {
             return null;
         }
 

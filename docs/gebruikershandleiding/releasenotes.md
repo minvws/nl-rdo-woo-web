@@ -2,6 +2,82 @@
 
 # Release notes
 
+## v3.7.0
+
+### Verhaallijnen als concept beheren en vooraf bekijken
+
+**Samenvatting:**  
+Verhaallijnen kunnen nu als **Concept** of **Gepubliceerd** worden beheerd en concepten zijn direct vanuit het onderwerpenoverzicht te openen en te bekijken.
+
+![Verhaallijn publiceren](/img/concept-verhaallijn.png)
+
+**Onderdeel:**  
+Balie, Publieke website
+
+**Wat je nu kan doen:**  
+Bij een verhaallijn kies je nu de status **Concept** of **Gepubliceerd** in plaats van alleen aan te geven of de verhaallijn getoond moet worden.
+Een landingspagina of verhaallijn met conceptinhoud is vanuit het onderwerpenoverzicht nu ook direct te bewerken en via een preview te bekijken:
+
+![Onderwerpen bewerken](/img/onderwerpen-index-preview.png)
+
+Op de **publieke landingspagina**` wordt de inhoud van een gepubliceerde verhaallijn standaard uitgeklapt weergegeven. Ook is de uitlijning van de verschillende onderdelen verbeterd en zijn de kaders rond de onderdelen verwijderd.
+
+**Start:**  
+Open **Onderwerpen** en bewerk de gewenste landingspagina of gebruik de previewlink om de conceptversie te bekijken.
+
+### Waarschuwing bij het gebruik van Matter in bestanden
+
+**Samenvatting:**  
+Bij het uploaden van bestanden met Matter-waarden geeft de Balie nu aan dat deze waarden worden vervangen door publicatiecontext.
+
+![Notificatie bij gebruik Matter](/img/gebruik-matter.png)
+
+**Onderdeel:**  
+Balie
+
+**Wat er veranderd is:**
+Vanaf 1 januari 2027 is Publicatiecontext verplicht.
+Meer over de publicatiecontext staat **[hier.](/publiceren/woo-besluit/productierapport.md#documentnummer-en-publicatiecontext)**
+
+Wanneer een productierapport of een bestand voor het koppelen van zaaknummers nog Matter-waarden bevat, krijg je hiervan een melding.
+De Matter-waarden worden bij de verwerking automatisch vervangen door publicatiecontext dus het rapport wordt wel gewoon goed verwerkt.
+Hetzelfde geldt voor het koppelen van zaaknummers voortaan publicationContext in plaats van matter.
+
+### Duidelijkere informatie na het publiceren van een Woo-besluit
+
+**Samenvatting:**  
+Na het publiceren van een Woo-besluit is duidelijker wanneer documenten openbaar beschikbaar worden en welke zaken bij feitelijke verstrekking horen.
+
+**Onderdeel:**  
+Balie
+
+**Wat je nu kan doen:**
+Op de bevestigingspagina wordt de publieke link nu getoond bij de datum waarop de documenten daadwerkelijk voor iedereen online komen.
+Wanneer sprake is van feitelijke verstrekking, worden de gekoppelde zaken met datum en link op dezelfde pagina weergegeven.
+
+![Publicatie datum](img/publicatie-datum.png)
+
+### Betere toetsenbordnavigatie in de Balie
+
+**Samenvatting:**  
+Elementen met toetsenbordfocus zijn in de Balie duidelijker zichtbaar en de link **Ga naar inhoud** werkt nu op dezelfde manier als op de publieke website.
+
+**Onderdeel:**  
+Balie
+
+**Wat je nu kan doen:**  
+Wanneer je met de Tab-toets door de Balie navigeert, is beter zichtbaar welk element actief is. De link **Ga naar inhoud** verschijnt los van de hoofdnavigatie wanneer je er met het toetsenbord naartoe navigeert.
+
+![Tab navigatie](img/ga-naar-inhoud.png)
+
+### Overige verbeteringen en bugfixes
+
+- **Verbetering:** De documentatie van de Publicatie API beschrijft duidelijker hoe *publicationContext* moet worden gebruikt. Bekijk de documentatie **[hier.](https://open.minvws.nl/api/#publication-v1)**
+- **Verbetering:** De API-documentatie toont bij *grounds* welke waarden kunnen worden gebruikt, inclusief de bijbehorende toelichtingen. Bekijk de documentatie **[hier.](https://open.minvws.nl/api/#publication-v1)**
+- **Verbetering:** Padparameters in de Publicatie API hebben nu consistente omschrijvingen en geven het verwachte formaat van de identifier aan.
+- **Fixed:** De public link van een document in een Woo-besluit verwees naar de algemene dossierpagina. De link verwijst nu naar de detailpagina van het betreffende document.
+- **Verbetering:** Een superuser kan de prefix van een organisatie wijzigen zolang er nog geen dossiers aan die organisatie zijn gekoppeld.
+
 ## v3.6.0
 
 ### API specificatie updates

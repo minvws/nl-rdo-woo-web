@@ -22,6 +22,7 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Webmozart\Assert\Assert;
 
 use function array_merge;
 use function in_array;
@@ -73,8 +74,8 @@ class UserCreateFormType extends AbstractType
 
             // It's possible that a user has multiple roles. We add all roles that are allowed to be assigned.
             $allowedRoles = [];
-            /** @var User $user */
             $user = $this->security->getUser();
+            Assert::isInstanceOf($user, User::class);
             foreach ($user->getRoles() as $role) {
                 $allowedRoles = array_merge($allowedRoles, Roles::getRoleHierarchy($role));
             }

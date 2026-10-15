@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Api\Dossier\OtherPublication;
 
+use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\DossierRequestDtoInterface;
 use PublicationApi\Api\Dossier\DossierStrategy;
 use PublicationApi\Api\Dossier\NoticeNotPublicSynchronizer;
@@ -24,7 +25,7 @@ readonly class OtherPublicationStrategy implements DossierStrategy
     public function __construct(
         private OtherPublicationPersister $otherPublicationPersister,
         private OtherPublicationRequestMapper $otherPublicationRequestMapper,
-        private OtherPublicationAttachmentSynchronizer $otherPublicationAttachmentSynchronizer,
+        private DossierAttachmentSynchronizer $dossierAttachmentSynchronizer,
         private OtherPublicationMainDocumentSynchronizer $otherPublicationMainDocumentSynchronizer,
         private NoticeNotPublicSynchronizer $noticeNotPublicSynchronizer,
     ) {
@@ -65,7 +66,7 @@ readonly class OtherPublicationStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->create($otherPublication, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->otherPublicationAttachmentSynchronizer->create($otherPublication, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->create($otherPublication, $dossierRequestDto->attachments);
 
         $this->otherPublicationPersister->persist($otherPublication, null, $attachmentEvents);
 
@@ -94,7 +95,7 @@ readonly class OtherPublicationStrategy implements DossierStrategy
             $this->noticeNotPublicSynchronizer->update($dossier, self::noticeNotPublic($dossierRequestDto));
         }
 
-        $attachmentEvents = $this->otherPublicationAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
+        $attachmentEvents = $this->dossierAttachmentSynchronizer->update($dossier, $dossierRequestDto->attachments);
 
         $this->otherPublicationPersister->persist($dossier, $otherPublicationSnapshot, $attachmentEvents);
     }

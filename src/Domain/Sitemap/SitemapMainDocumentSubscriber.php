@@ -11,6 +11,7 @@ use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\MainDocumentRepository;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Webmozart\Assert\Assert;
 
 use function sprintf;
 
@@ -27,8 +28,9 @@ readonly class SitemapMainDocumentSubscriber
     {
         $mainDocumentQuery = $this->mainDocumentRepository->getAllPublishedQuery();
 
-        /** @var AbstractMainDocument $mainDocument */
         foreach ($mainDocumentQuery->toIterable() as $mainDocument) {
+            Assert::isInstanceOf($mainDocument, AbstractMainDocument::class);
+
             $dossier = $mainDocument->getDossier();
             $event->getUrlContainer()->addUrl(
                 new UrlConcrete(

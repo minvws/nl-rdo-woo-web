@@ -17,7 +17,7 @@ use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
 use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Service\Security\LoginActivity\LoginActivity;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
@@ -34,12 +34,6 @@ use function strtoupper;
 class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface, BackupCodeInterface, LoggableUser
 {
     use TimestampableTrait;
-
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private Uuid $id;
 
     #[ORM\Column(length: 180, unique: true)]
     private string $email;
@@ -80,8 +74,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\OneToMany(mappedBy: 'account', targetEntity: LoginActivity::class)]
     private Collection $loginActivities;
 
-    public function __construct()
-    {
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
+    ) {
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->loginActivities = new ArrayCollection();

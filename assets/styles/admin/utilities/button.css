@@ -22,6 +22,7 @@
 @utility bhr-btn-filled_ {
     @apply bhr-btn_filled_or_bordered_;
     @apply text-white;
+    @apply focus:outline-white focus:-outline-offset-4;
 }
 
 @utility bhr-btn-bordered_ {

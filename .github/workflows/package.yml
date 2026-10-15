@@ -30,8 +30,8 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run npm build script
-        run: npm run build
+      - name: Run pnpm build script
+        run: pnpm run build
       - name: Build the docs
         env:
           GH_TOKEN: ${{ secrets.REPO_READ_ONLY_TOKEN }}

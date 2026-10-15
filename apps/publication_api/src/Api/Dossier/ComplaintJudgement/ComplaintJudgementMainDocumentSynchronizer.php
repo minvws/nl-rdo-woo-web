@@ -38,6 +38,7 @@ readonly class ComplaintJudgementMainDocumentSynchronizer
             return;
         }
 
+        $this->dossierMainDocumentValidator->validateDelete($complaintJudgement);
         $this->messageBus->dispatch(new DeleteMainDocumentCommand($complaintJudgement->getId()));
     }
 

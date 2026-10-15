@@ -107,10 +107,9 @@ readonly class RolloverCounter
             ),
         );
 
-        /**
-         * @var Elasticsearch $response
-         */
         $response = $this->elasticClient->search($queryBuilder->build());
+        Assert::isInstanceOf($response, Elasticsearch::class);
+
         $typedResponse = new TypeArray($response->asArray());
 
         $counts = [];

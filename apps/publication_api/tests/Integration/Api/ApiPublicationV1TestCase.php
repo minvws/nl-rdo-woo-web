@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Integration\Api;
 
-use ApiPlatform\Symfony\Bundle\Test\Client;
+use ApiPlatform\Test\Client;
 use PublicationApi\Tests\Integration\PublicationApiTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;

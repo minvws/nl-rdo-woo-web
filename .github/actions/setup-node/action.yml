@@ -6,32 +6,30 @@ inputs:
     description: The node version
     default: "24"
   github-token:
-    description: Add a Github Token which will be used for fetching node and npm packages
-  run-npm-build:
-    description: Run npm build script
+    description: Add a Github Token which will be used for fetching node
+  run-pnpm-build:
+    description: Run pnpm build script
     default: "false"
 
 runs:
   using: composite
   steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v6
+
     - name: Setup node
       uses: actions/setup-node@v6
       id: setup-node
       with:
         node-version: ${{ inputs.node-version }}
-        cache: npm
-        registry-url: https://npm.pkg.github.com
+        cache: pnpm
         token: ${{ inputs.github-token }}
 
-    - name: Enable corepack
+    - name: Install pnpm dependencies
       shell: bash
-      run: corepack enable npm
+      run: pnpm install --frozen-lockfile
 
-    - name: Install npm dependencies
+    - name: Run pnpm build
+      if: ${{ inputs.run-pnpm-build == 'true' }}
       shell: bash
-      run: npm ci
-
-    - name: Run npm build
-      if: ${{ inputs.run-npm-build == 'true' }}
-      shell: bash
-      run: npm run build
+      run: pnpm run build

@@ -10,6 +10,7 @@ use Shared\Tests\Factory\DepartmentFactory;
 use Shared\Tests\Factory\OrganisationFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Webmozart\Assert\Assert;
 
 use function base64_encode;
 use function json_encode;
@@ -136,8 +137,7 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
         $data = $response->toArray();
         self::assertArrayHasKey('items', $data);
         self::assertArrayHasKey('hasNextPage', $data);
-        /** @var array<array-key, mixed> $items */
-        $items = $data['items'];
+        $items = Assert::isArray($data['items']);
         self::assertCount($departmentCount, $items);
         // Note: Schema validation skipped due to CursorPage envelope wrapping collection
     }
@@ -153,8 +153,7 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
         $data = $response->toArray();
         self::assertArrayHasKey('items', $data);
         self::assertArrayHasKey('hasNextPage', $data);
-        /** @var array<array-key, mixed> $items */
-        $items = $data['items'];
+        $items = Assert::isArray($data['items']);
         self::assertCount(5, $items);
         // Note: Schema validation skipped due to CursorPage envelope wrapping collection
     }
@@ -181,8 +180,7 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
         $data = $response->toArray();
         self::assertArrayHasKey('items', $data);
         self::assertArrayHasKey('hasNextPage', $data);
-        /** @var array<array-key, mixed> $items */
-        $items = $data['items'];
+        $items = Assert::isArray($data['items']);
         self::assertCount(2, $items);
         // Note: Schema validation skipped due to CursorPage envelope wrapping collection
     }
@@ -202,8 +200,7 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
         $data = $response->toArray();
         self::assertArrayHasKey('items', $data);
         self::assertArrayHasKey('hasNextPage', $data);
-        /** @var array<array-key, mixed> $items */
-        $items = $data['items'];
+        $items = Assert::isArray($data['items']);
         self::assertCount(1, $items);
         // Note: Schema validation skipped due to CursorPage envelope wrapping collection
     }

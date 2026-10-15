@@ -12,6 +12,7 @@ use Shared\Doctrine\TimestampableTrait;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Enum\DocumentFileSetStatus;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\DocumentFile\Repository\DocumentFileSetRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: DocumentFileSetRepository::class)]
@@ -19,10 +20,6 @@ use Symfony\Component\Uid\Uuid;
 class DocumentFileSet
 {
     use TimestampableTrait;
-
-    #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true, nullable: false)]
-    private Uuid $id;
 
     #[ORM\Column(length: 255, nullable: false, enumType: DocumentFileSetStatus::class)]
     private DocumentFileSetStatus $status;
@@ -39,8 +36,10 @@ class DocumentFileSet
         #[ORM\ManyToOne(targetEntity: WooDecision::class)]
         #[ORM\JoinColumn(name: 'dossier_id', referencedColumnName: 'id', nullable: false, onDelete: 'cascade')]
         private WooDecision $dossier,
+        #[ORM\Id]
+        #[ORM\Column(type: 'uuid')]
+        private Uuid $id = new WooUuid(),
     ) {
-        $this->id = Uuid::v6();
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->status = DocumentFileSetStatus::OPEN_FOR_UPLOADS;

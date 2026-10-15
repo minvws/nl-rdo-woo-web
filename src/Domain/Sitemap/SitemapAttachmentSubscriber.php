@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Webmozart\Assert\Assert;
 
 use function sprintf;
 
@@ -27,8 +28,9 @@ readonly class SitemapAttachmentSubscriber
     {
         $attachmentQuery = $this->attachmentRepository->getAllPublishedQuery();
 
-        /** @var AbstractAttachment $attachment */
         foreach ($attachmentQuery->toIterable() as $attachment) {
+            Assert::isInstanceOf($attachment, AbstractAttachment::class);
+
             $dossier = $attachment->getDossier();
             $event->getUrlContainer()->addUrl(
                 new UrlConcrete(

@@ -26,7 +26,7 @@ task console:loadfixtures TENANT=minvws
 # The dataset the E2E tests use
 task rf:fixtures:load:e2e
 
-# Start over: clears dossiers, inquiries, the ES index and the MinIO buckets
+# Start over: clears dossiers, inquiries, the ES index and the S3 buckets
 task cleansheet
 ```
 
@@ -83,6 +83,12 @@ decide what the public site may load. The admin can additionally reach `concept`
 
 Transitions are governed by a Symfony workflow per publication type, so the admin only offers the ones the workflow
 allows.
+
+Before dispatching a main-document deletion, the Publication API checks whether the dossier's type-specific workflow
+allows the `DELETE_MAIN_DOCUMENT` transition. A disallowed transition becomes a validation error on `mainDocument`;
+the command handler still applies the same workflow transition as a final domain guard. This prevents a rejected
+replacement with a notice not public from dispatching the deletion command. The check is specific to deleting the main
+document; it is not a preflight validation of the entire update request.
 
 ## Ingest
 

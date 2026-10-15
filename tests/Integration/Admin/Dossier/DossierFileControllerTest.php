@@ -219,8 +219,8 @@ final class DossierFileControllerTest extends SharedWebTestCase
         $newDirectoryPath = sprintf('%s%s', $this->documentPathPrefix, dirname($fileInfoPath));
         vfsStream::newDirectory($newDirectoryPath)->at($this->root);
 
-        /** @var vfsStreamDirectory $childDir */
         $childDir = $this->root->getChild($newDirectoryPath);
+        Assert::isInstanceOf($childDir, vfsStreamDirectory::class);
 
         $fileInfoName = $entity->getFileInfo()->getName();
         Assert::string($fileInfoName);

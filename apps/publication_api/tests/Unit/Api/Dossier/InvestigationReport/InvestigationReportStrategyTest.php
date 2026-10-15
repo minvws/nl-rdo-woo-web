@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Unit\Api\Dossier\InvestigationReport;
 
 use Mockery;
-use PublicationApi\Api\Dossier\InvestigationReport\InvestigationReportAttachmentSynchronizer;
+use PublicationApi\Api\Dossier\DossierAttachmentSynchronizer;
 use PublicationApi\Api\Dossier\InvestigationReport\InvestigationReportMainDocumentRequestDto;
 use PublicationApi\Api\Dossier\InvestigationReport\InvestigationReportMainDocumentSynchronizer;
 use PublicationApi\Api\Dossier\InvestigationReport\InvestigationReportPersister;
@@ -34,7 +34,7 @@ final class InvestigationReportStrategyTest extends UnitTestCase
         $investigationReportStrategy = new InvestigationReportStrategy(
             Mockery::mock(InvestigationReportPersister::class),
             Mockery::mock(InvestigationReportRequestMapper::class),
-            Mockery::mock(InvestigationReportAttachmentSynchronizer::class),
+            Mockery::mock(DossierAttachmentSynchronizer::class),
             Mockery::mock(InvestigationReportMainDocumentSynchronizer::class),
             Mockery::mock(NoticeNotPublicSynchronizer::class),
         );
@@ -85,8 +85,8 @@ final class InvestigationReportStrategyTest extends UnitTestCase
         $investigationReportMainDocumentSynchronizer = Mockery::mock(InvestigationReportMainDocumentSynchronizer::class);
         $investigationReportMainDocumentSynchronizer->expects('create')->with($investigationReport, $mainDocumentRequestDto);
 
-        $investigationReportAttachmentSynchronizer = Mockery::mock(InvestigationReportAttachmentSynchronizer::class);
-        $investigationReportAttachmentSynchronizer->expects('create')
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('create')
             ->with($investigationReport, $investigationReportRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
@@ -96,7 +96,7 @@ final class InvestigationReportStrategyTest extends UnitTestCase
         $investigationReportStrategy = new InvestigationReportStrategy(
             $investigationReportPersister,
             $investigationReportRequestMapper,
-            $investigationReportAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             $investigationReportMainDocumentSynchronizer,
             Mockery::mock(NoticeNotPublicSynchronizer::class),
         );
@@ -145,8 +145,8 @@ final class InvestigationReportStrategyTest extends UnitTestCase
         $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
         $noticeNotPublicSynchronizer->expects('create')->with($investigationReport, $noticeNotPublicRequestDto);
 
-        $investigationReportAttachmentSynchronizer = Mockery::mock(InvestigationReportAttachmentSynchronizer::class);
-        $investigationReportAttachmentSynchronizer->expects('create')->andReturn($attachmentEvents);
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('create')->andReturn($attachmentEvents);
 
         $investigationReportPersister = Mockery::mock(InvestigationReportPersister::class);
         $investigationReportPersister->expects('persist')->with($investigationReport, null, $attachmentEvents);
@@ -154,7 +154,7 @@ final class InvestigationReportStrategyTest extends UnitTestCase
         $investigationReportStrategy = new InvestigationReportStrategy(
             $investigationReportPersister,
             $investigationReportRequestMapper,
-            $investigationReportAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             Mockery::mock(InvestigationReportMainDocumentSynchronizer::class),
             $noticeNotPublicSynchronizer,
         );
@@ -208,8 +208,8 @@ final class InvestigationReportStrategyTest extends UnitTestCase
         $investigationReportMainDocumentSynchronizer = Mockery::mock(InvestigationReportMainDocumentSynchronizer::class);
         $investigationReportMainDocumentSynchronizer->expects('update')->with($investigationReport, $mainDocumentRequestDto);
 
-        $investigationReportAttachmentSynchronizer = Mockery::mock(InvestigationReportAttachmentSynchronizer::class);
-        $investigationReportAttachmentSynchronizer->expects('update')
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('update')
             ->with($investigationReport, $investigationReportRequestDto->attachments)
             ->andReturn($attachmentEvents);
 
@@ -220,7 +220,7 @@ final class InvestigationReportStrategyTest extends UnitTestCase
         $investigationReportStrategy = new InvestigationReportStrategy(
             $investigationReportPersister,
             $investigationReportRequestMapper,
-            $investigationReportAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             $investigationReportMainDocumentSynchronizer,
             $noticeNotPublicSynchronizer,
         );
@@ -265,8 +265,8 @@ final class InvestigationReportStrategyTest extends UnitTestCase
         $noticeNotPublicSynchronizer = Mockery::mock(NoticeNotPublicSynchronizer::class);
         $noticeNotPublicSynchronizer->expects('update')->with($investigationReport, $noticeNotPublicRequestDto);
 
-        $investigationReportAttachmentSynchronizer = Mockery::mock(InvestigationReportAttachmentSynchronizer::class);
-        $investigationReportAttachmentSynchronizer->expects('update')->andReturn($attachmentEvents);
+        $dossierAttachmentSynchronizer = Mockery::mock(DossierAttachmentSynchronizer::class);
+        $dossierAttachmentSynchronizer->expects('update')->andReturn($attachmentEvents);
 
         $investigationReportPersister = Mockery::mock(InvestigationReportPersister::class);
         $investigationReportPersister->expects('snapshot')->with($investigationReport)->andReturn($investigationReportSnapshot);
@@ -275,7 +275,7 @@ final class InvestigationReportStrategyTest extends UnitTestCase
         $investigationReportStrategy = new InvestigationReportStrategy(
             $investigationReportPersister,
             $investigationReportRequestMapper,
-            $investigationReportAttachmentSynchronizer,
+            $dossierAttachmentSynchronizer,
             $investigationReportMainDocumentSynchronizer,
             $noticeNotPublicSynchronizer,
         );

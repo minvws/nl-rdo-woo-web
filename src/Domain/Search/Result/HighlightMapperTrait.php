@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Search\Result;
 
 use MinVWS\TypeArray\TypeArray;
+use Webmozart\Assert\Assert;
 
 use function array_merge;
 
@@ -24,7 +25,8 @@ trait HighlightMapperTrait
             }
         }
 
-        /** @var array<string> $highlightData */
+        Assert::allString($highlightData);
+
         return $highlightData;
     }
 }

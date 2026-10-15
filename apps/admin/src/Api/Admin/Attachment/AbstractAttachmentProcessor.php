@@ -74,7 +74,6 @@ abstract class AbstractAttachmentProcessor implements ProcessorInterface
 
     protected function create(AttachmentCreateDto $data, Uuid $dossierId): AbstractAttachmentDto
     {
-        /** @var AbstractAttachment $attachment */
         $attachment = $this->handle(
             new CreateAttachmentCommand(
                 dossierId: $dossierId,
@@ -86,6 +85,7 @@ abstract class AbstractAttachmentProcessor implements ProcessorInterface
                 uploadFileReference: $data->uploadUuid,
             ),
         );
+        Assert::isInstanceOf($attachment, AbstractAttachment::class);
 
         return $this->fromEntityToDto($attachment);
     }
@@ -94,7 +94,6 @@ abstract class AbstractAttachmentProcessor implements ProcessorInterface
     {
         Assert::notNull($attachmentId);
 
-        /** @var AbstractAttachment $attachment */
         $attachment = $this->handle(
             new UpdateAttachmentCommand(
                 dossierId: $dossierId,
@@ -107,6 +106,7 @@ abstract class AbstractAttachmentProcessor implements ProcessorInterface
                 uploadFileReference: $data->uploadUuid,
             ),
         );
+        Assert::isInstanceOf($attachment, AbstractAttachment::class);
 
         return $this->fromEntityToDto($attachment);
     }

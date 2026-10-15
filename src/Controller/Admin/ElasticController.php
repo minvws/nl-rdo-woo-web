@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webmozart\Assert\Assert;
 
 use function reset;
 
@@ -62,8 +63,8 @@ class ElasticController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var RolloverParameters $data */
             $data = $form->getData();
+            Assert::isInstanceOf($data, RolloverParameters::class);
 
             $this->rolloverService->initiateRollover($data);
 

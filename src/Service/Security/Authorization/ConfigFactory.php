@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Service\Security\Authorization;
 
+use Webmozart\Assert\Assert;
+
 readonly class ConfigFactory
 {
     /**
@@ -21,7 +23,8 @@ readonly class ConfigFactory
     {
         $entries = [];
         foreach ($this->config['entries'] ?? [] as $data) {
-            /** @var array<array-key, mixed> $data */
+            Assert::isArray($data);
+
             $entries[] = Entry::createFrom($data);
         }
 

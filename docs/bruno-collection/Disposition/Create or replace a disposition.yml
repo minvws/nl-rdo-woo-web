@@ -41,7 +41,7 @@ http:
           }
         ],
         "dossierDate": "2025-01-01",
-        "dossierNumber": "bruno-{{sessionTimestamp}}",
+        "dossierNumber": "{{dispositionDossierNumber}}",
         "publicationDate": "2026-02-01"
       }
   auth: inherit
@@ -58,6 +58,9 @@ runtime:
 
         if (!bru.getVar("dispositionDossierExternalId")) {
           bru.setVar("dispositionDossierExternalId", crypto.randomUUID());
+        }
+        if (!bru.getVar("dispositionDossierNumber")) {
+          bru.setVar("dispositionDossierNumber", `bruno-${Date.now()}`);
         }
         if (!bru.getVar("dispositionAttachmentExternalId")) {
           bru.setVar("dispositionAttachmentExternalId", crypto.randomUUID());

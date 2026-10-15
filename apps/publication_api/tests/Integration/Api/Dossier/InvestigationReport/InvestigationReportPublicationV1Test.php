@@ -43,6 +43,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Type;
+use Webmozart\Assert\Assert;
 
 use function array_map;
 use function array_merge;
@@ -78,8 +79,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         $data = $result->toArray();
         self::assertArrayHasKey('items', $data);
         self::assertArrayHasKey('hasNextPage', $data);
-        /** @var array<array-key, mixed> $items */
-        $items = $data['items'];
+        $items = Assert::isArray($data['items']);
         self::assertCount(1, $items);
         self::assertJsonContains(['items' => [['externalId' => $investigationReport->getExternalId()?->toString()]]]);
     }

@@ -1,0 +1,7 @@
+allowBuilds:
+  vue-demi: false
+auditConfig:
+  ignoreGhsas:
+    - GHSA-vfj7-8cjw-p6xm
+overrides:
+  '@ai-sdk/provider-utils': 4.0.33

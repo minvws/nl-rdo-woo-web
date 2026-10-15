@@ -237,8 +237,7 @@ class InquiryServiceTest extends UnitTestCase
     public function testApplyChangesetAsync(): void
     {
         $organisationId = Uuid::v6();
-        $organisation = Mockery::mock(Organisation::class);
-        $organisation->expects('getId')->times(4)->andReturn($organisationId);
+        $organisation = new Organisation($organisationId);
         $changeset = new InquiryChangeset($organisation);
 
         // Has no linked inquiries yet, so should be linked twice

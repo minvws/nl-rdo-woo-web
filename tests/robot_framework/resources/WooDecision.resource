@@ -35,7 +35,6 @@ Publish Test WooDecision
 
 Publish Generated Test WooDecision
   [Arguments]
-  ...  ${prefix}=E2E-A
   ...  ${publication_status}=Gepubliceerd
   ...  ${department}=${EMPTY}
   Generate Test Data Set  woo-decision
@@ -107,8 +106,7 @@ Upload And Process Documents
   Upload File By Selector  id=upload-area-dossier-files  @{file_locations}
   # Upload validation runs on the messenger worker, which can be slow under parallel load, so wait once instead of re-uploading
   Wait For Elements State  //*[@data-e2e-name="uploaded-files"]  visible  timeout=180s
-  # This has been wrapped with a retry mechanism, since sometimes the Click Process Documents fails for unclear reasons
-  Wait Until Keyword Succeeds  3x  20s  Click Process Documents
+  Click Process Documents
   Wait For Elements State  //*[@data-e2e-name="checking"]  detached
   Wait For Elements State  //*[@data-e2e-name="upload-busy"]  detached
 
@@ -131,9 +129,16 @@ Click Continue To Documents
 
 Click Process Documents
   Wait For Load State  load
-  Click  //button[@data-e2e-name="process-documents"]
+  # The uploaded files list can show up before the upload component is done, and then the click is ignored
   Wait For Elements State
-  ...  //button[@data-e2e-name="process-documents"]
+  ...  //button[@data-e2e-name="process-documents"][@data-e2e-is-uploading="false"]
+  ...  visible
+  ...  timeout=30s
+  Click  //button[@data-e2e-name="process-documents"]
+  # Small uploads can be fully processed before the next status poll, in which case the process button stays
+  # attached for the next (empty) upload set. The uploaded files list disappears in both cases.
+  Wait For Elements State
+  ...  //*[@data-e2e-name="uploaded-files"]
   ...  detached
   ...  message=Click on Process Documents did not work
 

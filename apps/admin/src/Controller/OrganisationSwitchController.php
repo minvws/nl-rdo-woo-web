@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Webmozart\Assert\Assert;
 
 use function in_array;
 
@@ -39,8 +40,8 @@ class OrganisationSwitchController extends AbstractController
     #[IsGranted('AuthMatrix.organisation.read')]
     public function index(Request $request, Organisation $organisation): Response
     {
-        /** @var User $user */
         $user = $this->getUser();
+        Assert::isInstanceOf($user, User::class);
         $this->organisationSwitcher->switchToOrganisation($user, $organisation);
 
         $referer = $request->headers->get('referer');

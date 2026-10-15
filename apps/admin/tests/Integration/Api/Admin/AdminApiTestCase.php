@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Admin\Tests\Integration\Api\Admin;
 
-use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
-use ApiPlatform\Symfony\Bundle\Test\Client;
+use ApiPlatform\Test\ApiTestCase;
+use ApiPlatform\Test\Client;
 use Shared\ApplicationId;
 use Shared\Service\Security\User;
 use Shared\Tests\Integration\ContainerTestTrait;
@@ -17,6 +17,8 @@ abstract class AdminApiTestCase extends ApiTestCase
     use ContainerTestTrait;
     use DatabaseTestTrait;
     use IntegrationTestTrait;
+
+    protected static ?bool $alwaysBootKernel = true;
 
     public function createAdminApiClient(User $user): Client
     {

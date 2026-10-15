@@ -19,6 +19,7 @@ use Shared\Domain\Upload\UploadedFile;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Uploader\UploadGroupId;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Webmozart\Assert\Assert;
 
 #[AsMessageHandler]
 readonly class ProcessDocumentFileUploadHandler
@@ -88,7 +89,8 @@ readonly class ProcessDocumentFileUploadHandler
     {
         $dossier = $documentFileSet->getDossier();
         foreach ($fileIterator as $file) {
-            /** @var UploadedFile $file */
+            Assert::isInstanceOf($file, UploadedFile::class);
+
             $originalFileExtension = $file->getOriginalFileExtension();
             $mimeType = $this->mimeTypeHelper->detectMimeTypeFromPath($file);
 

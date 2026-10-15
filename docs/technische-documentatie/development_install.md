@@ -38,14 +38,14 @@ Install the dependencies for the project.
 - [Docker](https://docs.docker.com/install/)
 - [Task](https://taskfile.dev/#/installation)
 
-That is all you need to get the platform running. PHP, Composer, Node and npm are all baked into the PHP image (see
+That is all you need to get the platform running. PHP, Composer, Node and pnpm are all baked into the PHP image (see
 `docker/php/Dockerfile` for the versions), and the tasks run inside containers. The one exception is the front-end
 watcher, which needs Node on the host — see [Developing frontend](#developing-frontend).
 
 <details>
 <summary>Set a <code>CR_PAT</code> env variable:</summary>
 
-This project currently needs to access private Composer and NPM packages hosted on Github. When you try to setup
+This project currently needs to access private Composer packages hosted on Github. When you try to setup
 the project, it will prompt you for the Github Access Token, if the `CR_PAT` env variable is not set.
 
 Instead of it prompting you everytime you "reset" the project you can instead set the `CR_PAT` env variable so it will
@@ -126,7 +126,7 @@ task up
 You can replace `up` with `stop`, `down` and `restart`.
 
 On a fresh checkout `task up` delegates to `task setup`, which does considerably more than starting containers:
-generates the local mTLS certificates (`task certs:gen`), installs the Composer and npm dependencies, creates the MinIO
+generates the local mTLS certificates (`task certs:gen`), installs the Composer and pnpm dependencies, creates the S3
 buckets, runs the database migrations and loads the example fixtures for each local tenant, creates the Elasticsearch
 index, builds the front-end assets and builds the user manual. Expect it to take a while the first time.
 
@@ -144,16 +144,18 @@ This starts the following services:
 | `rabbitmq`                       | Message queues                                |
 | `tika`                           | Content extraction                            |
 | `clamav`                         | Virus scanning of uploads                     |
-| `minio`                          | S3-compatible file storage                    |
+| `rustfs`                         | S3-compatible file storage                    |
 
 There are also containers behind compose profiles, which only run when a task needs them: `sphinx` (user manual),
-`certs` (certificate generation), `spectral` (API linting), `robot` (E2E tests) and `schemathesis` (API fuzzing).
+`certs` (certificate generation), `spectral` (API linting), `robot` (E2E tests), `schemathesis` (API fuzzing) and
+`rclone` (S3 bucket management).
 
 ### Note: The Docker containers in this repository are for development purposes only and they are not meant for production use
 
 > To administer your elasticsearch instance, you can use <https://app.elasticvue.com>
 > To administer your rabbitmq instance, you can use <http://rabbitmq-woo.local> (guest/guest)
-> To administer your MinIO buckets, you can use <http://localhost:9001>
+> To administer your S3 buckets, you can use the RustFS console at <http://localhost:9001> (root/password)
+> To manage your S3 buckets from the command line, use rclone: `docker compose run --rm rclone ls local:minvws-doc-bucket`
 
 ## Multiple tenants
 
@@ -211,8 +213,8 @@ consumers that read different files: Docker Compose interpolates them for the Or
 from your shell, while the application reads them from `.env.dev.local`. Changing them means changing both — see
 [docker/compose/README.md](../../docker/compose/README.md), which does exactly that for the second instance.
 
-The Publication API and MinIO keep their published ports, so they are on localhost either way: the API on `8443` /
-`8444` (mTLS, so it needs a client certificate from `task certs:gen`) and MinIO on `9000` with its console on `9001`.
+The Publication API and RustFS keep their published ports, so they are on localhost either way: the API on `8443` /
+`8444` (mTLS, so it needs a client certificate from `task certs:gen`) and RustFS on `9000` with its console on `9001`.
 
 If you are not using OrbStack, leave `compose.override.yml` out and the port mappings from `compose.yml` apply instead:
 public on `8000` / `8100`, admin on `8001` / `8101`, Elasticsearch on `9200`, RabbitMQ management on `15672` and
@@ -230,18 +232,18 @@ See [usage](usage.md) for more information on how to use the application.
 When developing frontend code (either CSS or JS), you can run the following command to watch for changes:
 
 ```shell
-npm run watch
+pnpm run watch
 ```
 
-This one does need Node and npm **on your machine** — `package.json` requires Node `>=20`. The Vite dev server binds to
-`localhost:8010` and the container does not publish that port, so running the watcher inside a container leaves it
-unreachable from the browser.
+This one does need Node and pnpm **on your machine** — `package.json` requires Node `^24.15.0 || >=26.0.0`. The Vite
+dev server binds to `localhost:8010` and the container does not publish that port, so running the watcher inside a
+container leaves it unreachable from the browser.
 
 For a one-off asset build you do not need Node on the host, since the image ships with it:
 
 ```shell
-task npm:install
-task npm:script:build
+task pnpm:install
+task pnpm:script:build
 ```
 
 ### Tasks

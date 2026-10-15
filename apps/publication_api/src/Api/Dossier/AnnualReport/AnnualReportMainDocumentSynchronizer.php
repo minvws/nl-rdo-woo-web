@@ -38,6 +38,7 @@ readonly class AnnualReportMainDocumentSynchronizer
             return;
         }
 
+        $this->dossierMainDocumentValidator->validateDelete($annualReport);
         $this->messageBus->dispatch(new DeleteMainDocumentCommand($annualReport->getId()));
     }
 

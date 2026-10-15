@@ -276,7 +276,7 @@ tasks:
     cmds:
       - task: :dc:exec:admin
         vars: { SUB_CMD: "bin/console --tenant=minvws woopie:dev:clean-sheet --index woopie-minvws --force {{ .CLI_ARGS }}" }
-      - task: :minio:clear-buckets
+      - task: :s3:clear-buckets
 
   fixtures:load:e2e:
     desc: Load the E2E fixtures

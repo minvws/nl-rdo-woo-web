@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Integration\Api\Department;
 
-use ApiPlatform\Symfony\Bundle\Test\Client;
+use ApiPlatform\Test\Client;
 use PublicationApi\Tests\Integration\Api\ApiPublicationV1TestCase;
 use Shared\Tests\Factory\DepartmentFactory;
 use Symfony\Component\HttpFoundation\Request;

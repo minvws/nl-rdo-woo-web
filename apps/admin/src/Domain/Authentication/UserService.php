@@ -24,6 +24,7 @@ use Shared\Service\Security\UserRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Webmozart\Assert\Assert;
 
 use function array_diff;
 use function array_merge;
@@ -58,8 +59,8 @@ readonly class UserService
             'user' => $user->getId(),
         ]);
 
-        /** @var ?User $actor */
         $actor = $this->tokenStorage->getToken()?->getUser();
+        Assert::nullOrIsInstanceOf($actor, User::class);
 
         $this->eventDispatcher->dispatch(
             new UserResetEvent(
@@ -90,8 +91,8 @@ readonly class UserService
             'user' => $user->getId(),
         ]);
 
-        /** @var ?User $actor */
         $actor = $this->tokenStorage->getToken()?->getUser();
+        Assert::nullOrIsInstanceOf($actor, User::class);
 
         $this->eventDispatcher->dispatch(
             new UserResetEvent(
@@ -148,8 +149,8 @@ readonly class UserService
             'roles' => $roles,
         ]);
 
-        /** @var ?User $actor */
         $actor = $this->tokenStorage->getToken()?->getUser();
+        Assert::nullOrIsInstanceOf($actor, User::class);
 
         $this->eventDispatcher->dispatch(
             new UserCreatedEvent(
