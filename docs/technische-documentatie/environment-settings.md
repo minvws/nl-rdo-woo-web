@@ -136,25 +136,24 @@ Locally this is served by KeyDB rather than Redis itself; see [keydb-mirror-manu
 Storage settings defines how documents, pages and thumbnails are stored and retrieved. There are two options: local and aws, but it is also possible
 to create your own storage adapter since internally it will be using flysystem.
 
-| Variable                                  | Description                                                           | Default value      |
-|-------------------------------------------|-----------------------------------------------------------------------|--------------------|
-| `STORAGE_DOCUMENT_ADAPTER`                | Which adapter to use for document storage (`aws` or `local`)          | `local`            |
-| `STORAGE_BATCH_ADAPTER`                   | Which adapter to use for archive storage (`aws` or `local`)           | `local`            |
-| `STORAGE_WOO_INDEX_ADAPTER`               | Which adapter to use for WooIndex sitemaps storage (`aws` or `local`) | `local`            |
-| `STORAGE_UPLOAD_ADAPTER`                  | Which adapter to use for upload storage (`aws` or `local`)            | `local`            |
-| `STORAGE_ASSETS_ADAPTER`                  | Which adapter to use for assets storage (`aws` or `local`)            | `local`            |
-| `<TENANT>_STORAGE_MINIO_REGION`           | The AWS/Minio region to use                                           | `eu-west-1`        |
-| `<TENANT>_STORAGE_MINIO_ENDPOINT`         | The AWS/Minio endpoint                                                | ``                 |
-| `<TENANT>_STORAGE_MINIO_ACCESS_KEY`       | The AWS/Minio access key                                              | ``                 |
-| `<TENANT>_STORAGE_MINIO_SECRET_KEY`       | The AWS/Minio secret key                                              | ``                 |
-| `<TENANT>_STORAGE_MINIO_DOCUMENT_BUCKET`  | Bucket for document storage                                           | `doc-bucket`       |
-| `<TENANT>_STORAGE_MINIO_BATCH_BUCKET`     | Bucket for archive storage                                            | `batch-bucket`     |
-| `<TENANT>_STORAGE_MINIO_WOO_INDEX_BUCKET` | Bucket for WooIndex sitemap storage                                   | `woo-index-bucket` |
-| `<TENANT>_STORAGE_MINIO_UPLOAD_BUCKET`    | Bucket for temporary upload storage                                   | `upload-bucket`    |
-| `<TENANT>_STORAGE_MINIO_ASSETS_BUCKET`    | Bucket for assets storage (like the department logo)                  | `assets-bucket`    |
+| Variable                               | Description                                                           | Default value      |
+|----------------------------------------|-----------------------------------------------------------------------|--------------------|
+| `STORAGE_DOCUMENT_ADAPTER`             | Which adapter to use for document storage (`aws` or `local`)          | `local`            |
+| `STORAGE_BATCH_ADAPTER`                | Which adapter to use for archive storage (`aws` or `local`)           | `local`            |
+| `STORAGE_WOO_INDEX_ADAPTER`            | Which adapter to use for WooIndex sitemaps storage (`aws` or `local`) | `local`            |
+| `STORAGE_UPLOAD_ADAPTER`               | Which adapter to use for upload storage (`aws` or `local`)            | `local`            |
+| `STORAGE_ASSETS_ADAPTER`               | Which adapter to use for assets storage (`aws` or `local`)            | `local`            |
+| `<TENANT>_STORAGE_S3_REGION`           | The S3 region to use                                                  | `eu-west-1`        |
+| `<TENANT>_STORAGE_S3_ENDPOINT`         | The S3 endpoint                                                       | ``                 |
+| `<TENANT>_STORAGE_S3_ACCESS_KEY`       | The S3 access key                                                     | ``                 |
+| `<TENANT>_STORAGE_S3_SECRET_KEY`       | The S3 secret key                                                     | ``                 |
+| `<TENANT>_STORAGE_S3_DOCUMENT_BUCKET`  | Bucket for document storage                                           | `doc-bucket`       |
+| `<TENANT>_STORAGE_S3_BATCH_BUCKET`     | Bucket for archive storage                                            | `batch-bucket`     |
+| `<TENANT>_STORAGE_S3_WOO_INDEX_BUCKET` | Bucket for WooIndex sitemap storage                                   | `woo-index-bucket` |
+| `<TENANT>_STORAGE_S3_UPLOAD_BUCKET`    | Bucket for temporary upload storage                                   | `upload-bucket`    |
+| `<TENANT>_STORAGE_S3_ASSETS_BUCKET`    | Bucket for assets storage (like the department logo)                  | `assets-bucket`    |
 
-Any S3-compatible storage system works: locally this is [RustFS](https://github.com/rustfs/rustfs), but AWS S3 or MinIO
-work as well.
+Any S3-compatible storage system works: locally this is [RustFS](https://github.com/rustfs/rustfs).
 
 ### Publication API settings
 

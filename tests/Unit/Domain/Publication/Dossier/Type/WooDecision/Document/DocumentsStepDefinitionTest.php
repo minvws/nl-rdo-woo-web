@@ -32,6 +32,8 @@ class DocumentsStepDefinitionTest extends UnitTestCase
         $this->step = new DocumentsStepDefinition(
             StepName::DOCUMENTS,
             DossierType::WOO_DECISION,
+            $this->getFaker()->word(),
+            $this->getFaker()->word(),
         );
 
         parent::setUp();

@@ -35,6 +35,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAtt
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Subject\Subject;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -76,10 +77,12 @@ enum ElasticDocumentType: string implements TranslatableInterface
     case DRAFT_DECISION_MAIN_DOCUMENT = 'draft_decision_main_document';
 
     case ATTACHMENT = 'attachment';
+    case SUBJECT = 'subject';
 
     public static function fromEntity(object $entity): self
     {
         return match (true) {
+            $entity instanceof Subject => self::SUBJECT,
             $entity instanceof Covenant => self::COVENANT,
             $entity instanceof CovenantMainDocument => self::COVENANT_MAIN_DOCUMENT,
             $entity instanceof CovenantAttachment => self::ATTACHMENT,
@@ -133,6 +136,7 @@ enum ElasticDocumentType: string implements TranslatableInterface
     public static function fromEntityClass(string $entityClass): self
     {
         return match ($entityClass) {
+            Subject::class => self::SUBJECT,
             Covenant::class => self::COVENANT,
             CovenantMainDocument::class => self::COVENANT_MAIN_DOCUMENT,
             CovenantAttachment::class => self::ATTACHMENT,
@@ -210,6 +214,16 @@ enum ElasticDocumentType: string implements TranslatableInterface
     /**
      * @return list<self>
      */
+    public static function getStandaloneTypes(): array
+    {
+        return [
+            self::SUBJECT,
+        ];
+    }
+
+    /**
+     * @return list<self>
+     */
     public static function getMainDocumentTypes(): array
     {
         return [
@@ -243,6 +257,16 @@ enum ElasticDocumentType: string implements TranslatableInterface
     {
         return self::toValues(
             self::getSubTypes(),
+        );
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function getStandaloneTypeValues(): array
+    {
+        return self::toValues(
+            self::getStandaloneTypes(),
         );
     }
 

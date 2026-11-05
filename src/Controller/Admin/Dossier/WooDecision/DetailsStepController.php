@@ -25,6 +25,10 @@ use Webmozart\Assert\Assert;
 
 class DetailsStepController extends AbstractController
 {
+    public const string ROUTE_NAME_CREATE = 'app_admin_dossier_woodecision_details_create';
+    public const string ROUTE_NAME_CONCEPT = 'app_admin_dossier_woodecision_details_concept';
+    public const string ROUTE_NAME_EDIT = 'app_admin_dossier_woodecision_details_edit';
+
     public function __construct(
         private readonly WizardStatusFactory $wizardStatusFactory,
         private readonly DossierFactory $dossierFactory,
@@ -35,8 +39,8 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/details/create',
-        name: 'app_admin_dossier_woodecision_details_create',
+        '/balie/dossier/woodecision/details/create',
+        self::ROUTE_NAME_CREATE,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create')]
@@ -65,8 +69,8 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/details/concept/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_woodecision_details_concept',
+        '/balie/dossier/woodecision/details/concept/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_CONCEPT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
@@ -99,8 +103,8 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/details/edit/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_woodecision_details_edit',
+        '/balie/dossier/woodecision/details/edit/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_EDIT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]

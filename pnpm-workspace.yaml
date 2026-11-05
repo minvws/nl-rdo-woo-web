@@ -1,5 +1,13 @@
 allowBuilds:
   vue-demi: false
+supportedArchitectures:
+  os:
+    - current
+    - linux
+  cpu:
+    - current
+  libc:
+    - glibc
 auditConfig:
   ignoreGhsas:
     - GHSA-vfj7-8cjw-p6xm

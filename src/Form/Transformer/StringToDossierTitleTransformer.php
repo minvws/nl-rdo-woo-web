@@ -53,7 +53,7 @@ class StringToDossierTitleTransformer implements DataTransformerInterface
         } catch (DossierTitleArgumentException $dossierTitleArgumentException) {
             throw new TransformationFailedException(
                 message: $dossierTitleArgumentException->getMessage(),
-                invalidMessage: $dossierTitleArgumentException->getTranslationKey(),
+                invalidMessage: $dossierTitleArgumentException->getMessageKey(),
                 invalidMessageParameters: $dossierTitleArgumentException->getParameters(),
             );
         }

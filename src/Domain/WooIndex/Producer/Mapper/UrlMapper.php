@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace Shared\Domain\WooIndex\Producer\Mapper;
 
 use Carbon\CarbonImmutable;
+use Shared\Controller\Public\Dossier\DossierFileController;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
 use Shared\Domain\WooIndex\Producer\Url;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Shared\ValueObject\Url as UrlValueObject;
 
 final readonly class UrlMapper
 {
     public function __construct(
-        private UrlGeneratorInterface $urlGenerator,
+        private PublicUrlGenerator $publicUrlGenerator,
         private DiWooDocumentMapper $diWooDocumentMapper,
-        private string $publicBaseUrl,
     ) {
     }
 
@@ -27,18 +28,13 @@ final readonly class UrlMapper
         );
     }
 
-    private function getLoc(RawUrlDto $rawUrl): string
+    private function getLoc(RawUrlDto $rawUrl): UrlValueObject
     {
-        $subpath = $this->urlGenerator->generate(
-            name: 'app_dossier_file_download',
-            parameters: [
-                'documentPrefix' => $rawUrl->documentPrefix,
-                'dossierNumber' => $rawUrl->dossierNumber,
-                'type' => $rawUrl->source->value,
-                'id' => $rawUrl->id,
-            ],
-        );
-
-        return $this->publicBaseUrl . $subpath;
+        return $this->publicUrlGenerator->buildUrlFromRoute(DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, [
+            'documentPrefix' => $rawUrl->documentPrefix,
+            'dossierNumber' => $rawUrl->dossierNumber,
+            'type' => $rawUrl->source->value,
+            'id' => $rawUrl->id,
+        ]);
     }
 }

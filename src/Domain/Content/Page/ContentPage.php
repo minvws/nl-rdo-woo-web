@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Content\Page;
 
 use Carbon\CarbonImmutable;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\TimestampableTrait;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,7 +28,7 @@ class ContentPage
     #[Assert\Length(min: 1, max: 200)]
     private string $title;
 
-    #[ORM\Column(type: 'text', nullable: false)]
+    #[ORM\Column(type: Types::TEXT, nullable: false)]
     #[Assert\NotBlank]
     private string $content;
 

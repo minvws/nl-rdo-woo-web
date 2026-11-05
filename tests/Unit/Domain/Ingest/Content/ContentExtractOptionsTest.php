@@ -69,14 +69,12 @@ class ContentExtractOptionsTest extends UnitTestCase
         );
     }
 
-    public function testWithLocalFile(): void
+    public function testWithFileContents(): void
     {
-        $options = ContentExtractOptions::create()->withLocalFile($localFile = '/foo/bar.txt');
+        $fileContents = $this->getFaker()->sentence();
+        $options = ContentExtractOptions::create()->withFileContents($fileContents);
 
-        self::assertTrue($options->hasLocalFile());
-        self::assertEquals(
-            $localFile,
-            $options->getLocalFile(),
-        );
+        self::assertTrue($options->hasFileContents());
+        self::assertSame($fileContents, $options->getFileContents());
     }
 }

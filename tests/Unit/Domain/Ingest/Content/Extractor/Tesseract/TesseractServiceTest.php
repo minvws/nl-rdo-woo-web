@@ -4,187 +4,112 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tesseract;
 
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
-use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\Content\Extractor\Tesseract\TesseractService;
-use Shared\Service\Storage\LocalFilesystem;
+use Shared\Service\ProcessFactory;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Process\Process;
 
 final class TesseractServiceTest extends UnitTestCase
 {
-    protected LoggerInterface&MockInterface $logger;
-    protected LocalFilesystem&MockInterface $localFilesystem;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->logger = Mockery::mock(LoggerInterface::class);
-        $this->localFilesystem = Mockery::mock(LocalFilesystem::class);
-    }
-
     public function testExtract(): void
     {
-        $this->localFilesystem
-            ->expects('createTempDir')
-            ->andReturn($tempDir = 'tempDir');
+        $source = Utils::tryFopen('php://memory', 'r');
+        $png = $this->getFaker()->sha256();
+        $tesseractOutput = $this->getFaker()->sentence();
 
-        $targetPngPath = $tempDir . '/page';
+        $pdftoppmProcess = Mockery::mock(Process::class);
+        $pdftoppmProcess->expects('setInput')->with($source)->andReturnSelf();
+        $pdftoppmProcess->expects('setTimeout')->with(120)->andReturnSelf();
+        $pdftoppmProcess->expects('run');
+        $pdftoppmProcess->expects('isSuccessful')->andReturnTrue();
+        $pdftoppmProcess->expects('getOutput')->andReturn($png);
 
-        $tesseract = $this->getTesseract();
+        $tesseractProcess = Mockery::mock(Process::class);
+        $tesseractProcess->expects('setInput')->with($png)->andReturnSelf();
+        $tesseractProcess->expects('setTimeout')->with(120)->andReturnSelf();
+        $tesseractProcess->expects('run');
+        $tesseractProcess->expects('isSuccessful')->andReturnTrue();
+        $tesseractProcess->expects('getOutput')->andReturn($tesseractOutput);
 
-        $tesseract
-            ->expects('getNewProcess')
-            ->with([TesseractService::PDFTOPPM_PATH, '-png', '-r', '300', '-singlefile', $sourcePdfPath = 'sourcePdfPath', $targetPngPath])
-            ->andReturn($pdftoppmProcess = $this->getProcess());
+        $processFactory = Mockery::mock(ProcessFactory::class);
+        $processFactory
+            ->expects('create')
+            ->with([TesseractService::PDFTOPPM_PATH, '-png', '-r', '300', '-singlefile', TesseractService::PDFTOPPM_INPUT_FROM_STDIN])
+            ->andReturn($pdftoppmProcess);
+        $processFactory
+            ->expects('create')
+            ->with([TesseractService::TESSERACT_PATH, TesseractService::TESSERACT_INPUT_FROM_STDIN, 'stdout'])
+            ->andReturn($tesseractProcess);
 
-        $pdftoppmProcess
-            ->expects('isSuccessful')
-            ->andReturnTrue();
+        $tesseract = new TesseractService(Mockery::mock(LoggerInterface::class), $processFactory);
 
-        $tesseract
-            ->expects('getNewProcess')
-            ->with([TesseractService::TESSERACT_PATH, $targetPngPath . '.png', 'stdout'])
-            ->andReturn($tesseractProcess = $this->getProcess());
-
-        $tesseractProcess
-            ->expects('isSuccessful')
-            ->andReturnTrue();
-
-        $this->localFilesystem
-            ->expects('deleteDirectory')
-            ->with($tempDir);
-
-        $tesseractProcess
-            ->expects('getOutput')
-            ->andReturn($tesseractOutput = 'output');
-
-        $result = $tesseract->extract($sourcePdfPath);
-
-        $this->assertSame($tesseractOutput, $result);
-    }
-
-    public function testExtractWhenFailedToCreateTempDir(): void
-    {
-        $this->localFilesystem
-            ->expects('createTempDir')
-            ->andReturnFalse();
-
-        $tesseract = $this->getTesseract();
-
-        $tesseract->expects('getNewProcess')->never();
-
-        $result = $tesseract->extract('sourcePdfPath');
-
-        $this->assertSame('', $result);
+        self::assertSame($tesseractOutput, $tesseract->extract($source));
     }
 
     public function testExtractWhenPdftoppmFails(): void
     {
-        $this->localFilesystem
-            ->expects('createTempDir')
-            ->andReturn($tempDir = 'tempDir');
+        $source = Utils::tryFopen('php://memory', 'r');
+        $errorOutput = $this->getFaker()->sentence();
 
-        $targetPngPath = $tempDir . '/page';
+        $pdftoppmProcess = Mockery::mock(Process::class);
+        $pdftoppmProcess->expects('setInput')->with($source)->andReturnSelf();
+        $pdftoppmProcess->expects('setTimeout')->with(120)->andReturnSelf();
+        $pdftoppmProcess->expects('run');
+        $pdftoppmProcess->expects('isSuccessful')->andReturnFalse();
+        $pdftoppmProcess->expects('getErrorOutput')->andReturn($errorOutput);
 
-        $tesseract = $this->getTesseract();
+        $logger = Mockery::mock(LoggerInterface::class);
+        $logger->expects('error')->with('pdftoppm failed', ['error_output' => $errorOutput]);
 
-        $tesseract
-            ->expects('getNewProcess')
-            ->with([TesseractService::PDFTOPPM_PATH, '-png', '-r', '300', '-singlefile', $sourcePdfPath = 'sourcePdfPath', $targetPngPath])
-            ->andReturn($pdftoppmProcess = $this->getProcess());
+        $processFactory = Mockery::mock(ProcessFactory::class);
+        $processFactory
+            ->expects('create')
+            ->with([TesseractService::PDFTOPPM_PATH, '-png', '-r', '300', '-singlefile', TesseractService::PDFTOPPM_INPUT_FROM_STDIN])
+            ->andReturn($pdftoppmProcess);
 
-        $pdftoppmProcess
-            ->expects('isSuccessful')
-            ->andReturnFalse();
+        $tesseract = new TesseractService($logger, $processFactory);
 
-        $pdftoppmProcess
-            ->expects('getErrorOutput')
-            ->andReturn($pdftoppmProcessErrorOutput = 'error_output');
-
-        $this->logger
-            ->expects('error')
-            ->with('pdftoppm failed', [
-                'sourcePath' => $sourcePdfPath,
-                'targetPngPath' => $targetPngPath . '.png',
-                'error_output' => $pdftoppmProcessErrorOutput,
-            ]);
-
-        $this->localFilesystem
-            ->expects('deleteDirectory')
-            ->with($tempDir);
-
-        $result = $tesseract->extract($sourcePdfPath);
-
-        $this->assertSame('', $result);
+        self::assertSame('', $tesseract->extract($source));
     }
 
     public function testExtractWhenTesseractFails(): void
     {
-        $this->localFilesystem
-            ->expects('createTempDir')
-            ->andReturn($tempDir = 'tempDir');
+        $source = Utils::tryFopen('php://memory', 'r');
+        $png = $this->getFaker()->sha256();
+        $errorOutput = $this->getFaker()->sentence();
 
-        $targetPngPath = $tempDir . '/page';
+        $pdftoppmProcess = Mockery::mock(Process::class);
+        $pdftoppmProcess->expects('setInput')->with($source)->andReturnSelf();
+        $pdftoppmProcess->expects('setTimeout')->with(120)->andReturnSelf();
+        $pdftoppmProcess->expects('run');
+        $pdftoppmProcess->expects('isSuccessful')->andReturnTrue();
+        $pdftoppmProcess->expects('getOutput')->andReturn($png);
 
-        $tesseract = $this->getTesseract();
+        $tesseractProcess = Mockery::mock(Process::class);
+        $tesseractProcess->expects('setInput')->with($png)->andReturnSelf();
+        $tesseractProcess->expects('setTimeout')->with(120)->andReturnSelf();
+        $tesseractProcess->expects('run');
+        $tesseractProcess->expects('isSuccessful')->andReturnFalse();
+        $tesseractProcess->expects('getErrorOutput')->andReturn($errorOutput);
 
-        $tesseract
-            ->expects('getNewProcess')
-            ->with([TesseractService::PDFTOPPM_PATH, '-png', '-r', '300', '-singlefile', $sourcePdfPath = 'sourcePdfPath', $targetPngPath])
-            ->andReturn($pdftoppmProcess = $this->getProcess());
+        $logger = Mockery::mock(LoggerInterface::class);
+        $logger->expects('error')->with('Tesseract failed', ['error_output' => $errorOutput]);
 
-        $pdftoppmProcess
-            ->expects('isSuccessful')
-            ->andReturnTrue();
+        $processFactory = Mockery::mock(ProcessFactory::class);
+        $processFactory
+            ->expects('create')
+            ->with([TesseractService::PDFTOPPM_PATH, '-png', '-r', '300', '-singlefile', TesseractService::PDFTOPPM_INPUT_FROM_STDIN])
+            ->andReturn($pdftoppmProcess);
+        $processFactory
+            ->expects('create')
+            ->with([TesseractService::TESSERACT_PATH, TesseractService::TESSERACT_INPUT_FROM_STDIN, 'stdout'])
+            ->andReturn($tesseractProcess);
 
-        $tesseract
-            ->expects('getNewProcess')
-            ->with([TesseractService::TESSERACT_PATH, $targetPngPath . '.png', 'stdout'])
-            ->andReturn($tesseractProcess = $this->getProcess());
+        $tesseract = new TesseractService($logger, $processFactory);
 
-        $tesseractProcess
-            ->expects('isSuccessful')
-            ->andReturnFalse();
-
-        $tesseractProcess
-            ->expects('getErrorOutput')
-            ->andReturn($tesseractProcessErrorOutput = 'error_output');
-
-        $this->logger
-            ->expects('error')
-            ->with('Tesseract failed', [
-                'sourcePath' => $sourcePdfPath,
-                'targetPngPath' => $targetPngPath . '.png',
-                'error_output' => $tesseractProcessErrorOutput,
-            ]);
-
-        $this->localFilesystem
-            ->expects('deleteDirectory')
-            ->with($tempDir);
-
-        $result = $tesseract->extract($sourcePdfPath);
-
-        $this->assertSame('', $result);
-    }
-
-    private function getTesseract(): TesseractService&MockInterface
-    {
-        $tesseract = Mockery::mock(TesseractService::class, [$this->logger, $this->localFilesystem])
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods();
-
-        return $tesseract;
-    }
-
-    private function getProcess(): Process&MockInterface
-    {
-        $process = Mockery::mock(Process::class);
-        $process->expects('setTimeout')->with(120);
-        $process->expects('run');
-
-        return $process;
+        self::assertSame('', $tesseract->extract($source));
     }
 }

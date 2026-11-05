@@ -7,9 +7,11 @@ namespace Shared\Domain\WooIndex;
 use Carbon\CarbonImmutable;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
+use Shared\Controller\Public\WooIndexController;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\WooIndex\Exception\WooIndexFileNotFoundException;
+use Shared\ValueObject\Url;
 use Symfony\Component\DependencyInjection\Attribute\Target;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
 
 use function basename;
@@ -21,9 +23,8 @@ readonly class WooIndexSitemapService
         private FilesystemOperator $wooIndexStorage,
         private WooIndexNamer $wooIndexNamer,
         private WooIndexSitemapRepository $wooIndexSitemapRepository,
-        private UrlGeneratorInterface $urlGenerator,
+        private PublicUrlGenerator $publicUrlGenerator,
         private WooIndex $wooIndex,
-        private string $publicBaseUrl,
     ) {
     }
 
@@ -58,19 +59,17 @@ readonly class WooIndexSitemapService
         return $stream;
     }
 
-    public function getCurrentSitemapIndexUrl(): ?string
+    public function getCurrentSitemapIndexUrl(): ?Url
     {
         $wooIndexSitemap = $this->wooIndexSitemapRepository->lastFinished();
         if ($wooIndexSitemap === null) {
             return null;
         }
 
-        $subpath = $this->urlGenerator->generate('app_woo_index_sitemap_download', [
+        return $this->publicUrlGenerator->buildUrlFromRoute(WooIndexController::ROUTE_NAME_WOO_INDEX_SITEMAP_DOWNLOAD, [
             'id' => $wooIndexSitemap->getId()->toRfc4122(),
             'file' => $this->wooIndexNamer->getSitemapIndexName(),
         ]);
-
-        return $this->publicBaseUrl . $subpath;
     }
 
     public function cleanupSitemap(WooIndexSitemap $wooIndexSitemap): void

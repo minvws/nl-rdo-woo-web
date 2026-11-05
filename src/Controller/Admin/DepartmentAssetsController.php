@@ -17,6 +17,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class DepartmentAssetsController extends AbstractController
 {
+    public const string ROUTE_NAME_DEPARTMENT_LOGO_DOWNLOAD = 'app_admin_department_logo_download';
+
     public function __construct(
         private readonly DownloadResponseHelper $downloadHelper,
         private readonly DepartmentFileService $departmentFileService,
@@ -27,7 +29,7 @@ final class DepartmentAssetsController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/balie/assets/department/{id}/logo',
-        name: 'app_admin_department_logo_download',
+        self::ROUTE_NAME_DEPARTMENT_LOGO_DOWNLOAD,
         methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.department_landing_page.update')]

@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\Type\WooDecision;
 
+use Shared\Controller\Admin\Dossier\WooDecision\DecisionStepController;
+use Shared\Controller\Admin\Dossier\WooDecision\DetailsStepController;
+use Shared\Controller\Admin\Dossier\WooDecision\DocumentsConceptStepController;
+use Shared\Controller\Admin\Dossier\WooDecision\DocumentsEditStepController;
+use Shared\Controller\Admin\Dossier\WooDecision\PublicationStepController;
 use Shared\Domain\Publication\Dossier\Step\StepDefinition;
 use Shared\Domain\Publication\Dossier\Step\StepDefinitionInterface;
 use Shared\Domain\Publication\Dossier\Step\StepName;
@@ -58,10 +63,30 @@ readonly class WooDecisionConfig implements DossierTypeConfigInterface
     public function getSteps(): array
     {
         return [
-            StepDefinition::create($this, StepName::DETAILS),
-            StepDefinition::create($this, StepName::DECISION),
-            DocumentsStepDefinition::create($this, StepName::DOCUMENTS),
-            StepDefinition::create($this, StepName::PUBLICATION),
+            StepDefinition::create(
+                $this,
+                StepName::DETAILS,
+                DetailsStepController::ROUTE_NAME_CONCEPT,
+                DetailsStepController::ROUTE_NAME_EDIT,
+            ),
+            StepDefinition::create(
+                $this,
+                StepName::DECISION,
+                DecisionStepController::ROUTE_NAME_CONCEPT,
+                DecisionStepController::ROUTE_NAME_EDIT,
+            ),
+            DocumentsStepDefinition::create(
+                $this,
+                StepName::DOCUMENTS,
+                DocumentsConceptStepController::ROUTE_NAME_CONCEPT,
+                DocumentsEditStepController::ROUTE_NAME_EDIT,
+            ),
+            StepDefinition::create(
+                $this,
+                StepName::PUBLICATION,
+                PublicationStepController::ROUTE_NAME_CONCEPT,
+                PublicationStepController::ROUTE_NAME_EDIT,
+            ),
         ];
     }
 
@@ -70,7 +95,7 @@ readonly class WooDecisionConfig implements DossierTypeConfigInterface
      */
     public function getCreateRouteName(): string
     {
-        return 'app_admin_dossier_woodecision_details_create';
+        return DetailsStepController::ROUTE_NAME_CREATE;
     }
 
     public function getSubEntityClasses(): array

@@ -4,28 +4,17 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Faker;
 
-use Faker\Generator;
 use Faker\Provider\Internet;
 use Shared\Domain\Publication\Citation;
 use Webmozart\Assert\Assert;
 
+use function array_diff;
+use function array_keys;
 use function array_unique;
 use function array_values;
 
 final class DossierFakerProvider extends Internet
 {
-    /**
-     * @var list<string>
-     */
-    private static array $grounds = [];
-
-    public function __construct(Generator $generator)
-    {
-        parent::__construct($generator);
-
-        self::$grounds = array_values(array_unique(Citation::ALL_GROUND_KEYS));
-    }
-
     public function dossierNumber(): string
     {
         return $this->slug(2);
@@ -33,7 +22,20 @@ final class DossierFakerProvider extends Internet
 
     public function ground(): string
     {
-        $ground = static::randomElement(self::$grounds);
+        return $this->grounds()[0];
+    }
+
+    public function wooGround(): string
+    {
+        $ground = static::randomElement(array_keys(Citation::$wooCitations));
+        Assert::string($ground);
+
+        return $ground;
+    }
+
+    public function wobGround(): string
+    {
+        $ground = static::randomElement(array_values(array_diff(Citation::WOB_GROUND_KEYS, [Citation::DUBBEL])));
         Assert::string($ground);
 
         return $ground;
@@ -44,7 +46,7 @@ final class DossierFakerProvider extends Internet
      */
     public function grounds(int $count = 1): array
     {
-        $grounds = array_values(static::randomElements(self::$grounds, $count));
+        $grounds = array_values(static::randomElements(array_values(array_unique(Citation::ALL_GROUND_KEYS)), $count));
         Assert::allString($grounds);
 
         return $grounds;

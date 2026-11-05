@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM marketsquare/robotframework-browser:20.0
+FROM marketsquare/robotframework-browser:20.6.0
 WORKDIR /home/pwuser
 
 # Systeem-deps + locale in één laag
@@ -34,12 +34,12 @@ ENV PATH="/home/pwuser/.venv/bin:/usr/local/bin:${PATH}"
 
 RUN mkdir -p /home/pwuser/results
 
-COPY ./tests/robot_framework/pyproject.toml .
+COPY ./tests/robot_framework/pyproject.toml ./tests/robot_framework/uv.lock ./
 
 # uv is nu beschikbaar als system binary, sync als pwuser
 RUN --mount=type=cache,target=/tmp/uv-cache,uid=1001 \
     uv venv --clear \
-    && uv sync \
+    && uv sync --frozen \
     && PLAYWRIGHT_BROWSERS_PATH=/ms-playwright uv run rfbrowser init --skip-browsers
 
 USER root

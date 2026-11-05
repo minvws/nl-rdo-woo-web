@@ -135,7 +135,7 @@ class SubjectMapper
             $description,
             $subject->getLandingPageContentTreeStatus(),
             $contentTree,
-            $previewUrlGenerator?->generatePreviewUrl($subject),
+            $previewUrlGenerator?->generatePreviewUrl($subject)?->toString(),
         );
     }
 }

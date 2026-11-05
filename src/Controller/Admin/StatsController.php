@@ -19,15 +19,16 @@ use function json_decode;
 
 class StatsController extends AbstractController
 {
+    public const string ROUTE_NAME_STATS = 'app_admin_stats';
+
     public function __construct(protected EntityManagerInterface $doctrine)
     {
     }
 
-    #[Route('/balie/stats', name: 'app_admin_stats', methods: ['GET'])]
+    #[Route('/balie/stats', self::ROUTE_NAME_STATS, methods: ['GET'])]
     #[IsGranted('AuthMatrix.stat.read')]
     public function stats(Breadcrumbs $breadcrumbs): Response
     {
-        $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('global.admin', 'app_admin');
         $breadcrumbs->addItem('admin.global.statistics');
 

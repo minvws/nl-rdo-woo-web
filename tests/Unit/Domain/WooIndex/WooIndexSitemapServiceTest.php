@@ -10,6 +10,8 @@ use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToReadFile;
 use Mockery;
 use Mockery\MockInterface;
+use Shared\Controller\Public\WooIndexController;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\WooIndex\Exception\WooIndexFileNotFoundException;
 use Shared\Domain\WooIndex\WooIndex;
 use Shared\Domain\WooIndex\WooIndexNamer;
@@ -19,7 +21,7 @@ use Shared\Domain\WooIndex\WooIndexSitemapRepository;
 use Shared\Domain\WooIndex\WooIndexSitemapService;
 use Shared\Domain\WooIndex\WooIndexSitemapStatus;
 use Shared\Tests\Unit\UnitTestCase;
-use Symfony\Component\Routing\Generator\UrlGenerator;
+use Shared\ValueObject\Url;
 use Symfony\Component\Uid\Uuid;
 
 use function fopen;
@@ -30,10 +32,9 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
     private FilesystemOperator&MockInterface $wooIndexStorage;
     private WooIndexNamer&MockInterface $wooIndexNamer;
     private WooIndexSitemapRepository&MockInterface $wooIndexSitemapRepository;
-    private UrlGenerator&MockInterface $urlGenerator;
+    private PublicUrlGenerator&MockInterface $publicUrlGenerator;
     private WooIndexSitemapService $wooIndexSitemapService;
     private WooIndex&MockInterface $wooIndex;
-    private string $publicBaseUrl = 'http://localhost';
 
     protected function setUp(): void
     {
@@ -43,16 +44,15 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
         $this->wooIndexStorage = Mockery::mock(FilesystemOperator::class);
         $this->wooIndexNamer = Mockery::mock(WooIndexNamer::class);
         $this->wooIndexSitemapRepository = Mockery::mock(WooIndexSitemapRepository::class);
-        $this->urlGenerator = Mockery::mock(UrlGenerator::class);
+        $this->publicUrlGenerator = Mockery::mock(PublicUrlGenerator::class);
         $this->wooIndex = Mockery::mock(WooIndex::class);
 
         $this->wooIndexSitemapService = new WooIndexSitemapService(
             $this->wooIndexStorage,
             $this->wooIndexNamer,
             $this->wooIndexSitemapRepository,
-            $this->urlGenerator,
+            $this->publicUrlGenerator,
             $this->wooIndex,
-            $this->publicBaseUrl,
         );
     }
 
@@ -140,20 +140,16 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
         $this->wooIndexNamer->expects('getSitemapIndexName')
             ->andReturn($indexFilename = 'my-indexfilename.xml');
 
-        $this->urlGenerator
-            ->expects('generate')
-            ->with(
-                'app_woo_index_sitemap_download',
-                [
-                    'id' => $uuid->toRfc4122(),
-                    'file' => $indexFilename,
-                ],
-            )
-            ->andReturn($subpath = '/my-path/to/the-file.xml');
+        $this->publicUrlGenerator->expects('buildUrlFromRoute')
+            ->with(WooIndexController::ROUTE_NAME_WOO_INDEX_SITEMAP_DOWNLOAD, [
+                'id' => $uuid->toRfc4122(),
+                'file' => $indexFilename,
+            ])
+            ->andReturn($expectedUrl = Url::create($this->getFaker()->url()));
 
         $result = $this->wooIndexSitemapService->getCurrentSitemapIndexUrl();
 
-        $this->assertSame($this->publicBaseUrl . $subpath, $result);
+        $this->assertSame($expectedUrl, $result);
     }
 
     public function testCurrentSitemapIndexUrlWithoutAnyWooIndexSitemap(): void
@@ -225,9 +221,8 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
             $this->wooIndexStorage,
             $this->wooIndexNamer,
             $this->wooIndexSitemapRepository,
-            $this->urlGenerator,
+            $this->publicUrlGenerator,
             $this->wooIndex,
-            $this->publicBaseUrl,
         ])->makePartial();
 
         $wooIndexSitemapService->expects('cleanupSitemap')->with($wooIndexSitemaps[0]);
@@ -245,9 +240,8 @@ final class WooIndexSitemapServiceTest extends UnitTestCase
             $this->wooIndexStorage,
             $this->wooIndexNamer,
             $this->wooIndexSitemapRepository,
-            $this->urlGenerator,
+            $this->publicUrlGenerator,
             $this->wooIndex,
-            $this->publicBaseUrl,
         ])->makePartial();
 
         $wooIndexSitemapService->expects('cleanupSitemaps')

@@ -43,6 +43,7 @@ use Webmozart\Assert\Assert;
 ])]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\UniqueConstraint(columns: ['dossier_id', 'external_id'])]
+#[ORM\Index(columns: ['dossier_id', 'updated_at', 'id'])]
 abstract class AbstractAttachment implements EntityWithFileInfo
 {
     use AttachmentAndMainDocumentEntityTrait;

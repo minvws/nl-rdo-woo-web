@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
 use Closure;
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
-use Mockery\MockInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shared\Domain\Ingest\Content\ContentExtractLogContext;
@@ -19,53 +20,42 @@ use Shared\Service\Worker\Pdf\Extractor\EntityMetaDataExtractor;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Cache\CacheInterface;
+use Webmozart\Assert\InvalidArgumentException;
+
+use function sprintf;
 
 final class EntityMetaDataExtractorTest extends UnitTestCase
 {
-    private LoggerInterface&MockInterface $logger;
-    private EntityStorageService&MockInterface $entityStorageService;
-    private SubTypeIndexer&MockInterface $subTypeIndexer;
-    private TikaService&MockInterface $tika;
-    private EntityWithFileInfo&MockInterface $entity;
-    private CacheInterface&MockInterface $cache;
-    private FileInfo&MockInterface $fileInfo;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->logger = Mockery::mock(LoggerInterface::class);
-        $this->entityStorageService = Mockery::mock(EntityStorageService::class);
-        $this->subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
-        $this->tika = Mockery::mock(TikaService::class);
-
-        $this->fileInfo = Mockery::mock(FileInfo::class);
-        $this->fileInfo->expects('getHash')->andReturn('foobar');
-
-        $this->entity = Mockery::mock(EntityWithFileInfo::class);
-        $this->entity->expects('getFileInfo')->andReturn($this->fileInfo);
-
-        $this->cache = Mockery::mock(CacheInterface::class);
-    }
-
     public function testExtractWithCacheMiss(): void
     {
-        $this->cache
+        $hash = $this->getFaker()->sha256();
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getHash')->andReturn($hash);
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
+        $entity->expects('getId')->andReturn($id = Uuid::v6());
+
+        $cache = Mockery::mock(CacheInterface::class);
+        $cache
             ->expects('get')
-            ->with('foobar-tika-metadata', Mockery::type('callable'))
+            ->with(sprintf('%s-tika-metadata', $hash), Mockery::type('callable'))
             ->andReturnUsing(static fn (string $key, Closure $closure) => $closure());
 
-        $this->entityStorageService
-            ->expects('downloadEntity')
-            ->with($this->entity)
-            ->andReturn($localPdfPath = '/path/to/file.pdf');
+        $entityStorageService = Mockery::mock(EntityStorageService::class);
+        $entityStorageService
+            ->expects('retrieveResourceEntity')
+            ->with($entity)
+            ->andReturn($source = Utils::tryFopen('php://memory', 'r'));
 
-        $this->entity->expects('getId')->andReturn($id = Uuid::v6());
-
-        $this->tika
+        $tika = Mockery::mock(TikaService::class);
+        $tika
             ->expects('extract')
             ->with(
-                $localPdfPath,
+                Mockery::on(static function (StreamInterface $stream) use ($source): bool {
+                    return $stream->detach() === $source;
+                }),
                 'application/pdf',
                 Mockery::on(
                     static function (ContentExtractLogContext $context) use ($id): bool {
@@ -77,13 +67,10 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             )
             ->andReturn($tikaData = ['X-TIKA:content' => 'lorem ipsum', 'key' => 'value']);
 
-        $this->entityStorageService
-            ->expects('removeDownload')
-            ->with($localPdfPath);
-
-        $this->subTypeIndexer
+        $subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
+        $subTypeIndexer
             ->expects('index')
-            ->with($this->entity, Mockery::on(function (array $data) use ($tikaData) {
+            ->with($entity, Mockery::on(function (array $data) use ($tikaData) {
                 $expectedData = $tikaData;
 
                 unset($expectedData['X-TIKA:content']);
@@ -93,75 +80,129 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
                 return true;
             }));
 
-        $this->getExtractor()->extract($this->entity);
+        $extractor = new EntityMetaDataExtractor(
+            Mockery::mock(LoggerInterface::class),
+            $entityStorageService,
+            $subTypeIndexer,
+            $tika,
+            $cache,
+        );
+        $extractor->extract($entity);
     }
 
     public function testExtractWithCacheHit(): void
     {
-        $this->cache
+        $hash = $this->getFaker()->sha256();
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getHash')->andReturn($hash);
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
+
+        $cache = Mockery::mock(CacheInterface::class);
+        $cache
             ->expects('get')
-            ->with('foobar-tika-metadata', Mockery::type('callable'))
+            ->with(sprintf('%s-tika-metadata', $hash), Mockery::type('callable'))
             ->andReturn($metadata = ['key' => 'value']);
 
-        $this->subTypeIndexer
+        $subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
+        $subTypeIndexer
             ->expects('index')
-            ->with($this->entity, Mockery::on(function (array $data) use ($metadata) {
+            ->with($entity, Mockery::on(function (array $data) use ($metadata) {
                 $this->assertSame($metadata, $data);
 
                 return true;
             }));
 
-        $this->getExtractor()->extract($this->entity);
+        $extractor = new EntityMetaDataExtractor(
+            Mockery::mock(LoggerInterface::class),
+            Mockery::mock(EntityStorageService::class),
+            $subTypeIndexer,
+            Mockery::mock(TikaService::class),
+            $cache,
+        );
+        $extractor->extract($entity);
     }
 
     public function testExtractWhenFetchingEntityFromStorageFails(): void
     {
-        $this->cache
-            ->expects('get')
-            ->with('foobar-tika-metadata', Mockery::type('callable'))
-            ->andReturnUsing(static fn (string $key, Closure $closure) => $closure());
+        $hash = $this->getFaker()->sha256();
 
-        $this->entityStorageService
-            ->expects('downloadEntity')
-            ->with($this->entity)
-            ->andReturnFalse();
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getHash')->andReturn($hash);
 
-        $this->entity
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
+        $entity
             ->expects('getId')
             ->andReturn($entityUuid = Uuid::v6());
 
-        $this->logger
+        $cache = Mockery::mock(CacheInterface::class);
+        $cache
+            ->expects('get')
+            ->with(sprintf('%s-tika-metadata', $hash), Mockery::type('callable'))
+            ->andReturnUsing(static fn (string $key, Closure $closure) => $closure());
+
+        $entityStorageService = Mockery::mock(EntityStorageService::class);
+        $entityStorageService
+            ->expects('retrieveResourceEntity')
+            ->with($entity)
+            ->andReturnNull();
+
+        $logger = Mockery::mock(LoggerInterface::class);
+        $logger
             ->expects('error')
-            ->with('Failed to save file to local storage', [
+            ->with('Failed to read file from storage', [
                 'id' => $entityUuid,
-                'class' => $this->entity::class,
+                'class' => $entity::class,
             ]);
 
-        $this->subTypeIndexer
+        $subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
+        $subTypeIndexer
             ->expects('index')
-            ->with($this->entity, []);
+            ->with($entity, []);
 
-        $this->getExtractor()->extract($this->entity);
+        $extractor = new EntityMetaDataExtractor(
+            $logger,
+            $entityStorageService,
+            $subTypeIndexer,
+            Mockery::mock(TikaService::class),
+            $cache,
+        );
+        $extractor->extract($entity);
     }
 
     public function testExtractWhenIndexingOfEntityFails(): void
     {
-        $this->cache
+        $hash = $this->getFaker()->sha256();
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getHash')->andReturn($hash);
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
+        $entity->expects('getId')->times(2)->andReturn($entityUuid = Uuid::v6());
+
+        $cache = Mockery::mock(CacheInterface::class);
+        $cache
             ->expects('get')
-            ->with('foobar-tika-metadata', Mockery::type('callable'))
+            ->with(sprintf('%s-tika-metadata', $hash), Mockery::type('callable'))
             ->andReturnUsing(static fn (string $key, Closure $closure) => $closure());
 
-        $this->entityStorageService
-            ->expects('downloadEntity')
-            ->with($this->entity)
-            ->andReturn($localPdfPath = '/path/to/file.pdf');
+        $entityStorageService = Mockery::mock(EntityStorageService::class);
+        $entityStorageService
+            ->expects('retrieveResourceEntity')
+            ->with($entity)
+            ->andReturn($source = Utils::tryFopen('php://memory', 'r'));
 
-        $this->entity->expects('getId')->times(2)->andReturn($entityUuid = Uuid::v6());
-
-        $this->tika
+        $tika = Mockery::mock(TikaService::class);
+        $tika
             ->expects('extract')
             ->with(
-                $localPdfPath,
+                Mockery::on(static function (StreamInterface $stream) use ($source): bool {
+                    return $stream->detach() === $source;
+                }),
                 'application/pdf',
                 Mockery::on(
                     static function (ContentExtractLogContext $context) use ($entityUuid): bool {
@@ -173,13 +214,10 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             )
             ->andReturn($tikaData = ['X-TIKA:content' => 'lorem ipsum', 'key' => 'value']);
 
-        $this->entityStorageService
-            ->expects('removeDownload')
-            ->with($localPdfPath);
-
-        $this->subTypeIndexer
+        $subTypeIndexer = Mockery::mock(SubTypeIndexer::class);
+        $subTypeIndexer
             ->expects('index')
-            ->with($this->entity, Mockery::on(function (array $data) use ($tikaData) {
+            ->with($entity, Mockery::on(function (array $data) use ($tikaData) {
                 $expectedData = $tikaData;
 
                 unset($expectedData['X-TIKA:content']);
@@ -190,27 +228,46 @@ final class EntityMetaDataExtractorTest extends UnitTestCase
             }))
             ->andThrow($exception = new RuntimeException('Failed to create document'));
 
-        $this->logger
+        $logger = Mockery::mock(LoggerInterface::class);
+        $logger
             ->expects('error')
             ->with('Failed to create document', [
                 'id' => $entityUuid,
-                'class' => $this->entity::class,
+                'class' => $entity::class,
                 'exception' => $exception->getMessage(),
             ]);
 
+        $extractor = new EntityMetaDataExtractor(
+            $logger,
+            $entityStorageService,
+            $subTypeIndexer,
+            $tika,
+            $cache,
+        );
+
         $this->expectExceptionObject($exception);
 
-        $this->getExtractor()->extract($this->entity);
+        $extractor->extract($entity);
     }
 
-    private function getExtractor(): EntityMetaDataExtractor
+    public function testExtractThrowsExceptionForEntityWithoutHash(): void
     {
-        return new EntityMetaDataExtractor(
-            $this->logger,
-            $this->entityStorageService,
-            $this->subTypeIndexer,
-            $this->tika,
-            $this->cache,
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getHash')->andReturnNull();
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
+
+        $extractor = new EntityMetaDataExtractor(
+            Mockery::mock(LoggerInterface::class),
+            Mockery::mock(EntityStorageService::class),
+            Mockery::mock(SubTypeIndexer::class),
+            Mockery::mock(TikaService::class),
+            Mockery::mock(CacheInterface::class),
         );
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $extractor->extract($entity);
     }
 }

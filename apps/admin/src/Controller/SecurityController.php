@@ -23,6 +23,10 @@ use function is_string;
 
 class SecurityController extends AbstractController
 {
+    public const string ROUTE_NAME_LOGIN = 'app_login';
+    public const string ROUTE_NAME_LOGOUT = 'app_logout';
+    public const string ROUTE_NAME_USER_PROFILE = 'app_admin_user_profile';
+
     public function __construct(
         protected EntityManagerInterface $doctrine,
         protected UserPasswordHasherInterface $passwordEncoder,
@@ -30,7 +34,7 @@ class SecurityController extends AbstractController
     ) {
     }
 
-    #[Route(path: '/balie/login', name: 'app_login')]
+    #[Route('/balie/login', self::ROUTE_NAME_LOGIN)]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         // get the login error if there is one
@@ -41,13 +45,13 @@ class SecurityController extends AbstractController
         return $this->render('admin/security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
     }
 
-    #[Route(path: '/balie/logout', name: 'app_logout')]
+    #[Route('/balie/logout', self::ROUTE_NAME_LOGOUT)]
     public function logout(): void
     {
         throw new LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
-    #[Route(path: '/balie/profiel', name: 'app_admin_user_profile')]
+    #[Route('/balie/profiel', self::ROUTE_NAME_USER_PROFILE)]
     public function viewLoggedInUser(Request $request): Response
     {
         $form = $this->createForm(ChangePasswordType::class);

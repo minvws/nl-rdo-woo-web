@@ -2,7 +2,7 @@ id: doc-456
 fields:
     type: document
     document_number: doc-123
-    publication_context: PUBCON
+    publication_context: pubcon
     mime_type: application/pdf
     file_size: 1234
     file_type: pdf
@@ -26,7 +26,7 @@ fields:
 documentValues:
     type: { name: WOO_DECISION_DOCUMENT, value: document }
     document_number: doc-123
-    publication_context: PUBCON
+    publication_context: pubcon
     mime_type: application/pdf
     file_size: 1234
     file_type: pdf

@@ -8,6 +8,7 @@ use MinVWS\TypeArray\TypeArray;
 use Shared\Domain\Publication\Citation;
 use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Query\Facet\FacetDefinitions;
+use Shared\Domain\Search\Query\Facet\Input\DocTypeValue;
 use Shared\Domain\Search\Query\Facet\Input\FacetInputFactory;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Model\Aggregation;
@@ -19,6 +20,8 @@ readonly class AggregationMapper
 {
     private const string KEY = '[key]';
     private const string DOC_COUNT = '[doc_count]';
+    private const string PUBLICATION_DOC_COUNT = '[publication][doc_count]';
+    private const string SUB_BUCKETS = '[sublevel_type][buckets]';
 
     public function __construct(
         private FacetInputFactory $facetInputFactory,
@@ -80,13 +83,13 @@ readonly class AggregationMapper
             $key = $bucket->getString(self::KEY);
             $allKeys = [
                 $key,
-                $key . '.publication',
+                $key . '.' . DocTypeValue::PUBLICATION_SUBTYPE,
             ];
 
             $subEntries = [];
-            $publicationCount = $bucket->getInt('[publication][doc_count]');
+            $publicationCount = $bucket->getInt(self::PUBLICATION_DOC_COUNT);
             if ($publicationCount > 0) {
-                $combinedKey = $key . '.publication';
+                $combinedKey = $key . '.' . DocTypeValue::PUBLICATION_SUBTYPE;
                 $subEntries[] = new AggregationBucketEntry(
                     $combinedKey,
                     $publicationCount,
@@ -99,7 +102,7 @@ readonly class AggregationMapper
                 );
             }
 
-            foreach ($bucket->getIterable('[' . ElasticField::SUBLEVEL_TYPE->value . '][buckets]') as $subBucketKey => $subBucket) {
+            foreach ($bucket->getIterable(self::SUB_BUCKETS) as $subBucketKey => $subBucket) {
                 Assert::isInstanceOf($subBucket, TypeArray::class);
 
                 $subKey = $subBucket->getString(self::KEY);

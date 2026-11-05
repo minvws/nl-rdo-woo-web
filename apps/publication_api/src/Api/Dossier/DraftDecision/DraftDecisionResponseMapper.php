@@ -18,10 +18,9 @@ use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\ValueObject\PlainDate;
-use Shared\ValueObject\Url;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -35,7 +34,7 @@ readonly class DraftDecisionResponseMapper implements DossierResponseMapper
     public function __construct(
         private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
-        private DossierPathHelper $dossierPathHelper,
+        private DossierUrlGenerator $dossierUrlGenerator,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
     ) {
     }
@@ -127,7 +126,7 @@ readonly class DraftDecisionResponseMapper implements DossierResponseMapper
         if ($draftDecision->getStatus()->isPublished()) {
             $linkCollection->set(
                 LinkCollection::PUBLIC,
-                new Link(Url::create($this->dossierPathHelper->getAbsoluteDetailsPath($draftDecision))),
+                new Link($this->dossierUrlGenerator->detailUrl($draftDecision)),
             );
         }
 

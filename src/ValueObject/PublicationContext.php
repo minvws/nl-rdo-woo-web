@@ -6,24 +6,20 @@ namespace Shared\ValueObject;
 
 use InvalidArgumentException;
 use Stringable;
-use Webmozart\Assert\Assert;
 
 use function mb_strlen;
-use function preg_match;
+use function strtolower;
 
-/**
- * @implements Equatable<PublicationContext>
- */
 final readonly class PublicationContext implements Equatable, Stringable
 {
-    public const string PATTERN = '/^[A-Za-z0-9\-._~]*$/';
-    public const string OPENAPI_PATTERN = '^[A-Za-z0-9\-._~]*$';
+    public const string PATTERN = '^[A-Za-z0-9\-._~]*$';
     public const int MIN_LENGTH = 1;
     public const int MAX_LENGTH = 255;
 
     public const int ERROR_EMPTY = 1;
     public const int ERROR_INVALID_FORMAT = 2;
     public const int ERROR_INVALID_LENGTH = 3;
+    public const int ERROR_NOT_LOWERCASE = 4;
 
     private function __construct(
         private string $value,
@@ -41,7 +37,7 @@ final readonly class PublicationContext implements Equatable, Stringable
             throw new InvalidArgumentException('Publication context cannot be empty', self::ERROR_EMPTY);
         }
 
-        if (preg_match(self::PATTERN, $value) !== 1) {
+        if (! RegexPattern::create(self::PATTERN)->matches($value)) {
             throw new InvalidArgumentException('Invalid publication context format', self::ERROR_INVALID_FORMAT);
         }
 
@@ -50,14 +46,21 @@ final readonly class PublicationContext implements Equatable, Stringable
             throw new InvalidArgumentException('Invalid publication context length', self::ERROR_INVALID_LENGTH);
         }
 
+        if ($value !== strtolower($value)) {
+            throw new InvalidArgumentException('Publication context must be lowercase', self::ERROR_NOT_LOWERCASE);
+        }
+
         return new self($value);
     }
 
-    public function equalTo(Equatable $other): bool
+    public static function fromUnnormalizedString(string $value): self
     {
-        Assert::isInstanceOf($other, self::class);
+        return self::fromString(strtolower($value));
+    }
 
-        return $this->toString() === $other->toString();
+    public function equalTo(mixed $other): bool
+    {
+        return $other instanceof self && $this->value === $other->value;
     }
 
     public function toString(): string

@@ -8,6 +8,7 @@ use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierBreadcrumbFactory;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
 use Shared\Service\DossierWizard\DossierWizardStatus;
 use Shared\Service\DossierWizard\WizardStatusFactory;
@@ -24,6 +25,7 @@ readonly class StepActionHelper
         private WizardStatusFactory $wizardStatusFactory,
         private PaginatorInterface $paginator,
         private DossierViewParamsBuilder $paramsBuilder,
+        private DossierBreadcrumbFactory $breadcrumbFactory,
     ) {
     }
 
@@ -120,7 +122,7 @@ readonly class StepActionHelper
     public function addDossierToBreadcrumbs(Breadcrumbs $breadcrumbs, AbstractDossier $dossier, ?string $item = null): void
     {
         $breadcrumbs->addRouteItem(
-            (string) $dossier->getTitle(),
+            $this->breadcrumbFactory->forDossier($dossier),
             'app_admin_dossier',
             ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );

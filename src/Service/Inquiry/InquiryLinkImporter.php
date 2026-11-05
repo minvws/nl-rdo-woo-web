@@ -7,9 +7,11 @@ namespace Shared\Service\Inquiry;
 use Exception;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use Shared\Exception\InquiryLinkImportException;
-use Shared\Exception\InventoryReaderException;
-use Shared\Exception\TranslatableException;
+use Shared\Exception\Import\ImportException;
+use Shared\Exception\Import\InquiryDocumentNotFoundException;
+use Shared\Exception\Import\InquiryInvalidInquiryNumbersException;
+use Shared\Exception\Import\SpreadsheetCannotBeOpenedException;
+use Shared\Service\Import\ImportError;
 use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Webmozart\Assert\InvalidArgumentException;
@@ -42,11 +44,11 @@ readonly class InquiryLinkImporter
 
             $this->inquiryService->applyChangesetAsync($inquiryChangeset);
         } catch (Exception $exception) {
-            if (! $exception instanceof TranslatableException) {
-                $exception = InventoryReaderException::forOpenSpreadsheetException($exception);
+            if (! $exception instanceof ImportException) {
+                $exception = new SpreadsheetCannotBeOpenedException($exception);
             }
 
-            $result->addGenericException($exception);
+            $result->addGenericError(ImportError::fromException($exception));
         }
 
         return $result;
@@ -62,21 +64,21 @@ readonly class InquiryLinkImporter
         foreach ($this->parser->parse($uploadedFile, $prefix) as $documentNumberValue => $inquiryNumberValues) {
             $rowNr++;
             try {
-                $documentNumber = DocumentNumber::fromString($documentNumberValue);
+                $documentNumber = DocumentNumber::fromUnnormalizedString($documentNumberValue);
                 $documentInquiryNumbers = $this->documentRepository->getDocumentInquiryNumbers($documentNumber);
                 if ($documentInquiryNumbers->isDocumentNotFound()) {
-                    throw InquiryLinkImportException::forMissingDocument($documentNumber->toString());
+                    throw new InquiryDocumentNotFoundException($documentNumber->toString());
                 }
 
                 try {
                     $inquiryNumbers = new InquiryNumbers($inquiryNumberValues);
                 } catch (InvalidArgumentException) {
-                    throw InquiryLinkImportException::forInvalidInquiryNumber($rowNr, $inquiryNumberValues);
+                    throw new InquiryInvalidInquiryNumbersException($rowNr, $inquiryNumberValues);
                 }
 
                 $inquiryChangeset->updateInquiryNumbersForDocument($documentInquiryNumbers, $inquiryNumbers);
-            } catch (TranslatableException $exception) {
-                $result->addRowException($rowNr, $exception);
+            } catch (ImportException $importException) {
+                $result->addRowError($rowNr, ImportError::fromException($importException));
             }
         }
     }

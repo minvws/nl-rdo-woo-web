@@ -7,14 +7,14 @@ namespace Shared\Service;
 use Generator;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use Symfony\Component\Routing\RouterInterface;
+use Shared\Domain\Publication\PublicUrlGenerator;
+use Shared\ValueObject\Url;
 
 readonly class RevokedUrlService
 {
     public function __construct(
         private DocumentRepository $documentRepository,
-        private RouterInterface $router,
-        private string $publicBaseUrl,
+        private PublicUrlGenerator $publicUrlGenerator,
     ) {
     }
 
@@ -26,7 +26,7 @@ readonly class RevokedUrlService
         $revokedDocuments = $this->documentRepository->getRevokedDocumentsInPublicDossiers();
         foreach ($revokedDocuments as $document) {
             foreach ($this->getDocumentUrls($document) as $url) {
-                yield $this->publicBaseUrl . $url;
+                yield $url->toString();
             }
         }
     }
@@ -35,7 +35,7 @@ readonly class RevokedUrlService
      * Note: some of the generated URLs depend on a file being uploaded, which might not always be the case.
      * They are included anyway, as the file might previously have been available (before suspend / withdraw).
      *
-     * @return Generator<array-key,string>
+     * @return Generator<array-key,Url>
      */
     private function getDocumentUrls(Document $document): Generator
     {
@@ -51,11 +51,11 @@ readonly class RevokedUrlService
                 'documentNumber' => $documentNumber,
             ];
 
-            yield $this->router->generate('app_document_detail', $urlParams);
+            yield $this->publicUrlGenerator->buildUrlFromRoute('app_document_detail', $urlParams);
 
             unset($urlParams['documentPrefix']);
 
-            yield $this->router->generate('app_legacy_document_detail', $urlParams);
+            yield $this->publicUrlGenerator->buildUrlFromRoute('app_legacy_document_detail', $urlParams);
         }
     }
 }

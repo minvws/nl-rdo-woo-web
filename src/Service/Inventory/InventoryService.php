@@ -10,7 +10,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Producti
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\SourceType;
-use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\Import\InventoryCannotBeLoadedFromStorageException;
 use Shared\Service\Inventory\Reader\InventoryReaderFactory;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Shared\Service\Storage\EntityStorageService;
@@ -37,7 +37,7 @@ class InventoryService
 
         $tmpFilename = $this->entityStorageService->downloadEntity($run);
         if (! $tmpFilename) {
-            throw ProcessInventoryException::forInventoryCannotBeLoadedFromStorage();
+            throw new InventoryCannotBeLoadedFromStorageException();
         }
 
         $run->setTmpFilename($tmpFilename);
@@ -99,7 +99,7 @@ class InventoryService
 
         $tmpFilename = $run->getTmpFilename();
         if (! $tmpFilename) {
-            throw ProcessInventoryException::forInventoryCannotBeLoadedFromStorage();
+            throw new InventoryCannotBeLoadedFromStorageException();
         }
 
         $fileInfo = new SplFileInfo($tmpFilename);

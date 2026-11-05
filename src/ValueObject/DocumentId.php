@@ -6,18 +6,13 @@ namespace Shared\ValueObject;
 
 use InvalidArgumentException;
 use Stringable;
-use Webmozart\Assert\Assert;
 
 use function mb_strlen;
-use function preg_match;
 use function strtolower;
 
-/**
- * @implements Equatable<DocumentId>
- */
 final readonly class DocumentId implements Equatable, Stringable
 {
-    public const string PATTERN = '/^[a-zA-Z0-9.\-]*$/';
+    public const string PATTERN = '^[a-zA-Z0-9.\-]*$';
     public const int MIN_LENGTH = 1;
     public const int MAX_LENGTH = 170;
 
@@ -32,6 +27,7 @@ final readonly class DocumentId implements Equatable, Stringable
 
     public function __toString(): string
     {
+        // Note: once the strtolower is removed also update equalTo so it compares the backed values directly
         return strtolower($this->id);
     }
 
@@ -41,7 +37,7 @@ final readonly class DocumentId implements Equatable, Stringable
             throw new InvalidArgumentException('Document ID cannot be empty', self::ERROR_EMPTY);
         }
 
-        if (preg_match(self::PATTERN, $id) !== 1) {
+        if (! RegexPattern::create(self::PATTERN)->matches($id)) {
             throw new InvalidArgumentException('Invalid document ID format', self::ERROR_INVALID_FORMAT);
         }
 
@@ -53,15 +49,13 @@ final readonly class DocumentId implements Equatable, Stringable
         return new self($id);
     }
 
-    public function equalTo(Equatable $other): bool
+    public function equalTo(mixed $other): bool
     {
-        Assert::isInstanceOf($other, self::class);
-
-        return $this->toString() === $other->toString();
+        return $other instanceof self && $this->__toString() === $other->__toString();
     }
 
     public function toString(): string
     {
-        return strtolower($this->id);
+        return $this->__toString();
     }
 }

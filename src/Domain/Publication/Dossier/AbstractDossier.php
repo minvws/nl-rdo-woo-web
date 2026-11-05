@@ -81,6 +81,11 @@ use function strtolower;
     entityClass: AbstractDossier::class,
     ignoreNull: true,
 )]
+#[ORM\Index(columns: ['organisation_id', 'status', 'created_at'])]
+#[ORM\Index(columns: ['organisation_id', 'decision_date'])]
+#[ORM\Index(columns: ['organisation_id', 'completed'])]
+#[ORM\Index(columns: ['status', 'publication_date'])]
+#[ORM\Index(columns: ['status', 'updated_at', 'id'])]
 abstract class AbstractDossier implements HasId
 {
     use TimestampableTrait;
@@ -270,11 +275,6 @@ abstract class AbstractDossier implements HasId
 
     public function setTitle(DossierTitle $title): self
     {
-        // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found
-        if (isset($this->title) && $this->title->equalTo($title)) {
-            return $this;
-        }
-
         $this->title = $title;
 
         return $this;

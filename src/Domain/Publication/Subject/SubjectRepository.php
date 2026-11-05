@@ -95,6 +95,23 @@ class SubjectRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getResult();
     }
 
+    public function getAllSubjectIdsWithLandingPageQuery(): Query
+    {
+        return $this->createQueryBuilder('subject')
+            ->select('subject.id')
+            ->where('subject.landingPageSlug IS NOT NULL')
+            ->getQuery();
+    }
+
+    public function countWithLandingPage(): int
+    {
+        return (int) $this->createQueryBuilder('subject')
+            ->select('COUNT(subject.id)')
+            ->where('subject.landingPageSlug IS NOT NULL')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function findConceptLandingPageByIdAndPreviewToken(string $id, string $previewToken): Subject
     {
         /** @var Subject */
@@ -144,6 +161,30 @@ class SubjectRepository extends ServiceEntityRepository
         return $queryBuilder
             ->orderBy('subject.id', SortDirection::Ascending)
             ->setMaxResults($itemsPerPage + 1)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<Subject>
+     */
+    public function getSubjectsWithDuplicateName(): array
+    {
+        $duplicate = $this->getEntityManager()->createQueryBuilder()
+            ->select('1')
+            ->from(Subject::class, 'duplicate')
+            ->where('duplicate.organisation = subject.organisation')
+            ->andWhere('duplicate.name = subject.name')
+            ->andWhere('duplicate.id != subject.id');
+
+        $queryBuilder = $this->createQueryBuilder('subject');
+
+        return $queryBuilder
+            ->join('subject.organisation', 'organisation')
+            ->addSelect('organisation')
+            ->where($queryBuilder->expr()->exists($duplicate->getDQL()))
+            ->orderBy('organisation.name')
+            ->addOrderBy('subject.name')
             ->getQuery()
             ->getResult();
     }

@@ -37,6 +37,22 @@ readonly class ElasticPath
         );
     }
 
+    public static function contentTreeTitle(): self
+    {
+        return new self(
+            ElasticNestedField::CONTENT_TREE,
+            ElasticField::TITLE,
+        );
+    }
+
+    public static function contentTreeBody(): self
+    {
+        return new self(
+            ElasticNestedField::CONTENT_TREE,
+            ElasticField::BODY,
+        );
+    }
+
     public static function dossiersTitle(): self
     {
         return new self(

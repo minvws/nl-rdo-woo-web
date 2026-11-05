@@ -56,7 +56,7 @@ final class DocumentNumberNormalizer implements NormalizerInterface, Denormalize
             );
         }
 
-        return DocumentNumber::fromString($data);
+        return DocumentNumber::fromUnnormalizedString($data);
     }
 
     public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool

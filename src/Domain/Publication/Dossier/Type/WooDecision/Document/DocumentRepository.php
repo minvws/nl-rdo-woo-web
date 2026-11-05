@@ -29,7 +29,6 @@ use Webmozart\Assert\Assert;
 use function array_map;
 use function intval;
 use function sprintf;
-use function strtolower;
 
 /**
  * @extends ServiceEntityRepository<Document>
@@ -173,14 +172,17 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findOneByDossierNumberAndDocumentNumber(string $documentPrefix, string $dossierNumber, string $documentNumber): ?Document
-    {
+    public function findOneByDossierNumberAndDocumentNumber(
+        string $documentPrefix,
+        string $dossierNumber,
+        DocumentNumber $documentNumber,
+    ): ?Document {
         $qb = $this->createQueryBuilder('d')
             ->innerJoin('d.dossiers', 'ds')
             ->where('d.documentNumber = :documentNumber')
             ->andWhere('ds.dossierNumber = :dossierNumber')
             ->andWhere('ds.documentPrefix = :documentPrefix')
-            ->setParameter('documentNumber', DocumentNumber::fromString($documentNumber))
+            ->setParameter('documentNumber', $documentNumber)
             ->setParameter('dossierNumber', $dossierNumber)
             ->setParameter('documentPrefix', $documentPrefix);
 
@@ -359,16 +361,6 @@ class DocumentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findOneByDocumentNumberCaseInsensitive(DocumentNumber $documentNumber): ?Document
-    {
-        $qb = $this->createQueryBuilder('d')
-            ->where('LOWER(d.documentNumber) = LOWER(:documentNumber)')
-            ->setParameter('documentNumber', $documentNumber);
-
-        /** @var ?Document */
-        return $qb->getQuery()->getOneOrNullResult();
-    }
-
     public function getDocumentInquiryNumbers(DocumentNumber $documentNumber): DocumentInquiryNumbers
     {
         /**
@@ -376,7 +368,7 @@ class DocumentRepository extends ServiceEntityRepository
          */
         $result = $this->createQueryBuilder('d')
             ->select('d.id, inq.inquiryNumber')
-            ->where('LOWER(d.documentNumber) = LOWER(:documentNumber)')
+            ->where('d.documentNumber = :documentNumber')
             ->setParameter('documentNumber', $documentNumber)
             ->leftJoin('d.inquiries', 'inq')
             ->getQuery()
@@ -395,7 +387,7 @@ class DocumentRepository extends ServiceEntityRepository
      *
      * @return array<int, Document>
      */
-    public function findByDocumentNumbersCaseInsensitive(array $documentNumbers): array
+    public function findByDocumentNumbers(array $documentNumbers): array
     {
         if ($documentNumbers === []) {
             return [];
@@ -404,11 +396,11 @@ class DocumentRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('document')
             ->innerJoin('document.dossiers', 'dossier')
             ->addSelect('dossier')
-            ->where('LOWER(document.documentNumber) IN (:documentNumbers)')
+            ->where('document.documentNumber IN (:documentNumbers)')
             ->setParameter(
                 'documentNumbers',
                 array_map(
-                    static fn (DocumentNumber $documentNumber): string => strtolower($documentNumber->toString()),
+                    static fn (DocumentNumber $documentNumber): string => $documentNumber->toString(),
                     $documentNumbers,
                 ),
             )

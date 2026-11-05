@@ -25,8 +25,8 @@ class ContentExtractException extends RuntimeException
         return new self('Cannot use a lazy file reference for a page');
     }
 
-    public static function forNoLocalFileInContentExtractOptions(): self
+    public static function forNoFileContentsInContentExtractOptions(): self
     {
-        return new self('No local file in content extract options');
+        return new self('No file contents in content extract options');
     }
 }

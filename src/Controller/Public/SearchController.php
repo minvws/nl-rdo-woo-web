@@ -26,6 +26,10 @@ use function strval;
 
 class SearchController extends AbstractController
 {
+    public const string ROUTE_NAME_SEARCH_RESULT_AJAX = 'app_search_result_ajax';
+    public const string ROUTE_NAME_SEARCH = 'app_search';
+    public const string ROUTE_NAME_BROWSE = 'app_browse';
+
     public function __construct(
         private readonly SearchService $searchService,
         private readonly SearchParametersFactory $searchParametersFactory,
@@ -40,7 +44,7 @@ class SearchController extends AbstractController
     /**
      * Ajax endpoint for search results.
      */
-    #[Route('/_result', name: 'app_search_result_ajax', methods: ['GET'])]
+    #[Route('/_result', self::ROUTE_NAME_SEARCH_RESULT_AJAX, methods: ['GET'])]
     public function ajaxResult(Request $request): JsonResponse
     {
         // Do the search
@@ -67,7 +71,7 @@ class SearchController extends AbstractController
         return new JsonResponse($ret);
     }
 
-    #[Route('/zoeken', name: 'app_search')]
+    #[Route('/zoeken', self::ROUTE_NAME_SEARCH)]
     public function search(Request $request): Response
     {
         // If we have a POST request, we have a search query in the body. Redirect to GET request
@@ -95,7 +99,7 @@ class SearchController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/alle-categorieën', name: 'app_browse', options: ['sitemap' => ['priority' => 0.7]])]
+    #[Route('/alle-categorieën', self::ROUTE_NAME_BROWSE, options: ['sitemap' => ['priority' => 0.7]])]
     public function browse(Request $request): Response
     {
         // If we have a POST request, we have a search query in the body. Redirect to GET request

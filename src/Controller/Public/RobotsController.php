@@ -12,13 +12,15 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class RobotsController extends AbstractController
 {
+    public const string ROUTE_NAME_ROBOTS = 'robots';
+
     public function __construct(
         private readonly RobotsViewFactory $robotsViewFactory,
     ) {
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/robots.txt', name: 'robots', methods: ['GET'])]
+    #[Route('/robots.txt', self::ROUTE_NAME_ROBOTS, methods: ['GET'])]
     public function index(): Response
     {
         $robotsViewModel = $this->robotsViewFactory->make();

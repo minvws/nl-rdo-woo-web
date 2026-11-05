@@ -9,6 +9,7 @@ use Erichard\ElasticQueryBuilder\QueryBuilder;
 use Shared\Domain\Search\Query\Facet\Facet;
 use Shared\Domain\Search\Query\Facet\FacetList;
 use Shared\Domain\Search\Query\SearchParameters;
+use Shared\Service\Search\Query\Aggregation\AggregationName;
 use Shared\Service\Search\Query\Condition\ContentAccessConditionBuilder;
 use Shared\Service\Search\Query\Condition\FacetConditionBuilder;
 use Shared\Service\Search\Query\Condition\QueryConditionBuilderInterface;
@@ -62,7 +63,7 @@ readonly class AggregationComponent
         // filters to apply per facet.
         if (count($filterAffectedFacets) > 0) {
             // Add a 'global' aggregation, this basically excludes all main query conditions
-            $globalAggregation = Aggregation::global('all');
+            $globalAggregation = Aggregation::global(AggregationName::ALL);
 
             // Because the main query is excluded we need to re-apply all non-facet conditions.
             // As a small optimization we can do this for all active facets at once, instead of repeating for each.
@@ -74,7 +75,7 @@ readonly class AggregationComponent
             }
 
             $baseFilterAgg = Aggregation::filter(
-                name: 'facet-base-filter',
+                name: AggregationName::FACET_BASE_FILTER,
                 query: $baseConditionsQuery,
             );
 
@@ -116,7 +117,7 @@ readonly class AggregationComponent
         // Wrap the aggregation with the filters for the other active facets and add it to the parent aggregation
         $parentAggregation->addAggregation(
             Aggregation::filter(
-                name: 'facet-filter-' . $facet->getFacetKey()->value,
+                name: AggregationName::FACET_FILTER_PREFIX . $facet->getFacetKey()->value,
                 query: $filterQuery,
             )->setAggregations([$aggregation]),
         );

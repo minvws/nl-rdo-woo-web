@@ -31,7 +31,7 @@ readonly class PageContentExtractor
             ContentExtractOptions::create()
                 ->withAllExtractors()
                 ->withPageNumber($context->getPageNumber())
-                ->withLocalFile($context->getOptionalLocalPageDocument()),
+                ->withFileContents($context->getOptionalPageContents()),
         );
 
         $this->indexPage(

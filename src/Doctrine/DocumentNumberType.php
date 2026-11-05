@@ -19,7 +19,7 @@ final class DocumentNumberType extends TextType
     {
         Assert::string($value);
 
-        return DocumentNumber::fromString($value);
+        return DocumentNumber::fromUnnormalizedString($value);
     }
 
     #[Override]

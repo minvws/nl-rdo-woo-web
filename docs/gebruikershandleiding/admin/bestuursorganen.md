@@ -12,7 +12,7 @@ Deze pagina is alleen beschikbaar voor Super Beheerders.
 
 Tijdens het publiceren kan meegegeven worden welk bestuursorgaan verantwoordelijk is voor de betreffende publicatie.
 Dit zal dan zichtbaar zijn op de publicatie zelf, en er kan op gefilterd worden tijdens het zoeken.
-Een bestuursorgaan moet, na het aanmaken, gekoppeld worden aan een organisatie voordat deze beschikbaar is tijdens het publiceren. Dit kan via de Organisatiebeheer pagina.
+Een bestuursorgaan moet, na het aanmaken, gekoppeld worden aan een organisatie voordat deze beschikbaar is tijdens het publiceren. Dit kan via het menu ['Organisaties'](organisaties.md).
 
 Via de Bestuursorganen pagina is het mogelijk om de lijst van beschikbare bestuursorganen te beheren.
 

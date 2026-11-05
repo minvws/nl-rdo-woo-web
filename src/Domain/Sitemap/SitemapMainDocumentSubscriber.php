@@ -7,13 +7,11 @@ namespace Shared\Domain\Sitemap;
 use Doctrine\ORM\EntityManagerInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\MainDocumentRepository;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
-
-use function sprintf;
 
 #[AsEventListener]
 readonly class SitemapMainDocumentSubscriber
@@ -21,6 +19,7 @@ readonly class SitemapMainDocumentSubscriber
     public function __construct(
         private EntityManagerInterface $doctrine,
         private MainDocumentRepository $mainDocumentRepository,
+        private DossierUrlGenerator $dossierUrlGenerator,
     ) {
     }
 
@@ -34,14 +33,7 @@ readonly class SitemapMainDocumentSubscriber
             $dossier = $mainDocument->getDossier();
             $event->getUrlContainer()->addUrl(
                 new UrlConcrete(
-                    $event->getUrlGenerator()->generate(
-                        sprintf('app_%s_document_detail', $dossier->getType()->getValueForRouteName()),
-                        [
-                            'documentPrefix' => $dossier->getDocumentPrefix(),
-                            'dossierNumber' => $dossier->getDossierNumber(),
-                        ],
-                        UrlGeneratorInterface::ABSOLUTE_URL,
-                    ),
+                    $this->dossierUrlGenerator->documentDetailUrl($dossier)->toString(),
                     $mainDocument->getUpdatedAt(),
                     UrlConcrete::CHANGEFREQ_MONTHLY,
                     0.8,

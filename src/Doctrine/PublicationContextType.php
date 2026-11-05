@@ -35,7 +35,7 @@ final class PublicationContextType extends Type
             return null;
         }
 
-        return PublicationContext::fromString($value);
+        return PublicationContext::fromUnnormalizedString($value);
     }
 
     #[Override]

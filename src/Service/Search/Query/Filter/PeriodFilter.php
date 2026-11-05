@@ -13,6 +13,7 @@ use Shared\Domain\Search\Query\Facet\Facet;
 use Shared\Domain\Search\Query\Facet\Input\DateFacetInputInterface;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Dsl\Query;
+use Shared\Service\Search\Query\Dsl\QueryParameter;
 
 use function is_null;
 
@@ -77,7 +78,7 @@ class PeriodFilter implements FilterInterface
                     ),
                 ],
             ),
-        ])->setParams(['minimum_should_match' => 1]);
+        ])->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]);
     }
 
     private function handleWithDate(BoolQuery $query, DateFacetInputInterface $input): void
@@ -104,7 +105,7 @@ class PeriodFilter implements FilterInterface
                         ],
                     ),
                 ],
-            )->setParams(['minimum_should_match' => 1]),
+            )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]),
         );
     }
 

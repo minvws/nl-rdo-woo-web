@@ -77,7 +77,8 @@ The creation of this user is handled by:
 task rf:init
 ```
 
-That does three things per local tenant (minvws and minfin):
+That does three things for the `minvws` tenant (pass `tenant=minfin` to set up minfin instead; the `rf:local:run*` and
+`rf:docker:run*` tasks pass their own `tenant` through):
 
 1. loads the E2E fixtures;
 2. runs `woopie:user:create`, which generates a **temporary** password and an OTP secret, and writes them to
@@ -86,12 +87,12 @@ That does three things per local tenant (minvws and minfin):
    changes it to `ADMIN_PASSWORD`, and deletes `secrets/.temp_password`.
 
 So the temporary password is transient; from that point on everything logs in with the fixed one. Only the OTP secrets
-survive, in `secrets/.otp_secret_minvws` and `secrets/.otp_secret_minfin`. The `secrets/` directory is gitignored.
+survive, in `secrets/.otp_secret_<tenant>`. The `secrets/` directory is gitignored.
 
 Test users that the suites create for other roles get the same fixed password, through the `${new_password}` default on
 the `Login Admin` keyword in `resources/Admin.resource`.
 
-`task rf:init` is a no-op once both OTP secret files exist, and it is called automatically by the `rf:local:run*`
+`task rf:init` is a no-op once the tenant's OTP secret file exists, and it is called automatically by the `rf:local:run*`
 tasks. It also disables the Symfony debug toolbar by setting `ENABLE_TOOLBAR=false` in `.env.dev.local`.
 
 If you ever need an OTP code to login manually, use either of the following command:

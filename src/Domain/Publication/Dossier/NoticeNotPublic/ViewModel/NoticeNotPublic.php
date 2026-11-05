@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Dossier\NoticeNotPublic\ViewModel;
 
+use Shared\Domain\Publication\Dossier\ViewModel\Ground;
+
 readonly class NoticeNotPublic
 {
     /**
-     * @param list<string> $grounds
+     * @param list<Ground> $grounds
      */
     public function __construct(
         public string $id,

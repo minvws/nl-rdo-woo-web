@@ -12,6 +12,8 @@ use function trim;
 
 readonly class DocTypeValue
 {
+    public const string PUBLICATION_SUBTYPE = 'publication';
+
     private function __construct(
         private string $mainType,
         private ?string $subType,

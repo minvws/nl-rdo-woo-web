@@ -8,4 +8,5 @@ enum ElasticNestedField: string
 {
     case DOSSIERS = 'dossiers';
     case PAGES = 'pages';
+    case CONTENT_TREE = 'content_tree';
 }

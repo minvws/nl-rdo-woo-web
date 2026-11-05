@@ -85,7 +85,7 @@ final class DocumentFactory extends PersistentObjectFactory
 
                 if (! array_key_exists('documentNumber', $attributes) && $attributes['documentId'] instanceof DocumentId) {
                     $attributes['documentNumber'] = DocumentNumber::fromPublicationContextAndDocumentId(
-                        PublicationContext::fromString(
+                        PublicationContext::fromUnnormalizedString(
                             WooDecisionFactory::DEFAULT_PREFIX . '-' . DocumentFactory::DEFAULT_MATTER,
                         ),
                         $attributes['documentId'],
@@ -102,7 +102,7 @@ final class DocumentFactory extends PersistentObjectFactory
                 }
 
                 if (array_key_exists('documentNumber', $attributes) && is_scalar($attributes['documentNumber'])) {
-                    $attributes['documentNumber'] = DocumentNumber::fromString((string) $attributes['documentNumber']);
+                    $attributes['documentNumber'] = DocumentNumber::fromUnnormalizedString((string) $attributes['documentNumber']);
                 }
 
                 return $attributes;

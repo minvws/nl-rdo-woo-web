@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Shared\Command\Cron;
 
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRunRepository;
-use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\Import\MaxRuntimeExceededException;
+use Shared\Service\Import\ImportError;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,7 +35,7 @@ class CleanInventoryProcessRun extends Command
 
         $expiredRuns = $this->repository->findExpiredRuns();
         foreach ($expiredRuns as $expiredRun) {
-            $expiredRun->addGenericException(ProcessInventoryException::forMaxRuntimeExceeded());
+            $expiredRun->addGenericError(ImportError::fromException(new MaxRuntimeExceededException()));
             $expiredRun->fail();
 
             $this->repository->save($expiredRun, true);

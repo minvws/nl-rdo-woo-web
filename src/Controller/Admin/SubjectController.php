@@ -21,6 +21,10 @@ use function iterator_to_array;
 
 class SubjectController extends AbstractController
 {
+    public const string ROUTE_NAME_SUBJECTS = 'app_admin_subjects';
+    public const string ROUTE_NAME_SUBJECT_CREATE = 'app_admin_subject_create';
+    public const string ROUTE_NAME_SUBJECT_EDIT = 'app_admin_subject_edit';
+
     public function __construct(
         private readonly PaginatorInterface $paginator,
         private readonly TranslatorInterface $translator,
@@ -29,7 +33,7 @@ class SubjectController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/onderwerpen', name: 'app_admin_subjects', methods: ['GET'])]
+    #[Route('/balie/onderwerpen', self::ROUTE_NAME_SUBJECTS, methods: ['GET'])]
     #[IsGranted('AuthMatrix.subject.read')]
     public function index(Request $request): Response
     {
@@ -51,7 +55,7 @@ class SubjectController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/onderwerpen/nieuw', name: 'app_admin_subject_create', methods: ['GET', 'POST'])]
+    #[Route('/balie/onderwerpen/nieuw', self::ROUTE_NAME_SUBJECT_CREATE, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.subject.create')]
     public function create(Request $request): Response
     {
@@ -72,7 +76,7 @@ class SubjectController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/onderwerpen/{id}', name: 'app_admin_subject_edit', methods: ['GET', 'POST'])]
+    #[Route('/balie/onderwerpen/{id}', self::ROUTE_NAME_SUBJECT_EDIT, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.subject.update')]
     public function modify(Request $request, Subject $subject): Response
     {

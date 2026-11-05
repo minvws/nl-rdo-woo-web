@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Subject;
 
 use InvalidArgumentException;
+use Shared\ValueObject\Equatable;
 use Stringable;
 
 use function mb_strlen;
 
-final readonly class LandingPageTitle implements Stringable
+final readonly class LandingPageTitle implements Stringable, Equatable
 {
     public const int MIN_LENGTH = 1;
     public const int MAX_LENGTH = 200;
@@ -44,5 +45,10 @@ final readonly class LandingPageTitle implements Stringable
     public function toString(): string
     {
         return $this->title;
+    }
+
+    public function equalTo(mixed $other): bool
+    {
+        return $other instanceof self && $this->title === $other->title;
     }
 }

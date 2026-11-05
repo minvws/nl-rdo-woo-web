@@ -6,7 +6,8 @@ namespace Shared\Domain\Ingest\Content;
 
 interface FileReferenceInterface
 {
-    public function getPath(): string;
-
-    public function hasPath(): bool;
+    /**
+     * @return resource
+     */
+    public function getStream();
 }

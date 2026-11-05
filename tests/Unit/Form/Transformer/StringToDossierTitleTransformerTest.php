@@ -76,8 +76,11 @@ class StringToDossierTitleTransformerTest extends UnitTestCase
     }
 
     #[DataProvider('invalidTitleDataProvider')]
-    public function testReverseTransformThrowsExceptionForInvalidTitle(string $title, string $expectedMessage): void
-    {
+    public function testReverseTransformThrowsExceptionForInvalidTitle(
+        string $title,
+        string $expectedMessage,
+        string $expectedMessageKey,
+    ): void {
         $this->expectException(TransformationFailedException::class);
         $this->expectExceptionMessageIs($expectedMessage);
 
@@ -85,14 +88,16 @@ class StringToDossierTitleTransformerTest extends UnitTestCase
     }
 
     #[DataProvider('invalidTitleDataProvider')]
-    public function testReverseTransformSetsCorrectionMetadataOnException(string $title, string $expectedMessageKey): void
-    {
+    public function testReverseTransformSetsCorrectionMetadataOnException(
+        string $title,
+        string $expectedMessage,
+        string $expectedMessageKey,
+    ): void {
         try {
             $this->transformer->reverseTransform($title);
             $this->fail('Expected TransformationFailedException to be thrown');
         } catch (TransformationFailedException $e) {
-            // Verify the translation key is set as the message
-            $this->assertSame($expectedMessageKey, $e->getMessage());
+            $this->assertSame($expectedMessage, $e->getMessage());
 
             // Verify invalidMessage contains the translation key
             $this->assertSame($expectedMessageKey, $e->getInvalidMessage());
@@ -115,10 +120,10 @@ class StringToDossierTitleTransformerTest extends UnitTestCase
     public static function invalidTitleDataProvider(): array
     {
         return [
-            'too short (1 char)' => ['a', 'dossier.title_too_short'],
-            'too short (2 chars)' => ['ab', 'dossier.title_too_short'],
-            'too short (trimmed to 2)' => [' ab', 'dossier.title_too_short'],
-            'too long (501 chars)' => [str_repeat('a', 501), 'dossier.title_too_long'],
+            'too short (1 char)' => ['a', 'Dossier title too short', 'dossier.title_too_short'],
+            'too short (2 chars)' => ['ab', 'Dossier title too short', 'dossier.title_too_short'],
+            'too short (trimmed to 2)' => [' ab', 'Dossier title too short', 'dossier.title_too_short'],
+            'too long (501 chars)' => [str_repeat('a', 501), 'Dossier title too long', 'dossier.title_too_long'],
         ];
     }
 }

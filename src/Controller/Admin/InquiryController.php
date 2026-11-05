@@ -28,6 +28,11 @@ use Webmozart\Assert\Assert;
 
 class InquiryController extends AbstractController
 {
+    public const string ROUTE_NAME_INQUIRIES = 'app_admin_inquiries';
+    public const string ROUTE_NAME_INQUIRIES_LINK = 'app_admin_inquiries_link';
+    public const string ROUTE_NAME_INQUIRIES_LINK_DOCUMENTS = 'app_admin_inquiries_link_documents';
+    public const string ROUTE_NAME_INQUIRIES_LINK_DOSSIERS = 'app_admin_inquiries_link_dossiers';
+
     protected const int MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
@@ -41,7 +46,7 @@ class InquiryController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/verzoeken', name: 'app_admin_inquiries', methods: ['GET'])]
+    #[Route('/balie/verzoeken', self::ROUTE_NAME_INQUIRIES, methods: ['GET'])]
     #[IsGranted('AuthMatrix.inquiry.read')]
     public function index(Request $request): Response
     {
@@ -56,7 +61,7 @@ class InquiryController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/verzoeken/link', name: 'app_admin_inquiries_link', methods: ['GET'])]
+    #[Route('/balie/verzoeken/link', self::ROUTE_NAME_INQUIRIES_LINK, methods: ['GET'])]
     #[IsGranted('AuthMatrix.inquiry.create')]
     public function link(): Response
     {
@@ -65,7 +70,7 @@ class InquiryController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/verzoeken/link/documenten', name: 'app_admin_inquiries_link_documents', methods: ['GET', 'POST'])]
+    #[Route('/balie/verzoeken/link/documenten', self::ROUTE_NAME_INQUIRIES_LINK_DOCUMENTS, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.inquiry.create')]
     public function linkDocuments(Request $request): Response
     {
@@ -98,7 +103,7 @@ class InquiryController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/verzoeken/link/besluiten', name: 'app_admin_inquiries_link_dossiers', methods: ['GET', 'POST'])]
+    #[Route('/balie/verzoeken/link/besluiten', self::ROUTE_NAME_INQUIRIES_LINK_DOSSIERS, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.inquiry.create')]
     public function linkDossiers(Request $request): Response
     {

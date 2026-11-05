@@ -15,9 +15,9 @@ use PublicationApi\Domain\Upload\UploadStatus;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\Url;
@@ -80,7 +80,7 @@ final class ComplaintJudgementResponseMapperTest extends UnitTestCase
 
         $complaintJudgementResponseMapper = new ComplaintJudgementResponseMapper(
             $apiUrlGenerator,
-            Mockery::mock(DossierPathHelper::class),
+            Mockery::mock(DossierUrlGenerator::class),
             $mainDocumentResponseDtoFactory,
             Mockery::mock(NoticeNotPublicResponseDtoFactory::class),
         );

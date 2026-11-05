@@ -20,10 +20,9 @@ use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\ValueObject\PlainDate;
-use Shared\ValueObject\Url;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -37,7 +36,7 @@ readonly class InvestigationReportResponseMapper implements DossierResponseMappe
     public function __construct(
         private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
-        private DossierPathHelper $dossierPathHelper,
+        private DossierUrlGenerator $dossierUrlGenerator,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
         private NoticeNotPublicResponseDtoFactory $noticeNotPublicResponseDtoFactory,
     ) {
@@ -130,7 +129,7 @@ readonly class InvestigationReportResponseMapper implements DossierResponseMappe
         if ($investigationReport->getStatus()->isPublished()) {
             $linkCollection->set(
                 LinkCollection::PUBLIC,
-                new Link(Url::create($this->dossierPathHelper->getAbsoluteDetailsPath($investigationReport))),
+                new Link($this->dossierUrlGenerator->detailUrl($investigationReport)),
             );
         }
 

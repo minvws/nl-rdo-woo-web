@@ -123,14 +123,12 @@ final class SubjectLandingPageTypeTest extends TestCase
         self::assertEquals(LandingPageTitle::create('Some title'), $subject->getLandingPageTitle());
         self::assertSame('Some description', $subject->getLandingPageDescription());
         self::assertSame(SubjectLandingPageStatus::PUBLISHED, $subject->getLandingPageStatus());
-        self::assertNotNull($subject->getLandingPagePreviewToken());
     }
 
     public function testSubmittingConceptStatusPreservesThePreviewToken(): void
     {
         $subject = new Subject();
         $constructionToken = $subject->getLandingPagePreviewToken();
-        self::assertNotNull($constructionToken);
 
         $form = $this->createForm($subject);
 
@@ -142,7 +140,7 @@ final class SubjectLandingPageTypeTest extends TestCase
         ]);
 
         self::assertTrue($form->isSynchronized());
-        self::assertSame($constructionToken->toRfc4122(), $subject->getLandingPagePreviewToken()?->toRfc4122());
+        self::assertSame($constructionToken->toRfc4122(), $subject->getLandingPagePreviewToken()->toRfc4122());
     }
 
     public function testContentTreeStatusIsConceptByDefault(): void

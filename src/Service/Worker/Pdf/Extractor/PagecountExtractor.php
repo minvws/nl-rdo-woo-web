@@ -34,9 +34,9 @@ class PagecountExtractor implements EntityExtractorInterface, OutputExtractorInt
 
     protected function extractPageCountFromPdf(EntityWithFileInfo&HasId $entity): ?PdftkPageCountResult
     {
-        $localPdfPath = $this->entityStorageService->downloadEntity($entity);
-        if ($localPdfPath === false) {
-            $this->logger->error('Failed to download entity for page count extraction', [
+        $source = $this->entityStorageService->retrieveResourceEntity($entity);
+        if ($source === null) {
+            $this->logger->error('Failed to read entity from storage for page count extraction', [
                 'id' => $entity->getId(),
                 'class' => $entity::class,
             ]);
@@ -44,15 +44,12 @@ class PagecountExtractor implements EntityExtractorInterface, OutputExtractorInt
             return null;
         }
 
-        $pdftkPageCountResult = $this->pdftkService->extractNumberOfPages($localPdfPath);
-
-        $this->entityStorageService->removeDownload($localPdfPath);
+        $pdftkPageCountResult = $this->pdftkService->extractNumberOfPages($source);
 
         if ($pdftkPageCountResult->isFailed()) {
             $this->logger->error('Failed to get number of pages', [
                 'id' => $entity->getId(),
                 'class' => $entity::class,
-                'sourcePdf' => $pdftkPageCountResult->sourcePdf,
                 'errorOutput' => $pdftkPageCountResult->errorMessage,
             ]);
         }

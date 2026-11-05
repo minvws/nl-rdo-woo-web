@@ -11,8 +11,8 @@ final class PdftkPageCountResultTest extends UnitTestCase
 {
     public function testIsSuccessfulAndIsFailed(): void
     {
-        $resultOne = new PdftkPageCountResult(0, [], null, 'source.pdf', 1);
-        $resultTwo = new PdftkPageCountResult(1, [], null, 'source.pdf', 1);
+        $resultOne = new PdftkPageCountResult(0, [], null, 1);
+        $resultTwo = new PdftkPageCountResult(1, [], null, 1);
 
         $this->assertTrue($resultOne->isSuccessful());
         $this->assertFalse($resultOne->isFailed());

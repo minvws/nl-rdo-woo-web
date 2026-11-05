@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PublicationApi\Tests\Integration\Api\Dossier\Uploads;
 
+use League\Flysystem\FilesystemOperator;
 use Mockery;
 use PublicationApi\Tests\Integration\Api\ApiPublicationV1TestCase;
 use Shared\Domain\Upload\StreamUpload;
@@ -78,7 +79,10 @@ abstract class ApiPublicationV1UploadTestCase extends ApiPublicationV1TestCase
                 return true;
             }),
         );
-        $uploadService->expects('moveUploadToStorage');
+        $uploadService->expects('moveUploadToStorage')
+            ->andReturnUsing(static function (UploadEntity $uploadEntity, FilesystemOperator $filesystem, string $filePath) use ($fileContent): void {
+                $filesystem->write($filePath, $fileContent);
+            });
 
         $client->request(Request::METHOD_PUT, $url, [
             'headers' => [

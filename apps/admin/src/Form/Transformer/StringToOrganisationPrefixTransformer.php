@@ -43,7 +43,7 @@ final class StringToOrganisationPrefixTransformer implements DataTransformerInte
         } catch (OrganisationPrefixArgumentException $exception) {
             throw new TransformationFailedException(
                 message: $exception->getMessage(),
-                invalidMessage: $exception->getTranslationKey(),
+                invalidMessage: $exception->getMessageKey(),
                 invalidMessageParameters: $exception->getParameters(),
             );
         }

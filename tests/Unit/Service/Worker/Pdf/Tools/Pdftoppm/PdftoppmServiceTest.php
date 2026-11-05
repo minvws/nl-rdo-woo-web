@@ -5,100 +5,78 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Worker\Pdf\Tools\Pdftoppm;
 
 use Mockery;
-use Mockery\MockInterface;
+use Shared\Service\ProcessFactory;
 use Shared\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmService;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Process\Process;
 
 final class PdftoppmServiceTest extends UnitTestCase
 {
-    protected Process&MockInterface $process;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->process = Mockery::mock(Process::class);
-    }
-
     public function testCreateThumbnail(): void
     {
-        $this->process
-            ->expects('run')
-            ->andReturn($exitCode = 0);
+        $pdf = $this->getFaker()->sha256();
+        $thumbnail = $this->getFaker()->sha256();
 
-        $this->process
-            ->expects('isSuccessful')
-            ->andReturnTrue();
+        $process = Mockery::mock(Process::class);
+        $process->expects('setInput')->with($pdf)->andReturnSelf();
+        $process->expects('run')->andReturn($exitCode = 0);
+        $process->expects('isSuccessful')->twice()->andReturnTrue();
+        $process->expects('getOutput')->andReturn($thumbnail);
 
-        $result = $this->getService()->createThumbnail($sourcePdf = 'sourcePdf', $targetPath = 'targetPath');
+        $processFactory = Mockery::mock(ProcessFactory::class);
+        $processFactory->expects('create')->andReturn($process);
+
+        $result = new PdftoppmService($processFactory)->createThumbnail($pdf);
 
         $this->assertSame(
             [
-                '/usr/bin/pdftoppm',
+                PdftoppmService::PDFTOPPM_PATH,
                 '-png',
                 '-scale-to',
                 '200',
                 '-r',
                 '150',
                 '-singlefile',
-                $sourcePdf,
-                $targetPath,
+                PdftoppmService::INPUT_FROM_STDIN,
             ],
             $result->params,
         );
         $this->assertSame($exitCode, $result->exitCode);
         $this->assertNull($result->errorMessage);
-        $this->assertSame($sourcePdf, $result->sourcePdf);
-        $this->assertSame($targetPath, $result->targetPath);
+        $this->assertSame($thumbnail, $result->thumbnail);
     }
 
     public function testCreateThumbnailWhenItFails(): void
     {
-        $this->process
-            ->expects('run')
-            ->andReturn($exitCode = 1);
+        $pdf = $this->getFaker()->sha256();
+        $errorMessage = $this->getFaker()->sentence();
 
-        $this->process
-            ->expects('isSuccessful')
-            ->andReturnFalse();
+        $process = Mockery::mock(Process::class);
+        $process->expects('setInput')->with($pdf)->andReturnSelf();
+        $process->expects('run')->andReturn($exitCode = 1);
+        $process->expects('isSuccessful')->twice()->andReturnFalse();
+        $process->expects('getErrorOutput')->andReturn($errorMessage);
 
-        $this->process
-            ->expects('getErrorOutput')
-            ->andReturn($errorMessage = 'errorMessage');
+        $processFactory = Mockery::mock(ProcessFactory::class);
+        $processFactory->expects('create')->andReturn($process);
 
-        $result = $this->getService()->createThumbnail($sourcePdf = 'sourcePdf', $targetPath = 'targetPath');
+        $result = new PdftoppmService($processFactory)->createThumbnail($pdf);
 
         $this->assertSame(
             [
-                '/usr/bin/pdftoppm',
+                PdftoppmService::PDFTOPPM_PATH,
                 '-png',
                 '-scale-to',
                 '200',
                 '-r',
                 '150',
                 '-singlefile',
-                $sourcePdf,
-                $targetPath,
+                PdftoppmService::INPUT_FROM_STDIN,
             ],
             $result->params,
         );
         $this->assertSame($exitCode, $result->exitCode);
         $this->assertSame($errorMessage, $result->errorMessage);
-        $this->assertSame($sourcePdf, $result->sourcePdf);
-        $this->assertSame($targetPath, $result->targetPath);
-    }
-
-    private function getService(): PdftoppmService&MockInterface
-    {
-        $instance = Mockery::mock(PdftoppmService::class)
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods();
-
-        $instance
-            ->expects('getNewProcess')
-            ->andReturn($this->process);
-
-        return $instance;
+        $this->assertNull($result->thumbnail);
     }
 }

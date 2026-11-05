@@ -12,7 +12,9 @@ use PublicationApi\Api\Subject\SubjectLandingPageInputDto;
 use PublicationApi\Api\Subject\SubjectMapper;
 use PublicationApi\Api\Subject\SubjectResponseDto;
 use PublicationApi\Api\Subject\SubjectUpdateDto;
+use Shared\Controller\Public\SubjectLandingPageController;
 use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\LandingPageSlug;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
@@ -22,9 +24,8 @@ use Shared\Domain\Publication\Subject\SubjectContentTreeStatus;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\Url;
 use Symfony\Component\Uid\Uuid;
-
-use function sprintf;
 
 class SubjectMapperTest extends UnitTestCase
 {
@@ -77,7 +78,16 @@ class SubjectMapperTest extends UnitTestCase
         $this->subject->expects('getLandingPageContentTreeStatus')->andReturn(SubjectContentTreeStatus::CONCEPT);
         $this->subject->expects('getLandingPagePreviewToken')->andReturn($previewToken);
 
-        $generator = new SubjectPreviewUrlGenerator('https://example.com');
+        $previewUrl = $this->getFaker()->url();
+        $publicUrlGenerator = Mockery::mock(PublicUrlGenerator::class);
+        $publicUrlGenerator->expects('buildUrlFromRoute')
+            ->with(SubjectLandingPageController::ROUTE_NAME_SUBJECT_LANDING_PAGE_PREVIEW, [
+                'id' => $this->subject->getId()->toRfc4122(),
+                'previewToken' => $previewToken->toRfc4122(),
+            ])
+            ->andReturn(Url::create($previewUrl));
+
+        $generator = new SubjectPreviewUrlGenerator($publicUrlGenerator);
 
         $result = SubjectMapper::fromEntityWithDetail($this->subject, $generator);
 
@@ -88,14 +98,7 @@ class SubjectMapperTest extends UnitTestCase
         self::assertSame('My description', $result->landingPage->description);
         self::assertSame(SubjectContentTreeStatus::CONCEPT, $result->landingPage->contentTreeStatus);
         self::assertEquals(new SubjectContentTree(title: '', intro: '', children: [], outro: ''), $result->landingPage->contentTree);
-        self::assertSame(
-            sprintf(
-                'https://example.com/onderwerp/%s/preview/%s',
-                $this->subject->getId(),
-                $previewToken,
-            ),
-            $result->landingPage->previewUrl,
-        );
+        self::assertSame($previewUrl, $result->landingPage->previewUrl);
     }
 
     public function testFromEntityWithDetailMapsPublishedLandingPageWithNullPreviewUrl(): void
@@ -108,7 +111,7 @@ class SubjectMapperTest extends UnitTestCase
         $this->subject->expects('getLandingPageContentTree')->andReturn(null);
         $this->subject->expects('getLandingPageContentTreeStatus')->andReturn(SubjectContentTreeStatus::CONCEPT);
 
-        $generator = new SubjectPreviewUrlGenerator('https://example.com');
+        $generator = new SubjectPreviewUrlGenerator(Mockery::mock(PublicUrlGenerator::class));
 
         $result = SubjectMapper::fromEntityWithDetail($this->subject, $generator);
 
@@ -139,7 +142,7 @@ class SubjectMapperTest extends UnitTestCase
         $this->subject->expects('getLandingPageContentTree')->andReturn($contentTree);
         $this->subject->expects('getLandingPageContentTreeStatus')->andReturn(SubjectContentTreeStatus::PUBLISHED);
 
-        $generator = new SubjectPreviewUrlGenerator('https://example.com');
+        $generator = new SubjectPreviewUrlGenerator(Mockery::mock(PublicUrlGenerator::class));
 
         $result = SubjectMapper::fromEntityWithDetail($this->subject, $generator);
 

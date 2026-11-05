@@ -82,7 +82,10 @@ final class WooDecisionMainDocumentTest extends AdminApiTestCase
                 Mockery::on(static fn (UploadEntity $uploadEntity) => $uploadEntity->getId()->equals($upload->getId())),
                 Mockery::type(FilesystemOperator::class),
                 Mockery::type('string'),
-            );
+            )
+            ->andReturnUsing(function (UploadEntity $uploadEntity, FilesystemOperator $filesystem, string $filePath): void {
+                $filesystem->write($filePath, $this->getFaker()->text());
+            });
 
         $data = [
             'formalDate' => CarbonImmutable::yesterday()->format('Y-m-d'),

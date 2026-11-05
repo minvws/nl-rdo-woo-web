@@ -10,6 +10,7 @@ use Shared\Domain\Publication\BatchDownload\BatchDownloadService;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminAction;
 use Shared\Domain\Publication\Dossier\Admin\Action\DossierAdminActionService;
+use Shared\Domain\Publication\Dossier\DossierBreadcrumbFactory;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionRepository;
 use Shared\Form\Dossier\AdministrationActionsType;
@@ -27,6 +28,10 @@ use function sprintf;
 
 class DossierAdministrationController extends AbstractController
 {
+    public const string ROUTE_NAME_DOSSIER_ADMINISTRATION = 'app_admin_dossier_administration';
+    public const string ROUTE_NAME_DOSSIER_ADMINISTRATION_DETAILS = 'app_admin_dossier_administration_details';
+    public const string ROUTE_NAME_DOSSIER_DOWNLOADS = 'app_admin_dossier_downloads';
+
     public function __construct(
         private readonly DossierRepository $repository,
         private readonly DossierAdminActionService $adminActionService,
@@ -34,15 +39,16 @@ class DossierAdministrationController extends AbstractController
         private readonly TranslatorInterface $translator,
         private readonly WooDecisionRepository $wooDecisionRepository,
         private readonly BatchDownloadService $batchDownloadService,
+        private readonly DossierBreadcrumbFactory $breadcrumbFactory,
     ) {
     }
 
-    #[Route('/balie/admin/dossiers', name: 'app_admin_dossier_administration', methods: ['GET'])]
+    #[Route('/balie/admin/dossiers', self::ROUTE_NAME_DOSSIER_ADMINISTRATION, methods: ['GET'])]
     #[IsGranted('AuthMatrix.dossier.administration')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('global.admin', 'app_admin');
-        $breadcrumbs->addItem('global.publication');
+        $breadcrumbs->addItem('global.publications');
 
         return $this->render('admin/dossier/administration/index.html.twig', [
             'dossiers' => $this->repository->findAll(),
@@ -50,7 +56,7 @@ class DossierAdministrationController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/admin/dossiers/{documentPrefix}/{dossierNumber}', name: 'app_admin_dossier_administration_details', methods: ['GET', 'POST'])]
+    #[Route('/balie/admin/dossiers/{documentPrefix}/{dossierNumber}', self::ROUTE_NAME_DOSSIER_ADMINISTRATION_DETAILS, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.dossier.administration')]
     public function dossier(
         #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
@@ -72,8 +78,8 @@ class DossierAdministrationController extends AbstractController
         }
 
         $breadcrumbs->addRouteItem('global.admin', 'app_admin');
-        $breadcrumbs->addRouteItem('global.publication', 'app_admin_dossier_administration');
-        $breadcrumbs->addItem($dossier->getDossierNumber());
+        $breadcrumbs->addRouteItem('global.publications', 'app_admin_dossier_administration');
+        $breadcrumbs->addItem($this->breadcrumbFactory->forDossier($dossier));
 
         return $this->render('admin/dossier/administration/details.html.twig', [
             'dossier' => $dossier,
@@ -84,7 +90,7 @@ class DossierAdministrationController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/admin/dossiers/downloads', name: 'app_admin_dossier_downloads', methods: ['GET'])]
+    #[Route('/balie/admin/dossiers/downloads', self::ROUTE_NAME_DOSSIER_DOWNLOADS, methods: ['GET'])]
     #[IsGranted('AuthMatrix.dossier.administration')]
     public function downloads(Breadcrumbs $breadcrumbs): Response
     {

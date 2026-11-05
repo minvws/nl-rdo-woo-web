@@ -11,8 +11,6 @@ use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\TypeInfo\Type\NullableType;
 use Symfony\Component\TypeInfo\Type\ObjectType;
 
-use function trim;
-
 #[AsDecorator(decorates: 'api_platform.metadata.property.metadata_factory')]
 final readonly class LandingPageSlugPropertyMetadataFactory implements PropertyMetadataFactoryInterface
 {
@@ -41,7 +39,7 @@ final readonly class LandingPageSlugPropertyMetadataFactory implements PropertyM
             'type' => 'string',
             'minLength' => LandingPageSlug::MIN_LENGTH,
             'maxLength' => LandingPageSlug::MAX_LENGTH,
-            'pattern' => trim(LandingPageSlug::PATTERN, '/'),
+            'pattern' => LandingPageSlug::PATTERN,
         ];
 
         if ($nullable) {

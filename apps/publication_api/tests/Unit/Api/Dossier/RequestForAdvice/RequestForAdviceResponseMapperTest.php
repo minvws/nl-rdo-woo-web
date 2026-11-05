@@ -16,9 +16,9 @@ use PublicationApi\Domain\Upload\UploadStatus;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\Url;
@@ -90,7 +90,7 @@ final class RequestForAdviceResponseMapperTest extends UnitTestCase
         $requestForAdviceResponseMapper = new RequestForAdviceResponseMapper(
             $apiUrlGenerator,
             $attachmentResponseDtoFactory,
-            Mockery::mock(DossierPathHelper::class),
+            Mockery::mock(DossierUrlGenerator::class),
             $mainDocumentResponseDtoFactory,
             Mockery::mock(NoticeNotPublicResponseDtoFactory::class),
         );

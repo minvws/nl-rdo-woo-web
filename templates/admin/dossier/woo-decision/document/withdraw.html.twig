@@ -6,6 +6,21 @@
 
         <div class="bhr-card">
             {% if workflow.canWithdraw %}
+                <div class="bhr-form-row">
+                    <table class="bhr-table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">{{ 'global.document_name' | trans }}</th>
+                                <td class="font-bold">{{ document.fileInfo.name }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">{{ 'global.document_number' | trans }}</th>
+                                <td class="font-bold">{{ documentNumber }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 <div class="bhr-form-row text-bhr-gray-700">
                     <p>Is het document opnieuw beoordeeld en zijn er andere lakkingen toegepast? Vervang dan het gelakte document. Let op: als andere beoordelingsgronden zijn toegepast, vervang dan ook het productierapport bij dit besluit.</p>
                 </div>

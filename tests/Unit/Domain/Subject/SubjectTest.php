@@ -84,7 +84,6 @@ class SubjectTest extends UnitTestCase
         self::assertSame($title, $subject->getLandingPageTitle());
         self::assertSame('Landing page description', $subject->getLandingPageDescription());
         self::assertSame(SubjectLandingPageStatus::PUBLISHED, $subject->getLandingPageStatus());
-        self::assertNotNull($subject->getLandingPagePreviewToken());
         self::assertSame($contentTree, $subject->getLandingPageContentTree());
     }
 
@@ -105,6 +104,27 @@ class SubjectTest extends UnitTestCase
         self::assertTrue($subject->hasPublishedContentTree());
     }
 
+    public function testVisibleLandingPageContentTreeRequiresPublishedPageAndPresentPublishedTree(): void
+    {
+        foreach (SubjectLandingPageStatus::cases() as $pageStatus) {
+            foreach (SubjectContentTreeStatus::cases() as $treeStatus) {
+                foreach ([null, new SubjectContentTree('', '', [], '')] as $tree) {
+                    $subject = new Subject();
+                    $subject->setLandingPageStatus($pageStatus)
+                        ->setLandingPageContentTreeStatus($treeStatus)
+                        ->setLandingPageContentTree($tree);
+
+                    self::assertSame(
+                        $pageStatus === SubjectLandingPageStatus::PUBLISHED
+                            && $treeStatus === SubjectContentTreeStatus::PUBLISHED
+                            && $tree !== null,
+                        $subject->hasVisibleLandingPageContentTree(),
+                    );
+                }
+            }
+        }
+    }
+
     public function testSetLandingPageGeneratesAndPreservesConceptPreviewToken(): void
     {
         $subject = new Subject();
@@ -119,7 +139,6 @@ class SubjectTest extends UnitTestCase
         );
 
         $previewToken = $subject->getLandingPagePreviewToken();
-        self::assertInstanceOf(Uuid::class, $previewToken);
 
         $subject->setLandingPage(
             LandingPageSlug::create('updated-landing-page'),
@@ -153,7 +172,6 @@ class SubjectTest extends UnitTestCase
         self::assertSame($title, $subject->getLandingPageTitle());
         self::assertSame('Page description', $subject->getLandingPageDescription());
         self::assertSame(SubjectLandingPageStatus::CONCEPT, $subject->getLandingPageStatus());
-        self::assertNotNull($subject->getLandingPagePreviewToken());
         self::assertEquals(
             new SubjectContentTree(title: '', intro: '', children: [$node], outro: ''),
             $subject->getLandingPageContentTree(),
@@ -168,7 +186,6 @@ class SubjectTest extends UnitTestCase
         self::assertNull($subject->getLandingPageTitle());
         self::assertNull($subject->getLandingPageDescription());
         self::assertSame(SubjectLandingPageStatus::CONCEPT, $subject->getLandingPageStatus());
-        self::assertNotNull($subject->getLandingPagePreviewToken());
         self::assertNull($subject->getLandingPageContentTree());
     }
 
@@ -207,7 +224,6 @@ class SubjectTest extends UnitTestCase
         );
 
         $firstToken = $subject->getLandingPagePreviewToken();
-        self::assertNotNull($firstToken);
 
         $subject->setLandingPage(
             LandingPageSlug::create('concept-to-concept-updated'),
@@ -218,7 +234,7 @@ class SubjectTest extends UnitTestCase
             SubjectContentTreeStatus::CONCEPT,
         );
 
-        self::assertSame($firstToken->toRfc4122(), $subject->getLandingPagePreviewToken()?->toRfc4122());
+        self::assertSame($firstToken->toRfc4122(), $subject->getLandingPagePreviewToken()->toRfc4122());
     }
 
     public function testTokenStableAfterConceptToPublished(): void
@@ -234,7 +250,6 @@ class SubjectTest extends UnitTestCase
         );
 
         $firstToken = $subject->getLandingPagePreviewToken();
-        self::assertNotNull($firstToken);
 
         $subject->setLandingPage(
             LandingPageSlug::create('concept-to-published'),
@@ -245,14 +260,13 @@ class SubjectTest extends UnitTestCase
             SubjectContentTreeStatus::CONCEPT,
         );
 
-        self::assertSame($firstToken->toRfc4122(), $subject->getLandingPagePreviewToken()?->toRfc4122());
+        self::assertSame($firstToken->toRfc4122(), $subject->getLandingPagePreviewToken()->toRfc4122());
     }
 
     public function testPublishingDoesNotChangeConstructionTimeToken(): void
     {
         $subject = new Subject();
         $constructionToken = $subject->getLandingPagePreviewToken();
-        self::assertNotNull($constructionToken);
 
         $subject->setLandingPage(
             LandingPageSlug::create('published'),
@@ -263,6 +277,6 @@ class SubjectTest extends UnitTestCase
             SubjectContentTreeStatus::CONCEPT,
         );
 
-        self::assertSame($constructionToken->toRfc4122(), $subject->getLandingPagePreviewToken()?->toRfc4122());
+        self::assertSame($constructionToken->toRfc4122(), $subject->getLandingPagePreviewToken()->toRfc4122());
     }
 }

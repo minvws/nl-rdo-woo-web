@@ -6,6 +6,7 @@ namespace Shared\Domain\Publication\Subject;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Shared\Doctrine\LandingPageSlugType;
 use Shared\Doctrine\LandingPageTitleType;
@@ -21,6 +22,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: SubjectRepository::class)]
 #[UniqueEntity(fields: ['name', 'organisation'], message: 'subject_already_exists')]
 #[UniqueEntity(fields: ['landingPageSlug'], message: 'subject_landing_page_slug_already_exists')]
+#[ORM\Index(columns: ['organisation_id', 'name'])]
+#[ORM\Index(columns: ['landing_page_status', 'name'])]
 class Subject implements HasId
 {
     #[ORM\Column(length: 50)]
@@ -53,17 +56,17 @@ class Subject implements HasId
     #[ORM\Column(length: 10000, nullable: true)]
     private ?string $landingPageDescription = null;
 
-    #[ORM\Column(type: 'string', length: 255, enumType: SubjectLandingPageStatus::class)]
+    #[ORM\Column(type: Types::STRING, length: 255, enumType: SubjectLandingPageStatus::class)]
     private SubjectLandingPageStatus $landingPageStatus = SubjectLandingPageStatus::CONCEPT;
 
-    #[ORM\Column(type: 'uuid', unique: true, nullable: true)]
-    private ?Uuid $landingPagePreviewToken = null;
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private Uuid $landingPagePreviewToken;
 
     #[ORM\Column(type: SubjectContentTreeType::NAME, nullable: true, options: ['jsonb' => true])]
     #[Assert\Valid]
     private ?SubjectContentTree $landingPageContentTree = null;
 
-    #[ORM\Column(type: 'string', length: 255, enumType: SubjectContentTreeStatus::class)]
+    #[ORM\Column(type: Types::STRING, length: 255, enumType: SubjectContentTreeStatus::class)]
     private SubjectContentTreeStatus $landingPageContentTreeStatus = SubjectContentTreeStatus::CONCEPT;
 
     public function __construct(
@@ -105,7 +108,7 @@ class Subject implements HasId
     }
 
     /**
-     * @return Collection<AbstractDossier>
+     * @return Collection<int, AbstractDossier>
      */
     public function getDossiers(): Collection
     {
@@ -146,6 +149,13 @@ class Subject implements HasId
     public function hasPublishedContentTree(): bool
     {
         return $this->landingPageContentTreeStatus === SubjectContentTreeStatus::PUBLISHED;
+    }
+
+    public function hasVisibleLandingPageContentTree(): bool
+    {
+        return $this->hasPublishedLandingPage()
+            && $this->hasPublishedContentTree()
+            && $this->landingPageContentTree !== null;
     }
 
     public function getLandingPageSlug(): ?LandingPageSlug
@@ -198,7 +208,7 @@ class Subject implements HasId
         return $this;
     }
 
-    public function getLandingPagePreviewToken(): ?Uuid
+    public function getLandingPagePreviewToken(): Uuid
     {
         return $this->landingPagePreviewToken;
     }

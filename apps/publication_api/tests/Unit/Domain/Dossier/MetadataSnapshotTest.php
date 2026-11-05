@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PublicationApi\Tests\Unit\Domain\Dossier;
 
 use Mockery;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PublicationApi\Domain\Dossier\MetadataSnapshot;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
@@ -92,6 +93,24 @@ final class MetadataSnapshotTest extends UnitTestCase
             MetadataSnapshot::of($this->createAttachment())
                 ->equalTo(MetadataSnapshot::of($this->createAttachment())),
         );
+    }
+
+    #[DataProvider('otherTypeDataProvider')]
+    public function testEqualToReturnsFalseForOtherTypes(mixed $other): void
+    {
+        self::assertFalse(MetadataSnapshot::of($this->createAttachment())->equalTo($other));
+    }
+
+    /**
+     * @return array<string, array{other: mixed}>
+     */
+    public static function otherTypeDataProvider(): array
+    {
+        return [
+            'null' => ['other' => null],
+            'array' => ['other' => []],
+            'other equatable' => ['other' => PlainDate::create('2025-01-01')],
+        ];
     }
 
     public function testOfNullableReturnsNullForAnAbsentEntity(): void

@@ -20,8 +20,8 @@ final class DepartmentPublicationV1Test extends ApiPublicationV1TestCase
 {
     public function testGetDepartment(): void
     {
-        $organisationA = OrganisationFactory::createOne();
-        $organisationB = OrganisationFactory::createOne();
+        $organisationA = OrganisationFactory::createOne(['name' => 'organisationA']);
+        $organisationB = OrganisationFactory::createOne(['name' => 'organisationB']);
         $department = DepartmentFactory::createOne(['organisations' => [$organisationA, $organisationB]]);
 
         $response = self::createPublicationApiClient()

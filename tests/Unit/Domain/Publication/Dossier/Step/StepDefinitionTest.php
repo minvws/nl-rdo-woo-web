@@ -19,12 +19,15 @@ class StepDefinitionTest extends UnitTestCase
 {
     public function testGetters(): void
     {
-        $step = new StepDefinition(StepName::DECISION, DossierType::WOO_DECISION);
+        $conceptRouteName = $this->getFaker()->word();
+        $editRouteName = $this->getFaker()->word();
+
+        $step = new StepDefinition(StepName::DECISION, DossierType::WOO_DECISION, $conceptRouteName, $editRouteName);
 
         self::assertEquals(StepName::DECISION, $step->getName());
         self::assertEquals(DossierType::WOO_DECISION, $step->getDossierType());
-        self::assertEquals('app_admin_dossier_woodecision_decision_concept', $step->getConceptEditRouteName());
-        self::assertEquals('app_admin_dossier_woodecision_decision_edit', $step->getEditRouteName());
+        self::assertSame($conceptRouteName, $step->getConceptEditRouteName());
+        self::assertSame($editRouteName, $step->getEditRouteName());
     }
 
     public function testIsCompletedReturnsTrueWhenTheValidatorReturnsNoErrors(): void
@@ -38,7 +41,7 @@ class StepDefinitionTest extends UnitTestCase
         $validator = Mockery::mock(ValidatorInterface::class);
         $validator->expects('validate')->with($dossier, null, [StepName::DECISION->value])->andReturn($violations);
 
-        $step = new StepDefinition(StepName::DECISION, DossierType::WOO_DECISION);
+        $step = new StepDefinition(StepName::DECISION, DossierType::WOO_DECISION, $this->getFaker()->word(), $this->getFaker()->word());
 
         self::assertTrue($step->isCompleted($dossier, $validator));
     }
@@ -54,7 +57,7 @@ class StepDefinitionTest extends UnitTestCase
         $validator = Mockery::mock(ValidatorInterface::class);
         $validator->expects('validate')->with($dossier, null, [StepName::DECISION->value])->andReturn($violations);
 
-        $step = new StepDefinition(StepName::DECISION, DossierType::WOO_DECISION);
+        $step = new StepDefinition(StepName::DECISION, DossierType::WOO_DECISION, $this->getFaker()->word(), $this->getFaker()->word());
 
         self::assertFalse($step->isCompleted($dossier, $validator));
     }
@@ -64,7 +67,7 @@ class StepDefinitionTest extends UnitTestCase
         $dossier = Mockery::mock(WooDecision::class);
         $dossier->expects('getType')->andReturn(DossierType::WOO_DECISION);
 
-        $step = new StepDefinition(StepName::DECISION, DossierType::COVENANT);
+        $step = new StepDefinition(StepName::DECISION, DossierType::COVENANT, $this->getFaker()->word(), $this->getFaker()->word());
 
         $validator = Mockery::mock(ValidatorInterface::class);
 
@@ -86,8 +89,13 @@ class StepDefinitionTest extends UnitTestCase
         $config = Mockery::mock(DossierTypeConfigInterface::class);
         $config->expects('getDossierType')->andReturn(DossierType::WOO_DECISION);
 
-        $step = StepDefinition::create($config, StepName::DECISION);
+        $conceptRouteName = $this->getFaker()->word();
+        $editRouteName = $this->getFaker()->word();
+
+        $step = StepDefinition::create($config, StepName::DECISION, $conceptRouteName, $editRouteName);
 
         self::assertTrue($step->isCompleted($dossier, $validator));
+        self::assertSame($conceptRouteName, $step->getConceptEditRouteName());
+        self::assertSame($editRouteName, $step->getEditRouteName());
     }
 }

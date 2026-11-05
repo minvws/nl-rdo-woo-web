@@ -14,7 +14,7 @@ final readonly class SitemapUrlBuilder
     {
         $writer->startElement(name: 'url');
 
-        $writer->writeElement(name: 'loc', content: $url->loc);
+        $writer->writeElement(name: 'loc', content: $url->loc->toString());
         $writer->writeElement(name: 'lastmod', content: $url->lastmod->toDateString());
         $this->writeChangefreq($writer, $url);
         $this->writePriority($writer, $url);
@@ -118,7 +118,7 @@ final readonly class SitemapUrlBuilder
 
         $writer->startDiWooElement('isPartOf');
 
-        $writer->writeAttribute(name: 'resource', value: $document->isPartOf->resource);
+        $writer->writeAttribute(name: 'resource', value: $document->isPartOf->resource->toString());
         $writer->text($document->isPartOf->officieleTitel);
 
         $writer->endElement();
@@ -135,7 +135,7 @@ final readonly class SitemapUrlBuilder
         foreach ($document->hasParts as $urlReference) {
             $writer->startDiWooElement('hasPart');
 
-            $writer->writeAttribute(name: 'resource', value: $urlReference->resource);
+            $writer->writeAttribute(name: 'resource', value: $urlReference->resource->toString());
             $writer->text($urlReference->officieleTitel);
 
             $writer->endElement(); // closes hasPart-element

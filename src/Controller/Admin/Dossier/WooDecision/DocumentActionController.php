@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Shared\Controller\Admin\Dossier\WooDecision;
 
 use Huluti\BreadcrumbsBundle\Model\Breadcrumbs;
-use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\DossierBreadcrumbFactory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentDispatcher;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentWithdrawReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Form\Document\WithdrawDocumentFormType;
 use Shared\Service\DocumentWorkflow\DocumentWorkflowStatus;
+use Shared\ValueObject\DocumentNumber;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\SubmitButton;
@@ -23,15 +25,19 @@ use Webmozart\Assert\Assert;
 
 class DocumentActionController extends AbstractController
 {
+    public const string ROUTE_NAME_DOSSIER_WOODECISION_DOCUMENT_WITHDRAW = 'app_admin_dossier_woodecision_document_withdraw';
+
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly DocumentDispatcher $dispatcher,
+        private readonly DocumentRepository $documentRepository,
+        private readonly DossierBreadcrumbFactory $breadcrumbFactory,
     ) {
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/document/withdraw/{documentPrefix}/{dossierNumber}/{documentNumber}',
-        name: 'app_admin_dossier_woodecision_document_withdraw',
+        '/balie/dossier/woodecision/document/withdraw/{documentPrefix}/{dossierNumber}/{documentNumber}',
+        self::ROUTE_NAME_DOSSIER_WOODECISION_DOCUMENT_WITHDRAW,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
@@ -39,24 +45,32 @@ class DocumentActionController extends AbstractController
         Breadcrumbs $breadcrumbs,
         Request $request,
         #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
-        #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(documentPrefix, dossierNumber, documentNumber)')] Document $document,
+        DocumentNumber $documentNumber,
     ): Response {
-        $documentNumber = $document->getDocumentNumber()->toString();
+        $document = $this->documentRepository->findOneByDossierNumberAndDocumentNumber(
+            $dossier->getDocumentPrefix(),
+            $dossier->getDossierNumber(),
+            $documentNumber,
+        );
+
+        if ($document === null) {
+            throw $this->createNotFoundException();
+        }
 
         $breadcrumbs->addRouteItem(
-            $dossier->getDossierNumber(),
+            $this->breadcrumbFactory->forDossier($dossier),
             'app_admin_dossier',
             ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
         $breadcrumbs->addRouteItem(
-            'Documenten',
+            'global.documents',
             'app_admin_dossier_woodecision_documents_edit',
             ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
-        $breadcrumbs->addRouteItem($documentNumber, 'app_admin_dossier_woodecision_document', [
+        $breadcrumbs->addRouteItem('global.document', 'app_admin_dossier_woodecision_document', [
             'documentPrefix' => $dossier->getDocumentPrefix(),
             'dossierNumber' => $dossier->getDossierNumber(),
-            'documentNumber' => $documentNumber,
+            'documentNumber' => $documentNumber->toString(),
         ]);
         $breadcrumbs->addItem('admin.dossiers.woo-decision.step.withdraw_document');
 
@@ -94,7 +108,7 @@ class DocumentActionController extends AbstractController
                 [
                     'documentPrefix' => $dossier->getDocumentPrefix(),
                     'dossierNumber' => $dossier->getDossierNumber(),
-                    'documentNumber' => $documentNumber,
+                    'documentNumber' => $documentNumber->toString(),
                 ],
             );
         }
@@ -102,6 +116,7 @@ class DocumentActionController extends AbstractController
         return $this->render('admin/dossier/woo-decision/document/withdraw.html.twig', [
             'dossier' => $dossier,
             'document' => $document,
+            'documentNumber' => $documentNumber,
             'breadcrumbs' => $breadcrumbs,
             'form' => $form,
             'workflow' => new DocumentWorkflowStatus($document),

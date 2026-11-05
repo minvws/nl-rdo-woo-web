@@ -10,20 +10,14 @@ class PdfPageProcessingContext
 {
     private readonly EntityWithFileInfo $entity;
     private readonly int $pageNumber;
-    private readonly string $workDirPath;
-    private readonly string $localDocument;
-    private ?string $localPageDocument = null;
+    private ?string $pageContents = null;
 
     public function __construct(
         EntityWithFileInfo $entity,
         int $pageNumber,
-        string $workDirPath,
-        string $localDocument,
     ) {
         $this->entity = $entity;
         $this->pageNumber = $pageNumber;
-        $this->workDirPath = $workDirPath;
-        $this->localDocument = $localDocument;
     }
 
     public function getEntity(): EntityWithFileInfo
@@ -36,33 +30,23 @@ class PdfPageProcessingContext
         return $this->pageNumber;
     }
 
-    public function getWorkDirPath(): string
+    public function getPageContents(): string
     {
-        return $this->workDirPath;
-    }
-
-    public function getLocalDocument(): string
-    {
-        return $this->localDocument;
-    }
-
-    public function getLocalPageDocument(): string
-    {
-        if ($this->localPageDocument === null) {
-            throw PdfPageException::forLocalPageDocumentNotSet($this);
+        if ($this->pageContents === null) {
+            throw PdfPageException::forPageContentsNotSet($this);
         }
 
-        return $this->localPageDocument;
+        return $this->pageContents;
     }
 
-    public function getOptionalLocalPageDocument(): ?string
+    public function getOptionalPageContents(): ?string
     {
-        return $this->localPageDocument;
+        return $this->pageContents;
     }
 
-    public function setLocalPageDocument(string $localPageDocument): self
+    public function setPageContents(string $pageContents): self
     {
-        $this->localPageDocument = $localPageDocument;
+        $this->pageContents = $pageContents;
 
         return $this;
     }

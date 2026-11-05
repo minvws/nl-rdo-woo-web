@@ -9,6 +9,8 @@ use RuntimeException;
 use Shared\Service\Storage\FileHashService;
 use Shared\Tests\Unit\UnitTestCase;
 
+use function fopen;
+
 use const DIRECTORY_SEPARATOR;
 
 class FileHashServiceTest extends UnitTestCase
@@ -25,6 +27,18 @@ class FileHashServiceTest extends UnitTestCase
         $this->expectException(RuntimeException::class);
 
         FileHashService::calculate('non-existing-file');
+    }
+
+    public function testCalculateResourceHash(): void
+    {
+        $stream = fopen(__DIR__ . DIRECTORY_SEPARATOR . 'dummy.txt', 'r');
+        if ($stream === false) {
+            $this->fail('cannot open dummy file');
+        }
+
+        $hash = FileHashService::calculateResourceHash($stream);
+
+        self::assertEquals('b1b113c6ed8ab3a14779f7c54179eac2b87d39fcebbf65a50556b8d68caaa2fb', $hash);
     }
 
     public function testCalculatePsrStreamHash(): void

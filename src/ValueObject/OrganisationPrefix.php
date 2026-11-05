@@ -5,22 +5,20 @@ declare(strict_types=1);
 namespace Shared\ValueObject;
 
 use InvalidArgumentException;
-use Shared\Domain\Exception\OrganisationPrefixArgumentException;
+use Shared\Domain\Exception\OrganisationPrefixInvalidFormatException;
+use Shared\Domain\Exception\OrganisationPrefixTooLongException;
+use Shared\Domain\Exception\OrganisationPrefixTooShortException;
 use Stringable;
 use Webmozart\Assert\Assert;
 
-use function preg_match;
 use function strtoupper;
 use function trim;
 
-/**
- * @implements Equatable<OrganisationPrefix>
- */
 final readonly class OrganisationPrefix implements Stringable, Equatable
 {
     public const int MIN_LENGTH = 5;
     public const int MAX_LENGTH = 30;
-    public const string PATTERN = '/^[0-9A-Za-z-]+$/';
+    public const string PATTERN = '^[0-9A-Za-z-]+$';
 
     private function __construct(
         private string $prefix,
@@ -34,23 +32,17 @@ final readonly class OrganisationPrefix implements Stringable, Equatable
         try {
             Assert::minLength($prefix, self::MIN_LENGTH);
         } catch (InvalidArgumentException) {
-            throw new OrganisationPrefixArgumentException(
-                'organisation.prefix_too_short',
-                ['{{ limit }}' => self::MIN_LENGTH],
-            );
+            throw new OrganisationPrefixTooShortException(self::MIN_LENGTH);
         }
 
         try {
             Assert::maxLength($prefix, self::MAX_LENGTH);
         } catch (InvalidArgumentException) {
-            throw new OrganisationPrefixArgumentException(
-                'organisation.prefix_too_long',
-                ['{{ limit }}' => self::MAX_LENGTH],
-            );
+            throw new OrganisationPrefixTooLongException(self::MAX_LENGTH);
         }
 
-        if (preg_match(self::PATTERN, $prefix) !== 1) {
-            throw new OrganisationPrefixArgumentException('organisation.prefix_invalid_format');
+        if (! RegexPattern::create(self::PATTERN)->matches($prefix)) {
+            throw new OrganisationPrefixInvalidFormatException();
         }
 
         return new self(strtoupper($prefix));
@@ -66,10 +58,8 @@ final readonly class OrganisationPrefix implements Stringable, Equatable
         return $this->__toString();
     }
 
-    public function equalTo(Equatable $other): bool
+    public function equalTo(mixed $other): bool
     {
-        Assert::isInstanceOf($other, self::class);
-
-        return $this->toString() === $other->toString();
+        return $other instanceof self && $this->prefix === $other->prefix;
     }
 }

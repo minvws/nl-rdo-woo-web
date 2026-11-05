@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentId;
+use Shared\ValueObject\ExternalId;
 
 use function str_repeat;
 
@@ -85,6 +86,24 @@ class DocumentIdTest extends UnitTestCase
         $documentId = DocumentId::create('abc-123');
 
         $this->assertFalse($documentId->equalTo(DocumentId::create('def-456')));
+    }
+
+    #[DataProvider('otherTypeDataProvider')]
+    public function testEqualToReturnsFalseForOtherTypes(mixed $other): void
+    {
+        $this->assertFalse(DocumentId::create('abc-123')->equalTo($other));
+    }
+
+    /**
+     * @return array<string,array{other:mixed}>
+     */
+    public static function otherTypeDataProvider(): array
+    {
+        return [
+            'null' => ['other' => null],
+            'string with same value' => ['other' => 'abc-123'],
+            'other equatable with same value' => ['other' => ExternalId::create('abc-123')],
+        ];
     }
 
     /**

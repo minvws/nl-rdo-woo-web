@@ -9,17 +9,16 @@ use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use PublicationApi\Domain\Upload\MainDocumentUploadStatusService;
 use Shared\Controller\Public\Dossier\DossierFileController;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\PublicUrlGenerator;
-use Shared\ValueObject\Url;
 
 readonly class MainDocumentResponseDtoFactory
 {
     public function __construct(
         private ApiUrlGenerator $apiUrlGenerator,
-        private DossierPathHelper $dossierPathHelper,
+        private DossierUrlGenerator $dossierUrlGenerator,
         private MainDocumentUploadStatusService $mainDocumentUploadStatusService,
         private PublicUrlGenerator $publicUrlGenerator,
     ) {
@@ -87,7 +86,7 @@ readonly class MainDocumentResponseDtoFactory
         if ($dossier->getStatus()->isPublished()) {
             $linkCollection->set(
                 LinkCollection::PUBLIC,
-                new Link(Url::create($this->dossierPathHelper->getAbsoluteMainDocumentDetailsPath($dossier))),
+                new Link($this->dossierUrlGenerator->documentDetailUrl($dossier)),
             );
             $linkCollection->set(
                 LinkCollection::FILE,

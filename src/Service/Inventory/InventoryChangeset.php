@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory;
 
-use OutOfBoundsException;
-use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\Import\DuplicateDocumentNumberException;
 use Shared\ValueObject\DocumentNumber;
 use Webmozart\Assert\Assert;
 
@@ -65,7 +64,7 @@ class InventoryChangeset
     {
         $key = strtolower($documentNumber->toString());
         if (! array_key_exists($key, $this->documentStatus)) {
-            throw new OutOfBoundsException("documentNumber $key not found in InventoryChangeset");
+            throw new InventoryChangesetDocumentNotFoundException($key);
         }
 
         return $this->documentStatus[$key];
@@ -132,7 +131,7 @@ class InventoryChangeset
     private function setDocumentStatus(string $documentNumber, string $status): void
     {
         if (key_exists($documentNumber, $this->documentStatus)) {
-            throw ProcessInventoryException::forDuplicateDocumentNumber($documentNumber);
+            throw new DuplicateDocumentNumberException($documentNumber);
         }
 
         $this->documentStatus[strtolower($documentNumber)] = $status;

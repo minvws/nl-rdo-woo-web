@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker;
 
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
-use Mockery\MockInterface;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Worker\Pdf\Extractor\PageExtractor;
 use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkPageExtractResult;
 use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
@@ -17,17 +18,21 @@ use Symfony\Component\Uid\Uuid;
 
 final class PageExtractorTest extends UnitTestCase
 {
-    private PdftkService&MockInterface $pdftkService;
-    private PageExtractor $extractor;
-
-    protected function setUp(): void
+    public function testThrowsExceptionWhenReadingFromStorageFails(): void
     {
-        parent::setUp();
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getId')->andReturn(Uuid::v6());
 
-        $this->pdftkService = Mockery::mock(PdftkService::class);
-        $this->extractor = new PageExtractor(
-            $this->pdftkService,
-        );
+        $context = new PdfPageProcessingContext($entity, $this->getFaker()->numberBetween(1, 10));
+
+        $entityStorageService = Mockery::mock(EntityStorageService::class);
+        $entityStorageService->expects('retrieveResourceEntity')->with($entity)->andReturnNull();
+
+        $extractor = new PageExtractor(Mockery::mock(PdftkService::class), $entityStorageService);
+
+        $this->expectException(PdfPageException::class);
+
+        $extractor->extractSinglePagePdf($context);
     }
 
     public function testThrowsExceptionWhenExtractFails(): void
@@ -35,49 +40,57 @@ final class PageExtractorTest extends UnitTestCase
         $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->expects('getId')->andReturn(Uuid::v6());
 
-        $context = Mockery::mock(PdfPageProcessingContext::class);
-        $context->expects('getWorkDirPath')->andReturn('/foo/bar');
-        $context->expects('getLocalDocument')->andReturn($this->getFaker()->word());
-        $context->expects('getPageNumber')->twice()->andReturn(2);
-        $context->expects('getEntity')->twice()->andReturn($entity);
+        $pageNr = $this->getFaker()->numberBetween(1, 10);
+        $context = new PdfPageProcessingContext($entity, $pageNr);
+        $source = Utils::tryFopen('php://memory', 'r');
+
+        $entityStorageService = Mockery::mock(EntityStorageService::class);
+        $entityStorageService->expects('retrieveResourceEntity')->with($entity)->andReturn($source);
 
         $result = new PdftkPageExtractResult(
             exitCode: 1,
             params: [],
-            errorMessage: 'some error',
-            sourcePdf: '',
-            pageNr: 2,
-            targetPath: '',
+            errorMessage: $this->getFaker()->sentence(),
+            pageNr: $pageNr,
+            pageContents: null,
         );
 
-        $this->pdftkService->expects('extractPage')->andReturn($result);
+        $pdftkService = Mockery::mock(PdftkService::class);
+        $pdftkService->expects('extractPage')->with($source, $pageNr)->andReturn($result);
+
+        $extractor = new PageExtractor($pdftkService, $entityStorageService);
 
         $this->expectException(PdfPageException::class);
 
-        $this->extractor->extractSinglePagePdf($context);
+        $extractor->extractSinglePagePdf($context);
     }
 
-    public function testSetLocalPageDocumentOnSuccess(): void
+    public function testSetsPageContentsOnSuccess(): void
     {
-        $page = $this->getFaker()->numberBetween(1, 10);
-        $context = Mockery::mock(PdfPageProcessingContext::class);
-        $context->expects('getWorkDirPath')->andReturn('/foo/bar');
-        $context->expects('getLocalDocument')->andReturn($this->getFaker()->word());
-        $context->expects('getPageNumber')->andReturn($page);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+
+        $pageNr = $this->getFaker()->numberBetween(1, 10);
+        $pageContents = $this->getFaker()->sha256();
+        $context = new PdfPageProcessingContext($entity, $pageNr);
+        $source = Utils::tryFopen('php://memory', 'r');
+
+        $entityStorageService = Mockery::mock(EntityStorageService::class);
+        $entityStorageService->expects('retrieveResourceEntity')->with($entity)->andReturn($source);
 
         $result = new PdftkPageExtractResult(
             exitCode: 0,
             params: [],
-            errorMessage: 'some error',
-            sourcePdf: '',
-            pageNr: $page,
-            targetPath: '',
+            errorMessage: null,
+            pageNr: $pageNr,
+            pageContents: $pageContents,
         );
 
-        $this->pdftkService->expects('extractPage')->andReturn($result);
+        $pdftkService = Mockery::mock(PdftkService::class);
+        $pdftkService->expects('extractPage')->with($source, $pageNr)->andReturn($result);
 
-        $context->expects('setLocalPageDocument')->with('/foo/bar/page.pdf');
+        $extractor = new PageExtractor($pdftkService, $entityStorageService);
+        $extractor->extractSinglePagePdf($context);
 
-        $this->extractor->extractSinglePagePdf($context);
+        self::assertSame($pageContents, $context->getPageContents());
     }
 }

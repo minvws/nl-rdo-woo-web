@@ -11,8 +11,8 @@ final class PdftkPageExtractResultTest extends UnitTestCase
 {
     public function testIsSuccessfulAndIsFailed(): void
     {
-        $resultOne = new PdftkPageExtractResult(0, [], null, 'source.pdf', 1, 'target.pdf');
-        $resultTwo = new PdftkPageExtractResult(1, [], null, 'source.pdf', 1, 'target.pdf');
+        $resultOne = new PdftkPageExtractResult(0, [], null, 1, $this->getFaker()->sha256());
+        $resultTwo = new PdftkPageExtractResult(1, [], $this->getFaker()->sentence(), 1, null);
 
         $this->assertTrue($resultOne->isSuccessful());
         $this->assertFalse($resultOne->isFailed());

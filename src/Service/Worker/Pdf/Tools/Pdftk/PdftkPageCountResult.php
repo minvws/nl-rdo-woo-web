@@ -13,7 +13,6 @@ final readonly class PdftkPageCountResult
         public int $exitCode,
         public array $params,
         public ?string $errorMessage,
-        public string $sourcePdf,
         public ?int $numberOfPages,
     ) {
     }

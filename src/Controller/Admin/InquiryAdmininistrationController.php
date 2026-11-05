@@ -19,18 +19,21 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class InquiryAdmininistrationController extends AbstractController
 {
+    public const string ROUTE_NAME_INQUIRY_ADMINISTRATION = 'app_admin_inquiry_administration';
+    public const string ROUTE_NAME_INQUIRY_ADMINISTRATION_DETAILS = 'app_admin_inquiry_administration_details';
+
     public function __construct(
         private readonly InquiryRepository $repository,
         private readonly InquiryService $inquiryService,
     ) {
     }
 
-    #[Route('/balie/admin/inquiry', name: 'app_admin_inquiry_administration', methods: ['GET'])]
+    #[Route('/balie/admin/inquiry', self::ROUTE_NAME_INQUIRY_ADMINISTRATION, methods: ['GET'])]
     #[IsGranted('AuthMatrix.inquiry.administration')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addRouteItem('global.admin', 'app_admin');
-        $breadcrumbs->addItem('global.inquiry');
+        $breadcrumbs->addItem('global.inquiries');
 
         return $this->render('admin/dossier/woo-decision/inquiry/administration/index.html.twig', [
             'inquiries' => $this->repository->findAll(),
@@ -38,7 +41,7 @@ class InquiryAdmininistrationController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/admin/inquiry/{inquiryNumber}', name: 'app_admin_inquiry_administration_details', methods: ['GET', 'POST'])]
+    #[Route('/balie/admin/inquiry/{inquiryNumber}', self::ROUTE_NAME_INQUIRY_ADMINISTRATION_DETAILS, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.inquiry.administration')]
     public function inquiry(
         #[MapEntity(mapping: ['inquiryNumber' => 'inquiryNumber'])] Inquiry $inquiry,
@@ -57,7 +60,7 @@ class InquiryAdmininistrationController extends AbstractController
         }
 
         $breadcrumbs->addRouteItem('global.admin', 'app_admin');
-        $breadcrumbs->addRouteItem('global.inquiry', 'app_admin_inquiry_administration');
+        $breadcrumbs->addRouteItem('global.inquiries', 'app_admin_inquiry_administration');
         $breadcrumbs->addItem($inquiry->getInquiryNumber());
 
         return $this->render('admin/dossier/woo-decision/inquiry/administration/details.html.twig', [

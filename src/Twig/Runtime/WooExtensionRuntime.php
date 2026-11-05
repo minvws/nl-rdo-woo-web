@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Shared\Twig\Runtime;
 
 use DateTimeImmutable;
-use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\DossierReference;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierNotifications;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\History\History;
 use Shared\Domain\Publication\History\HistoryWooDecisionOrigin;
 use Shared\Domain\Publication\History\HistoryWooDecisionOriginResolver;
@@ -38,18 +37,10 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
         private RequestStack $requestStack,
         private OrganisationSwitcher $organisationSwitcher,
         private HistoryService $historyService,
-        private DossierPathHelper $dossierPathHelper,
+        private DossierUrlGenerator $dossierUrlGenerator,
         private DossierNotificationsFactory $dossierNotificationsFactory,
         private HistoryWooDecisionOriginResolver $historyWooDecisionOriginResolver,
     ) {
-    }
-
-    /**
-     * Returns the classification of a citation.
-     */
-    public function classification(string $citation): string
-    {
-        return Citation::toClassification($citation);
     }
 
     /**
@@ -58,11 +49,6 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
     public function period(DateTimeImmutable|PlainDate|null $from, DateTimeImmutable|PlainDate|null $to): string
     {
         return DateRangeConverter::convertToString($from, $to);
-    }
-
-    public function getCitationType(string $citation): string
-    {
-        return Citation::getCitationType($citation);
     }
 
     public function queryStringWithoutParam(string $queryParam, string $value): string
@@ -155,7 +141,7 @@ readonly class WooExtensionRuntime implements RuntimeExtensionInterface
 
     public function dossierDetailsPath(AbstractDossier|DossierReference $dossier): string
     {
-        return $this->dossierPathHelper->getDetailsPath($dossier);
+        return $this->dossierUrlGenerator->detailPath($dossier);
     }
 
     public function getDossierNotifications(AbstractDossier $dossier): DossierNotifications

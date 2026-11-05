@@ -8,11 +8,10 @@ use InvalidArgumentException;
 use Stringable;
 
 use function mb_strlen;
-use function preg_match;
 
 final readonly class DocumentMatter implements Stringable
 {
-    public const string PATTERN = '/^[a-zA-Z0-9-._~]*$/';
+    public const string PATTERN = '^[a-zA-Z0-9-._~]*$';
     public const int MIN_LENGTH = 1;
     public const int MAX_LENGTH = 255;
 
@@ -36,7 +35,7 @@ final readonly class DocumentMatter implements Stringable
             throw new InvalidArgumentException('DocumentMatter cannot be empty', self::ERROR_EMPTY);
         }
 
-        if (preg_match(self::PATTERN, $documentMatter) !== 1) {
+        if (! RegexPattern::create(self::PATTERN)->matches($documentMatter)) {
             throw new InvalidArgumentException('DocumentMatter contains invalid characters', self::ERROR_INVALID_CHARACTERS);
         }
 

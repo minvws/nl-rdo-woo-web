@@ -20,12 +20,13 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UploadEntityRepository::class)]
 #[ORM\Table(name: 'upload')]
+#[ORM\Index(columns: ['updated_at'])]
 #[ORM\HasLifecycleCallbacks]
 class UploadEntity
 {
     use TimestampableTrait;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, index: true)]
     private string $uploadId;
 
     #[ORM\Column(type: ExternalIdType::NAME, length: 128, nullable: true, index: true)]
@@ -34,7 +35,7 @@ class UploadEntity
     #[ORM\Column(length: 50, enumType: UploadGroupId::class)]
     protected UploadGroupId $uploadGroupId;
 
-    #[ORM\Column(length: 50, enumType: UploadEntityStatus::class)]
+    #[ORM\Column(length: 50, enumType: UploadEntityStatus::class, index: true)]
     protected UploadEntityStatus $status;
 
     #[ORM\ManyToOne]

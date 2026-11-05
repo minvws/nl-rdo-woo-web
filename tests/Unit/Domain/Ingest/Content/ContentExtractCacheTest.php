@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Ingest\Content;
 
 use Mockery;
-use Mockery\MockInterface;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Shared\Domain\Ingest\Content\ContentExtractCache;
@@ -15,52 +14,40 @@ use Shared\Domain\Ingest\Content\ContentExtractService;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
+use Webmozart\Assert\InvalidArgumentException;
+
+use function sprintf;
 
 class ContentExtractCacheTest extends UnitTestCase
 {
-    private CacheItemPoolInterface&MockInterface $cacheItemPool;
-    private ContentExtractService&MockInterface $contentExtractService;
-    private EntityWithFileInfo&MockInterface $entity;
-    private FileInfo&MockInterface $fileInfo;
-    private ContentExtractCache $contentExtractCache;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->contentExtractService = Mockery::mock(ContentExtractService::class);
-        $this->cacheItemPool = Mockery::mock(CacheItemPoolInterface::class);
-
-        $this->fileInfo = Mockery::mock(FileInfo::class);
-        $this->fileInfo->expects('getHash')->andReturn('testhash');
-
-        $this->entity = Mockery::mock(EntityWithFileInfo::class);
-        $this->entity->expects('getFileInfo')->andReturn($this->fileInfo);
-
-        $this->contentExtractCache = new ContentExtractCache(
-            $this->contentExtractService,
-            $this->cacheItemPool,
-        );
-    }
-
     public function testGetCombinedExtractsWithCacheMiss(): void
     {
         $pageNr = 123;
         $content = "lorem ipsum tika\nlorem ipsum tesseract";
+        $hash = $this->getFaker()->sha256();
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getHash')->andReturn($hash);
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
 
         $cacheItem = Mockery::mock(CacheItemInterface::class);
         $cacheItem->expects('isHit')->andReturn(false);
         $cacheItem->expects('set')->with($content)->andReturnSelf();
         $cacheItem->expects('get')->andReturn($content);
-        $this->cacheItemPool->expects('getItem')->with('testhash-' . $pageNr)->andReturn($cacheItem);
-        $this->cacheItemPool->expects('save')->with($cacheItem);
+
+        $cacheItemPool = Mockery::mock(CacheItemPoolInterface::class);
+        $cacheItemPool->expects('getItem')->with(sprintf('%s-%s', $hash, $pageNr))->andReturn($cacheItem);
+        $cacheItemPool->expects('save')->with($cacheItem);
 
         $collection = Mockery::mock(ContentExtractCollection::class);
         $collection->expects('getCombinedContent')->andReturn($content);
 
-        $this->contentExtractService
+        $contentExtractService = Mockery::mock(ContentExtractService::class);
+        $contentExtractService
             ->expects('getExtracts')
-            ->with($this->entity, Mockery::on(
+            ->with($entity, Mockery::on(
                 static function (ContentExtractOptions $options) use ($pageNr): bool {
                     self::assertEquals($pageNr, $options->getPageNumber());
 
@@ -72,46 +59,95 @@ class ContentExtractCacheTest extends UnitTestCase
         $options = new ContentExtractOptions();
         $options->withPageNumber($pageNr);
 
-        $this->contentExtractCache->getCombinedExtracts($this->entity, $options);
+        $contentExtractCache = new ContentExtractCache($contentExtractService, $cacheItemPool);
+        $contentExtractCache->getCombinedExtracts($entity, $options);
     }
 
     public function testGetCombinedExtractsWithCacheHit(): void
     {
         $pageNr = 123;
         $content = "lorem ipsum tika\nlorem ipsum tesseract";
+        $hash = $this->getFaker()->sha256();
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getHash')->andReturn($hash);
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
 
         $cacheItem = Mockery::mock(CacheItemInterface::class);
         $cacheItem->expects('isHit')->andReturnTrue();
         $cacheItem->expects('get')->andReturn($content);
-        $this->cacheItemPool->expects('getItem')->with('testhash-' . $pageNr)->andReturn($cacheItem);
+
+        $cacheItemPool = Mockery::mock(CacheItemPoolInterface::class);
+        $cacheItemPool->expects('getItem')->with(sprintf('%s-%s', $hash, $pageNr))->andReturn($cacheItem);
 
         $options = new ContentExtractOptions();
         $options->withPageNumber($pageNr);
 
-        $this->contentExtractCache->getCombinedExtracts($this->entity, $options);
+        $contentExtractCache = new ContentExtractCache(Mockery::mock(ContentExtractService::class), $cacheItemPool);
+        $contentExtractCache->getCombinedExtracts($entity, $options);
     }
 
     public function testHasCacheReturnsTrueForHit(): void
     {
         $pageNr = 123;
+        $hash = $this->getFaker()->sha256();
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getHash')->andReturn($hash);
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
 
         $cacheItem = Mockery::mock(CacheItemInterface::class);
         $cacheItem->expects('isHit')->andReturnTrue();
 
-        $this->cacheItemPool->expects('getItem')->with('testhash-' . $pageNr)->andReturn($cacheItem);
+        $cacheItemPool = Mockery::mock(CacheItemPoolInterface::class);
+        $cacheItemPool->expects('getItem')->with(sprintf('%s-%s', $hash, $pageNr))->andReturn($cacheItem);
 
-        self::assertTrue($this->contentExtractCache->hasCache($this->entity, $pageNr));
+        $contentExtractCache = new ContentExtractCache(Mockery::mock(ContentExtractService::class), $cacheItemPool);
+
+        self::assertTrue($contentExtractCache->hasCache($entity, $pageNr));
     }
 
     public function testHasCacheReturnsFalseForMisse(): void
     {
         $pageNr = 123;
+        $hash = $this->getFaker()->sha256();
+
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getHash')->andReturn($hash);
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
 
         $cacheItem = Mockery::mock(CacheItemInterface::class);
         $cacheItem->expects('isHit')->andReturnFalse();
 
-        $this->cacheItemPool->expects('getItem')->with('testhash-' . $pageNr)->andReturn($cacheItem);
+        $cacheItemPool = Mockery::mock(CacheItemPoolInterface::class);
+        $cacheItemPool->expects('getItem')->with(sprintf('%s-%s', $hash, $pageNr))->andReturn($cacheItem);
 
-        self::assertFalse($this->contentExtractCache->hasCache($this->entity, $pageNr));
+        $contentExtractCache = new ContentExtractCache(Mockery::mock(ContentExtractService::class), $cacheItemPool);
+
+        self::assertFalse($contentExtractCache->hasCache($entity, $pageNr));
+    }
+
+    public function testHasCacheFaislForEntityWithoutHash(): void
+    {
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getHash')->andReturnNull();
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
+
+        $contentExtractCache = new ContentExtractCache(
+            Mockery::mock(ContentExtractService::class),
+            Mockery::mock(CacheItemPoolInterface::class),
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $contentExtractCache->hasCache($entity, $this->getFaker()->numberBetween(1, 100));
     }
 }

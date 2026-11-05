@@ -6,7 +6,6 @@ namespace Shared\Service\Storage;
 
 use Psr\Log\LoggerInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
-use SplFileInfo;
 
 use function dirname;
 use function min;
@@ -43,7 +42,7 @@ class ThumbnailStorageService extends StorageService
     /**
      * Store a file in the storage adapter.
      */
-    public function store(EntityWithFileInfo $entity, SplFileInfo $localFile, int $pageNr): bool
+    public function store(EntityWithFileInfo $entity, string $thumbnail, int $pageNr): bool
     {
         $remotePath = $this->generateThumbPath($entity, $pageNr);
 
@@ -51,7 +50,7 @@ class ThumbnailStorageService extends StorageService
             return false;
         }
 
-        return $this->doStore($localFile, $remotePath);
+        return $this->remoteFilesystem->write($remotePath, $thumbnail);
     }
 
     /**

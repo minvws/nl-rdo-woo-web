@@ -20,10 +20,9 @@ use PublicationApi\Domain\OpenApi\Links\Link;
 use PublicationApi\Domain\OpenApi\Links\LinkCollection;
 use Shared\Domain\Department\Department;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
-use Shared\ValueObject\Url;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -37,7 +36,7 @@ readonly class WooDecisionResponseMapper implements DossierResponseMapper
     public function __construct(
         private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentResponseDtoFactory $attachmentResponseDtoFactory,
-        private DossierPathHelper $dossierPathHelper,
+        private DossierUrlGenerator $dossierUrlGenerator,
         private InquiryLinkFactory $inquiryLinkFactory,
         private MainDocumentResponseDtoFactory $mainDocumentResponseDtoFactory,
         private WooDecisionDocumentResponseDtoFactory $wooDecisionDocumentResponseDtoFactory,
@@ -121,7 +120,7 @@ readonly class WooDecisionResponseMapper implements DossierResponseMapper
         );
 
         if ($wooDecision->getStatus()->isPublished()) {
-            $linkCollection->set(LinkCollection::PUBLIC, new Link(Url::create($this->dossierPathHelper->getAbsoluteDetailsPath($wooDecision))));
+            $linkCollection->set(LinkCollection::PUBLIC, new Link($this->dossierUrlGenerator->detailUrl($wooDecision)));
         }
 
         foreach ($wooDecision->getInquiries() as $inquiry) {

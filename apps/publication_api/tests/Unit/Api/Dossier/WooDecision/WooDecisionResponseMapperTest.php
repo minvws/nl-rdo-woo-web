@@ -18,11 +18,11 @@ use Shared\Domain\Department\Department;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DossierTitle;
 use Shared\ValueObject\Url;
@@ -92,7 +92,7 @@ final class WooDecisionResponseMapperTest extends UnitTestCase
         $wooDecisionResponseMapper = new WooDecisionResponseMapper(
             $apiUrlGenerator,
             $attachmentResponseDtoFactory,
-            Mockery::mock(DossierPathHelper::class),
+            Mockery::mock(DossierUrlGenerator::class),
             Mockery::mock(InquiryLinkFactory::class),
             $mainDocumentResponseDtoFactory,
             $wooDecisionDocumentResponseDtoFactory,

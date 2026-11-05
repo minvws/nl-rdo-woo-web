@@ -15,23 +15,26 @@ tasks:
      - uv lock --upgrade
 
   init:
-    desc: Loads E2E fixtures and create a super-admin user for minvws and minfin tenants
-    status:
-      - test -f secrets/.otp_secret_minvws
-      - test -f secrets/.otp_secret_minfin
+    desc: Loads E2E fixtures and creates a super-admin user for a tenant (default minvws, override with tenant=minfin)
+    vars:
+      tenant: '{{.tenant | default .DEFAULT_TENANT}}'
     cmds:
       - cmd: mkdir -p results
       - task: init:single
         vars:
-          tenant: minvws
-      - task: init:single
-        vars:
-          tenant: minfin
+          tenant: '{{.tenant}}'
 
   init:single:
     internal: true
     vars:
       tenant: '{{.tenant | default .DEFAULT_TENANT}}'
+    # Up-to-date when the stored OTP secret matches the user in the DB and the first login has completed
+    status:
+      - test -f secrets/.otp_secret_{{.tenant}}
+      - test ! -f secrets/.temp_password_{{.tenant}}
+      - >
+        docker compose exec -T admin bin/console --no-interaction --tenant={{.tenant}} woopie:user:view email@example.org
+        | grep -qF "$(cat secrets/.otp_secret_{{.tenant}})"
     cmds:
       - cmd: |
           echo Tenant: {{.tenant}}
@@ -47,6 +50,11 @@ tasks:
 
           # Capture output safely: grep failure won't trigger exit
           CREATE_OUTPUT="$($CMD woopie:user:create "$EMAIL" "Robot Admin" --super-admin 2>&1 || true)"
+
+          # User already exists from an earlier run: reset its credentials instead
+          if grep -q 'already exists' <<< "$CREATE_OUTPUT"; then
+              CREATE_OUTPUT="$($CMD woopie:user:reset "$EMAIL" 2>&1 || true)"
+          fi
           CREATE_OUTPUT_CLEAN="$(grep -v 'qrencode not found' <<< "$CREATE_OUTPUT" || true)"
 
           # Extract TEMP_PASSWORD and OTP_SECRET
@@ -61,7 +69,7 @@ tasks:
 
           mkdir -p secrets
           printf "%s" "$OTP_SECRET" > secrets/.otp_secret_{{.tenant}}
-          printf "%s" "$TEMP_PASSWORD" > secrets/.temp_password
+          printf "%s" "$TEMP_PASSWORD" > secrets/.temp_password_{{.tenant}}
           echo "User $EMAIL created successfully, secrets saved."
         silent: true
       - task: disable-toolbar
@@ -95,6 +103,7 @@ tasks:
     cmds:
       - task: :up
       - task: init
+        vars: { tenant: '{{.tenant}}' }
       - task: clear-results
       - task: disable-toolbar
       - cmd: uv run robot --include '{{.tag | default "single"}}' --exclude '{{.exclude | default ""}}' {{.ROBOT_PARAMS}}
@@ -111,6 +120,7 @@ tasks:
     cmds:
       - task: :up
       - task: init
+        vars: { tenant: '{{.tenant}}' }
       - task: clear-results
       - task: disable-toolbar
       - cmd: uv run pabot --processes 8 --artifactsinsubfolders --include api --exclude failing {{.ROBOT_PARAMS}}
@@ -134,6 +144,11 @@ tasks:
     desc: Returns an OTP code from the secret in .otp_secret
     vars:
       tenant: '{{.tenant | default .DEFAULT_TENANT}}'
+    preconditions:
+      - sh: test -s secrets/.otp_secret_{{.tenant}}
+        msg: "No OTP secret found for tenant '{{.tenant}}' (tests/robot_framework/secrets/.otp_secret_{{.tenant}}). Run 'task rf:init' first."
+      - sh: docker info > /dev/null 2>&1
+        msg: "Docker is not running. Start Docker and try again."
     cmds:
       - task: :dc
         vars: { SUB_CMD: "run --rm robot uv run python -c 'import pyotp; print(pyotp.TOTP(open(\"secrets/.otp_secret_{{.tenant}}\").read().strip()).now())'" }
@@ -149,6 +164,7 @@ tasks:
           task: ':env:e2e:disable'
       - task: :up
       - task: init
+        vars: { tenant: '{{.tenant}}' }
       - task: clear-results
       - task: disable-toolbar
       - task: :dc
@@ -168,6 +184,7 @@ tasks:
           task: ':env:e2e:disable'
       - task: :up
       - task: init
+        vars: { tenant: '{{.tenant}}' }
       - task: clear-results
       - task: disable-toolbar
       - task: :dc
@@ -185,6 +202,7 @@ tasks:
     cmds:
       - task: :up
       - task: init
+        vars: { tenant: '{{.tenant}}' }
       - task: clear-results
       - task: disable-toolbar
       - task: :dc

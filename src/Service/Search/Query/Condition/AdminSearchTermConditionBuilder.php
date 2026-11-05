@@ -12,6 +12,7 @@ use Shared\Domain\Search\Index\Schema\ElasticNestedField;
 use Shared\Domain\Search\Index\Schema\ElasticPath;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Dsl\Query;
+use Shared\Service\Search\Query\Dsl\QueryParameter;
 
 class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
 {
@@ -29,7 +30,7 @@ class AdminSearchTermConditionBuilder extends SearchTermConditionBuilder
             filter: [
                 $this->getTypeFilter(),
             ],
-        )->setParams(['minimum_should_match' => 1]);
+        )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]);
     }
 
     #[Override]

@@ -55,10 +55,10 @@
                     })
                 }}</p>
 
-                {% if document.entity.grounds | length > 0 %}
-                    <p class="mb-2!">{{ 'public.documents.reasons_are' | trans({'count': document.entity.grounds | length }) }}:</p>
+                {% if document.grounds | length > 0 %}
+                    <p class="mb-2!">{{ 'public.documents.reasons_are' | trans({'count': document.grounds | length }) }}:</p>
                     <ul>
-                        {% for ground in document.entity.grounds %}
+                        {% for ground in document.grounds %}
                             <li>
                                 {{ macro.document_ground(ground) }}
                             </li>

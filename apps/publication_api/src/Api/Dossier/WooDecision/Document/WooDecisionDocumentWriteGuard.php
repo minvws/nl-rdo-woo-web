@@ -74,7 +74,7 @@ final readonly class WooDecisionDocumentWriteGuard
     {
         $documentsByNumber = [];
 
-        foreach ($this->documentRepository->findByDocumentNumbersCaseInsensitive($documentNumbers) as $document) {
+        foreach ($this->documentRepository->findByDocumentNumbers($documentNumbers) as $document) {
             $documentsByNumber[$document->getDocumentNumber()->toString()] = $document;
         }
 

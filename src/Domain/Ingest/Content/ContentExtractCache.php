@@ -8,6 +8,7 @@ use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Webmozart\Assert\Assert;
 
 use function sprintf;
 
@@ -43,10 +44,13 @@ readonly class ContentExtractCache
 
     private function getCacheItem(EntityWithFileInfo $entity, ?int $pageNr): CacheItemInterface
     {
+        $hash = $entity->getFileInfo()->getHash();
+        Assert::notNull($hash, 'Cannot generate cache key for entity without hash in FileInfo');
+
         return $this->contentExtractCache->getItem(
             sprintf(
                 '%s-%s',
-                $entity->getFileInfo()->getHash(),
+                $hash,
                 $pageNr ?? 0,
             ),
         );

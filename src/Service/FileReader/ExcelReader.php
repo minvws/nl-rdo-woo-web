@@ -10,7 +10,7 @@ use Generator;
 use IteratorAggregate;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Shared\Exception\FileReaderException;
+use Shared\Exception\Import\DateCannotBeParsedException;
 use Shared\Service\Inventory\InventoryDataHelper;
 use Webmozart\Assert\Assert;
 
@@ -84,7 +84,7 @@ class ExcelReader implements IteratorAggregate, FileReaderInterface
         try {
             return InventoryDataHelper::toDateTimeImmutable($value);
         } catch (Exception) {
-            throw FileReaderException::forCannotParseDate($value);
+            throw new DateCannotBeParsedException($value);
         }
     }
 
@@ -98,7 +98,7 @@ class ExcelReader implements IteratorAggregate, FileReaderInterface
         try {
             return InventoryDataHelper::toDateTimeImmutable($value);
         } catch (Exception) {
-            throw FileReaderException::forCannotParseDate($value);
+            throw new DateCannotBeParsedException($value);
         }
     }
 

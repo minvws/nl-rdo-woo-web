@@ -25,10 +25,7 @@ ${VALIDATION_RESPONSE}    ${EMPTY}
 *** Test Cases ***
 Get All Subjects
   [Documentation]  Reads all subjects and checks if the E2E Test Subject, from the fixtures, is present.
-  ${url} =  Subject Collection Url
-  ${response} =  GET On Session  alias=${API_ALIAS}  url=${url}  msg=GET request failed
-  Get Object From Json By Attribute  ${response.json()}  name  E2E Test Subject
-  Status Should Be  200  ${response}  msg=GET request did not return a 200
+  Get Subject ID
 
 Create A Subject
   When A Subject Is Created

@@ -16,6 +16,7 @@ use Shared\Domain\Search\Index\Schema\ElasticPath;
 use Shared\Domain\Search\Query\Facet\FacetList;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Dsl\Query;
+use Shared\Service\Search\Query\Dsl\QueryParameter;
 
 class SearchTermConditionBuilder implements QueryConditionBuilderInterface
 {
@@ -35,7 +36,7 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
             $this->createMainTypesQuery($searchParameters),
         );
 
-        $query->setParams(['minimum_should_match' => 1]);
+        $query->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]);
     }
 
     public function createDocumentQuery(SearchParameters $searchParameters): BoolQuery
@@ -51,7 +52,7 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
             filter: [
                 $this->getTypeFilter(),
             ],
-        )->setParams(['minimum_should_match' => 1]);
+        )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]);
     }
 
     public function createMainTypesQuery(SearchParameters $searchParameters): BoolQuery
@@ -89,7 +90,7 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
                     values: ElasticDocumentType::getMainTypeValues(),
                 ),
             ],
-        )->setParams(['minimum_should_match' => 1]);
+        )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]);
     }
 
     protected function getNestedDossiersTitleAndSummaryQuery(SearchParameters $searchParameters): NestedQuery
@@ -115,7 +116,7 @@ class SearchTermConditionBuilder implements QueryConditionBuilderInterface
                         ->setDefaultOperator($searchParameters->operator->value)
                         ->setBoost(2),
                 ],
-            )->setParams(['minimum_should_match' => 1]),
+            )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]),
         );
     }
 

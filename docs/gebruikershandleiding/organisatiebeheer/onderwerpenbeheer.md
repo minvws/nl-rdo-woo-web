@@ -5,7 +5,7 @@ Je kunt een onderwerp aan een publicatie koppelen om de openbaar gemaakte inform
 te structureren, naast de bestaande informatiecategorieën. Dit biedt je de flexibiliteit om de informatie beter te organiseren.
 De onderwerpen kunnen door de organisatie zelf beheerd en aangepast worden.
 
-Om het menu te openen, klik je bovenaan in de zwarte balk op 'Onderwerpen'. Je ziet dan een overzicht van alle onderwerpen die
+Om het menu te openen, klik je bovenaan in de zwarte menubalk op 'Onderwerpen'. Je ziet dan een overzicht van alle onderwerpen die
 binnen de organisatie zijn aangemaakt. Vanuit dit overzicht kun je eenvoudig nieuwe onderwerpen toevoegen en bestaande onderwerpen
 bewerken, zodat de structuur van de informatie altijd up-to-date blijft en aansluit bij de behoeften van de organisatie.
 

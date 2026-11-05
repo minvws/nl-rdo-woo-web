@@ -25,6 +25,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DocumentsConceptStepController extends AbstractController
 {
+    public const string ROUTE_NAME_CONCEPT = 'app_admin_dossier_woodecision_documents_concept';
+    public const string ROUTE_NAME_CONCEPT_INVENTORY_STATUS = 'app_admin_dossier_woodecision_documents_concept_inventory_status';
+
     public function __construct(
         private readonly StepActionHelper $stepHelper,
         private readonly DocumentsStepHelper $documentsHelper,
@@ -34,8 +37,8 @@ class DocumentsConceptStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/documents/concept/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_woodecision_documents_concept',
+        '/balie/dossier/woodecision/documents/concept/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_CONCEPT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
@@ -130,8 +133,8 @@ class DocumentsConceptStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/documents/concept/inventory-status/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_woodecision_documents_concept_inventory_status',
+        '/balie/dossier/woodecision/documents/concept/inventory-status/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_CONCEPT_INVENTORY_STATUS,
         methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]

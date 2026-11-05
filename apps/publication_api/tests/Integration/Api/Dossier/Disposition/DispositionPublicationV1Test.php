@@ -18,12 +18,12 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
@@ -107,7 +107,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertResponseIsSuccessful();
 
         $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
-        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $dossierUrlGenerator = $this->fromContainer(DossierUrlGenerator::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $disposition->getId(),
@@ -147,7 +147,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($disposition)],
+                    'public' => ['href' => $dossierUrlGenerator->documentDetailUrl($disposition)->toString()],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -183,7 +183,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
                                 ],
                             )->toString(),
                         ],
-                        'public' => ['href' => $dossierPathHelper->getAbsoluteAttachmentDetailsPath($disposition, $dispositionAttachment->getId())],
+                        'public' => ['href' => $dossierUrlGenerator->attachmentDetailUrl($disposition, $dispositionAttachment->getId())->toString()],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -201,7 +201,7 @@ final class DispositionPublicationV1Test extends ApiPublicationV1DossierTestCase
             'dossierDate' => $disposition->getDateFrom()?->format('Y-m-d'),
             '_links' => [
                 'self' => ['href' => $this->buildApiUrl($organisation, $disposition)],
-                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($disposition)],
+                'public' => ['href' => $dossierUrlGenerator->detailUrl($disposition)->toString()],
             ],
         ];
 

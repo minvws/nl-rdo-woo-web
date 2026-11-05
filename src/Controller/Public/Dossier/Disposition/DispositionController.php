@@ -25,6 +25,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class DispositionController extends AbstractController
 {
+    public const string ROUTE_NAME_DETAIL = 'app_disposition_detail';
+    public const string ROUTE_NAME_NOTICE_NOT_PUBLIC_DETAIL = 'app_disposition_notice_not_public_detail';
+    public const string ROUTE_NAME_DOCUMENT_DETAIL = 'app_disposition_document_detail';
+    public const string ROUTE_NAME_ATTACHMENT_DETAIL = 'app_disposition_attachment_detail';
+
     public function __construct(
         private readonly DispositionViewFactory $viewFactory,
         private readonly AttachmentViewFactory $attachmentViewFactory,
@@ -36,7 +41,7 @@ class DispositionController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/beschikking/{documentPrefix}/{dossierNumber}', name: 'app_disposition_detail', methods: ['GET'])]
+    #[Route('/beschikking/{documentPrefix}/{dossierNumber}', self::ROUTE_NAME_DETAIL, methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] Disposition $disposition,
         Breadcrumbs $breadcrumbs,
@@ -74,7 +79,7 @@ class DispositionController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/beschikking/{documentPrefix}/{dossierNumber}/mededeling-niet-openbaar',
-        name: 'app_disposition_notice_not_public_detail',
+        self::ROUTE_NAME_NOTICE_NOT_PUBLIC_DETAIL,
         methods: ['GET'],
     )]
     public function noticeNotPublicDetail(
@@ -97,7 +102,7 @@ class DispositionController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/beschikking/{documentPrefix}/{dossierNumber}/document',
-        name: 'app_disposition_document_detail',
+        self::ROUTE_NAME_DOCUMENT_DETAIL,
         methods: ['GET'],
     )]
     public function documentDetail(
@@ -128,7 +133,7 @@ class DispositionController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/beschikking/{documentPrefix}/{dossierNumber}/bijlage/{attachmentId}',
-        name: 'app_disposition_attachment_detail',
+        self::ROUTE_NAME_ATTACHMENT_DETAIL,
         methods: ['GET'],
     )]
     public function attachmentDetail(

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\FileReader;
 
-use Shared\Exception\FileReaderException;
+use Shared\Exception\Import\UnknownHeaderException;
 use Shared\Service\FileReader\HeaderMap;
 use Shared\Tests\Unit\UnitTestCase;
 
@@ -23,7 +23,7 @@ class HeaderMapTest extends UnitTestCase
 
         self::assertFalse($headerMap->has('foobar'));
 
-        $this->expectExceptionObject(FileReaderException::forUnknownHeader('foobar'));
+        $this->expectExceptionObject(new UnknownHeaderException('foobar'));
         $headerMap->getCellCoordinate('foobar');
     }
 }

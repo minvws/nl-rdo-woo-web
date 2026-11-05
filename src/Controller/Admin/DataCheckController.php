@@ -12,7 +12,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DataCheckController extends AbstractController
 {
-    #[Route('/balie/data-checks', name: 'app_admin_data_checks', methods: ['GET'])]
+    public const string ROUTE_NAME_DATA_CHECKS = 'app_admin_data_checks';
+
+    #[Route('/balie/data-checks', self::ROUTE_NAME_DATA_CHECKS, methods: ['GET'])]
     #[IsGranted('AuthMatrix.data_check.read')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {

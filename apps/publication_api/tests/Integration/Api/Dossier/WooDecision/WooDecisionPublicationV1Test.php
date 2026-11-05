@@ -21,6 +21,7 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Decision\DecisionType;
@@ -31,7 +32,6 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionM
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Validator\Immutable;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\Ground;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\SourceType;
@@ -195,7 +195,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertResponseIsSuccessful();
 
         $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
-        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $dossierUrlGenerator = $this->fromContainer(DossierUrlGenerator::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $wooDecision->getId(),
@@ -235,7 +235,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($wooDecision)],
+                    'public' => ['href' => $dossierUrlGenerator->documentDetailUrl($wooDecision)->toString()],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -270,7 +270,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
                                 ],
                             )->toString(),
                         ],
-                        'public' => ['href' => $dossierPathHelper->getAbsoluteAttachmentDetailsPath($wooDecision, $wooDecisionAttachment->getId())],
+                        'public' => ['href' => $dossierUrlGenerator->attachmentDetailUrl($wooDecision, $wooDecisionAttachment->getId())->toString()],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -405,7 +405,7 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
             ],
             '_links' => [
                 'self' => ['href' => $this->buildApiUrl($organisation, $wooDecision)],
-                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
+                'public' => ['href' => $dossierUrlGenerator->detailUrl($wooDecision)->toString()],
             ],
         ];
 
@@ -435,10 +435,10 @@ final class WooDecisionPublicationV1Test extends ApiPublicationV1DossierTestCase
         );
         self::assertResponseIsSuccessful();
 
-        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $dossierUrlGenerator = $this->fromContainer(DossierUrlGenerator::class);
         self::assertEquals([
             'self' => ['href' => $this->buildApiUrl($organisation, $wooDecision)],
-            'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($wooDecision)],
+            'public' => ['href' => $dossierUrlGenerator->detailUrl($wooDecision)->toString()],
         ], $result->toArray()['_links']);
     }
 

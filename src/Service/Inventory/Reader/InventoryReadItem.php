@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inventory\Reader;
 
-use Shared\Exception\TranslatableException;
+use Shared\Exception\Import\ImportException;
 use Shared\Service\Inventory\DocumentMetadata;
 
 class InventoryReadItem
@@ -12,11 +12,11 @@ class InventoryReadItem
     public function __construct(
         private readonly ?DocumentMetadata $documentMetadata,
         private readonly int $index,
-        private readonly ?TranslatableException $exception,
+        private readonly ?ImportException $exception,
     ) {
     }
 
-    public function getException(): ?TranslatableException
+    public function getException(): ?ImportException
     {
         return $this->exception;
     }

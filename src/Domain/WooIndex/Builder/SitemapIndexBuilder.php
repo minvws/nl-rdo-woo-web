@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\WooIndex\Builder;
 
 use Closure;
+use Shared\ValueObject\Url;
 use Webmozart\Assert\Assert;
 
 final class SitemapIndexBuilder
@@ -32,11 +33,11 @@ final class SitemapIndexBuilder
         return $writer;
     }
 
-    public function addSitemap(DiWooXMLWriter $writer, string $location): void
+    public function addSitemap(DiWooXMLWriter $writer, Url $location): void
     {
         $writer->startElement(name: 'sitemap');
 
-        $writer->writeElement(name: 'loc', content: $location);
+        $writer->writeElement(name: 'loc', content: $location->toString());
 
         $writer->endElement(); // closes sitemap-element
     }

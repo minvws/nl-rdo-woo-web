@@ -29,6 +29,21 @@ use function strval;
 
 readonly class ResultTransformer
 {
+    private const string TIME_TAKEN = '[took]';
+    private const string TIMED_OUT = '[timed_out]';
+    private const string TOTAL_HITS = '[hits][total][value]';
+    private const string DOSSIER_COUNT = '[aggregations][unique_dossiers][value]';
+    private const string DATE_FILTER_DOCUMENT_COUNT = '[aggregations][all][facet-base-filter][date_filter][doc_count]';
+    private const string DATE_FACET_FILTER_DOCUMENT_COUNT = '[aggregations][all][facet-base-filter][facet-filter-date][date_filter][doc_count]';
+    private const string AGGREGATIONS = '[aggregations]';
+    private const string HITS = '[hits][hits]';
+    private const string SUGGEST = '[suggest]';
+    private const string OPTIONS = '[options]';
+    private const string TEXT = '[text]';
+    private const string SCORE = '[score]';
+    private const string FREQUENCY = '[freq]';
+    private const string BUCKETS = '[buckets]';
+
     public function __construct(
         private LoggerInterface $logger,
         private PaginatorInterface $paginator,
@@ -97,21 +112,21 @@ readonly class ResultTransformer
         $typedResponse = new TypeArray($response->asArray());
         $result = new Result();
 
-        $result->setTimeTaken($typedResponse->getInt('[took]', 0));
-        if ($typedResponse->getBool('[timed_out]')) {
+        $result->setTimeTaken($typedResponse->getInt(self::TIME_TAKEN, 0));
+        if ($typedResponse->getBool(self::TIMED_OUT)) {
             $result->setFailed(true);
             $result->setMessage('ElasticSearch timed out');
 
             return $result;
         }
 
-        $result->setResultCount($typedResponse->getInt('[hits][total][value]', 0));
+        $result->setResultCount($typedResponse->getInt(self::TOTAL_HITS, 0));
 
         if ($searchParameters->aggregations === true) {
-            $result->setDossierCount($typedResponse->getInt('[aggregations][unique_dossiers][value]', 0));
+            $result->setDossierCount($typedResponse->getInt(self::DOSSIER_COUNT, 0));
 
-            $documentCountWithoutDate = $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][date_filter][doc_count]')
-                ?? $typedResponse->getIntOrNull('[aggregations][all][facet-base-filter][facet-filter-date][date_filter][doc_count]');
+            $documentCountWithoutDate = $typedResponse->getIntOrNull(self::DATE_FILTER_DOCUMENT_COUNT)
+                ?? $typedResponse->getIntOrNull(self::DATE_FACET_FILTER_DOCUMENT_COUNT);
             $result->setDocumentCountWithoutDate($documentCountWithoutDate);
             $result->setDisplayWithoutDateMessage($this->displayWithoutDateMessage($searchParameters, $documentCountWithoutDate));
         }
@@ -124,7 +139,7 @@ readonly class ResultTransformer
         if ($searchParameters->aggregations) {
             $aggregations = $this->transformAggregations(
                 $searchParameters,
-                $typedResponse->getTypeArray('[aggregations]'),
+                $typedResponse->getTypeArray(self::AGGREGATIONS),
             );
             if ($aggregations) {
                 $result->setAggregations($aggregations);
@@ -133,7 +148,7 @@ readonly class ResultTransformer
 
         // Add all found hits and their documents
         $entries = [];
-        foreach ($typedResponse->getIterable('[hits][hits]') as $hit) {
+        foreach ($typedResponse->getIterable(self::HITS) as $hit) {
             Assert::isInstanceOf($hit, TypeArray::class);
 
             $entries[] = $this->resultFactory->map($hit, $searchParameters->applicationId);
@@ -150,12 +165,12 @@ readonly class ResultTransformer
      */
     protected function transformSuggestions(TypeArray $response): array
     {
-        if (! $response->exists('[suggest]')) {
+        if (! $response->exists(self::SUGGEST)) {
             return [];
         }
 
         $ret = [];
-        foreach ($response->getIterable('[suggest]') as $name => $entry) {
+        foreach ($response->getIterable(self::SUGGEST) as $name => $entry) {
             Assert::isInstanceOf($entry, TypeArray::class);
 
             foreach ($entry->toArray() as $suggestion) {
@@ -165,11 +180,11 @@ readonly class ResultTransformer
 
                 $entries = [];
                 /** @var TypeArray $option */
-                foreach ($suggestion->getIterable('[options]') as $option) {
+                foreach ($suggestion->getIterable(self::OPTIONS) as $option) {
                     $entries[] = new SuggestionEntry(
-                        $option->getString('[text]'),
-                        $option->getFloat('[score]'),
-                        $option->getInt('[freq]'),
+                        $option->getString(self::TEXT),
+                        $option->getFloat(self::SCORE),
+                        $option->getInt(self::FREQUENCY),
                     );
                 }
                 $ret[] = new Suggestion($name, $entries);
@@ -197,7 +212,7 @@ readonly class ResultTransformer
             $aggregation = new TypeArray($aggregation);
 
             // Check if we have buckets, if not, we might have a nested aggregation
-            if (! $aggregation->exists('[buckets]')) {
+            if (! $aggregation->exists(self::BUCKETS)) {
                 // No buckets, we might need to go deeper as this is a nested aggregation
                 $ret = array_merge(
                     $ret,
@@ -242,7 +257,7 @@ readonly class ResultTransformer
     {
         $buckets = [];
 
-        foreach ($aggregation->getIterable('[buckets]') as $bucketKey => $bucket) {
+        foreach ($aggregation->getIterable(self::BUCKETS) as $bucketKey => $bucket) {
             Assert::isInstanceOf($bucket, TypeArray::class);
 
             $buckets[$bucketKey] = $bucket;

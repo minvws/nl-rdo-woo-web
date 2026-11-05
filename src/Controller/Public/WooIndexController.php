@@ -18,6 +18,8 @@ use function fpassthru;
 
 final class WooIndexController extends AbstractController
 {
+    public const string ROUTE_NAME_WOO_INDEX_SITEMAP_DOWNLOAD = 'app_woo_index_sitemap_download';
+
     public function __construct(private readonly WooIndexSitemapService $wooIndexSitemapService)
     {
     }
@@ -25,7 +27,7 @@ final class WooIndexController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/sitemap/woo-index/{id}/{file}',
-        name: 'app_woo_index_sitemap_download',
+        self::ROUTE_NAME_WOO_INDEX_SITEMAP_DOWNLOAD,
         methods: ['GET'],
     )]
     public function download(

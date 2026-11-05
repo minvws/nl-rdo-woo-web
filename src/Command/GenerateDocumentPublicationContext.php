@@ -12,7 +12,6 @@ use Shared\ValueObject\PublicationContext;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Webmozart\Assert\Assert;
@@ -22,7 +21,10 @@ use function str_ends_with;
 use function strlen;
 use function substr;
 
-#[AsCommand(name: self::COMMAND_NAME, description: 'Generate the publicationContext of documents that do not have one yet')]
+#[AsCommand(
+    name: self::COMMAND_NAME,
+    description: 'Lowercase document numbers and generate the publicationContext of documents that do not have one yet',
+)]
 class GenerateDocumentPublicationContext extends Command
 {
     public const string COMMAND_NAME = 'woopie:document:generate-document-publication-context';
@@ -36,35 +38,61 @@ class GenerateDocumentPublicationContext extends Command
         parent::__construct();
     }
 
-    protected function configure(): void
-    {
-        $this->setDefinition([
-            new InputOption('dry-run', 'd', InputOption::VALUE_NONE, 'Dry run'),
-        ]);
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $dryRun = (bool) $input->getOption('dry-run');
 
-        $result = $this->process($io, $dryRun);
+        $lowercased = $this->lowercaseDatabaseFields();
+        $this->entityManager->clear();
 
-        if ($dryRun) {
-            $io->warning('THIS IS A DRY RUN, NOTHING WAS UPDATED IN THE DATABASE');
-        } else {
-            $this->entityManager->flush();
-        }
+        $result = $this->process($io);
+        $this->entityManager->flush();
 
-        $io->success(sprintf('Finished: processed %d, updated %d, skipped %d', $result['processed'], $result['updated'], $result['skipped']));
+        $io->success([
+            sprintf('Lowercased %d document numbers', $lowercased['documentNumbers']),
+            sprintf('Lowercased %d publication contexts', $lowercased['publicationContexts']),
+            sprintf('Lowercased %d document ids', $lowercased['documentIds']),
+            sprintf(
+                'Finished: processed %d, updated %d, skipped %d',
+                $result['processed'],
+                $result['updated'],
+                $result['skipped'],
+            ),
+        ]);
 
         return self::SUCCESS;
     }
 
     /**
+     * @return array{documentNumbers: int, publicationContexts: int, documentIds: int}
+     */
+    private function lowercaseDatabaseFields(): array
+    {
+        return [
+            'documentNumbers' => $this->lowercaseDatabaseField('documentNumber'),
+            'publicationContexts' => $this->lowercaseDatabaseField('publicationContext'),
+            'documentIds' => $this->lowercaseDatabaseField('documentId'),
+        ];
+    }
+
+    private function lowercaseDatabaseField(string $field): int
+    {
+        $affected = $this->entityManager->createQueryBuilder()
+            ->update(Document::class, 'd')
+            ->set(sprintf('d.%s', $field), sprintf('LOWER(d.%s)', $field))
+            ->where(sprintf('d.%s <> LOWER(d.%s)', $field, $field))
+            ->getQuery()
+            ->execute();
+
+        Assert::integer($affected);
+
+        return $affected;
+    }
+
+    /**
      * @return array{processed: int, updated: int, skipped: int}
      */
-    private function process(SymfonyStyle $io, bool $dryRun): array
+    private function process(SymfonyStyle $io): array
     {
         $processed = 0;
         $updated = 0;
@@ -83,9 +111,7 @@ class GenerateDocumentPublicationContext extends Command
             }
 
             if ($processed % self::BATCH_SIZE === 0) {
-                if (! $dryRun) {
-                    $this->entityManager->flush();
-                }
+                $this->entityManager->flush();
                 $this->entityManager->clear();
             }
         }

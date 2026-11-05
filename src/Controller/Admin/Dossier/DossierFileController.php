@@ -17,6 +17,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DossierFileController extends AbstractController
 {
+    public const string ROUTE_NAME_DOSSIER_FILE_DOWNLOAD = 'app_admin_dossier_file_download';
+
     public function __construct(
         private readonly DownloadResponseHelper $downloadHelper,
         private readonly DossierFileProviderManager $fileProviderManager,
@@ -26,7 +28,7 @@ class DossierFileController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/balie/dossier/{documentPrefix}/{dossierNumber}/file/download/{type}/{id?""}',
-        name: 'app_admin_dossier_file_download',
+        self::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
         methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]

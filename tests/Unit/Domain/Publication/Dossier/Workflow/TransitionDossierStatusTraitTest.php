@@ -15,26 +15,26 @@ final class TransitionDossierStatusTraitTest extends UnitTestCase
 {
     private static function oldState(Transition $transition): DossierStatus
     {
-        return (new class {
+        return new class {
             use TransitionDossierStatusTrait;
 
             public function oldState(Transition $transition): DossierStatus
             {
                 return $this->getOldState($transition);
             }
-        })->oldState($transition);
+        }->oldState($transition);
     }
 
     private static function newState(Transition $transition): DossierStatus
     {
-        return (new class {
+        return new class {
             use TransitionDossierStatusTrait;
 
             public function newState(Transition $transition): DossierStatus
             {
                 return $this->getNewState($transition);
             }
-        })->newState($transition);
+        }->newState($transition);
     }
 
     /**

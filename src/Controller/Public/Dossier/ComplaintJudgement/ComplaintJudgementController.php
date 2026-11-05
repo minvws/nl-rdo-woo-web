@@ -23,6 +23,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class ComplaintJudgementController extends AbstractController
 {
+    public const string ROUTE_NAME_DETAIL = 'app_complaintjudgement_detail';
+    public const string ROUTE_NAME_NOTICE_NOT_PUBLIC_DETAIL = 'app_complaintjudgement_notice_not_public_detail';
+    public const string ROUTE_NAME_DOCUMENT_DETAIL = 'app_complaintjudgement_document_detail';
+
     public function __construct(
         private readonly ComplaintJudgementViewFactory $viewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
@@ -33,7 +37,7 @@ class ComplaintJudgementController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/klachtoordeel/{documentPrefix}/{dossierNumber}', name: 'app_complaintjudgement_detail', methods: ['GET'])]
+    #[Route('/klachtoordeel/{documentPrefix}/{dossierNumber}', self::ROUTE_NAME_DETAIL, methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] ComplaintJudgement $complaintJudgement,
         Breadcrumbs $breadcrumbs,
@@ -70,7 +74,7 @@ class ComplaintJudgementController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/klachtoordeel/{documentPrefix}/{dossierNumber}/mededeling-niet-openbaar',
-        name: 'app_complaintjudgement_notice_not_public_detail',
+        self::ROUTE_NAME_NOTICE_NOT_PUBLIC_DETAIL,
         methods: ['GET'],
     )]
     public function noticeNotPublicDetail(
@@ -93,7 +97,7 @@ class ComplaintJudgementController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/klachtoordeel/{documentPrefix}/{dossierNumber}/document',
-        name: 'app_complaintjudgement_document_detail',
+        self::ROUTE_NAME_DOCUMENT_DETAIL,
         methods: ['GET'],
     )]
     public function documentDetail(

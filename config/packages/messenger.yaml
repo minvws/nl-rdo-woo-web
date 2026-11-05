@@ -92,6 +92,7 @@ framework:
             Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Command\WithDrawAllDocumentsCommand: high
             Shared\Domain\Upload\Command\ValidateUploadCommand: high
             Shared\Domain\Publication\Dossier\Command\SynchronizeDossierArtifactsCommand: high
+            Shared\Domain\Search\Index\Subject\IndexAllSubjectsCommand: high
 
             Shared\Domain\Ingest\Process\Dossier\IngestAllDossiersCommand: ingestor
             Shared\Domain\Ingest\Process\Dossier\IngestDossierCommand: ingestor
@@ -112,6 +113,9 @@ framework:
             Shared\Domain\Publication\MainDocument\Event\MainDocumentDeletedEvent: esupdater
             Shared\Domain\Search\Index\DeleteElasticDocumentCommand: esupdater
             Shared\Domain\Publication\Subject\Event\SubjectUpdatedEvent: esupdater
+            Shared\Domain\Publication\Subject\Event\SubjectCreatedEvent: esupdater
+            Shared\Domain\Publication\Subject\Event\SubjectDeletedEvent: esupdater
+            Shared\Domain\Search\Index\Subject\IndexSubjectCommand: esupdater
 
             Shared\Domain\Publication\BatchDownload\Command\GenerateBatchDownloadCommand: global
 

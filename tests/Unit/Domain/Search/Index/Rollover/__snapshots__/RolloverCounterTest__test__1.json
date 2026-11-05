@@ -61,5 +61,11 @@
                 "actualPages": 0
             }
         ]
+    },
+    {
+        "type": "subject",
+        "expected": 1,
+        "actual": 1,
+        "subCounts": []
     }
 ]

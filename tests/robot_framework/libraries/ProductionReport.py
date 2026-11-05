@@ -96,7 +96,8 @@ def _randomize_zip(zip_path: str, id_map: dict, tmp_dir: str) -> str:
             )
 
     new_zip = os.path.join(tmp_dir, os.path.basename(zip_path))
-    with zipfile.ZipFile(new_zip, 'w', zipfile.ZIP_STORED) as zf:
+    # Compress, otherwise an Office file stored first makes the upload's mime type detection see the zip as that file
+    with zipfile.ZipFile(new_zip, 'w', zipfile.ZIP_DEFLATED) as zf:
         for filename in os.listdir(extract_dir):
             zf.write(os.path.join(extract_dir, filename), filename)
 

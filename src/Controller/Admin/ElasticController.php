@@ -23,6 +23,12 @@ use function reset;
 
 class ElasticController extends AbstractController
 {
+    public const string ROUTE_NAME_ELASTIC = 'app_admin_elastic';
+    public const string ROUTE_NAME_ELASTIC_CREATE = 'app_admin_elastic_create';
+    public const string ROUTE_NAME_ELASTIC_DETAILS = 'app_admin_elastic_details';
+    public const string ROUTE_NAME_ELASTIC_DELETE = 'app_admin_elastic_delete';
+    public const string ROUTE_NAME_ELASTIC_LIVE = 'app_admin_elastic_live';
+
     public function __construct(
         protected ElasticIndexManager $indexService,
         protected RolloverService $rolloverService,
@@ -30,11 +36,10 @@ class ElasticController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/elastic', name: 'app_admin_elastic', methods: ['GET'])]
+    #[Route('/balie/elastic', self::ROUTE_NAME_ELASTIC, methods: ['GET'])]
     #[IsGranted('AuthMatrix.elastic.read')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {
-        $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('global.admin', 'app_admin');
         $breadcrumbs->addItem('admin.elastic.generic');
 
@@ -47,11 +52,10 @@ class ElasticController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/elastic/create', name: 'app_admin_elastic_create', methods: ['GET', 'POST'])]
+    #[Route('/balie/elastic/create', self::ROUTE_NAME_ELASTIC_CREATE, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.elastic.create')]
     public function create(Breadcrumbs $breadcrumbs, Request $request): Response
     {
-        $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('global.admin', 'app_admin');
         $breadcrumbs->addRouteItem('admin.elastic.generic', 'app_admin_elastic');
         $breadcrumbs->addItem('admin.elastic.new_rollover');
@@ -78,11 +82,10 @@ class ElasticController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/elastic/{indexName}/details', name: 'app_admin_elastic_details', methods: ['GET'])]
+    #[Route('/balie/elastic/{indexName}/details', self::ROUTE_NAME_ELASTIC_DETAILS, methods: ['GET'])]
     #[IsGranted('AuthMatrix.elastic.read')]
     public function details(Breadcrumbs $breadcrumbs, string $indexName): Response
     {
-        $breadcrumbs->addRouteItem('global.home', 'app_home');
         $breadcrumbs->addRouteItem('global.admin', 'app_admin');
         $breadcrumbs->addRouteItem('admin.elastic.generic', 'app_admin_elastic');
         $breadcrumbs->addItem('global.details');
@@ -112,7 +115,7 @@ class ElasticController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/elastic/{indexName}/delete', name: 'app_admin_elastic_delete', methods: ['POST'])]
+    #[Route('/balie/elastic/{indexName}/delete', self::ROUTE_NAME_ELASTIC_DELETE, methods: ['POST'])]
     #[IsGranted('AuthMatrix.elastic.update')]
     public function delete(string $indexName, Request $request): Response
     {
@@ -144,7 +147,7 @@ class ElasticController extends AbstractController
         return $this->redirectToRoute('app_admin_elastic');
     }
 
-    #[Route('/balie/elastic/{indexName}/live', name: 'app_admin_elastic_live', methods: ['GET', 'POST'])]
+    #[Route('/balie/elastic/{indexName}/live', self::ROUTE_NAME_ELASTIC_LIVE, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.elastic.update')]
     public function makeLive(Breadcrumbs $breadcrumbs, Request $request, string $indexName): Response
     {

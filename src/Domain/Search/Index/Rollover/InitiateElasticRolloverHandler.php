@@ -9,10 +9,11 @@ use Psr\Log\LoggerInterface;
 use Shared\Domain\Ingest\IngestDispatcher;
 use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexManager;
+use Shared\Domain\Search\SearchDispatcher;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
- * Initialize the elasticsearch rollover and does a dossier ingestion of all dossiers.
+ * Initialize the Elasticsearch rollover and enqueue dossier ingestion and Subject indexing into the new write index.
  */
 #[AsMessageHandler]
 class InitiateElasticRolloverHandler
@@ -21,6 +22,7 @@ class InitiateElasticRolloverHandler
         protected ElasticIndexManager $indexService,
         protected LoggerInterface $logger,
         protected IngestDispatcher $ingestDispatcher,
+        private readonly SearchDispatcher $searchDispatcher,
         private readonly ElasticConfig $elasticConfig,
     ) {
     }
@@ -40,6 +42,7 @@ class InitiateElasticRolloverHandler
             );
 
             $this->ingestDispatcher->dispatchIngestAllDossiersCommand();
+            $this->searchDispatcher->dispatchIndexAllSubjectsCommand();
         } catch (Exception $e) {
             $this->logger->error('Failed to initialize the elasticsearch rollover', [
                 'index_name' => $message->indexName,

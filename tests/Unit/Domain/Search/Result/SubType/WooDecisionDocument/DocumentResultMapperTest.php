@@ -44,7 +44,7 @@ class DocumentResultMapperTest extends UnitTestCase
 
     public function testMapReturnsNullWhenViewModelCannotBeLoaded(): void
     {
-        $documentNumber = DocumentNumber::fromString('Prefix-Matter_01-Doc.123');
+        $documentNumber = DocumentNumber::fromString('prefix-matter_01-doc.123');
         $hit = Mockery::mock(TypeArray::class);
         $hit->expects('getStringOrNull')->with('[fields][document_number][0]')->andReturn($documentNumber->toString());
 
@@ -62,7 +62,7 @@ class DocumentResultMapperTest extends UnitTestCase
 
     public function testMapSuccessful(): void
     {
-        $documentNumber = DocumentNumber::fromString('Prefix-Matter_01-Doc.123');
+        $documentNumber = DocumentNumber::fromString('prefix-matter_01-doc.123');
         $capturedDocumentNumber = null;
         $hit = Mockery::mock(TypeArray::class);
         $hit->expects('getStringOrNull')->with('[fields][document_number][0]')->andReturn($documentNumber->toString());

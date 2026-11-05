@@ -4,6 +4,7 @@
 
 *** Settings ***
 Documentation       Tests for the Subjects API
+Library             String
 Library             RequestsLibrary
 Resource            ../resources/Organisations.resource
 Resource            ../resources/Setup.resource
@@ -70,13 +71,11 @@ Create Session For Tenant
   Create Session  ${alias}
 
 Retrieve Organisation ID
-  ${response} =  GET On Session  alias=${API_ALIAS}  url=${URL_API}/api/publication/v1/organisation
-  ${organisation} =  Get Object From Json By Attribute  ${response.json()}  name  E2E Test Organisation
+  ${organisation} =  Get Object By Name From Collection  organisation  E2E Test Organisation
   VAR  ${ORGANISATION_ID} =  ${organisation}[id]  scope=suite
 
 Get Department ID
-  ${response} =  GET On Session  alias=${API_ALIAS}  url=${URL_API}/api/publication/v1/department
-  ${department} =  Get Object From Json By Attribute  ${response.json()}  name  E2E Test Department 1
+  ${department} =  Get Object By Name From Collection  department  E2E Test Department 1
   RETURN  ${department}[id]
 
 Get Random Department ID
@@ -95,19 +94,22 @@ Get Random Department IDs
   RETURN  @{department_ids}
 
 Get Subject ID
-  ${response} =  GET On Session
-  ...  alias=${API_ALIAS}
-  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/subject
-  ${subject} =  Get Object From Json By Attribute  ${response.json()}  name  E2E Test Subject
+  ${subject} =  Get Object By Name From Collection  organisation/${ORGANISATION_ID}/subject  E2E Test Subject
   RETURN  ${subject}[id]
 
-Get Object From Json By Attribute
-  [Arguments]  ${json}  ${attribute_name}  ${attribute_value}
-  FOR  ${element}  IN  @{json}[items]
-    VAR  ${value} =  ${element}[${attribute_name}]
-    IF  $value == $attribute_value  RETURN  ${element}
+Get Object By Name From Collection
+  [Arguments]  ${collection}  ${name}
+  VAR  ${url} =  ${URL_API}/api/publication/v1/${collection}
+  WHILE  True
+    ${response} =  GET On Session  alias=${API_ALIAS}  url=${url}
+    FOR  ${element}  IN  @{response.json()}[items]
+      IF  $element['name'] == $name  RETURN  ${element}
+    END
+    IF  not $response.json()['hasNextPage']  BREAK
+    ${path} =  Remove String Using Regexp  ${response.json()}[_links][next][href]  ^https?://[^/]+
+    VAR  ${url} =  ${URL_API}${path}
   END
-  Fatal Error  No Object found with ${attribute_name} '${attribute_value}'
+  Fatal Error  No Object found with name '${name}'
 
 Upload File
   [Arguments]

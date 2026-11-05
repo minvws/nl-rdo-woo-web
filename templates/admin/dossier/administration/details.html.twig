@@ -6,7 +6,7 @@
 
 {% block body %}
 <div class="bhr-container">
-    {% include 'admin/shared/page-title.html.twig' %}
+    {% include 'admin/shared/page-title.html.twig' with { pageTitle: dossier.dossierNumber } %}
 
     <div class="bhr-card">
         {% include 'admin/shared/flash-messages.html.twig' %}

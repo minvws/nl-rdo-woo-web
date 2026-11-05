@@ -13,7 +13,9 @@ use function strval;
 
 class HomeController extends AbstractController
 {
-    #[Route('/woo-gpt', name: 'app_gpt_home', methods: ['GET'], condition: "env('HAS_FEATURE_WOO_GPT') === 'true'")]
+    public const string ROUTE_NAME_GPT_HOME = 'app_gpt_home';
+
+    #[Route('/woo-gpt', self::ROUTE_NAME_GPT_HOME, methods: ['GET'], condition: "env('HAS_FEATURE_WOO_GPT') === 'true'")]
     public function index(Request $request): Response
     {
         $query = strval($request->query->get('q'));

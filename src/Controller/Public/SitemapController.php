@@ -13,6 +13,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class SitemapController extends AbstractController
 {
+    public const string ROUTE_NAME_SITEMAP = 'app_sitemap';
+
     public function __construct(
         private readonly BrowseAllAggregationsQueryDefinition $aggregationsQueryDefinition,
         private readonly DepartmentService $departmentService,
@@ -20,7 +22,7 @@ class SitemapController extends AbstractController
     ) {
     }
 
-    #[Route('/sitemap', name: 'app_sitemap')]
+    #[Route('/sitemap', self::ROUTE_NAME_SITEMAP)]
     public function index(): Response
     {
         return $this->render('public/sitemap/index.html.twig', [

@@ -40,6 +40,7 @@ global.decision_date: "Datum besluit"
 global.decision_made: "Besluit genomen op"
 global.decision_type: "Type besluit"
 global.publication: "Publicatie"
+global.publications: "Publicaties"
 global.document: "Document"
 global.documents: "Documenten"
 global.document_number: "Documentnummer"
@@ -64,6 +65,7 @@ global.grounds: "Beoordelingsgrond(en)"
 global.history: "Geschiedenis"
 global.home: "Home"
 global.inquiry: "Zaak"
+global.inquiries: "Zaken"
 global.invalid_input: "Ongeldige invoer"
 global.link: "Link"
 global.logout: "Uitloggen"
@@ -253,7 +255,8 @@ admin.global.publication: "Publicatie"
 admin.global.label.publications: "Publicaties"
 admin.global.label.departments: "Bestuursorganen"
 admin.global.label.subjects: "Onderwerpen"
-admin.global.label.access_control: "Toegangsbeheer"
+admin.global.label.users: "Gebruikers"
+admin.global.label.organisations: "Organisaties"
 admin.global.page_count: "Aantal pagina's"
 admin.global.document_count: "Aantal documenten"
 admin.global.dossier_count: "Besluiten"
@@ -301,7 +304,6 @@ admin.inventory.optional_explanation.2: 'Het productierapport kan dan, na public
 admin.inventory.submit_label: "Upload productierapport"
 admin.inventory.matter_deprecated: 'We zien dat het geüploade productierapport nog Matter-waarden bevat. Deze worden automatisch vervangen door publicatiecontext. Vanaf 1 januari 2027 wordt Matter niet meer ondersteund en wordt alleen publicatiecontext gebruikt.'
 
-admin.organisations.manage: "Organisaties beheren"
 admin.organisation.select: "Kies een organisatie"
 
 admin.subjects.manage: "Onderwerpen beheren"
@@ -781,6 +783,7 @@ public.documents.file_type.note: "Notitie"
 public.documents.file_type.pdf: "PDF"
 public.documents.file_type.presentation: "Presentatie"
 public.documents.file_type.spreadsheet: "Spreadsheet"
+public.documents.file_type.txt: "Tekstbestand"
 public.documents.file_type.unknown: "Onbekend"
 public.documents.file_type.multiple: "Verzamelbestand"
 public.documents.file_type.vcard: "Visitekaartje"
@@ -1109,10 +1112,10 @@ publication.dossier.error.matter_or_publication_context_required: "Rij {rownumbe
 publication.dossier.error.matter_and_publication_context_combination: "Productierapport met een kolom \"Publicatiecontext\" kan geen kolom voor \"Matter\" bevatten"
 publication.dossier.error.remark_too_long: "Rij {rownumber} heeft een te lange toelichting / opmerking (max {max} tekens)"
 publication.dossier.error.link_too_long: "Rij {rownumber} heeft een te lange link (max 2048 tekens)"
-publication.dossier.error.file_name_too_long: "Rij {rownumber} heeft een te lange bestandsnaam (max 1024 tekens)"
+publication.dossier.error.file_name_too_long: "Rij {rownumber} heeft een te lange bestandsnaam: {filename} (max {max} tekens)"
 publication.dossier.error.inquiry_numbers_invalid: "Rij {rownumber} bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
 publication.dossier.error.invalid_link: "Rij {rownumber} heeft een ongeldige URL"
-publication.inquiry.error.inquiry_numbers_invalid: "Bevat één of meer ongeldige zaaknummers (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
+publication.inquiry.error.inquiry_numbers_invalid: "Rij {rownumber} bevat één of meer ongeldige zaaknummers ({inquiryNumbers}) (Alleen letters, cijfers en verbindingstekens. Max 255 tekens per nummer.)"
 publication.inquiry.error.matter_and_publication_context_combination: "Een bestand met een kolom \"Publicatiecontext\" kan geen kolom voor \"Matter\" bevatten"
 publication.dossier.error.generic_document_row_exception: "Er is een technische fout opgetreden tijdens de verwerking van het productierapport"
 publication.dossier.error.processing_inventory: "Er is een technische fout opgetreden tijdens de verwerking van het productierapport"
@@ -1120,6 +1123,7 @@ publication.dossier.error.no_inventory_changes: "Het nieuwe productierapport is 
 publication.dossier.error.max_documents_exceeded: "Het maximaal aantal documenten per dossier ({max}) wordt overschreden"
 publication.dossier.error.missing_document: "Document {documentNumber} mist in het productierapport"
 publication.dossier.error.referred_document_does_not_exist: "Gerelateerd ID {documentNumber} is niet bekend"
+publication.dossier.error.invalid_refers_to: "Rij {rownumber} heeft een ongeldig gerelateerd ID: {refersTo} (gebruik een puntkomma als scheidingsteken)"
 publication.dossier.error.document_not_unique: "Het documentnummer {documentNumber} is niet uniek binnen het productierapport"
 publication.dossier.error.maximum_processing_time_exceeded: "De verwerking van het productierapport heeft de maximale duur overschreden"
 publication.dossier.error.file_name_does_not_match_document_number: "De bestandsnaam {filename} komt niet overeen met documentnummer {documentNumber}"
@@ -1590,6 +1594,7 @@ admin.dossiers.downloads.actions: 'Acties'
 public.search.type_description.dossier: 'Reacties op Woo-verzoeken'
 public.search.type.document: 'Documenten'
 public.search.type.attachment: 'Bijlagen'
+public.search.type.subject: 'Onderwerpen'
 public.search.type.woo_decision_main_document: 'Hoofddocument'
 public.search.type.publication: 'Publicaties'
 

@@ -9,15 +9,17 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-use function sprintf;
 
 readonly class AttachmentViewFactory
 {
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
+        private GroundViewFactory $groundViewFactory,
+        private DossierUrlGenerator $dossierUrlGenerator,
     ) {
     }
 
@@ -44,15 +46,6 @@ readonly class AttachmentViewFactory
         AbstractAttachment $attachment,
         ApplicationId $applicationId = ApplicationId::PUBLIC,
     ): Attachment {
-        $detailsUrl = $this->urlGenerator->generate(
-            sprintf('app_%s_attachment_detail', $dossier->getType()->getValueForRouteName()),
-            [
-                'documentPrefix' => $dossier->getDocumentPrefix(),
-                'dossierNumber' => $dossier->getDossierNumber(),
-                'attachmentId' => $attachment->getId(),
-            ],
-        );
-
         $downloadRouteName = $applicationId->isAdmin()
             ? 'app_admin_dossier_file_download'
             : 'app_dossier_file_download';
@@ -77,9 +70,9 @@ readonly class AttachmentViewFactory
             size: $fileSize,
             internalReference: $attachment->getInternalReference(),
             language: $attachment->getLanguage(),
-            grounds: Citation::sortWooCitations($attachment->getGrounds()),
+            grounds: $this->groundViewFactory->makeCollection(Citation::sortWooCitations($attachment->getGrounds())),
             downloadUrl: $this->urlGenerator->generate($downloadRouteName, $downloadRouteParameters),
-            detailsUrl: $detailsUrl,
+            detailsUrl: $this->dossierUrlGenerator->attachmentDetailPath($dossier, $attachment->getId()),
             pageCount: $fileInfo->getPageCount() ?? 0,
             isDownloadable: $fileInfo->isUploaded() && $fileSize > 0,
             withdrawn: $attachment->isWithdrawn(),

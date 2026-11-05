@@ -48,7 +48,7 @@ class WhereTest extends UnitTestCase
     {
         $documentId = Uuid::v6();
         $dossierNumber = 'tst-123';
-        $documentNumber = DocumentNumber::fromString('PREF-matter-123');
+        $documentNumber = DocumentNumber::fromString('pref-matter-123');
 
         $matcher = Mockery::mock(UrlMatcherInterface::class);
         $matcher->expects('match')->andReturn([

@@ -20,7 +20,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function array_map;
 use function is_subclass_of;
-use function str_replace;
 
 enum DossierType: string implements TranslatableInterface
 {
@@ -114,11 +113,6 @@ enum DossierType: string implements TranslatableInterface
     public function getTranslationKey(): string
     {
         return 'dossier.type.' . $this->value;
-    }
-
-    public function getValueForRouteName(): string
-    {
-        return str_replace('-', '', $this->value);
     }
 
     /**

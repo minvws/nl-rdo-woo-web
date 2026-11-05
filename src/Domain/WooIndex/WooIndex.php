@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Shared\Domain\WooIndex;
 
 use League\Flysystem\FilesystemOperator;
+use Shared\Controller\Public\WooIndexController;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\WooIndex\Builder\SitemapBuilder;
 use Shared\Domain\WooIndex\Builder\SitemapIndexBuilder;
 use Shared\Domain\WooIndex\Builder\SitemapUrlBuilder;
 use Shared\Domain\WooIndex\Producer\ProducerSignal;
 use Shared\Domain\WooIndex\Producer\UrlProducer;
+use Shared\ValueObject\Url;
 use Symfony\Component\DependencyInjection\Attribute\Target;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use function fclose;
 use function ftell;
@@ -31,9 +33,8 @@ readonly class WooIndex
         private SitemapBuilder $sitemapBuilder,
         private SitemapUrlBuilder $urlBuilder,
         private WooIndexNamer $wooIndexNamer,
-        private UrlGeneratorInterface $urlGenerator,
+        private PublicUrlGenerator $publicUrlGenerator,
         private StreamHelper $streamHelper,
-        private string $publicBaseUrl,
     ) {
     }
 
@@ -88,14 +89,12 @@ readonly class WooIndex
         return sprintf('%s/%s', $path, $this->wooIndexNamer->getSitemapName($sitemapNumber));
     }
 
-    private function getSitemapUri(WooIndexSitemap $wooIndexSitemap, int $sitemapNumber): string
+    private function getSitemapUri(WooIndexSitemap $wooIndexSitemap, int $sitemapNumber): Url
     {
-        $subpath = $this->urlGenerator->generate('app_woo_index_sitemap_download', [
+        return $this->publicUrlGenerator->buildUrlFromRoute(WooIndexController::ROUTE_NAME_WOO_INDEX_SITEMAP_DOWNLOAD, [
             'id' => $wooIndexSitemap->getId()->toRfc4122(),
             'file' => $this->wooIndexNamer->getSitemapName($sitemapNumber),
         ]);
-
-        return $this->publicBaseUrl . $subpath;
     }
 
     /**

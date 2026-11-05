@@ -94,7 +94,7 @@ final class DocumentControllerTest extends SharedWebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertStringContainsString('shared.pdf', (string) $client->getResponse()->getContent());
-        self::assertStringContainsString('PREF-MAT-100', (string) $client->getResponse()->getContent());
+        self::assertStringContainsString('pref-mat-100', (string) $client->getResponse()->getContent());
     }
 
     public function testDossierDocumentPageRendersMultiDossierDocument(): void
@@ -124,7 +124,7 @@ final class DocumentControllerTest extends SharedWebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertStringContainsString('shared.pdf', (string) $client->getResponse()->getContent());
-        self::assertStringContainsString('PREF-MAT-101', (string) $client->getResponse()->getContent());
+        self::assertStringContainsString('pref-mat-101', (string) $client->getResponse()->getContent());
     }
 
     public function testCanonicalDocumentPageReturnsNotFoundForUnpublishedDocument(): void
@@ -182,7 +182,7 @@ final class DocumentControllerTest extends SharedWebTestCase
         self::assertCount(1, $client->getCrawler()->filter('link[rel="canonical"]'));
         self::assertSame(
             sprintf(
-                '%s/document/PREF-MAT-200',
+                '%s/document/pref-mat-200',
                 self::getContainer()->getParameter('public_base_url'),
             ),
             $client->getCrawler()->filter('link[rel="canonical"]')->attr('href'),

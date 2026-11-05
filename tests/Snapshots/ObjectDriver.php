@@ -7,6 +7,7 @@ namespace Shared\Tests\Snapshots;
 use Shared\Serializer\DocumentIdNormalizer;
 use Shared\Serializer\FileNameNormalizer;
 use Shared\Serializer\PlainDateNormalizer;
+use Shared\Serializer\UrlNormalizer;
 use Spatie\Snapshots\Drivers\ObjectDriver as SpatieObjectDriver;
 use Symfony\Component\Serializer\Encoder\YamlEncoder;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -22,6 +23,7 @@ final class ObjectDriver extends SpatieObjectDriver
                 new PlainDateNormalizer(),
                 new DocumentIdNormalizer(),
                 new FileNameNormalizer(),
+                new UrlNormalizer(),
                 new DateTimeNormalizer(),
                 new ObjectNormalizer(),
             ],

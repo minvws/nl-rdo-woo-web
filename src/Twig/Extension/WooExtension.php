@@ -23,7 +23,6 @@ class WooExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('classification', $this->runtime->classification(...)),
             new TwigFilter(
                 'highlights',
                 $this->runtime->filterHighlights(...),
@@ -37,7 +36,6 @@ class WooExtension extends AbstractExtension
     {
         return [
             new TwigFunction('period', $this->runtime->period(...)),
-            new TwigFunction('get_citation_type', $this->runtime->getCitationType(...)),
             new TwigFunction('query_string_without_param', $this->runtime->queryStringWithoutParam(...)),
             new TwigFunction('get_organisation_switcher', $this->runtime->getOrganisationSwitcher(...)),
             new TwigFunction('get_frontend_history', $this->runtime->getFrontendHistory(...)),

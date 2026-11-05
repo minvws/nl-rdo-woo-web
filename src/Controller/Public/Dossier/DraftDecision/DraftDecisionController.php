@@ -22,6 +22,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class DraftDecisionController extends AbstractController
 {
+    public const string ROUTE_NAME_DETAIL = 'app_draftdecision_detail';
+    public const string ROUTE_NAME_DOCUMENT_DETAIL = 'app_draftdecision_document_detail';
+    public const string ROUTE_NAME_ATTACHMENT_DETAIL = 'app_draftdecision_attachment_detail';
+
     public function __construct(
         private readonly DraftDecisionViewFactory $viewFactory,
         private readonly AttachmentViewFactory $attachmentViewFactory,
@@ -31,7 +35,7 @@ class DraftDecisionController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/ontwerpbesluit/{documentPrefix}/{dossierNumber}', name: 'app_draftdecision_detail', methods: ['GET'])]
+    #[Route('/ontwerpbesluit/{documentPrefix}/{dossierNumber}', self::ROUTE_NAME_DETAIL, methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] DraftDecision $draftDecision,
         #[MapEntity(expr: 'repository.findForDossierByPrefixAndDossierNumber(documentPrefix, dossierNumber)')]
@@ -52,7 +56,7 @@ class DraftDecisionController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/ontwerpbesluit/{documentPrefix}/{dossierNumber}/document',
-        name: 'app_draftdecision_document_detail',
+        self::ROUTE_NAME_DOCUMENT_DETAIL,
         methods: ['GET'],
     )]
     public function documentDetail(
@@ -83,7 +87,7 @@ class DraftDecisionController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/ontwerpbesluit/{documentPrefix}/{dossierNumber}/bijlage/{attachmentId}',
-        name: 'app_draftdecision_attachment_detail',
+        self::ROUTE_NAME_ATTACHMENT_DETAIL,
         methods: ['GET'],
     )]
     public function attachmentDetail(

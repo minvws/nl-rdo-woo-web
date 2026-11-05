@@ -277,3 +277,14 @@ Bulk Download WooDecision Documents
 UploadStatus Is No Upload Required
   [Documentation]    This is not unused, it's referenced from the YAML file.
   Verify WooDecision Document Processing  no_upload_required
+
+Public Document Page Should Show Link
+  [Documentation]    This is not unused, it's referenced from the YAML file.
+  [Arguments]  ${expected_link}
+  ${get_response} =  GET On Session
+  ...  alias=publication_api
+  ...  url=${URL_API}/api/publication/v1/organisation/${ORGANISATION_ID}/dossiers/woo-decision/external/${EXTERNAL_ID}
+  ${path} =  Remove String Using Regexp  ${get_response.json()}[documents][0][_links][public][href]  ^https?://[^/]+
+  Create Public Session
+  ${response} =  GET On Session  alias=public  url=${path}
+  Should Contain  ${response.text}  href="${expected_link}"

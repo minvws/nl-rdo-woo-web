@@ -48,6 +48,7 @@ jobs:
 
   audit-composer:
     name: Dependency Audit Composer
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     needs: [setup-composer-cache]
     steps:
@@ -62,6 +63,7 @@ jobs:
 
   audit-pnpm:
     name: Dependency Audit pnpm
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     needs: [setup-pnpm-cache]
     steps:

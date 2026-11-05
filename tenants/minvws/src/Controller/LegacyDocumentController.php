@@ -16,7 +16,9 @@ use Symfony\Component\Routing\Attribute\Route;
 // Redirects old dossier urls (without prefixes in the url) to the new urls
 class LegacyDocumentController extends AbstractController
 {
-    #[Route('/dossier/{dossierNumber}/document/{documentNumber}', name: 'app_legacy_document_detail', methods: ['GET'], priority: -1)]
+    public const string ROUTE_NAME_LEGACY_DOCUMENT_DETAIL = 'app_legacy_document_detail';
+
+    #[Route('/dossier/{dossierNumber}/document/{documentNumber}', self::ROUTE_NAME_LEGACY_DOCUMENT_DETAIL, methods: ['GET'], priority: -1)]
     public function detail(
         #[MapEntity(mapping: ['dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
         #[MapEntity(mapping: ['documentNumber' => 'documentNumber'])] Document $document,

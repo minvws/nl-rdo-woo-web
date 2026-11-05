@@ -54,7 +54,7 @@ class DossierViewParamsBuilder
 
         $this->params['documentLanguages'] = $this->attachmentLanguageFactory->makeAsArray();
         $this->params['documentFileLimits'] = $dossier->getMainDocumentEntityClass()::getUploadGroupId()->getFileLimits();
-        $this->params['grounds'] = $this->groundViewFactory->makeAsArray();
+        $this->params['grounds'] = $this->groundViewFactory->makeOptions();
 
         return $this;
     }
@@ -72,7 +72,7 @@ class DossierViewParamsBuilder
 
         $this->params['attachmentFileLimits'] = $dossier->getAttachmentEntityClass()::getUploadGroupId()->getFileLimits();
         $this->params['attachmentLanguages'] = $this->attachmentLanguageFactory->makeAsArray();
-        $this->params['grounds'] = $this->groundViewFactory->makeAsArray();
+        $this->params['grounds'] = $this->groundViewFactory->makeOptions();
 
         return $this;
     }

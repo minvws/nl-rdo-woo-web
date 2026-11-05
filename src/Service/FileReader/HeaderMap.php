@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\FileReader;
 
-use Shared\Exception\FileReaderException;
+use Shared\Exception\Import\UnknownHeaderException;
 
 use function array_key_exists;
 
@@ -25,7 +25,7 @@ class HeaderMap
     public function getCellCoordinate(string $headerName): string|int
     {
         if (! $this->has($headerName)) {
-            throw FileReaderException::forUnknownHeader($headerName);
+            throw new UnknownHeaderException($headerName);
         }
 
         return $this->mapping[$headerName];

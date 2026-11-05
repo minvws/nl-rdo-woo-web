@@ -8,8 +8,11 @@ use Exception;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Exception\ProcessInventoryException;
-use Shared\Exception\TranslatableException;
+use Shared\Exception\Import\DocumentExistsInAnotherDossierException;
+use Shared\Exception\Import\ImportException;
+use Shared\Exception\Import\MissingDocumentException;
+use Shared\Exception\Import\UnexpectedRowException;
+use Shared\Service\Import\ImportError;
 use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Shared\ValueObject\DocumentNumber;
@@ -58,7 +61,7 @@ class InventoryComparator
                     $documentMetadata->getPublicationContext(),
                     $documentMetadata->getId(),
                 );
-                $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber);
+                $document = $this->documentRepository->findByDocumentNumber($documentNumber);
 
                 if ($document === null) {
                     $changeset->markAsAdded($documentNumber);
@@ -67,7 +70,12 @@ class InventoryComparator
                 }
 
                 if ($document->getDossiers()->contains($dossier) === false) {
-                    $run->addRowException($rowIndex, ProcessInventoryException::forDocumentExistsInAnotherDossier($document));
+                    $run->addRowError(
+                        $rowIndex,
+                        ImportError::fromException(
+                            new DocumentExistsInAnotherDossierException($document->getDocumentId()->toString()),
+                        ),
+                    );
                 }
 
                 // This document is still in the inventory, so remove it from the tobeRemovedDocs array
@@ -78,8 +86,8 @@ class InventoryComparator
                 } else {
                     $changeset->markAsUnchanged($documentNumber);
                 }
-            } catch (TranslatableException $exception) {
-                $run->addRowException($rowIndex, $exception);
+            } catch (ImportException $importException) {
+                $run->addRowError($rowIndex, ImportError::fromException($importException));
             }
 
             unset($document);
@@ -97,11 +105,11 @@ class InventoryComparator
         Exception $exception,
     ): void {
         // Exception occurred, but we still continue with the next row. Just log the error
-        if (! $exception instanceof TranslatableException) {
-            $exception = ProcessInventoryException::forGenericRowException($exception);
+        if (! $exception instanceof ImportException) {
+            $exception = new UnexpectedRowException($exception);
         }
 
-        $run->addRowException($rowIndex, $exception);
+        $run->addRowError($rowIndex, ImportError::fromException($exception));
     }
 
     /**
@@ -133,7 +141,7 @@ class InventoryComparator
     ): void {
         foreach (array_keys($tobeRemovedDocs) as $documentNumber) {
             if (! $dossier->getStatus()->isConcept()) {
-                $run->addGenericException(ProcessInventoryException::forMissingDocument($documentNumber));
+                $run->addGenericError(ImportError::fromException(new MissingDocumentException($documentNumber)));
             }
 
             $changeset->markAsDeleted(DocumentNumber::fromString($documentNumber));

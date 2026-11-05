@@ -5,118 +5,41 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Service\Worker;
 
 use Mockery;
-use Mockery\MockInterface;
-use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
-use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContextFactory;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
-use Shared\Service\Storage\EntityStorageService;
-use Shared\Service\Storage\LocalFilesystem;
 use Shared\Tests\Unit\UnitTestCase;
-use Symfony\Component\Uid\Uuid;
 
 class PdfPageProcessingContextFactoryTest extends UnitTestCase
 {
-    private EntityStorageService&MockInterface $entityStorage;
-    private LocalFilesystem&MockInterface $localFilesytem;
-    private FileInfo&MockInterface $fileInfo;
-    private PdfPageProcessingContextFactory $factory;
-
-    protected function setUp(): void
+    public function testCreateContextSuccessful(): void
     {
-        parent::setUp();
-
-        $this->entityStorage = Mockery::mock(EntityStorageService::class);
-        $this->localFilesytem = Mockery::mock(LocalFilesystem::class);
-        $this->fileInfo = Mockery::mock(FileInfo::class);
-        $this->factory = new PdfPageProcessingContextFactory(
-            $this->entityStorage,
-            $this->localFilesytem,
-        );
-    }
-
-    public function testCreateContentThrowsExceptionWhenDownloadFails(): void
-    {
-        $this->fileInfo->expects('isUploaded')->andReturnTrue();
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('isUploaded')->andReturnTrue();
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->expects('getFileInfo')->andReturn($this->fileInfo);
-        $entity->expects('getId')->andReturn(Uuid::v6());
-        $pageNumber = 123;
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
 
-        $this->entityStorage->expects('downloadEntity')->with($entity)->andReturnFalse();
+        $pageNumber = $this->getFaker()->numberBetween(1, 100);
 
-        $this->expectException(PdfPageException::class);
-
-        $this->factory->createContext($entity, $pageNumber);
-    }
-
-    public function testCreateContentThrowsExceptionWhenTempDirCannotBeCreated(): void
-    {
-        $this->fileInfo->expects('isUploaded')->andReturnTrue();
-
-        $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->expects('getFileInfo')->andReturn($this->fileInfo);
-
-        $localFile = '/local/file.pdf';
-        $pageNumber = 123;
-
-        $this->entityStorage->expects('downloadEntity')->with($entity)->andReturn($localFile);
-
-        $this->localFilesytem->expects('createTempDir')->andReturnFalse();
-
-        $this->expectException(PdfPageException::class);
-
-        $this->factory->createContext($entity, $pageNumber);
-    }
-
-    public function testCreateContentSuccessful(): void
-    {
-        $this->fileInfo->expects('isUploaded')->andReturnTrue();
-
-        $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->expects('getFileInfo')->andReturn($this->fileInfo);
-
-        $localFile = '/local/file.pdf';
-        $tempDir = '/tmp/dir';
-        $pageNumber = 123;
-
-        $this->entityStorage->expects('downloadEntity')->with($entity)->andReturn($localFile);
-        $this->localFilesytem->expects('createTempDir')->andReturn($tempDir);
-
-        $context = $this->factory->createContext($entity, $pageNumber);
+        $context = new PdfPageProcessingContextFactory()->createContext($entity, $pageNumber);
 
         self::assertNotNull($context);
-        self::assertEquals($entity, $context->getEntity());
-        self::assertEquals($pageNumber, $context->getPageNumber());
-        self::assertEquals($localFile, $context->getLocalDocument());
-        self::assertEquals($tempDir, $context->getWorkDirPath());
+        self::assertSame($entity, $context->getEntity());
+        self::assertSame($pageNumber, $context->getPageNumber());
+        self::assertNull($context->getOptionalPageContents());
     }
 
     public function testCreateContextOnEntityWithoutUploadedFile(): void
     {
-        $this->fileInfo->expects('isUploaded')->andReturnFalse();
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('isUploaded')->andReturnFalse();
 
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $entity->expects('getFileInfo')->andReturn($this->fileInfo);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
 
-        $pageNumber = 123;
-
-        $context = $this->factory->createContext($entity, $pageNumber);
+        $context = new PdfPageProcessingContextFactory()->createContext($entity, $this->getFaker()->numberBetween(1, 100));
 
         self::assertNull($context);
-    }
-
-    public function testTeardown(): void
-    {
-        $context = Mockery::mock(PdfPageProcessingContext::class);
-        $context->expects('getLocalDocument')->andReturn($localDocument = '/local/file.pdf');
-        $context->expects('getWorkDirPath')->andReturn($workDir = '/temp/dir');
-
-        $this->entityStorage->expects('removeDownload')->with($localDocument);
-        $this->localFilesytem->expects('deleteDirectory')->with($workDir);
-
-        $this->factory->teardown($context);
     }
 }

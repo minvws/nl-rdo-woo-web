@@ -157,7 +157,7 @@ final class InquiryControllerTest extends SharedWebTestCase
             ->first()
             ->filter('tbody tr');
 
-        self::assertSame('PREF-MAT-100', trim($rows->eq(0)->filter('td')->eq(0)->text()));
-        self::assertSame('PREF-MAT-200', trim($rows->eq(1)->filter('td')->eq(0)->text()));
+        self::assertSame('pref-mat-100', trim($rows->eq(0)->filter('td')->eq(0)->text()));
+        self::assertSame('pref-mat-200', trim($rows->eq(1)->filter('td')->eq(0)->text()));
     }
 }

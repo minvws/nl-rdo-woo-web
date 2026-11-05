@@ -17,13 +17,15 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 class DocumentNumberCheckController extends AbstractController
 {
+    public const string ROUTE_NAME_DOCUMENT_NUMBER_CHECK = 'app_admin_document_number_check';
+
     private const int ROW_LIMIT = 100;
 
     public function __construct(private readonly DocumentRepository $documentRepository)
     {
     }
 
-    #[Route('/balie/data-checks/document-number', name: 'app_admin_document_number_check', methods: ['GET'])]
+    #[Route('/balie/data-checks/document-number', self::ROUTE_NAME_DOCUMENT_NUMBER_CHECK, methods: ['GET'])]
     #[IsGranted('AuthMatrix.data_check.read')]
     public function index(Breadcrumbs $breadcrumbs): Response
     {

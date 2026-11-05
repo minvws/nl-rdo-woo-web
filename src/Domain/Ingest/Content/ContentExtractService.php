@@ -39,8 +39,6 @@ readonly class ContentExtractService
 
         $fileReference = $this->getFileReference($options, $entity);
 
-        $this->ensureEntityHashIsSet($entity, $options, $fileReference);
-
         try {
             foreach ($this->extractors as $extractor) {
                 if (! $options->isExtractorEnabled($extractor)) {
@@ -68,8 +66,6 @@ readonly class ContentExtractService
         } catch (Exception $exception) {
             $this->logWithContext('Content extract error: ' . $exception->getMessage(), $entity, LogLevel::ERROR);
             $extracts->markAsFailure();
-        } finally {
-            $this->cleanupFileReferenceDownload($fileReference);
         }
 
         return $extracts;
@@ -87,55 +83,14 @@ readonly class ContentExtractService
         );
     }
 
-    /**
-     * This method exist for backwards compatibility: any entities created before hashing will get the hash added on
-     * the fly (once).
-     */
-    private function ensureEntityHashIsSet(
-        EntityWithFileInfo $entity,
-        ContentExtractOptions $options,
-        FileReferenceInterface $fileReference,
-    ): void {
-        if ($entity->getFileInfo()->getHash() !== null) {
-            return;
-        }
-
-        // When a page number is set the path will be page specific, but for hashing we need the complete document.
-        if ($options->hasPageNumber()) {
-            $documentFileReference = LazyFileReference::createForEntityWithFileInfo(
-                $entity,
-                $options->withoutPageNumber(),
-                $this->entityStorage,
-            );
-
-            $path = $documentFileReference->getPath();
-            $this->entityStorage->setHash($entity, $path);
-            $this->entityStorage->removeDownload($documentFileReference->getPath());
-
-            return;
-        }
-
-        // In other cases the existing file reference can be used. No removal of the download, as this will be used for
-        // further processing.
-        $path = $fileReference->getPath();
-        $this->entityStorage->setHash($entity, $path);
-    }
-
     private function getFileReference(ContentExtractOptions $options, EntityWithFileInfo $entity): FileReferenceInterface
     {
-        if ($options->hasLocalFile()) {
+        if ($options->hasFileContents()) {
             $fileReference = FileReference::forContentExtractOptions($options);
         } else {
-            $fileReference = LazyFileReference::createForEntityWithFileInfo($entity, $options, $this->entityStorage);
+            $fileReference = new LazyFileReference($entity, $options, $this->entityStorage);
         }
 
         return $fileReference;
-    }
-
-    private function cleanupFileReferenceDownload(FileReferenceInterface $fileReference): void
-    {
-        if ($fileReference instanceof LazyFileReference && $fileReference->hasPath()) {
-            $this->entityStorage->removeDownload($fileReference->getPath());
-        }
     }
 }

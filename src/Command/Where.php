@@ -73,7 +73,7 @@ class Where extends Command
 
         if (array_key_exists('documentNumber', $match)) {
             Assert::string($match['documentNumber']);
-            $documentNumber = DocumentNumber::fromString($match['documentNumber']);
+            $documentNumber = DocumentNumber::fromUnnormalizedString($match['documentNumber']);
             $document = $this->documentRepository->findOneBy(['documentNumber' => $documentNumber]);
             $documents = [$document];
         } else {

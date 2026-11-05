@@ -8,6 +8,8 @@ use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Search\Index\DeleteElasticDocumentCommand;
 use Shared\Domain\Search\Index\Dossier\IndexDossierCommand;
+use Shared\Domain\Search\Index\Subject\IndexAllSubjectsCommand;
+use Shared\Domain\Search\Index\Subject\IndexSubjectCommand;
 use Shared\Domain\Search\Index\SubType\IndexAttachmentCommand;
 use Shared\Domain\Search\Index\SubType\IndexMainDocumentCommand;
 use Shared\Domain\Search\SearchDispatcher;
@@ -91,5 +93,28 @@ class SearchDispatcherTest extends UnitTestCase
         ))->andReturns(new Envelope(new stdClass()));
 
         $this->dispatcher->dispatchIndexDossierCommand($id, $refresh);
+    }
+
+    public function testDispatchIndexSubjectCommand(): void
+    {
+        $id = Uuid::v6();
+
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
+            static function (IndexSubjectCommand $command) use ($id) {
+                self::assertEquals($id, $command->getUuid());
+
+                return true;
+            },
+        ))->andReturns(new Envelope(new stdClass()));
+
+        $this->dispatcher->dispatchIndexSubjectCommand($id);
+    }
+
+    public function testDispatchIndexAllSubjectsCommand(): void
+    {
+        $this->messageBus->expects('dispatch')->with(Mockery::type(IndexAllSubjectsCommand::class))
+            ->andReturns(new Envelope(new stdClass()));
+
+        $this->dispatcher->dispatchIndexAllSubjectsCommand();
     }
 }

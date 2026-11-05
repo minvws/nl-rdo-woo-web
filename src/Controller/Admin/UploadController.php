@@ -18,13 +18,15 @@ use Webmozart\Assert\Assert;
 
 final class UploadController extends AbstractController
 {
+    public const string ROUTE_NAME_UPLOAD = 'app_admin_upload';
+
     public function __construct(
         private readonly UploadService $uploadService,
         private readonly Security $security,
     ) {
     }
 
-    #[Route('/balie/upload', name: 'app_admin_upload', methods: ['POST', 'PUT', 'PATCH'], format: 'json')]
+    #[Route('/balie/upload', self::ROUTE_NAME_UPLOAD, methods: ['POST', 'PUT', 'PATCH'], format: 'json')]
     #[IsGranted('AuthMatrix.upload.create')]
     public function upload(Request $request): JsonResponse
     {

@@ -10,7 +10,7 @@ use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: HistoryRepository::class)]
-#[ORM\Index(columns: ['type', 'identifier'])]
+#[ORM\Index(columns: ['type', 'identifier', 'created_dt', 'id'])]
 class History
 {
     public const string CONTEXT_ORIGIN_WOO_DECISION_ID = 'originWooDecisionId';

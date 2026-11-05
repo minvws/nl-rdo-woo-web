@@ -58,14 +58,14 @@ class Document extends AbstractPublicationItem
     #[ORM\Column(type: PlainDateType::NAME, nullable: true, index: true)]
     private ?PlainDate $documentDate = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, index: true)]
     private ?int $familyId = null;
 
-    #[ORM\Column(type: 'document_id', length: 170, nullable: false)]
+    #[ORM\Column(type: 'document_id', length: 170, nullable: false, index: true)]
     #[Immutable(groups: [DossierValidationGroup::PUBLICATION_LOCKED->value])]
     private DocumentId $documentId;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, index: true)]
     private ?int $threadId = null;
 
     #[ORM\Column(length: 255, nullable: true, enumType: Judgement::class)]

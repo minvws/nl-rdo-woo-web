@@ -6,6 +6,7 @@ namespace Shared\Domain\Search\Index;
 
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\Subject\Subject;
 
 readonly class ElasticDocumentId
 {
@@ -19,8 +20,17 @@ readonly class ElasticDocumentId
         return $entity->getId()->toRfc4122();
     }
 
+    public static function forSubject(Subject $subject): string
+    {
+        return $subject->getId()->toRfc4122();
+    }
+
     public static function forObject(object $object): string
     {
+        if ($object instanceof Subject) {
+            return self::forSubject($object);
+        }
+
         if ($object instanceof AbstractDossier) {
             return self::forDossier($object);
         }

@@ -166,6 +166,12 @@ Publish A WooDecision With Different Suspended And Withdrawn States
   Get Text  //*[@data-e2e-name="suspended-withdrawn"]  contains  6 openbaar gemaakt
   Reload  # Extra reload to make sure the retraction has been processed and the tab text updated accordingly
   Verify Dossier Document Count  3  1  1  5
+  Go To Admin
+  Search For A Publication  ${DOSSIER_REFERENCE}
+  Click Documents Edit
+  Open Document In Dossier  ${doc_ids}[1007]
+  Click Public URL
+  Verify Notification  https://voorbeeld.nl/reeds-openbaar
 
 WooDecision Period Configurations Are Displayed Correctly On Public
   ${prod_report}  ${docs}  ${_} =  Randomize Production Report
@@ -217,7 +223,7 @@ Publish A WooDecision With Production Report With PublicationContext Column
   Search For A Publication  ${DOSSIER_REFERENCE}
   Click Documents Edit
   Open Document In Dossier  ${doc_ids}[1001]
-  Get Text  //*[@data-e2e-name="document-nr"]  equals  PUBCON-${doc_ids}[1001]
+  Get Text  //*[@data-e2e-name="document-nr"]  equals  pubcon-${doc_ids}[1001]
 
 Verify PDF Preview Thumbnail
   [Documentation]  Depends on the first testcase, since it needs a fully ingested dossier.

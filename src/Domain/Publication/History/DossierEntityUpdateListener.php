@@ -137,7 +137,7 @@ final class DossierEntityUpdateListener
         }
 
         $newValue = $args->getNewValue($fieldName);
-        if ($oldValue instanceof Equatable && $newValue instanceof Equatable) {
+        if ($oldValue instanceof Equatable) {
             return ! $oldValue->equalTo($newValue);
         }
 

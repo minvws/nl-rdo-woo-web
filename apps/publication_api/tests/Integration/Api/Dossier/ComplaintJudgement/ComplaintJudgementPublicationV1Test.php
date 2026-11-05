@@ -17,11 +17,11 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
@@ -94,7 +94,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
         self::assertResponseIsSuccessful();
 
         $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
-        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $dossierUrlGenerator = $this->fromContainer(DossierUrlGenerator::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $complaintJudgement->getId(),
@@ -134,7 +134,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($complaintJudgement)],
+                    'public' => ['href' => $dossierUrlGenerator->documentDetailUrl($complaintJudgement)->toString()],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -152,7 +152,7 @@ final class ComplaintJudgementPublicationV1Test extends ApiPublicationV1DossierT
             'dossierDate' => $complaintJudgement->getDateFrom()?->format('Y-m-d'),
             '_links' => [
                 'self' => ['href' => $this->buildApiUrl($organisation, $complaintJudgement)],
-                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($complaintJudgement)],
+                'public' => ['href' => $dossierUrlGenerator->detailUrl($complaintJudgement)->toString()],
             ],
         ];
 

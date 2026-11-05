@@ -18,10 +18,10 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision;
 use Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecisionAttachment;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
@@ -106,7 +106,7 @@ final class DraftDecisionPublicationV1Test extends ApiPublicationV1DossierTestCa
         self::assertResponseIsSuccessful();
 
         $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
-        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $dossierUrlGenerator = $this->fromContainer(DossierUrlGenerator::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $draftDecision->getId(),
@@ -145,7 +145,7 @@ final class DraftDecisionPublicationV1Test extends ApiPublicationV1DossierTestCa
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($draftDecision)],
+                    'public' => ['href' => $dossierUrlGenerator->documentDetailUrl($draftDecision)->toString()],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -180,7 +180,7 @@ final class DraftDecisionPublicationV1Test extends ApiPublicationV1DossierTestCa
                             )->toString(),
                         ],
                         'public' => [
-                            'href' => $dossierPathHelper->getAbsoluteAttachmentDetailsPath($draftDecision, $draftDecisionAttachment->getId()),
+                            'href' => $dossierUrlGenerator->attachmentDetailUrl($draftDecision, $draftDecisionAttachment->getId())->toString(),
                         ],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
@@ -199,7 +199,7 @@ final class DraftDecisionPublicationV1Test extends ApiPublicationV1DossierTestCa
             'dossierDate' => $draftDecision->getDateFrom()?->format('Y-m-d'),
             '_links' => [
                 'self' => ['href' => $this->buildApiUrl($organisation, $draftDecision)],
-                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($draftDecision)],
+                'public' => ['href' => $dossierUrlGenerator->detailUrl($draftDecision)->toString()],
             ],
         ];
 

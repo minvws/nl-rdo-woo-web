@@ -19,6 +19,11 @@ use Shared\Service\Storage\EntityStorageService;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Tests\Unit\UnitTestCase;
 
+use function fopen;
+use function fwrite;
+use function hash;
+use function rewind;
+
 class EntityUploadStorerTest extends UnitTestCase
 {
     private UploadService&MockInterface $uploadService;
@@ -70,11 +75,22 @@ class EntityUploadStorerTest extends UnitTestCase
 
         $this->uploadService->expects('moveUploadToStorage')->with($uploadEntity, $this->documentStorage, $path);
 
+        $content = $this->getFaker()->text();
+        $stream = fopen('php://memory', 'r+');
+        if ($stream === false) {
+            $this->fail('cannot open mock stream');
+        }
+        fwrite($stream, $content);
+        rewind($stream);
+
+        $this->documentStorage->expects('readStream')->with($path)->andReturn($stream);
+
         $targetEntity->expects('getFileInfo->setMimetype')->with($mimetype);
         $targetEntity->expects('getFileInfo->setSize')->with($size);
         $targetEntity->expects('getFileInfo->setPath')->with($path);
         $targetEntity->expects('getFileInfo->setUploaded')->with(true);
         $targetEntity->expects('getFileInfo->setPageCount')->with(null);
+        $targetEntity->expects('getFileInfo->setHash')->with(hash('sha256', $content));
 
         $this->uploadStorer->storeUploadForEntity($uploadEntity, $targetEntity);
     }
@@ -98,11 +114,22 @@ class EntityUploadStorerTest extends UnitTestCase
 
         $this->uploadService->expects('moveUploadToStorage')->with($uploadEntity, $this->documentStorage, $path);
 
+        $content = $this->getFaker()->text();
+        $stream = fopen('php://memory', 'r+');
+        if ($stream === false) {
+            $this->fail('cannot open mock stream');
+        }
+        fwrite($stream, $content);
+        rewind($stream);
+
+        $this->documentStorage->expects('readStream')->with($path)->andReturn($stream);
+
         $targetEntity->expects('getFileInfo->setMimetype')->with($mimetype);
         $targetEntity->expects('getFileInfo->setSize')->with($size);
         $targetEntity->expects('getFileInfo->setPath')->with($path);
         $targetEntity->expects('getFileInfo->setUploaded')->with(true);
         $targetEntity->expects('getFileInfo->setPageCount')->with(null);
+        $targetEntity->expects('getFileInfo->setHash')->with(hash('sha256', $content));
 
         $this->uploadStorer->storeUploadForEntity($uploadEntity, $targetEntity);
     }
@@ -126,11 +153,22 @@ class EntityUploadStorerTest extends UnitTestCase
 
         $this->uploadService->expects('moveUploadToStorage')->with($uploadEntity, $this->documentStorage, $path);
 
+        $content = $this->getFaker()->text();
+        $stream = fopen('php://memory', 'r+');
+        if ($stream === false) {
+            $this->fail('cannot open mock stream');
+        }
+        fwrite($stream, $content);
+        rewind($stream);
+
+        $this->documentStorage->expects('readStream')->with($path)->andReturn($stream);
+
         $targetEntity->expects('getFileInfo->setMimetype')->with($mimetype);
         $targetEntity->expects('getFileInfo->setSize')->with($size);
         $targetEntity->expects('getFileInfo->setPath')->with($path);
         $targetEntity->expects('getFileInfo->setUploaded')->with(true);
         $targetEntity->expects('getFileInfo->setPageCount')->with(null);
+        $targetEntity->expects('getFileInfo->setHash')->with(hash('sha256', $content));
 
         $this->uploadStorer->storeUploadForEntity($uploadEntity, $targetEntity);
     }
@@ -159,11 +197,22 @@ class EntityUploadStorerTest extends UnitTestCase
 
         $this->uploadService->expects('moveUploadToStorage')->with($uploadEntity, $this->documentStorage, $path);
 
+        $content = $this->getFaker()->text();
+        $stream = fopen('php://memory', 'r+');
+        if ($stream === false) {
+            $this->fail('cannot open mock stream');
+        }
+        fwrite($stream, $content);
+        rewind($stream);
+
+        $this->documentStorage->expects('readStream')->with($path)->andReturn($stream);
+
         $targetEntity->expects('getFileInfo->setMimetype')->with($mimetype);
         $targetEntity->expects('getFileInfo->setSize')->with($size);
         $targetEntity->expects('getFileInfo->setPath')->with($path);
         $targetEntity->expects('getFileInfo->setUploaded')->with(true);
         $targetEntity->expects('getFileInfo->setPageCount')->with(null);
+        $targetEntity->expects('getFileInfo->setHash')->with(hash('sha256', $content));
         $targetEntity->expects('getFileInfo->setSourceType')->with(SourceType::PDF);
         $targetEntity->expects('getFileInfo->setName')->with($filename);
 
@@ -190,11 +239,22 @@ class EntityUploadStorerTest extends UnitTestCase
             ->expects('moveUploadToStorage')
             ->with($uploadEntity, $this->assetsStorage, $path);
 
+        $content = $this->getFaker()->text();
+        $stream = fopen('php://memory', 'r+');
+        if ($stream === false) {
+            $this->fail('cannot open mock stream');
+        }
+        fwrite($stream, $content);
+        rewind($stream);
+
+        $this->assetsStorage->expects('readStream')->with($path)->andReturn($stream);
+
         $targetEntity->expects('getFileInfo->setMimetype')->with($mimetype);
         $targetEntity->expects('getFileInfo->setSize')->with($size);
         $targetEntity->expects('getFileInfo->setPath')->with($path);
         $targetEntity->expects('getFileInfo->setUploaded')->with(true);
         $targetEntity->expects('getFileInfo->setPageCount')->with(null);
+        $targetEntity->expects('getFileInfo->setHash')->with(hash('sha256', $content));
         $targetEntity->expects('getFileInfo->setName')->with($filename);
 
         $this->uploadStorer->storeDepartmentAssetForEntity($uploadEntity, $targetEntity);

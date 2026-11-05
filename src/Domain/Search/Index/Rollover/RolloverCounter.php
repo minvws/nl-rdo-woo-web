@@ -11,15 +11,18 @@ use Erichard\ElasticQueryBuilder\QueryBuilder;
 use MinVWS\TypeArray\TypeArray;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
+use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
 use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Index\Schema\ElasticNestedField;
 use Shared\Service\Elastic\ElasticClientInterface;
+use Shared\Service\Search\Query\Aggregation\AggregationName;
 use Shared\Service\Search\Query\Dsl\Aggregation;
 use Shared\Service\Search\Query\Dsl\Query;
 use Webmozart\Assert\Assert;
 
+use function count;
 use function is_subclass_of;
 
 readonly class RolloverCounter
@@ -28,6 +31,7 @@ readonly class RolloverCounter
         private EntityManagerInterface $entityManager,
         private ElasticClientInterface $elasticClient,
         private DossierTypeManager $dossierTypeManager,
+        private SubjectRepository $subjectRepository,
     ) {
     }
 
@@ -69,6 +73,14 @@ readonly class RolloverCounter
             );
         }
 
+        $subjectType = ElasticDocumentType::SUBJECT;
+        $subjectTypeKey = $subjectType->value;
+        $counts[] = new MainTypeCount(
+            $subjectType,
+            $databaseCounts[$subjectTypeKey]['count'] ?? 0,
+            $elasticCounts[$subjectTypeKey]['count'] ?? 0,
+        );
+
         return $counts;
     }
 
@@ -81,31 +93,33 @@ readonly class RolloverCounter
         $queryBuilder->setIndex($index->name);
         $queryBuilder->setSize(0);
 
-        $queryBuilder->addAggregation(
-            Aggregation::terms(
-                name: ElasticField::TOPLEVEL_TYPE->value,
-                fieldOrSource: ElasticField::TOPLEVEL_TYPE->value,
-                aggregations: [
-                    Aggregation::filter(
-                        name: 'main_types_only',
-                        query: Query::Terms(
-                            field: ElasticField::TYPE->value,
-                            values: ElasticDocumentType::getMainTypeValues(),
+        $topLevelTypeAggregation = Aggregation::terms(
+            name: ElasticField::TOPLEVEL_TYPE->value,
+            fieldOrSource: ElasticField::TOPLEVEL_TYPE->value,
+            aggregations: [
+                Aggregation::filter(
+                    name: AggregationName::MAIN_TYPES_ONLY,
+                    query: Query::Terms(
+                        field: ElasticField::TYPE->value,
+                        values: ElasticDocumentType::getMainTypeValues(),
+                    ),
+                ),
+                Aggregation::terms(
+                    name: ElasticField::SUBLEVEL_TYPE->value,
+                    fieldOrSource: ElasticField::SUBLEVEL_TYPE->value,
+                    aggregations: [
+                        new NestedAggregation(
+                            ElasticNestedField::PAGES->value,
+                            ElasticNestedField::PAGES->value,
                         ),
-                    ),
-                    Aggregation::terms(
-                        name: ElasticField::SUBLEVEL_TYPE->value,
-                        fieldOrSource: ElasticField::SUBLEVEL_TYPE->value,
-                        aggregations: [
-                            new NestedAggregation(
-                                ElasticNestedField::PAGES->value,
-                                ElasticNestedField::PAGES->value,
-                            ),
-                        ],
-                    ),
-                ],
-            ),
+                    ],
+                ),
+            ],
         );
+        $topLevelTypeAggregation->setSize(
+            count(ElasticDocumentType::getMainTypes()) + count(ElasticDocumentType::getStandaloneTypes()),
+        );
+        $queryBuilder->addAggregation($topLevelTypeAggregation);
 
         $response = $this->elasticClient->search($queryBuilder->build());
         Assert::isInstanceOf($response, Elasticsearch::class);
@@ -117,6 +131,13 @@ readonly class RolloverCounter
             Assert::isInstanceOf($dossierTypeCount, TypeArray::class);
 
             $dossierTypeKey = $dossierTypeCount->getString('[key]');
+
+            if ($dossierTypeKey === ElasticDocumentType::SUBJECT->value) {
+                $counts[$dossierTypeKey]['count'] = $dossierTypeCount->getInt('[doc_count]');
+
+                continue;
+            }
+
             $counts[$dossierTypeKey]['count'] = $dossierTypeCount->getInt('[main_types_only][doc_count]');
 
             foreach ($dossierTypeCount->getIterable('[sublevel_type][buckets]') as $subTypeCount) {
@@ -163,6 +184,10 @@ readonly class RolloverCounter
                 $counts[$typeKey]['subtypes'][$subTypeKey] = $this->getSubtypeDatabaseCounts($subTypeClass);
             }
         }
+
+        $counts[ElasticDocumentType::SUBJECT->value] = [
+            'count' => $this->subjectRepository->countWithLandingPage(),
+        ];
 
         return $counts;
     }

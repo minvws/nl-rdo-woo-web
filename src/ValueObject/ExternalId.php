@@ -8,14 +8,12 @@ use InvalidArgumentException;
 use Stringable;
 
 use function mb_strlen;
-use function preg_match;
 
-final readonly class ExternalId implements Stringable
+final readonly class ExternalId implements Stringable, Equatable
 {
     public const int MAX_LENGTH = 128;
     public const int MIN_LENGTH = 1;
-    public const string OPENAPI_PATTERN = '^[A-Za-z0-9\-._~]*$';
-    public const string PATTERN = '/' . self::OPENAPI_PATTERN . '/';
+    public const string PATTERN = '^[A-Za-z0-9\-._~]*$';
 
     private function __construct(
         private string $id,
@@ -29,7 +27,7 @@ final readonly class ExternalId implements Stringable
 
     public static function create(string $id): self
     {
-        if (preg_match(self::PATTERN, $id) !== 1) {
+        if (! RegexPattern::create(self::PATTERN)->matches($id)) {
             throw new InvalidArgumentException('Invalid external ID format');
         }
 
@@ -44,5 +42,10 @@ final readonly class ExternalId implements Stringable
     public function toString(): string
     {
         return $this->__toString();
+    }
+
+    public function equalTo(mixed $other): bool
+    {
+        return $other instanceof self && $this->id === $other->id;
     }
 }

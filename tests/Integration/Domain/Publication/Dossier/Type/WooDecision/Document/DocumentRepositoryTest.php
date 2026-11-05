@@ -58,21 +58,21 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         );
     }
 
-    public function testFindByDocumentNumbersCaseInsensitive(): void
+    public function testFindByDocumentNumbers(): void
     {
         $dossier = WooDecisionFactory::createOne();
         $document = DocumentFactory::createOne([
             'dossiers' => [$dossier],
-            'documentNumber' => 'FOO-123',
+            'documentNumber' => 'foo-123',
         ]);
 
-        $documents = $this->documentRepository->findByDocumentNumbersCaseInsensitive([
+        $documents = $this->documentRepository->findByDocumentNumbers([
             DocumentNumber::fromString('foo-123'),
         ]);
 
         self::assertCount(1, $documents);
         self::assertSame($document->getId(), $documents[0]->getId());
-        self::assertSame('FOO-123', $documents[0]->getDocumentNumber()->toString());
+        self::assertSame('foo-123', $documents[0]->getDocumentNumber()->toString());
     }
 
     public function testFindByFamilyId(): void
@@ -84,22 +84,22 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $dossierC = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::CONCEPT]);
 
         DocumentFactory::createOne([
-            'documentNumber' => $documentNumberA = 'FOO-123',
+            'documentNumber' => $documentNumberA = 'foo-123',
             'dossiers' => [$dossierA],
             'familyId' => 123,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => $documentNumberB = 'FOO-456',
+            'documentNumber' => $documentNumberB = 'foo-456',
             'dossiers' => [$dossierA],
             'familyId' => 456,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-789',
+            'documentNumber' => 'foo-789',
             'dossiers' => [$dossierB],
             'familyId' => 123,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-999',
+            'documentNumber' => 'foo-999',
             'dossiers' => [$dossierC],
             'familyId' => 123,
         ]);
@@ -134,22 +134,22 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $dossierC = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::CONCEPT]);
 
         DocumentFactory::createOne([
-            'documentNumber' => $documentNumberA = 'FOO-123',
+            'documentNumber' => $documentNumberA = 'foo-123',
             'dossiers' => [$dossierA],
             'threadId' => 123,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => $documentNumberB = 'FOO-456',
+            'documentNumber' => $documentNumberB = 'foo-456',
             'dossiers' => [$dossierA],
             'threadId' => 456,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-789',
+            'documentNumber' => 'foo-789',
             'dossiers' => [$dossierB],
             'threadId' => 123,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-999',
+            'documentNumber' => 'foo-999',
             'dossiers' => [$dossierC],
             'threadId' => 123,
         ]);
@@ -178,13 +178,13 @@ final class DocumentRepositoryTest extends SharedWebTestCase
     public function testPagecount(): void
     {
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-123',
+            'documentNumber' => 'foo-123',
             'fileInfo' => FileInfoFactory::createOne([
                 'pageCount' => 100,
             ]),
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-456',
+            'documentNumber' => 'foo-456',
             'fileInfo' => FileInfoFactory::createOne([
                 'pageCount' => 100,
             ]),
@@ -201,22 +201,22 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $dossierB = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
 
         $documentA = DocumentFactory::createOne([
-            'documentNumber' => 'FOO-123',
+            'documentNumber' => 'foo-123',
             'dossiers' => [$dossierA],
             'threadId' => 123,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => $documentNumberB = 'FOO-456',
+            'documentNumber' => $documentNumberB = 'foo-456',
             'dossiers' => [$dossierA],
             'threadId' => 123,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-789',
+            'documentNumber' => 'foo-789',
             'dossiers' => [$dossierA],
             'threadId' => 456,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-999',
+            'documentNumber' => 'foo-999',
             'dossiers' => [$dossierB],
             'threadId' => 123,
         ]);
@@ -246,22 +246,22 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $dossierB = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
 
         $documentA = DocumentFactory::createOne([
-            'documentNumber' => 'FOO-123',
+            'documentNumber' => 'foo-123',
             'dossiers' => [$dossierA],
             'familyId' => 123,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => $documentNumberB = 'FOO-456',
+            'documentNumber' => $documentNumberB = 'foo-456',
             'dossiers' => [$dossierA],
             'familyId' => 123,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-789',
+            'documentNumber' => 'foo-789',
             'dossiers' => [$dossierA],
             'familyId' => 456,
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-999',
+            'documentNumber' => 'foo-999',
             'dossiers' => [$dossierB],
             'familyId' => 123,
         ]);
@@ -291,28 +291,28 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $dossierB = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::CONCEPT]);
 
         $docA = DocumentFactory::createOne([
-            'documentNumber' => $documentNumberA = 'FOO-123',
+            'documentNumber' => $documentNumberA = 'foo-123',
             'dossiers' => [$dossierA],
         ]);
         $docA->withdraw(DocumentWithdrawReason::DATA_IN_DOCUMENT, '');
         save($docA);
 
         DocumentFactory::createOne([
-            'documentNumber' => $documentNumberB = 'FOO-456',
+            'documentNumber' => $documentNumberB = 'foo-456',
             'dossiers' => [$dossierA],
             'suspended' => true,
         ]);
 
         // This one should not be matched, not suspended and not withdrawn
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-789',
+            'documentNumber' => 'foo-789',
             'dossiers' => [$dossierA],
             'suspended' => false,
         ]);
 
         // This one should not be matched, not a public dossier
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-999',
+            'documentNumber' => 'foo-999',
             'dossiers' => [$dossierB],
             'suspended' => true,
         ]);
@@ -332,7 +332,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $organisation = OrganisationFactory::createOne();
 
         $dossier = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
-        $documentNumber = DocumentNumber::fromString('FOO-123');
+        $documentNumber = DocumentNumber::fromString('foo-123');
         DocumentFactory::createOne([
             'documentNumber' => $documentNumber,
             'dossiers' => [$dossier],
@@ -350,7 +350,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
     public function testFindByDocumentNumber(): void
     {
-        $documentNumber = DocumentNumber::fromString('FOO-123');
+        $documentNumber = DocumentNumber::fromString('foo-123');
 
         DocumentFactory::createOne([
             'documentNumber' => $documentNumber,
@@ -369,12 +369,12 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $dossier = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
 
         DocumentFactory::createOne([
-            'documentNumber' => $documentNumberA = 'FOO-123',
+            'documentNumber' => $documentNumberA = 'foo-123',
             'dossiers' => [$dossier],
         ]);
 
         DocumentFactory::createOne([
-            'documentNumber' => $documentNumberB = 'FOO-456',
+            'documentNumber' => $documentNumberB = 'foo-456',
             'dossiers' => [$dossier],
         ]);
 
@@ -397,12 +397,12 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $dossier = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
 
         DocumentFactory::createOne([
-            'documentNumber' => $documentNumber = 'FOO-123',
+            'documentNumber' => $documentNumber = 'foo-123',
             'dossiers' => [$dossier],
         ]);
 
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-456',
+            'documentNumber' => 'foo-456',
         ]);
 
         $result = $this->documentRepository->getAllDossierDocumentsWithDossiers($dossier);
@@ -436,14 +436,14 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $dossier = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
 
         $document = DocumentFactory::createOne([
-            'documentNumber' => $documentNumber = 'FOO-123',
+            'documentNumber' => $documentNumber = 'foo-123',
             'dossiers' => [$dossier],
         ]);
 
         $result = $this->documentRepository->findOneByDossierNumberAndDocumentNumber(
             $dossier->getDocumentPrefix(),
             $dossier->getDossierNumber(),
-            $documentNumber,
+            DocumentNumber::fromUnnormalizedString($documentNumber),
         );
 
         self::assertSame($document, $result);
@@ -470,8 +470,8 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         $dossier = WooDecisionFactory::createOne(['organisation' => $organisation, 'status' => DossierStatus::PUBLISHED]);
 
-        $documentNumberA = 'FOO-123';
-        $documentNumberB = 'FOO-456';
+        $documentNumberA = 'foo-123';
+        $documentNumberB = 'foo-456';
 
         DocumentFactory::createOne([
             'documentNumber' => $documentNumberA,
@@ -534,24 +534,10 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         self::assertSame($secondDocumentWithoutContext->getId(), $documents[1]->getId());
     }
 
-    public function testFindOneBydocumentNumberCaseInsensitive(): void
-    {
-        DocumentFactory::createOne([
-            'documentNumber' => $documentNumber = 'FOO-xx-123',
-        ]);
-
-        $result = $this->documentRepository->findOneByDocumentNumberCaseInsensitive(
-            DocumentNumber::fromString(strtoupper($documentNumber)),
-        );
-
-        self::assertNotNull($result);
-        self::assertSame($documentNumber, $result->getdocumentNumber()->toString());
-    }
-
     public function testGetDocumentInquiryNumbers(): void
     {
         $document = DocumentFactory::createOne([
-            'documentNumber' => $documentNumber = 'FOO-xx-123',
+            'documentNumber' => $documentNumber = 'foo-xx-123',
         ]);
 
         InquiryFactory::createOne([
@@ -560,7 +546,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         ]);
 
         $documentInquiryNumbers = $this->documentRepository->getDocumentInquiryNumbers(
-            DocumentNumber::fromString(strtoupper($documentNumber)),
+            DocumentNumber::fromUnnormalizedString(strtoupper($documentNumber)),
         );
 
         self::assertFalse($documentInquiryNumbers->isDocumentNotFound());
@@ -647,7 +633,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         DocumentFactory::createOne([
             'dossiers' => [$dossier],
-            'documentNumber' => 'DOC-001',
+            'documentNumber' => 'doc-001',
             'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
         ]);
@@ -696,7 +682,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         // Create document manually since setJudgement requires non-null but property is nullable
         $document = new Document();
-        $document->setDocumentNumber(DocumentNumber::fromString('DOC-001'));
+        $document->setDocumentNumber(DocumentNumber::fromString('doc-001'));
         $document->setDocumentId(DocumentId::create('001'));
         $document->setFileInfo(FileInfoFactory::createOne(['uploaded' => true]));
         $document->addDossier($dossier);
@@ -712,7 +698,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         DocumentFactory::createOne([
             'dossiers' => [$dossier],
-            'documentNumber' => 'DOC-001',
+            'documentNumber' => 'doc-001',
             'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
@@ -726,7 +712,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         DocumentFactory::createOne([
             'dossiers' => [$dossier],
-            'documentNumber' => 'DOC-001',
+            'documentNumber' => 'doc-001',
             'judgement' => Judgement::PARTIAL_PUBLIC,
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
@@ -742,7 +728,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
             ->withdrawn()
             ->create([
                 'dossiers' => [$dossier],
-                'documentNumber' => 'DOC-001',
+                'documentNumber' => 'doc-001',
                 'judgement' => Judgement::PUBLIC,
             ]);
 
@@ -755,7 +741,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         DocumentFactory::createOne([
             'dossiers' => [$dossier],
-            'documentNumber' => 'DOC-001',
+            'documentNumber' => 'doc-001',
             'judgement' => Judgement::PUBLIC,
             'suspended' => true,
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
@@ -770,7 +756,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         DocumentFactory::createOne([
             'dossiers' => [$dossier],
-            'documentNumber' => 'DOC-001',
+            'documentNumber' => 'doc-001',
             'judgement' => Judgement::ALREADY_PUBLIC,
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
@@ -784,7 +770,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         DocumentFactory::createOne([
             'dossiers' => [$dossier],
-            'documentNumber' => 'DOC-001',
+            'documentNumber' => 'doc-001',
             'judgement' => Judgement::NOT_PUBLIC,
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
@@ -798,7 +784,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         $referredDocument = DocumentFactory::createOne([
             'dossiers' => [$dossier],
-            'documentNumber' => 'DOC-REFERRED',
+            'documentNumber' => 'doc-referred',
             'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => false]),
         ]);
@@ -856,7 +842,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         $referredDocument = DocumentFactory::createOne([
             'dossiers' => [$dossier],
-            'documentNumber' => 'DOC-REFERRED',
+            'documentNumber' => 'doc-referred',
             'judgement' => Judgement::PUBLIC,
             'fileInfo' => FileInfoFactory::createOne(['uploaded' => true]),
         ]);
@@ -916,7 +902,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         // Create referred document manually with null judgement
         $referredDocument = new Document();
-        $referredDocument->setDocumentNumber(DocumentNumber::fromString('DOC-REFERRED'));
+        $referredDocument->setDocumentNumber(DocumentNumber::fromString('doc-referred'));
         $referredDocument->setDocumentId(DocumentId::create('referred'));
         $referredDocument->setFileInfo(FileInfoFactory::createOne(['uploaded' => true]));
         $referredDocument->addDossier($dossier);
@@ -1036,8 +1022,8 @@ final class DocumentRepositoryTest extends SharedWebTestCase
     public function testDocumentMatchingItsPublicationContextAndIdIsNotReported(): void
     {
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-abc',
-            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentNumber' => 'foo-abc',
+            'publicationContext' => PublicationContext::fromString('foo'),
             'documentId' => 'abc',
         ]);
 
@@ -1049,7 +1035,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
     public function testDocumentWithoutPublicationContextIsReportedOnlyAsMissingContext(): void
     {
         DocumentFactory::createOne([
-            'documentNumber' => 'FOO-abc',
+            'documentNumber' => 'foo-abc',
             'publicationContext' => null,
             'documentId' => 'abc',
         ]);
@@ -1061,14 +1047,14 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         self::assertCount(1, $rows);
         self::assertNull($rows[0]->getPublicationContext());
-        self::assertSame('FOO-abc', $rows[0]->getDocumentNumber()->toString());
+        self::assertSame('foo-abc', $rows[0]->getDocumentNumber()->toString());
     }
 
     public function testDocumentNumberThatDoesNotMatchItsPublicationContextAndIdIsReportedAsDrifted(): void
     {
         DocumentFactory::createOne([
-            'documentNumber' => 'BAR-abc',
-            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentNumber' => 'bar-abc',
+            'publicationContext' => PublicationContext::fromString('foo'),
             'documentId' => 'abc',
         ]);
 
@@ -1078,27 +1064,16 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         $rows = $this->documentRepository->getDocumentsWithDriftedDocumentNumber(100);
 
         self::assertCount(1, $rows);
-        self::assertSame('BAR-abc', $rows[0]->getDocumentNumber()->toString());
-        self::assertSame('FOO', (string) $rows[0]->getPublicationContext());
+        self::assertSame('bar-abc', $rows[0]->getDocumentNumber()->toString());
+        self::assertSame('foo', (string) $rows[0]->getPublicationContext());
         self::assertSame('abc', (string) $rows[0]->getDocumentId());
     }
 
-    public function testDocumentNumberDifferingOnlyInCasingIsReportedAsDrifted(): void
-    {
-        DocumentFactory::createOne([
-            'documentNumber' => 'FOO-ABC',
-            'publicationContext' => PublicationContext::fromString('FOO'),
-            'documentId' => 'abc',
-        ]);
-
-        self::assertSame(1, $this->documentRepository->countDocumentsWithDriftedDocumentNumber());
-    }
-
-    public function testUppercaseDocumentIdIsReportedAsMixedCaseAndNotAsDrifted(): void
+    public function testUppercaseDocumentIdIsReportedAsMixedCaseAndAsDrifted(): void
     {
         $document = DocumentFactory::createOne([
-            'documentNumber' => 'FOO-ABC',
-            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentNumber' => 'foo-abc',
+            'publicationContext' => PublicationContext::fromString('foo'),
             'documentId' => 'abc',
         ]);
 
@@ -1108,25 +1083,25 @@ final class DocumentRepositoryTest extends SharedWebTestCase
         );
 
         self::assertSame(1, $this->documentRepository->countDocumentsWithMixedCaseDocumentId());
-        self::assertSame(0, $this->documentRepository->countDocumentsWithDriftedDocumentNumber());
+        self::assertSame(1, $this->documentRepository->countDocumentsWithDriftedDocumentNumber());
         self::assertCount(1, $this->documentRepository->getDocumentsWithMixedCaseDocumentId(100));
     }
 
     public function testDriftedDocumentRowsAreLimitedWhileTheCountCoversEveryRow(): void
     {
         DocumentFactory::createOne([
-            'documentNumber' => 'BAR-abc',
-            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentNumber' => 'bar-abc',
+            'publicationContext' => PublicationContext::fromString('foo'),
             'documentId' => 'abc',
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => 'BAR-def',
-            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentNumber' => 'bar-def',
+            'publicationContext' => PublicationContext::fromString('foo'),
             'documentId' => 'def',
         ]);
         DocumentFactory::createOne([
-            'documentNumber' => 'BAR-ghi',
-            'publicationContext' => PublicationContext::fromString('FOO'),
+            'documentNumber' => 'bar-ghi',
+            'publicationContext' => PublicationContext::fromString('foo'),
             'documentId' => 'ghi',
         ]);
 
@@ -1136,7 +1111,7 @@ final class DocumentRepositoryTest extends SharedWebTestCase
 
         self::assertCount(2, $rows);
         self::assertSame(
-            ['BAR-abc', 'BAR-def'],
+            ['bar-abc', 'bar-def'],
             array_map(static fn (Document $document): string => $document->getDocumentNumber()->toString(), $rows),
         );
     }

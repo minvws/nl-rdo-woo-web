@@ -21,12 +21,12 @@ use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Attachment\Event\AttachmentDeletedEvent;
 use Shared\Domain\Publication\Attachment\Event\AttachmentUpdatedEvent;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\Covenant\Covenant;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\History\History;
 use Shared\Domain\Publication\MainDocument\Event\MainDocumentUpdatedEvent;
 use Shared\Domain\Publication\PublicUrlGenerator;
@@ -132,7 +132,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertResponseIsSuccessful();
 
         $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
-        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $dossierUrlGenerator = $this->fromContainer(DossierUrlGenerator::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $covenant->getId(),
@@ -172,7 +172,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($covenant)],
+                    'public' => ['href' => $dossierUrlGenerator->documentDetailUrl($covenant)->toString()],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -208,7 +208,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
                                 ],
                             )->toString(),
                         ],
-                        'public' => ['href' => $dossierPathHelper->getAbsoluteAttachmentDetailsPath($covenant, $covenantAttachment->getId())],
+                        'public' => ['href' => $dossierUrlGenerator->attachmentDetailUrl($covenant, $covenantAttachment->getId())->toString()],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -229,7 +229,7 @@ final class CovenantPublicationV1Test extends ApiPublicationV1DossierTestCase
             'parties' => $covenant->getParties(),
             '_links' => [
                 'self' => ['href' => $this->buildApiUrl($organisation, $covenant)],
-                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($covenant)],
+                'public' => ['href' => $dossierUrlGenerator->detailUrl($covenant)->toString()],
             ],
         ];
 

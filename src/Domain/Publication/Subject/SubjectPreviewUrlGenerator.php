@@ -4,42 +4,26 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Publication\Subject;
 
-use LogicException;
-
-use function rtrim;
-use function sprintf;
+use Shared\Controller\Public\SubjectLandingPageController;
+use Shared\Domain\Publication\PublicUrlGenerator;
+use Shared\ValueObject\Url;
 
 readonly class SubjectPreviewUrlGenerator
 {
-    private string $baseUrl;
-
-    public function __construct(string $publicBaseUrl)
-    {
-        $this->baseUrl = rtrim($publicBaseUrl, '/');
+    public function __construct(
+        private PublicUrlGenerator $publicUrlGenerator,
+    ) {
     }
 
-    public function generatePreviewUrl(Subject $subject): ?string
+    public function generatePreviewUrl(Subject $subject): ?Url
     {
         if ($subject->getLandingPageStatus() !== SubjectLandingPageStatus::CONCEPT) {
             return null;
         }
 
-        $token = $subject->getLandingPagePreviewToken();
-        if ($token === null) {
-            throw new LogicException(
-                sprintf(
-                    'Subject "%s" has CONCEPT landing page status but no preview token. '
-                    . 'This invariant should be guaranteed by Subject::setLandingPage.',
-                    $subject->getId()->toRfc4122(),
-                ),
-            );
-        }
-
-        return sprintf(
-            '%s/onderwerp/%s/preview/%s',
-            $this->baseUrl,
-            $subject->getId()->toRfc4122(),
-            $token->toRfc4122(),
-        );
+        return $this->publicUrlGenerator->buildUrlFromRoute(SubjectLandingPageController::ROUTE_NAME_SUBJECT_LANDING_PAGE_PREVIEW, [
+            'id' => $subject->getId()->toRfc4122(),
+            'previewToken' => $subject->getLandingPagePreviewToken()->toRfc4122(),
+        ]);
     }
 }

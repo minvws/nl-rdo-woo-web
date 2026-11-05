@@ -16,6 +16,7 @@ use Shared\Tests\Integration\Service\Search\Query\Definition\QueryDefinitionTest
 use Shared\Tests\Snapshots\MatchesSnapshots as SnapshotsMatchesSnapshots;
 use Shared\Tests\Unit\UnitTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
+use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
 return static function (Config $config): void {
     $classSet = ClassSet::fromDir(
@@ -65,6 +66,7 @@ return static function (Config $config): void {
     $rules[] = Rule::allClasses()
         ->except(IntegrationTestTrait::class, UnitTestCase::class)
         ->that(new ResideInOneOfTheseNamespaces(...$testNamespaces))
+        ->andThat(new NotExtend(ConstraintValidatorTestCase::class))
         ->should(new NotHaveTrait(MockeryPHPUnitIntegration::class))
         ->because('test classes should extend the base classes that already includes MockeryPHPUnitIntegration trait');
 

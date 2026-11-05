@@ -28,7 +28,7 @@ readonly class TypeAggregationStrategy implements AggregationStrategyInterface
                     ->setSize($maxCount)
                     ->setOrder('_count', SortDirections::DESC),
                 Aggregation::missing(
-                    name: 'publication',
+                    name: AggregationName::PUBLICATION,
                     field: ElasticField::SUBLEVEL_TYPE->value,
                 ),
             ],

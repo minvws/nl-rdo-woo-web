@@ -9,10 +9,13 @@ use MinVWS\TypeArray\TypeArray;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Search\Index\ElasticConfig;
 use Shared\Domain\Search\Index\ElasticDocumentId;
+use Shared\Domain\Search\Index\Schema\ElasticField;
 use Shared\Domain\Search\Index\Schema\ElasticNestedField;
 use Shared\Domain\Search\Index\Schema\ElasticPath;
 use Shared\Service\Elastic\ElasticClientInterface;
 use Throwable;
+
+use function sprintf;
 
 /**
  * DocumentHandler would be a better Elasticsearch name
@@ -81,7 +84,13 @@ readonly class ObjectHandler
             $response = $this->elastic->search($params);
             $response = new TypeArray($response->asArray());
 
-            return $response->getString('[hits][hits][0][inner_hits][pages][hits][hits][0][_source][content]', '');
+            $path = sprintf(
+                '[hits][hits][0][inner_hits][%1$s][hits][hits][0][_source][%2$s]',
+                ElasticNestedField::PAGES->value,
+                ElasticField::CONTENT->value,
+            );
+
+            return $response->getString($path, '');
         } catch (Throwable) {
             return '';
         }

@@ -12,6 +12,7 @@ use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Query\Facet\Definition\PrefixedDossierNumberFacet;
 use Shared\Domain\Search\Query\Facet\Definition\TypeFacet;
 use Shared\Domain\Search\Query\Facet\FacetDefinitions;
+use Shared\Domain\Search\Query\Facet\Input\DocTypeValue;
 use Shared\Domain\Search\Query\Facet\Input\FacetInputFactory;
 use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInput;
 use Shared\Service\Search\Model\FacetKey;
@@ -134,7 +135,7 @@ readonly class SearchParametersFactory
 
             $types = match ($resultType) {
                 SearchResultType::DOSSIER => array_map(
-                    static fn (string $type): string => $type . '.publication',
+                    static fn (string $type): string => $type . '.' . DocTypeValue::PUBLICATION_SUBTYPE,
                     $dossierTypes,
                 ),
                 SearchResultType::DOCUMENT => [sprintf(

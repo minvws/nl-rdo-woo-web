@@ -7,8 +7,7 @@ namespace Shared\Service\FileReader;
 use DateTimeImmutable;
 use Exception;
 use Generator;
-use RuntimeException;
-use Shared\Exception\FileReaderException;
+use Shared\Exception\Import\DateCannotBeParsedException;
 use Shared\Service\Inventory\InventoryDataHelper;
 use Webmozart\Assert\Assert;
 
@@ -32,7 +31,7 @@ class CsvReader implements FileReaderInterface
     {
         $handle = fopen($this->filepath, 'r');
         if (! $handle) {
-            throw new RuntimeException('Failed to open file: ' . $this->filepath);
+            throw new CsvFileCannotBeOpenedException($this->filepath);
         }
         // read/skip the header row
         fgetcsv($handle, escape: '\\');
@@ -101,7 +100,7 @@ class CsvReader implements FileReaderInterface
         try {
             return InventoryDataHelper::toDateTimeImmutable($value);
         } catch (Exception) {
-            throw FileReaderException::forCannotParseDate($value);
+            throw new DateCannotBeParsedException($value);
         }
     }
 
@@ -115,7 +114,7 @@ class CsvReader implements FileReaderInterface
         try {
             return InventoryDataHelper::toDateTimeImmutable($value);
         } catch (Exception) {
-            throw FileReaderException::forCannotParseDate($value);
+            throw new DateCannotBeParsedException($value);
         }
     }
 

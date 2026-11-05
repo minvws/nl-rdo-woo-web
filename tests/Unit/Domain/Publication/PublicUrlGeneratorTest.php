@@ -18,7 +18,7 @@ final class PublicUrlGeneratorTest extends UnitTestCase
         $router = Mockery::mock(RouterInterface::class);
         $generator = new PublicUrlGenerator($baseUrl, $router);
 
-        self::assertSame($expectedUrl, $generator->buildUrlFromPath($path));
+        self::assertSame($expectedUrl, $generator->buildUrlFromPath($path)->toString());
     }
 
     /**

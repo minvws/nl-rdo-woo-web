@@ -6,7 +6,7 @@ namespace Shared\Tests\Unit\Service\Inquiry;
 
 use Mockery;
 use Mockery\MockInterface;
-use Shared\Exception\InquiryLinkImportException;
+use Shared\Service\Import\ImportError;
 use Shared\Service\Inquiry\InquiryChangeset;
 use Shared\Service\Inquiry\InquiryLinkImportResult;
 use Shared\Tests\Unit\UnitTestCase;
@@ -24,26 +24,27 @@ class InquiryLinkImportResultTest extends UnitTestCase
         parent::setUp();
     }
 
-    public function testAddGenericException(): void
+    public function testAddGenericError(): void
     {
-        $this->assertFalse($this->result->hasGenericExceptions());
+        $this->assertFalse($this->result->hasGenericErrors());
 
-        $exception = InquiryLinkImportException::forMissingDocument('foo-123');
-        $this->result->addGenericException($exception);
+        $importError = new ImportError($this->getFaker()->sentence(), $this->getFaker()->word());
+        $this->result->addGenericError($importError);
 
-        $this->assertEquals([$exception], $this->result->genericExceptions);
-        $this->assertTrue($this->result->hasGenericExceptions());
+        $this->assertEquals([$importError], $this->result->genericErrors);
+        $this->assertTrue($this->result->hasGenericErrors());
     }
 
-    public function testAddRowException(): void
+    public function testAddRowError(): void
     {
-        $this->assertFalse($this->result->hasRowExceptions());
+        $this->assertFalse($this->result->hasRowErrors());
 
-        $exception = InquiryLinkImportException::forMissingDocument('foo-123');
-        $this->result->addRowException(123, $exception);
+        $rowNumber = $this->getFaker()->randomNumber();
+        $importError = new ImportError($this->getFaker()->sentence(), $this->getFaker()->word());
+        $this->result->addRowError($rowNumber, $importError);
 
-        $this->assertEquals([123 => [$exception]], $this->result->rowExceptions);
-        $this->assertTrue($this->result->hasRowExceptions());
+        $this->assertEquals([$rowNumber => [$importError]], $this->result->rowErrors);
+        $this->assertTrue($this->result->hasRowErrors());
     }
 
     public function testGetAddedRelationsCount(): void
@@ -82,16 +83,16 @@ class InquiryLinkImportResultTest extends UnitTestCase
 
     public function testIsSuccessfulReturnsFalseWhenDocumentIsAddedWithARowError(): void
     {
-        $exception = InquiryLinkImportException::forMissingDocument('foo-123');
-        $this->result->addRowException(123, $exception);
+        $importError = new ImportError($this->getFaker()->sentence(), $this->getFaker()->word());
+        $this->result->addRowError($this->getFaker()->randomNumber(), $importError);
 
         self::assertFalse($this->result->isSuccessful());
     }
 
     public function testIsSuccessfulReturnsFalseWhenDocumentIsAddedWithAGenericError(): void
     {
-        $exception = InquiryLinkImportException::forMissingDocument('foo-123');
-        $this->result->addGenericException($exception);
+        $importError = new ImportError($this->getFaker()->sentence(), $this->getFaker()->word());
+        $this->result->addGenericError($importError);
 
         self::assertFalse($this->result->isSuccessful());
     }

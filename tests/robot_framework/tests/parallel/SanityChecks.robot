@@ -45,9 +45,11 @@ Open A Woo Decision Dossier And Download Its Files
   Page Should Load Without Error
   Download WooDecision Inventory
   Click  //a[@data-e2e-name="main-document-detail-link"]
+  Page Should Load Without Error
   Generic Download Click  //a[@data-e2e-name="download-file-link"]
   Go Back
   Click  (//div[@data-e2e-name="documents-section"]//tbody/tr//td//a)[1]
+  Page Should Load Without Error
   Generic Download Click  //a[@data-e2e-name="download-file-link"]
 
 Robots Txt Sitemap Is Available And Filled
@@ -141,6 +143,11 @@ Page Should Load Without Error
   ...  not contains
   ...  Pagina niet gevonden
   ...  msg=Page shows a Not Found error page
+  Get Text
+  ...  //body
+  ...  not contains
+  ...  Pagina of document niet beschikbaar
+  ...  msg=Page shows a Not Available error page
 
 Category Counts Should Be Shown
   [Arguments]  ${facet_key}

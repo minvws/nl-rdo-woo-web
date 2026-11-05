@@ -9,13 +9,12 @@ use Stringable;
 
 use function mb_strlen;
 use function pathinfo;
-use function preg_match;
 
 use const PATHINFO_EXTENSION;
 
 final readonly class FileName implements Stringable
 {
-    private const string PATTERN = '/^[A-Za-z0-9 ._-]+$/';
+    private const string PATTERN = '^[A-Za-z0-9 ._-]+$';
 
     private function __construct(
         private string $filename,
@@ -37,7 +36,7 @@ final readonly class FileName implements Stringable
             throw new InvalidArgumentException('Filename must not exceed 255 characters');
         }
 
-        if (preg_match(self::PATTERN, $filename) !== 1) {
+        if (! RegexPattern::create(self::PATTERN)->matches($filename)) {
             throw new InvalidArgumentException('Filename contains invalid characters');
         }
 

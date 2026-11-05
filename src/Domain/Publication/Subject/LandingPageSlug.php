@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Subject;
 
 use InvalidArgumentException;
+use Shared\ValueObject\Equatable;
+use Shared\ValueObject\RegexPattern;
 use Stringable;
 
 use function mb_strlen;
-use function preg_match;
 use function strtolower;
 
-final readonly class LandingPageSlug implements Stringable
+final readonly class LandingPageSlug implements Stringable, Equatable
 {
-    public const string PATTERN = '/^[A-Za-z0-9-]+$/';
+    public const string PATTERN = '^[A-Za-z0-9-]+$';
     public const int MIN_LENGTH = 2;
     public const int MAX_LENGTH = 50;
 
@@ -32,7 +33,7 @@ final readonly class LandingPageSlug implements Stringable
             throw new InvalidArgumentException('Landing page slug cannot be empty', self::ERROR_EMPTY);
         }
 
-        if (preg_match(self::PATTERN, $slug) !== 1) {
+        if (! RegexPattern::create(self::PATTERN)->matches($slug)) {
             throw new InvalidArgumentException('Invalid landing page slug format', self::ERROR_INVALID_FORMAT);
         }
 
@@ -52,5 +53,10 @@ final readonly class LandingPageSlug implements Stringable
     public function toString(): string
     {
         return $this->slug;
+    }
+
+    public function equalTo(mixed $other): bool
+    {
+        return $other instanceof self && $this->slug === $other->slug;
     }
 }

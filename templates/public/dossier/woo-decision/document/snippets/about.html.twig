@@ -60,7 +60,7 @@
                 </tr>
                 {% endif %}
 
-                {% set hasGrounds = document.entity.grounds | length > 0 %}
+                {% set hasGrounds = document.grounds | length > 0 %}
                 {% set isDownloadable = document.entity.isUploaded and document.entity.fileInfo.size != "0" %}
                 {% if hasGrounds or isDownloadable %}
                 <tr>
@@ -68,7 +68,7 @@
                     <td data-e2e-name="grounds">
                         {% if hasGrounds %}
                         <ul>
-                            {% for ground in document.entity.grounds %}
+                            {% for ground in document.grounds %}
                                 <li class="py-1 leading-none">
                                     {{ macro.document_ground(ground) }}
                                 </li>

@@ -74,7 +74,7 @@ class WooDecisionDocumentRequestDto
             . 'dots, hyphens, underscores and tildes only). Together with documentId this forms the document number.',
             openapiContext: [
                 'type' => 'string',
-                'pattern' => PublicationContext::OPENAPI_PATTERN,
+                'pattern' => PublicationContext::PATTERN,
                 'minLength' => PublicationContext::MIN_LENGTH,
                 'maxLength' => PublicationContext::MAX_LENGTH,
                 'example' => 'pub-context-1',

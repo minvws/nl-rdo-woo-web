@@ -12,24 +12,24 @@ use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 
 final class DocumentNumberNormalizerTest extends UnitTestCase
 {
-    public function testItNormalizesADocumentNumberToItsExactString(): void
+    public function testItNormalizesADocumentNumberToItsString(): void
     {
         $normalizer = new DocumentNumberNormalizer();
 
         self::assertSame(
-            'Prefix-Matter_01-Doc.123',
-            $normalizer->normalize(DocumentNumber::fromString('Prefix-Matter_01-Doc.123')),
+            'prefix-matter_01-doc.123',
+            $normalizer->normalize(DocumentNumber::fromString('prefix-matter_01-doc.123')),
         );
     }
 
-    public function testItDenormalizesAStringWithoutChangingIt(): void
+    public function testItDenormalizesAStringToLowercase(): void
     {
         $normalizer = new DocumentNumberNormalizer();
 
         $result = $normalizer->denormalize('Prefix-Matter_01-Doc.123', DocumentNumber::class);
 
         self::assertInstanceOf(DocumentNumber::class, $result);
-        self::assertSame('Prefix-Matter_01-Doc.123', $result->toString());
+        self::assertSame('prefix-matter_01-doc.123', $result->toString());
     }
 
     public function testItRejectsNonStringInputDuringDenormalization(): void

@@ -87,7 +87,7 @@ Verify Permissions On Users
   [Arguments]  ${role}  ${create}  ${read}  ${update}  ${delete}  ${organisation_only}
   Login Admin With Role  ${role}
   IF  not ${read}
-    Menu Does Not Contain Item  Toegangsbeheer
+    Menu Does Not Contain Item With E2E Name  nav-access-control
   ELSE
     IF  ${create} and ${update} and ${delete}
       Click Access Control
@@ -103,9 +103,9 @@ Verify Permissions On Users
   END
   No-Click Logout
 
-Menu Does Not Contain Item
-  [Arguments]  ${item}
-  Get Text  //*[@id="main-nav"]  not contains  ${item}
+Menu Does Not Contain Item With E2E Name
+  [Arguments]  ${e2e_name}
+  Get Element Count  //*[@id="main-nav"]//*[@data-e2e-name="${e2e_name}"]  should be  0
 
 User List Does Not Contain Users From The Other Organisation
   Click Access Control
@@ -131,7 +131,7 @@ Verify Permissions On Departments
   [Arguments]  ${role}  ${create}  ${read}  ${update}
   Login Admin With Role  ${role}
   IF  not ${read}
-    Menu Does Not Contain Item  Bestuursorganen
+    Menu Does Not Contain Item With E2E Name  nav-departments
   ELSE
     IF  ${create} and ${update}
       Click Departments
@@ -145,7 +145,7 @@ Verify Permissions On Department Landingpages
   [Arguments]  ${role}  ${update}  ${organisation_only}
   Login Admin With Role  ${role}
   IF  not ${update}
-    Menu Does Not Contain Item  Bestuursorganen
+    Menu Does Not Contain Item With E2E Name  nav-departments
   ELSE
     Click Departments
     IF  ${organisation_only}
@@ -168,7 +168,7 @@ Verify Permissions On Subjects
   [Arguments]  ${role}  ${create}  ${read}  ${update}
   Login Admin With Role  ${role}
   IF  not ${read}
-    Menu Does Not Contain Item  Onderwerpen
+    Menu Does Not Contain Item With E2E Name  nav-subjects
   ELSE
     IF  ${create} and ${update}
       Click Subjects

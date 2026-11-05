@@ -134,7 +134,7 @@ See [elastic_index.md](elastic_index.md) for the index itself.
 |----------------------|---------------------------------------------------------------------|
 | `Domain/Upload`      | Chunked uploads, validation and virus scanning (`Upload/AntiVirus`) |
 | `Domain/FileStorage` | Checking storage against the database, finding orphaned files       |
-| `Domain/S3`          | S3 / MinIO specifics                                                |
+| `Domain/S3`          | S3 specifics                                                        |
 | `Service/Storage`    | Flysystem-backed storage services, local or S3                      |
 
 ### Other domains

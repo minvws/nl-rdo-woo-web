@@ -9,8 +9,8 @@ use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Service\DocumentCanonicalUrlGenerator;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Webmozart\Assert\Assert;
 
@@ -22,7 +22,7 @@ readonly class SitemapDocumentSubscriber
     public function __construct(
         private EntityManagerInterface $doctrine,
         private DossierRepository $dossierRepository,
-        private DocumentCanonicalUrlGenerator $documentCanonicalUrlGenerator,
+        private DocumentUrlGenerator $documentUrlGenerator,
     ) {
     }
 
@@ -53,11 +53,11 @@ readonly class SitemapDocumentSubscriber
                 }
 
                 $processedDocumentNumbers[$documentNumberString] = true;
-                $canonicalDocumentUrl = $this->documentCanonicalUrlGenerator->canonical($documentNumber);
+                $canonicalDocumentUrl = $this->documentUrlGenerator->canonicalUrl($documentNumber);
 
                 $event->getUrlContainer()->addUrl(
                     new UrlConcrete(
-                        $canonicalDocumentUrl,
+                        $canonicalDocumentUrl->toString(),
                         $document->getUpdatedAt(),
                         UrlConcrete::CHANGEFREQ_MONTHLY,
                         0.8,

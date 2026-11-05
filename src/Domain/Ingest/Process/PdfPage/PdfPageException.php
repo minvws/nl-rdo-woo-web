@@ -11,11 +11,11 @@ use function sprintf;
 
 class PdfPageException extends RuntimeException
 {
-    public static function forCannotDownload(EntityWithFileInfo $entity): self
+    public static function forCannotRead(EntityWithFileInfo $entity): self
     {
         return new self(
             sprintf(
-                'Cannot download entity of type %s and ID %s from storage',
+                'Cannot read entity of type %s and ID %s from storage',
                 $entity::class,
                 $entity->getId(),
             ),
@@ -48,16 +48,11 @@ class PdfPageException extends RuntimeException
         );
     }
 
-    public static function forCannotCreateTempDir(): self
-    {
-        return new self('Cannot create temp dir');
-    }
-
-    public static function forLocalPageDocumentNotSet(PdfPageProcessingContext $context): self
+    public static function forPageContentsNotSet(PdfPageProcessingContext $context): self
     {
         return new self(
             sprintf(
-                'No local page document set in context for entity of type %s and ID %s. Pagenr: %d',
+                'No page contents set in context for entity of type %s and ID %s. Pagenr: %d',
                 $context->getEntity()::class,
                 $context->getEntity()->getId(),
                 $context->getPageNumber(),

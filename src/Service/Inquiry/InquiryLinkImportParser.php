@@ -6,8 +6,9 @@ namespace Shared\Service\Inquiry;
 
 use Exception;
 use Generator;
-use Shared\Exception\FileReaderException;
-use Shared\Exception\InquiryLinkImportException;
+use Shared\Exception\Import\InquiryMatterAndPublicationContextCombinationException;
+use Shared\Exception\Import\MissingHeadersException;
+use Shared\Exception\Import\SpreadsheetCannotBeOpenedException;
 use Shared\Service\FileReader\ColumnMapping;
 use Shared\Service\FileReader\ExcelReaderFactory;
 use Shared\Service\FileReader\FileReaderInterface;
@@ -41,11 +42,11 @@ class InquiryLinkImportParser
         $hasPublicationContext = $reader->hasColumn(self::COLUMN_PUBLICATION_CONTEXT);
 
         if ($hasMatter && $hasPublicationContext) {
-            throw InquiryLinkImportException::forMatterAndPublicationContextCombination();
+            throw new InquiryMatterAndPublicationContextCombinationException();
         }
 
         if (! $hasMatter && ! $hasPublicationContext) {
-            throw FileReaderException::forMissingHeaders(['Publicatiecontext']);
+            throw new MissingHeadersException(['Publicatiecontext']);
         }
 
         foreach ($reader as $rowIdx => $row) {
@@ -65,7 +66,7 @@ class InquiryLinkImportParser
                 $publicationContext = sprintf('%s-%s', $prefix, $matter);
             }
 
-            $documentNumber = DocumentNumber::fromString(sprintf('%s-%s', $publicationContext, $documentId));
+            $documentNumber = DocumentNumber::fromUnnormalizedString(sprintf('%s-%s', $publicationContext, $documentId));
 
             yield $documentNumber->toString() => $inquiryNumbers;
         }
@@ -103,7 +104,7 @@ class InquiryLinkImportParser
                 ),
             );
         } catch (Exception $exception) {
-            throw FileReaderException::forOpenSpreadsheetException($exception);
+            throw new SpreadsheetCannotBeOpenedException($exception);
         }
     }
 }

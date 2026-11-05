@@ -12,7 +12,6 @@
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\Covenant\Covenant
     translationKey: dossier.type.covenant
-    valueForRouteName: covenant
     name: COVENANT
     value: covenant
 -
@@ -29,7 +28,6 @@
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision
     translationKey: dossier.type.woo-decision
-    valueForRouteName: woodecision
     name: WOO_DECISION
     value: woo-decision
 -
@@ -46,7 +44,6 @@
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport
     translationKey: dossier.type.annual-report
-    valueForRouteName: annualreport
     name: ANNUAL_REPORT
     value: annual-report
 -
@@ -63,7 +60,6 @@
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport
     translationKey: dossier.type.investigation-report
-    valueForRouteName: investigationreport
     name: INVESTIGATION_REPORT
     value: investigation-report
 -
@@ -80,7 +76,6 @@
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\Disposition\Disposition
     translationKey: dossier.type.disposition
-    valueForRouteName: disposition
     name: DISPOSITION
     value: disposition
 -
@@ -97,7 +92,6 @@
     attachments: false
     dossierClass: Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgement
     translationKey: dossier.type.complaint-judgement
-    valueForRouteName: complaintjudgement
     name: COMPLAINT_JUDGEMENT
     value: complaint-judgement
 -
@@ -114,7 +108,6 @@
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\OtherPublication\OtherPublication
     translationKey: dossier.type.other-publication
-    valueForRouteName: otherpublication
     name: OTHER_PUBLICATION
     value: other-publication
 -
@@ -131,7 +124,6 @@
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\Advice\Advice
     translationKey: dossier.type.advice
-    valueForRouteName: advice
     name: ADVICE
     value: advice
 -
@@ -148,7 +140,6 @@
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice
     translationKey: dossier.type.request-for-advice
-    valueForRouteName: requestforadvice
     name: REQUEST_FOR_ADVICE
     value: request-for-advice
 -
@@ -165,6 +156,5 @@
     attachments: true
     dossierClass: Shared\Domain\Publication\Dossier\Type\DraftDecision\DraftDecision
     translationKey: dossier.type.draft-decision
-    valueForRouteName: draftdecision
     name: DRAFT_DECISION
     value: draft-decision

@@ -45,7 +45,7 @@ final class DossierTitleNormalizer implements NormalizerInterface, DenormalizerI
             return DossierTitle::create($data);
         } catch (DossierTitleArgumentException $dossierTitleArgumentException) {
             throw NotNormalizableValueException::createForUnexpectedDataType(
-                $dossierTitleArgumentException->getTranslationKey(),
+                $dossierTitleArgumentException->getMessageKey(),
                 $data,
                 [],
                 $this->getPathFromContext($context),

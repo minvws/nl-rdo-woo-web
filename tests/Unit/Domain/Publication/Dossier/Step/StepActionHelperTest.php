@@ -10,15 +10,16 @@ use Knp\Component\Pager\PaginatorInterface;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierBreadcrumbFactory;
 use Shared\Domain\Publication\Dossier\DossierStatus;
 use Shared\Domain\Publication\Dossier\Step\StepActionHelper;
 use Shared\Domain\Publication\Dossier\Step\StepName;
+use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierViewParamsBuilder;
 use Shared\Service\DossierWizard\DossierWizardStatus;
 use Shared\Service\DossierWizard\StepStatus;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Shared\Tests\Unit\UnitTestCase;
-use Shared\ValueObject\DossierTitle;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\Routing\RouterInterface;
@@ -49,6 +50,7 @@ class StepActionHelperTest extends UnitTestCase
             $this->wizardStatusFactory,
             $this->paginator,
             $this->paramsBuilder,
+            new DossierBreadcrumbFactory(),
         );
     }
 
@@ -258,12 +260,11 @@ class StepActionHelperTest extends UnitTestCase
 
         $breadCrumbs = Mockery::mock(Breadcrumbs::class);
         $item = 'foo bar';
-        $dossierTitle = DossierTitle::create('llama');
 
-        $this->dossier->expects('getTitle')->andReturn($dossierTitle);
+        $this->dossier->expects('getType')->andReturn(DossierType::COVENANT);
 
         $breadCrumbs->expects('addRouteItem')->with(
-            (string) $dossierTitle,
+            'dossier.type.covenant',
             'app_admin_dossier',
             [
                 'documentPrefix' => $this->dossier->getDocumentPrefix(),

@@ -7,7 +7,7 @@ namespace Shared\Tests\Unit\Service\FileReader;
 use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
-use Shared\Exception\FileReaderException;
+use Shared\Exception\Import\DateCannotBeParsedException;
 use Shared\Service\FileReader\CsvReader;
 use Shared\Service\FileReader\HeaderMap;
 use Shared\Service\Inventory\MetadataField;
@@ -120,7 +120,7 @@ class CsvReaderTest extends UnitTestCase
 
         // Last row has an empty value in date column
         end($rows);
-        $this->expectException(FileReaderException::class);
+        $this->expectException(DateCannotBeParsedException::class);
         $this->csvReader->getDateTime(2, 'date');
     }
 
@@ -129,7 +129,7 @@ class CsvReaderTest extends UnitTestCase
         $this->headerMap->expects('has')->with('subject')->andReturnTrue();
         $this->headerMap->expects('getCellCoordinate')->with('subject')->andReturn(8);
 
-        $this->expectException(FileReaderException::class);
+        $this->expectException(DateCannotBeParsedException::class);
 
         foreach ($this->csvReader as $rowIndex => $data) {
             $this->csvReader->getDateTime($rowIndex, 'subject'); // This field cannot be parsed as a date
@@ -176,7 +176,7 @@ class CsvReaderTest extends UnitTestCase
             ->with('date')
             ->andReturn(4);
 
-        self::expectException(FileReaderException::class);
+        self::expectException(DateCannotBeParsedException::class);
         $this->csvReader->getOptionalDateTime(1, 'date');
     }
 

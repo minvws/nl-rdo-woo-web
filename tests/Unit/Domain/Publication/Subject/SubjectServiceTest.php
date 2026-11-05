@@ -8,6 +8,8 @@ use Doctrine\ORM\Query;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Organisation\Organisation;
+use Shared\Domain\Publication\Subject\Event\SubjectCreatedEvent;
+use Shared\Domain\Publication\Subject\Event\SubjectDeletedEvent;
 use Shared\Domain\Publication\Subject\Event\SubjectUpdatedEvent;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectRepository;
@@ -55,10 +57,27 @@ class SubjectServiceTest extends UnitTestCase
     public function testSaveNew(): void
     {
         $subject = Mockery::mock(Subject::class);
+        $subject->expects('getId')->andReturn($subjectId = Uuid::v6());
 
         $this->repository->expects('save')->with($subject, true);
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
+            static fn (SubjectCreatedEvent $message) => $message->getUuid() === $subjectId,
+        ))->andReturns(new Envelope(new stdClass()));
 
         $this->subjectService->saveNew($subject);
+    }
+
+    public function testDeleteRemovesSubjectAndDispatchesEvent(): void
+    {
+        $subject = Mockery::mock(Subject::class);
+        $subject->expects('getId')->andReturn($subjectId = Uuid::v6());
+
+        $this->repository->expects('remove')->with($subject, true);
+        $this->messageBus->expects('dispatch')->with(Mockery::on(
+            static fn (SubjectDeletedEvent $message) => $message->getUuid() === $subjectId,
+        ))->andReturns(new Envelope(new stdClass()));
+
+        $this->subjectService->delete($subject);
     }
 
     public function testSave(): void

@@ -323,7 +323,7 @@ services:
 
   robot:
     profiles: [run-only]
-    image: ghcr.io/minvws/nl-rdo-woo-web-private/robot:2026.06.25
+    image: ghcr.io/minvws/nl-rdo-woo-web-private/robot:2026.10.42
     depends_on:
       public:
         condition: service_healthy

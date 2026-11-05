@@ -7,48 +7,29 @@ namespace Shared\Domain\Ingest\Content;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\Storage\EntityStorageService;
 
-class LazyFileReference implements FileReferenceInterface
+readonly class LazyFileReference implements FileReferenceInterface
 {
-    /** @var callable(): string */
-    private $loader;
-
-    private ?string $path = null;
-
-    public function __construct(callable $loader)
-    {
-        $this->loader = $loader;
+    public function __construct(
+        private EntityWithFileInfo $entity,
+        private ContentExtractOptions $contentExtractOptions,
+        private EntityStorageService $entityStorageService,
+    ) {
     }
 
-    public function getPath(): string
+    /**
+     * @return resource
+     */
+    public function getStream()
     {
-        $this->path ??= ($this->loader)();
+        if ($this->contentExtractOptions->hasPageNumber()) {
+            throw ContentExtractException::forCannotCreateLazyFileReferenceForPage();
+        }
 
-        return $this->path;
-    }
+        $stream = $this->entityStorageService->retrieveResourceEntity($this->entity);
+        if ($stream === null) {
+            throw ContentExtractException::forCannotCreateLazyFileReference($this->entity);
+        }
 
-    public function hasPath(): bool
-    {
-        return $this->path !== null;
-    }
-
-    public static function createForEntityWithFileInfo(
-        EntityWithFileInfo $entity,
-        ContentExtractOptions $options,
-        EntityStorageService $entityStorage,
-    ): self {
-        return new self(
-            static function () use ($entity, $options, $entityStorage) {
-                if ($options->hasPageNumber()) {
-                    throw ContentExtractException::forCannotCreateLazyFileReferenceForPage();
-                }
-
-                $filePath = $entityStorage->downloadEntity($entity);
-                if ($filePath === false) {
-                    throw ContentExtractException::forCannotCreateLazyFileReference($entity);
-                }
-
-                return $filePath;
-            },
-        );
+        return $stream;
     }
 }

@@ -18,23 +18,23 @@
                     <p class="font-bold">{{ 'admin.inquiries.number_of_inquiries_added' | trans({'count': result.addedRelationsCount}) }}</p>
 
                     <twig:block name="extra">
-                        {% if result.hasGenericExceptions %}
+                        {% if result.hasGenericErrors %}
                             <p class="font-bold">{{ 'admin.inquiries.generic_errors_title' | trans }}:</p>
 
                             <ul class="bhr-ul">
-                                {% for exception in result.genericExceptions %}
-                                    <li class="bhr-li">{{ exception | trans }}</li>
+                                {% for error in result.genericErrors %}
+                                    <li class="bhr-li">{{ error | trans }}</li>
                                 {% endfor %}
                             </ul>
                         {% endif %}
 
-                        {% if result.hasRowExceptions %}
-                            <p class="font-bold {{ result.hasGenericExceptions ? 'mt-4' : '' }}">{{ 'admin.inquiries.row_errors_title' | trans }}:</p>
+                        {% if result.hasRowErrors %}
+                            <p class="font-bold {{ result.hasGenericErrors ? 'mt-4' : '' }}">{{ 'admin.inquiries.row_errors_title' | trans }}:</p>
 
                             <ul class="bhr-ul">
-                                {% for rownumber, rowExceptions in result.rowExceptions %}
-                                    {% for exception in rowExceptions %}
-                                        <li class="bhr-li">{{ 'admin.inquiries.row' | trans }} {{ rownumber }}: {{ exception | trans }}</li>
+                                {% for rownumber, rowErrors in result.rowErrors %}
+                                    {% for error in rowErrors %}
+                                        <li class="bhr-li">{{ 'admin.inquiries.row' | trans }} {{ rownumber }}: {{ error | trans }}</li>
                                     {% endfor %}
                                 {% endfor %}
                             </ul>

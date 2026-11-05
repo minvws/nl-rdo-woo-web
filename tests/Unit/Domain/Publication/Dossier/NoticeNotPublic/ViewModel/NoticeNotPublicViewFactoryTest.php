@@ -6,12 +6,16 @@ namespace Shared\Tests\Unit\Domain\Publication\Dossier\NoticeNotPublic\ViewModel
 
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic as NoticeNotPublicEntity;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicNotFoundException;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\ViewModel\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\ViewModel\NoticeNotPublicViewFactory;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\ViewModel\Ground;
+use Shared\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\PlainDate;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -53,6 +57,11 @@ final class NoticeNotPublicViewFactoryTest extends UnitTestCase
             $translator->expects('trans')->never();
         }
 
+        $expectedGrounds = [new Ground($this->getFaker()->ground(), $this->getFaker()->word(), $this->getFaker()->url())];
+
+        $groundViewFactory = Mockery::mock(GroundViewFactory::class);
+        $groundViewFactory->expects('makeCollection')->with($grounds)->andReturn($expectedGrounds);
+
         $noticeNotPublic = Mockery::mock(NoticeNotPublicEntity::class);
         $noticeNotPublic->expects('getId')->andReturn($uuid);
         $noticeNotPublic->expects('getDocumentName')->times(2)->andReturn($documentName);
@@ -66,13 +75,15 @@ final class NoticeNotPublicViewFactoryTest extends UnitTestCase
         $dossier->expects('getDossierNumber')->andReturn('2024-001');
         $dossier->expects('getType')->andReturn(DossierType::ADVICE);
 
-        $result = new NoticeNotPublicViewFactory($urlGenerator, $translator)->make($dossier);
+        $dossierUrlGenerator = new DossierUrlGenerator(Mockery::mock(PublicUrlGenerator::class), $urlGenerator);
+        $result = new NoticeNotPublicViewFactory($groundViewFactory, $translator, $dossierUrlGenerator)
+            ->make($dossier);
 
         $this->assertInstanceOf(NoticeNotPublic::class, $result);
         $this->assertSame($expectedId, $result->id);
         $this->assertSame($documentName, $result->documentName);
         $this->assertSame($expectedFormalDate, $result->formalDate);
-        $this->assertSame($grounds, $result->grounds);
+        $this->assertSame($expectedGrounds, $result->grounds);
         $this->assertSame($expectedExplanation, $result->explanation);
         $this->assertSame($expectedDetailsUrl, $result->detailsUrl);
         $this->assertSame($expectedTitle, $result->title);
@@ -86,8 +97,9 @@ final class NoticeNotPublicViewFactoryTest extends UnitTestCase
         $this->expectException(NoticeNotPublicNotFoundException::class);
 
         new NoticeNotPublicViewFactory(
-            Mockery::mock(UrlGeneratorInterface::class),
+            Mockery::mock(GroundViewFactory::class),
             Mockery::mock(TranslatorInterface::class),
+            Mockery::mock(DossierUrlGenerator::class),
         )->make($dossier);
     }
 

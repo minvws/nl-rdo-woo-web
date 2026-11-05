@@ -12,6 +12,7 @@ use Shared\Domain\Search\Query\Facet\Input\DocTypeValue;
 use Shared\Domain\Search\Query\Facet\Input\StringValuesFacetInputInterface;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Dsl\Query;
+use Shared\Service\Search\Query\Dsl\QueryParameter;
 
 use function is_null;
 
@@ -42,7 +43,7 @@ class DocTypeFilter implements FilterInterface
                 continue;
             }
 
-            if ($docTypeValue->getSubType() === 'publication') {
+            if ($docTypeValue->getSubType() === DocTypeValue::PUBLICATION_SUBTYPE) {
                 $subFilters[] = Query::bool(
                     must: [
                         Query::term(
@@ -73,7 +74,7 @@ class DocTypeFilter implements FilterInterface
         $query->addFilter(
             Query::bool(
                 should: $subFilters,
-            )->setParams(['minimum_should_match' => 1]),
+            )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]),
         );
     }
 

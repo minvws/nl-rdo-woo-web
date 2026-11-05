@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain\WooIndex\Builder;
 use Shared\Domain\WooIndex\Builder\DiWooXMLWriter;
 use Shared\Domain\WooIndex\Builder\SitemapIndexBuilder;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\Url;
 use Webmozart\Assert\Assert;
 
 use function fopen;
@@ -38,9 +39,9 @@ final class SitemapIndexBuilderTest extends UnitTestCase
 
         $writer = $builder->open($this->stream);
 
-        $builder->addSitemap($writer, 'https://example.com/sitemap1.xml');
-        $builder->addSitemap($writer, 'https://example.com/sitemap1.xml');
-        $builder->addSitemap($writer, 'https://example.com/sitemap1.xml');
+        $builder->addSitemap($writer, Url::create('https://example.com/sitemap1.xml'));
+        $builder->addSitemap($writer, Url::create('https://example.com/sitemap1.xml'));
+        $builder->addSitemap($writer, Url::create('https://example.com/sitemap1.xml'));
         $builder->closeFlush($writer);
 
         rewind($this->stream);

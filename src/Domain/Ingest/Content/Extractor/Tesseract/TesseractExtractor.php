@@ -25,7 +25,7 @@ readonly class TesseractExtractor implements ContentExtractorInterface
     public function getContent(EntityWithFileInfo $entity, FileReferenceInterface $fileReference): string
     {
         $content = $this->tesseractService->extract(
-            $fileReference->getPath(),
+            $fileReference->getStream(),
         );
 
         return trim($content);

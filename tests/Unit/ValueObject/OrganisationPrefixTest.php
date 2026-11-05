@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\ValueObject;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Exception\OrganisationPrefixArgumentException;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\OrganisationPrefix;
 
 use function str_repeat;
@@ -42,14 +43,32 @@ final class OrganisationPrefixTest extends UnitTestCase
         );
     }
 
+    #[DataProvider('otherTypeDataProvider')]
+    public function testEqualToReturnsFalseForOtherTypes(mixed $other): void
+    {
+        self::assertFalse(OrganisationPrefix::create('ABC-12')->equalTo($other));
+    }
+
+    /**
+     * @return array<string, array{other: mixed}>
+     */
+    public static function otherTypeDataProvider(): array
+    {
+        return [
+            'null' => ['other' => null],
+            'string with same value' => ['other' => 'ABC-12'],
+            'other equatable with same value' => ['other' => ExternalId::create('ABC-12')],
+        ];
+    }
+
     #[DataProvider('invalidPrefixDataProvider')]
-    public function testCreateRejectsInvalidValues(string $prefix, string $translationKey): void
+    public function testCreateRejectsInvalidValues(string $prefix, string $messageKey): void
     {
         try {
             OrganisationPrefix::create($prefix);
             self::fail('Expected OrganisationPrefixArgumentException to be thrown');
         } catch (OrganisationPrefixArgumentException $exception) {
-            self::assertSame($translationKey, $exception->getTranslationKey());
+            self::assertSame($messageKey, $exception->getMessageKey());
         }
     }
 

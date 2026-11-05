@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Shared\ValueObject;
 
 use InvalidArgumentException;
-use Shared\Domain\Exception\DossierTitleArgumentException;
+use Shared\Domain\Exception\DossierTitleTooLongException;
+use Shared\Domain\Exception\DossierTitleTooShortException;
 use Stringable;
 use Webmozart\Assert\Assert;
 
 use function trim;
 
-/**
- * @implements Equatable<DossierTitle>
- */
 final readonly class DossierTitle implements Stringable, Equatable
 {
     public const int MIN_LENGTH = 3;
@@ -34,19 +32,13 @@ final readonly class DossierTitle implements Stringable, Equatable
         try {
             Assert::minLength(trim($title), self::MIN_LENGTH);
         } catch (InvalidArgumentException) {
-            throw new DossierTitleArgumentException(
-                'dossier.title_too_short',
-                ['{{ limit }}' => self::MIN_LENGTH],
-            );
+            throw new DossierTitleTooShortException(self::MIN_LENGTH);
         }
 
         try {
             Assert::maxLength($title, self::MAX_LENGTH);
         } catch (InvalidArgumentException) {
-            throw new DossierTitleArgumentException(
-                'dossier.title_too_long',
-                ['{{ limit }}' => self::MAX_LENGTH],
-            );
+            throw new DossierTitleTooLongException(self::MAX_LENGTH);
         }
 
         return new self($title);
@@ -57,10 +49,8 @@ final readonly class DossierTitle implements Stringable, Equatable
         return $this->__toString();
     }
 
-    public function equalTo(Equatable $other): bool
+    public function equalTo(mixed $other): bool
     {
-        Assert::isInstanceOf($other, self::class);
-
-        return $this->toString() === $other->toString();
+        return $other instanceof self && $this->title === $other->title;
     }
 }

@@ -29,6 +29,7 @@ return RectorConfig::configure()
         __DIR__ . '/tests',
         __DIR__ . '/utils',
     ])
+    ->withPreparedSets(doctrineCodeQuality: true)
     ->withComposerBased(twig: true, doctrine: true, phpunit: true, symfony: true)
     ->withAttributesSets()
     ->withPhpSets()

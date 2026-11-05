@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Inquiry;
 
-use Shared\Exception\TranslatableException;
+use Shared\Service\Import\ImportError;
 
 use function array_key_exists;
 use function array_reduce;
@@ -13,14 +13,14 @@ use function count;
 class InquiryLinkImportResult
 {
     /**
-     * @var array<array-key,TranslatableException>
+     * @var array<array-key,ImportError>
      */
-    public array $genericExceptions = [];
+    public array $genericErrors = [];
 
     /**
-     * @var array<int, array<array-key,TranslatableException>>
+     * @var array<int, array<array-key,ImportError>>
      */
-    public array $rowExceptions = [];
+    public array $rowErrors = [];
 
     private bool $hasMatter = false;
 
@@ -39,18 +39,18 @@ class InquiryLinkImportResult
         $this->hasMatter = $hasMatter;
     }
 
-    public function addGenericException(TranslatableException $exception): void
+    public function addGenericError(ImportError $importError): void
     {
-        $this->genericExceptions[] = $exception;
+        $this->genericErrors[] = $importError;
     }
 
-    public function addRowException(int $rowNumber, TranslatableException $exception): void
+    public function addRowError(int $rowNumber, ImportError $importError): void
     {
-        if (! array_key_exists($rowNumber, $this->rowExceptions)) {
-            $this->rowExceptions[$rowNumber] = [];
+        if (! array_key_exists($rowNumber, $this->rowErrors)) {
+            $this->rowErrors[$rowNumber] = [];
         }
 
-        $this->rowExceptions[$rowNumber][] = $exception;
+        $this->rowErrors[$rowNumber][] = $importError;
     }
 
     public function getAddedRelationsCount(): int
@@ -64,16 +64,16 @@ class InquiryLinkImportResult
 
     public function isSuccessful(): bool
     {
-        return ! $this->hasGenericExceptions() && ! $this->hasRowExceptions() && $this->getAddedRelationsCount() > 0;
+        return ! $this->hasGenericErrors() && ! $this->hasRowErrors() && $this->getAddedRelationsCount() > 0;
     }
 
-    public function hasGenericExceptions(): bool
+    public function hasGenericErrors(): bool
     {
-        return count($this->genericExceptions) > 0;
+        return count($this->genericErrors) > 0;
     }
 
-    public function hasRowExceptions(): bool
+    public function hasRowErrors(): bool
     {
-        return count($this->rowExceptions) > 0;
+        return count($this->rowErrors) > 0;
     }
 }

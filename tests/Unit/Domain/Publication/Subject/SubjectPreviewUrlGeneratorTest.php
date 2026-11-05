@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Publication\Subject;
 
-use LogicException;
 use Mockery;
-use Mockery\MockInterface;
-use Shared\Domain\Publication\Subject\LandingPageSlug;
+use Shared\Controller\Public\SubjectLandingPageController;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectContentTree;
@@ -15,100 +14,51 @@ use Shared\Domain\Publication\Subject\SubjectContentTreeStatus;
 use Shared\Domain\Publication\Subject\SubjectLandingPageStatus;
 use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Tests\Unit\UnitTestCase;
-use Symfony\Component\Uid\Uuid;
+use Shared\ValueObject\Url;
 
 class SubjectPreviewUrlGeneratorTest extends UnitTestCase
 {
     public function testGeneratesPreviewUrlForConceptWithToken(): void
     {
-        $generator = new SubjectPreviewUrlGenerator('https://example.com');
-
         $subject = new Subject();
         $subject->setLandingPage(
-            LandingPageSlug::create('preview'),
-            LandingPageTitle::create('T'),
-            'D',
+            $this->getFaker()->landingPageSlug(),
+            LandingPageTitle::create($this->getFaker()->sentence()),
+            $this->getFaker()->sentence(),
             SubjectLandingPageStatus::CONCEPT,
             new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
             SubjectContentTreeStatus::CONCEPT,
         );
 
-        $url = $generator->generatePreviewUrl($subject);
+        $previewToken = $subject->getLandingPagePreviewToken();
+        $url = Url::create($this->getFaker()->url());
 
-        self::assertNotNull($url);
-        self::assertStringStartsWith(
-            'https://example.com/onderwerp/' . $subject->getId()->toRfc4122() . '/preview/',
-            $url,
-        );
+        $publicUrlGenerator = Mockery::mock(PublicUrlGenerator::class);
+        $publicUrlGenerator
+            ->expects('buildUrlFromRoute')
+            ->with(SubjectLandingPageController::ROUTE_NAME_SUBJECT_LANDING_PAGE_PREVIEW, [
+                'id' => $subject->getId()->toRfc4122(),
+                'previewToken' => $previewToken->toRfc4122(),
+            ])
+            ->andReturn($url);
+
+        self::assertSame($url, new SubjectPreviewUrlGenerator($publicUrlGenerator)->generatePreviewUrl($subject));
     }
 
     public function testReturnsNullForPublishedStatus(): void
     {
-        $generator = new SubjectPreviewUrlGenerator('https://example.com');
-
         $subject = new Subject();
         $subject->setLandingPage(
-            LandingPageSlug::create('published'),
-            LandingPageTitle::create('T'),
-            'D',
+            $this->getFaker()->landingPageSlug(),
+            LandingPageTitle::create($this->getFaker()->sentence()),
+            $this->getFaker()->sentence(),
             SubjectLandingPageStatus::PUBLISHED,
             new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
             SubjectContentTreeStatus::CONCEPT,
         );
 
+        $generator = new SubjectPreviewUrlGenerator(Mockery::mock(PublicUrlGenerator::class));
+
         self::assertNull($generator->generatePreviewUrl($subject));
-    }
-
-    public function testGeneratesPreviewUrlForFreshSubjectWithDefaultConceptStatus(): void
-    {
-        $generator = new SubjectPreviewUrlGenerator('https://example.com');
-
-        $subject = new Subject();
-        self::assertSame(SubjectLandingPageStatus::CONCEPT, $subject->getLandingPageStatus());
-        self::assertNotNull($subject->getLandingPagePreviewToken());
-
-        $url = $generator->generatePreviewUrl($subject);
-
-        self::assertNotNull($url);
-        self::assertStringStartsWith(
-            'https://example.com/onderwerp/' . $subject->getId()->toRfc4122() . '/preview/',
-            $url,
-        );
-    }
-
-    public function testThrowsLogicExceptionForConceptWithNullToken(): void
-    {
-        $generator = new SubjectPreviewUrlGenerator('https://example.com');
-
-        /** @var Subject&MockInterface $subject */
-        $subject = Mockery::mock(Subject::class);
-        $subject->expects('getLandingPageStatus')->andReturn(SubjectLandingPageStatus::CONCEPT);
-        $subject->expects('getLandingPagePreviewToken')->andReturn(null);
-        $subject->expects('getId')->andReturn(Uuid::v6());
-
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessageMatches('/no preview token/');
-
-        $generator->generatePreviewUrl($subject);
-    }
-
-    public function testBaseUrlTrailingSlashNormalized(): void
-    {
-        $generator = new SubjectPreviewUrlGenerator('https://example.com/');
-
-        $subject = new Subject();
-        $subject->setLandingPage(
-            LandingPageSlug::create('normalized'),
-            LandingPageTitle::create('T'),
-            'D',
-            SubjectLandingPageStatus::CONCEPT,
-            new SubjectContentTree(title: '', intro: '', children: [], outro: ''),
-            SubjectContentTreeStatus::CONCEPT,
-        );
-
-        $url = $generator->generatePreviewUrl($subject);
-
-        self::assertNotNull($url);
-        self::assertStringNotContainsString('//onderwerp', $url);
     }
 }

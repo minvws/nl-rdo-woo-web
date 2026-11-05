@@ -11,8 +11,6 @@ use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\TypeInfo\Type\NullableType;
 use Symfony\Component\TypeInfo\Type\ObjectType;
 
-use function trim;
-
 #[AsDecorator(decorates: 'api_platform.metadata.property.metadata_factory')]
 final readonly class DocumentIdPropertyMetadataFactory implements PropertyMetadataFactoryInterface
 {
@@ -42,7 +40,7 @@ final readonly class DocumentIdPropertyMetadataFactory implements PropertyMetada
             'format' => 'document-id',
             'minLength' => DocumentId::MIN_LENGTH,
             'maxLength' => DocumentId::MAX_LENGTH,
-            'pattern' => trim(DocumentId::PATTERN, '/'),
+            'pattern' => DocumentId::PATTERN,
         ];
 
         if ($nullable) {

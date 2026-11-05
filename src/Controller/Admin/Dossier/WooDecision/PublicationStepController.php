@@ -19,6 +19,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class PublicationStepController extends AbstractController
 {
+    public const string ROUTE_NAME_CONCEPT = 'app_admin_dossier_woodecision_publication_concept';
+    public const string ROUTE_NAME_EDIT = 'app_admin_dossier_woodecision_publication_edit';
+
     public function __construct(
         private readonly DossierService $dossierService,
         private readonly StepActionHelper $stepHelper,
@@ -26,8 +29,8 @@ class PublicationStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/publish/concept/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_woodecision_publication_concept',
+        '/balie/dossier/woodecision/publish/concept/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_CONCEPT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
@@ -56,8 +59,8 @@ class PublicationStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/publish/edit/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_woodecision_publication_edit',
+        '/balie/dossier/woodecision/publish/edit/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_EDIT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]

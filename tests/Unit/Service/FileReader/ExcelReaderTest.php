@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use Mockery;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Row;
-use Shared\Exception\FileReaderException;
+use Shared\Exception\Import\DateCannotBeParsedException;
 use Shared\Service\FileReader\ExcelReader;
 use Shared\Service\FileReader\HeaderMap;
 use Shared\Tests\Unit\UnitTestCase;
@@ -135,7 +135,7 @@ class ExcelReaderTest extends UnitTestCase
         // Last row has an empty value in date column
         $last = end($rows);
         Assert::isInstanceOf($last, Row::class);
-        $this->expectException(FileReaderException::class);
+        $this->expectException(DateCannotBeParsedException::class);
         $excelReader->getDateTime($last->getRowIndex(), 'date');
     }
 
@@ -150,7 +150,7 @@ class ExcelReaderTest extends UnitTestCase
             $headerMap,
         );
 
-        $this->expectException(FileReaderException::class);
+        $this->expectException(DateCannotBeParsedException::class);
 
         foreach ($excelReader as $row) {
             $excelReader->getDateTime($row->getRowIndex(), 'subject'); // This field cannot be parsed as a date
@@ -214,7 +214,7 @@ class ExcelReaderTest extends UnitTestCase
             $headerMap,
         );
 
-        self::expectException(FileReaderException::class);
+        self::expectException(DateCannotBeParsedException::class);
         $excelReader->getOptionalDateTime(1, 'date');
     }
 

@@ -19,8 +19,13 @@ enum PublicationReason: string implements TranslatableInterface
         return self::WOO_REQUEST;
     }
 
+    public function getTranslationKey(): string
+    {
+        return 'dossier.type.woo-decision.publication-reason.' . $this->value;
+    }
+
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
-        return $translator->trans('dossier.type.woo-decision.publication-reason.' . $this->value, locale: $locale);
+        return $translator->trans($this->getTranslationKey(), locale: $locale);
     }
 }

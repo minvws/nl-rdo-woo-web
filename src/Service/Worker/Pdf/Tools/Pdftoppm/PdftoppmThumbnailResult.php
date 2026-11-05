@@ -13,13 +13,13 @@ final readonly class PdftoppmThumbnailResult
         public int $exitCode,
         public array $params,
         public ?string $errorMessage,
-        public string $sourcePdf,
-        public string $targetPath,
+        public ?string $thumbnail,
     ) {
     }
 
     /**
      * @phpstan-assert-if-true !string $this->errorMessage
+     * @phpstan-assert-if-true !null $this->thumbnail
      *
      * @phpstan-assert-if-false !null $this->errorMessage
      */
@@ -32,6 +32,7 @@ final readonly class PdftoppmThumbnailResult
      * @phpstan-assert-if-true !null $this->errorMessage
      *
      * @phpstan-assert-if-false !string $this->errorMessage
+     * @phpstan-assert-if-false !null $this->thumbnail
      */
     public function isFailed(): bool
     {

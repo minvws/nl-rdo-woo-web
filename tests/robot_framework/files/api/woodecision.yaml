@@ -653,7 +653,7 @@ testcases:
               grounds: [<ROBOT RANDOMIZE>]
               isSuspended: false
               judgement: already_public
-              links: []
+              links: [https://voorbeeld.nl/reeds-openbaar]
               publicationContext: <ROBOT RANDOM CONTEXT>
               refersTo: []
               remark: "Niets op aan te merken"
@@ -665,3 +665,8 @@ testcases:
     - name: UploadStatus Is No Upload Required
       keyword:
         name: UploadStatus Is No Upload Required
+    - name: Public document page shows the public link
+      keyword:
+        name: Public Document Page Should Show Link
+        args:
+          - https://voorbeeld.nl/reeds-openbaar

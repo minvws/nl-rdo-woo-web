@@ -6,6 +6,8 @@ namespace Shared\Domain\Search;
 
 use Shared\Domain\Search\Index\DeleteElasticDocumentCommand;
 use Shared\Domain\Search\Index\Dossier\IndexDossierCommand;
+use Shared\Domain\Search\Index\Subject\IndexAllSubjectsCommand;
+use Shared\Domain\Search\Index\Subject\IndexSubjectCommand;
 use Shared\Domain\Search\Index\SubType\IndexAttachmentCommand;
 use Shared\Domain\Search\Index\SubType\IndexMainDocumentCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -43,6 +45,20 @@ readonly class SearchDispatcher
     {
         $this->messageBus->dispatch(
             new IndexDossierCommand($uuid, $refresh),
+        );
+    }
+
+    public function dispatchIndexSubjectCommand(Uuid $uuid): void
+    {
+        $this->messageBus->dispatch(
+            new IndexSubjectCommand($uuid),
+        );
+    }
+
+    public function dispatchIndexAllSubjectsCommand(): void
+    {
+        $this->messageBus->dispatch(
+            new IndexAllSubjectsCommand(),
         );
     }
 }

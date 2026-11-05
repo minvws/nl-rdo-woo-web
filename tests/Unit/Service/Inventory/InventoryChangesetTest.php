@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inventory;
 
-use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\Import\DuplicateDocumentNumberException;
 use Shared\Service\Inventory\InventoryChangeset;
+use Shared\Service\Inventory\InventoryChangesetDocumentNotFoundException;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentNumber;
 
@@ -128,7 +129,7 @@ class InventoryChangesetTest extends UnitTestCase
         $documentNumber = DocumentNumber::fromString('test-x-123a');
         $duplicateDocumentNumber = DocumentNumber::fromString('test-x-123a');
 
-        $expectedException = ProcessInventoryException::forDuplicateDocumentNumber($duplicateDocumentNumber->toString());
+        $expectedException = new DuplicateDocumentNumberException($duplicateDocumentNumber->toString());
 
         $changeset->markAsAdded($documentNumber);
 
@@ -162,5 +163,16 @@ class InventoryChangesetTest extends UnitTestCase
 
         // One added + one unchanged + one updated and don't count the deleted one = 3
         self::assertEquals(3, $changeset->getResultingTotalDocumentCount());
+    }
+
+    public function testGetStatusFailsWhenDocumentNumberIsUnknown(): void
+    {
+        $documentNumber = $this->getFaker()->documentNumber();
+
+        $changeset = new InventoryChangeset();
+
+        self::expectException(InventoryChangesetDocumentNotFoundException::class);
+
+        $changeset->getStatus($documentNumber);
     }
 }

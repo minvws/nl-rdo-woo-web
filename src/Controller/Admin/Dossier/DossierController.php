@@ -10,9 +10,9 @@ use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\Dossier\Admin\DossierFilterParameters;
 use Shared\Domain\Publication\Dossier\Admin\DossierListingService;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublicRepository;
 use Shared\Domain\Publication\Dossier\Type\DossierTypeManager;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierTypeViewFactory;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
@@ -32,6 +32,11 @@ use function reset;
 
 class DossierController extends AbstractController
 {
+    public const string ROUTE_NAME_DOSSIERS = 'app_admin_dossiers';
+    public const string ROUTE_NAME_DOSSIER = 'app_admin_dossier';
+    public const string ROUTE_NAME_DOSSIER_PUBLICATION_CONFIRMATION = 'app_admin_dossier_publication_confirmation';
+    public const string ROUTE_NAME_DOSSIER_CREATE = 'app_admin_dossier_create';
+
     protected const int MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
@@ -40,14 +45,14 @@ class DossierController extends AbstractController
         private readonly WizardStatusFactory $wizardStatusFactory,
         private readonly DossierTypeManager $dossierTypeManager,
         private readonly AttachmentViewFactory $attachmentViewFactory,
-        private readonly DossierPathHelper $dossierPathHelper,
+        private readonly DossierUrlGenerator $dossierUrlGenerator,
         private readonly DossierTypeViewFactory $dossierTypeViewFactory,
         private readonly MainDocumentViewFactory $mainDocumentViewFactory,
         private readonly NoticeNotPublicRepository $noticeNotPublicRepository,
     ) {
     }
 
-    #[Route('/balie/dossiers', name: 'app_admin_dossiers', methods: ['GET'])]
+    #[Route('/balie/dossiers', self::ROUTE_NAME_DOSSIERS, methods: ['GET'])]
     #[IsGranted('AuthMatrix.dossier.read')]
     public function index(Request $request): Response
     {
@@ -76,7 +81,7 @@ class DossierController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/dossier/overview/{documentPrefix}/{dossierNumber}', name: 'app_admin_dossier', methods: ['GET'])]
+    #[Route('/balie/dossier/overview/{documentPrefix}/{dossierNumber}', self::ROUTE_NAME_DOSSIER, methods: ['GET'])]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
     public function dossier(
         #[MapEntity(
@@ -107,14 +112,14 @@ class DossierController extends AbstractController
                 'noticeNotPublic' => $noticeNotPublic,
                 'dossier' => $dossier,
                 'workflowStatus' => $this->wizardStatusFactory->getWizardStatus($dossier),
-                'publicDossierUrl' => $this->dossierPathHelper->getAbsoluteDetailsPath($dossier),
+                'publicDossierUrl' => $this->dossierUrlGenerator->detailUrl($dossier)->toString(),
             ],
         );
     }
 
     #[Route(
-        path: '/balie/dossier/overview/{documentPrefix}/{dossierNumber}/publication-confirmation',
-        name: 'app_admin_dossier_publication_confirmation',
+        '/balie/dossier/overview/{documentPrefix}/{dossierNumber}/publication-confirmation',
+        self::ROUTE_NAME_DOSSIER_PUBLICATION_CONFIRMATION,
         methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.dossier.read', subject: 'dossier')]
@@ -123,11 +128,11 @@ class DossierController extends AbstractController
     ): Response {
         return $this->render('admin/dossier/' . $dossier->getType()->value . '/publication-confirmation.html.twig', [
             'dossier' => $dossier,
-            'publicDossierUrl' => $this->dossierPathHelper->getAbsoluteDetailsPath($dossier),
+            'publicDossierUrl' => $this->dossierUrlGenerator->detailUrl($dossier)->toString(),
         ]);
     }
 
-    #[Route('/balie/dossier/create', name: 'app_admin_dossier_create', methods: ['GET'])]
+    #[Route('/balie/dossier/create', self::ROUTE_NAME_DOSSIER_CREATE, methods: ['GET'])]
     #[IsGranted('AuthMatrix.dossier.create')]
     public function create(): Response
     {

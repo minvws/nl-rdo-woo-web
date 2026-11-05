@@ -41,7 +41,7 @@ class BatchDownload
 
     public function __construct(
         BatchDownloadScope $scope,
-        #[ORM\Column]
+        #[ORM\Column(index: true)]
         private DateTimeImmutable $expiration,
         #[ORM\Id]
         #[ORM\Column(type: 'uuid')]

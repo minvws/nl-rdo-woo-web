@@ -10,6 +10,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\ViewModel\DocumentViewFactory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\PublicationReason;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ViewModel\WooDecisionViewFactory;
@@ -17,11 +18,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierFileViewFactory;
 use Shared\Domain\Search\Index\Dossier\Mapper\PrefixedDossierNumber;
 use Shared\Domain\Search\Query\Facet\FacetDefinitions;
-use Shared\Service\DocumentCanonicalUrlGenerator;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Security\DossierVoter;
 use Shared\ValueObject\DocumentNumber;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,6 +33,7 @@ use Webmozart\Assert\Assert;
 class DocumentController extends AbstractController
 {
     public const string ROUTE_NAME_DOCUMENT_DETAIL = 'app_document_detail';
+    public const string ROUTE_NAME_DOCUMENT_CANONICAL = 'app_document_canonical';
 
     public function __construct(
         private readonly DocumentRepository $documentRepository,
@@ -43,18 +43,28 @@ class DocumentController extends AbstractController
         private readonly DossierFileViewFactory $dossierFileViewFactory,
         private readonly TranslatorInterface $translator,
         private readonly FacetDefinitions $facetDefinitions,
-        private readonly DocumentCanonicalUrlGenerator $documentCanonicalUrlGenerator,
+        private readonly DocumentUrlGenerator $documentUrlGenerator,
     ) {
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/dossier/{documentPrefix}/{dossierNumber}/document/{documentNumber}', name: self::ROUTE_NAME_DOCUMENT_DETAIL, methods: ['GET'])]
+    #[Route('/dossier/{documentPrefix}/{dossierNumber}/document/{documentNumber}', self::ROUTE_NAME_DOCUMENT_DETAIL, methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $wooDecision,
-        #[MapEntity(expr: 'repository.findOneByDossierNumberAndDocumentNumber(documentPrefix, dossierNumber, documentNumber)')] Document $document,
+        DocumentNumber $documentNumber,
         Breadcrumbs $breadcrumbs,
         Request $request,
     ): Response {
+        $document = $this->documentRepository->findOneByDossierNumberAndDocumentNumber(
+            $wooDecision->getDocumentPrefix(),
+            $wooDecision->getDossierNumber(),
+            $documentNumber,
+        );
+
+        if ($document === null) {
+            throw $this->createNotFoundException();
+        }
+
         $this->denyAccessUnlessGranted(DossierVoter::VIEW, $document);
 
         $breadcrumbs->addRouteItem('global.home', 'app_home');
@@ -96,7 +106,7 @@ class DocumentController extends AbstractController
         return $this->render('public/dossier/woo-decision/document/details.html.twig', [
             'dossier' => $this->wooDecisionViewFactory->make($wooDecision),
             'document' => $this->documentViewFactory->make($document),
-            'canonical_url' => $this->documentCanonicalUrlGenerator->canonical($document->getDocumentNumber()),
+            'canonical_url' => $this->documentUrlGenerator->canonicalUrl($document->getDocumentNumber()),
             'thread' => $threadDocPaginator,
             'family' => $familyDocPaginator,
             'file' => $this->dossierFileViewFactory->make(
@@ -129,12 +139,10 @@ class DocumentController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/document/{documentNumber}', name: 'app_document_canonical', methods: ['GET'])]
-    public function canonical(string $documentNumber): Response
+    #[Route('/document/{documentNumber}', self::ROUTE_NAME_DOCUMENT_CANONICAL, methods: ['GET'])]
+    public function canonical(DocumentNumber $documentNumber): Response
     {
-        $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive(
-            DocumentNumber::fromString($documentNumber),
-        );
+        $document = $this->documentRepository->findByDocumentNumber($documentNumber);
 
         if ($document === null) {
             throw $this->createNotFoundException();
@@ -146,7 +154,7 @@ class DocumentController extends AbstractController
 
         return $this->render('public/dossier/woo-decision/document/canonical.html.twig', [
             'document' => $this->documentViewFactory->make($document),
-            'canonical_url' => $this->documentCanonicalUrlGenerator->canonical($document->getDocumentNumber()),
+            'canonical_url' => $this->documentUrlGenerator->canonicalUrl($document->getDocumentNumber()),
         ]);
     }
 

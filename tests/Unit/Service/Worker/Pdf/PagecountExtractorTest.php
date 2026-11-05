@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Log\LoggerInterface;
@@ -35,26 +36,21 @@ final class PagecountExtractorTest extends UnitTestCase
     public function testExtract(): void
     {
         $this->entityStorageService
-            ->expects('downloadEntity')
+            ->expects('retrieveResourceEntity')
             ->with($this->entity)
-            ->andReturn($localPdfPath = 'localPdfPath');
+            ->andReturn($source = Utils::tryFopen('php://memory', 'r'));
 
         $pdftkPageCountResult = new PdftkPageCountResult(
             exitCode: 0,
             params: ['cmd', 'param1', 'param2'],
             errorMessage: null,
-            sourcePdf: 'foobar.pdf',
             numberOfPages: 42,
         );
 
         $this->pdftkService
             ->expects('extractNumberOfPages')
-            ->with($localPdfPath)
+            ->with($source)
             ->andReturn($pdftkPageCountResult);
-
-        $this->entityStorageService
-            ->expects('removeDownload')
-            ->with($localPdfPath);
 
         $extractor = new PagecountExtractor(
             $this->logger,
@@ -67,12 +63,12 @@ final class PagecountExtractorTest extends UnitTestCase
         $this->assertSame($pdftkPageCountResult, $extractor->getOutput());
     }
 
-    public function testExtractWithFailedDownloadingOfEntity(): void
+    public function testExtractWithFailedReadingOfEntity(): void
     {
         $this->entityStorageService
-            ->expects('downloadEntity')
+            ->expects('retrieveResourceEntity')
             ->with($this->entity)
-            ->andReturnFalse();
+            ->andReturnNull();
 
         $this->entity
             ->expects('getId')
@@ -80,7 +76,7 @@ final class PagecountExtractorTest extends UnitTestCase
 
         $this->logger
             ->expects('error')
-            ->with('Failed to download entity for page count extraction', [
+            ->with('Failed to read entity from storage for page count extraction', [
                 'id' => $entityUuid,
                 'class' => $this->entity::class,
             ]);
@@ -99,26 +95,21 @@ final class PagecountExtractorTest extends UnitTestCase
     public function testExtractWithFailedNumberOfPagesExtraction(): void
     {
         $this->entityStorageService
-            ->expects('downloadEntity')
+            ->expects('retrieveResourceEntity')
             ->with($this->entity)
-            ->andReturn($localPdfPath = 'localPdfPath');
+            ->andReturn($source = Utils::tryFopen('php://memory', 'r'));
 
         $pdftkPageCountResult = new PdftkPageCountResult(
             exitCode: 1,
             params: [],
             errorMessage: 'errorMessage',
-            sourcePdf: 'sourcePdf',
             numberOfPages: null,
         );
 
         $this->pdftkService
             ->expects('extractNumberOfPages')
-            ->with($localPdfPath)
+            ->with($source)
             ->andReturn($pdftkPageCountResult);
-
-        $this->entityStorageService
-            ->expects('removeDownload')
-            ->with($localPdfPath);
 
         $this->entity
             ->expects('getId')
@@ -129,7 +120,6 @@ final class PagecountExtractorTest extends UnitTestCase
             ->with('Failed to get number of pages', [
                 'id' => $entityUuid,
                 'class' => $this->entity::class,
-                'sourcePdf' => $pdftkPageCountResult->sourcePdf,
                 'errorOutput' => $pdftkPageCountResult->errorMessage,
             ]);
 

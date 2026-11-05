@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain\Subject;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Publication\Subject\LandingPageSlug;
+use Shared\Domain\Publication\Subject\LandingPageTitle;
 use Shared\Tests\Unit\UnitTestCase;
 
 use function str_repeat;
@@ -27,6 +28,34 @@ final class LandingPageSlugTest extends UnitTestCase
 
         self::assertInstanceOf(LandingPageSlug::class, $slug);
         self::assertSame($slug->toString(), (string) $slug);
+    }
+
+    public function testEqualToReturnsTrueForSameNormalizedValue(): void
+    {
+        self::assertTrue(LandingPageSlug::create('foo-bar')->equalTo(LandingPageSlug::create('Foo-Bar')));
+    }
+
+    public function testEqualToReturnsFalseForDifferentValue(): void
+    {
+        self::assertFalse(LandingPageSlug::create('foo-bar')->equalTo(LandingPageSlug::create('foo-baz')));
+    }
+
+    #[DataProvider('otherTypeDataProvider')]
+    public function testEqualToReturnsFalseForOtherTypes(mixed $other): void
+    {
+        self::assertFalse(LandingPageSlug::create('foo-bar')->equalTo($other));
+    }
+
+    /**
+     * @return array<string, array{other: mixed}>
+     */
+    public static function otherTypeDataProvider(): array
+    {
+        return [
+            'null' => ['other' => null],
+            'string with same value' => ['other' => 'foo-bar'],
+            'other equatable with same value' => ['other' => LandingPageTitle::create('foo-bar')],
+        ];
     }
 
     #[DataProvider('invalidSlugDataProvider')]

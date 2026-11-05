@@ -12,6 +12,7 @@ use function hash_file;
 use function hash_final;
 use function hash_init;
 use function hash_update;
+use function hash_update_stream;
 use function is_readable;
 use function sprintf;
 
@@ -33,6 +34,17 @@ class FileHashService
         }
 
         return $hash;
+    }
+
+    /**
+     * @param resource $stream
+     */
+    public static function calculateResourceHash($stream): string
+    {
+        $hashContext = hash_init(self::HASH_ALGORITHM);
+        hash_update_stream($hashContext, $stream);
+
+        return hash_final($hashContext);
     }
 
     public static function calculatePsrStreamHash(StreamInterface $stream): string

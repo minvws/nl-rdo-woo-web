@@ -4,13 +4,19 @@ declare(strict_types=1);
 
 namespace Shared\Service\Worker\Pdf\Tools\Pdftoppm;
 
-use Symfony\Component\Process\Process;
+use Shared\Service\ProcessFactory;
 
 class PdftoppmService
 {
-    public const PDFTOPPM_PATH = '/usr/bin/pdftoppm';
+    public const string PDFTOPPM_PATH = '/usr/bin/pdftoppm';
+    public const string INPUT_FROM_STDIN = '-';
 
-    public function createThumbnail(string $sourcePdf, string $targetPath): PdftoppmThumbnailResult
+    public function __construct(
+        private readonly ProcessFactory $processFactory,
+    ) {
+    }
+
+    public function createThumbnail(string $pdf): PdftoppmThumbnailResult
     {
         $params = [
             self::PDFTOPPM_PATH,
@@ -20,29 +26,18 @@ class PdftoppmService
             '-r',
             '150',
             '-singlefile',
-            $sourcePdf,
-            $targetPath,
+            self::INPUT_FROM_STDIN,
         ];
 
-        $process = $this->getNewProcess($params);
+        $process = $this->processFactory->create($params);
+        $process->setInput($pdf);
         $exitCode = $process->run();
 
         return new PdftoppmThumbnailResult(
             exitCode: $exitCode,
             params: $params,
             errorMessage: $process->isSuccessful() ? null : $process->getErrorOutput(),
-            sourcePdf: $sourcePdf,
-            targetPath: $targetPath,
+            thumbnail: $process->isSuccessful() ? $process->getOutput() : null,
         );
-    }
-
-    /**
-     * @param array<int,string> $params
-     *
-     * @codeCoverageIgnore
-     */
-    protected function getNewProcess(array $params): Process
-    {
-        return new Process($params);
     }
 }

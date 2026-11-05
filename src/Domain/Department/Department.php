@@ -13,6 +13,7 @@ use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
 use Shared\ValueObject\WooUuid;
+use SortDirection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -48,6 +49,7 @@ class Department implements EntityWithFileInfo
 
     /** @var Collection<array-key, Organisation> */
     #[ORM\ManyToMany(targetEntity: Organisation::class, mappedBy: 'departments', fetch: 'EXTRA_LAZY')]
+    #[ORM\OrderBy(['name' => SortDirection::Ascending])]
     private Collection $organisations;
 
     #[ORM\Column(length: 100, nullable: true)]

@@ -12,7 +12,7 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Inventory\Inventory;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\Import\InventoryCannotBeLoadedFromStorageException;
 use Shared\Service\Inventory\InventoryService;
 use Shared\Service\Inventory\Reader\InventoryReaderFactory;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
@@ -58,7 +58,7 @@ class InventoryServiceTest extends UnitTestCase
 
         $this->entityStorageService->expects('downloadEntity')->with($this->run)->andReturnFalse();
 
-        $this->expectExceptionObject(ProcessInventoryException::forInventoryCannotBeLoadedFromStorage());
+        $this->expectExceptionObject(new InventoryCannotBeLoadedFromStorageException());
 
         $this->inventoryService->getReader($this->run);
     }

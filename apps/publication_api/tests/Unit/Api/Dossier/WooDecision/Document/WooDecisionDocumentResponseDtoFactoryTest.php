@@ -62,7 +62,7 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         $wooDecision = $this->createWooDecision(DossierStatus::PREVIEW);
         $document = new Document();
         $document->setJudgement(Judgement::PUBLIC);
-        $documentNumber = DocumentNumber::fromString('PREFIX-1-1');
+        $documentNumber = DocumentNumber::fromString('prefix-1-1');
         $document->setDocumentNumber($documentNumber);
         $document->setDocumentId(DocumentId::create('1'));
         $wooDecision->addDocument($document);
@@ -103,7 +103,7 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         $wooDecision = $this->createWooDecision(DossierStatus::PUBLISHED);
         $document = new Document();
         $document->setJudgement(Judgement::PUBLIC);
-        $documentNumber = DocumentNumber::fromString('PREFIX-1-1');
+        $documentNumber = DocumentNumber::fromString('prefix-1-1');
         $document->setDocumentNumber($documentNumber);
         $document->setDocumentId(DocumentId::create('1'));
         $wooDecision->addDocument($document);
@@ -163,7 +163,7 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
 
         $document = new Document();
         $document->setJudgement(Judgement::PUBLIC);
-        $document->setDocumentNumber(DocumentNumber::fromString('PREFIX-1-1'));
+        $document->setDocumentNumber(DocumentNumber::fromString('prefix-1-1'));
         $document->setDocumentId(DocumentId::create('1'));
         $document->addInquiry($inquiry);
 
@@ -206,7 +206,7 @@ final class WooDecisionDocumentResponseDtoFactoryTest extends UnitTestCase
         $wooDecision = $this->createWooDecision(DossierStatus::PREVIEW);
         $document = new Document();
         $document->setJudgement(Judgement::PUBLIC);
-        $document->setDocumentNumber(DocumentNumber::fromString('PREFIX-1-1'));
+        $document->setDocumentNumber(DocumentNumber::fromString('prefix-1-1'));
         $document->setDocumentId(DocumentId::create('1'));
         $wooDecision->addDocument($document);
 

@@ -15,6 +15,7 @@ enum SourceType: string implements TranslatableInterface
 {
     case PDF = 'pdf';
     case DOC = 'doc';
+    case TXT = 'txt';
     case IMAGE = 'image';
     case PRESENTATION = 'presentation';
     case SPREADSHEET = 'spreadsheet';
@@ -52,16 +53,24 @@ enum SourceType: string implements TranslatableInterface
             'application/rms.encrypted.ms-office' => self::DOC,
             'application/msonenote' => self::NOTE,
             'application/x-sqlite3' => self::DATABASE,
+            'text/plain' => self::TXT,
             'chatbericht' => self::CHAT,
             default => self::UNKNOWN,
         };
     }
 
-    public static function fromFileType(FileType $fileType): self
+    public static function fromMimeType(?string $mimeType): self
     {
+        $fileType = FileType::fromMimeType($mimeType ?? '');
+
+        if ($fileType === null) {
+            return self::UNKNOWN;
+        }
+
         return match ($fileType) {
             FileType::PDF => self::PDF,
-            FileType::DOC, FileType::TXT => self::DOC,
+            FileType::DOC => self::DOC,
+            FileType::TXT => self::TXT,
             FileType::XLS => self::SPREADSHEET,
             FileType::PPT => self::PRESENTATION,
             FileType::ZIP => self::UNKNOWN,

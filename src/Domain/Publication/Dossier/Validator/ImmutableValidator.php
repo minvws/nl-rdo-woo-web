@@ -48,7 +48,7 @@ class ImmutableValidator extends ConstraintValidator
 
     private function isEqual(mixed $old, mixed $new): bool
     {
-        if ($old instanceof Equatable && $new instanceof Equatable && $old::class === $new::class) {
+        if ($old instanceof Equatable) {
             return $old->equalTo($new);
         }
 

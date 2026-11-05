@@ -31,9 +31,8 @@ use Shared\Domain\Publication\Subject\SubjectPreviewUrlGenerator;
 use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Domain\Publication\Subject\SubjectService;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\Url;
 use Symfony\Component\Uid\Uuid;
-
-use function sprintf;
 
 class SubjectProcessorTest extends UnitTestCase
 {
@@ -41,6 +40,7 @@ class SubjectProcessorTest extends UnitTestCase
     private SubjectRepository&MockInterface $subjectRepository;
     private SubjectService&MockInterface $subjectService;
     private EntityValidator&MockInterface $validator;
+    private SubjectPreviewUrlGenerator&MockInterface $subjectPreviewUrlGenerator;
     private SubjectProcessor $processor;
 
     protected function setUp(): void
@@ -49,13 +49,14 @@ class SubjectProcessorTest extends UnitTestCase
         $this->subjectService = Mockery::mock(SubjectService::class);
         $this->validator = Mockery::mock(EntityValidator::class);
         $this->organisationResolver = Mockery::mock(OrganisationResolver::class);
+        $this->subjectPreviewUrlGenerator = Mockery::mock(SubjectPreviewUrlGenerator::class);
 
         $this->processor = new SubjectProcessor(
             $this->organisationResolver,
             $this->subjectRepository,
             $this->subjectService,
             $this->validator,
-            new SubjectPreviewUrlGenerator('https://example.com'),
+            $this->subjectPreviewUrlGenerator,
         );
 
         parent::setUp();
@@ -106,6 +107,10 @@ class SubjectProcessorTest extends UnitTestCase
         $this->organisationResolver->expects('resolve')->with($uriVariables)->andReturn($organisation);
         $this->validator->expects('throwExceptionIfNotValid')->with(Mockery::type(Subject::class));
         $this->subjectService->expects('saveNew')->with(Mockery::type(Subject::class));
+        $this->subjectPreviewUrlGenerator
+            ->expects('generatePreviewUrl')
+            ->with(Mockery::type(Subject::class))
+            ->andReturn(Url::create($this->getFaker()->url()));
 
         $result = $this->processor->process(
             new SubjectCreateDto('Test subject', $landingPage),
@@ -185,7 +190,8 @@ class SubjectProcessorTest extends UnitTestCase
             ->with($organisation, Mockery::on(static fn (Uuid $actualSubjectId): bool => $actualSubjectId->equals($subjectId)))
             ->andReturn($subject);
         $this->subjectRepository->expects('isInUse')->with($subject)->andReturn(false);
-        $this->subjectRepository->expects('remove')->with($subject, true);
+        $this->subjectService->expects('delete')->with($subject);
+        $this->subjectRepository->expects('remove')->never();
 
         $result = $this->processor
             ->process(
@@ -217,6 +223,12 @@ class SubjectProcessorTest extends UnitTestCase
         $this->validator->expects('throwExceptionIfNotValid')->with($subject);
         $this->subjectService->expects('save')->with($subject);
 
+        $previewUrl = $this->getFaker()->url();
+        $this->subjectPreviewUrlGenerator
+            ->expects('generatePreviewUrl')
+            ->with($subject)
+            ->andReturn(Url::create($previewUrl));
+
         $landingPage = new SubjectLandingPageInputDto(
             LandingPageSlug::create('landing-page'),
             LandingPageTitle::create('Landing page title'),
@@ -245,10 +257,7 @@ class SubjectProcessorTest extends UnitTestCase
         self::assertSame('Landing page description', $result->landingPage->description);
         self::assertSame(SubjectContentTreeStatus::PUBLISHED, $result->landingPage->contentTreeStatus);
         self::assertEquals($landingPage->contentTree, $result->landingPage->contentTree);
-        self::assertSame(
-            sprintf('https://example.com/onderwerp/%s/preview/%s', $subject->getId(), $subject->getLandingPagePreviewToken()),
-            $result->landingPage->previewUrl,
-        );
+        self::assertSame($previewUrl, $result->landingPage->previewUrl);
     }
 
     public function testDeleteThrowsWhenSubjectIsInUse(): void
@@ -266,6 +275,7 @@ class SubjectProcessorTest extends UnitTestCase
             ->andReturn($subject);
         $this->subjectRepository->expects('isInUse')->with($subject)->andReturn(true);
         $this->subjectRepository->expects('remove')->never();
+        $this->subjectService->expects('delete')->never();
 
         $this->expectException(ResourceInUseException::class);
 

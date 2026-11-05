@@ -16,6 +16,7 @@ use Shared\Domain\Search\Query\Facet\FacetList;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Condition\QueryConditionBuilderInterface;
 use Shared\Service\Search\Query\Dsl\Query;
+use Shared\Service\Search\Query\Dsl\QueryParameter;
 
 use function in_array;
 
@@ -59,7 +60,7 @@ readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInte
                         ],
                     ),
                 ],
-            )->setParams(['minimum_should_match' => 1]),
+            )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]),
         );
     }
 
@@ -90,7 +91,7 @@ readonly class Covid19QueryConditionBuilder implements QueryConditionBuilderInte
                         ],
                     ),
                 ],
-            )->setParams(['minimum_should_match' => 1]),
+            )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]),
         );
     }
 

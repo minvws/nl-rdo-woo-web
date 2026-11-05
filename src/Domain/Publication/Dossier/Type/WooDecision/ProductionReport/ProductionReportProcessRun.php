@@ -12,7 +12,7 @@ use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
-use Shared\Exception\TranslatableException;
+use Shared\Service\Import\ImportError;
 use Shared\Service\Inventory\InventoryChangeset;
 use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
@@ -21,6 +21,7 @@ use function array_key_exists;
 use function count;
 
 #[ORM\Entity(repositoryClass: ProductionReportProcessRunRepository::class)]
+#[ORM\Index(columns: ['status', 'started_at'])]
 class ProductionReportProcessRun implements EntityWithFileInfo
 {
     public const STATUS_PENDING = 'pending';
@@ -32,13 +33,13 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     public const STATUS_FAILED = 'failed';
     public const STATUS_FINISHED = 'finished';
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: false)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     private DateTimeImmutable $createdAt;
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $startedAt = null;
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $endedAt = null;
 
     /** @var array<int, array{message: string, translation: string, placeholders: array<string, string>}> */
@@ -56,7 +57,7 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     #[ORM\Column(length: 255)]
     private string $status;
 
-    #[ORM\Column(type: 'smallint', nullable: false)]
+    #[ORM\Column(type: Types::SMALLINT, nullable: false)]
     private int $progress;
 
     #[ORM\Column(nullable: false, options: ['default' => false])]
@@ -107,22 +108,22 @@ class ProductionReportProcessRun implements EntityWithFileInfo
         return $this;
     }
 
-    public function addGenericException(TranslatableException $exception): self
+    public function addGenericError(ImportError $importError): self
     {
         if ($this->isFinal()) {
             throw new RuntimeException('Cannot add errors to a run in a final state');
         }
 
         $this->genericErrors[] = [
-            'message' => $exception->getMessage(),
-            'translation' => $exception->getTranslationKey(),
-            'placeholders' => $exception->getPlaceholders(),
+            'message' => $importError->message,
+            'translation' => $importError->translationKey,
+            'placeholders' => $importError->placeholders,
         ];
 
         return $this;
     }
 
-    public function addRowException(int $rowNumber, TranslatableException $exception): self
+    public function addRowError(int $rowNumber, ImportError $importError): self
     {
         if ($this->isFinal()) {
             throw new RuntimeException('Cannot add errors to a run in a final state');
@@ -133,9 +134,9 @@ class ProductionReportProcessRun implements EntityWithFileInfo
         }
 
         $this->rowErrors[$rowNumber][] = [
-            'message' => $exception->getMessage(),
-            'translation' => $exception->getTranslationKey(),
-            'placeholders' => $exception->getPlaceholders(),
+            'message' => $importError->message,
+            'translation' => $importError->translationKey,
+            'placeholders' => $importError->placeholders,
         ];
 
         return $this;
@@ -340,7 +341,7 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     public function confirm(): void
     {
         if ($this->status !== self::STATUS_NEEDS_CONFIRMATION) {
-            throw new RuntimeException('Cannot confirm production report run with status ' . $this->status);
+            throw new ProductionReportProcessRunCannotBeConfirmedException($this->status);
         }
 
         $this->status = self::STATUS_CONFIRMED;
@@ -350,7 +351,7 @@ class ProductionReportProcessRun implements EntityWithFileInfo
     public function reject(): void
     {
         if ($this->status !== self::STATUS_NEEDS_CONFIRMATION && $this->status !== self::STATUS_FAILED) {
-            throw new RuntimeException('Cannot reject production report run with status ' . $this->status);
+            throw new ProductionReportProcessRunCannotBeRejectedException($this->status);
         }
 
         $this->status = self::STATUS_REJECTED;

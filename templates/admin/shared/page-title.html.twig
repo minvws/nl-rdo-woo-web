@@ -1,4 +1,6 @@
-{% if wo_breadcrumbs() | default([]) | length %}
+{% if pageTitle is defined and pageTitle %}
+    <twig:Admin:PageTitle title="{{ pageTitle }}" />
+{% elseif wo_breadcrumbs() | default([]) | length %}
     {% set currentPage = wo_breadcrumbs() | last %}
-    <twig:Admin:PageTitle title="{{ currentPage.text | trans() }}" />
+    <twig:Admin:PageTitle title="{{ currentPage.text | trans }}" />
 {% endif %}

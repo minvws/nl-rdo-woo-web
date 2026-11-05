@@ -223,7 +223,7 @@ Path     : /dd/19ba3eda7104b4041da826c5a8f9562abd548b3aa1968ca30112d4ebdc2006/50
 bin/console --tenant=minvws woo-index:generate
 ```
 
-Generates a new Woo-index in `/var/woo_index` on local/dev environments. This will be changed to an S3 bucket once we implement minio locally.
+Generates a new Woo-index in the storage configured by `STORAGE_WOO_INDEX_ADAPTER` (`/var/woo_index` for the `local` adapter).
 Will not cleanup old woo-indexes, for that you need to add `--cleanup`.
 
 ### File-storage check
@@ -319,8 +319,7 @@ bin/console --tenant=minvws woopie:document:generate-document-publication-contex
 ```
 
 Generate the publicationContext of existing documents that do not have one yet. This is a temporary migration command and is no
-longer needed once every document has a publicationContext and the database enforces that value. Use `--dry-run` (`-d`) to preview
-the effect.
+longer needed once every document has a publicationContext and the database enforces that value.
 
 ## Development commands
 

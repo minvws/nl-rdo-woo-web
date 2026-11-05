@@ -38,7 +38,7 @@ readonly class DocumentSearchResultMapper implements SearchResultMapperInterface
             return null;
         }
 
-        $documentNumber = DocumentNumber::fromString($documentNumberString);
+        $documentNumber = DocumentNumber::fromUnnormalizedString($documentNumberString);
         $document = $this->documentRepository->getDocumentSearchEntry($documentNumber);
         if (! $document) {
             return null;

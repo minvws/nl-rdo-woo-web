@@ -12,10 +12,9 @@ use Shared\Controller\Public\Dossier\DossierFileController;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Entity\EntityWithAttachments;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
-use Shared\ValueObject\Url;
 
 use function array_map;
 use function array_values;
@@ -25,7 +24,7 @@ readonly class AttachmentResponseDtoFactory
     public function __construct(
         private ApiUrlGenerator $apiUrlGenerator,
         private AttachmentUploadStatusService $attachmentUploadStatusService,
-        private DossierPathHelper $dossierPathHelper,
+        private DossierUrlGenerator $dossierUrlGenerator,
         private PublicUrlGenerator $publicUrlGenerator,
     ) {
     }
@@ -73,7 +72,7 @@ readonly class AttachmentResponseDtoFactory
         if ($dossier->getStatus()->isPublished()) {
             $linkCollection->set(
                 LinkCollection::PUBLIC,
-                new Link(Url::create($this->dossierPathHelper->getAbsoluteAttachmentDetailsPath($dossier, $attachment->getId()))),
+                new Link($this->dossierUrlGenerator->attachmentDetailUrl($dossier, $attachment->getId())),
             );
             $linkCollection->set(
                 LinkCollection::FILE,

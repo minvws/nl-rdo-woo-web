@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace Shared\Domain\WooIndex\Producer\Mapper;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Shared\Controller\Public\Dossier\DossierFileController;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\WooIndex\Producer\Repository\RawReferenceDto;
 use Shared\Domain\WooIndex\Producer\Repository\RawUrlDto;
 use Shared\Domain\WooIndex\Producer\UrlReference;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Shared\ValueObject\Url;
 
 final readonly class HasPartsMapper
 {
     public function __construct(
-        private UrlGeneratorInterface $urlGenerator,
-        private string $publicBaseUrl,
+        private PublicUrlGenerator $publicUrlGenerator,
     ) {
     }
 
@@ -32,18 +33,13 @@ final readonly class HasPartsMapper
             ?? null;
     }
 
-    private function getResource(string $documentPrefix, string $dossierNumber, RawReferenceDto $dto): string
+    private function getResource(string $documentPrefix, string $dossierNumber, RawReferenceDto $dto): Url
     {
-        $subpath = $this->urlGenerator->generate(
-            name: 'app_dossier_file_download',
-            parameters: [
-                'documentPrefix' => $documentPrefix,
-                'dossierNumber' => $dossierNumber,
-                'type' => $dto->source->value,
-                'id' => $dto->id,
-            ],
-        );
-
-        return $this->publicBaseUrl . $subpath;
+        return $this->publicUrlGenerator->buildUrlFromRoute(DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, [
+            'documentPrefix' => $documentPrefix,
+            'dossierNumber' => $dossierNumber,
+            'type' => $dto->source->value,
+            'id' => $dto->id,
+        ]);
     }
 }

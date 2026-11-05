@@ -11,6 +11,7 @@ use Shared\ValueObject\WooUuid;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: WooIndexSitemapRepository::class)]
+#[ORM\Index(columns: ['status', 'created_at'])]
 #[ORM\HasLifecycleCallbacks]
 class WooIndexSitemap
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shared\Service\Worker\Pdf\Tools\Pdftk;
 
-use Symfony\Component\Process\Process;
+use Shared\Service\ProcessFactory;
 
 use function preg_match;
 
@@ -12,30 +12,44 @@ use const PREG_UNMATCHED_AS_NULL;
 
 class PdftkService
 {
-    public const PDFTK_PATH = '/usr/bin/pdftk';
+    public const string PDFTK_PATH = '/usr/bin/pdftk';
+    public const string INPUT_FROM_STDIN = '-';
+    public const string OUTPUT_TO_STDOUT = '-';
 
-    public function extractPage(string $sourcePdf, int $pageNr, string $targetPath): PdftkPageExtractResult
+    public function __construct(
+        private readonly ProcessFactory $processFactory,
+    ) {
+    }
+
+    /**
+     * @param resource $source
+     */
+    public function extractPage($source, int $pageNr): PdftkPageExtractResult
     {
-        $params = [self::PDFTK_PATH, $sourcePdf, 'cat', (string) $pageNr, 'output', $targetPath];
+        $params = [self::PDFTK_PATH, self::INPUT_FROM_STDIN, 'cat', (string) $pageNr, 'output', self::OUTPUT_TO_STDOUT];
 
-        $process = $this->getNewProcess($params);
+        $process = $this->processFactory->create($params);
+        $process->setInput($source);
         $exitCode = $process->run();
 
         return new PdftkPageExtractResult(
             exitCode: $exitCode,
             params: $params,
             errorMessage: $process->isSuccessful() ? null : $process->getErrorOutput(),
-            sourcePdf: $sourcePdf,
             pageNr: $pageNr,
-            targetPath: $targetPath,
+            pageContents: $process->isSuccessful() ? $process->getOutput() : null,
         );
     }
 
-    public function extractNumberOfPages(string $sourcePdf): PdftkPageCountResult
+    /**
+     * @param resource $source
+     */
+    public function extractNumberOfPages($source): PdftkPageCountResult
     {
-        $params = [self::PDFTK_PATH, $sourcePdf, 'dump_data'];
+        $params = [self::PDFTK_PATH, self::INPUT_FROM_STDIN, 'dump_data'];
 
-        $process = $this->getNewProcess($params);
+        $process = $this->processFactory->create($params);
+        $process->setInput($source);
         $exitCode = $process->run();
 
         if ($process->isSuccessful()) {
@@ -51,18 +65,7 @@ class PdftkService
             exitCode: $exitCode,
             params: $params,
             errorMessage: $process->isSuccessful() ? null : $process->getErrorOutput(),
-            sourcePdf: $sourcePdf,
             numberOfPages: $numberOfPages ?? null,
         );
-    }
-
-    /**
-     * @param array<int,string> $params
-     *
-     * @codeCoverageIgnore
-     */
-    protected function getNewProcess(array $params): Process
-    {
-        return new Process($params);
     }
 }

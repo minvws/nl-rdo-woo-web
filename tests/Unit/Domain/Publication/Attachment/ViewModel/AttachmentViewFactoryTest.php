@@ -16,6 +16,7 @@ use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Attachment\ViewModel\Attachment;
 use Shared\Domain\Publication\Attachment\ViewModel\AttachmentViewFactory;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantAttachment;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionAttachment;
@@ -23,7 +24,10 @@ use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Attachment\WooDecisionAttachment;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
+use Shared\Domain\Publication\Dossier\ViewModel\Ground;
+use Shared\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
 use Shared\Domain\Publication\FileInfo;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\SourceType;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\PlainDate;
@@ -85,6 +89,12 @@ final class AttachmentViewFactoryTest extends UnitTestCase
             )
             ->andReturn($expectedDownloadUrl = 'http://download.test');
 
+        $ground = $this->getFaker()->ground();
+        $expectedGrounds = [new Ground($this->getFaker()->ground(), $this->getFaker()->word(), $this->getFaker()->url())];
+
+        $groundViewFactory = Mockery::mock(GroundViewFactory::class);
+        $groundViewFactory->expects('makeCollection')->with([$ground])->andReturn($expectedGrounds);
+
         $attachment = Mockery::mock($attachmentClass);
         Assert::isInstanceOf($attachment, AbstractAttachment::class);
         Assert::isInstanceOf($attachment, MockInterface::class);
@@ -95,7 +105,7 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         $attachment->expects('getType')->andReturn(AttachmentType::ADVICE);
         $attachment->expects('getLanguage')->andReturn(AttachmentLanguage::NLD);
         $attachment->expects('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
-        $attachment->expects('getGrounds')->andReturn($expectedGrounds = ['bar', 'foo']);
+        $attachment->expects('getGrounds')->andReturn([$ground]);
         $attachment->expects('isWithdrawn')->times(2)->andReturnFalse();
         $attachment->expects('getWithdrawReason')->andReturnNull();
         $attachment->expects('getWithdrawDate')->andReturnNull();
@@ -106,7 +116,9 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         $dossier->expects('getAttachments')->andReturn(new ArrayCollection([$attachment]));
         $dossier->expects('getType')->andReturn($dossierType);
 
-        $result = new AttachmentViewFactory($urlGenerator)->makeCollection($dossier, $applicationId);
+        $dossierUrlGenerator = new DossierUrlGenerator(Mockery::mock(PublicUrlGenerator::class), $urlGenerator);
+        $result = new AttachmentViewFactory($urlGenerator, $groundViewFactory, $dossierUrlGenerator)
+            ->makeCollection($dossier, $applicationId);
 
         $this->assertCount(1, $result);
         $this->assertInstanceOf(Attachment::class, $result[0]);
@@ -268,7 +280,10 @@ final class AttachmentViewFactoryTest extends UnitTestCase
         $dossier = Mockery::mock(AbstractDossier::class);
 
         $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
-        $factory = new AttachmentViewFactory($urlGenerator);
+        $groundViewFactory = Mockery::mock(GroundViewFactory::class);
+
+        $dossierUrlGenerator = new DossierUrlGenerator(Mockery::mock(PublicUrlGenerator::class), $urlGenerator);
+        $factory = new AttachmentViewFactory($urlGenerator, $groundViewFactory, $dossierUrlGenerator);
 
         self::assertCount(0, $factory->makeCollection($dossier));
     }

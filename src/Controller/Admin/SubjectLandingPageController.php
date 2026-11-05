@@ -16,13 +16,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SubjectLandingPageController extends AbstractController
 {
+    public const string ROUTE_NAME_SUBJECT_LANDING_PAGE_EDIT = 'app_admin_subject_landing_page_edit';
+
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly SubjectService $subjectService,
     ) {
     }
 
-    #[Route('/balie/onderwerpen/{id}/landingpage', name: 'app_admin_subject_landing_page_edit', methods: ['GET', 'POST'])]
+    #[Route('/balie/onderwerpen/{id}/landingpage', self::ROUTE_NAME_SUBJECT_LANDING_PAGE_EDIT, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.subject.update')]
     public function edit(Request $request, Subject $subject): Response
     {

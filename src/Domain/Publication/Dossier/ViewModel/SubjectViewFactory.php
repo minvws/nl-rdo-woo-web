@@ -31,7 +31,7 @@ readonly class SubjectViewFactory
             searchUrl: $searchUrl,
             landingPageUrl: $landingPageUrl,
             landingPageUrlOrSearchUrl: $landingPageUrl ?? $searchUrl,
-            landingPagePreviewUrl: $this->subjectPreviewUrlGenerator->generatePreviewUrl($subject),
+            landingPagePreviewUrl: $this->subjectPreviewUrlGenerator->generatePreviewUrl($subject)?->toString(),
             hasPublishedLandingPage: $subject->hasPublishedLandingPage(),
             landingPageTitle: $subject->getLandingPageTitle()?->toString(),
             landingPageDescription: $subject->getLandingPageDescription(),

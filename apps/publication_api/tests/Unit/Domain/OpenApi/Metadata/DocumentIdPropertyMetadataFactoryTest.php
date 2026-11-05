@@ -15,8 +15,6 @@ use stdClass;
 use Symfony\Component\TypeInfo\Type\NullableType;
 use Symfony\Component\TypeInfo\Type\ObjectType;
 
-use function trim;
-
 final class DocumentIdPropertyMetadataFactoryTest extends UnitTestCase
 {
     public function testItSetsStringSchemaForDocumentIdProperty(): void
@@ -38,7 +36,7 @@ final class DocumentIdPropertyMetadataFactoryTest extends UnitTestCase
             'format' => 'document-id',
             'minLength' => DocumentId::MIN_LENGTH,
             'maxLength' => DocumentId::MAX_LENGTH,
-            'pattern' => trim(DocumentId::PATTERN, '/'),
+            'pattern' => DocumentId::PATTERN,
         ];
         self::assertSame($expectedSchema, $result->getSchema());
     }
@@ -64,7 +62,7 @@ final class DocumentIdPropertyMetadataFactoryTest extends UnitTestCase
                     'format' => 'document-id',
                     'minLength' => DocumentId::MIN_LENGTH,
                     'maxLength' => DocumentId::MAX_LENGTH,
-                    'pattern' => trim(DocumentId::PATTERN, '/'),
+                    'pattern' => DocumentId::PATTERN,
                 ],
                 ['type' => 'null'],
             ],

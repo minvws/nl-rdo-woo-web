@@ -27,7 +27,7 @@ class UniqueDocumentNumberValidator extends ConstraintValidator
             return;
         }
 
-        $conflicting = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($value->getDocumentNumber());
+        $conflicting = $this->documentRepository->findByDocumentNumber($value->getDocumentNumber());
         if ($conflicting === null) {
             return;
         }

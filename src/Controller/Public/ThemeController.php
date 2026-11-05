@@ -25,6 +25,9 @@ use const JSON_THROW_ON_ERROR;
 
 class ThemeController extends AbstractController
 {
+    public const string ROUTE_NAME_THEME = 'app_theme';
+    public const string ROUTE_NAME_THEME_RESULT_AJAX = 'app_theme_result_ajax';
+
     public function __construct(
         private readonly ThemeManager $themeManager,
         private readonly SearchParametersFactory $searchParametersFactory,
@@ -33,7 +36,7 @@ class ThemeController extends AbstractController
     ) {
     }
 
-    #[Route('/thema/{name}', name: 'app_theme')]
+    #[Route('/thema/{name}', self::ROUTE_NAME_THEME)]
     public function search(string $name, Request $request): Response
     {
         // If we have a POST request, we have a search query in the body. Redirect to GET request
@@ -67,7 +70,7 @@ class ThemeController extends AbstractController
     /**
      * Ajax endpoint for search results within a theme.
      */
-    #[Route('thema/{name}/_result', name: 'app_theme_result_ajax', methods: ['GET'])]
+    #[Route('thema/{name}/_result', self::ROUTE_NAME_THEME_RESULT_AJAX, methods: ['GET'])]
     public function ajaxResult(
         string $name,
         Request $request,

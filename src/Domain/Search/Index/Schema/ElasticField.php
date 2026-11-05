@@ -43,7 +43,10 @@ enum ElasticField: string
     case JUDGEMENT = 'judgement';
     case DOCUMENT_PAGES = 'document_pages';
     case CONTENT = 'content';
+    case CONTENT_FOR_SUGGESTIONS = 'content_for_suggestions';
+    case BODY = 'body';
     case PAGE_NR = 'page_nr';
+    case HAS_VISIBLE_CONTENT_TREE = 'has_visible_content_tree';
     case SUBJECT_NAMES = 'subject_names';
     case DEPARTMENT_NAMES = 'department_names';
     case DATE_FILTER = 'date_filter';

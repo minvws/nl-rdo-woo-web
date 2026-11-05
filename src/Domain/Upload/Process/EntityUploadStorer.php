@@ -10,15 +10,16 @@ use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Upload\AssetsNamer;
 use Shared\Domain\Upload\Exception\UploadException;
-use Shared\Domain\Upload\FileType\FileType;
 use Shared\Domain\Upload\UploadEntity;
 use Shared\Domain\Upload\UploadEntityRepository;
 use Shared\Domain\Upload\UploadService;
 use Shared\Service\Storage\EntityStorageService;
+use Shared\Service\Storage\FileHashService;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Webmozart\Assert\Assert;
 
+use function fclose;
 use function pathinfo;
 
 use const PATHINFO_EXTENSION;
@@ -62,8 +63,7 @@ readonly class EntityUploadStorer
 
         $this->storeUploadForEntity($uploadEntity, $targetEntity);
 
-        $fileType = FileType::fromMimeType($uploadEntity->getMimeType() ?? '');
-        $targetEntity->getFileInfo()->setSourceType($fileType ? SourceType::fromFileType($fileType) : SourceType::UNKNOWN);
+        $targetEntity->getFileInfo()->setSourceType(SourceType::fromMimeType($uploadEntity->getMimeType()));
 
         $targetEntity->getFileInfo()->setName($uploadEntity->getFilename());
     }
@@ -96,5 +96,15 @@ readonly class EntityUploadStorer
         $targetEntity->getFileInfo()->setPath($filePath);
         $targetEntity->getFileInfo()->setUploaded(true);
         $targetEntity->getFileInfo()->setPageCount(null);
+        $targetEntity->getFileInfo()->setHash($this->calculateHash($storage, $filePath));
+    }
+
+    private function calculateHash(FilesystemOperator $storage, string $filePath): string
+    {
+        $stream = $storage->readStream($filePath);
+        $hash = FileHashService::calculateResourceHash($stream);
+        fclose($stream);
+
+        return $hash;
     }
 }

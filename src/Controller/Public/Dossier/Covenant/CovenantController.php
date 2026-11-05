@@ -25,6 +25,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class CovenantController extends AbstractController
 {
+    public const string ROUTE_NAME_DETAIL = 'app_covenant_detail';
+    public const string ROUTE_NAME_NOTICE_NOT_PUBLIC_DETAIL = 'app_covenant_notice_not_public_detail';
+    public const string ROUTE_NAME_DOCUMENT_DETAIL = 'app_covenant_document_detail';
+    public const string ROUTE_NAME_ATTACHMENT_DETAIL = 'app_covenant_attachment_detail';
+
     public function __construct(
         private readonly CovenantViewFactory $covenantViewFactory,
         private readonly AttachmentViewFactory $attachmentViewFactory,
@@ -36,7 +41,7 @@ class CovenantController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/convenant/{documentPrefix}/{dossierNumber}', name: 'app_covenant_detail', methods: ['GET'])]
+    #[Route('/convenant/{documentPrefix}/{dossierNumber}', self::ROUTE_NAME_DETAIL, methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] Covenant $covenant,
         Breadcrumbs $breadcrumbs,
@@ -71,7 +76,7 @@ class CovenantController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/convenant/{documentPrefix}/{dossierNumber}/mededeling-niet-openbaar',
-        name: 'app_covenant_notice_not_public_detail',
+        self::ROUTE_NAME_NOTICE_NOT_PUBLIC_DETAIL,
         methods: ['GET'],
     )]
     public function noticeNotPublicDetail(
@@ -94,7 +99,7 @@ class CovenantController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/convenant/{documentPrefix}/{dossierNumber}/document',
-        name: 'app_covenant_document_detail',
+        self::ROUTE_NAME_DOCUMENT_DETAIL,
         methods: ['GET'],
     )]
     public function covenantDocumentDetail(
@@ -127,7 +132,7 @@ class CovenantController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/convenant/{documentPrefix}/{dossierNumber}/bijlage/{attachmentId}',
-        name: 'app_covenant_attachment_detail',
+        self::ROUTE_NAME_ATTACHMENT_DETAIL,
         methods: ['GET'],
     )]
     public function covenantAttachmentDetail(

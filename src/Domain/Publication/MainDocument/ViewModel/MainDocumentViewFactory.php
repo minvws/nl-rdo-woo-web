@@ -7,17 +7,19 @@ namespace Shared\Domain\Publication\MainDocument\ViewModel;
 use Shared\ApplicationId;
 use Shared\Domain\Publication\Citation;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
+use Shared\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\EntityWithMainDocument;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-use function sprintf;
 
 readonly class MainDocumentViewFactory
 {
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
+        private GroundViewFactory $groundViewFactory,
+        private DossierUrlGenerator $dossierUrlGenerator,
     ) {
     }
 
@@ -26,14 +28,6 @@ readonly class MainDocumentViewFactory
         AbstractMainDocument $mainDocument,
         ApplicationId $applicationId = ApplicationId::PUBLIC,
     ): MainDocument {
-        $detailsUrl = $this->urlGenerator->generate(
-            sprintf('app_%s_document_detail', $dossier->getType()->getValueForRouteName()),
-            [
-                'documentPrefix' => $dossier->getDocumentPrefix(),
-                'dossierNumber' => $dossier->getDossierNumber(),
-            ],
-        );
-
         $downloadRouteName = $applicationId->isAdmin()
             ? 'app_admin_dossier_file_download'
             : 'app_dossier_file_download';
@@ -58,9 +52,9 @@ readonly class MainDocumentViewFactory
             size: $fileSize,
             internalReference: $mainDocument->getInternalReference(),
             language: $mainDocument->getLanguage(),
-            grounds: Citation::sortWooCitations($mainDocument->getGrounds()),
+            grounds: $this->groundViewFactory->makeCollection(Citation::sortWooCitations($mainDocument->getGrounds())),
             downloadUrl: $this->urlGenerator->generate($downloadRouteName, $downloadRouteParameters),
-            detailsUrl: $detailsUrl,
+            detailsUrl: $this->dossierUrlGenerator->documentDetailPath($dossier),
             pageCount: $fileInfo->getPageCount() ?? 0,
             isDownloadable: $fileInfo->isUploaded() && $fileSize > 0,
         );

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Shared\Domain\Publication\Subject;
 
 use Doctrine\ORM\Query;
+use Shared\Domain\Publication\Subject\Event\SubjectCreatedEvent;
+use Shared\Domain\Publication\Subject\Event\SubjectDeletedEvent;
 use Shared\Domain\Publication\Subject\Event\SubjectUpdatedEvent;
 use Shared\Service\Security\Authorization\AuthorizationMatrix;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -31,6 +33,10 @@ readonly class SubjectService
     public function saveNew(Subject $subject): void
     {
         $this->repository->save($subject, true);
+
+        $this->messageBus->dispatch(
+            SubjectCreatedEvent::forSubject($subject),
+        );
     }
 
     public function save(Subject $subject): void
@@ -39,6 +45,15 @@ readonly class SubjectService
 
         $this->messageBus->dispatch(
             SubjectUpdatedEvent::forSubject($subject),
+        );
+    }
+
+    public function delete(Subject $subject): void
+    {
+        $this->repository->remove($subject, true);
+
+        $this->messageBus->dispatch(
+            SubjectDeletedEvent::forSubject($subject),
         );
     }
 

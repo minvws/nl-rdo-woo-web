@@ -11,6 +11,9 @@ use Shared\Tests\Factory\OrganisationFactory;
 use Shared\Tests\Factory\Publication\Dossier\Type\WooDecision\WooDecisionFactory;
 use Shared\Tests\Factory\Publication\Subject\SubjectFactory;
 use Shared\Tests\Integration\SharedWebTestCase;
+use Symfony\Component\Uid\Uuid;
+
+use function array_map;
 
 class SubjectRepositoryTest extends SharedWebTestCase
 {
@@ -94,6 +97,32 @@ class SubjectRepositoryTest extends SharedWebTestCase
         self::assertCount(2, $result);
     }
 
+    public function testGetAllSubjectIdsWithLandingPageQueryIncludesEveryLandingPageStatus(): void
+    {
+        $subjectRepository = self::fromContainer(SubjectRepository::class);
+
+        $publishedSubject = SubjectFactory::new()
+            ->withLandingPage(SubjectLandingPageStatus::PUBLISHED, 'published-slug')
+            ->create();
+        $conceptSubject = SubjectFactory::new()
+            ->withLandingPage(SubjectLandingPageStatus::CONCEPT, 'concept-slug')
+            ->create();
+        SubjectFactory::createOne(['name' => 'no-landing-page']);
+
+        $subjectIds = [];
+        foreach ($subjectRepository->getAllSubjectIdsWithLandingPageQuery()->toIterable() as $row) {
+            self::assertIsArray($row);
+            self::assertInstanceOf(Uuid::class, $row['id']);
+            $subjectIds[] = $row['id']->toRfc4122();
+        }
+
+        self::assertEqualsCanonicalizing(
+            [$publishedSubject->getId()->toRfc4122(), $conceptSubject->getId()->toRfc4122()],
+            $subjectIds,
+        );
+        self::assertSame(2, $subjectRepository->countWithLandingPage());
+    }
+
     public function testIsInUseReturnsFalseForUnusedSubject(): void
     {
         $subject = SubjectFactory::createOne();
@@ -109,5 +138,25 @@ class SubjectRepositoryTest extends SharedWebTestCase
 
         $subjectRepository = self::fromContainer(SubjectRepository::class);
         self::assertTrue($subjectRepository->isInUse($subject));
+    }
+
+    public function testGetSubjectsWithDuplicateNames(): void
+    {
+        $organisation = OrganisationFactory::createOne();
+        $name = $this->getFaker()->unique()->word();
+
+        $subject = SubjectFactory::createOne(['organisation' => $organisation, 'name' => $name]);
+        $duplicateSubject = SubjectFactory::createOne(['organisation' => $organisation, 'name' => $name]);
+        SubjectFactory::createOne(['organisation' => $organisation]);
+
+        $subjectRepository = self::fromContainer(SubjectRepository::class);
+
+        self::assertEqualsCanonicalizing(
+            [$subject->getId(), $duplicateSubject->getId()],
+            array_map(
+                static fn (Subject $subject): Uuid => $subject->getId(),
+                $subjectRepository->getSubjectsWithDuplicateName(),
+            ),
+        );
     }
 }

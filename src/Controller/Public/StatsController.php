@@ -21,6 +21,9 @@ use Throwable;
 
 class StatsController extends AbstractController
 {
+    public const string ROUTE_NAME_PROMETHEUS = 'app_prometheus';
+    public const string ROUTE_NAME_HEALTH = 'app_health';
+
     public function __construct(
         private readonly EntityManagerInterface $doctrine,
         private readonly Client $redis,
@@ -32,7 +35,7 @@ class StatsController extends AbstractController
     ) {
     }
 
-    #[Route('/prometheus', name: 'app_prometheus', methods: ['GET'])]
+    #[Route('/prometheus', self::ROUTE_NAME_PROMETHEUS, methods: ['GET'])]
     public function prometheus(): Response
     {
         $response = $this->render('public/stats/prometheus.txt.twig', [
@@ -48,7 +51,7 @@ class StatsController extends AbstractController
         return $response;
     }
 
-    #[Route('/health', name: 'app_health', methods: ['GET'])]
+    #[Route('/health', self::ROUTE_NAME_HEALTH, methods: ['GET'])]
     public function health(): JsonResponse
     {
         $services = [

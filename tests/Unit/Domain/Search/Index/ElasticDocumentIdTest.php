@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\Domain\Search\Index;
 use Mockery;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
 use Shared\Domain\Publication\EntityWithFileInfo;
+use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Search\Index\ElasticDocumentId;
 use Shared\Domain\Search\Index\IndexException;
 use Shared\Tests\Unit\UnitTestCase;
@@ -36,6 +37,17 @@ class ElasticDocumentIdTest extends UnitTestCase
         );
     }
 
+    public function testForSubject(): void
+    {
+        $subject = Mockery::mock(Subject::class);
+        $subject->expects('getId->toRfc4122')->andReturn($subjectId = 'foo-123');
+
+        self::assertEquals(
+            $subjectId,
+            ElasticDocumentId::forSubject($subject),
+        );
+    }
+
     public function testForObjectWithDossier(): void
     {
         $dossier = Mockery::mock(AbstractDossier::class);
@@ -55,6 +67,17 @@ class ElasticDocumentIdTest extends UnitTestCase
         self::assertEquals(
             $entityId,
             ElasticDocumentId::forObject($entity),
+        );
+    }
+
+    public function testForObjectWithSubject(): void
+    {
+        $subject = Mockery::mock(Subject::class);
+        $subject->expects('getId->toRfc4122')->andReturn($subjectId = 'foo-123');
+
+        self::assertEquals(
+            $subjectId,
+            ElasticDocumentId::forObject($subject),
         );
     }
 

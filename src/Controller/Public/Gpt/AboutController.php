@@ -12,12 +12,14 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class AboutController extends AbstractController
 {
+    public const string ROUTE_NAME_GPT_ABOUT = 'app_gpt_about';
+
     public function __construct(
         private readonly ContentPageService $contentPageService,
     ) {
     }
 
-    #[Route('/woo-gpt/over', name: 'app_gpt_about', methods: ['GET'], condition: "env('HAS_FEATURE_WOO_GPT') === 'true'")]
+    #[Route('/woo-gpt/over', self::ROUTE_NAME_GPT_ABOUT, methods: ['GET'], condition: "env('HAS_FEATURE_WOO_GPT') === 'true'")]
     public function index(): Response
     {
         return $this->render('public/gpt/about.html.twig', [

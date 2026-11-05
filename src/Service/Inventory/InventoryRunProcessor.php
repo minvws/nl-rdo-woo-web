@@ -13,9 +13,13 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Shared\Domain\Logging\LoggingHelper;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
-use Shared\Exception\ProcessInventoryException;
-use Shared\Exception\TranslatableException;
+use Shared\Exception\Import\ImportException;
+use Shared\Exception\Import\MaxDocumentsExceededException;
+use Shared\Exception\Import\NoInventoryChangesException;
+use Shared\Exception\Import\ProcessingFailedException;
+use Shared\Exception\Import\UnexpectedProcessingException;
 use Shared\Service\DossierService;
+use Shared\Service\Import\ImportError;
 use Shared\Service\Inventory\Progress\ProgressUpdater;
 use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
@@ -66,13 +70,13 @@ readonly class InventoryRunProcessor
                 $this->processUpdates($run, $inventoryReader);
             }
         } catch (Exception $exception) {
-            if (! $exception instanceof TranslatableException) {
-                $exception = ProcessInventoryException::forOtherException($exception);
+            if (! $exception instanceof ImportException) {
+                $exception = new UnexpectedProcessingException($exception);
             }
 
             $caughtException = $exception;
 
-            $run->addGenericException($exception);
+            $run->addGenericError(ImportError::fromException($exception));
             $run->fail();
 
             $this->logger->error(
@@ -103,7 +107,7 @@ readonly class InventoryRunProcessor
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    private function failRunWithFreshManager(Uuid $runId, ?TranslatableException $exception): void
+    private function failRunWithFreshManager(Uuid $runId, ?ImportException $exception): void
     {
         $manager = $this->managerRegistry->resetManager();
         Assert::isInstanceOf($manager, EntityManagerInterface::class);
@@ -113,11 +117,11 @@ readonly class InventoryRunProcessor
             return;
         }
 
-        if (! $exception instanceof TranslatableException) {
-            $exception = ProcessInventoryException::forProcessingFailed();
+        if (! $exception instanceof ImportException) {
+            $exception = new ProcessingFailedException();
         }
 
-        $run->addGenericException($exception);
+        $run->addGenericError(ImportError::fromException($exception));
         $run->fail();
 
         $manager->flush();
@@ -135,11 +139,11 @@ readonly class InventoryRunProcessor
         $changeset = $this->inventoryComparator->determineChangeset($run, $inventoryReader, $runProgress);
 
         if ($changeset->hasNoChanges() && $run->hasNoErrors()) {
-            $run->addGenericException(ProcessInventoryException::forNoChanges());
+            $run->addGenericError(ImportError::fromException(new NoInventoryChangesException()));
         }
 
         if ($changeset->getResultingTotalDocumentCount() > self::MAX_DOCUMENTS) {
-            $run->addGenericException(ProcessInventoryException::forMaxDocumentsExceeded(self::MAX_DOCUMENTS));
+            $run->addGenericError(ImportError::fromException(new MaxDocumentsExceededException(self::MAX_DOCUMENTS)));
         }
 
         if ($run->hasErrors()) {

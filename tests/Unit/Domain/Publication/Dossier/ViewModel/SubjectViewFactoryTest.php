@@ -121,6 +121,8 @@ final class SubjectViewFactoryTest extends UnitTestCase
 
     public function testMakeWithConceptLandingPagePreviewUrl(): void
     {
+        $expectedPreviewUrl = $this->getFaker()->url();
+
         $subject = Mockery::mock(Subject::class);
         $subject->expects('getId')->andReturn(Uuid::v6());
         $subject->expects('getName')->twice()->andReturn($expectedSubject = 'Foo');
@@ -139,7 +141,7 @@ final class SubjectViewFactoryTest extends UnitTestCase
         $this->subjectPreviewUrlGenerator
             ->expects('generatePreviewUrl')
             ->with($subject)
-            ->andReturn($expectedPreviewUrl = 'https://example.com/onderwerp/123/preview/abc');
+            ->andReturn(Url::create($expectedPreviewUrl));
 
         $view = $this->factory->make($subject);
 

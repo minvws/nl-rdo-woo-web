@@ -29,6 +29,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserController extends AbstractController
 {
+    public const string ROUTE_NAME_USERS = 'app_admin_users';
+    public const string ROUTE_NAME_USER_CREATE = 'app_admin_user_create';
+    public const string ROUTE_NAME_USER_PDF = 'app_admin_user_pdf';
+    public const string ROUTE_NAME_USER = 'app_admin_user';
+
     private const string RESET_USER_KEY = 'reset_user';
 
     public function __construct(
@@ -41,7 +46,7 @@ class UserController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/gebruikers', name: 'app_admin_users', methods: ['GET'])]
+    #[Route('/balie/gebruikers', self::ROUTE_NAME_USERS, methods: ['GET'])]
     #[IsGranted('AuthMatrix.user.read')]
     public function index(Request $request): Response
     {
@@ -94,7 +99,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/gebruiker/new', name: 'app_admin_user_create', methods: ['GET', 'POST'])]
+    #[Route('/balie/gebruiker/new', self::ROUTE_NAME_USER_CREATE, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.user.create')]
     public function create(Request $request): Response
     {
@@ -133,7 +138,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/gebruiker/pdf', name: 'app_admin_user_pdf', methods: ['GET'])]
+    #[Route('/balie/gebruiker/pdf', self::ROUTE_NAME_USER_PDF, methods: ['GET'])]
     #[IsGranted('AuthMatrix.user.update')]
     public function viewUserCredentials(Request $request): Response
     {
@@ -158,7 +163,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/gebruiker/{id}', name: 'app_admin_user', methods: ['GET', 'POST'])]
+    #[Route('/balie/gebruiker/{id}', self::ROUTE_NAME_USER, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.user.update')]
     public function modify(Request $request, User $user): Response
     {

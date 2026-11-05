@@ -46,20 +46,20 @@ class InventoryDocumentMapperTest extends UnitTestCase
         $referredDocA = Mockery::mock(Document::class);
         $referredDocA->expects('getDocumentNumber')
             ->once()
-            ->andReturn(DocumentNumber::fromString('PREFIX-matterA-a'));
+            ->andReturn(DocumentNumber::fromString($refDocIdA = 'prefix-mattera-a'));
         $referredDocA->expects('getDocumentId')->never();
 
         $referredDocB = Mockery::mock(Document::class);
         $referredDocB->expects('getDocumentNumber')
             ->once()
-            ->andReturn(DocumentNumber::fromString('PREFIX-matterB-b'));
+            ->andReturn(DocumentNumber::fromString($refDocIdB = 'prefix-matterb-b'));
         $referredDocB->expects('getDocumentId')->never();
 
         $document = Mockery::mock(Document::class);
         $document->expects('getDocumentId')->andReturn(DocumentId::create('123'));
         $document->expects('getDocumentNumber')
             ->once()
-            ->andReturn(DocumentNumber::fromString('PREFIX-matterA-123'));
+            ->andReturn(DocumentNumber::fromString($docNr = 'prefix-mattera-123'));
         $document->expects('getFileInfo->getName')->andReturn('test-doc-name');
         $document->expects('getJudgement')->times(2)->andReturn(Judgement::PARTIAL_PUBLIC);
         $document->expects('getGrounds')->andReturn(['a', 'b']);

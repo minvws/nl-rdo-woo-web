@@ -19,7 +19,7 @@ Create New Subject
   [Documentation]  If no params are provided, a random name is generated.
   [Arguments]  ${name}=EMPTY
   IF  '${name}' == 'EMPTY'
-    ${random} =  Generate Random String  3  [NUMBERS][UPPER]
+    ${random} =  Generate Random String  8  [NUMBERS][UPPER]
     VAR  ${name} =  E2E Test Subject ${random}
   END
   Click  //a[@data-e2e-name="new-subject"]

@@ -49,8 +49,7 @@
             <div class="bg-bhr-gray-900">
                 <a href="#inhoud" class="bhr-skip-link bhr-skip-link--to-main-content">{{ 'global.skip_link' | trans() }}</a>
 
-                <div class="bhr-container">
-                    {% if isAuthenticated %}
+                {% if isAuthenticated %}
                     <button class="p-4 lg:hidden js-visibility-toggler" aria-controls="main-nav" aria-expanded="false">
                         <twig:Admin:Icon color="fill-white" name="hamburger" class="" />
                         <span class="sr-only">{{ 'global.menu_toggle.label' | trans() }}</span>
@@ -78,16 +77,6 @@
                                         </summary>
                                         <div class="bhr-overlay-card max-w-sm mt-2 text-black flex flex-col sm:min-w-3xs">
                                             <ul>
-                                                <li>
-                                                    <a
-                                                        class="bhr-site-header-sub-nav-item"
-                                                        data-e2e-name="manage-organisations"
-                                                        href="{{ path('app_admin_user_organisation') }}"
-                                                    >
-                                                        <twig:Admin:Icon name="manage" class="mr-1" />
-                                                        {{ 'admin.organisations.manage' | trans }}
-                                                    </a>
-                                                </li>
                                                 {% for organisation in organisationSwitcher.organisations(app.user) %}
                                                     {% set isActiveOrganisation = activeOrganisation == organisation %}
                                                     <li>
@@ -122,8 +111,12 @@
                                 {{ _self.nav_item('app_admin_subjects', 'admin.global.label.subjects', '/^app_admin_subject/', 'nav-subjects') }}
                             {% endif %}
 
+                            {% if matrix_has_permission('organisation.read') %}
+                                {{ _self.nav_item('app_admin_organisation', 'admin.global.label.organisations', '/^app_admin_organisation/', 'nav-organisations') }}
+                            {% endif %}
+
                             {% if matrix_has_permission('user.read') %}
-                                {{ _self.nav_item('app_admin_users', 'admin.global.label.access_control', '/^app_admin_user/', 'nav-access-control') }}
+                                {{ _self.nav_item('app_admin_users', 'admin.global.label.users', '/^app_admin_user/', 'nav-access-control') }}
                             {% endif %}
                         </ul>
 
@@ -137,8 +130,7 @@
                         <div><strong class="text-2xl">{{ SITE_NAME }}</strong></div>
                         <em>Publicatie/document management</em>
                     </div>
-                    {% endif %}
-                </div>
+                {% endif %}
             </div>
 
             {% if wo_breadcrumbs_exists() %}

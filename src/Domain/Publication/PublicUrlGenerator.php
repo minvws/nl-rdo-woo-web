@@ -19,13 +19,13 @@ readonly class PublicUrlGenerator
     ) {
     }
 
-    public function buildUrlFromPath(string $path): string
+    public function buildUrlFromPath(string $path): Url
     {
         if ($path === '') {
-            return $this->publicBaseUrl;
+            return Url::create($this->publicBaseUrl);
         }
 
-        return sprintf('%s/%s', rtrim($this->publicBaseUrl, '/'), ltrim($path, '/'));
+        return Url::create(sprintf('%s/%s', rtrim($this->publicBaseUrl, '/'), ltrim($path, '/')));
     }
 
     /**
@@ -33,9 +33,6 @@ readonly class PublicUrlGenerator
      */
     public function buildUrlFromRoute(string $name, array $parameters): Url
     {
-        $path = $this->router->generate($name, $parameters);
-        $url = $this->buildUrlFromPath($path);
-
-        return Url::create($url);
+        return $this->buildUrlFromPath($this->router->generate($name, $parameters));
     }
 }

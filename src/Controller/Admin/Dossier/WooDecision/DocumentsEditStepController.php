@@ -27,6 +27,10 @@ use function is_scalar;
 
 class DocumentsEditStepController extends AbstractController
 {
+    public const string ROUTE_NAME_EDIT = 'app_admin_dossier_woodecision_documents_edit';
+    public const string ROUTE_NAME_EDIT_INVENTORY_STATUS = 'app_admin_dossier_woodecision_documents_edit_inventory_status';
+    public const string ROUTE_NAME_EDIT_REPLACE_INVENTORY = 'app_admin_dossier_woodecision_documents_edit_replace_inventory';
+
     public function __construct(
         private readonly StepActionHelper $stepHelper,
         private readonly DocumentRepository $documentRepository,
@@ -36,8 +40,8 @@ class DocumentsEditStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/documents/edit/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_woodecision_documents_edit',
+        '/balie/dossier/woodecision/documents/edit/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_EDIT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.document.update', subject: 'dossier')]
@@ -76,8 +80,8 @@ class DocumentsEditStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/documents/edit/inventory-status/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_woodecision_documents_edit_inventory_status',
+        '/balie/dossier/woodecision/documents/edit/inventory-status/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_EDIT_INVENTORY_STATUS,
         methods: ['GET'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
@@ -93,8 +97,8 @@ class DocumentsEditStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/woodecision/documents/edit/replace-inventory/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_woodecision_documents_edit_replace_inventory',
+        '/balie/dossier/woodecision/documents/edit/replace-inventory/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_EDIT_REPLACE_INVENTORY,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]

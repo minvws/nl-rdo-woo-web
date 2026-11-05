@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Worker\Pdf\Tools\Pdftk;
 
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
-use Mockery\MockInterface;
+use Shared\Service\ProcessFactory;
 use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkRuntimeException;
 use Shared\Service\Worker\Pdf\Tools\Pdftk\PdftkService;
 use Shared\Tests\Unit\UnitTestCase;
@@ -13,92 +14,96 @@ use Symfony\Component\Process\Process;
 
 final class PdftkServiceTest extends UnitTestCase
 {
-    protected Process&MockInterface $process;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->process = Mockery::mock(Process::class);
-    }
-
     public function testExtractPage(): void
     {
-        $this->process
-            ->expects('run')
-            ->andReturn($exitCode = 0);
+        $source = Utils::tryFopen('php://memory', 'r');
+        $pageNr = $this->getFaker()->numberBetween(1, 100);
+        $pageContents = $this->getFaker()->sha256();
+        $exitCode = 0;
 
-        $this->process
-            ->expects('isSuccessful')
-            ->andReturn(true);
+        $process = Mockery::mock(Process::class);
+        $process->expects('setInput')->with($source)->andReturnSelf();
+        $process->expects('run')->andReturn($exitCode);
+        $process->expects('isSuccessful')->twice()->andReturn(true);
+        $process->expects('getOutput')->andReturn($pageContents);
 
-        $service = $this->getService();
-        $result = $service->extractPage($sourcePdf = 'sourcePdf', $pageNr = 1337, $targetPath = 'targetPath');
+        $processFactory = Mockery::mock(ProcessFactory::class);
+        $processFactory->expects('create')->andReturn($process);
 
-        $this->assertSame(['/usr/bin/pdftk', $sourcePdf, 'cat', (string) $pageNr, 'output', $targetPath], $result->params);
+        $service = new PdftkService($processFactory);
+        $result = $service->extractPage($source, $pageNr);
+
+        $expected = [PdftkService::PDFTK_PATH, PdftkService::INPUT_FROM_STDIN, 'cat', (string) $pageNr, 'output', PdftkService::OUTPUT_TO_STDOUT];
+        $this->assertSame($expected, $result->params);
+
         $this->assertSame($exitCode, $result->exitCode);
         $this->assertNull($result->errorMessage);
-        $this->assertSame($sourcePdf, $result->sourcePdf);
         $this->assertSame($pageNr, $result->pageNr);
-        $this->assertSame($targetPath, $result->targetPath);
+        $this->assertSame($pageContents, $result->pageContents);
+    }
+
+    public function testExtractPageWhenItFails(): void
+    {
+        $source = Utils::tryFopen('php://memory', 'r');
+        $pageNr = $this->getFaker()->numberBetween(1, 100);
+        $errorMessage = $this->getFaker()->sentence();
+
+        $process = Mockery::mock(Process::class);
+        $process->expects('setInput')->with($source)->andReturnSelf();
+        $process->expects('run')->andReturn($exitCode = 1);
+        $process->expects('isSuccessful')->twice()->andReturn(false);
+        $process->expects('getErrorOutput')->andReturn($errorMessage);
+
+        $processFactory = Mockery::mock(ProcessFactory::class);
+        $processFactory->expects('create')->andReturn($process);
+
+        $service = new PdftkService($processFactory);
+        $result = $service->extractPage($source, $pageNr);
+
+        $this->assertSame($exitCode, $result->exitCode);
+        $this->assertSame($errorMessage, $result->errorMessage);
+        $this->assertNull($result->pageContents);
     }
 
     public function testExtractNumberOfPages(): void
     {
-        $this->process
-            ->expects('run')
-            ->andReturn($exitCode = 0);
+        $source = Utils::tryFopen('php://memory', 'r');
 
-        $this->process
-            ->expects('isSuccessful')
-            ->times(2)
-            ->andReturn(true);
+        $process = Mockery::mock(Process::class);
+        $process->expects('setInput')->with($source)->andReturnSelf();
+        $process->expects('run')->andReturn($exitCode = 0);
+        $process->expects('isSuccessful')->times(2)->andReturn(true);
+        $process->expects('getOutput')->andReturn($this->getMockDumpDataOutput($numberOfPages = 4));
 
-        $this->process
-            ->expects('getOutput')
-            ->andReturn($this->getMockDumpDataOutput($numberOfPages = 4));
+        $processFactory = Mockery::mock(ProcessFactory::class);
+        $processFactory->expects('create')->andReturn($process);
 
-        $service = $this->getService();
-        $result = $service->extractNumberOfPages($sourcePdf = 'sourcePdf');
+        $service = new PdftkService($processFactory);
+        $result = $service->extractNumberOfPages($source);
 
-        $this->assertSame(['/usr/bin/pdftk', $sourcePdf, 'dump_data'], $result->params);
+        $this->assertSame([PdftkService::PDFTK_PATH, PdftkService::INPUT_FROM_STDIN, 'dump_data'], $result->params);
         $this->assertSame($exitCode, $result->exitCode);
         $this->assertNull($result->errorMessage);
-        $this->assertSame($sourcePdf, $result->sourcePdf);
         $this->assertSame($numberOfPages, $result->numberOfPages);
     }
 
     public function testExtractNumberOfPagesWithInvalidOutput(): void
     {
-        $this->process
-            ->expects('run')
-            ->andReturn(0);
+        $source = Utils::tryFopen('php://memory', 'r');
 
-        $this->process
-            ->expects('isSuccessful')
-            ->andReturn(true);
-
-        $this->process
-            ->expects('getOutput')
-            ->andReturn('Lorem ipsum yada yada yada');
+        $process = Mockery::mock(Process::class);
+        $process->expects('setInput')->with($source)->andReturnSelf();
+        $process->expects('run')->andReturn(0);
+        $process->expects('isSuccessful')->andReturn(true);
+        $process->expects('getOutput')->andReturn('Lorem ipsum yada yada yada');
 
         $this->expectExceptionObject(PdftkRuntimeException::noPageCountResultFound());
 
-        $service = $this->getService();
-        $service->extractNumberOfPages($sourcePdf = 'sourcePdf');
-    }
+        $processFactory = Mockery::mock(ProcessFactory::class);
+        $processFactory->expects('create')->andReturn($process);
 
-    private function getService(): PdftkService&MockInterface
-    {
-        $instance = Mockery::mock(PdftkService::class)
-            ->makePartial()
-            ->shouldAllowMockingProtectedMethods();
-
-        $instance
-            ->expects('getNewProcess')
-            ->andReturn($this->process);
-
-        return $instance;
+        $service = new PdftkService($processFactory);
+        $service->extractNumberOfPages($source);
     }
 
     private function getMockDumpDataOutput(string|int $numberOfPages): string

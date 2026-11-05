@@ -23,6 +23,9 @@ use function hash;
 
 class DepartmentController extends AbstractController
 {
+    public const string ROUTE_NAME_DEPARTMENTS_INDEX = 'app_departments_index';
+    public const string ROUTE_NAME_DEPARTMENT_DETAIL = 'app_department_detail';
+
     public function __construct(
         private readonly DossierViewFactory $dossierViewFactory,
         private readonly SearchParametersFactory $searchParametersFactory,
@@ -33,7 +36,7 @@ class DepartmentController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/bestuursorganen', name: 'app_departments_index')]
+    #[Route('/bestuursorganen', self::ROUTE_NAME_DEPARTMENTS_INDEX)]
     public function index(): Response
     {
         return $this->render('public/department/index.html.twig', [
@@ -42,7 +45,7 @@ class DepartmentController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/{slug}', name: 'app_department_detail', priority: -100)]
+    #[Route('/{slug}', self::ROUTE_NAME_DEPARTMENT_DETAIL, priority: -100)]
     public function detail(
         Request $request,
         #[MapEntity(expr: 'repository.findPublicDepartmentBySlug(slug)')] Department $department,

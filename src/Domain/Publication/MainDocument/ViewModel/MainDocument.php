@@ -6,13 +6,14 @@ namespace Shared\Domain\Publication\MainDocument\ViewModel;
 
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Dossier\ViewModel\Ground;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Search\Result\SubType\SubTypeViewModelInterface;
 
 readonly class MainDocument implements SubTypeViewModelInterface
 {
     /**
-     * @param list<string> $grounds
+     * @param list<Ground> $grounds
      */
     public function __construct(
         public string $id,

@@ -21,6 +21,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DepartmentController extends AbstractController
 {
+    public const string ROUTE_NAME_DEPARTMENTS = 'app_admin_departments';
+    public const string ROUTE_NAME_DEPARTMENT_CREATE = 'app_admin_department_create';
+    public const string ROUTE_NAME_DEPARTMENT_EDIT = 'app_admin_department_edit';
+
     protected const int MAX_ITEMS_PER_PAGE = 100;
 
     public function __construct(
@@ -32,7 +36,7 @@ class DepartmentController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/bestuursorganen', name: 'app_admin_departments', methods: ['GET'])]
+    #[Route('/balie/bestuursorganen', self::ROUTE_NAME_DEPARTMENTS, methods: ['GET'])]
     #[IsGranted('AuthMatrix.department.read')]
     public function index(Request $request): Response
     {
@@ -55,7 +59,7 @@ class DepartmentController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/bestuursorganen/nieuw', name: 'app_admin_department_create', methods: ['GET', 'POST'])]
+    #[Route('/balie/bestuursorganen/nieuw', self::ROUTE_NAME_DEPARTMENT_CREATE, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.department.create')]
     public function create(Request $request): Response
     {
@@ -76,7 +80,7 @@ class DepartmentController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/bestuursorganen/{id}', name: 'app_admin_department_edit', methods: ['GET', 'POST'])]
+    #[Route('/balie/bestuursorganen/{id}', self::ROUTE_NAME_DEPARTMENT_EDIT, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.department.update')]
     public function modify(Request $request, Department $department): Response
     {

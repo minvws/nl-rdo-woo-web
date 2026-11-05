@@ -14,7 +14,7 @@ Organisation Selector Should Not Be Available
   Get Element Count  //*[@data-e2e-name="organisation-switcher"]  should not be  1
 
 Click Manage Organisations
-  Click  //*[@data-e2e-name="manage-organisations"]
+  Click  //*[@data-e2e-name="nav-organisations"]
 
 Click Save Organisation
   Click  //*[@data-e2e-name="organisation-form-submit"]
@@ -49,7 +49,6 @@ Select Organisation
 
 Create New Organisation
   [Arguments]  ${organisation_name}=EMPTY  ${responsible_department_name}=EMPTY  ${prefix}=EMPTY
-  Click Organisation Selector
   Click Manage Organisations
   ${already_exists} =  Get Element Count
   ...  //*[@data-e2e-name="organisations-table"][contains(.,'${organisation_name}')]

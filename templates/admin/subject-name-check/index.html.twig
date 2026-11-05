@@ -1,0 +1,39 @@
+{% extends 'admin/base.html.twig' %}
+
+{% set page_title = 'Onderwerp controle' %}
+
+{% block body %}
+<div class="bhr-container">
+    <h1 class="bhr-title mb-6">Onderwerp controle</h1>
+
+    <div class="bhr-card">
+        {% if subjects is empty %}
+            <p>Geen dubbele onderwerpen in de database.</p>
+        {% else %}
+            <p class="mb-4">Deze onderwerpen zijn dubbel:</p>
+
+            <div class="bhr-responsive-table">
+                <table class="bhr-table">
+                    <caption class="sr-only">Dubbele onderwerpen</caption>
+                    <thead>
+                        <tr>
+                            <th class="text-left" scope="col">Organisatie</th>
+                            <th class="text-left" scope="col">Naam</th>
+                            <th class="text-left" scope="col">ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for subject in subjects %}
+                        <tr>
+                            <td><span class="break-all">{{ subject.organisation.name }}</span></td>
+                            <td><span class="break-all">{{ subject.name }}</span></td>
+                            <td><a class="bhr-a" href="{{ path('app_admin_subject_edit', { id: subject.id.toBase58 }) }}">{{ subject.id }}</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

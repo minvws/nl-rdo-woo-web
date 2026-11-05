@@ -18,9 +18,10 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\Producti
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Search\SearchDispatcher;
-use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\Import\ImportException;
+use Shared\Exception\Import\UnexpectedRowException;
 use Shared\Exception\ProductionReportUpdaterException;
-use Shared\Exception\TranslatableException;
+use Shared\Service\Import\ImportError;
 use Shared\Service\Inquiry\DocumentInquiryNumbers;
 use Shared\Service\Inquiry\InquiryChangeset;
 use Shared\Service\Inquiry\InquiryService;
@@ -84,7 +85,7 @@ readonly class InventoryUpdater
                     $documentsToUpdate[] = $document;
                 }
             } catch (Exception $exception) {
-                $this->addRowException($rowIndex, $run, $exception);
+                $this->addRowError($rowIndex, $run, $exception);
 
                 throw $exception;
             }
@@ -128,7 +129,7 @@ readonly class InventoryUpdater
             return null;
         }
 
-        $document = $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber);
+        $document = $this->documentRepository->findByDocumentNumber($documentNumber);
         if ($documentChangeStatus === InventoryChangeset::ADDED && $document === null) {
             $document = new Document();
             $document->setDocumentNumber($documentNumber);
@@ -189,13 +190,13 @@ readonly class InventoryUpdater
         }
     }
 
-    private function addRowException(int $rowIndex, ProductionReportProcessRun $run, Exception $exception): void
+    private function addRowError(int $rowIndex, ProductionReportProcessRun $run, Exception $exception): void
     {
-        if (! $exception instanceof TranslatableException) {
-            $exception = ProcessInventoryException::forGenericRowException($exception);
+        if (! $exception instanceof ImportException) {
+            $exception = new UnexpectedRowException($exception);
         }
 
-        $run->addRowException($rowIndex, $exception);
+        $run->addRowError($rowIndex, ImportError::fromException($exception));
     }
 
     private function applyDeletes(InventoryChangeset $changeset, WooDecision $dossier): void
@@ -267,7 +268,7 @@ readonly class InventoryUpdater
 
     private function getDocument(DocumentNumber $documentNumber): ?Document
     {
-        return $this->documentRepository->findOneByDocumentNumberCaseInsensitive($documentNumber);
+        return $this->documentRepository->findByDocumentNumber($documentNumber);
     }
 
     /**

@@ -18,12 +18,12 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdvice;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAttachment;
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
@@ -111,7 +111,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
         self::assertResponseIsSuccessful();
 
         $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
-        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $dossierUrlGenerator = $this->fromContainer(DossierUrlGenerator::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $requestForAdvice->getId(),
@@ -151,7 +151,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($requestForAdvice)],
+                    'public' => ['href' => $dossierUrlGenerator->documentDetailUrl($requestForAdvice)->toString()],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -188,7 +188,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
                             )->toString(),
                         ],
                         'public' => [
-                            'href' => $dossierPathHelper->getAbsoluteAttachmentDetailsPath($requestForAdvice, $requestForAdviceAttachment->getId()),
+                            'href' => $dossierUrlGenerator->attachmentDetailUrl($requestForAdvice, $requestForAdviceAttachment->getId())->toString(),
                         ],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
@@ -209,7 +209,7 @@ final class RequestForAdvicePublicationV1Test extends ApiPublicationV1DossierTes
             'advisoryBodies' => $requestForAdvice->getAdvisoryBodies(),
             '_links' => [
                 'self' => ['href' => $this->buildApiUrl($organisation, $requestForAdvice)],
-                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($requestForAdvice)],
+                'public' => ['href' => $dossierUrlGenerator->detailUrl($requestForAdvice)->toString()],
             ],
         ];
 

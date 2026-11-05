@@ -55,7 +55,7 @@ class WooDecisionDocumentMapperTest extends UnitTestCase
 
     public function testMap(): void
     {
-        $document = $this->createDocumentMock(PublicationContext::fromString('PUBCON'));
+        $document = $this->createDocumentMock(PublicationContext::fromString('pubcon'));
 
         $this->assertMatchesSnapshot(
             $this->mapper->map($document, ['foo'], [1 => 'bar']),

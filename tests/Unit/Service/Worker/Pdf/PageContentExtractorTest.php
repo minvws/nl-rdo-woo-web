@@ -47,14 +47,16 @@ final class PageContentExtractorTest extends UnitTestCase
     public function testExtract(): void
     {
         $pageNr = 123;
+        $pageContents = $this->getFaker()->sentence();
         $content = "lorem ipsum tika\nlorem ipsum tesseract";
 
         $this->contentExtractCache
             ->expects('getCombinedExtracts')
             ->with($this->entity, Mockery::on(
-                static function (ContentExtractOptions $options) use ($pageNr): bool {
+                static function (ContentExtractOptions $options) use ($pageNr, $pageContents): bool {
                     self::assertCount(count(ContentExtractorKey::cases()), $options->getEnabledExtractors());
                     self::assertEquals($pageNr, $options->getPageNumber());
+                    self::assertSame($pageContents, $options->getFileContents());
 
                     return true;
                 },
@@ -65,10 +67,8 @@ final class PageContentExtractorTest extends UnitTestCase
             ->expects('updatePage')
             ->with($this->entity, $pageNr, $content);
 
-        $workDir = '/foo/bar';
-        $localDocument = '/baz.pdf';
-        $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
-        $context->setLocalPageDocument('/baz_123.pdf');
+        $context = new PdfPageProcessingContext($this->entity, $pageNr);
+        $context->setPageContents($pageContents);
 
         $this->extractor->extract($context);
     }
@@ -94,10 +94,8 @@ final class PageContentExtractorTest extends UnitTestCase
             ->expects('updatePage')
             ->with($this->entity, $pageNr, $content);
 
-        $workDir = '/foo/bar';
-        $localDocument = '/baz.pdf';
-        $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
-        $context->setLocalPageDocument('/baz_123.pdf');
+        $context = new PdfPageProcessingContext($this->entity, $pageNr);
+        $context->setPageContents($this->getFaker()->sentence());
 
         $this->extractor->extract($context);
     }
@@ -137,10 +135,8 @@ final class PageContentExtractorTest extends UnitTestCase
                 'exception' => $thrownException->getMessage(),
             ]);
 
-        $workDir = '/foo/bar';
-        $localDocument = '/baz.pdf';
-        $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
-        $context->setLocalPageDocument('/baz_123.pdf');
+        $context = new PdfPageProcessingContext($this->entity, $pageNr);
+        $context->setPageContents($this->getFaker()->sentence());
 
         $this->extractor->extract($context);
     }

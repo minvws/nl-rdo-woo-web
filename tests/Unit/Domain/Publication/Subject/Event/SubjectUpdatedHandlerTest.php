@@ -11,6 +11,7 @@ use Shared\Domain\Publication\Subject\Event\SubjectUpdatedHandler;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Publication\Subject\SubjectRepository;
 use Shared\Domain\Search\Index\Updater\SubjectIndexUpdater;
+use Shared\Domain\Search\SearchDispatcher;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
 use Webmozart\Assert\InvalidArgumentException;
@@ -19,16 +20,19 @@ class SubjectUpdatedHandlerTest extends UnitTestCase
 {
     private SubjectRepository&MockInterface $repository;
     private SubjectIndexUpdater&MockInterface $indexUpdater;
+    private SearchDispatcher&MockInterface $searchDispatcher;
     private SubjectUpdatedHandler $handler;
 
     protected function setUp(): void
     {
         $this->repository = Mockery::mock(SubjectRepository::class);
         $this->indexUpdater = Mockery::mock(SubjectIndexUpdater::class);
+        $this->searchDispatcher = Mockery::mock(SearchDispatcher::class);
 
         $this->handler = new SubjectUpdatedHandler(
             $this->repository,
             $this->indexUpdater,
+            $this->searchDispatcher,
         );
 
         parent::setUp();
@@ -41,6 +45,7 @@ class SubjectUpdatedHandlerTest extends UnitTestCase
 
         $this->repository->expects('find')->with($subjectId)->andReturn($subject);
         $this->indexUpdater->expects('update')->with($subject);
+        $this->searchDispatcher->expects('dispatchIndexSubjectCommand')->with($subjectId);
 
         $this->handler->__invoke(
             SubjectUpdatedEvent::forSubject($subject),

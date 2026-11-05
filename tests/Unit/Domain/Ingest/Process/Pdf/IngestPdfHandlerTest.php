@@ -72,7 +72,7 @@ final class IngestPdfHandlerTest extends UnitTestCase
         $this->extractor->expects('extract')->with($entity);
 
         $pageCount = 2;
-        $pdftkPageCountResult = new PdftkPageCountResult(0, [], null, 'source', $pageCount);
+        $pdftkPageCountResult = new PdftkPageCountResult(0, [], null, $pageCount);
 
         $this->extractor->expects('getOutPut')->with()->andReturn($pdftkPageCountResult);
 

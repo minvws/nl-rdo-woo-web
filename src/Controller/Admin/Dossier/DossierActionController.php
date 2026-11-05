@@ -27,6 +27,9 @@ use Webmozart\Assert\Assert;
 
 class DossierActionController extends AbstractController
 {
+    public const string ROUTE_NAME_DOSSIER_DELETE = 'app_admin_dossier_delete';
+    public const string ROUTE_NAME_DOSSIER_WITHDRAW_ALL_DOCUMENTS = 'app_admin_dossier_withdraw_all_documents';
+
     public function __construct(
         private readonly StepActionHelper $stepHelper,
         private readonly DossierWorkflowManager $dossierWorkflowManager,
@@ -36,7 +39,7 @@ class DossierActionController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/dossier/delete/{documentPrefix}/{dossierNumber}', name: 'app_admin_dossier_delete', methods: ['GET', 'POST'])]
+    #[Route('/balie/dossier/delete/{documentPrefix}/{dossierNumber}', self::ROUTE_NAME_DOSSIER_DELETE, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.dossier.delete', subject: 'dossier')]
     public function delete(
         #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] AbstractDossier $dossier,
@@ -72,7 +75,7 @@ class DossierActionController extends AbstractController
 
     #[Route(
         '/balie/dossier/documenten-intrekken/{documentPrefix}/{dossierNumber}',
-        'app_admin_dossier_withdraw_all_documents',
+        self::ROUTE_NAME_DOSSIER_WITHDRAW_ALL_DOCUMENTS,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'wooDecision')]

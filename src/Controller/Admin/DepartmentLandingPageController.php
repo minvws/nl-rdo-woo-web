@@ -18,6 +18,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DepartmentLandingPageController extends AbstractController
 {
+    public const string ROUTE_NAME_DEPARTMENT_LANDING_PAGE_EDIT = 'app_admin_department_landing_page_edit';
+
     public function __construct(
         private readonly DepartmentRepository $repository,
         private readonly TranslatorInterface $translator,
@@ -26,7 +28,7 @@ class DepartmentLandingPageController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/bestuursorganen/{id}/landingpage', name: 'app_admin_department_landing_page_edit', methods: ['GET', 'POST'])]
+    #[Route('/balie/bestuursorganen/{id}/landingpage', self::ROUTE_NAME_DEPARTMENT_LANDING_PAGE_EDIT, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.department_landing_page.update')]
     public function edit(Request $request, Department $department): Response
     {

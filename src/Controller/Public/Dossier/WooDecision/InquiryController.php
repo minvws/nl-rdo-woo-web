@@ -29,6 +29,10 @@ use Symfony\Component\Routing\Attribute\Route;
 class InquiryController extends AbstractController
 {
     public const string ROUTE_NAME_INQUIRY_DETAIL = 'app_inquiry_detail';
+    public const string ROUTE_NAME_INQUIRY_INVENTORY_DOWNLOAD = 'app_inquiry_inventory_download';
+    public const string ROUTE_NAME_INQUIRY_DOWNLOAD_ZIP = 'app_inquiry_download_zip';
+    public const string ROUTE_NAME_INQUIRY_DOSSIERS = 'app_inquiry_dossiers';
+    public const string ROUTE_NAME_INQUIRY_DOSSIER = 'app_inquiry_dossier';
 
     private const int MAX_DOCUMENTS_PER_PAGE = 10;
     private const int MAX_DOSSIERS_PER_PAGE = 10;
@@ -43,7 +47,7 @@ class InquiryController extends AbstractController
     ) {
     }
 
-    #[Route('/zaak/{token}', name: self::ROUTE_NAME_INQUIRY_DETAIL, methods: ['GET'])]
+    #[Route('/zaak/{token}', self::ROUTE_NAME_INQUIRY_DETAIL, methods: ['GET'])]
     public function detail(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
     ): Response {
@@ -72,14 +76,14 @@ class InquiryController extends AbstractController
         ]);
     }
 
-    #[Route('/zaak/{token}/inventarislijst/download', name: 'app_inquiry_inventory_download', methods: ['GET'])]
+    #[Route('/zaak/{token}/inventarislijst/download', self::ROUTE_NAME_INQUIRY_INVENTORY_DOWNLOAD, methods: ['GET'])]
     public function downloadInventory(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
     ): StreamedResponse {
         return $this->downloadHelper->getResponseForEntityWithFileInfo($inquiry->getInventory());
     }
 
-    #[Route('/zaak/{token}/download/{documentPrefix}/{dossierNumber}', name: 'app_inquiry_download_zip', methods: ['GET', 'POST'])]
+    #[Route('/zaak/{token}/download/{documentPrefix}/{dossierNumber}', self::ROUTE_NAME_INQUIRY_DOWNLOAD_ZIP, methods: ['GET', 'POST'])]
     public function downloadZip(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $wooDecision,
@@ -89,7 +93,7 @@ class InquiryController extends AbstractController
         return $this->onDemandZipGenerator->getStreamedResponse($scope);
     }
 
-    #[Route('/zaak/{token}/dossiers', name: 'app_inquiry_dossiers', methods: ['GET'])]
+    #[Route('/zaak/{token}/dossiers', self::ROUTE_NAME_INQUIRY_DOSSIERS, methods: ['GET'])]
     public function dossiers(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
         Request $request,
@@ -129,7 +133,7 @@ class InquiryController extends AbstractController
         ]);
     }
 
-    #[Route('/zaak/{token}/dossier/{documentPrefix}/{dossierNumber}', name: 'app_inquiry_dossier', methods: ['GET'])]
+    #[Route('/zaak/{token}/dossier/{documentPrefix}/{dossierNumber}', self::ROUTE_NAME_INQUIRY_DOSSIER, methods: ['GET'])]
     public function dossier(
         #[MapEntity(mapping: ['token' => 'token'])] Inquiry $inquiry,
         #[ValueResolver('dossierWithAccessCheck')] WooDecision $wooDecision,

@@ -13,17 +13,17 @@ final class PublicationContextNormalizerTest extends TestCase
 {
     public function testNormalizeReturnsString(): void
     {
-        $publicationContext = PublicationContext::fromString('ABC-123');
+        $publicationContext = PublicationContext::fromString('abc-123');
         $result = new PublicationContextNormalizer()->normalize($publicationContext);
 
-        self::assertSame('ABC-123', $result);
+        self::assertSame('abc-123', $result);
     }
 
     public function testDenormalizeCreatesPublicationContextFromValidString(): void
     {
         $result = new PublicationContextNormalizer()->denormalize('ABC-123', PublicationContext::class);
 
-        self::assertSame('ABC-123', $result->toString());
+        self::assertSame('abc-123', $result->toString());
     }
 
     public function testDenormalizeThrowsExceptionWhenDataIsNotAString(): void

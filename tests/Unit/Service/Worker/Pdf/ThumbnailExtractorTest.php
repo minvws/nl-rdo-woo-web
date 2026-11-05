@@ -6,7 +6,6 @@ namespace Shared\Tests\Unit\Service\Worker\Pdf;
 
 use Mockery;
 use Mockery\MockInterface;
-use org\bovigo\vfs\vfsStream;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
 use Shared\Domain\Publication\EntityWithFileInfo;
@@ -15,7 +14,6 @@ use Shared\Service\Worker\Pdf\Extractor\ThumbnailExtractor;
 use Shared\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmService;
 use Shared\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmThumbnailResult;
 use Shared\Tests\Unit\UnitTestCase;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Uid\Uuid;
 
 final class ThumbnailExtractorTest extends UnitTestCase
@@ -39,46 +37,32 @@ final class ThumbnailExtractorTest extends UnitTestCase
             $this->pdfToPpmService,
             $this->thumbnailLimit,
         );
-
-        vfsStream::setup();
     }
 
     public function testExtractSuccessful(): void
     {
         $pageNr = 23;
-        $workDir = 'vfs://root/temp';
-        $localDocument = '/baz.pdf';
-        $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
-        $context->setLocalPageDocument($localPageDocument = '/baz_123.pdf');
+        $pageContents = $this->getFaker()->sha256();
+        $thumbnail = $this->getFaker()->sha256();
 
-        $targetPath = $workDir . '/thumb';
+        $context = new PdfPageProcessingContext($this->entity, $pageNr);
+        $context->setPageContents($pageContents);
 
         $pdfToPpmResult = new PdftoppmThumbnailResult(
             exitCode: 0,
             params: [],
             errorMessage: null,
-            sourcePdf: $localDocument,
-            targetPath: $targetPath,
+            thumbnail: $thumbnail,
         );
 
         $this->pdfToPpmService
             ->expects('createThumbnail')
-            ->with($localPageDocument, $targetPath)
+            ->with($pageContents)
             ->andReturn($pdfToPpmResult);
 
         $this->thumbnailStorageService
             ->expects('store')
-            ->with(
-                $this->entity,
-                Mockery::on(function (File $file) use ($targetPath) {
-                    $this->assertSame($targetPath . '.png', $file->getPathname());
-
-                    return true;
-                }),
-                $pageNr,
-            );
-
-        vfsStream::create(['temp' => ['thumb.png' => '']]);
+            ->with($this->entity, $thumbnail, $pageNr);
 
         $this->extractor->extractSinglePagePdfThumbnail($context);
     }
@@ -86,10 +70,8 @@ final class ThumbnailExtractorTest extends UnitTestCase
     public function testExtractSkipsWhenPageNrAboveLimit(): void
     {
         $pageNr = 51;
-        $workDir = 'vfs://root/temp';
-        $localDocument = '/baz.pdf';
-        $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
-        $context->setLocalPageDocument('/baz_123.pdf');
+        $context = new PdfPageProcessingContext($this->entity, $pageNr);
+        $context->setPageContents($this->getFaker()->sha256());
 
         $this->pdfToPpmService->expects('createThumbnail')->never();
 
@@ -101,24 +83,21 @@ final class ThumbnailExtractorTest extends UnitTestCase
         $this->entity->expects('getId')->andReturn(Uuid::v6());
 
         $pageNr = 23;
-        $workDir = 'vfs://root/temp';
-        $localDocument = '/baz.pdf';
-        $context = new PdfPageProcessingContext($this->entity, $pageNr, $workDir, $localDocument);
-        $context->setLocalPageDocument($localPageDocument = '/baz_123.pdf');
+        $pageContents = $this->getFaker()->sha256();
 
-        $targetPath = $workDir . '/thumb';
+        $context = new PdfPageProcessingContext($this->entity, $pageNr);
+        $context->setPageContents($pageContents);
 
         $pdfToPpmResult = new PdftoppmThumbnailResult(
             exitCode: 1,
             params: [],
-            errorMessage: 'oops',
-            sourcePdf: $localDocument,
-            targetPath: $targetPath,
+            errorMessage: $this->getFaker()->sentence(),
+            thumbnail: null,
         );
 
         $this->pdfToPpmService
             ->expects('createThumbnail')
-            ->with($localPageDocument, $targetPath)
+            ->with($pageContents)
             ->andReturn($pdfToPpmResult);
 
         $this->thumbnailStorageService->expects('store')->never();

@@ -6,9 +6,10 @@ namespace Shared\Tests\Unit\Service\Inquiry;
 
 use Mockery;
 use Mockery\MockInterface;
+use RuntimeException;
 use Shared\Domain\Organisation\Organisation;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentRepository;
-use Shared\Exception\InquiryLinkImportException;
+use Shared\Service\Import\ImportError;
 use Shared\Service\Inquiry\DocumentInquiryNumbers;
 use Shared\Service\Inquiry\InquiryChangeset;
 use Shared\Service\Inquiry\InquiryLinkImporter;
@@ -21,6 +22,8 @@ use Shared\ValueObject\DocumentNumber;
 use Shared\ValueObject\OrganisationPrefix;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Uid\Uuid;
+
+use function sprintf;
 
 class InquiryLinkImporterTest extends UnitTestCase
 {
@@ -147,12 +150,15 @@ class InquiryLinkImporterTest extends UnitTestCase
 
         self::assertFalse($result->isSuccessful());
         self::assertEquals(
-            [
-                2 => [
-                    InquiryLinkImportException::forInvalidInquiryNumber(2, ['case1', '<script>foo</script>']),
+            [2 => [new ImportError(
+                'Invalid inquiry numbers',
+                'publication.inquiry.error.inquiry_numbers_invalid',
+                [
+                    '{rownumber}' => '2',
+                    '{inquiryNumbers}' => 'case1, <script>foo</script>',
                 ],
-            ],
-            $result->rowExceptions,
+            )]],
+            $result->rowErrors,
         );
     }
 
@@ -176,5 +182,74 @@ class InquiryLinkImporterTest extends UnitTestCase
         $result = $this->importer->import($organisation, $upload);
 
         self::assertTrue($result->hasMatter());
+    }
+
+    public function testImportFailsWhenDocumentIsNotFound(): void
+    {
+        $organisationPrefix = $this->getFaker()->documentPrefix();
+        $documentNumber = $this->getFaker()->documentNumber()->toString();
+
+        $upload = Mockery::mock(UploadedFile::class);
+        $organisation = Mockery::mock(Organisation::class);
+        $organisation->expects('getPrefix')->andReturn(OrganisationPrefix::create($organisationPrefix));
+
+        $inquiryLinkImportParser = Mockery::mock(InquiryLinkImportParser::class);
+        $inquiryLinkImportParser->expects('hasMatterColumn')->with($upload)->andReturnFalse();
+        $inquiryLinkImportParser
+            ->expects('parse')
+            ->with($upload, $organisationPrefix)
+            ->andReturn($this->iterableToGenerator([
+                $documentNumber => [$this->getFaker()->word()],
+            ]));
+
+        $documentRepository = Mockery::mock(DocumentRepository::class);
+        $documentRepository
+            ->expects('getDocumentInquiryNumbers')
+            ->andReturn(new DocumentInquiryNumbers(null, InquiryNumbers::empty()));
+
+        $inquiryService = Mockery::mock(InquiryService::class);
+        $inquiryService->expects('applyChangesetAsync');
+
+        $inquiryLinkImporter = new InquiryLinkImporter($inquiryService, $documentRepository, $inquiryLinkImportParser);
+
+        $result = $inquiryLinkImporter->import($organisation, $upload);
+
+        self::assertEquals(
+            [1 => [new ImportError(
+                sprintf('Document %s does not exist', $documentNumber),
+                'public.global.no_document_number',
+                ['{documentNumber}' => $documentNumber],
+            )]],
+            $result->rowErrors,
+        );
+    }
+
+    public function testImportFailsWhenSpreadsheetCannotBeOpened(): void
+    {
+        $organisationPrefix = $this->getFaker()->documentPrefix();
+
+        $upload = Mockery::mock(UploadedFile::class);
+        $organisation = Mockery::mock(Organisation::class);
+        $organisation->expects('getPrefix')->andReturn(OrganisationPrefix::create($organisationPrefix));
+
+        $inquiryLinkImportParser = Mockery::mock(InquiryLinkImportParser::class);
+        $inquiryLinkImportParser->expects('hasMatterColumn')->with($upload)->andReturnFalse();
+        $inquiryLinkImportParser
+            ->expects('parse')
+            ->with($upload, $organisationPrefix)
+            ->andThrow(new RuntimeException());
+
+        $inquiryLinkImporter = new InquiryLinkImporter(
+            Mockery::mock(InquiryService::class),
+            Mockery::mock(DocumentRepository::class),
+            $inquiryLinkImportParser,
+        );
+
+        $result = $inquiryLinkImporter->import($organisation, $upload);
+
+        self::assertEquals(
+            [new ImportError('Error while opening the spreadsheet', 'publication.dossier.error.opening_inventory_file')],
+            $result->genericErrors,
+        );
     }
 }

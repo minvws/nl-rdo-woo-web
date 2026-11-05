@@ -9,9 +9,12 @@ use Mockery\MockInterface;
 use RuntimeException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReport;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRunCannotBeConfirmedException;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRunCannotBeRejectedException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\FileInfo;
-use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\Import\MissingHeadersException;
+use Shared\Service\Import\ImportError;
 use Shared\Service\Inventory\InventoryChangeset;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\WooUuid;
@@ -151,7 +154,7 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
     public function testConfirmThrowsExceptionForInvalidStatus(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(ProductionReportProcessRunCannotBeConfirmedException::class);
         $this->productionReportProcessRun->confirm();
     }
 
@@ -182,7 +185,7 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
     public function testRejectThrowsExceptionForInvalidStatus(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(ProductionReportProcessRunCannotBeRejectedException::class);
         $this->productionReportProcessRun->reject();
     }
 
@@ -280,20 +283,28 @@ final class ProductionReportProcessRunTest extends UnitTestCase
         self::assertEquals($name, $this->productionReportProcessRun->getTmpFilename());
     }
 
-    public function testAddGenericException(): void
+    public function testAddGenericError(): void
     {
         self::assertFalse($this->productionReportProcessRun->hasErrors());
 
-        $this->productionReportProcessRun->addGenericException(
-            ProcessInventoryException::forMaxRuntimeExceeded(),
-        );
+        $header = $this->getFaker()->word();
+        $importException = new MissingHeadersException([$header]);
+
+        $this->productionReportProcessRun->addGenericError(ImportError::fromException($importException));
 
         self::assertTrue($this->productionReportProcessRun->hasErrors());
-        self::assertCount(1, $this->productionReportProcessRun->getGenericErrors());
+        self::assertSame(
+            [[
+                'message' => $importException->getMessage(),
+                'translation' => 'publication.dossier.error.missing_inventory_header',
+                'placeholders' => ['{headername}' => $header],
+            ]],
+            $this->productionReportProcessRun->getGenericErrors(),
+        );
         self::assertCount(0, $this->productionReportProcessRun->getRowErrors());
     }
 
-    public function testAddGenericExceptionThrowsExceptionForFinalStatus(): void
+    public function testAddGenericErrorThrowsExceptionForFinalStatus(): void
     {
         $this->wooDecision->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
@@ -305,26 +316,34 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
         $this->expectException(RuntimeException::class);
 
-        $this->productionReportProcessRun->addGenericException(
-            ProcessInventoryException::forMaxRuntimeExceeded(),
+        $this->productionReportProcessRun->addGenericError(
+            ImportError::fromException(new MissingHeadersException([$this->getFaker()->word()])),
         );
     }
 
-    public function testAddRowException(): void
+    public function testAddRowError(): void
     {
         self::assertFalse($this->productionReportProcessRun->hasErrors());
 
-        $this->productionReportProcessRun->addRowException(
-            23,
-            ProcessInventoryException::forMaxRuntimeExceeded(),
-        );
+        $rowNumber = $this->getFaker()->randomNumber();
+        $header = $this->getFaker()->word();
+        $importException = new MissingHeadersException([$header]);
+
+        $this->productionReportProcessRun->addRowError($rowNumber, ImportError::fromException($importException));
 
         self::assertTrue($this->productionReportProcessRun->hasErrors());
         self::assertCount(0, $this->productionReportProcessRun->getGenericErrors());
-        self::assertCount(1, $this->productionReportProcessRun->getRowErrors());
+        self::assertSame(
+            [$rowNumber => [[
+                'message' => $importException->getMessage(),
+                'translation' => 'publication.dossier.error.missing_inventory_header',
+                'placeholders' => ['{headername}' => $header],
+            ]]],
+            $this->productionReportProcessRun->getRowErrors(),
+        );
     }
 
-    public function testAddRowExceptionThrowsExceptionForFinalStatus(): void
+    public function testAddRowErrorThrowsExceptionForFinalStatus(): void
     {
         $this->wooDecision->expects('getProductionReport')->andReturn(Mockery::mock(ProductionReport::class));
 
@@ -336,9 +355,9 @@ final class ProductionReportProcessRunTest extends UnitTestCase
 
         $this->expectException(RuntimeException::class);
 
-        $this->productionReportProcessRun->addRowException(
-            23,
-            ProcessInventoryException::forMaxRuntimeExceeded(),
+        $this->productionReportProcessRun->addRowError(
+            $this->getFaker()->randomNumber(),
+            ImportError::fromException(new MissingHeadersException([$this->getFaker()->word()])),
         );
     }
 
@@ -353,8 +372,8 @@ final class ProductionReportProcessRunTest extends UnitTestCase
     {
         self::assertTrue($this->productionReportProcessRun->hasNoErrors());
 
-        $this->productionReportProcessRun->addGenericException(
-            ProcessInventoryException::forMaxRuntimeExceeded(),
+        $this->productionReportProcessRun->addGenericError(
+            ImportError::fromException(new MissingHeadersException([$this->getFaker()->word()])),
         );
 
         self::assertFalse($this->productionReportProcessRun->hasNoErrors());

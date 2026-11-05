@@ -199,17 +199,17 @@ parameters:
     global_transport_dsn: '%env(${TENANT_UPPER}_GLOBAL_TRANSPORT_DSN)%'
     api_documents_transport_dsn: '%env(${TENANT_UPPER}_API_DOCUMENTS_TRANSPORT_DSN)%'
 
-    # Minio
-    storage.minio.region: '%env(${TENANT_UPPER}_STORAGE_MINIO_REGION)%'
-    storage.minio.endpoint: '%env(${TENANT_UPPER}_STORAGE_MINIO_ENDPOINT)%'
-    storage.minio.access_key: '%env(${TENANT_UPPER}_STORAGE_MINIO_ACCESS_KEY)%'
-    storage.minio.secret_key: '%env(${TENANT_UPPER}_STORAGE_MINIO_SECRET_KEY)%'
+    # S3
+    storage.s3.region: '%env(${TENANT_UPPER}_STORAGE_S3_REGION)%'
+    storage.s3.endpoint: '%env(${TENANT_UPPER}_STORAGE_S3_ENDPOINT)%'
+    storage.s3.access_key: '%env(${TENANT_UPPER}_STORAGE_S3_ACCESS_KEY)%'
+    storage.s3.secret_key: '%env(${TENANT_UPPER}_STORAGE_S3_SECRET_KEY)%'
 
-    storage.minio.bucket.upload: '%env(${TENANT_UPPER}_STORAGE_MINIO_UPLOAD_BUCKET)%'
-    storage.minio.bucket.document: '%env(${TENANT_UPPER}_STORAGE_MINIO_DOCUMENT_BUCKET)%'
-    storage.minio.bucket.batch: '%env(${TENANT_UPPER}_STORAGE_MINIO_BATCH_BUCKET)%'
-    storage.minio.bucket.woo_index: '%env(${TENANT_UPPER}_STORAGE_MINIO_WOO_INDEX_BUCKET)%'
-    storage.minio.bucket.assets: '%env(${TENANT_UPPER}_STORAGE_MINIO_ASSETS_BUCKET)%'
+    storage.s3.bucket.upload: '%env(${TENANT_UPPER}_STORAGE_S3_UPLOAD_BUCKET)%'
+    storage.s3.bucket.document: '%env(${TENANT_UPPER}_STORAGE_S3_DOCUMENT_BUCKET)%'
+    storage.s3.bucket.batch: '%env(${TENANT_UPPER}_STORAGE_S3_BATCH_BUCKET)%'
+    storage.s3.bucket.woo_index: '%env(${TENANT_UPPER}_STORAGE_S3_WOO_INDEX_BUCKET)%'
+    storage.s3.bucket.assets: '%env(${TENANT_UPPER}_STORAGE_S3_ASSETS_BUCKET)%'
 
     # Redis
     redis.url: '%env(${TENANT_UPPER}_REDIS_URL)%'

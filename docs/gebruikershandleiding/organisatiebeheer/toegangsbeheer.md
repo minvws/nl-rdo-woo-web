@@ -1,8 +1,8 @@
 <!-- markdownlint-disable MD024 -->
 
-# Toegangsbeheer
+# Gebruikersbeheer
 
-Je opent het Toegangsbeheer-menu door in de zwarte balk bovenaan op 'Toegangsbeheer' te klikken. Dit opent een overzicht van
+Je opent het gebruikersoverzicht door in de zwarte menubalk bovenaan op 'Gebruikers' te klikken. Dit opent een overzicht van
 alle gebruikers die momenteel toegang hebben tot de organisatie of die gedeactiveerd zijn. Actieve gebruikers zijn accounts
 die nog kunnen inloggen en het uploadportaal kunnen gebruiken. Gedeactiveerde gebruikers zijn accounts die zijn uitgeschakeld en
 geen toegang meer hebben.

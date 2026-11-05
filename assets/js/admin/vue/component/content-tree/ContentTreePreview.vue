@@ -46,7 +46,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="break-all">
     <h2 class="bhr-title-sm mb-1" v-if="tree.title">{{ tree.title }}</h2>
     <div
       class="bhr-content mb-4"

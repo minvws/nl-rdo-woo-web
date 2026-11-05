@@ -5,9 +5,9 @@ services:
 
     Shared\Domain\Publication\BatchDownload\Archiver\ZipStreamBatchArchiver:
         arguments:
-            $batchBucket: '%storage.minio.bucket.batch%'
-            $documentBucket: '%storage.minio.bucket.document%'
+            $batchBucket: '%storage.s3.bucket.batch%'
+            $documentBucket: '%storage.s3.bucket.document%'
 
     Shared\Domain\Publication\BatchDownload\OnDemandZipGenerator:
         arguments:
-            $documentBucket: '%storage.minio.bucket.document%'
+            $documentBucket: '%storage.s3.bucket.document%'

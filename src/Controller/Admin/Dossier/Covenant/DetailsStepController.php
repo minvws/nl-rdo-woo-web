@@ -25,6 +25,10 @@ use Webmozart\Assert\Assert;
 
 class DetailsStepController extends AbstractController
 {
+    public const string ROUTE_NAME_CREATE = 'app_admin_dossier_covenant_details_create';
+    public const string ROUTE_NAME_CONCEPT = 'app_admin_dossier_covenant_details_concept';
+    public const string ROUTE_NAME_EDIT = 'app_admin_dossier_covenant_details_edit';
+
     private const STEP_NAME = StepName::DETAILS;
 
     public function __construct(
@@ -36,8 +40,8 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/covenant/details/create',
-        name: 'app_admin_dossier_covenant_details_create',
+        '/balie/dossier/covenant/details/create',
+        self::ROUTE_NAME_CREATE,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create')]
@@ -65,23 +69,15 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/covenant/details/concept/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_covenant_details_concept',
+        '/balie/dossier/covenant/details/concept/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_CONCEPT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
         #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] Covenant $dossier,
         Request $request,
-        Breadcrumbs $breadcrumbs,
     ): Response {
-        $breadcrumbs->addRouteItem(
-            (string) $dossier->getTitle(),
-            'app_admin_dossier',
-            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
-        );
-        $breadcrumbs->addItem('admin.dossiers.covenant.step.details');
-
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
         if (! $wizardStatus->isCurrentStepAccessibleInConceptMode()) {
             return $this->stepHelper->redirectToFirstOpenStep($wizardStatus);
@@ -104,8 +100,8 @@ class DetailsStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/covenant/details/edit/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_covenant_details_edit',
+        '/balie/dossier/covenant/details/edit/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_EDIT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]

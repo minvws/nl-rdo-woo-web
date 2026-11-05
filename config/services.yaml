@@ -138,12 +138,12 @@ services:
     Aws\S3\S3Client:
         arguments:
             - version: '2006-03-01'
-              region: '%storage.minio.region%'
-              endpoint: '%storage.minio.endpoint%'
+              region: '%storage.s3.region%'
+              endpoint: '%storage.s3.endpoint%'
               use_path_style_endpoint: true
               credentials:
-                key: '%storage.minio.access_key%'
-                secret: '%storage.minio.secret_key%'
+                key: '%storage.s3.access_key%'
+                secret: '%storage.s3.secret_key%'
 
     Shared\Service\Security\Authorization\AuthorizationMatrix:
         arguments:
@@ -176,15 +176,11 @@ services:
 
     Shared\Domain\Upload\Handler\S3\S3UploadHelper:
         arguments:
-            $bucket: '%storage.minio.bucket.upload%'
+            $bucket: '%storage.s3.bucket.upload%'
 
     League\MimeTypeDetection\FinfoMimeTypeDetector:
         arguments:
             $bufferSampleSize: !php/const Shared\Domain\Upload\FileType\MimeTypeHelper::SAMPLE_SIZE
-
-    Shared\Domain\Robots\RobotsViewFactory:
-        arguments:
-            $publicBaseUrl: '%public_base_url%'
 
     Minvws\HorseBattery\HorseBattery: ~
     Minvws\HorseBattery\PasswordGenerator: '@Minvws\HorseBattery\HorseBattery'

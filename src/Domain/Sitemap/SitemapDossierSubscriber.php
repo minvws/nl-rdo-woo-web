@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
 use Shared\Domain\Publication\Dossier\DossierRepository;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener]
@@ -17,7 +17,7 @@ readonly class SitemapDossierSubscriber
     public function __construct(
         private EntityManagerInterface $doctrine,
         private DossierRepository $dossierRepository,
-        private DossierPathHelper $dossierPathHelper,
+        private DossierUrlGenerator $dossierUrlGenerator,
     ) {
     }
 
@@ -31,7 +31,7 @@ readonly class SitemapDossierSubscriber
         foreach ($dossierQuery->toIterable() as $dossier) {
             $event->getUrlContainer()->addUrl(
                 new UrlConcrete(
-                    $this->dossierPathHelper->getAbsoluteDetailsPath($dossier),
+                    $this->dossierUrlGenerator->detailUrl($dossier)->toString(),
                     $dossier->getUpdatedAt(),
                     UrlConcrete::CHANGEFREQ_MONTHLY,
                     0.8,

@@ -25,9 +25,9 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionDispatcher;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Search\SearchDispatcher;
-use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\Import\InvalidMatterException;
 use Shared\Exception\ProductionReportUpdaterException;
-use Shared\Exception\TranslatableException;
+use Shared\Service\Import\ImportError;
 use Shared\Service\Inquiry\InquiryChangeset;
 use Shared\Service\Inquiry\InquiryNumbers;
 use Shared\Service\Inquiry\InquiryService;
@@ -133,12 +133,12 @@ class InventoryUpdaterTest extends UnitTestCase
         $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($dossierId);
 
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->expects('findByDocumentNumber')
             ->with(Mockery::on($this->documentNumberMatcher('pfx-matter-2')))
             ->andReturn($updatedDocument);
 
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->expects('findByDocumentNumber')
             ->with(Mockery::on($this->documentNumberMatcher('pfx-matter-3')))
             ->andReturn($deletedDocument);
 
@@ -179,12 +179,12 @@ class InventoryUpdaterTest extends UnitTestCase
         $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($dossierId);
 
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->expects('findByDocumentNumber')
             ->with(Mockery::on($this->documentNumberMatcher('pfx-matter-1')))
             ->andReturn($updatedDocument);
 
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->expects('findByDocumentNumber')
             ->with(Mockery::on($this->documentNumberMatcher('pfx-matter-2')))
             ->andReturn($addedDocument);
 
@@ -251,7 +251,7 @@ class InventoryUpdaterTest extends UnitTestCase
             suspended: false,
             links: [],
             remark: null,
-            publicationContext: PublicationContext::fromString('PFX-MAT'),
+            publicationContext: PublicationContext::fromString('pfx-mat'),
             refersTo: ['PFX-MAT-77'],
         );
 
@@ -270,12 +270,12 @@ class InventoryUpdaterTest extends UnitTestCase
 
         $createdDocument = Mockery::mock(Document::class);
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
-            ->with(Mockery::on($this->documentNumberMatcher('PFX-MAT-1')))
+            ->expects('findByDocumentNumber')
+            ->with(Mockery::on($this->documentNumberMatcher('pfx-mat-1')))
             ->andReturn(null);
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
-            ->with(Mockery::on($this->documentNumberMatcher('PFX-MAT-1')))
+            ->expects('findByDocumentNumber')
+            ->with(Mockery::on($this->documentNumberMatcher('pfx-mat-1')))
             ->andReturn($createdDocument);
 
         $this->documentUpdater
@@ -322,7 +322,7 @@ class InventoryUpdaterTest extends UnitTestCase
             suspended: false,
             links: [],
             remark: null,
-            publicationContext: PublicationContext::fromString('PFX-MAT'),
+            publicationContext: PublicationContext::fromString('pfx-mat'),
             refersTo: [],
         );
 
@@ -344,8 +344,8 @@ class InventoryUpdaterTest extends UnitTestCase
             ->with(1);
 
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
-            ->with(Mockery::on($this->documentNumberMatcher('PFX-MAT-1')))
+            ->expects('findByDocumentNumber')
+            ->with(Mockery::on($this->documentNumberMatcher('pfx-mat-1')))
             ->andReturn(null);
 
         $this->documentUpdater
@@ -358,8 +358,11 @@ class InventoryUpdaterTest extends UnitTestCase
             ->andThrows(new RuntimeException('some runtime exception'));
 
         $run = Mockery::mock(ProductionReportProcessRun::class);
-        $run->expects('addRowException')
-            ->with(1, Mockery::type(TranslatableException::class));
+        $run->expects('addRowError')
+            ->with(1, Mockery::on(
+                static fn (ImportError $importError): bool => $importError->translationKey
+                    === 'publication.dossier.error.generic_document_row_exception',
+            ));
 
         $this->expectException(RuntimeException::class);
         $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $reader, $changeset, $runProgress);
@@ -385,7 +388,7 @@ class InventoryUpdaterTest extends UnitTestCase
             suspended: false,
             links: [],
             remark: null,
-            publicationContext: PublicationContext::fromString('PFX-MAT'),
+            publicationContext: PublicationContext::fromString('pfx-mat'),
             refersTo: [],
         );
 
@@ -407,11 +410,11 @@ class InventoryUpdaterTest extends UnitTestCase
             ->with(1);
 
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
-            ->with(Mockery::on($this->documentNumberMatcher('PFX-MAT-1')))
+            ->expects('findByDocumentNumber')
+            ->with(Mockery::on($this->documentNumberMatcher('pfx-mat-1')))
             ->andReturn(null);
 
-        $thrown = ProcessInventoryException::forGenericRowException(new RuntimeException('some runtime exception'));
+        $thrown = new InvalidMatterException(1);
         $this->documentUpdater
             ->expects('linkDocument')
             ->with(Mockery::type(Document::class), $dossier);
@@ -422,10 +425,12 @@ class InventoryUpdaterTest extends UnitTestCase
             ->andThrows($thrown);
 
         $run = Mockery::mock(ProductionReportProcessRun::class);
-        $run->expects('addRowException')
-            ->with(1, $thrown);
+        $run->expects('addRowError')
+            ->with(1, Mockery::on(
+                static fn (ImportError $importError): bool => $importError->translationKey === 'publication.dossier.error.invalid_matter',
+            ));
 
-        $this->expectException(ProcessInventoryException::class);
+        $this->expectExceptionObject($thrown);
         $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $reader, $changeset, $runProgress);
     }
 
@@ -508,12 +513,15 @@ class InventoryUpdaterTest extends UnitTestCase
         $runProgress->expects('update')->with($index);
 
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
-            ->with(Mockery::on($this->documentNumberMatcher('PFX-MAT-1')))
+            ->expects('findByDocumentNumber')
+            ->with(Mockery::on($this->documentNumberMatcher('pfx-mat-1')))
             ->andReturn(Mockery::mock(Document::class));
 
         $run = Mockery::mock(ProductionReportProcessRun::class);
-        $run->expects('addRowException')->with($index, Mockery::type(TranslatableException::class));
+        $run->expects('addRowError')->with($index, Mockery::on(
+            static fn (ImportError $importError): bool => $importError->translationKey
+                === 'publication.dossier.error.generic_document_row_exception',
+        ));
 
         $this->expectException(ProductionReportUpdaterException::class);
         $this->inventoryUpdater->applyChangesetToDatabase($run, $dossier, $reader, $changeset, $runProgress);
@@ -541,7 +549,7 @@ class InventoryUpdaterTest extends UnitTestCase
         $this->entityManager->expects('flush')->twice();
 
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->expects('findByDocumentNumber')
             ->with(Mockery::on($this->documentNumberMatcher($documentNumber)))
             ->andReturnNull();
 
@@ -573,8 +581,8 @@ class InventoryUpdaterTest extends UnitTestCase
         $runProgress->expects('update')->with($index);
 
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
-            ->with(Mockery::on($this->documentNumberMatcher('PFX-MAT-1')))
+            ->expects('findByDocumentNumber')
+            ->with(Mockery::on($this->documentNumberMatcher('pfx-mat-1')))
             ->twice()
             ->andReturnNull();
 
@@ -613,7 +621,7 @@ class InventoryUpdaterTest extends UnitTestCase
         $this->searchDispatcher->expects('dispatchIndexDossierCommand')->with($dossierId);
 
         $this->documentRepository
-            ->expects('findOneByDocumentNumberCaseInsensitive')
+            ->expects('findByDocumentNumber')
             ->with(Mockery::on($this->documentNumberMatcher($documentNumber)))
             ->andReturnNull();
 
@@ -640,7 +648,7 @@ class InventoryUpdaterTest extends UnitTestCase
             suspended: false,
             links: [],
             remark: null,
-            publicationContext: PublicationContext::fromString('PFX-MAT'),
+            publicationContext: PublicationContext::fromString('pfx-mat'),
             refersTo: $refersTo,
         );
     }

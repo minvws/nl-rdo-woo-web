@@ -16,6 +16,7 @@ use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Domain\Search\Query\SearchType;
 use Shared\Service\Search\Model\FacetKey;
 use Shared\Service\Search\Query\Dsl\Query;
+use Shared\Service\Search\Query\Dsl\QueryParameter;
 use Webmozart\Assert\Assert;
 
 use function array_map;
@@ -56,7 +57,7 @@ class ContentAccessConditionBuilder implements QueryConditionBuilderInterface
                 $query->addFilter(
                     Query::bool(
                         should: $this->getFiltersForAllTypes($searchParameters),
-                    )->setParams(['minimum_should_match' => 1]),
+                    )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]),
                 );
                 break;
         }

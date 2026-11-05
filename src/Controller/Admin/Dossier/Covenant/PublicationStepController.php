@@ -19,6 +19,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class PublicationStepController extends AbstractController
 {
+    public const string ROUTE_NAME_CONCEPT = 'app_admin_dossier_covenant_publication_concept';
+    public const string ROUTE_NAME_EDIT = 'app_admin_dossier_covenant_publication_edit';
+
     private const STEP_NAME = StepName::PUBLICATION;
 
     public function __construct(
@@ -28,8 +31,8 @@ class PublicationStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/covenant/publish/concept/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_covenant_publication_concept',
+        '/balie/dossier/covenant/publish/concept/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_CONCEPT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
@@ -58,8 +61,8 @@ class PublicationStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/covenant/publish/edit/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_covenant_publication_edit',
+        '/balie/dossier/covenant/publish/edit/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_EDIT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]

@@ -96,6 +96,6 @@ final readonly class SubjectProcessor implements ProcessorInterface
             throw new ResourceInUseException();
         }
 
-        $this->subjectRepository->remove($subject, true);
+        $this->subjectService->delete($subject);
     }
 }

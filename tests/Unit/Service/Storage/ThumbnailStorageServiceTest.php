@@ -14,7 +14,6 @@ use Shared\Service\Storage\RemoteFilesystem;
 use Shared\Service\Storage\StorageRootPathGenerator;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Tests\Unit\UnitTestCase;
-use SplFileInfo;
 use Webmozart\Assert\Assert;
 
 use function dirname;
@@ -64,7 +63,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
     public function testStore(): void
     {
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $localFile = Mockery::mock(SplFileInfo::class);
+        $thumbnail = $this->getFaker()->sha256();
 
         $service = $this->getStorageService();
         $service
@@ -77,12 +76,12 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
             ->with(dirname($remotePath))
             ->andReturnTrue();
 
-        $service
-            ->expects('doStore')
-            ->with($localFile, $remotePath)
+        $this->remoteFilesystem
+            ->expects('write')
+            ->with($remotePath, $thumbnail)
             ->andReturnTrue();
 
-        $result = $service->store($entity, $localFile, $pageNr);
+        $result = $service->store($entity, $thumbnail, $pageNr);
 
         $this->assertTrue($result);
     }
@@ -90,7 +89,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
     public function testStoreWhenCreatingDirectoryFails(): void
     {
         $entity = Mockery::mock(EntityWithFileInfo::class);
-        $localFile = Mockery::mock(SplFileInfo::class);
+        $thumbnail = $this->getFaker()->sha256();
 
         $service = $this->getStorageService();
         $service
@@ -105,9 +104,7 @@ final class ThumbnailStorageServiceTest extends UnitTestCase
 
         $this->remoteFilesystem->expects('createDirectory')->never();
 
-        $service->expects('doStore')->never();
-
-        $result = $service->store($entity, $localFile, $pageNr);
+        $result = $service->store($entity, $thumbnail, $pageNr);
 
         $this->assertFalse($result);
     }

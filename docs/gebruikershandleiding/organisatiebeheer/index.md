@@ -5,7 +5,7 @@ Beheerders met Super Beheerder of Organisatie Admin rechten zijn verantwoordelij
 
 Als organisatiebeheerder ben jij verantwoordelijk voor het beheer van de organisatie in het uploadportaal van het Woo Publicatieplatform.
 
-Je hebt toegang tot exclusieve menu-opties, zoals 'Toegangsbeheer' en 'Onderwerpen', waartoe collega’s met de
+Je hebt toegang tot exclusieve menu-opties, zoals 'Gebruikers' en 'Onderwerpen', waartoe collega’s met de
 gebruikersrechten 'publicatiebeheer' of 'alleen-lezen' geen toegang hebben. Daarnaast heb je toegang tot het menu
 'Zaken', waarover je meer kunt lezen in de handleiding voor het publiceren van een Woo-besluit.
 

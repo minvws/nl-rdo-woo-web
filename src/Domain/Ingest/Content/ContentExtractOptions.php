@@ -18,7 +18,7 @@ class ContentExtractOptions
 
     private ?int $pageNumber = null;
 
-    private ?string $localFile = null;
+    private ?string $fileContents = null;
 
     public static function create(): self
     {
@@ -73,28 +73,20 @@ class ContentExtractOptions
         return $this->pageNumber;
     }
 
-    public function withoutPageNumber(): self
+    public function withFileContents(?string $fileContents): self
     {
-        $clone = clone $this;
-        $clone->pageNumber = null;
-
-        return $clone;
-    }
-
-    public function withLocalFile(?string $localFile): self
-    {
-        $this->localFile = $localFile;
+        $this->fileContents = $fileContents;
 
         return $this;
     }
 
-    public function hasLocalFile(): bool
+    public function hasFileContents(): bool
     {
-        return $this->localFile !== null;
+        return $this->fileContents !== null;
     }
 
-    public function getLocalFile(): ?string
+    public function getFileContents(): ?string
     {
-        return $this->localFile;
+        return $this->fileContents;
     }
 }

@@ -129,7 +129,7 @@ final class WooDecisionDocumentWriteGuardTest extends UnitTestCase
         }
 
         $this->documentRepository
-            ->expects('findByDocumentNumbersCaseInsensitive')
+            ->expects('findByDocumentNumbers')
             ->with(Mockery::on(static function (array $documentNumbers) use ($expectedDocumentNumbers): bool {
                 $actualDocumentNumbers = [];
                 foreach ($documentNumbers as $documentNumber) {

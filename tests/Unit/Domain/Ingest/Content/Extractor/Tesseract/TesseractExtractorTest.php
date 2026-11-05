@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tesseract;
 
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
 use Mockery\MockInterface;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use Shared\Domain\Ingest\Content\Extractor\Tesseract\TesseractExtractor;
 use Shared\Domain\Ingest\Content\Extractor\Tesseract\TesseractService;
-use Shared\Domain\Ingest\Content\LazyFileReference;
+use Shared\Domain\Ingest\Content\FileReferenceInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
+
+use function sprintf;
 
 final class TesseractExtractorTest extends UnitTestCase
 {
@@ -31,13 +34,20 @@ final class TesseractExtractorTest extends UnitTestCase
     {
         $entity = Mockery::mock(EntityWithFileInfo::class);
 
-        $fileReference = Mockery::mock(LazyFileReference::class);
-        $fileReference->expects('getPath')->andReturn($file = '/foo/bar.txt');
+        $source = Utils::tryFopen('php://memory', 'r');
 
-        $this->tesseractService->expects('extract')->with($file)->andReturn('   foo bar  ');
+        $fileReference = Mockery::mock(FileReferenceInterface::class);
+        $fileReference->expects('getStream')->andReturn($source);
 
-        self::assertEquals(
-            'foo bar',
+        $content = $this->getFaker()->sentence();
+
+        $this->tesseractService
+            ->expects('extract')
+            ->with($source)
+            ->andReturn(sprintf('   %s  ', $content));
+
+        self::assertSame(
+            $content,
             $this->extractor->getContent($entity, $fileReference),
         );
     }

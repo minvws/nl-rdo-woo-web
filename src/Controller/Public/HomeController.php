@@ -26,6 +26,8 @@ use function strval;
 
 class HomeController extends AbstractController
 {
+    public const string ROUTE_NAME_HOME = 'app_home';
+
     public function __construct(
         private readonly SearchService $searchService,
         private readonly BrowseMainAggregationsQueryDefinition $queryDefinition,
@@ -37,7 +39,7 @@ class HomeController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/', name: 'app_home')]
+    #[Route('/', self::ROUTE_NAME_HOME)]
     public function index(Request $request, Breadcrumbs $breadcrumbs): Response
     {
         $breadcrumbs->addItem('global.home');

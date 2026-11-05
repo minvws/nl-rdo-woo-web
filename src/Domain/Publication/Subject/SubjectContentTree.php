@@ -6,12 +6,13 @@ namespace Shared\Domain\Publication\Subject;
 
 use Shared\Domain\Publication\Subject\Constraint\ValidContentTreeDepth;
 use Shared\Domain\Publication\Subject\Constraint\ValidContentTreeNodeCount;
+use Shared\ValueObject\Equatable;
 use Symfony\Component\Validator\Constraints as SymfonyAssert;
 use Webmozart\Assert\Assert;
 
 use function array_map;
 
-final readonly class SubjectContentTree
+final readonly class SubjectContentTree implements Equatable
 {
     /**
      * @param list<SubjectContentNode> $children
@@ -73,5 +74,10 @@ final readonly class SubjectContentTree
             intro: $intro,
             outro: $outro,
         );
+    }
+
+    public function equalTo(mixed $other): bool
+    {
+        return $other instanceof self && $this->toArray() === $other->toArray();
     }
 }

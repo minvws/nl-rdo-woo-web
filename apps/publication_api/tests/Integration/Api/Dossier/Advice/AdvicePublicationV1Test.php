@@ -18,12 +18,12 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\Advice\Advice;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceAttachment;
 use Shared\Domain\Publication\Dossier\Type\Advice\AdviceMainDocument;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
@@ -108,7 +108,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
         self::assertResponseIsSuccessful();
 
         $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
-        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $dossierUrlGenerator = $this->fromContainer(DossierUrlGenerator::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $advice->getId(),
@@ -148,7 +148,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($advice)],
+                    'public' => ['href' => $dossierUrlGenerator->documentDetailUrl($advice)->toString()],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -184,7 +184,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
                                 ],
                             )->toString(),
                         ],
-                        'public' => ['href' => $dossierPathHelper->getAbsoluteAttachmentDetailsPath($advice, $adviceAttachment->getId())],
+                        'public' => ['href' => $dossierUrlGenerator->attachmentDetailUrl($advice, $adviceAttachment->getId())->toString()],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -202,7 +202,7 @@ final class AdvicePublicationV1Test extends ApiPublicationV1DossierTestCase
             'dossierDate' => $advice->getDateFrom()?->format('Y-m-d'),
             '_links' => [
                 'self' => ['href' => $this->buildApiUrl($organisation, $advice)],
-                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($advice)],
+                'public' => ['href' => $dossierUrlGenerator->detailUrl($advice)->toString()],
             ],
         ];
 

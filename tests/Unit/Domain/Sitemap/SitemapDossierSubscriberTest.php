@@ -14,28 +14,29 @@ use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
 use Shared\Domain\Publication\Dossier\DossierRepository;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Sitemap\SitemapDossierSubscriber;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\Url;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SitemapDossierSubscriberTest extends UnitTestCase
 {
     private EntityManagerInterface&MockInterface $entityManager;
     private DossierRepository&MockInterface $dossierRepository;
-    private DossierPathHelper&MockInterface $dossierPathHelper;
+    private DossierUrlGenerator&MockInterface $dossierUrlGenerator;
     private SitemapDossierSubscriber $subscriber;
 
     protected function setUp(): void
     {
         $this->entityManager = Mockery::mock(EntityManagerInterface::class);
         $this->dossierRepository = Mockery::mock(DossierRepository::class);
-        $this->dossierPathHelper = Mockery::mock(DossierPathHelper::class);
+        $this->dossierUrlGenerator = Mockery::mock(DossierUrlGenerator::class);
         $this->subscriber = new SitemapDossierSubscriber(
             $this->entityManager,
             $this->dossierRepository,
-            $this->dossierPathHelper,
+            $this->dossierUrlGenerator,
         );
     }
 
@@ -59,7 +60,8 @@ class SitemapDossierSubscriberTest extends UnitTestCase
             ->expects('createQueryBuilder')
             ->andReturn($queryBuilder);
 
-        $this->dossierPathHelper->expects('getAbsoluteDetailsPath')->with($dossier)->andReturn($url = '/foo/bar');
+        $url = $this->getFaker()->url();
+        $this->dossierUrlGenerator->expects('detailUrl')->with($dossier)->andReturn(Url::create($url));
 
         $urlContainer = Mockery::mock(UrlContainerInterface::class);
         $urlContainer->expects('addUrl')->with(

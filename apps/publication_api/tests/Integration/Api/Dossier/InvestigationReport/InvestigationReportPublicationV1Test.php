@@ -18,12 +18,12 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReport;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
@@ -107,7 +107,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
         self::assertResponseIsSuccessful();
 
         $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
-        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $dossierUrlGenerator = $this->fromContainer(DossierUrlGenerator::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $investigationReport->getId(),
@@ -147,7 +147,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($investigationReport)],
+                    'public' => ['href' => $dossierUrlGenerator->documentDetailUrl($investigationReport)->toString()],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -184,10 +184,10 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
                             )->toString(),
                         ],
                         'public' => [
-                            'href' => $dossierPathHelper->getAbsoluteAttachmentDetailsPath(
+                            'href' => $dossierUrlGenerator->attachmentDetailUrl(
                                 $investigationReport,
                                 $investigationReportAttachment->getId(),
-                            ),
+                            )->toString(),
                         ],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
@@ -206,7 +206,7 @@ final class InvestigationReportPublicationV1Test extends ApiPublicationV1Dossier
             'dossierDate' => $investigationReport->getDateFrom()?->format('Y-m-d'),
             '_links' => [
                 'self' => ['href' => $this->buildApiUrl($organisation, $investigationReport)],
-                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($investigationReport)],
+                'public' => ['href' => $dossierUrlGenerator->detailUrl($investigationReport)->toString()],
             ],
         ];
 

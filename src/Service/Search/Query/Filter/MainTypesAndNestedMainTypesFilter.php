@@ -11,6 +11,7 @@ use Shared\Domain\Search\Index\Schema\ElasticNestedField;
 use Shared\Domain\Search\Query\Facet\Facet;
 use Shared\Domain\Search\Query\SearchParameters;
 use Shared\Service\Search\Query\Dsl\Query;
+use Shared\Service\Search\Query\Dsl\QueryParameter;
 
 /**
  * This filter can decorate another filter to check those conditions in both main type docs and nested main type docs.
@@ -63,7 +64,7 @@ readonly class MainTypesAndNestedMainTypesFilter implements FilterInterface
                         ],
                     ),
                 ],
-            )->setParams(['minimum_should_match' => 1]),
+            )->setParams([QueryParameter::MINIMUM_SHOULD_MATCH => 1]),
         );
     }
 }

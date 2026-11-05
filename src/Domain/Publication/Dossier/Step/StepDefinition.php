@@ -12,13 +12,14 @@ use Shared\Service\EnumHelper;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use function count;
-use function sprintf;
 
 readonly class StepDefinition implements StepDefinitionInterface
 {
     final public function __construct(
         private StepName $name,
         private DossierType $dossierType,
+        private string $conceptRouteName,
+        private string $editRouteName,
     ) {
     }
 
@@ -49,24 +50,20 @@ readonly class StepDefinition implements StepDefinitionInterface
 
     public function getConceptEditRouteName(): string
     {
-        return sprintf(
-            'app_admin_dossier_%s_%s_concept',
-            $this->dossierType->getValueForRouteName(),
-            $this->getName()->value,
-        );
+        return $this->conceptRouteName;
     }
 
     public function getEditRouteName(): string
     {
-        return sprintf(
-            'app_admin_dossier_%s_%s_edit',
-            $this->dossierType->getValueForRouteName(),
-            $this->getName()->value,
-        );
+        return $this->editRouteName;
     }
 
-    public static function create(DossierTypeConfigInterface $config, StepName $stepName): static
-    {
-        return new static($stepName, $config->getDossierType());
+    public static function create(
+        DossierTypeConfigInterface $config,
+        StepName $stepName,
+        string $conceptRouteName,
+        string $editRouteName,
+    ): static {
+        return new static($stepName, $config->getDossierType(), $conceptRouteName, $editRouteName);
     }
 }

@@ -18,12 +18,12 @@ use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
 use Shared\Domain\Publication\Dossier\DossierStatus;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\FileProvider\DossierFileType;
 use Shared\Domain\Publication\Dossier\NoticeNotPublic\NoticeNotPublic;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReport;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportAttachment;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\Subject\Subject;
 use Shared\Service\Uploader\UploadGroupId;
@@ -106,7 +106,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
         self::assertResponseIsSuccessful();
 
         $apiUrlGenerator = $this->fromContainer(ApiUrlGenerator::class);
-        $dossierPathHelper = $this->fromContainer(DossierPathHelper::class);
+        $dossierUrlGenerator = $this->fromContainer(DossierUrlGenerator::class);
         $publicUrlGenerator = $this->fromContainer(PublicUrlGenerator::class);
         $expectedResponse = [
             'id' => (string) $annualReport->getId(),
@@ -146,7 +146,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                             ],
                         )->toString(),
                     ],
-                    'public' => ['href' => $dossierPathHelper->getAbsoluteMainDocumentDetailsPath($annualReport)],
+                    'public' => ['href' => $dossierUrlGenerator->documentDetailUrl($annualReport)->toString()],
                     'file' => [
                         'href' => $publicUrlGenerator->buildUrlFromRoute(
                             DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -182,7 +182,9 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
                                 ],
                             )->toString(),
                         ],
-                        'public' => ['href' => $dossierPathHelper->getAbsoluteAttachmentDetailsPath($annualReport, $annualReportAttachment->getId())],
+                        'public' => [
+                            'href' => $dossierUrlGenerator->attachmentDetailUrl($annualReport, $annualReportAttachment->getId())->toString(),
+                        ],
                         'file' => [
                             'href' => $publicUrlGenerator->buildUrlFromRoute(
                                 DossierFileController::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD,
@@ -200,7 +202,7 @@ final class AnnualReportPublicationV1Test extends ApiPublicationV1DossierTestCas
             'year' => (int) $annualReport->getDateFrom()?->format('Y'),
             '_links' => [
                 'self' => ['href' => $this->buildApiUrl($organisation, $annualReport)],
-                'public' => ['href' => $dossierPathHelper->getAbsoluteDetailsPath($annualReport)],
+                'public' => ['href' => $dossierUrlGenerator->detailUrl($annualReport)->toString()],
             ],
         ];
 

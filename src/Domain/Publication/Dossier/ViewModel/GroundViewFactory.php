@@ -13,10 +13,36 @@ use function key_exists;
 
 readonly class GroundViewFactory
 {
+    private const string WOO_URL = 'https://wetten.overheid.nl/BWBR0045754/#Hoofdstuk5';
+    private const string WOB_URL = 'https://wetten.overheid.nl/BWBR0005252/#HoofdstukV';
+
+    public function make(string $citation): Ground
+    {
+        return new Ground(
+            citation: $citation,
+            classification: Citation::toClassification($citation),
+            url: match (Citation::getCitationType($citation)) {
+                Citation::TYPE_WOO => self::WOO_URL,
+                Citation::TYPE_WOB => self::WOB_URL,
+                default => null,
+            },
+        );
+    }
+
+    /**
+     * @param list<string> $citations
+     *
+     * @return list<Ground>
+     */
+    public function makeCollection(array $citations): array
+    {
+        return array_map($this->make(...), $citations);
+    }
+
     /**
      * @return list<array{citation:string,label:string}>
      */
-    public function makeAsArray(): array
+    public function makeOptions(): array
     {
         $grounds = Citation::$wooCitations;
 

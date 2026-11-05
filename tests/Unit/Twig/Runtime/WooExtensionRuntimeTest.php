@@ -8,10 +8,10 @@ use Mockery;
 use Mockery\MockInterface;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierNotifications;
 use Shared\Domain\Publication\Dossier\ViewModel\DossierNotificationsFactory;
-use Shared\Domain\Publication\Dossier\ViewModel\DossierPathHelper;
 use Shared\Domain\Publication\History\History;
 use Shared\Domain\Publication\History\HistoryWooDecisionOrigin;
 use Shared\Domain\Publication\History\HistoryWooDecisionOriginResolver;
@@ -42,7 +42,7 @@ class WooExtensionRuntimeTest extends UnitTestCase
             $this->requestStack,
             Mockery::mock(OrganisationSwitcher::class),
             Mockery::mock(HistoryService::class),
-            Mockery::mock(DossierPathHelper::class),
+            Mockery::mock(DossierUrlGenerator::class),
             $this->dossierNotificationsFactory,
             $this->historyWooDecisionOriginResolver,
         );

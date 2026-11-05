@@ -11,8 +11,8 @@ final class PdftoppmThumbnailResultTest extends UnitTestCase
 {
     public function testIsSuccessfulAndIsFailed(): void
     {
-        $resultOne = new PdftoppmThumbnailResult(0, [], null, 'source.pdf', 'target.png');
-        $resultTwo = new PdftoppmThumbnailResult(1, [], null, 'source.pdf', 'target.png');
+        $resultOne = new PdftoppmThumbnailResult(0, [], null, $this->getFaker()->sha256());
+        $resultTwo = new PdftoppmThumbnailResult(1, [], $this->getFaker()->sentence(), null);
 
         $this->assertTrue($resultOne->isSuccessful());
         $this->assertFalse($resultOne->isFailed());

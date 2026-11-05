@@ -4,12 +4,10 @@
     ground: a list of documents to display
 #}
 {% macro document_ground(ground) %}
-    {% if get_citation_type(ground) == constant('Shared\\Domain\\Publication\\Citation::TYPE_WOO') %}
-        <a class="woo-a" href="https://wetten.overheid.nl/BWBR0045754/#Hoofdstuk5">{{ ground }} {{ ground|classification }}</a>
-    {% elseif get_citation_type(ground) == constant('Shared\\Domain\\Publication\\Citation::TYPE_WOB') %}
-        <a class="woo-a" href="https://wetten.overheid.nl/BWBR0005252/#HoofdstukV">{{ ground }} {{ ground|classification }}</a>
+    {% if ground.url %}
+        <a class="woo-a" href="{{ ground.url }}">{{ ground.citation }} {{ ground.classification }}</a>
     {% else %}
-        {{ ground }}
+        {{ ground.citation }}
     {% endif %}
 {% endmacro %}
 

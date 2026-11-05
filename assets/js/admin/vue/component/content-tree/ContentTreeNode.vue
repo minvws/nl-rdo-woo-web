@@ -105,7 +105,7 @@ const moveChild = (index: number, direction: 'up' | 'down') => {
             name="chevron-down"
           />
           {{ label }} {{ props.number }}
-          <span class="font-normal pl-2 bhr-text-muted">
+          <span class="font-normal pl-2 bhr-text-muted truncate max-w-lg">
             ({{ titleLabel }})
           </span>
         </button>

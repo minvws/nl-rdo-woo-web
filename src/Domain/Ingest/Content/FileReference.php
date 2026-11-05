@@ -4,30 +4,37 @@ declare(strict_types=1);
 
 namespace Shared\Domain\Ingest\Content;
 
+use GuzzleHttp\Psr7\Utils;
+
+use function fwrite;
+use function rewind;
+
 readonly class FileReference implements FileReferenceInterface
 {
     public function __construct(
-        private string $path,
+        private string $contents,
     ) {
     }
 
     public static function forContentExtractOptions(ContentExtractOptions $options): self
     {
-        $localFile = $options->getLocalFile();
-        if ($localFile === null) {
-            throw ContentExtractException::forNoLocalFileInContentExtractOptions();
+        $fileContents = $options->getFileContents();
+        if ($fileContents === null) {
+            throw ContentExtractException::forNoFileContentsInContentExtractOptions();
         }
 
-        return new self($localFile);
+        return new self($fileContents);
     }
 
-    public function getPath(): string
+    /**
+     * @return resource
+     */
+    public function getStream()
     {
-        return $this->path;
-    }
+        $stream = Utils::tryFopen('php://memory', 'r+');
+        fwrite($stream, $this->contents);
+        rewind($stream);
 
-    public function hasPath(): bool
-    {
-        return true;
+        return $stream;
     }
 }

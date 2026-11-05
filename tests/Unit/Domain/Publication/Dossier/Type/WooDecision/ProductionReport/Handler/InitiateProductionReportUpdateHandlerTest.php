@@ -18,6 +18,7 @@ use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowException;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Exception\ProductionReportUpdaterException;
+use Shared\Service\Import\ImportError;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -104,7 +105,10 @@ class InitiateProductionReportUpdateHandlerTest extends UnitTestCase
         $this->entityStorage->expects('storeEntity')->andReturnFalse();
 
         $this->logger->expects('error');
-        $run->expects('addGenericException');
+        $run->expects('addGenericError')
+            ->with(Mockery::on(static function (ImportError $importError): bool {
+                return $importError->translationKey === 'publication.dossier.error.can_not_store_inventory_file';
+            }));
         $run->expects('fail');
         $this->processRunRepository->expects('save')->with($run, true);
 

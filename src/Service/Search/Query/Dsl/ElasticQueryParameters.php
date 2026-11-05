@@ -45,7 +45,7 @@ class ElasticQueryParameters
                 $this->elasticConfig->suggestionsSearchInput => [
                     'text' => $this->searchParameters->query,
                     'term' => [
-                        'field' => 'content_for_suggestions',
+                        'field' => ElasticField::CONTENT_FOR_SUGGESTIONS->value,
                         'size' => 3,
                         'sort' => 'frequency',
                         'suggest_mode' => 'popular',

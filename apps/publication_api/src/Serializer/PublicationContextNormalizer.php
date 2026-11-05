@@ -41,7 +41,7 @@ final class PublicationContextNormalizer implements NormalizerInterface, Denorma
         }
 
         try {
-            return PublicationContext::fromString($data);
+            return PublicationContext::fromUnnormalizedString($data);
         } catch (InvalidArgumentException $invalidArgumentException) {
             throw NotNormalizableValueException::createForUnexpectedDataType(
                 $invalidArgumentException->getMessage(),

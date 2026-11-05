@@ -12,8 +12,9 @@ use Shared\Domain\Publication\Dossier\Workflow\DossierStatusTransition;
 use Shared\Domain\Publication\Dossier\Workflow\DossierWorkflowManager;
 use Shared\Domain\Publication\SourceType;
 use Shared\Domain\Upload\FileType\FileType;
-use Shared\Exception\ProcessInventoryException;
+use Shared\Exception\Import\InventoryCannotBeStoredException;
 use Shared\Exception\ProductionReportUpdaterException;
+use Shared\Service\Import\ImportError;
 use Shared\Service\Storage\EntityStorageService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -49,7 +50,7 @@ readonly class InitiateProductionReportUpdateHandler
                 'filename' => $command->upload->getClientOriginalName(),
             ]);
 
-            $run->addGenericException(ProcessInventoryException::forInventoryCannotBeStored());
+            $run->addGenericError(ImportError::fromException(new InventoryCannotBeStoredException()));
             $run->fail();
 
             $this->processRunRepository->save($run, true);

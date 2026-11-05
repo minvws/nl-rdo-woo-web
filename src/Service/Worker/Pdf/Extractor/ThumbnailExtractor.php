@@ -8,7 +8,6 @@ use Shared\Domain\Ingest\Process\PdfPage\PdfPageException;
 use Shared\Domain\Ingest\Process\PdfPage\PdfPageProcessingContext;
 use Shared\Service\Storage\ThumbnailStorageService;
 use Shared\Service\Worker\Pdf\Tools\Pdftoppm\PdftoppmService;
-use Symfony\Component\HttpFoundation\File\File;
 
 readonly class ThumbnailExtractor
 {
@@ -25,16 +24,14 @@ readonly class ThumbnailExtractor
             return;
         }
 
-        $targetPath = $context->getWorkDirPath() . '/thumb';  // pdftoppm will add the extension
-
-        $pdfToPpmResult = $this->pdfToPpmService->createThumbnail($context->getLocalPageDocument(), $targetPath);
+        $pdfToPpmResult = $this->pdfToPpmService->createThumbnail($context->getPageContents());
         if ($pdfToPpmResult->isFailed()) {
             throw PdfPageException::forCannotCreateThumbnail($context, $pdfToPpmResult->errorMessage);
         }
 
         $this->thumbnailStorage->store(
             $context->getEntity(),
-            new File($targetPath . '.png'),
+            $pdfToPpmResult->thumbnail,
             $context->getPageNumber(),
         );
     }

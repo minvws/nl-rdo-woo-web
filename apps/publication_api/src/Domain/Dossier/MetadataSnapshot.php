@@ -7,11 +7,7 @@ namespace PublicationApi\Domain\Dossier;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\ValueObject\Equatable;
-use Webmozart\Assert\Assert;
 
-/**
- * @implements Equatable<MetadataSnapshot>
- */
 final readonly class MetadataSnapshot implements Equatable
 {
     /**
@@ -35,10 +31,8 @@ final readonly class MetadataSnapshot implements Equatable
         return $entity === null ? null : self::of($entity);
     }
 
-    public function equalTo(Equatable $other): bool
+    public function equalTo(mixed $other): bool
     {
-        Assert::isInstanceOf($other, self::class);
-
-        return $this->values === $other->values;
+        return $other instanceof self && $this->values === $other->values;
     }
 }

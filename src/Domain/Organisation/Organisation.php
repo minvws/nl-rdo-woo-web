@@ -169,7 +169,7 @@ class Organisation implements HasId
     }
 
     /**
-     * @return Collection<Inquiry>
+     * @return Collection<int, Inquiry>
      */
     public function getInquiries(): Collection
     {
@@ -177,7 +177,7 @@ class Organisation implements HasId
     }
 
     /**
-     * @return Collection<AbstractDossier>
+     * @return Collection<int, AbstractDossier>
      */
     public function getDossiers(): Collection
     {

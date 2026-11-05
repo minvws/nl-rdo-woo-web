@@ -6,10 +6,9 @@ namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tika;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
 use Mockery\MockInterface;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -19,21 +18,17 @@ use Shared\Domain\Ingest\Content\Extractor\Tika\TikaService;
 use Shared\Tests\Unit\UnitTestCase;
 
 use function json_encode;
-use function sprintf;
 
 use const JSON_THROW_ON_ERROR;
 
 final class TikaServiceTest extends UnitTestCase
 {
-    protected vfsStreamDirectory $root;
     protected GuzzleClient&MockInterface $client;
     protected LoggerInterface&MockInterface $logger;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->root = vfsStream::setup();
 
         $this->client = Mockery::mock(GuzzleClient::class);
         $this->logger = Mockery::mock(LoggerInterface::class);
@@ -46,11 +41,7 @@ final class TikaServiceTest extends UnitTestCase
             'lastname' => 'Doe',
         ], JSON_THROW_ON_ERROR);
 
-        vfsStream::newFile($sourceFile = 'sourcePath.txt')
-            ->withContent($body)
-            ->at($this->root);
-
-        $sourcePath = sprintf('%s/%s', $this->root->url(), $sourceFile);
+        $source = Utils::streamFor(Utils::tryFopen('php://memory', 'r'));
 
         $stream = Mockery::mock(StreamInterface::class);
         $stream
@@ -72,28 +63,19 @@ final class TikaServiceTest extends UnitTestCase
                         'Content-Type' => 'application/pdf',
                         'X-Tika-OCRmaxFileSizeToOcr' => '0',
                     ],
-                    'body' => $body,
+                    'body' => $source,
                 ],
             )
             ->andReturn($response);
 
-        $result = $this->getInstance()->extract($sourcePath);
+        $result = $this->getInstance()->extract($source);
 
         $this->assertSame($contents, $result);
     }
 
     public function testExtractWhenGuzzleThrowsAnException(): void
     {
-        $body = json_encode([
-            'firstname' => 'John',
-            'lastname' => 'Doe',
-        ], JSON_THROW_ON_ERROR);
-
-        vfsStream::newFile($sourceFile = 'sourcePath.txt')
-            ->withContent($body)
-            ->at($this->root);
-
-        $sourcePath = sprintf('%s/%s', $this->root->url(), $sourceFile);
+        $source = Utils::streamFor(Utils::tryFopen('php://memory', 'r'));
 
         $request = Mockery::mock(RequestInterface::class);
 
@@ -107,7 +89,7 @@ final class TikaServiceTest extends UnitTestCase
                         'Content-Type' => 'application/pdf',
                         'X-Tika-OCRmaxFileSizeToOcr' => '0',
                     ],
-                    'body' => $body,
+                    'body' => $source,
                 ],
             )
             ->andThrows($exception = new ConnectException('My exception message', $request));
@@ -117,13 +99,12 @@ final class TikaServiceTest extends UnitTestCase
         $this->logger
             ->expects('error')
             ->with('Tika failed', [
-                'sourcePath' => $sourcePath,
                 'exception' => $exception->getMessage(),
                 'context' => $logContext,
             ]);
 
         $result = $this->getInstance()->extract(
-            sourcePath: $sourcePath,
+            source: $source,
             logContext: $logContext,
         );
 

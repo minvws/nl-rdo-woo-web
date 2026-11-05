@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Mockery;
 use Shared\Command\GenerateDocumentPublicationContext;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
@@ -40,10 +42,25 @@ class GenerateDocumentPublicationContextTest extends UnitTestCase
         $documentRepository->expects('getDocumentsMissingPublicationContextIterable')
             ->andReturn([$document]);
 
+        $query = Mockery::mock(Query::class);
+        $query->expects('execute')->times(3)->andReturn(0);
+
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
+        $queryBuilder->expects('update')->with(Document::class, 'd')->times(3)->andReturnSelf();
+        $queryBuilder->expects('set')->times(3)->andReturnSelf();
+        $queryBuilder->expects('where')->times(3)->andReturnSelf();
+        $queryBuilder->expects('getQuery')->times(3)->andReturn($query);
+
         $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager->expects('createQueryBuilder')->times(3)->andReturn($queryBuilder);
+        $entityManager->expects('clear');
         $entityManager->expects('flush');
 
-        $commandTester = $this->executeCommand($entityManager, $documentRepository, false);
+        $application = new Application();
+        $application->addCommand(new GenerateDocumentPublicationContext($entityManager, $documentRepository));
+
+        $commandTester = new CommandTester($application->find(GenerateDocumentPublicationContext::COMMAND_NAME));
+        $commandTester->execute([]);
 
         self::assertSame(Command::SUCCESS, $commandTester->getStatusCode());
         self::assertStringContainsString('processed 1, updated 1, skipped 0', $commandTester->getDisplay());
@@ -61,10 +78,25 @@ class GenerateDocumentPublicationContextTest extends UnitTestCase
         $documentRepository->expects('getDocumentsMissingPublicationContextIterable')
             ->andReturn([$document]);
 
+        $query = Mockery::mock(Query::class);
+        $query->expects('execute')->times(3)->andReturn(0);
+
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
+        $queryBuilder->expects('update')->with(Document::class, 'd')->times(3)->andReturnSelf();
+        $queryBuilder->expects('set')->times(3)->andReturnSelf();
+        $queryBuilder->expects('where')->times(3)->andReturnSelf();
+        $queryBuilder->expects('getQuery')->times(3)->andReturn($query);
+
         $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager->expects('createQueryBuilder')->times(3)->andReturn($queryBuilder);
+        $entityManager->expects('clear');
         $entityManager->expects('flush');
 
-        $commandTester = $this->executeCommand($entityManager, $documentRepository, false);
+        $application = new Application();
+        $application->addCommand(new GenerateDocumentPublicationContext($entityManager, $documentRepository));
+
+        $commandTester = new CommandTester($application->find(GenerateDocumentPublicationContext::COMMAND_NAME));
+        $commandTester->execute([]);
 
         self::assertSame(Command::SUCCESS, $commandTester->getStatusCode());
         self::assertStringContainsString('processed 1, updated 0, skipped 1', $commandTester->getDisplay());
@@ -86,56 +118,28 @@ class GenerateDocumentPublicationContextTest extends UnitTestCase
         $documentRepository->expects('getDocumentsMissingPublicationContextIterable')
             ->andReturn([$document]);
 
+        $query = Mockery::mock(Query::class);
+        $query->expects('execute')->times(3)->andReturn(0);
+
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
+        $queryBuilder->expects('update')->with(Document::class, 'd')->times(3)->andReturnSelf();
+        $queryBuilder->expects('set')->times(3)->andReturnSelf();
+        $queryBuilder->expects('where')->times(3)->andReturnSelf();
+        $queryBuilder->expects('getQuery')->times(3)->andReturn($query);
+
         $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager->expects('createQueryBuilder')->times(3)->andReturn($queryBuilder);
+        $entityManager->expects('clear');
         $entityManager->expects('flush');
 
-        $commandTester = $this->executeCommand($entityManager, $documentRepository, false);
+        $application = new Application();
+        $application->addCommand(new GenerateDocumentPublicationContext($entityManager, $documentRepository));
+
+        $commandTester = new CommandTester($application->find(GenerateDocumentPublicationContext::COMMAND_NAME));
+        $commandTester->execute([]);
 
         self::assertSame(Command::SUCCESS, $commandTester->getStatusCode());
         self::assertStringContainsString('processed 1, updated 0, skipped 1', $commandTester->getDisplay());
-    }
-
-    public function testExecuteWithDryRunDoesNotFlush(): void
-    {
-        $documentId = $this->getFaker()->documentId();
-        $publicationContext = $this->getFaker()->publicationContext();
-
-        $document = Mockery::mock(Document::class);
-        $document->expects('getDocumentId')
-            ->andReturn($documentId);
-        $document->expects('getDocumentNumber')
-            ->andReturn(DocumentNumber::fromString(sprintf('%s-%s', $publicationContext->toString(), $documentId->toString())));
-        $document->expects('setPublicationContext')
-            ->with(Mockery::on(static function (PublicationContext $actualPublicationContext) use ($publicationContext): bool {
-                return $actualPublicationContext->toString() === $publicationContext->toString();
-            }));
-
-        $documentRepository = Mockery::mock(DocumentRepository::class);
-        $documentRepository->expects('getDocumentsMissingPublicationContextIterable')
-            ->andReturn([$document]);
-
-        $entityManager = Mockery::mock(EntityManagerInterface::class);
-
-        $commandTester = $this->executeCommand($entityManager, $documentRepository, true);
-
-        self::assertSame(Command::SUCCESS, $commandTester->getStatusCode());
-        self::assertStringContainsString('processed 1, updated 1, skipped 0', $commandTester->getDisplay());
-    }
-
-    private function executeCommand(
-        EntityManagerInterface $entityManager,
-        DocumentRepository $documentRepository,
-        bool $dryRun,
-    ): CommandTester {
-        $command = new GenerateDocumentPublicationContext($entityManager, $documentRepository);
-
-        $application = new Application();
-        $application->addCommand($command);
-
-        $commandTester = new CommandTester($application->find(GenerateDocumentPublicationContext::COMMAND_NAME));
-        $commandTester->execute($dryRun ? ['--dry-run' => true] : []);
-
-        return $commandTester;
     }
 
     public function testExecuteDisplaysAWarningWhenAnInvalidPublicationContextIsProduced(): void
@@ -156,10 +160,25 @@ class GenerateDocumentPublicationContextTest extends UnitTestCase
         $documentRepository->expects('getDocumentsMissingPublicationContextIterable')
             ->andReturn([$document]);
 
+        $query = Mockery::mock(Query::class);
+        $query->expects('execute')->times(3)->andReturn(0);
+
+        $queryBuilder = Mockery::mock(QueryBuilder::class);
+        $queryBuilder->expects('update')->with(Document::class, 'd')->times(3)->andReturnSelf();
+        $queryBuilder->expects('set')->times(3)->andReturnSelf();
+        $queryBuilder->expects('where')->times(3)->andReturnSelf();
+        $queryBuilder->expects('getQuery')->times(3)->andReturn($query);
+
         $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager->expects('createQueryBuilder')->times(3)->andReturn($queryBuilder);
+        $entityManager->expects('clear');
         $entityManager->expects('flush');
 
-        $commandTester = $this->executeCommand($entityManager, $documentRepository, false);
+        $application = new Application();
+        $application->addCommand(new GenerateDocumentPublicationContext($entityManager, $documentRepository));
+
+        $commandTester = new CommandTester($application->find(GenerateDocumentPublicationContext::COMMAND_NAME));
+        $commandTester->execute([]);
 
         self::assertSame(Command::SUCCESS, $commandTester->getStatusCode());
         self::assertStringContainsString('PublicationContext failed for documentNumber', $commandTester->getDisplay());

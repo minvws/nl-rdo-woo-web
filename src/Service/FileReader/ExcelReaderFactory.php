@@ -7,7 +7,8 @@ namespace Shared\Service\FileReader;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Shared\Exception\FileReaderException;
+use Shared\Exception\Import\MissingHeadersException;
+use Shared\Exception\Import\SpreadsheetCannotBeOpenedException;
 use Webmozart\Assert\Assert;
 
 use function array_filter;
@@ -56,7 +57,7 @@ class ExcelReaderFactory implements ReaderFactoryInterface
             // Assume only first worksheet
             $sheet = $spreadsheet->getSheet(0);
         } catch (\Exception $exception) {
-            throw FileReaderException::forOpenSpreadsheetException($exception);
+            throw new SpreadsheetCannotBeOpenedException($exception);
         }
 
         $mapping = $this->resolveHeaderMapping($sheet, $columnMappings);
@@ -70,7 +71,7 @@ class ExcelReaderFactory implements ReaderFactoryInterface
      *
      * @param array<array-key, ColumnMapping> $columnMappings
      *
-     * @throws FileReaderException|Exception
+     * @throws MissingHeadersException|Exception
      */
     private function resolveHeaderMapping(Worksheet $sheet, array $columnMappings): HeaderMap
     {
@@ -109,7 +110,7 @@ class ExcelReaderFactory implements ReaderFactoryInterface
         );
 
         if (count($missingHeaders) > 0) {
-            throw FileReaderException::forMissingHeaders(array_keys($missingHeaders));
+            throw new MissingHeadersException(array_keys($missingHeaders));
         }
 
         return new HeaderMap($headerMapping);

@@ -122,7 +122,7 @@ readonly class DocumentUpdater
         /** @var array<string, DocumentNumber> $newReferrals */
         $newReferrals = [];
         foreach ($refersTo as $referral) {
-            $documentNumber = DocumentNumber::fromString($referral);
+            $documentNumber = DocumentNumber::fromUnnormalizedString($referral);
             $newReferrals[$documentNumber->toString()] = $documentNumber;
         }
 

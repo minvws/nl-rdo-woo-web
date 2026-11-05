@@ -5,16 +5,45 @@ declare(strict_types=1);
 namespace Shared\Tests\Unit\Domain\Publication;
 
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Shared\Domain\Publication\SourceType;
-use Shared\Domain\Upload\FileType\FileType;
+use Shared\Tests\Unit\UnitTestCase;
 
-class SourceTypeTest extends TestCase
+class SourceTypeTest extends UnitTestCase
 {
     #[DataProvider('createProvider')]
     public function testCreate(?string $input, SourceType $expectedResult): void
     {
         self::assertEquals($expectedResult, SourceType::create($input));
+    }
+
+    public function testFromMimeTypeMapsPlainTextToTxt(): void
+    {
+        self::assertSame(SourceType::TXT, SourceType::fromMimeType('text/plain'));
+    }
+
+    public function testFromMimeTypeMapsWordDocumentsToDoc(): void
+    {
+        self::assertSame(SourceType::DOC, SourceType::fromMimeType('application/msword'));
+    }
+
+    public function testFromMimeTypeMapsRtfToTxt(): void
+    {
+        self::assertSame(SourceType::TXT, SourceType::fromMimeType('application/rtf'));
+    }
+
+    public function testFromMimeTypeReturnsUnknownForMissingMimeType(): void
+    {
+        self::assertSame(SourceType::UNKNOWN, SourceType::fromMimeType(null));
+    }
+
+    public function testFromMimeTypeReturnsUnknownForUnsupportedMimeType(): void
+    {
+        self::assertSame(SourceType::UNKNOWN, SourceType::fromMimeType('application/unknown'));
+    }
+
+    public function testFromMimeTypeMapsZipToUnknown(): void
+    {
+        self::assertSame(SourceType::UNKNOWN, SourceType::fromMimeType('application/zip'));
     }
 
     /**
@@ -86,27 +115,9 @@ class SourceTypeTest extends TestCase
         ];
     }
 
-    #[DataProvider('fromFileTypeProvider')]
-    public function testFromFileType(FileType $fileType, SourceType $expectedResult): void
+    public function testCreateRecognizesTextSourceType(): void
     {
-        self::assertEquals($expectedResult, SourceType::fromFileType($fileType));
-    }
-
-    /**
-     * @return array<string, array{fileType:FileType, expectedResult:SourceType}>
-     */
-    public static function fromFileTypeProvider(): array
-    {
-        return [
-            'doc' => [
-                'fileType' => FileType::DOC,
-                'expectedResult' => SourceType::DOC,
-            ],
-            'zip' => [
-                'fileType' => FileType::ZIP,
-                'expectedResult' => SourceType::UNKNOWN,
-            ],
-        ];
+        self::assertSame(SourceType::TXT, SourceType::create('txt'));
     }
 
     public function testIsEmail(): void

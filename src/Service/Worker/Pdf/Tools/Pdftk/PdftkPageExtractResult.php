@@ -13,14 +13,14 @@ final readonly class PdftkPageExtractResult
         public int $exitCode,
         public array $params,
         public ?string $errorMessage,
-        public string $sourcePdf,
         public int $pageNr,
-        public string $targetPath,
+        public ?string $pageContents,
     ) {
     }
 
     /**
      * @phpstan-assert-if-true !string $this->errorMessage
+     * @phpstan-assert-if-true !null $this->pageContents
      *
      * @phpstan-assert-if-false !null $this->errorMessage
      */
@@ -33,6 +33,7 @@ final readonly class PdftkPageExtractResult
      * @phpstan-assert-if-true !null $this->errorMessage
      *
      * @phpstan-assert-if-false !string $this->errorMessage
+     * @phpstan-assert-if-false !null $this->pageContents
      */
     public function isFailed(): bool
     {

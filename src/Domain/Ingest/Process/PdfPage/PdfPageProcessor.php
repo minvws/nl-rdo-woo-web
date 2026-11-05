@@ -31,22 +31,18 @@ readonly class PdfPageProcessor
             return;
         }
 
-        try {
-            $needsThumbGeneration = $this->thumbnailExtractor->needsThumbGeneration($processingContext);
-            $contentCacheMissing = ! $this->contentExtractCache->hasCache($entity, $pageNr);
-            if ($needsThumbGeneration || $contentCacheMissing) {
-                // Only download the file when actual processing is needed
-                $this->pageExtractor->extractSinglePagePdf($processingContext);
-            }
-
-            if ($needsThumbGeneration) {
-                $this->thumbnailExtractor->extractSinglePagePdfThumbnail($processingContext);
-            }
-
-            // Always executed because it also indexes content into ES, but in most cases this can be done from cache
-            $this->pageContentExtractor->extract($processingContext);
-        } finally {
-            $this->contextFactory->teardown($processingContext);
+        $needsThumbGeneration = $this->thumbnailExtractor->needsThumbGeneration($processingContext);
+        $contentCacheMissing = ! $this->contentExtractCache->hasCache($entity, $pageNr);
+        if ($needsThumbGeneration || $contentCacheMissing) {
+            // Only read the file when actual processing is needed
+            $this->pageExtractor->extractSinglePagePdf($processingContext);
         }
+
+        if ($needsThumbGeneration) {
+            $this->thumbnailExtractor->extractSinglePagePdfThumbnail($processingContext);
+        }
+
+        // Always executed because it also indexes content into ES, but in most cases this can be done from cache
+        $this->pageContentExtractor->extract($processingContext);
     }
 }

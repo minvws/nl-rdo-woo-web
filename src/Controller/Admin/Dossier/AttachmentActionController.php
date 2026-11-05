@@ -9,6 +9,7 @@ use Shared\Domain\Publication\Attachment\AttachmentDispatcher;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentWithdrawReason;
 use Shared\Domain\Publication\Dossier\AbstractDossier;
+use Shared\Domain\Publication\Dossier\DossierBreadcrumbFactory;
 use Shared\Form\Dossier\WithdrawAttachmentFormType;
 use Shared\Service\DossierWizard\WizardStatusFactory;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -22,15 +23,18 @@ use Webmozart\Assert\Assert;
 
 class AttachmentActionController extends AbstractController
 {
+    public const string ROUTE_NAME_DOSSIER_ATTACHMENT_WITHDRAW = 'app_admin_dossier_attachment_withdraw';
+
     public function __construct(
         private readonly AttachmentDispatcher $dispatcher,
         private readonly WizardStatusFactory $wizardStatusFactory,
+        private readonly DossierBreadcrumbFactory $breadcrumbFactory,
     ) {
     }
 
     #[Route(
-        path: '/balie/dossier/attachment/withdraw/{documentPrefix}/{dossierNumber}/{attachmentId}',
-        name: 'app_admin_dossier_attachment_withdraw',
+        '/balie/dossier/attachment/withdraw/{documentPrefix}/{dossierNumber}/{attachmentId}',
+        self::ROUTE_NAME_DOSSIER_ATTACHMENT_WITHDRAW,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]
@@ -47,14 +51,13 @@ class AttachmentActionController extends AbstractController
         $wizardStatus = $this->wizardStatusFactory->getWizardStatus($dossier);
 
         $breadcrumbs->addRouteItem(
-            $dossier->getDossierNumber(),
+            $this->breadcrumbFactory->forDossier($dossier),
             'app_admin_dossier',
             ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
         );
 
-        Assert::notNull($attachment->getFileInfo()->getName());
         $breadcrumbs->addRouteItem(
-            $attachment->getFileInfo()->getName(),
+            'public.global.attachment',
             $wizardStatus->getAttachmentStep()->getRouteName(),
             [
                 'documentPrefix' => $dossier->getDocumentPrefix(),

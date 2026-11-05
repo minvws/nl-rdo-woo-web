@@ -13,8 +13,8 @@ use RuntimeException;
 use Shared\Domain\Logging\LoggingHelper;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\ProductionReport\ProductionReportProcessRun;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
-use Shared\Exception\TranslatableException;
 use Shared\Service\DossierService;
+use Shared\Service\Import\ImportError;
 use Shared\Service\Inventory\InventoryChangeset;
 use Shared\Service\Inventory\InventoryComparator;
 use Shared\Service\Inventory\InventoryRunProcessor;
@@ -25,6 +25,8 @@ use Shared\Service\Inventory\Progress\RunProgress;
 use Shared\Service\Inventory\Reader\InventoryReaderInterface;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
+
+use function sprintf;
 
 class InventoryRunProcessorTest extends UnitTestCase
 {
@@ -92,9 +94,13 @@ class InventoryRunProcessorTest extends UnitTestCase
         $changeset->expects('getResultingTotalDocumentCount')->andReturn(0);
         $this->entityManager->expects('isOpen')->andReturnTrue();
 
+        $importError = Mockery::on(
+            static fn (ImportError $importError): bool => $importError->translationKey === 'publication.dossier.error.no_inventory_changes',
+        );
+
         $this->run->expects('hasNoErrors')->andReturnTrue();
         $this->run->expects('hasErrors')->andReturnTrue();
-        $this->run->expects('addGenericException');
+        $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
         $this->run->expects('isConfirmed')->andReturnFalse();
         $this->run->expects('isFinal')->andReturnTrue();
@@ -113,7 +119,13 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->reader->expects('hasMatterColumn')->andReturnFalse();
         $this->run->expects('setHasMatter')->with(false);
 
-        $this->run->expects('addGenericException');
+        $errorMessage = $this->getFaker()->sentence();
+
+        $importError = Mockery::on(
+            static fn (ImportError $importError): bool => $importError->translationKey === 'publication.dossier.error.processing_inventory',
+        );
+
+        $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
         $this->run->expects('isFinal')->andReturnTrue();
         $this->run->expects('isPending')->andReturnTrue();
@@ -190,7 +202,10 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->run->expects('isFinal')->andReturnTrue();
         $this->run->expects('isPending')->andReturnTrue();
         $this->run->expects('isConfirmed')->andReturnFalse();
-        $this->run->expects('addGenericException');
+        $importError = Mockery::on(
+            static fn (ImportError $importError): bool => $importError->translationKey === 'publication.dossier.error.max_documents_exceeded',
+        );
+        $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
         $this->entityManager->expects('isOpen')->andReturnTrue();
 
@@ -250,8 +265,13 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->managerRegistry->expects('resetManager')
             ->andReturn($freshManager);
 
+        $importError = Mockery::on(
+            static fn (ImportError $importError): bool => $importError->translationKey === 'publication.dossier.error.processing_inventory'
+                && $importError->message === 'Production report processing failed',
+        );
+
         $reloadedRun = Mockery::mock(ProductionReportProcessRun::class);
-        $reloadedRun->expects('addGenericException');
+        $reloadedRun->expects('addGenericError')->with($importError);
         $reloadedRun->expects('fail');
 
         $freshManager
@@ -272,10 +292,14 @@ class InventoryRunProcessorTest extends UnitTestCase
         $changeset->expects('hasNoChanges')->andReturnTrue();
         $changeset->expects('getResultingTotalDocumentCount')->andReturn(10);
 
+        $importError = Mockery::on(
+            static fn (ImportError $importError): bool => $importError->translationKey === 'publication.dossier.error.no_inventory_changes',
+        );
+
         $this->run->expects('isPending')->andReturnTrue();
         $this->run->expects('hasNoErrors')->andReturnTrue();
         $this->run->expects('hasErrors')->andReturnTrue();
-        $this->run->expects('addGenericException');
+        $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
         $this->run->expects('isConfirmed')->andReturnFalse();
         $this->run->expects('isFinal')->andReturnTrue();
@@ -304,7 +328,10 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->run->expects('isConfirmed')->andReturnTrue();
         $this->run->expects('startUpdating');
         $this->run->expects('getChangeset')->andReturnNull();
-        $this->run->expects('addGenericException');
+        $importError = Mockery::on(
+            static fn (ImportError $importError): bool => $importError->translationKey === 'publication.dossier.error.processing_inventory',
+        );
+        $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
         $this->run->expects('isFinal')->andReturnTrue();
 
@@ -328,8 +355,12 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->reader->expects('hasMatterColumn')->andReturnFalse();
         $this->run->expects('setHasMatter')->with(false);
 
+        $importError = Mockery::on(
+            static fn (ImportError $importError): bool => $importError->translationKey === 'publication.dossier.error.processing_inventory',
+        );
+
         $this->run->expects('isPending')->andReturnTrue();
-        $this->run->expects('addGenericException');
+        $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
         $this->run->expects('isFinal')->andReturnTrue();
 
@@ -356,9 +387,16 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->reader->expects('hasMatterColumn')->andReturnFalse();
         $this->run->expects('setHasMatter')->with(false);
 
+        $errorMessage = $this->getFaker()->sentence();
+
+        $importError = Mockery::on(
+            static fn (ImportError $importError): bool => $importError->translationKey === 'publication.dossier.error.processing_inventory'
+                && $importError->message === sprintf('Uncaught exception during inventory processing: %s', $errorMessage),
+        );
+
         $this->run->expects('isPending')
             ->andReturnTrue();
-        $this->run->expects('addGenericException');
+        $this->run->expects('addGenericError')->with($importError);
         $this->run->expects('fail');
         $this->run->expects('isFinal')
             ->andReturnTrue();
@@ -372,17 +410,14 @@ class InventoryRunProcessorTest extends UnitTestCase
         $this->logger->expects('error');
 
         $this->inventoryComparator->expects('determineChangeset')
-            ->andThrows(new RuntimeException('some error'));
+            ->andThrows(new RuntimeException($errorMessage));
 
         $freshManager = Mockery::mock(EntityManagerInterface::class);
         $this->managerRegistry->expects('resetManager')
             ->andReturn($freshManager);
 
         $reloadedRun = Mockery::mock(ProductionReportProcessRun::class);
-        $reloadedRun->expects('addGenericException')
-            ->with(Mockery::on(static function (TranslatableException $exception): bool {
-                return $exception->getMessage() === 'Uncaught exception during inventory processing: some error';
-            }));
+        $reloadedRun->expects('addGenericError')->with($importError);
         $reloadedRun->expects('fail');
 
         $freshManager

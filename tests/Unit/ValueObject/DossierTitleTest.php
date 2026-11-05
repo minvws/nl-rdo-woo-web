@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\Domain\Exception\DossierTitleArgumentException;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DossierTitle;
+use Shared\ValueObject\ExternalId;
 
 use function str_repeat;
 
@@ -39,6 +40,24 @@ class DossierTitleTest extends UnitTestCase
         $this->assertFalse($titleTwo->equalTo($titleOne));
     }
 
+    #[DataProvider('otherTypeDataProvider')]
+    public function testEqualToReturnsFalseForOtherTypes(mixed $other): void
+    {
+        $this->assertFalse(DossierTitle::create('foobar')->equalTo($other));
+    }
+
+    /**
+     * @return array<string,array{other:mixed}>
+     */
+    public static function otherTypeDataProvider(): array
+    {
+        return [
+            'null' => ['other' => null],
+            'string with same value' => ['other' => 'foobar'],
+            'other equatable with same value' => ['other' => ExternalId::create('foobar')],
+        ];
+    }
+
     #[DataProvider('invalidDossierTitleDataProvider')]
     public function testCreateWithInvalidString(string $title, string $message): void
     {
@@ -55,10 +74,10 @@ class DossierTitleTest extends UnitTestCase
         $longString = str_repeat('a', 501);
 
         return [
-            'string too short (0 chars)' => ['', 'dossier.title_too_short'],
-            'string too short with spaces' => [' aa', 'dossier.title_too_short'],
+            'string too short (0 chars)' => ['', 'Dossier title too short'],
+            'string too short with spaces' => [' aa', 'Dossier title too short'],
             'string too long (> 500 chars)' => [
-                $longString, 'dossier.title_too_long',
+                $longString, 'Dossier title too long',
             ],
         ];
     }

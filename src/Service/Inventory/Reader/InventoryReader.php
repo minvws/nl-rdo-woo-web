@@ -9,7 +9,23 @@ use Generator;
 use InvalidArgumentException;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\SourceType;
-use Shared\Exception\InventoryReaderException;
+use Shared\Exception\Import\FilenameTooLongException;
+use Shared\Exception\Import\ImportException;
+use Shared\Exception\Import\InvalidDocumentIdException;
+use Shared\Exception\Import\InvalidDocumentIdLengthException;
+use Shared\Exception\Import\InvalidFamilyIdException;
+use Shared\Exception\Import\InvalidInquiryNumbersException;
+use Shared\Exception\Import\InvalidLinkException;
+use Shared\Exception\Import\InvalidMatterException;
+use Shared\Exception\Import\InvalidPublicationContextException;
+use Shared\Exception\Import\InvalidRefersToException;
+use Shared\Exception\Import\InvalidThreadIdException;
+use Shared\Exception\Import\LinkTooLongException;
+use Shared\Exception\Import\MatterAndPublicationContextCombinationException;
+use Shared\Exception\Import\MissingDocumentIdException;
+use Shared\Exception\Import\MissingMatterAndPublicationContextException;
+use Shared\Exception\Import\RemarkTooLongException;
+use Shared\Exception\Import\RowProcessingException;
 use Shared\Service\FileReader\ColumnMapping;
 use Shared\Service\FileReader\FileReaderInterface;
 use Shared\Service\FileReader\ReaderFactoryInterface;
@@ -41,7 +57,6 @@ use const FILTER_VALIDATE_URL;
 
 class InventoryReader implements InventoryReaderInterface
 {
-    private const int MAX_LINK_LENGTH = 2048;
     private const int MAX_FILENAME_LENGTH = 500;
     private const int MAX_REMARK_LENGTH = 1000;
 
@@ -85,7 +100,9 @@ class InventoryReader implements InventoryReaderInterface
             } catch (Exception $exception) {
                 // Exception occurred, but we still continue with the next row to discover and report any other errors
                 // To not break the generator yield instead of throwing the exception
-                $exception = InventoryReaderException::forRowProcessingException($rowIdx, $exception);
+                if (! $exception instanceof ImportException) {
+                    $exception = new RowProcessingException($rowIdx, $exception);
+                }
             }
 
             yield new InventoryReadItem($documentMetadata, $rowIdx, $exception);
@@ -161,7 +178,7 @@ class InventoryReader implements InventoryReaderInterface
     {
         $remark = $this->reader->getOptionalString($rowIdx, MetadataField::REMARK->value);
         if ($remark !== null && mb_strlen($remark) > self::MAX_REMARK_LENGTH) {
-            throw InventoryReaderException::forRemarkTooLong($rowIdx, self::MAX_REMARK_LENGTH);
+            throw new RemarkTooLongException($rowIdx, self::MAX_REMARK_LENGTH);
         }
 
         return $remark;
@@ -171,7 +188,7 @@ class InventoryReader implements InventoryReaderInterface
     {
         $familyId = $this->reader->getOptionalInt($rowIdx, MetadataField::FAMILY->value);
         if ($familyId !== null && $familyId < 1) {
-            throw InventoryReaderException::forInvalidFamilyId($rowIdx);
+            throw new InvalidFamilyIdException($rowIdx);
         }
 
         return $familyId;
@@ -181,7 +198,7 @@ class InventoryReader implements InventoryReaderInterface
     {
         $threadId = $this->reader->getOptionalInt($rowIdx, MetadataField::THREADID->value);
         if ($threadId !== null && $threadId < 1) {
-            throw InventoryReaderException::forInvalidThreadId($rowIdx);
+            throw new InvalidThreadIdException($rowIdx);
         }
 
         return $threadId;
@@ -196,10 +213,10 @@ class InventoryReader implements InventoryReaderInterface
         } catch (InvalidArgumentException $e) {
             match ($e->getCode()) {
                 DocumentId::ERROR_EMPTY
-                    => throw InventoryReaderException::forMissingDocumentIdInRow($rowIdx),
+                    => throw new MissingDocumentIdException($rowIdx),
                 DocumentId::ERROR_INVALID_LENGTH
-                    => throw InventoryReaderException::forInvalidDocumentIdLength($rowIdx, DocumentId::MIN_LENGTH, DocumentId::MAX_LENGTH),
-                default => throw InventoryReaderException::forInvalidDocumentId($rowIdx),
+                    => throw new InvalidDocumentIdLengthException($rowIdx, DocumentId::MIN_LENGTH, DocumentId::MAX_LENGTH),
+                default => throw new InvalidDocumentIdException($rowIdx),
             };
         }
     }
@@ -208,7 +225,7 @@ class InventoryReader implements InventoryReaderInterface
     {
         $filename = $this->reader->getString($rowIdx, MetadataField::DOCUMENT->value);
         if (strlen($filename) > self::MAX_FILENAME_LENGTH) {
-            throw InventoryReaderException::forFileTooLong($filename, $rowIdx);
+            throw new FilenameTooLongException($filename, $rowIdx, self::MAX_FILENAME_LENGTH);
         }
 
         return $filename;
@@ -220,7 +237,7 @@ class InventoryReader implements InventoryReaderInterface
         try {
             $inquiryNumbers = InquiryNumbers::fromCommaSeparatedString($inquiryNumbersInput);
         } catch (InvalidArgumentException) {
-            throw InventoryReaderException::forInvalidInquiryNumbers($inquiryNumbersInput ?? '', $rowIdx);
+            throw new InvalidInquiryNumbersException($inquiryNumbersInput ?? '', $rowIdx);
         }
 
         return $inquiryNumbers;
@@ -236,7 +253,7 @@ class InventoryReader implements InventoryReaderInterface
         try {
             return DocumentMatter::create($matter);
         } catch (InvalidArgumentException) {
-            throw InventoryReaderException::forInvalidMatterInRow($rowIdx);
+            throw new InvalidMatterException($rowIdx);
         }
     }
 
@@ -246,22 +263,22 @@ class InventoryReader implements InventoryReaderInterface
 
         if ($publicationContext !== null && trim($publicationContext) !== '') {
             try {
-                return PublicationContext::fromString($publicationContext);
+                return PublicationContext::fromUnnormalizedString($publicationContext);
             } catch (InvalidArgumentException) {
-                throw InventoryReaderException::forInvalidPublicationContextInRow($rowIdx);
+                throw new InvalidPublicationContextException($rowIdx);
             }
         }
 
         if ($this->getMatter($rowIdx) !== null) {
             // this is a fallback to construct a publicationContext from prefix and matter
             try {
-                return PublicationContext::fromString($prefix . '-' . $this->getMatter($rowIdx)->toString());
+                return PublicationContext::fromUnnormalizedString($prefix . '-' . $this->getMatter($rowIdx)->toString());
             } catch (InvalidArgumentException) {
-                throw InventoryReaderException::forInvalidPublicationContextInRow($rowIdx);
+                throw new InvalidPublicationContextException($rowIdx);
             }
         }
 
-        throw InventoryReaderException::forInvalidPublicationContextInRow($rowIdx);
+        throw new InvalidPublicationContextException($rowIdx);
     }
 
     /**
@@ -279,8 +296,12 @@ class InventoryReader implements InventoryReaderInterface
         }
 
         return array_map(
-            function (string $referral) use ($documentPrefix, $matter): string {
-                return $this->getLegacyReferral($documentPrefix, $matter, $referral)->toString();
+            function (string $referral) use ($rowIdx, $documentPrefix, $matter): string {
+                try {
+                    return $this->getLegacyReferral($documentPrefix, $matter, $referral)->toString();
+                } catch (InvalidArgumentException) {
+                    throw new InvalidRefersToException($referral, $rowIdx);
+                }
             },
             $referrals,
         );
@@ -305,7 +326,7 @@ class InventoryReader implements InventoryReaderInterface
         }
 
         return DocumentNumber::fromPublicationContextAndDocumentId(
-            PublicationContext::fromString(sprintf('%s-%s', $documentPrefix, $matter->toString())),
+            PublicationContext::fromUnnormalizedString(sprintf('%s-%s', $documentPrefix, $matter->toString())),
             $documentId,
         );
     }
@@ -319,11 +340,11 @@ class InventoryReader implements InventoryReaderInterface
         $hasPublicationContext = $publicationContext !== null && trim($publicationContext) !== '';
 
         if (! $hasMatter && ! $hasPublicationContext) {
-            throw InventoryReaderException::forMissingMatterAndPublicationContextInRow($rowIdx);
+            throw new MissingMatterAndPublicationContextException($rowIdx);
         }
 
         if ($hasMatter && $hasPublicationContext) {
-            throw InventoryReaderException::forMatterAndPublicationContextCombination();
+            throw new MatterAndPublicationContextCombinationException();
         }
     }
 
@@ -333,12 +354,12 @@ class InventoryReader implements InventoryReaderInterface
     private function validateLinks(array $links, int $rowIdx): void
     {
         foreach ($links as $link) {
-            if (mb_strlen($link) > self::MAX_LINK_LENGTH) {
-                throw InventoryReaderException::forLinkTooLong($link, $rowIdx);
+            if (mb_strlen($link) > 2048) {
+                throw new LinkTooLongException($link, $rowIdx);
             }
 
             if (! filter_var($link, FILTER_VALIDATE_URL)) {
-                throw InventoryReaderException::forInvalidLink($link, $rowIdx);
+                throw new InvalidLinkException($link, $rowIdx);
             }
         }
     }

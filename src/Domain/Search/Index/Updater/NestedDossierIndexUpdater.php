@@ -19,6 +19,8 @@ readonly class NestedDossierIndexUpdater
 {
     use RetryIndexUpdaterTrait;
 
+    private const string PARAMETER_NAME = 'dossier';
+
     public function __construct(
         private ElasticClientInterface $elastic,
         private LoggerInterface $logger,
@@ -33,7 +35,11 @@ readonly class NestedDossierIndexUpdater
      */
     public function update(AbstractDossier $dossier, array $dossierDoc): void
     {
-        $this->retry(fn: function () use ($dossier, $dossierDoc) {
+        $dossiersField = ElasticNestedField::DOSSIERS->value;
+        $idField = ElasticField::ID->value;
+        $parameterName = self::PARAMETER_NAME;
+
+        $this->retry(fn: function () use ($dossier, $dossierDoc, $dossiersField, $idField, $parameterName) {
             $this->elastic->updateByQuery([
                 'index' => $this->elasticConfig->writeIndex,
                 'body' => [
@@ -53,15 +59,15 @@ readonly class NestedDossierIndexUpdater
                     ],
                     'script' => [
                         'source' => <<< EOF
-                            for (int i = 0; i < ctx._source.dossiers.length; i++) {
-                                if (ctx._source.dossiers[i].id == params.dossier.id) {
-                                    ctx._source.dossiers[i] = params.dossier;
+                            for (int i = 0; i < ctx._source.{$dossiersField}.length; i++) {
+                                if (ctx._source.{$dossiersField}[i].{$idField} == params.{$parameterName}.{$idField}) {
+                                    ctx._source.{$dossiersField}[i] = params.{$parameterName};
                                 }
                             }
 EOF,
                         'lang' => 'painless',
                         'params' => [
-                            'dossier' => $dossierDoc,
+                            $parameterName => $dossierDoc,
                         ],
                     ],
                 ],

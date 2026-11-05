@@ -17,6 +17,18 @@ final class PublicationReasonTest extends UnitTestCase
         $this->assertEquals(PublicationReason::WOO_REQUEST, PublicationReason::getDefault());
     }
 
+    public function testGetTranslationKey(): void
+    {
+        $this->assertSame(
+            'dossier.type.woo-decision.publication-reason.woo_request',
+            PublicationReason::WOO_REQUEST->getTranslationKey(),
+        );
+        $this->assertSame(
+            'dossier.type.woo-decision.publication-reason.wob_request',
+            PublicationReason::WOB_REQUEST->getTranslationKey(),
+        );
+    }
+
     #[DataProvider('transDataProvider')]
     public function testTransKey(PublicationReason $publicationReason, string $expectedKey, ?string $locale): void
     {

@@ -31,3 +31,14 @@ services:
     labels:
       dev.orbstack.domains: postgres-woo.local
     ports: !reset []
+
+  publication_api:
+    ports: !override
+      - 8543:443
+      - 8544:444
+
+  rustfs:
+    labels:
+      dev.orbstack.domains: rustfs-woo.local
+      dev.orbstack.http-port: 9001
+    ports: !reset []

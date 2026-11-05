@@ -22,12 +22,16 @@ use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\MainDocument\WooDecisionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecisionConfig;
+use Shared\Domain\Publication\Subject\SubjectRepository;
+use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\ElasticIndex\ElasticIndexDetails;
 use Shared\Domain\Search\Index\Rollover\RolloverCounter;
 use Shared\Service\Elastic\ElasticClientInterface;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Workflow\WorkflowInterface;
+use Webmozart\Assert\Assert;
 
+use function count;
 use function file_get_contents;
 use function json_decode;
 
@@ -39,17 +43,20 @@ class RolloverCounterTest extends UnitTestCase
     private EntityManagerInterface&MockInterface $entityManager;
     private DossierTypeManager&MockInterface $dossierTypeManager;
     private ElasticClientInterface&MockInterface $elasticClient;
+    private SubjectRepository&MockInterface $subjectRepository;
 
     protected function setUp(): void
     {
         $this->entityManager = Mockery::mock(EntityManagerInterface::class);
         $this->elasticClient = Mockery::mock(ElasticClientInterface::class);
         $this->dossierTypeManager = Mockery::mock(DossierTypeManager::class);
+        $this->subjectRepository = Mockery::mock(SubjectRepository::class);
 
         $this->rolloverCounter = new RolloverCounter(
             $this->entityManager,
             $this->elasticClient,
             $this->dossierTypeManager,
+            $this->subjectRepository,
         );
 
         parent::setUp();
@@ -67,7 +74,11 @@ class RolloverCounterTest extends UnitTestCase
             ['woopie-read'],
         );
 
-        $this->elasticClient->expects('search')->andReturn($this->getElasticResponse());
+        $searchParameters = [];
+        $this->elasticClient->expects('search')
+            ->with(Mockery::capture($searchParameters))
+            ->andReturn($this->getElasticResponse());
+        $this->subjectRepository->expects('countWithLandingPage')->andReturn(1);
 
         $this->mockMainTypeRepository(WooDecision::class, 1);
         $this->mockMainTypeRepository(ComplaintJudgement::class, 1);
@@ -84,9 +95,26 @@ class RolloverCounterTest extends UnitTestCase
             new CovenantConfig(Mockery::mock(WorkflowInterface::class)),
         ]);
 
-        $this->assertMatchesJsonSnapshot(
-            $this->rolloverCounter->getEntityCounts($indexDetails),
+        $counts = $this->rolloverCounter->getEntityCounts($indexDetails);
+        Assert::keyExists($searchParameters, 'body');
+        Assert::isArray($searchParameters['body']);
+        $body = $searchParameters['body'];
+        Assert::keyExists($body, 'aggs');
+        Assert::isArray($body['aggs']);
+        $aggregations = $body['aggs'];
+        Assert::keyExists($aggregations, 'toplevel_type');
+        Assert::isArray($aggregations['toplevel_type']);
+        $topLevelTypeAggregation = $aggregations['toplevel_type'];
+        Assert::keyExists($topLevelTypeAggregation, 'terms');
+        Assert::isArray($topLevelTypeAggregation['terms']);
+        $terms = $topLevelTypeAggregation['terms'];
+        Assert::keyExists($terms, 'size');
+
+        self::assertSame(
+            count(ElasticDocumentType::getMainTypes()) + count(ElasticDocumentType::getStandaloneTypes()),
+            $terms['size'],
         );
+        $this->assertMatchesJsonSnapshot($counts);
     }
 
     private function getElasticResponse(): MockInterface&Elasticsearch
@@ -98,6 +126,28 @@ class RolloverCounterTest extends UnitTestCase
         $response->expects('asArray')->andReturn($esData);
 
         return $response;
+    }
+
+    public function testSubjectCountReportsMissingDocumentsAndEmptyIndex(): void
+    {
+        $index = new ElasticIndexDetails('subject-test', 'yellow', 'open', '0', '0', '32', []);
+        foreach ([2, 0] as $expectedCount) {
+            $response = Mockery::mock(Elasticsearch::class);
+            $response->expects('asArray')->andReturn([
+                'aggregations' => ['toplevel_type' => ['buckets' => []]],
+            ]);
+            $this->elasticClient->expects('search')->andReturn($response);
+            $this->dossierTypeManager->expects('getAllConfigs')->times(2)->andReturn([]);
+            $this->subjectRepository->expects('countWithLandingPage')->andReturn($expectedCount);
+
+            $counts = $this->rolloverCounter->getEntityCounts($index);
+
+            self::assertCount(1, $counts);
+            self::assertSame(ElasticDocumentType::SUBJECT, $counts[0]->type);
+            self::assertSame($expectedCount, $counts[0]->expected);
+            self::assertSame(0, $counts[0]->actual);
+            self::assertSame($expectedCount === 0 ? 100.0 : 0.0, $counts[0]->getPercentage());
+        }
     }
 
     /**

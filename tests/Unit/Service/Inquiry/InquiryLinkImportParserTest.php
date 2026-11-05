@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Service\Inquiry;
 
-use Shared\Exception\FileReaderException;
-use Shared\Exception\InquiryLinkImportException;
+use Mockery;
+use PhpOffice\PhpSpreadsheet\Exception;
+use Shared\Exception\Import\InquiryMatterAndPublicationContextCombinationException;
+use Shared\Exception\Import\MissingHeadersException;
+use Shared\Exception\Import\SpreadsheetCannotBeOpenedException;
 use Shared\Service\FileReader\ExcelReaderFactory;
 use Shared\Service\Inquiry\InquiryLinkImportParser;
 use Shared\Tests\Unit\UnitTestCase;
@@ -38,7 +41,7 @@ class InquiryLinkImportParserTest extends UnitTestCase
     {
         $input = new UploadedFile(sprintf('%s/input-both-contexts.xlsx', __DIR__), 'input-both-contexts.xlsx');
 
-        $this->expectException(InquiryLinkImportException::class);
+        $this->expectException(InquiryMatterAndPublicationContextCombinationException::class);
 
         iterator_to_array($this->getParser()->parse($input, 'TEST'));
     }
@@ -47,9 +50,23 @@ class InquiryLinkImportParserTest extends UnitTestCase
     {
         $input = new UploadedFile(sprintf('%s/input-no-context.xlsx', __DIR__), 'input-no-context.xlsx');
 
-        $this->expectException(FileReaderException::class);
+        $this->expectException(MissingHeadersException::class);
 
         iterator_to_array($this->getParser()->parse($input, 'TEST'));
+    }
+
+    public function testParseFailsWhenSpreadsheetCannotBeOpened(): void
+    {
+        $input = new UploadedFile(sprintf('%s/input.xlsx', __DIR__), 'input.xlsx');
+
+        $excelReaderFactory = Mockery::mock(ExcelReaderFactory::class);
+        $excelReaderFactory->expects('createReader')->andThrow(new Exception());
+
+        $inquiryLinkImportParser = new InquiryLinkImportParser($excelReaderFactory);
+
+        self::expectException(SpreadsheetCannotBeOpenedException::class);
+
+        iterator_to_array($inquiryLinkImportParser->parse($input, $this->getFaker()->documentPrefix()));
     }
 
     public function testPraseWithMatterColumn(): void

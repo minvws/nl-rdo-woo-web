@@ -25,6 +25,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class AdviceController extends AbstractController
 {
+    public const string ROUTE_NAME_DETAIL = 'app_advice_detail';
+    public const string ROUTE_NAME_DOCUMENT_DETAIL = 'app_advice_document_detail';
+    public const string ROUTE_NAME_ATTACHMENT_DETAIL = 'app_advice_attachment_detail';
+    public const string ROUTE_NAME_NOTICE_NOT_PUBLIC_DETAIL = 'app_advice_notice_not_public_detail';
+
     public function __construct(
         private readonly AdviceViewFactory $viewFactory,
         private readonly AdviceMainDocumentRepository $adviceMainDocumentRepository,
@@ -36,7 +41,7 @@ class AdviceController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/advies/{documentPrefix}/{dossierNumber}', name: 'app_advice_detail', methods: ['GET'])]
+    #[Route('/advies/{documentPrefix}/{dossierNumber}', self::ROUTE_NAME_DETAIL, methods: ['GET'])]
     public function detail(
         #[ValueResolver('dossierWithAccessCheck')] Advice $advice,
         Breadcrumbs $breadcrumbs,
@@ -71,7 +76,7 @@ class AdviceController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/advies/{documentPrefix}/{dossierNumber}/document',
-        name: 'app_advice_document_detail',
+        self::ROUTE_NAME_DOCUMENT_DETAIL,
         methods: ['GET'],
     )]
     public function documentDetail(
@@ -102,7 +107,7 @@ class AdviceController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/advies/{documentPrefix}/{dossierNumber}/bijlage/{attachmentId}',
-        name: 'app_advice_attachment_detail',
+        self::ROUTE_NAME_ATTACHMENT_DETAIL,
         methods: ['GET'],
     )]
     public function attachmentDetail(
@@ -133,7 +138,7 @@ class AdviceController extends AbstractController
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
     #[Route(
         '/advies/{documentPrefix}/{dossierNumber}/mededeling-niet-openbaar',
-        name: 'app_advice_notice_not_public_detail',
+        self::ROUTE_NAME_NOTICE_NOT_PUBLIC_DETAIL,
         methods: ['GET'],
     )]
     public function noticeNotPublicDetail(

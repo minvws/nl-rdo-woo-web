@@ -7,6 +7,7 @@ namespace Shared\Tests\Unit\ValueObject;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Shared\ValueObject\ExternalId;
 use Shared\ValueObject\PlainDate;
 use Shared\ValueObject\PlainDateException;
 
@@ -125,6 +126,25 @@ class PlainDateTest extends TestCase
         $date2 = PlainDate::createFromFormat('Y-m-d', '2000-01-02');
 
         $this->assertFalse($date1->equalTo($date2));
+    }
+
+    #[DataProvider('otherTypeDataProvider')]
+    public function testEqualToReturnsFalseForOtherTypes(mixed $other): void
+    {
+        $this->assertFalse(PlainDate::create('2000-01-01')->equalTo($other));
+    }
+
+    /**
+     * @return array<string,array{other:mixed}>
+     */
+    public static function otherTypeDataProvider(): array
+    {
+        return [
+            'null' => ['other' => null],
+            'string with same value' => ['other' => '2000-01-01'],
+            'datetime with same date' => ['other' => new DateTimeImmutable('2000-01-01')],
+            'other equatable with same value' => ['other' => ExternalId::create('2000-01-01')],
+        ];
     }
 
     public function testIsBefore(): void

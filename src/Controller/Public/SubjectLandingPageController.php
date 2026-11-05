@@ -14,13 +14,16 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class SubjectLandingPageController extends AbstractController
 {
+    public const string ROUTE_NAME_SUBJECT_LANDING_PAGE = 'app_subject_landing_page';
+    public const string ROUTE_NAME_SUBJECT_LANDING_PAGE_PREVIEW = 'app_subject_landing_page_preview';
+
     public function __construct(
         private readonly SubjectViewFactory $subjectViewFactory,
     ) {
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/onderwerp/{slug}', name: 'app_subject_landing_page', methods: ['GET'])]
+    #[Route('/onderwerp/{slug}', self::ROUTE_NAME_SUBJECT_LANDING_PAGE, methods: ['GET'])]
     public function detail(
         #[MapEntity(expr: 'repository.findPublishedLandingPageBySlug(slug)')]
         Subject $subject,
@@ -28,7 +31,7 @@ final class SubjectLandingPageController extends AbstractController
         return $this->renderLandingPage($subject);
     }
 
-    #[Route('/onderwerp/{id}/preview/{previewToken}', name: 'app_subject_landing_page_preview', methods: ['GET'])]
+    #[Route('/onderwerp/{id}/preview/{previewToken}', self::ROUTE_NAME_SUBJECT_LANDING_PAGE_PREVIEW, methods: ['GET'])]
     public function preview(
         #[MapEntity(expr: 'repository.findConceptLandingPageByIdAndPreviewToken(id, previewToken)')]
         Subject $subject,

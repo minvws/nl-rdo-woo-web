@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Shared\Service\FileReader;
 
 use PhpOffice\PhpSpreadsheet\Exception;
-use Shared\Exception\FileReaderException;
+use Shared\Exception\Import\MissingHeadersException;
 
 use function array_filter;
 use function array_keys;
@@ -24,7 +24,7 @@ trait HeaderMappingTrait
      * @param array<array-key, string> $headers
      * @param array<array-key, ColumnMapping> $columnMappings
      *
-     * @throws FileReaderException|Exception
+     * @throws MissingHeadersException|Exception
      */
     private function resolveHeaderMapping(array $headers, array $columnMappings): HeaderMap
     {
@@ -57,7 +57,7 @@ trait HeaderMappingTrait
         );
 
         if (count($missingHeaders) > 0) {
-            throw FileReaderException::forMissingHeaders(array_keys($missingHeaders));
+            throw new MissingHeadersException(array_keys($missingHeaders));
         }
 
         return new HeaderMap($headerMapping);

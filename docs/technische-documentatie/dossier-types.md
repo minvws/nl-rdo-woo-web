@@ -180,6 +180,8 @@ See ``WooDecisionIngestStrategy`` for an example.
 - Implement ``ElasticDossierMapperInterface`` if needed. All dossier types automatically use the ``DefaultDossierMapper`` which indexes common properties from ``AbstractDossier``.
   If you need to map additional data into ElasticSearch that is specific to the dossier type you should implement a custom mapper. In that case you probably also need to add new fields to the ES schema.
   See ``WooDecisionMapper`` for an example. If you implement the ``ElasticDossierMapperInterface`` your mapper will be autowired with a higher priority than the default mapper.
+- Standalone search documents such as `Subject` are not dossier types. Keep them out of `getMainTypes()` and `getSubTypes()`;
+  list them through the standalone-type accessors and give them their own mapper, index command, and rollover fan-out.
 - Add a new namespace for search result mapping: `Shared\Domain\Search\Result\Dossier\FooBar`
   - Create a search result viewmodel that extends ``AbstractDossierTypeSearchResult`` (which implements the marker interface ``DossierTypeSearchResultInterface``). See ``AnnualReportSearchResult`` for an example.
   - Implement ``ProvidesDossierTypeSearchResultInterface`` in the repository of the dossier type. The ``getSearchResultViewModel`` method receives an ``ApplicationId``,

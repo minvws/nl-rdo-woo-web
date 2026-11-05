@@ -64,7 +64,7 @@ class PdfPageProcessorTest extends UnitTestCase
         $this->processor->processPage($entity, 1);
     }
 
-    public function testProcessPageCallsAllExtractorsSuccessfulAndInitiatesTeardown(): void
+    public function testProcessPageCallsAllExtractorsSuccessful(): void
     {
         $pageNr = 1;
 
@@ -80,8 +80,6 @@ class PdfPageProcessorTest extends UnitTestCase
 
         $this->thumbnailExtractor->expects('needsThumbGeneration')->with($context)->andReturnTrue();
         $this->thumbnailExtractor->expects('extractSinglePagePdfThumbnail')->with($context);
-
-        $this->contextFactory->expects('teardown')->with($context);
 
         $this->processor->processPage($entity, $pageNr);
     }
@@ -101,12 +99,10 @@ class PdfPageProcessorTest extends UnitTestCase
         $this->contentExtractCache->expects('hasCache')->with($entity, $pageNr)->andReturnTrue();
         $this->pageContentExtractor->expects('extract')->with($context);
 
-        $this->contextFactory->expects('teardown')->with($context);
-
         $this->processor->processPage($entity, $pageNr);
     }
 
-    public function testProcessPageInitiatesTeardownEvenWhenAnExtractorFails(): void
+    public function testProcessPageRethrowsWhenAnExtractorFails(): void
     {
         $pageNr = 1;
 
@@ -123,8 +119,6 @@ class PdfPageProcessorTest extends UnitTestCase
         $this->thumbnailExtractor->expects('needsThumbGeneration')->with($context)->andReturnTrue();
 
         $this->contentExtractCache->expects('hasCache')->with($entity, $pageNr);
-
-        $this->contextFactory->expects('teardown')->with($context);
 
         $this->expectExceptionObject($exception);
 

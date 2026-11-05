@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Shared\ApplicationId;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentLanguage;
 use Shared\Domain\Publication\Attachment\Enum\AttachmentType;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\AnnualReport\AnnualReportMainDocument;
 use Shared\Domain\Publication\Dossier\Type\ComplaintJudgement\ComplaintJudgementMainDocument;
 use Shared\Domain\Publication\Dossier\Type\Covenant\CovenantMainDocument;
@@ -18,10 +19,13 @@ use Shared\Domain\Publication\Dossier\Type\Disposition\Disposition;
 use Shared\Domain\Publication\Dossier\Type\Disposition\DispositionMainDocument;
 use Shared\Domain\Publication\Dossier\Type\DossierType;
 use Shared\Domain\Publication\Dossier\Type\InvestigationReport\InvestigationReportMainDocument;
+use Shared\Domain\Publication\Dossier\ViewModel\Ground;
+use Shared\Domain\Publication\Dossier\ViewModel\GroundViewFactory;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocument;
 use Shared\Domain\Publication\MainDocument\ViewModel\MainDocumentViewFactory;
+use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Publication\SourceType;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\PlainDate;
@@ -81,6 +85,12 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
             )
             ->andReturn($expectedDetailsUrl = 'http://details.test');
 
+        $ground = $this->getFaker()->ground();
+        $expectedGrounds = [new Ground($this->getFaker()->ground(), $this->getFaker()->word(), $this->getFaker()->url())];
+
+        $groundViewFactory = Mockery::mock(GroundViewFactory::class);
+        $groundViewFactory->expects('makeCollection')->with([$ground])->andReturn($expectedGrounds);
+
         $mainDocument = Mockery::mock($mainDocumentClass);
         Assert::isInstanceOf($mainDocument, AbstractMainDocument::class);
         Assert::isInstanceOf($mainDocument, MockInterface::class);
@@ -91,14 +101,16 @@ final class MainDocumentViewFactoryTest extends UnitTestCase
         $mainDocument->expects('getType')->andReturn(AttachmentType::ADVICE);
         $mainDocument->expects('getLanguage')->andReturn(AttachmentLanguage::NLD);
         $mainDocument->expects('getInternalReference')->andReturn($expectedInternalReference = 'internal reference');
-        $mainDocument->expects('getGrounds')->andReturn($expectedGrounds = ['bar', 'foo']);
+        $mainDocument->expects('getGrounds')->andReturn([$ground]);
 
         $dossier = Mockery::mock(Disposition::class);
         $dossier->expects('getDocumentPrefix')->times(2)->andReturn($expectedDocumentPrefix);
         $dossier->expects('getDossierNumber')->times(2)->andReturn($expectedDossierId);
         $dossier->expects('getType')->andReturn($dossierType);
 
-        $result = new MainDocumentViewFactory($urlGenerator)->make($dossier, $mainDocument, $applicationId);
+        $dossierUrlGenerator = new DossierUrlGenerator(Mockery::mock(PublicUrlGenerator::class), $urlGenerator);
+        $result = new MainDocumentViewFactory($urlGenerator, $groundViewFactory, $dossierUrlGenerator)
+            ->make($dossier, $mainDocument, $applicationId);
 
         $this->assertInstanceOf(MainDocument::class, $result);
         $this->assertSame($expectedUuid, $result->id);

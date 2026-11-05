@@ -25,7 +25,7 @@ final class SubjectFactory extends PersistentObjectFactory
     {
         return [
             'organisation' => OrganisationFactory::new(),
-            'name' => self::faker()->word(),
+            'name' => self::faker()->unique()->word(),
         ];
     }
 

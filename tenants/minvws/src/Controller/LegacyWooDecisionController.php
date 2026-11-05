@@ -17,7 +17,13 @@ use Symfony\Component\Routing\Attribute\Route;
 // Redirects old dossier urls (without prefixes in the url) to the new urls
 class LegacyWooDecisionController extends AbstractController
 {
-    #[Route('/dossier/{dossierNumber}', name: 'app_legacy_dossier_detail', methods: ['GET'], priority: -1)]
+    public const string ROUTE_NAME_LEGACY_DOSSIER_DETAIL = 'app_legacy_dossier_detail';
+    public const string ROUTE_NAME_LEGACY_DOSSIER_BATCH = 'app_legacy_dossier_batch';
+    public const string ROUTE_NAME_LEGACY_DOSSIER_BATCH_DETAIL = 'app_legacy_dossier_batch_detail';
+    public const string ROUTE_NAME_LEGACY_DOSSIER_BATCH_DOWNLOAD = 'app_legacy_dossier_batch_download';
+    public const string ROUTE_NAME_LEGACY_DOSSIER_DECISION_DOWNLOAD = 'app_legacy_dossier_decision_download';
+
+    #[Route('/dossier/{dossierNumber}', self::ROUTE_NAME_LEGACY_DOSSIER_DETAIL, methods: ['GET'], priority: -1)]
     public function detail(
         #[MapEntity(mapping: ['dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
     ): RedirectResponse {
@@ -33,7 +39,7 @@ class LegacyWooDecisionController extends AbstractController
         );
     }
 
-    #[Route('/dossier/{dossierNumber}/batch', name: 'app_legacy_dossier_batch', methods: ['POST'], priority: -1)]
+    #[Route('/dossier/{dossierNumber}/batch', self::ROUTE_NAME_LEGACY_DOSSIER_BATCH, methods: ['POST'], priority: -1)]
     public function createBatch(
         #[MapEntity(mapping: ['dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
     ): RedirectResponse {
@@ -49,7 +55,7 @@ class LegacyWooDecisionController extends AbstractController
         );
     }
 
-    #[Route('/dossier/{dossierNumber}/batch/{batchId}', name: 'app_legacy_dossier_batch_detail', methods: ['GET'], priority: -1)]
+    #[Route('/dossier/{dossierNumber}/batch/{batchId}', self::ROUTE_NAME_LEGACY_DOSSIER_BATCH_DETAIL, methods: ['GET'], priority: -1)]
     public function batch(
         #[MapEntity(mapping: ['dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
@@ -71,7 +77,7 @@ class LegacyWooDecisionController extends AbstractController
     }
 
     #[Cache(public: true, maxage: 600, mustRevalidate: true)]
-    #[Route('/dossier/{dossierNumber}/batch/{batchId}/download', name: 'app_legacy_dossier_batch_download', methods: ['GET'], priority: -1)]
+    #[Route('/dossier/{dossierNumber}/batch/{batchId}/download', self::ROUTE_NAME_LEGACY_DOSSIER_BATCH_DOWNLOAD, methods: ['GET'], priority: -1)]
     public function batchDownload(
         #[MapEntity(mapping: ['dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
         #[MapEntity(mapping: ['batchId' => 'id'])] BatchDownload $batch,
@@ -92,7 +98,7 @@ class LegacyWooDecisionController extends AbstractController
         );
     }
 
-    #[Route('/dossier/{dossierNumber}/decision/download', name: 'app_legacy_dossier_decision_download', methods: ['GET'], priority: -1)]
+    #[Route('/dossier/{dossierNumber}/decision/download', self::ROUTE_NAME_LEGACY_DOSSIER_DECISION_DOWNLOAD, methods: ['GET'], priority: -1)]
     public function downloadDecision(
         #[MapEntity(mapping: ['dossierNumber' => 'dossierNumber'])] WooDecision $dossier,
     ): RedirectResponse {

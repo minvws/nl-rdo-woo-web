@@ -97,6 +97,33 @@ class DossierEntityUpdateListenerTest extends UnitTestCase
         $this->listener->postUpdate($dossier, $postUpdateArgs);
     }
 
+    public function testHistoryLoggingTreatsAClearedValueObjectAsAnUpdate(): void
+    {
+        $preUpdateArgs = Mockery::mock(PreUpdateEventArgs::class);
+        $dossier = Mockery::mock(WooDecision::class);
+        $dossier->expects('getId')->andReturn(Uuid::v6());
+
+        $preUpdateArgs->expects('hasChangedField')->with('decisionDate')->andReturnTrue();
+        $preUpdateArgs->expects('getOldValue')->with('decisionDate')->andReturn(PlainDate::create('2025-12-21'));
+        $preUpdateArgs->expects('getNewValue')->with('decisionDate')->andReturnNull();
+
+        foreach (['title', 'summary', 'publicationDate', 'previewDate'] as $fieldName) {
+            $preUpdateArgs->expects('hasChangedField')->with($fieldName)->andReturnFalse();
+        }
+
+        $this->listener->preUpdate($dossier, $preUpdateArgs);
+
+        $postUpdateArgs = Mockery::mock(PostUpdateEventArgs::class);
+
+        $this->entityManager->expects('persist')->with(Mockery::on(
+            static fn (History $history): bool => $history->getContextKey() === 'dossier_updated'
+                && $history->getContext() === ['changes' => ['%history.value.decision_date%']],
+        ));
+        $this->entityManager->expects('flush');
+
+        $this->listener->postUpdate($dossier, $postUpdateArgs);
+    }
+
     public function testHistoryLoggingSkipsValueObjectsThatDidNotChange(): void
     {
         $preUpdateArgs = Mockery::mock(PreUpdateEventArgs::class);

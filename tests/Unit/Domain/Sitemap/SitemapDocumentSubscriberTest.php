@@ -16,10 +16,10 @@ use Presta\SitemapBundle\Service\UrlContainerInterface;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
 use Shared\Domain\Publication\Dossier\DossierRepository;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\Document;
+use Shared\Domain\Publication\Dossier\Type\WooDecision\Document\DocumentUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\PublicUrlGenerator;
 use Shared\Domain\Sitemap\SitemapDocumentSubscriber;
-use Shared\Service\DocumentCanonicalUrlGenerator;
 use Shared\Tests\Unit\UnitTestCase;
 use Shared\ValueObject\DocumentNumber;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -41,7 +41,7 @@ class SitemapDocumentSubscriberTest extends UnitTestCase
         $this->subscriber = new SitemapDocumentSubscriber(
             $this->entityManager,
             $this->dossierRepository,
-            new DocumentCanonicalUrlGenerator(new PublicUrlGenerator('https://example.test', $this->router)),
+            new DocumentUrlGenerator(new PublicUrlGenerator('https://example.test', $this->router)),
         );
     }
 

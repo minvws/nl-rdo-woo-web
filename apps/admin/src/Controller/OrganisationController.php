@@ -30,6 +30,10 @@ use function is_array;
 
 class OrganisationController extends AbstractController
 {
+    public const string ROUTE_NAME_ORGANISATION = 'app_admin_organisation';
+    public const string ROUTE_NAME_ORGANISATION_CREATE = 'app_admin_organisation_create';
+    public const string ROUTE_NAME_ORGANISATION_EDIT = 'app_admin_organisation_edit';
+
     public function __construct(
         private readonly OrganisationRepository $organisationRepository,
         private readonly DepartmentRepository $departmentRepository,
@@ -39,7 +43,7 @@ class OrganisationController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/organisatie', name: 'app_admin_user_organisation', methods: ['GET'])]
+    #[Route('/balie/organisatie', self::ROUTE_NAME_ORGANISATION, methods: ['GET'])]
     #[IsGranted('AuthMatrix.organisation.read')]
     public function index(): Response
     {
@@ -50,7 +54,7 @@ class OrganisationController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/organisatie/new', name: 'app_admin_user_organisation_create', methods: ['GET', 'POST'])]
+    #[Route('/balie/organisatie/new', self::ROUTE_NAME_ORGANISATION_CREATE, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.organisation.create')]
     public function create(Request $request): Response
     {
@@ -64,7 +68,7 @@ class OrganisationController extends AbstractController
             // Use the service instead of the repo directly as it will do more work like audit logging
             $this->organisationService->create($this->organisationFormMapper->create($data));
 
-            return new RedirectResponse($this->generateUrl('app_admin_user_organisation', []));
+            return new RedirectResponse($this->generateUrl('app_admin_organisation', []));
         }
 
         return $this->render('admin/organisation/create.html.twig', [
@@ -75,7 +79,7 @@ class OrganisationController extends AbstractController
         ]);
     }
 
-    #[Route('/balie/organisatie/{id}', name: 'app_admin_user_organisation_edit', methods: ['GET', 'POST'])]
+    #[Route('/balie/organisatie/{id}', self::ROUTE_NAME_ORGANISATION_EDIT, methods: ['GET', 'POST'])]
     #[IsGranted('AuthMatrix.organisation.update')]
     public function modify(Request $request, Organisation $organisation): Response
     {
@@ -94,7 +98,7 @@ class OrganisationController extends AbstractController
             // Use the service instead of the repo directly as it will do more work like audit logging
             $this->organisationService->update($organisation);
 
-            return new RedirectResponse($this->generateUrl('app_admin_user_organisation', []));
+            return new RedirectResponse($this->generateUrl('app_admin_organisation', []));
         }
 
         return $this->render('admin/organisation/edit.html.twig', [

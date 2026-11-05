@@ -7,67 +7,47 @@ namespace Shared\Tests\Unit\Domain\Sitemap;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery;
-use Mockery\MockInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
-use Shared\Domain\Publication\Dossier\Type\DossierType;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
 use Shared\Domain\Publication\MainDocument\MainDocumentRepository;
 use Shared\Domain\Sitemap\SitemapMainDocumentSubscriber;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\Url;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SitemapMainDocumentSubscriberTest extends UnitTestCase
 {
-    private EntityManagerInterface&MockInterface $entityManager;
-    private MainDocumentRepository&MockInterface $mainDocumentRepository;
-    private SitemapMainDocumentSubscriber $subscriber;
-
-    protected function setUp(): void
-    {
-        $this->entityManager = Mockery::mock(EntityManagerInterface::class);
-        $this->mainDocumentRepository = Mockery::mock(MainDocumentRepository::class);
-
-        $this->subscriber = new SitemapMainDocumentSubscriber(
-            $this->entityManager,
-            $this->mainDocumentRepository,
-        );
-    }
-
     public function testPopulate(): void
     {
+        $updatedAt = new DateTimeImmutable();
+        $url = $this->getFaker()->url();
+
         $dossier = Mockery::mock(WooDecision::class);
-        $dossier->expects('getDocumentPrefix')->andReturn($prefix = 'foo');
-        $dossier->expects('getDossierNumber')->andReturn($dossierNumber = 'bar');
-        $dossier->expects('getType')->andReturn(DossierType::COVENANT);
 
         $mainDocument = Mockery::mock(AbstractMainDocument::class);
         $mainDocument->expects('getDossier')->andReturn($dossier);
-        $mainDocument->expects('getUpdatedAt')->andReturn($updatedAt = new DateTimeImmutable());
+        $mainDocument->expects('getUpdatedAt')->andReturn($updatedAt);
 
-        $urlContainer = Mockery::mock(UrlContainerInterface::class);
-
-        $this->mainDocumentRepository
+        $mainDocumentRepository = Mockery::mock(MainDocumentRepository::class);
+        $mainDocumentRepository
             ->expects('getAllPublishedQuery->toIterable')
-
             ->andReturn([$mainDocument]);
 
-        $urlGenerator = Mockery::mock(UrlGeneratorInterface::class);
-        $urlGenerator->expects('generate')->with(
-            'app_covenant_document_detail',
-            [
-                'documentPrefix' => $prefix,
-                'dossierNumber' => $dossierNumber,
-            ],
-            0,
-        )->andReturn($attachmentUrl = '/foo/bar/attachment-123');
+        $dossierUrlGenerator = Mockery::mock(DossierUrlGenerator::class);
+        $dossierUrlGenerator
+            ->expects('documentDetailUrl')
+            ->with($dossier)
+            ->andReturn(Url::create($url));
 
+        $urlContainer = Mockery::mock(UrlContainerInterface::class);
         $urlContainer->expects('addUrl')->with(
             Mockery::on(
-                static function (UrlConcrete $urlConcrete) use ($attachmentUrl, $updatedAt): bool {
-                    self::assertEquals($attachmentUrl, $urlConcrete->getLoc());
+                static function (UrlConcrete $urlConcrete) use ($url, $updatedAt): bool {
+                    self::assertEquals($url, $urlConcrete->getLoc());
                     self::assertEquals($updatedAt, $urlConcrete->getLastmod());
 
                     return true;
@@ -76,13 +56,18 @@ class SitemapMainDocumentSubscriberTest extends UnitTestCase
             'main_documents',
         );
 
-        $this->entityManager->expects('detach')->with($mainDocument);
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager->expects('detach')->with($mainDocument);
 
-        $event = new SitemapPopulateEvent(
-            $urlContainer,
-            $urlGenerator,
+        $subscriber = new SitemapMainDocumentSubscriber(
+            $entityManager,
+            $mainDocumentRepository,
+            $dossierUrlGenerator,
         );
 
-        $this->subscriber->__invoke($event);
+        $subscriber->__invoke(new SitemapPopulateEvent(
+            $urlContainer,
+            Mockery::mock(UrlGeneratorInterface::class),
+        ));
     }
 }

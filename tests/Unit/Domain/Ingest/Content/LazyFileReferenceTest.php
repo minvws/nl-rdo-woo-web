@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Content;
 
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
-use Mockery\VerificationDirector;
 use Shared\Domain\Ingest\Content\ContentExtractException;
 use Shared\Domain\Ingest\Content\ContentExtractOptions;
 use Shared\Domain\Ingest\Content\LazyFileReference;
@@ -13,47 +13,50 @@ use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Service\Storage\EntityStorageService;
 use Shared\Tests\Unit\UnitTestCase;
 use Symfony\Component\Uid\Uuid;
-use Webmozart\Assert\Assert;
 
 class LazyFileReferenceTest extends UnitTestCase
 {
-    public function testLazyFileReferenceLoadsFileOnlyWhenNeededAndOnlyOnce(): void
+    public function testGetStream(): void
     {
-        $spy = Mockery::spy(static fn (): string => '/foo/bar.txt');
-        Assert::isCallable($spy);
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $stream = Utils::tryFopen('php://memory', 'r');
 
-        $reference = new LazyFileReference($spy);
+        $entityStorageService = Mockery::mock(EntityStorageService::class);
+        $entityStorageService->expects('retrieveResourceEntity')->with($entity)->andReturn($stream);
 
-        $spy->shouldNotHaveBeenCalled();
+        $lazyFileReference = new LazyFileReference($entity, ContentExtractOptions::create(), $entityStorageService);
 
-        self::assertEquals('/foo/bar.txt', $reference->getPath());
-
-        $verficationDirector = $spy->shouldHaveBeenCalled();
-        Assert::isInstanceOf($verficationDirector, VerificationDirector::class);
-        $verficationDirector->once();
-
-        self::assertEquals('/foo/bar.txt', $reference->getPath());
-
-        $verficationDirector = $spy->shouldHaveBeenCalled();
-        Assert::isInstanceOf($verficationDirector, VerificationDirector::class);
-        $verficationDirector->once();
+        self::assertSame($stream, $lazyFileReference->getStream());
     }
 
-    public function testItThrowsExceptionWhenFilePathCannotBeDetermined(): void
+    public function testGetStreamThrowsExceptionWhenEntityCannotBeRead(): void
     {
         $entity = Mockery::mock(EntityWithFileInfo::class);
         $entity->expects('getId')->times(2)->andReturn(Uuid::v6());
 
-        $options = Mockery::mock(ContentExtractOptions::class);
-        $options->expects('hasPageNumber')->andReturn(false);
+        $entityStorageService = Mockery::mock(EntityStorageService::class);
+        $entityStorageService->expects('retrieveResourceEntity')->with($entity)->andReturnNull();
 
-        $entityStorage = Mockery::mock(EntityStorageService::class);
-        $entityStorage->expects('downloadEntity')->with($entity)->andReturn(false);
-
-        $result = LazyFileReference::createForEntityWithFileInfo($entity, $options, $entityStorage);
+        $lazyFileReference = new LazyFileReference($entity, ContentExtractOptions::create(), $entityStorageService);
 
         $this->expectExceptionObject(ContentExtractException::forCannotCreateLazyFileReference($entity));
 
-        $result->getPath();
+        $lazyFileReference->getStream();
+    }
+
+    public function testGetStreamThrowsExceptionForPage(): void
+    {
+        $contentExtractOptions = ContentExtractOptions::create()
+            ->withPageNumber($this->getFaker()->numberBetween(1, 100));
+
+        $lazyFileReference = new LazyFileReference(
+            Mockery::mock(EntityWithFileInfo::class),
+            $contentExtractOptions,
+            Mockery::mock(EntityStorageService::class),
+        );
+
+        $this->expectExceptionObject(ContentExtractException::forCannotCreateLazyFileReferenceForPage());
+
+        $lazyFileReference->getStream();
     }
 }

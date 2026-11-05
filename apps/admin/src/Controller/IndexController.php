@@ -16,18 +16,21 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class IndexController extends AbstractController
 {
+    public const string ROUTE_NAME_INDEX = 'app_admin_index';
+    public const string ROUTE_NAME_ADMIN = 'app_admin';
+
     public function __construct(
         private readonly UserRouteHelper $userRouteHelper,
     ) {
     }
 
-    #[Route('/balie', name: 'app_admin_index', methods: ['GET'])]
+    #[Route('/balie', self::ROUTE_NAME_INDEX, methods: ['GET'])]
     public function index(): Response
     {
         return $this->redirectToRoute($this->userRouteHelper->getDefaultIndexRouteName());
     }
 
-    #[Route('/balie/admin', name: 'app_admin', methods: ['GET'])]
+    #[Route('/balie/admin', self::ROUTE_NAME_ADMIN, methods: ['GET'])]
     #[IsGranted(Roles::ROLE_SUPER_ADMIN)]
     public function admin(Breadcrumbs $breadcrumbs): Response
     {

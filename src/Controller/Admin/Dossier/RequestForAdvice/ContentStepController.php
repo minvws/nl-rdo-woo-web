@@ -22,6 +22,9 @@ use Webmozart\Assert\Assert;
 
 class ContentStepController extends AbstractController
 {
+    public const string ROUTE_NAME_CONCEPT = 'app_admin_dossier_requestforadvice_content_concept';
+    public const string ROUTE_NAME_EDIT = 'app_admin_dossier_requestforadvice_content_edit';
+
     private const STEP_NAME = StepName::CONTENT;
 
     public function __construct(
@@ -31,23 +34,15 @@ class ContentStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/request-for-advice/content/concept/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_requestforadvice_content_concept',
+        '/balie/dossier/request-for-advice/content/concept/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_CONCEPT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.create', subject: 'dossier')]
     public function concept(
         #[MapEntity(mapping: ['documentPrefix' => 'documentPrefix', 'dossierNumber' => 'dossierNumber'])] RequestForAdvice $dossier,
         Request $request,
-        Breadcrumbs $breadcrumbs,
     ): Response {
-        $breadcrumbs->addRouteItem(
-            (string) $dossier->getTitle(),
-            'app_admin_dossier',
-            ['documentPrefix' => $dossier->getDocumentPrefix(), 'dossierNumber' => $dossier->getDossierNumber()],
-        );
-        $breadcrumbs->addItem('admin.dossiers.request-for-advice.step.content');
-
         $wizardStatus = $this->stepHelper->getWizardStatus($dossier, self::STEP_NAME);
         if (! $wizardStatus->isCurrentStepAccessibleInConceptMode()) {
             return $this->stepHelper->redirectToFirstOpenStep($wizardStatus);
@@ -69,7 +64,6 @@ class ContentStepController extends AbstractController
                 ->withNoticeNotPublicParams($dossier)
                 ->withForm($form)
                 ->withWizardStatus($wizardStatus)
-                ->withBreadCrumbs($breadcrumbs)
                 ->withDepartments()
                 ->with('advisoryBodiesErrors', $this->getAdvisoryBodiesErrors($form))
                 ->getParams(),
@@ -77,8 +71,8 @@ class ContentStepController extends AbstractController
     }
 
     #[Route(
-        path: '/balie/dossier/request-for-advice/content/edit/{documentPrefix}/{dossierNumber}',
-        name: 'app_admin_dossier_requestforadvice_content_edit',
+        '/balie/dossier/request-for-advice/content/edit/{documentPrefix}/{dossierNumber}',
+        self::ROUTE_NAME_EDIT,
         methods: ['GET', 'POST'],
     )]
     #[IsGranted('AuthMatrix.dossier.update', subject: 'dossier')]

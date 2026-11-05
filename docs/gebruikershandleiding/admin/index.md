@@ -7,6 +7,7 @@ Beheerders met Super Beheerder rechten zijn verantwoordelijk voor het inrichten 
 :caption: Inhoudsopgave
 
 configureren
+organisaties
 bestuursorganen
 beheerpagina/index
 ```

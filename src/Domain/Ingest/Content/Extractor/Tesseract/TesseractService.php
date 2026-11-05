@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Shared\Domain\Ingest\Content\Extractor\Tesseract;
 
 use Psr\Log\LoggerInterface;
-use Shared\Service\Storage\LocalFilesystem;
-use Symfony\Component\Process\Process;
+use Shared\Service\ProcessFactory;
 
 /**
  * Generates a hi-res PNG image of a (single-page) PDF file, and use tesseract to extract text from it by OCR.
@@ -14,72 +13,54 @@ use Symfony\Component\Process\Process;
  */
 class TesseractService
 {
-    public const PDFTOPPM_PATH = '/usr/bin/pdftoppm';
-    public const TESSERACT_PATH = '/usr/bin/tesseract';
+    public const string PDFTOPPM_PATH = '/usr/bin/pdftoppm';
+    public const string TESSERACT_PATH = '/usr/bin/tesseract';
+    public const string PDFTOPPM_INPUT_FROM_STDIN = '-';
+    public const string TESSERACT_INPUT_FROM_STDIN = 'stdin';
 
     public function __construct(
         protected LoggerInterface $logger,
-        protected LocalFilesystem $localFilesystem,
+        protected ProcessFactory $processFactory,
     ) {
     }
 
-    public function extract(string $sourcePdfPath): string
+    /**
+     * @param resource $source
+     */
+    public function extract($source): string
     {
-        $tempDir = $this->localFilesystem->createTempDir();
-        if ($tempDir === false) {
-            return '';
-        }
-        $targetPngPath = $tempDir . '/page';
+        $params = [self::PDFTOPPM_PATH, '-png', '-r', '300', '-singlefile', self::PDFTOPPM_INPUT_FROM_STDIN];
 
-        // Create hi-res page
-        $params = [self::PDFTOPPM_PATH, '-png', '-r', '300', '-singlefile', $sourcePdfPath, $targetPngPath];
-
-        $process = $this->getNewProcess($params);
+        $process = $this->processFactory->create($params);
+        $process->setInput($source);
         $process->setTimeout(120);
         $process->run();
 
         if (! $process->isSuccessful()) {
             $this->logger->error('pdftoppm failed', [
-                'sourcePath' => $sourcePdfPath,
-                'targetPngPath' => $targetPngPath . '.png',
                 'error_output' => $process->getErrorOutput(),
             ]);
-
-            $this->localFilesystem->deleteDirectory($tempDir);
 
             return '';
         }
 
-        $params = [self::TESSERACT_PATH, $targetPngPath . '.png', 'stdout'];
+        $png = $process->getOutput();
 
-        $process = $this->getNewProcess($params);
+        $params = [self::TESSERACT_PATH, self::TESSERACT_INPUT_FROM_STDIN, 'stdout'];
+
+        $process = $this->processFactory->create($params);
+        $process->setInput($png);
         $process->setTimeout(120);
         $process->run();
 
         if (! $process->isSuccessful()) {
             $this->logger->error('Tesseract failed', [
-                'sourcePath' => $sourcePdfPath,
-                'targetPngPath' => $targetPngPath . '.png',
                 'error_output' => $process->getErrorOutput(),
             ]);
-
-            $this->localFilesystem->deleteDirectory($tempDir);
 
             return '';
         }
 
-        $this->localFilesystem->deleteDirectory($tempDir);
-
         return $process->getOutput();
-    }
-
-    /**
-     * @param array<int,string> $params
-     *
-     * @codeCoverageIgnore
-     */
-    protected function getNewProcess(array $params): Process
-    {
-        return new Process($params);
     }
 }

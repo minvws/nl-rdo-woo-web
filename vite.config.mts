@@ -60,6 +60,7 @@ export default defineConfig({
         'http://localhost:8001',
         'http://localhost:8100',
         'http://localhost:8101',
+        /^https?:\/\/[\w-]+\.local$/,
       ],
     },
     host: 'localhost',

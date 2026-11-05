@@ -9,11 +9,9 @@ use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
 use Shared\Domain\Publication\Attachment\Entity\AbstractAttachment;
 use Shared\Domain\Publication\Attachment\Repository\AttachmentRepository;
+use Shared\Domain\Publication\Dossier\DossierUrlGenerator;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
-
-use function sprintf;
 
 #[AsEventListener]
 readonly class SitemapAttachmentSubscriber
@@ -21,6 +19,7 @@ readonly class SitemapAttachmentSubscriber
     public function __construct(
         private EntityManagerInterface $doctrine,
         private AttachmentRepository $attachmentRepository,
+        private DossierUrlGenerator $dossierUrlGenerator,
     ) {
     }
 
@@ -34,15 +33,7 @@ readonly class SitemapAttachmentSubscriber
             $dossier = $attachment->getDossier();
             $event->getUrlContainer()->addUrl(
                 new UrlConcrete(
-                    $event->getUrlGenerator()->generate(
-                        sprintf('app_%s_attachment_detail', $dossier->getType()->getValueForRouteName()),
-                        [
-                            'documentPrefix' => $dossier->getDocumentPrefix(),
-                            'dossierNumber' => $dossier->getDossierNumber(),
-                            'attachmentId' => $attachment->getId(),
-                        ],
-                        UrlGeneratorInterface::ABSOLUTE_URL,
-                    ),
+                    $this->dossierUrlGenerator->attachmentDetailUrl($dossier, $attachment->getId())->toString(),
                     $attachment->getUpdatedAt(),
                     UrlConcrete::CHANGEFREQ_MONTHLY,
                     0.8,

@@ -35,6 +35,7 @@ use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceAtta
 use Shared\Domain\Publication\Dossier\Type\RequestForAdvice\RequestForAdviceMainDocument;
 use Shared\Domain\Publication\Dossier\Type\WooDecision\WooDecision;
 use Shared\Domain\Publication\MainDocument\AbstractMainDocument;
+use Shared\Domain\Publication\Subject\Subject;
 use Shared\Domain\Search\Index\ElasticDocumentType;
 use Shared\Domain\Search\Index\IndexException;
 use Shared\Tests\Unit\UnitTestCase;
@@ -45,7 +46,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ElasticDocumentTypeTest extends UnitTestCase
 {
     /**
-     * @return array<string, array{entity: AbstractDossier|AbstractAttachment|AbstractMainDocument, expectedType: ElasticDocumentType}>
+     * @return array<string, array{entity: AbstractDossier|AbstractAttachment|AbstractMainDocument|Subject, expectedType: ElasticDocumentType}>
      */
     public static function fromEntityProvider(): array
     {
@@ -57,6 +58,10 @@ class ElasticDocumentTypeTest extends UnitTestCase
             'WooDecision' => [
                 'entity' => new WooDecision(),
                 'expectedType' => ElasticDocumentType::WOO_DECISION,
+            ],
+            'Subject' => [
+                'entity' => new Subject(),
+                'expectedType' => ElasticDocumentType::SUBJECT,
             ],
             'AnnualReport' => [
                 'entity' => new AnnualReport(),
@@ -192,6 +197,10 @@ class ElasticDocumentTypeTest extends UnitTestCase
                 'entityClass' => AnnualReport::class,
                 'expectedType' => ElasticDocumentType::ANNUAL_REPORT,
             ],
+            'Subject' => [
+                'entityClass' => Subject::class,
+                'expectedType' => ElasticDocumentType::SUBJECT,
+            ],
             'AnnualReportMainDocument' => [
                 'entityClass' => AnnualReportMainDocument::class,
                 'expectedType' => ElasticDocumentType::ANNUAL_REPORT_MAIN_DOCUMENT,
@@ -301,6 +310,22 @@ class ElasticDocumentTypeTest extends UnitTestCase
         );
     }
 
+    public function testGetStandaloneTypes(): void
+    {
+        self::assertSame(
+            [ElasticDocumentType::SUBJECT],
+            ElasticDocumentType::getStandaloneTypes(),
+        );
+    }
+
+    public function testGetStandaloneTypeValues(): void
+    {
+        self::assertSame(
+            ['subject'],
+            ElasticDocumentType::getStandaloneTypeValues(),
+        );
+    }
+
     public function testTransForMainType(): void
     {
         $locale = 'en_GB';
@@ -328,6 +353,21 @@ class ElasticDocumentTypeTest extends UnitTestCase
         self::assertEquals(
             'foo',
             ElasticDocumentType::COVENANT_MAIN_DOCUMENT->trans($translator, $locale),
+        );
+    }
+
+    public function testTransForStandaloneType(): void
+    {
+        $locale = 'en_GB';
+        $translator = Mockery::mock(TranslatorInterface::class);
+        $translator
+            ->expects('trans')
+            ->with('public.search.type.subject', [], null, $locale)
+            ->andReturn('Subjects');
+
+        self::assertSame(
+            'Subjects',
+            ElasticDocumentType::SUBJECT->trans($translator, $locale),
         );
     }
 

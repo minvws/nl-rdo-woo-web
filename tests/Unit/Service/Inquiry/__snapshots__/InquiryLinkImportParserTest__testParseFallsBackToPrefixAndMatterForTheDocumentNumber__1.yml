@@ -1,5 +1,5 @@
-TEST-XX-5033:
+test-xx-5033:
     - foo123
     - bar456
-TEST-xx-5034:
+test-xx-5034:
     - foo123

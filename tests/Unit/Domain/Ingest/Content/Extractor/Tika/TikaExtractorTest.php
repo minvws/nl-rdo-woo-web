@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Shared\Tests\Unit\Domain\Ingest\Content\Extractor\Tika;
 
+use GuzzleHttp\Psr7\Utils;
 use Mockery;
 use Mockery\MockInterface;
+use Psr\Http\Message\StreamInterface;
 use Shared\Domain\Ingest\Content\ContentExtractLogContext;
 use Shared\Domain\Ingest\Content\Extractor\ContentExtractorKey;
 use Shared\Domain\Ingest\Content\Extractor\Tika\TikaExtractor;
 use Shared\Domain\Ingest\Content\Extractor\Tika\TikaService;
-use Shared\Domain\Ingest\Content\LazyFileReference;
+use Shared\Domain\Ingest\Content\FileReferenceInterface;
 use Shared\Domain\Publication\EntityWithFileInfo;
 use Shared\Domain\Publication\FileInfo;
 use Shared\Tests\Unit\UnitTestCase;
@@ -38,13 +40,17 @@ final class TikaExtractorTest extends UnitTestCase
         $entity->expects('getFileInfo')->andReturn($fileInfo);
         $entity->expects('getId')->andReturn($id = Uuid::v6());
 
-        $fileReference = Mockery::mock(LazyFileReference::class);
-        $fileReference->expects('getPath')->andReturn($file = '/foo/bar.txt');
+        $source = Utils::tryFopen('php://memory', 'r');
+
+        $fileReference = Mockery::mock(FileReferenceInterface::class);
+        $fileReference->expects('getStream')->andReturn($source);
 
         $this->tikaService
             ->expects('extract')
             ->with(
-                $file,
+                Mockery::on(static function (StreamInterface $stream) use ($source): bool {
+                    return $stream->detach() === $source;
+                }),
                 $mimeType,
                 Mockery::on(
                     static function (ContentExtractLogContext $context) use ($id): bool {
@@ -60,6 +66,26 @@ final class TikaExtractorTest extends UnitTestCase
             'foo bar',
             $this->extractor->getContent($entity, $fileReference),
         );
+    }
+
+    public function testGetContentReturnsEmptyStringWhenTikaReturnsNoContent(): void
+    {
+        $fileInfo = Mockery::mock(FileInfo::class);
+        $fileInfo->expects('getNormalizedMimeType')->andReturn($this->getFaker()->mimeType());
+
+        $entity = Mockery::mock(EntityWithFileInfo::class);
+        $entity->expects('getFileInfo')->andReturn($fileInfo);
+        $entity->expects('getId')->andReturn(Uuid::v6());
+
+        $fileReference = Mockery::mock(FileReferenceInterface::class);
+        $fileReference->expects('getStream')->andReturn(Utils::tryFopen('php://memory', 'r'));
+
+        $tikaService = Mockery::mock(TikaService::class);
+        $tikaService->expects('extract')->andReturn([]);
+
+        $extractor = new TikaExtractor($tikaService);
+
+        self::assertSame('', $extractor->getContent($entity, $fileReference));
     }
 
     public function testSupports(): void

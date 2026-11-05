@@ -94,7 +94,7 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
             ->andReturn(['languages' => 'foo']);
 
         $this->groundViewFactory
-            ->expects('makeAsArray')
+            ->expects('makeOptions')
             ->andReturn(['grounds' => 'foo']);
 
         $this->builder->forDossier($this->dossier)->withMainDocumentParams($this->dossier);
@@ -131,7 +131,7 @@ final class DossierViewParamsBuilderTest extends UnitTestCase
             ->andReturn(['languages' => 'foo']);
 
         $this->groundViewFactory
-            ->expects('makeAsArray')
+            ->expects('makeOptions')
             ->andReturn(['grounds' => 'foo']);
 
         $this->builder->forDossier($this->dossier)->withAttachmentsParams($this->dossier);

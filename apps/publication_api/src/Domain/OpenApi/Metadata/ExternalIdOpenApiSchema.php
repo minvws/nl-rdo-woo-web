@@ -22,6 +22,6 @@ final class ExternalIdOpenApiSchema
         'format' => 'external-id',
         'minLength' => ExternalId::MIN_LENGTH,
         'maxLength' => ExternalId::MAX_LENGTH,
-        'pattern' => ExternalId::OPENAPI_PATTERN,
+        'pattern' => ExternalId::PATTERN,
     ];
 }

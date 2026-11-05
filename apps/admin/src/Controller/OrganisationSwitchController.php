@@ -20,6 +20,8 @@ use function in_array;
 
 class OrganisationSwitchController extends AbstractController
 {
+    public const string ROUTE_NAME_SWITCH_ORGANISATION = 'app_admin_switch_organisation';
+
     private const array ROUTE_WHITELIST = [
         'app_admin_dossiers',
         'app_admin_inquiries',
@@ -36,7 +38,7 @@ class OrganisationSwitchController extends AbstractController
     ) {
     }
 
-    #[Route('/balie/organisatie-wissel/{id}', name: 'app_admin_switch_organisation', methods: ['GET'])]
+    #[Route('/balie/organisatie-wissel/{id}', self::ROUTE_NAME_SWITCH_ORGANISATION, methods: ['GET'])]
     #[IsGranted('AuthMatrix.organisation.read')]
     public function index(Request $request, Organisation $organisation): Response
     {

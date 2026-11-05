@@ -18,6 +18,8 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InquiryRepository::class)]
+#[ORM\Index(columns: ['organisation_id', 'inquiry_number'])]
+#[ORM\Index(columns: ['organisation_id', 'updated_at'])]
 #[ORM\HasLifecycleCallbacks]
 class Inquiry
 {

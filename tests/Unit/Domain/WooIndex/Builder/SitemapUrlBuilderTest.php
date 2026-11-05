@@ -19,6 +19,7 @@ use Shared\Domain\WooIndex\Tooi\InformatieCategorie;
 use Shared\Domain\WooIndex\Tooi\Ministerie;
 use Shared\Domain\WooIndex\Tooi\SoortHandeling;
 use Shared\Tests\Unit\UnitTestCase;
+use Shared\ValueObject\Url as UrlValueObject;
 use Webmozart\Assert\Assert;
 
 use function fopen;
@@ -60,7 +61,7 @@ final class SitemapUrlBuilderTest extends UnitTestCase
     public function testCreatingSitemapIndexWithInvalidPriotityThrowsException(): void
     {
         $url = new Url(
-            loc: 'https://example.com',
+            loc: UrlValueObject::create('https://example.com'),
             lastmod: CarbonImmutable::parse('2021-01-01')->startOfDay(),
             diWooDocument: new DiWooDocument(
                 creatiedatum: CarbonImmutable::parse('2021-05-10')->startOfDay(),
@@ -93,7 +94,7 @@ final class SitemapUrlBuilderTest extends UnitTestCase
         return [
             'all fields filled' => [
                 'url' => new Url(
-                    loc: 'https://example.com',
+                    loc: UrlValueObject::create('https://example.com'),
                     lastmod: CarbonImmutable::parse('2021-01-01')->startOfDay(),
                     diWooDocument: new DiWooDocument(
                         creatiedatum: CarbonImmutable::parse('2021-05-10')->startOfDay(),
@@ -105,16 +106,16 @@ final class SitemapUrlBuilderTest extends UnitTestCase
                             atTime: CarbonImmutable::parse('2021-05-10')->endOfDay(),
                         ),
                         isPartOf: new UrlReference(
-                            resource: 'https://example2.com',
+                            resource: UrlValueObject::create('https://example2.com'),
                             officieleTitel: 'Officiële titel 2',
                         ),
                         hasParts: new ArrayCollection([
                             new UrlReference(
-                                resource: 'https://example3.com',
+                                resource: UrlValueObject::create('https://example3.com'),
                                 officieleTitel: 'Officiële titel 3',
                             ),
                             new UrlReference(
-                                resource: 'https://example4.com',
+                                resource: UrlValueObject::create('https://example4.com'),
                                 officieleTitel: 'Officiële titel 4',
                             ),
                         ]),
@@ -125,7 +126,7 @@ final class SitemapUrlBuilderTest extends UnitTestCase
             ],
             'optional fields empty' => [
                 'url' => new Url(
-                    loc: 'https://example.com',
+                    loc: UrlValueObject::create('https://example.com'),
                     lastmod: CarbonImmutable::parse('2021-01-01')->startOfDay(),
                     diWooDocument: new DiWooDocument(
                         creatiedatum: CarbonImmutable::parse('2021-05-10')->startOfDay(),

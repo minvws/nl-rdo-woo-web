@@ -25,6 +25,7 @@ use function sprintf;
 class DossierFileController extends AbstractController
 {
     public const string ROUTE_NAME_DOSSIER_FILE_DOWNLOAD = 'app_dossier_file_download';
+    public const string ROUTE_NAME_DOSSIER_FILE_THUMBNAIL = 'app_dossier_file_thumbnail';
 
     public function __construct(
         private readonly ThumbnailStorageService $thumbnailStorage,
@@ -34,7 +35,7 @@ class DossierFileController extends AbstractController
     }
 
     #[Cache(maxage: 600, public: true, mustRevalidate: true)]
-    #[Route('/dossier/{documentPrefix}/{dossierNumber}/file/download/{type}/{id?""}', name: self::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, methods: ['GET'])]
+    #[Route('/dossier/{documentPrefix}/{dossierNumber}/file/download/{type}/{id?""}', self::ROUTE_NAME_DOSSIER_FILE_DOWNLOAD, methods: ['GET'])]
     public function download(
         #[ValueResolver('dossierWithAccessCheck')] AbstractDossier $dossier,
         DossierFileType $type,
@@ -48,7 +49,7 @@ class DossierFileController extends AbstractController
     #[Cache(maxage: 600, smaxage: 600, public: true)]
     #[Route(
         '/dossier/{documentPrefix}/{dossierNumber}/file/thumbnail/{type}/{id}/{pageNr}/{hash}',
-        name: 'app_dossier_file_thumbnail',
+        self::ROUTE_NAME_DOSSIER_FILE_THUMBNAIL,
         requirements: ['pageNr' => '\d+'],
         defaults: ['hash' => ''],
         methods: ['GET'],

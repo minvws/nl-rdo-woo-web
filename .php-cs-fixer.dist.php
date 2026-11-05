@@ -2,7 +2,7 @@
 
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
-$finder = (new PhpCsFixer\Finder())
+$finder = new PhpCsFixer\Finder()
     ->in([
         __DIR__ . '/src',
         __DIR__ . '/apps',
@@ -21,7 +21,7 @@ $finder = (new PhpCsFixer\Finder())
         __DIR__ . '/public/index.php',
     ]);
 
-return (new PhpCsFixer\Config())
+return new PhpCsFixer\Config()
     ->setParallelConfig(ParallelConfigFactory::detect())
     ->setRules([
         '@Symfony' => true,
@@ -38,5 +38,6 @@ return (new PhpCsFixer\Config())
         'global_namespace_import' => ['import_classes' => true, 'import_constants' => true, 'import_functions' => true],
         'single_line_throw' => false,
         'multiline_whitespace_before_semicolons' => true,
+        'new_expression_parentheses' => ['use_parentheses' => false],
     ])
     ->setFinder($finder);

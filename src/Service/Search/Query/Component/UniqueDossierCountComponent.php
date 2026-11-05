@@ -6,6 +6,7 @@ namespace Shared\Service\Search\Query\Component;
 
 use Erichard\ElasticQueryBuilder\QueryBuilder;
 use Shared\Domain\Search\Index\Schema\ElasticField;
+use Shared\Service\Search\Query\Aggregation\AggregationName;
 use Shared\Service\Search\Query\Dsl\Aggregation;
 
 class UniqueDossierCountComponent
@@ -14,7 +15,7 @@ class UniqueDossierCountComponent
     {
         $queryBuilder->addAggregation(
             Aggregation::cardinality(
-                nameAndField: 'unique_dossiers',
+                nameAndField: AggregationName::UNIQUE_DOSSIERS,
                 fieldOrSource: ElasticField::PREFIXED_DOSSIER_NUMBER->value,
             )->setPrecisionThreshold(40_000),
         );
